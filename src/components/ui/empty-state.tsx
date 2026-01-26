@@ -1,3 +1,4 @@
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { FileX, Search, Inbox, AlertCircle } from "lucide-react";
@@ -8,7 +9,7 @@ interface EmptyStateProps {
   variant?: EmptyStateVariant;
   icon?: React.ReactNode;
   title: string;
-  description?: string;
+  description: string;
   action?: {
     label: string;
     onClick: () => void;
@@ -36,19 +37,17 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center py-xl px-md text-center",
+        "flex flex-col items-center justify-center py-xl px-md text-center max-w-sm mx-auto",
         className
       )}
     >
-      <div className="mb-4 text-muted-foreground/50">{IconComponent}</div>
-      <h3 className="text-h3 font-semibold text-foreground mb-2">{title}</h3>
-      {description && (
-        <p className="text-body text-muted-foreground max-w-sm mb-6">
-          {description}
-        </p>
-      )}
+      <div className="mb-4 text-content-tertiary [&>svg]:h-12 [&>svg]:w-12">
+        {IconComponent}
+      </div>
+      <h3 className="text-h3 font-semibold text-content">{title}</h3>
+      <p className="text-body text-content-secondary mt-2">{description}</p>
       {action && (
-        <Button onClick={action.onClick} variant="default">
+        <Button onClick={action.onClick} variant="primary" className="mt-6">
           {action.label}
         </Button>
       )}
@@ -94,7 +93,10 @@ export function NoDataState({
       description={`Get started by adding your first ${entityName.slice(0, -1)}.`}
       action={
         onAdd
-          ? { label: addLabel || `Add ${entityName.slice(0, -1)}`, onClick: onAdd }
+          ? {
+              label: addLabel || `Add ${entityName.slice(0, -1)}`,
+              onClick: onAdd,
+            }
           : undefined
       }
     />

@@ -1,19 +1,18 @@
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
-
-import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
 const avatarVariants = cva(
-  "relative flex shrink-0 overflow-hidden rounded-full border-2 border-background shadow-sm",
+  "relative flex shrink-0 overflow-hidden rounded-full border-2 border-white shadow-sm",
   {
     variants: {
       size: {
-        xs: "h-6 w-6",
-        sm: "h-8 w-8",
-        md: "h-10 w-10",
-        lg: "h-12 w-12",
-        xl: "h-16 w-16",
+        xs: "h-6 w-6 text-[10px]",
+        sm: "h-8 w-8 text-xs",
+        md: "h-10 w-10 text-sm",
+        lg: "h-12 w-12 text-base",
+        xl: "h-16 w-16 text-lg",
       },
     },
     defaultVariants: {
@@ -24,19 +23,44 @@ const avatarVariants = cva(
 
 interface AvatarProps
   extends React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>,
-    VariantProps<typeof avatarVariants> {}
+    VariantProps<typeof avatarVariants> {
+  src?: string;
+  name?: string;
+}
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   AvatarProps
->(({ className, size, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(avatarVariants({ size }), className)}
-    {...props}
-  />
-));
-Avatar.displayName = AvatarPrimitive.Root.displayName;
+>(({ className, size, src, name, children, ...props }, ref) => {
+  const initials = name
+    ? name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : "";
+
+  return (
+    <AvatarPrimitive.Root
+      ref={ref}
+      className={cn(avatarVariants({ size }), className)}
+      {...props}
+    >
+      {src && (
+        <AvatarPrimitive.Image
+          src={src}
+          alt={name || "Avatar"}
+          className="aspect-square h-full w-full object-cover"
+        />
+      )}
+      <AvatarPrimitive.Fallback className="flex h-full w-full items-center justify-center rounded-full bg-surface-tertiary text-content-secondary font-medium">
+        {initials || children}
+      </AvatarPrimitive.Fallback>
+    </AvatarPrimitive.Root>
+  );
+});
+Avatar.displayName = "Avatar";
 
 const AvatarImage = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Image>,
@@ -57,7 +81,7 @@ const AvatarFallback = React.forwardRef<
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-background-tertiary text-muted-foreground text-small font-medium",
+      "flex h-full w-full items-center justify-center rounded-full bg-surface-tertiary text-content-secondary font-medium",
       className
     )}
     {...props}
@@ -69,10 +93,24 @@ AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 interface AvatarGroupProps {
   children: React.ReactNode;
   max?: number;
+  size?: "xs" | "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
-function AvatarGroup({ children, max = 4, className }: AvatarGroupProps) {
+const sizeMap = {
+  xs: "h-6 w-6 text-[10px]",
+  sm: "h-8 w-8 text-xs",
+  md: "h-10 w-10 text-sm",
+  lg: "h-12 w-12 text-base",
+  xl: "h-16 w-16 text-lg",
+};
+
+function AvatarGroup({
+  children,
+  max = 4,
+  size = "md",
+  className,
+}: AvatarGroupProps) {
   const childArray = React.Children.toArray(children);
   const visibleChildren = childArray.slice(0, max);
   const remaining = childArray.length - max;
@@ -81,7 +119,12 @@ function AvatarGroup({ children, max = 4, className }: AvatarGroupProps) {
     <div className={cn("flex -space-x-2", className)}>
       {visibleChildren}
       {remaining > 0 && (
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-background bg-background-tertiary text-small font-medium text-muted-foreground">
+        <div
+          className={cn(
+            "relative flex shrink-0 items-center justify-center rounded-full border-2 border-white bg-surface-tertiary font-medium text-content-secondary shadow-sm",
+            sizeMap[size]
+          )}
+        >
           +{remaining}
         </div>
       )}

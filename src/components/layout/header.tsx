@@ -2,7 +2,6 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Search, Bell, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Avatar,
   AvatarFallback,
@@ -41,6 +40,10 @@ export function Header({
     onSearch?.(searchQuery);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -63,12 +66,12 @@ export function Header({
           <form onSubmit={handleSearch} className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
+              <input
                 type="search"
                 placeholder="Search properties, contacts..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-9"
+                onChange={handleInputChange}
+                className="flex w-full h-9 pl-10 pr-3.5 py-2.5 rounded-small border border-border bg-background text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10"
               />
             </div>
           </form>
@@ -101,7 +104,7 @@ export function Header({
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent className="w-56 bg-white" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
