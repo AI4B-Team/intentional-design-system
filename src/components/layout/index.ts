@@ -1,4 +1,9 @@
-export { PageLayout, PageHeader, PageSection, Grid } from "./page-layout";
+export { AppSidebar, MobileSidebar, MobileTabBar } from "./app-sidebar";
 export { Header } from "./header";
-export { AppSidebar } from "./app-sidebar";
-export { DashboardLayout } from "./dashboard-layout";
+export {
+  DashboardLayout,
+  PageHeader,
+  ContentSection,
+  StatsGrid,
+} from "./dashboard-layout";
+export { PageLayout, PageSection, Grid } from "./page-layout";

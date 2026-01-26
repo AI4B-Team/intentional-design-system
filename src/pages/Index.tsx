@@ -1,315 +1,261 @@
-import { DashboardLayout } from "@/components/layout";
-import { PageLayout, PageHeader, PageSection, Grid } from "@/components/layout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge, HeatScoreBadge } from "@/components/ui/badge";
+import {
+  DashboardLayout,
+  PageHeader,
+  ContentSection,
+  StatsGrid,
+} from "@/components/layout";
 import { StatCard } from "@/components/ui/stat-card";
-import { Avatar, AvatarFallback, AvatarGroup } from "@/components/ui/avatar";
-import { SkeletonCard, SkeletonStat } from "@/components/ui/skeleton";
-import { Spinner, LoadingDots } from "@/components/ui/spinner";
-import { EmptyState, NoDataState } from "@/components/ui/empty-state";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
-import { Building2, Users, DollarSign, TrendingUp, Plus } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge, HeatScoreBadge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { PremiumTable, type Column } from "@/components/ui/table";
+import { Avatar } from "@/components/ui/avatar";
+import {
+  Building2,
+  DollarSign,
+  TrendingUp,
+  Users,
+  ArrowRight,
+  MapPin,
+} from "lucide-react";
 
-const mockUser = {
-  name: "John Investor",
-  email: "john@reinvest.com",
-  avatar: "",
-};
-
-const mockProperties = [
-  { id: 1, address: "123 Main St", city: "Austin", score: 850, status: "Hot Lead" },
-  { id: 2, address: "456 Oak Ave", city: "Dallas", score: 620, status: "Warm" },
-  { id: 3, address: "789 Pine Rd", city: "Houston", score: 450, status: "Moderate" },
-  { id: 4, address: "321 Elm Dr", city: "San Antonio", score: 180, status: "Cold" },
+// Sample data
+const recentProperties = [
+  {
+    id: 1,
+    address: "123 Oak Street",
+    city: "Austin, TX",
+    price: "$425,000",
+    type: "Single Family",
+    score: 850,
+    status: "Hot Lead",
+  },
+  {
+    id: 2,
+    address: "456 Pine Avenue",
+    city: "Dallas, TX",
+    price: "$315,000",
+    type: "Multi-Family",
+    score: 720,
+    status: "In Review",
+  },
+  {
+    id: 3,
+    address: "789 Elm Boulevard",
+    city: "Houston, TX",
+    price: "$275,000",
+    type: "Single Family",
+    score: 580,
+    status: "New",
+  },
+  {
+    id: 4,
+    address: "321 Maple Drive",
+    city: "San Antonio, TX",
+    price: "$195,000",
+    type: "Condo",
+    score: 420,
+    status: "Analyzing",
+  },
+  {
+    id: 5,
+    address: "654 Cedar Lane",
+    city: "Fort Worth, TX",
+    price: "$380,000",
+    type: "Single Family",
+    score: 290,
+    status: "On Hold",
+  },
 ];
 
-const Index = () => {
-  const { toast } = useToast();
+const columns: Column[] = [
+  {
+    key: "address",
+    header: "Property",
+    render: (_, row) => (
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-medium bg-surface-tertiary">
+          <Building2 className="h-5 w-5 text-content-tertiary" />
+        </div>
+        <div>
+          <div className="font-medium text-content">{row.address}</div>
+          <div className="flex items-center gap-1 text-small text-content-secondary">
+            <MapPin className="h-3 w-3" />
+            {row.city}
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    key: "type",
+    header: "Type",
+    render: (value) => (
+      <Badge variant="secondary" size="sm">
+        {value}
+      </Badge>
+    ),
+  },
+  {
+    key: "price",
+    header: "Price",
+    align: "right",
+    render: (value) => (
+      <span className="font-medium tabular-nums">{value}</span>
+    ),
+  },
+  {
+    key: "score",
+    header: "Heat Score",
+    align: "center",
+    render: (value) => <HeatScoreBadge score={value} size="sm" />,
+  },
+  {
+    key: "status",
+    header: "Status",
+    render: (value) => {
+      const variant =
+        value === "Hot Lead"
+          ? "success"
+          : value === "In Review"
+          ? "warning"
+          : value === "On Hold"
+          ? "error"
+          : "default";
+      return (
+        <Badge variant={variant} size="sm">
+          {value}
+        </Badge>
+      );
+    },
+  },
+];
 
-  const showToast = (variant: "default" | "success" | "warning" | "destructive" | "info") => {
-    const messages = {
-      default: { title: "Notification", description: "This is a default notification." },
-      success: { title: "Success!", description: "Property saved successfully." },
-      warning: { title: "Warning", description: "This deal needs attention." },
-      destructive: { title: "Error", description: "Something went wrong." },
-      info: { title: "Info", description: "New market data available." },
-    };
-    toast({ ...messages[variant], variant });
-  };
+const recentActivity = [
+  {
+    id: 1,
+    user: "Sarah Chen",
+    action: "added a new property",
+    target: "123 Oak Street",
+    time: "2 min ago",
+  },
+  {
+    id: 2,
+    user: "Mike Johnson",
+    action: "updated deal status",
+    target: "456 Pine Avenue",
+    time: "15 min ago",
+  },
+  {
+    id: 3,
+    user: "Emily Davis",
+    action: "added notes to",
+    target: "789 Elm Boulevard",
+    time: "1 hour ago",
+  },
+  {
+    id: 4,
+    user: "Chris Wilson",
+    action: "closed deal on",
+    target: "999 Birch Court",
+    time: "3 hours ago",
+  },
+];
 
+export default function Index() {
   return (
-    <DashboardLayout user={mockUser}>
-      <PageLayout>
-        <PageHeader
-          title="Design System"
-          description="Premium component library for real estate investing"
-          action={
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Property
+    <DashboardLayout
+      title="Dashboard"
+      breadcrumbs={[{ label: "Dashboard" }]}
+    >
+      <PageHeader
+        title="Dashboard"
+        description="Welcome back! Here's an overview of your portfolio."
+      />
+
+      {/* Stats Grid */}
+      <StatsGrid columns={4} className="mb-lg">
+        <StatCard
+          label="Total Properties"
+          value="124"
+          trend={{ value: 12, label: "vs last month" }}
+          icon={<Building2 />}
+        />
+        <StatCard
+          label="Portfolio Value"
+          value="$4.2M"
+          trend={{ value: 8.5, label: "vs last month" }}
+          icon={<DollarSign />}
+        />
+        <StatCard
+          label="Active Deals"
+          value="18"
+          trend={{ value: -3, label: "vs last month" }}
+          icon={<TrendingUp />}
+        />
+        <StatCard
+          label="Total Contacts"
+          value="342"
+          trend={{ value: 24, label: "vs last month" }}
+          icon={<Users />}
+        />
+      </StatsGrid>
+
+      <div className="grid gap-md lg:grid-cols-3">
+        {/* Recent Properties */}
+        <ContentSection
+          title="Recent Properties"
+          actions={
+            <Button variant="ghost" size="sm" icon={<ArrowRight />} iconPosition="right">
+              View all
             </Button>
           }
-        />
-
-        {/* Stats Section */}
-        <PageSection title="Stat Cards">
-          <Grid columns={4}>
-            <StatCard
-              label="Total Properties"
-              value="247"
-              trend={{ value: 12, label: "vs last month" }}
-              icon={<Building2 className="h-5 w-5" />}
+          className="lg:col-span-2"
+        >
+          <Card padding="none" className="overflow-hidden">
+            <PremiumTable
+              columns={columns}
+              data={recentProperties}
+              onRowClick={(row) => console.log("Clicked:", row)}
             />
-            <StatCard
-              label="Active Leads"
-              value="1,842"
-              trend={{ value: -3, label: "vs last week" }}
-              icon={<Users className="h-5 w-5" />}
-            />
-            <StatCard
-              label="Portfolio Value"
-              value="$4.2M"
-              trend={{ value: 8, label: "this quarter" }}
-              icon={<DollarSign className="h-5 w-5" />}
-            />
-            <StatCard
-              label="ROI"
-              value="24.5%"
-              trend={{ value: 2.1, label: "vs benchmark" }}
-              icon={<TrendingUp className="h-5 w-5" />}
-            />
-          </Grid>
-        </PageSection>
-
-        {/* Buttons Section */}
-        <PageSection title="Buttons">
-          <div className="flex flex-wrap gap-3">
-            <Button variant="primary">Primary</Button>
-            <Button variant="secondary">Secondary</Button>
-            <Button variant="ghost">Ghost</Button>
-            <Button variant="danger">Danger</Button>
-            <Button variant="accent">Accent</Button>
-            <Button variant="link">Link</Button>
-          </div>
-          <div className="flex flex-wrap gap-3 mt-4">
-            <Button variant="primary" size="sm">Small</Button>
-            <Button variant="primary" size="md">Medium</Button>
-            <Button variant="primary" size="lg">Large</Button>
-            <Button variant="primary" loading>Loading</Button>
-            <Button variant="primary" icon={<Plus />}>With Icon</Button>
-          </div>
-        </PageSection>
-
-        {/* Badges Section */}
-        <PageSection title="Badges & Heat Scores">
-          <div className="flex flex-wrap gap-3 mb-4">
-            <Badge variant="default">Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="success">Success</Badge>
-            <Badge variant="warning">Warning</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-            <Badge variant="info">Info</Badge>
-            <Badge variant="outline">Outline</Badge>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <HeatScoreBadge score={850} />
-            <HeatScoreBadge score={650} />
-            <HeatScoreBadge score={450} />
-            <HeatScoreBadge score={250} />
-            <HeatScoreBadge score={100} />
-          </div>
-        </PageSection>
-
-        {/* Form Elements */}
-        <PageSection title="Form Elements">
-          <div className="max-w-md space-y-4">
-            <Input placeholder="Enter property address..." />
-            <Input type="email" placeholder="Email address" />
-            <Input type="number" placeholder="Listing price" />
-            <Input disabled placeholder="Disabled input" />
-          </div>
-        </PageSection>
-
-        {/* Avatars */}
-        <PageSection title="Avatars">
-          <div className="flex items-center gap-4 mb-4">
-            <Avatar size="xs">
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <Avatar size="sm">
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <Avatar size="md">
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <Avatar size="lg">
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-            <Avatar size="xl">
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-          </div>
-          <AvatarGroup>
-            <Avatar><AvatarFallback>JD</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>AK</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>RS</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>MK</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>TL</AvatarFallback></Avatar>
-            <Avatar><AvatarFallback>XY</AvatarFallback></Avatar>
-          </AvatarGroup>
-        </PageSection>
-
-        {/* Table */}
-        <PageSection title="Data Table">
-          <Card>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Address</TableHead>
-                  <TableHead>City</TableHead>
-                  <TableHead>Score</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockProperties.map((property) => (
-                  <TableRow key={property.id}>
-                    <TableCell className="font-medium">{property.address}</TableCell>
-                    <TableCell>{property.city}</TableCell>
-                    <TableCell>
-                      <span className="font-mono">{property.score}</span>
-                    </TableCell>
-                    <TableCell>
-                      <HeatScoreBadge score={property.score} showScore={false} />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
           </Card>
-        </PageSection>
+        </ContentSection>
 
-        {/* Toasts */}
-        <PageSection title="Toast Notifications">
-          <div className="flex flex-wrap gap-3">
-            <Button variant="outline" onClick={() => showToast("default")}>Default Toast</Button>
-            <Button variant="outline" onClick={() => showToast("success")}>Success Toast</Button>
-            <Button variant="outline" onClick={() => showToast("warning")}>Warning Toast</Button>
-            <Button variant="outline" onClick={() => showToast("destructive")}>Error Toast</Button>
-            <Button variant="outline" onClick={() => showToast("info")}>Info Toast</Button>
-          </div>
-        </PageSection>
-
-        {/* Modal */}
-        <PageSection title="Modal">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Open Modal</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Property</DialogTitle>
-                <DialogDescription>
-                  Enter the details for the new property listing.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogBody>
-                <div className="space-y-4">
-                  <Input placeholder="Property address" />
-                  <Input placeholder="City" />
-                  <Input type="number" placeholder="Estimated value" />
+        {/* Recent Activity */}
+        <ContentSection
+          title="Recent Activity"
+          actions={
+            <Button variant="ghost" size="sm">
+              View all
+            </Button>
+          }
+        >
+          <Card padding="none">
+            <div className="divide-y divide-border-subtle">
+              {recentActivity.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="flex items-start gap-3 p-4 transition-colors hover:bg-surface-secondary"
+                >
+                  <Avatar name={activity.user} size="sm" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-small text-content">
+                      <span className="font-medium">{activity.user}</span>{" "}
+                      <span className="text-content-secondary">
+                        {activity.action}
+                      </span>{" "}
+                      <span className="font-medium">{activity.target}</span>
+                    </p>
+                    <p className="text-tiny text-content-tertiary mt-0.5">
+                      {activity.time}
+                    </p>
+                  </div>
                 </div>
-              </DialogBody>
-              <DialogFooter>
-                <Button variant="outline">Cancel</Button>
-                <Button>Save Property</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </PageSection>
-
-        {/* Loading States */}
-        <PageSection title="Loading States">
-          <div className="flex items-center gap-6 mb-6">
-            <Spinner size="sm" />
-            <Spinner size="md" />
-            <Spinner size="lg" />
-            <LoadingDots />
-          </div>
-          <Grid columns={3}>
-            <SkeletonStat />
-            <SkeletonStat />
-            <SkeletonStat />
-          </Grid>
-          <div className="mt-6">
-            <SkeletonCard />
-          </div>
-        </PageSection>
-
-        {/* Empty States */}
-        <PageSection title="Empty States">
-          <Grid columns={2}>
-            <Card>
-              <NoDataState entityName="properties" onAdd={() => {}} />
-            </Card>
-            <Card>
-              <EmptyState
-                variant="search"
-                title="No results found"
-                description="Try adjusting your search or filter criteria."
-              />
-            </Card>
-          </Grid>
-        </PageSection>
-
-        {/* Cards */}
-        <PageSection title="Cards">
-          <Grid columns={3}>
-            <Card className="card-hover cursor-pointer">
-              <CardHeader>
-                <CardTitle>Investment Opportunity</CardTitle>
-                <CardDescription>High-potential property in growing market</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <span className="text-h2 font-semibold">$425,000</span>
-                  <HeatScoreBadge score={780} />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="card-hover cursor-pointer">
-              <CardHeader>
-                <CardTitle>Flip Opportunity</CardTitle>
-                <CardDescription>Quick turnaround potential</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <span className="text-h2 font-semibold">$185,000</span>
-                  <HeatScoreBadge score={550} />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="card-hover cursor-pointer">
-              <CardHeader>
-                <CardTitle>Rental Property</CardTitle>
-                <CardDescription>Steady cash flow investment</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <span className="text-h2 font-semibold">$320,000</span>
-                  <HeatScoreBadge score={420} />
-                </div>
-              </CardContent>
-            </Card>
-          </Grid>
-        </PageSection>
-      </PageLayout>
+              ))}
+            </div>
+          </Card>
+        </ContentSection>
+      </div>
     </DashboardLayout>
   );
-};
-
-export default Index;
+}
