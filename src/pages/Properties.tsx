@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { DashboardLayout, PageHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -159,6 +160,7 @@ const sampleProperties = [
 ];
 
 export default function Properties() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState("");
   const [viewMode, setViewMode] = React.useState<"cards" | "table">("cards");
   const [sortBy, setSortBy] = React.useState("newest");
@@ -277,7 +279,7 @@ export default function Properties() {
                 <PropertyCard
                   key={property.id}
                   {...property}
-                  onClick={() => console.log("View property:", property.id)}
+                  onClick={() => navigate(`/properties/${property.id}`)}
                   className="animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` }}
                 />
@@ -291,9 +293,9 @@ export default function Properties() {
               properties={filteredProperties}
               selectedIds={selectedIds}
               onSelectionChange={setSelectedIds}
-              onRowClick={(property) => console.log("View property:", property.id)}
+              onRowClick={(property) => navigate(`/properties/${property.id}`)}
               onCall={(id) => console.log("Call:", id)}
-              onView={(id) => console.log("View:", id)}
+              onView={(id) => navigate(`/properties/${id}`)}
               className="animate-fade-in"
             />
           )}
