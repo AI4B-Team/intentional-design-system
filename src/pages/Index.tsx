@@ -1,260 +1,178 @@
-import {
-  DashboardLayout,
-  PageHeader,
-  ContentSection,
-  StatsGrid,
-} from "@/components/layout";
-import { StatCard } from "@/components/ui/stat-card";
+import * as React from "react";
+import { DashboardLayout } from "@/components/layout";
 import { Card } from "@/components/ui/card";
-import { Badge, HeatScoreBadge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { PremiumTable, type Column } from "@/components/ui/table";
-import { Avatar } from "@/components/ui/avatar";
 import {
-  Building2,
-  DollarSign,
-  TrendingUp,
-  Users,
-  ArrowRight,
-  MapPin,
-} from "lucide-react";
+  DashboardStatCard,
+  HotOpportunitiesList,
+  PipelineFunnel,
+  TasksList,
+  RecentActivityList,
+} from "@/components/dashboard";
+import { Users, Calendar, FileText, DollarSign } from "lucide-react";
+
+// Get greeting based on time of day
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+// Format current date
+function formatDate(): string {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 // Sample data
-const recentProperties = [
+const statsData = [
   {
-    id: 1,
-    address: "123 Oak Street",
-    city: "Austin, TX",
-    price: "$425,000",
-    type: "Single Family",
-    score: 850,
-    status: "Hot Lead",
+    id: "leads",
+    label: "New Leads",
+    value: "47",
+    trend: { value: 12, isPositive: true },
+    icon: <Users />,
+    iconBgClass: "bg-blue-50",
+    iconColorClass: "text-blue-500",
   },
   {
-    id: 2,
-    address: "456 Pine Avenue",
-    city: "Dallas, TX",
-    price: "$315,000",
-    type: "Multi-Family",
-    score: 720,
-    status: "In Review",
+    id: "appointments",
+    label: "Appointments",
+    value: "12",
+    trend: { value: 8, isPositive: true },
+    icon: <Calendar />,
+    iconBgClass: "bg-green-50",
+    iconColorClass: "text-green-500",
   },
   {
-    id: 3,
-    address: "789 Elm Boulevard",
-    city: "Houston, TX",
-    price: "$275,000",
-    type: "Single Family",
-    score: 580,
-    status: "New",
+    id: "offers",
+    label: "Offers Sent",
+    value: "8",
+    trend: { value: -5, isPositive: false },
+    icon: <FileText />,
+    iconBgClass: "bg-amber-50",
+    iconColorClass: "text-amber-500",
   },
   {
-    id: 4,
-    address: "321 Maple Drive",
-    city: "San Antonio, TX",
-    price: "$195,000",
-    type: "Condo",
-    score: 420,
-    status: "Analyzing",
-  },
-  {
-    id: 5,
-    address: "654 Cedar Lane",
-    city: "Fort Worth, TX",
-    price: "$380,000",
-    type: "Single Family",
-    score: 290,
-    status: "On Hold",
+    id: "closed",
+    label: "Closed Deals",
+    value: "3",
+    trend: { value: 50, isPositive: true },
+    icon: <DollarSign />,
+    iconBgClass: "bg-emerald-50",
+    iconColorClass: "text-emerald-500",
   },
 ];
 
-const columns: Column[] = [
-  {
-    key: "address",
-    header: "Property",
-    render: (_, row) => (
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-medium bg-surface-tertiary">
-          <Building2 className="h-5 w-5 text-content-tertiary" />
-        </div>
-        <div>
-          <div className="font-medium text-content">{row.address}</div>
-          <div className="flex items-center gap-1 text-small text-content-secondary">
-            <MapPin className="h-3 w-3" />
-            {row.city}
-          </div>
-        </div>
-      </div>
-    ),
-  },
-  {
-    key: "type",
-    header: "Type",
-    render: (value) => (
-      <Badge variant="secondary" size="sm">
-        {value}
-      </Badge>
-    ),
-  },
-  {
-    key: "price",
-    header: "Price",
-    align: "right",
-    render: (value) => (
-      <span className="font-medium tabular-nums">{value}</span>
-    ),
-  },
-  {
-    key: "score",
-    header: "Heat Score",
-    align: "center",
-    render: (value) => <HeatScoreBadge score={value} size="sm" />,
-  },
-  {
-    key: "status",
-    header: "Status",
-    render: (value) => {
-      const variant =
-        value === "Hot Lead"
-          ? "success"
-          : value === "In Review"
-          ? "warning"
-          : value === "On Hold"
-          ? "error"
-          : "default";
-      return (
-        <Badge variant={variant} size="sm">
-          {value}
-        </Badge>
-      );
-    },
-  },
+const hotOpportunities = [
+  { id: 1, address: "1423 Elm Street", city: "Austin", state: "TX", score: 92, daysAgo: 0 },
+  { id: 2, address: "567 Oak Avenue", city: "Dallas", state: "TX", score: 85, daysAgo: 1 },
+  { id: 3, address: "890 Pine Road", city: "Houston", state: "TX", score: 78, daysAgo: 2 },
+  { id: 4, address: "234 Maple Drive", city: "San Antonio", state: "TX", score: 71, daysAgo: 3 },
+  { id: 5, address: "456 Cedar Lane", city: "Fort Worth", state: "TX", score: 65, daysAgo: 5 },
 ];
 
-const recentActivity = [
-  {
-    id: 1,
-    user: "Sarah Chen",
-    action: "added a new property",
-    target: "123 Oak Street",
-    time: "2 min ago",
-  },
-  {
-    id: 2,
-    user: "Mike Johnson",
-    action: "updated deal status",
-    target: "456 Pine Avenue",
-    time: "15 min ago",
-  },
-  {
-    id: 3,
-    user: "Emily Davis",
-    action: "added notes to",
-    target: "789 Elm Boulevard",
-    time: "1 hour ago",
-  },
-  {
-    id: 4,
-    user: "Chris Wilson",
-    action: "closed deal on",
-    target: "999 Birch Court",
-    time: "3 hours ago",
-  },
+const pipelineStages = [
+  { id: "leads", name: "New Leads", count: 47, value: "$2.1M", conversionRate: 68 },
+  { id: "contacted", name: "Contacted", count: 32, value: "$1.4M", conversionRate: 45 },
+  { id: "appointments", name: "Appointments", count: 14, value: "$620K", conversionRate: 57 },
+  { id: "offers", name: "Offers Made", count: 8, value: "$350K", conversionRate: 38 },
+  { id: "closed", name: "Closed", count: 3, value: "$132K" },
+];
+
+const initialTasks = [
+  { id: 1, title: "Call back John Smith about 123 Oak St", time: "9:00 AM", priority: "high" as const, completed: false },
+  { id: 2, title: "Send offer for 456 Pine Avenue", time: "10:30 AM", priority: "high" as const, completed: false },
+  { id: 3, title: "Review comps for Cedar Lane property", time: "1:00 PM", priority: "medium" as const, completed: false },
+  { id: 4, title: "Follow up with title company", time: "3:00 PM", priority: "low" as const, completed: false },
+  { id: 5, title: "Schedule property inspection", time: "4:30 PM", priority: "medium" as const, completed: false },
+];
+
+const recentActivities = [
+  { id: 1, type: "lead" as const, description: "New lead added:", target: "1423 Elm Street", time: "5 min ago", targetHref: "#" },
+  { id: 2, type: "contact" as const, description: "Call completed with", target: "Sarah Johnson", time: "28 min ago", targetHref: "#" },
+  { id: 3, type: "offer" as const, description: "Offer sent for", target: "567 Oak Avenue", time: "1 hour ago", targetHref: "#" },
+  { id: 4, type: "response" as const, description: "Counter-offer received on", target: "890 Pine Road", time: "2 hours ago", targetHref: "#" },
+  { id: 5, type: "closed" as const, description: "Deal closed:", target: "234 Maple Drive", time: "Yesterday", targetHref: "#" },
+  { id: 6, type: "lead" as const, description: "New lead from marketing:", target: "789 Birch Court", time: "Yesterday", targetHref: "#" },
 ];
 
 export default function Index() {
+  const [tasks, setTasks] = React.useState(initialTasks);
+
+  const handleToggleTask = (id: string | number) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
+
   return (
     <DashboardLayout
-      title="Dashboard"
       breadcrumbs={[{ label: "Dashboard" }]}
     >
-      <PageHeader
-        title="Dashboard"
-        description="Welcome back! Here's an overview of your portfolio."
-      />
+      {/* Header Greeting */}
+      <div className="mb-lg animate-fade-in">
+        <h1 className="text-h1 font-semibold text-content">
+          {getGreeting()}, Brian
+        </h1>
+        <p className="text-body text-content-secondary mt-1">{formatDate()}</p>
+      </div>
 
       {/* Stats Grid */}
-      <StatsGrid columns={4} className="mb-lg">
-        <StatCard
-          label="Total Properties"
-          value="124"
-          trend={{ value: 12, label: "vs last month" }}
-          icon={<Building2 />}
-        />
-        <StatCard
-          label="Portfolio Value"
-          value="$4.2M"
-          trend={{ value: 8.5, label: "vs last month" }}
-          icon={<DollarSign />}
-        />
-        <StatCard
-          label="Active Deals"
-          value="18"
-          trend={{ value: -3, label: "vs last month" }}
-          icon={<TrendingUp />}
-        />
-        <StatCard
-          label="Total Contacts"
-          value="342"
-          trend={{ value: 24, label: "vs last month" }}
-          icon={<Users />}
-        />
-      </StatsGrid>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md mb-lg">
+        {statsData.map((stat, index) => (
+          <DashboardStatCard
+            key={stat.id}
+            {...stat}
+            style={{ animationDelay: `${index * 100}ms` }}
+            className="animate-fade-in"
+          />
+        ))}
+      </div>
 
-      <div className="grid gap-md lg:grid-cols-3">
-        {/* Recent Properties */}
-        <ContentSection
-          title="Recent Properties"
-          actions={
-            <Button variant="ghost" size="sm" icon={<ArrowRight />} iconPosition="right">
-              View all
-            </Button>
-          }
-          className="lg:col-span-2"
-        >
-          <Card padding="none" className="overflow-hidden">
-            <PremiumTable
-              columns={columns}
-              data={recentProperties}
-              onRowClick={(row) => console.log("Clicked:", row)}
-            />
-          </Card>
-        </ContentSection>
+      {/* Middle Section: Hot Opportunities + Pipeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-md mb-lg">
+        {/* Hot Opportunities - 60% */}
+        <Card padding="md" className="lg:col-span-3 animate-fade-in" style={{ animationDelay: "400ms" }}>
+          <HotOpportunitiesList
+            opportunities={hotOpportunities}
+            onViewAll={() => console.log("View all opportunities")}
+            onCall={(id) => console.log("Call", id)}
+            onView={(id) => console.log("View", id)}
+          />
+        </Card>
+
+        {/* Pipeline - 40% */}
+        <Card padding="md" className="lg:col-span-2 animate-fade-in" style={{ animationDelay: "500ms" }}>
+          <h3 className="text-h3 font-semibold text-content mb-4">Pipeline</h3>
+          <PipelineFunnel stages={pipelineStages} />
+        </Card>
+      </div>
+
+      {/* Bottom Section: Tasks + Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
+        {/* Today's Tasks */}
+        <Card padding="md" className="animate-fade-in" style={{ animationDelay: "600ms" }}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-h3 font-semibold text-content">Today's Tasks</h3>
+            <span className="text-small text-content-secondary">
+              {tasks.filter((t) => t.completed).length}/{tasks.length} completed
+            </span>
+          </div>
+          <TasksList tasks={tasks} onToggle={handleToggleTask} />
+        </Card>
 
         {/* Recent Activity */}
-        <ContentSection
-          title="Recent Activity"
-          actions={
-            <Button variant="ghost" size="sm">
-              View all
-            </Button>
-          }
-        >
-          <Card padding="none">
-            <div className="divide-y divide-border-subtle">
-              {recentActivity.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex items-start gap-3 p-4 transition-colors hover:bg-surface-secondary"
-                >
-                  <Avatar name={activity.user} size="sm" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-small text-content">
-                      <span className="font-medium">{activity.user}</span>{" "}
-                      <span className="text-content-secondary">
-                        {activity.action}
-                      </span>{" "}
-                      <span className="font-medium">{activity.target}</span>
-                    </p>
-                    <p className="text-tiny text-content-tertiary mt-0.5">
-                      {activity.time}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </ContentSection>
+        <Card padding="md" className="animate-fade-in" style={{ animationDelay: "700ms" }}>
+          <h3 className="text-h3 font-semibold text-content mb-4">Recent Activity</h3>
+          <RecentActivityList activities={recentActivities} />
+        </Card>
       </div>
     </DashboardLayout>
   );
