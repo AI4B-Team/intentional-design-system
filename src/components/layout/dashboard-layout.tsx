@@ -21,6 +21,7 @@ interface DashboardLayoutProps {
   showSearch?: boolean;
   headerActions?: React.ReactNode;
   className?: string;
+  fullWidth?: boolean;
 }
 
 export function DashboardLayout({
@@ -31,6 +32,7 @@ export function DashboardLayout({
   showSearch = true,
   headerActions,
   className,
+  fullWidth = false,
 }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -81,8 +83,11 @@ export function DashboardLayout({
         />
 
         {/* Page Content */}
-        <main className="min-h-[calc(100vh-64px)] p-md pb-24 lg:p-lg lg:pb-lg">
-          <div className="mx-auto max-w-[1400px]">{children}</div>
+        <main className={cn(
+          "min-h-[calc(100vh-64px)]",
+          fullWidth ? "p-0 pb-20 lg:pb-0" : "p-md pb-24 lg:p-lg lg:pb-lg"
+        )}>
+          <div className={cn(!fullWidth && "mx-auto max-w-[1400px]")}>{children}</div>
         </main>
       </div>
 
