@@ -1,7 +1,153 @@
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
+import { Skeleton } from "./skeleton";
 
+interface Column<T = any> {
+  key: string;
+  header: string;
+  width?: string;
+  align?: "left" | "center" | "right";
+  render?: (value: any, row: T, index: number) => React.ReactNode;
+}
+
+interface TableProps<T = any> {
+  columns: Column<T>[];
+  data: T[];
+  onRowClick?: (row: T, index: number) => void;
+  loading?: boolean;
+  emptyMessage?: string;
+  className?: string;
+}
+
+function PremiumTable<T extends Record<string, any>>({
+  columns,
+  data,
+  onRowClick,
+  loading = false,
+  emptyMessage = "No data available",
+  className,
+}: TableProps<T>) {
+  const alignmentClasses = {
+    left: "text-left",
+    center: "text-center",
+    right: "text-right",
+  };
+
+  if (loading) {
+    return (
+      <div className={cn("w-full overflow-auto", className)}>
+        <table className="w-full caption-bottom text-body">
+          <thead className="bg-surface-secondary">
+            <tr className="border-b border-border">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={cn(
+                    "px-4 py-3 text-tiny uppercase tracking-wide text-content-secondary font-medium",
+                    alignmentClasses[column.align || "left"]
+                  )}
+                  style={{ width: column.width }}
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <tr key={i} className="border-b border-border-subtle">
+                {columns.map((column) => (
+                  <td key={column.key} className="px-4 py-3">
+                    <Skeleton className="h-4 w-full" />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  if (data.length === 0) {
+    return (
+      <div className={cn("w-full overflow-auto", className)}>
+        <table className="w-full caption-bottom text-body">
+          <thead className="bg-surface-secondary">
+            <tr className="border-b border-border">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={cn(
+                    "px-4 py-3 text-tiny uppercase tracking-wide text-content-secondary font-medium",
+                    alignmentClasses[column.align || "left"]
+                  )}
+                  style={{ width: column.width }}
+                >
+                  {column.header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        </table>
+        <div className="flex items-center justify-center py-12 text-content-secondary text-body">
+          {emptyMessage}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("w-full overflow-auto", className)}>
+      <table className="w-full caption-bottom text-body">
+        <thead className="bg-surface-secondary">
+          <tr className="border-b border-border">
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                className={cn(
+                  "px-4 py-3 text-tiny uppercase tracking-wide text-content-secondary font-medium",
+                  alignmentClasses[column.align || "left"]
+                )}
+                style={{ width: column.width }}
+              >
+                {column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row, rowIndex) => (
+            <tr
+              key={rowIndex}
+              onClick={() => onRowClick?.(row, rowIndex)}
+              className={cn(
+                "border-b border-border-subtle transition-colors hover:bg-surface-secondary",
+                onRowClick && "cursor-pointer"
+              )}
+            >
+              {columns.map((column) => (
+                <td
+                  key={column.key}
+                  className={cn(
+                    "px-4 py-3",
+                    alignmentClasses[column.align || "left"]
+                  )}
+                >
+                  {column.render
+                    ? column.render(row[column.key], row, rowIndex)
+                    : row[column.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// Also export the basic table components for more control
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
@@ -22,7 +168,7 @@ const TableHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-background-secondary [&_tr]:border-b", className)}
+    className={cn("bg-surface-secondary [&_tr]:border-b", className)}
     {...props}
   />
 ));
@@ -47,7 +193,7 @@ const TableFooter = React.forwardRef<
   <tfoot
     ref={ref}
     className={cn(
-      "border-t bg-background-secondary font-medium [&>tr]:last:border-b-0",
+      "border-t bg-surface-secondary font-medium [&>tr]:last:border-b-0",
       className
     )}
     {...props}
@@ -62,7 +208,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      "border-b border-border-subtle transition-colors hover:bg-background-secondary data-[state=selected]:bg-muted",
+      "border-b border-border-subtle transition-colors hover:bg-surface-secondary data-[state=selected]:bg-muted",
       className
     )}
     {...props}
@@ -77,7 +223,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle text-tiny font-medium uppercase tracking-wider text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      "px-4 py-3 text-left align-middle text-tiny font-medium uppercase tracking-wide text-content-secondary [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -92,7 +238,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "px-4 py-4 align-middle [&:has([role=checkbox])]:pr-0",
+      "px-4 py-3 align-middle [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -106,13 +252,14 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-small text-muted-foreground", className)}
+    className={cn("mt-4 text-small text-content-secondary", className)}
     {...props}
   />
 ));
 TableCaption.displayName = "TableCaption";
 
 export {
+  PremiumTable,
   Table,
   TableHeader,
   TableBody,
@@ -121,4 +268,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  type Column,
+  type TableProps,
 };

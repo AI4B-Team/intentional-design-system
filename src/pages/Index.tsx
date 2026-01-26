@@ -88,19 +88,19 @@ const Index = () => {
         {/* Buttons Section */}
         <PageSection title="Buttons">
           <div className="flex flex-wrap gap-3">
-            <Button variant="default">Primary</Button>
+            <Button variant="primary">Primary</Button>
             <Button variant="secondary">Secondary</Button>
-            <Button variant="outline">Outline</Button>
             <Button variant="ghost">Ghost</Button>
-            <Button variant="destructive">Destructive</Button>
+            <Button variant="danger">Danger</Button>
             <Button variant="accent">Accent</Button>
             <Button variant="link">Link</Button>
           </div>
           <div className="flex flex-wrap gap-3 mt-4">
-            <Button size="sm">Small</Button>
-            <Button size="default">Default</Button>
-            <Button size="lg">Large</Button>
-            <Button size="icon"><Plus className="h-4 w-4" /></Button>
+            <Button variant="primary" size="sm">Small</Button>
+            <Button variant="primary" size="md">Medium</Button>
+            <Button variant="primary" size="lg">Large</Button>
+            <Button variant="primary" loading>Loading</Button>
+            <Button variant="primary" icon={<Plus />}>With Icon</Button>
           </div>
         </PageSection>
 
