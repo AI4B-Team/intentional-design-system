@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Briefcase,
   MapPin,
+  Calculator,
   LucideIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -52,6 +53,7 @@ const navGroups: NavGroup[] = [
     label: "Deals",
     items: [
       { label: "Pipeline", href: "/pipeline", icon: Briefcase, badge: 3 },
+      { label: "Calculators", href: "/calculators", icon: Calculator },
       { label: "Analytics", href: "/analytics", icon: BarChart3 },
       { label: "Documents", href: "/documents", icon: FileText },
     ],
