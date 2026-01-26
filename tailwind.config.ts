@@ -32,6 +32,7 @@ export default {
         'tiny': ['11px', { lineHeight: '16px', letterSpacing: '0.02em' }],
       },
       colors: {
+        // Semantic design tokens (CSS variables)
         border: "hsl(var(--border))",
         "border-subtle": "hsl(var(--border-subtle))",
         input: "hsl(var(--input))",
@@ -101,6 +102,7 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Heat/Score colors
         heat: {
           hot: "hsl(var(--heat-hot))",
           warm: "hsl(var(--heat-warm))",
@@ -108,6 +110,32 @@ export default {
           cool: "hsl(var(--heat-cool))",
           cold: "hsl(var(--heat-cold))",
         },
+        score: {
+          hot: "#DC2626",
+          warm: "#F97316",
+          moderate: "#EAB308",
+          cool: "#3B82F6",
+          cold: "#6B7280",
+        },
+        // Surface colors (direct values for convenience)
+        surface: {
+          DEFAULT: "#FFFFFF",
+          secondary: "#FAFAFA",
+          tertiary: "#F5F5F7",
+        },
+        // Content/text colors (direct values)
+        content: {
+          DEFAULT: "#1A1A2E",
+          secondary: "#64748B",
+          tertiary: "#94A3B8",
+        },
+        // Brand colors (direct values)
+        brand: {
+          DEFAULT: "#0F172A",
+          light: "#1E293B",
+          accent: "#3B82F6",
+        },
+        // Chart colors
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -129,10 +157,10 @@ export default {
         '3xl': '96px',
       },
       borderRadius: {
-        xs: "4px",
-        sm: "6px",
-        md: "8px",
-        lg: "12px",
+        tiny: "4px",
+        small: "6px",
+        medium: "8px",
+        large: "12px",
         xl: "16px",
         full: "9999px",
       },
@@ -168,24 +196,39 @@ export default {
           "0%": { transform: "translateX(100%)" },
           "100%": { transform: "translateX(0)" },
         },
+        "slide-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-down": {
+          "0%": { opacity: "0", transform: "translateY(-8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
         "shimmer": {
-          "0%": { backgroundPosition: "200% 0" },
-          "100%": { backgroundPosition: "-200% 0" },
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
         },
         "spin": {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
+        "pulse-subtle": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "fade-out": "fade-out 0.3s ease-out",
+        "fade-in": "fade-in 0.2s ease-out",
+        "fade-out": "fade-out 0.2s ease-out",
         "scale-in": "scale-in 0.2s ease-out",
         "slide-in-right": "slide-in-right 0.3s ease-out",
+        "slide-up": "slide-up 0.2s ease-out",
+        "slide-down": "slide-down 0.15s ease-out",
         "shimmer": "shimmer 1.5s infinite",
         "spin": "spin 1s linear infinite",
+        "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
       },
     },
   },
