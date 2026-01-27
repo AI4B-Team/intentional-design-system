@@ -135,13 +135,18 @@ export type Database = {
           city: string | null
           created_at: string
           days_on_market: number | null
+          followup_count: number | null
           id: string
+          last_followup_at: string | null
           list_price: number | null
+          notes: string | null
           offer_amount: number | null
           opened_at: string | null
           property_id: string | null
           responded_at: string | null
+          response_content: string | null
           response_notes: string | null
+          response_status: string | null
           response_type: string | null
           sent_at: string | null
           state: string | null
@@ -160,13 +165,18 @@ export type Database = {
           city?: string | null
           created_at?: string
           days_on_market?: number | null
+          followup_count?: number | null
           id?: string
+          last_followup_at?: string | null
           list_price?: number | null
+          notes?: string | null
           offer_amount?: number | null
           opened_at?: string | null
           property_id?: string | null
           responded_at?: string | null
+          response_content?: string | null
           response_notes?: string | null
+          response_status?: string | null
           response_type?: string | null
           sent_at?: string | null
           state?: string | null
@@ -185,13 +195,18 @@ export type Database = {
           city?: string | null
           created_at?: string
           days_on_market?: number | null
+          followup_count?: number | null
           id?: string
+          last_followup_at?: string | null
           list_price?: number | null
+          notes?: string | null
           offer_amount?: number | null
           opened_at?: string | null
           property_id?: string | null
           responded_at?: string | null
+          response_content?: string | null
           response_notes?: string | null
+          response_status?: string | null
           response_type?: string | null
           sent_at?: string | null
           state?: string | null
@@ -219,6 +234,7 @@ export type Database = {
       }
       campaigns: {
         Row: {
+          batch_size_per_day: number | null
           campaign_type: string
           closing_timeline: string | null
           completed_at: string | null
@@ -227,6 +243,8 @@ export type Database = {
           earnest_money: number | null
           email_body: string | null
           email_subject: string | null
+          followup_enabled: boolean | null
+          followup_sequences: Json | null
           id: string
           include_earnest_money: boolean | null
           name: string
@@ -236,6 +254,7 @@ export type Database = {
           opened_count: number | null
           properties_count: number | null
           responded_count: number | null
+          scheduled_start: string | null
           sent_count: number | null
           started_at: string | null
           status: string
@@ -244,6 +263,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          batch_size_per_day?: number | null
           campaign_type?: string
           closing_timeline?: string | null
           completed_at?: string | null
@@ -252,6 +272,8 @@ export type Database = {
           earnest_money?: number | null
           email_body?: string | null
           email_subject?: string | null
+          followup_enabled?: boolean | null
+          followup_sequences?: Json | null
           id?: string
           include_earnest_money?: boolean | null
           name: string
@@ -261,6 +283,7 @@ export type Database = {
           opened_count?: number | null
           properties_count?: number | null
           responded_count?: number | null
+          scheduled_start?: string | null
           sent_count?: number | null
           started_at?: string | null
           status?: string
@@ -269,6 +292,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          batch_size_per_day?: number | null
           campaign_type?: string
           closing_timeline?: string | null
           completed_at?: string | null
@@ -277,6 +301,8 @@ export type Database = {
           earnest_money?: number | null
           email_body?: string | null
           email_subject?: string | null
+          followup_enabled?: boolean | null
+          followup_sequences?: Json | null
           id?: string
           include_earnest_money?: boolean | null
           name?: string
@@ -286,6 +312,7 @@ export type Database = {
           opened_count?: number | null
           properties_count?: number | null
           responded_count?: number | null
+          scheduled_start?: string | null
           sent_count?: number | null
           started_at?: string | null
           status?: string
