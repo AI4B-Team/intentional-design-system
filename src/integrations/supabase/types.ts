@@ -23,6 +23,7 @@ export type Database = {
           icon: string
           id: string
           name: string
+          organization_id: string | null
           points: number
           threshold: number
         }
@@ -34,6 +35,7 @@ export type Database = {
           icon?: string
           id?: string
           name: string
+          organization_id?: string | null
           points?: number
           threshold?: number
         }
@@ -45,10 +47,19 @@ export type Database = {
           icon?: string
           id?: string
           name?: string
+          organization_id?: string | null
           points?: number
           threshold?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "achievements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       activity_log: {
         Row: {
@@ -101,7 +112,9 @@ export type Database = {
         Row: {
           activity_type: string
           created_at: string | null
+          entity_id: string | null
           id: string
+          organization_id: string | null
           points: number
           reference_id: string | null
           user_id: string
@@ -109,7 +122,9 @@ export type Database = {
         Insert: {
           activity_type: string
           created_at?: string | null
+          entity_id?: string | null
           id?: string
+          organization_id?: string | null
           points?: number
           reference_id?: string | null
           user_id: string
@@ -117,12 +132,22 @@ export type Database = {
         Update: {
           activity_type?: string
           created_at?: string | null
+          entity_id?: string | null
           id?: string
+          organization_id?: string | null
           points?: number
           reference_id?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "activity_points_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       appointments: {
         Row: {
@@ -1203,6 +1228,44 @@ export type Database = {
             columns: ["lender_id"]
             isOneToOne: false
             referencedRelation: "marketplace_lenders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gamification_settings: {
+        Row: {
+          created_at: string | null
+          enabled: boolean | null
+          id: string
+          organization_id: string
+          point_values: Json | null
+          streak_requirements: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          organization_id: string
+          point_values?: Json | null
+          streak_requirements?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled?: boolean | null
+          id?: string
+          organization_id?: string
+          point_values?: Json | null
+          streak_requirements?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gamification_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -2994,6 +3057,47 @@ export type Database = {
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_streaks: {
+        Row: {
+          created_at: string | null
+          current_streak: number | null
+          id: string
+          last_activity_date: string | null
+          longest_streak: number | null
+          organization_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_streak?: number | null
+          id?: string
+          last_activity_date?: string | null
+          longest_streak?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_streaks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
