@@ -3,13 +3,11 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Phone, Eye, MoreHorizontal, MapPin, Flame } from "lucide-react";
+import { Phone, Eye, MapPin, Flame, Zap } from "lucide-react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  calculateVelocityScore,
+  getDefaultVelocityData,
+} from "@/lib/velocity-scoring";
 
 interface Property {
   id: string | number;
@@ -24,6 +22,7 @@ interface Property {
   status: string;
   source?: string;
   addedDate: string;
+  distress_signals?: string[];
 }
 
 interface PropertiesTableProps {
@@ -33,6 +32,7 @@ interface PropertiesTableProps {
   onRowClick: (property: Property) => void;
   onCall?: (id: string | number) => void;
   onView?: (id: string | number) => void;
+  sortBy?: string;
   className?: string;
 }
 
@@ -71,6 +71,19 @@ function formatCurrency(value: number): string {
   return `$${value}`;
 }
 
+function getVelocityColor(level: string): string {
+  switch (level) {
+    case "CRITICAL":
+      return "text-destructive";
+    case "HIGH":
+      return "text-warning";
+    case "STANDARD":
+      return "text-info";
+    default:
+      return "text-muted-foreground";
+  }
+}
+
 export function PropertiesTable({
   properties,
   selectedIds,
@@ -78,8 +91,29 @@ export function PropertiesTable({
   onRowClick,
   onCall,
   onView,
+  sortBy,
   className,
 }: PropertiesTableProps) {
+  // Calculate velocity for each property
+  const propertiesWithVelocity = React.useMemo(() => {
+    return properties.map((p) => {
+      const velocityData = getDefaultVelocityData({
+        motivation_score: p.score,
+        distress_signals: p.distress_signals,
+      });
+      const velocity = calculateVelocityScore(velocityData);
+      return { ...p, velocity };
+    });
+  }, [properties]);
+
+  // Sort by velocity if requested
+  const sortedProperties = React.useMemo(() => {
+    if (sortBy === "velocity") {
+      return [...propertiesWithVelocity].sort((a, b) => b.velocity.score - a.velocity.score);
+    }
+    return propertiesWithVelocity;
+  }, [propertiesWithVelocity, sortBy]);
+
   const allSelected = properties.length > 0 && selectedIds.length === properties.length;
   const someSelected = selectedIds.length > 0 && selectedIds.length < properties.length;
 
@@ -124,6 +158,9 @@ export function PropertiesTable({
               <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">
                 Score
               </th>
+              <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">
+                Velocity
+              </th>
               <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">
                 Beds/Baths
               </th>
@@ -142,18 +179,21 @@ export function PropertiesTable({
 
           {/* Body */}
           <tbody>
-            {properties.map((property, index) => {
+            {sortedProperties.map((property, index) => {
               const isSelected = selectedIds.includes(property.id);
               const scoreColors = getScoreColor(property.score);
               const isHot = property.score >= 800;
+              const isCriticalVelocity = property.velocity.urgency_level === "CRITICAL";
 
               return (
                 <tr
                   key={property.id}
                   onClick={() => onRowClick(property)}
-                  className={cn(
+                className={cn(
                     "h-14 cursor-pointer transition-colors group",
-                    index % 2 === 0 ? "bg-white" : "bg-surface-secondary/50",
+                    isCriticalVelocity && "bg-destructive/5",
+                    !isCriticalVelocity && index % 2 === 0 && "bg-white",
+                    !isCriticalVelocity && index % 2 !== 0 && "bg-surface-secondary/50",
                     isSelected && "bg-brand-accent/5",
                     "hover:bg-brand-accent/5"
                   )}
@@ -172,6 +212,11 @@ export function PropertiesTable({
                     <div>
                       <div className="text-body font-medium text-content group-hover:text-brand-accent transition-colors">
                         {property.address}
+                        {isCriticalVelocity && (
+                          <Badge variant="error" size="sm" className="ml-2 animate-pulse">
+                            🚨 Critical
+                          </Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-1 text-small text-content-secondary">
                         <MapPin className="h-3 w-3" />
@@ -214,6 +259,16 @@ export function PropertiesTable({
                   {/* ARV */}
                   <td className="px-4 text-right text-body font-medium tabular-nums">
                     {property.arv ? formatCurrency(property.arv) : "—"}
+                  </td>
+
+                  {/* Velocity */}
+                  <td className="px-4 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Zap className={cn("h-3.5 w-3.5", getVelocityColor(property.velocity.urgency_level))} />
+                      <span className={cn("font-semibold tabular-nums", getVelocityColor(property.velocity.urgency_level))}>
+                        {property.velocity.score}
+                      </span>
+                    </div>
                   </td>
 
                   {/* Added */}

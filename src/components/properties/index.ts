@@ -4,3 +4,7 @@ export { PropertiesTable } from "./properties-table";
 export { AddPropertyModal } from "./add-property-modal";
 export { MotivationIQBadge } from "./motivation-iq-badge";
 export { MotivationIQModal } from "./motivation-iq-modal";
+export { VelocityScoreCard } from "./velocity-score-card";
+export { VelocityBadge, VelocityScoreCell } from "./velocity-badge";
+export { BulkOfferModal } from "./bulk-offer-modal";
+export { TitleStatusBadge } from "./title-status-badge";

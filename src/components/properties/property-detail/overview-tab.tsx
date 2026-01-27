@@ -6,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { MotivationGauge } from "./motivation-gauge";
 import { MotivationIQModal } from "../motivation-iq-modal";
 import { MotivationIQBadge } from "../motivation-iq-badge";
+import { VelocityScoreCard } from "../velocity-score-card";
 import { AIAnalysisButton, DistressAnalysisModal } from "@/components/ai";
 import { analyzeDistress, type DistressAnalysis, type PropertyAnalysisInput } from "@/lib/ai-analysis";
+import { getDefaultVelocityData } from "@/lib/velocity-scoring";
 import {
   Pencil,
   Home,
@@ -27,7 +29,6 @@ import {
   Copy,
   ExternalLink,
   Settings,
-  Zap,
   Brain,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -304,21 +305,18 @@ export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTab
         </Card>
 
         {/* Velocity Score Card */}
-        <Card variant="default" padding="md">
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-small text-content-secondary">Velocity Score</div>
-            {property.urgencyLevel === "high" && (
-              <Badge variant="error" size="sm" className="animate-pulse">
-                <Zap className="h-3 w-3 mr-1" />
-                Move Now!
-              </Badge>
-            )}
-          </div>
-          <MotivationGauge score={property.velocityScore || 720} size="sm" showLabel={false} />
-          <div className="mt-3 text-small text-content-secondary text-center">
-            High engagement signals detected
-          </div>
-        </Card>
+        <VelocityScoreCard
+          velocityData={getDefaultVelocityData({
+            motivation_score: property.score,
+            distress_signals: property.distressSignals,
+          })}
+          onRecalculate={() => {
+            toast.success("Velocity score recalculated");
+          }}
+          onCompetitionFlag={(data) => {
+            toast.success(data.detected ? "Competition flagged" : "Competition flag cleared");
+          }}
+        />
 
         {/* Map Card */}
         <Card variant="default" padding="none" className="overflow-hidden">
