@@ -80,6 +80,7 @@ const toolsGroup: NavGroup = {
   items: [
     { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
     { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
+    { label: "OfferBlaster", href: "/tools/offer-blaster", icon: Send },
     { label: "Calculators", href: "/calculators", icon: Calculator },
     { label: "Analytics", href: "/analytics", icon: BarChart3 },
   ],

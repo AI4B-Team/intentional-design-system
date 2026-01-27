@@ -56,6 +56,7 @@ import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
+import OfferBlaster from "./pages/OfferBlaster";
 
 const queryClient = new QueryClient();
 
@@ -430,6 +431,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MarketAnalyzer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tools/offer-blaster"
+              element={
+                <ProtectedRoute>
+                  <OfferBlaster />
                 </ProtectedRoute>
               }
             />
