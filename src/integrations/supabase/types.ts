@@ -61,6 +61,75 @@ export type Database = {
           },
         ]
       }
+      bids: {
+        Row: {
+          bid_amount: number | null
+          contractor_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          property_id: string
+          received_at: string | null
+          requested_at: string | null
+          scope_items: Json | null
+          scope_of_work: string | null
+          status: string | null
+          timeline_days: number | null
+          updated_at: string | null
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          bid_amount?: number | null
+          contractor_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          property_id: string
+          received_at?: string | null
+          requested_at?: string | null
+          scope_items?: Json | null
+          scope_of_work?: string | null
+          status?: string | null
+          timeline_days?: number | null
+          updated_at?: string | null
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          bid_amount?: number | null
+          contractor_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          property_id?: string
+          received_at?: string | null
+          requested_at?: string | null
+          scope_items?: Json | null
+          scope_of_work?: string | null
+          status?: string | null
+          timeline_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_contractor_id_fkey"
+            columns: ["contractor_id"]
+            isOneToOne: false
+            referencedRelation: "contractors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bids_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       buyers: {
         Row: {
           avg_close_days: number | null
@@ -377,6 +446,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      contractors: {
+        Row: {
+          avg_bid_accuracy: number | null
+          communication_rating: number | null
+          company: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          insurance_verified: boolean | null
+          jobs_completed: number | null
+          license_number: string | null
+          license_verified: boolean | null
+          name: string
+          notes: string | null
+          on_time_percentage: number | null
+          overall_rating: number | null
+          phone: string | null
+          quality_rating: number | null
+          reliability_rating: number | null
+          service_areas: string[] | null
+          specialties: string[] | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_bid_accuracy?: number | null
+          communication_rating?: number | null
+          company?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          insurance_verified?: boolean | null
+          jobs_completed?: number | null
+          license_number?: string | null
+          license_verified?: boolean | null
+          name: string
+          notes?: string | null
+          on_time_percentage?: number | null
+          overall_rating?: number | null
+          phone?: string | null
+          quality_rating?: number | null
+          reliability_rating?: number | null
+          service_areas?: string[] | null
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_bid_accuracy?: number | null
+          communication_rating?: number | null
+          company?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          insurance_verified?: boolean | null
+          jobs_completed?: number | null
+          license_number?: string | null
+          license_verified?: boolean | null
+          name?: string
+          notes?: string | null
+          on_time_percentage?: number | null
+          overall_rating?: number | null
+          phone?: string | null
+          quality_rating?: number | null
+          reliability_rating?: number | null
+          service_areas?: string[] | null
+          specialties?: string[] | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       deal_sources: {
         Row: {

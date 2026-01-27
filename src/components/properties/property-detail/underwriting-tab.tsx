@@ -38,6 +38,7 @@ import { usePropertyTitleReport, calculateTitleMetrics, type TitleReportSummary 
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import { AddCompModal } from "./add-comp-modal";
 import { AddRepairModal } from "./add-repair-modal";
+import { BidsSection } from "@/components/contractors/bids-section";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { AIAnalysisButton, AIBadge, ARVAnalysisModal, RepairEstimateModal, OfferRecommendationModal, ExitStrategyModal } from "@/components/ai";
@@ -538,6 +539,15 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
             </>
           )}
         </CardContent>
+      </Card>
+
+      {/* Contractor Bids Section */}
+      <Card variant="default" padding="md">
+        <BidsSection 
+          propertyId={id || ""}
+          propertyAddress={property?.address || ""}
+          repairDetails={repairItems}
+        />
       </Card>
 
       {/* MAO Calculator Section */}
