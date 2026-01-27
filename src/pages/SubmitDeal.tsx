@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSubmitDeal, type SubmitDealData } from "@/hooks/useDealSubmissions";
+import { PageLayout } from "@/components/layout";
 
 const steps = [
   { id: 1, name: "Your Info", icon: User },
@@ -222,8 +223,8 @@ export default function SubmitDeal() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-surface-secondary to-background">
-        <div className="container max-w-2xl mx-auto px-4 py-16">
+      <PageLayout>
+        <div className="max-w-2xl mx-auto py-8">
           <Card variant="elevated" padding="lg" className="text-center">
             <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
               <CheckCircle2 className="h-8 w-8 text-success" />
@@ -254,29 +255,21 @@ export default function SubmitDeal() {
             </div>
           </Card>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-secondary to-background">
-      {/* Header */}
-      <header className="bg-white border-b border-border-subtle">
-        <div className="container max-w-4xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-medium bg-brand flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-h3 font-bold text-content">DealFlow</span>
-          </div>
+    <PageLayout>
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
           <h1 className="text-h1 font-bold text-content">Submit a Deal</h1>
           <p className="text-body text-content-secondary mt-1">
             We review all submissions within 24 hours
           </p>
         </div>
-      </header>
 
-      <div className="container max-w-4xl mx-auto px-4 py-8">
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -913,6 +906,6 @@ export default function SubmitDeal() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </PageLayout>
   );
 }
