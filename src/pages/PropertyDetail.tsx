@@ -29,6 +29,7 @@ import {
   DocumentsTab,
   NotesTab,
   TitleTab,
+  NegotiationCoachTab,
 } from "@/components/properties/property-detail";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import {
@@ -62,6 +63,7 @@ const tabs = [
   { id: "overview", label: "Overview" },
   { id: "title", label: "Title" },
   { id: "underwriting", label: "Underwriting" },
+  { id: "negotiation", label: "Negotiation Coach" },
   { id: "offers", label: "Offers" },
   { id: "outreach", label: "Outreach" },
   { id: "appointments", label: "Appointments" },
@@ -401,6 +403,12 @@ export default function PropertyDetail() {
           />
         )}
         {activeTab === "underwriting" && <UnderwritingTab property={propertyForTabs} />}
+        {activeTab === "negotiation" && (
+          <NegotiationCoachTab 
+            property={propertyForTabs} 
+            onCompleteProfile={() => setActiveTab("overview")}
+          />
+        )}
         {activeTab === "offers" && <OffersTab />}
         {activeTab === "outreach" && <OutreachTab />}
         {activeTab === "appointments" && <AppointmentsTab />}
