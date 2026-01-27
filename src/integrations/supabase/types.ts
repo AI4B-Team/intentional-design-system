@@ -454,6 +454,110 @@ export type Database = {
         }
         Relationships: []
       }
+      closebot_connections: {
+        Row: {
+          account_id: string | null
+          account_name: string | null
+          api_key: string | null
+          bot_mappings: Json | null
+          created_at: string | null
+          field_mappings: Json | null
+          id: string
+          is_active: boolean | null
+          trigger_settings: Json | null
+          updated_at: string | null
+          user_id: string
+          webhook_secret: string | null
+        }
+        Insert: {
+          account_id?: string | null
+          account_name?: string | null
+          api_key?: string | null
+          bot_mappings?: Json | null
+          created_at?: string | null
+          field_mappings?: Json | null
+          id?: string
+          is_active?: boolean | null
+          trigger_settings?: Json | null
+          updated_at?: string | null
+          user_id: string
+          webhook_secret?: string | null
+        }
+        Update: {
+          account_id?: string | null
+          account_name?: string | null
+          api_key?: string | null
+          bot_mappings?: Json | null
+          created_at?: string | null
+          field_mappings?: Json | null
+          id?: string
+          is_active?: boolean | null
+          trigger_settings?: Json | null
+          updated_at?: string | null
+          user_id?: string
+          webhook_secret?: string | null
+        }
+        Relationships: []
+      }
+      closebot_conversations: {
+        Row: {
+          appointment_set: boolean | null
+          appointment_time: string | null
+          bot_id: string | null
+          bot_name: string | null
+          collected_data: Json | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          outcome: string | null
+          property_id: string | null
+          started_at: string | null
+          status: string | null
+          transcript: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_set?: boolean | null
+          appointment_time?: string | null
+          bot_id?: string | null
+          bot_name?: string | null
+          collected_data?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          outcome?: string | null
+          property_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          transcript?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_set?: boolean | null
+          appointment_time?: string | null
+          bot_id?: string | null
+          bot_name?: string | null
+          collected_data?: Json | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          outcome?: string | null
+          property_id?: string | null
+          started_at?: string | null
+          status?: string | null
+          transcript?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "closebot_conversations_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_checks: {
         Row: {
           check_type: string

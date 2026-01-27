@@ -53,10 +53,22 @@ import {
   DEFAULT_FIELD_MAPPINGS,
   DEFAULT_STAGE_MAPPINGS,
 } from "@/hooks/useGHLIntegration";
+import {
+  useClosebotConnection,
+  useConnectClosebot,
+  useDisconnectClosebot,
+  useUpdateClosebotSettings,
+  useClosebotConversations,
+  MOCK_CLOSEBOT_BOTS,
+  DEFAULT_FIELD_MAPPINGS as CLOSEBOT_FIELD_MAPPINGS,
+  type BotMappings,
+  type TriggerSettings,
+} from "@/hooks/useClosebotIntegration";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
 import { useBulkSyncToGHL, useUnsyncedPropertiesCount } from "@/lib/ghl-sync";
 import { Progress } from "@/components/ui/progress";
+import { Bot, MessageSquare, Copy, Webhook } from "lucide-react";
 
 function ConnectGHLModal({
   open,
@@ -729,6 +741,516 @@ function GHLConfiguration() {
   );
 }
 
+// ============ CLOSEBOT SECTION ============
+
+function ConnectClosebotModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const [apiKey, setApiKey] = React.useState("");
+  const [accountId, setAccountId] = React.useState("");
+  const [isTesting, setIsTesting] = React.useState(false);
+  const [testResult, setTestResult] = React.useState<"success" | "error" | null>(null);
+
+  const connectClosebot = useConnectClosebot();
+
+  const handleTest = async () => {
+    if (!apiKey.trim()) return;
+    setIsTesting(true);
+    // Simulate API test
+    await new Promise((r) => setTimeout(r, 1000));
+    setTestResult("success");
+    setIsTesting(false);
+  };
+
+  const handleConnect = () => {
+    connectClosebot.mutate(
+      { apiKey, accountId: accountId || undefined },
+      {
+        onSuccess: () => {
+          onOpenChange(false);
+          setApiKey("");
+          setAccountId("");
+          setTestResult(null);
+        },
+      }
+    );
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            Connect Closebot.ai
+          </DialogTitle>
+          <DialogDescription>
+            Enter your Closebot API credentials to enable AI conversation management.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="cb-api-key">API Key</Label>
+            <Input
+              id="cb-api-key"
+              type="password"
+              placeholder="cb_live_..."
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="font-mono"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="cb-account-id">Account ID (optional)</Label>
+            <Input
+              id="cb-account-id"
+              placeholder="acc_..."
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+              className="font-mono"
+            />
+          </div>
+
+          {testResult && (
+            <div
+              className={cn(
+                "flex items-center gap-2 p-3 rounded-lg text-small",
+                testResult === "success"
+                  ? "bg-success/10 text-success"
+                  : "bg-destructive/10 text-destructive"
+              )}
+            >
+              {testResult === "success" ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  Connection successful!
+                </>
+              ) : (
+                <>
+                  <X className="h-4 w-4" />
+                  Connection failed. Check credentials.
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="gap-2">
+          <Button
+            variant="secondary"
+            onClick={handleTest}
+            disabled={!apiKey.trim() || isTesting}
+          >
+            {isTesting ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Zap className="h-4 w-4 mr-2" />
+            )}
+            Test Connection
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleConnect}
+            disabled={!apiKey.trim() || connectClosebot.isPending}
+          >
+            {connectClosebot.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Link2 className="h-4 w-4 mr-2" />
+            )}
+            Save & Connect
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ClosebotConfiguration() {
+  const { data: connection } = useClosebotConnection();
+  const updateSettings = useUpdateClosebotSettings();
+  const { data: conversations } = useClosebotConversations();
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+
+  if (!connection) return null;
+
+  const webhookUrl = `${supabaseUrl}/functions/v1/closebot-webhook`;
+
+  const handleBotChange = (purpose: keyof BotMappings, botId: string) => {
+    updateSettings.mutate({
+      bot_mappings: {
+        ...connection.bot_mappings,
+        [purpose]: botId,
+      },
+    });
+  };
+
+  const handleTriggerChange = (setting: keyof TriggerSettings, value: boolean) => {
+    updateSettings.mutate({
+      trigger_settings: {
+        ...connection.trigger_settings,
+        [setting]: value,
+      },
+    });
+  };
+
+  const copyWebhookUrl = () => {
+    navigator.clipboard.writeText(webhookUrl);
+  };
+
+  const copyWebhookSecret = () => {
+    if (connection.webhook_secret) {
+      navigator.clipboard.writeText(connection.webhook_secret);
+    }
+  };
+
+  return (
+    <Tabs defaultValue="bots" className="space-y-md">
+      <TabsList className="flex-wrap">
+        <TabsTrigger value="bots" className="gap-1.5">
+          <Bot className="h-4 w-4" />
+          Bot Selection
+        </TabsTrigger>
+        <TabsTrigger value="triggers" className="gap-1.5">
+          <Zap className="h-4 w-4" />
+          Triggers
+        </TabsTrigger>
+        <TabsTrigger value="webhook" className="gap-1.5">
+          <Webhook className="h-4 w-4" />
+          Webhook
+        </TabsTrigger>
+        <TabsTrigger value="history" className="gap-1.5">
+          <MessageSquare className="h-4 w-4" />
+          Conversations
+        </TabsTrigger>
+      </TabsList>
+
+      {/* Bot Selection Tab */}
+      <TabsContent value="bots">
+        <Card variant="default" padding="md">
+          <CardHeader>
+            <CardTitle>Select Bots</CardTitle>
+            <CardDescription>
+              Choose which Closebot bots to use for different purposes
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Seller Qualification Bot</Label>
+              <Select
+                value={connection.bot_mappings.seller_qualification || ""}
+                onValueChange={(v) => handleBotChange("seller_qualification", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a bot..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {MOCK_CLOSEBOT_BOTS.filter((b) => b.type === "seller").map((bot) => (
+                    <SelectItem key={bot.id} value={bot.id}>
+                      {bot.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Buyer Qualification Bot</Label>
+              <Select
+                value={connection.bot_mappings.buyer_qualification || ""}
+                onValueChange={(v) => handleBotChange("buyer_qualification", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a bot..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {MOCK_CLOSEBOT_BOTS.filter((b) => b.type === "buyer").map((bot) => (
+                    <SelectItem key={bot.id} value={bot.id}>
+                      {bot.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Follow-up Bot</Label>
+              <Select
+                value={connection.bot_mappings.followup || ""}
+                onValueChange={(v) => handleBotChange("followup", v)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a bot..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {MOCK_CLOSEBOT_BOTS.filter((b) => b.type === "followup").map((bot) => (
+                    <SelectItem key={bot.id} value={bot.id}>
+                      {bot.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Triggers Tab */}
+      <TabsContent value="triggers">
+        <Card variant="default" padding="md">
+          <CardHeader>
+            <CardTitle>Trigger Configuration</CardTitle>
+            <CardDescription>
+              Configure when Closebot should automatically start conversations
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+              <div>
+                <p className="text-small font-medium">New lead added</p>
+                <p className="text-tiny text-content-tertiary">
+                  Trigger when a new lead with phone number is added
+                </p>
+              </div>
+              <Switch
+                checked={connection.trigger_settings.on_new_lead}
+                onCheckedChange={(v) => handleTriggerChange("on_new_lead", v)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+              <div>
+                <p className="text-small font-medium">Status changes to "Contacted"</p>
+                <p className="text-tiny text-content-tertiary">
+                  Trigger when lead status is updated to contacted
+                </p>
+              </div>
+              <Switch
+                checked={connection.trigger_settings.on_status_change}
+                onCheckedChange={(v) => handleTriggerChange("on_status_change", v)}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+              <div>
+                <p className="text-small font-medium">Manual trigger only</p>
+                <p className="text-tiny text-content-tertiary">
+                  Only start conversations when manually triggered
+                </p>
+              </div>
+              <Switch
+                checked={connection.trigger_settings.manual_only}
+                onCheckedChange={(v) => handleTriggerChange("manual_only", v)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Webhook Tab */}
+      <TabsContent value="webhook">
+        <Card variant="default" padding="md">
+          <CardHeader>
+            <CardTitle>Webhook Configuration</CardTitle>
+            <CardDescription>
+              Configure Closebot to send conversation data back to DealFlow
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Webhook URL</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={webhookUrl}
+                  readOnly
+                  className="font-mono text-tiny"
+                />
+                <Button variant="secondary" size="sm" onClick={copyWebhookUrl}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-tiny text-content-tertiary">
+                Add this URL to Closebot's webhook settings
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Webhook Secret</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={connection.webhook_secret ? "••••••••••••••••" : ""}
+                  readOnly
+                  className="font-mono"
+                />
+                <Button variant="secondary" size="sm" onClick={copyWebhookSecret}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-tiny text-content-tertiary">
+                Include this in the <code className="text-brand">x-webhook-secret</code> header
+              </p>
+            </div>
+
+            <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
+              <p className="text-small text-info font-medium">Data Mapping</p>
+              <p className="text-tiny text-info/80 mt-1">
+                When Closebot sends data, it will automatically map to DealFlow fields:
+              </p>
+              <ul className="text-tiny text-info/80 mt-2 space-y-1 list-disc list-inside">
+                <li>motivation_level → motivation_score</li>
+                <li>mortgage_info → mortgage_balance, mortgage_payment</li>
+                <li>seller_timeline → notes</li>
+                <li>appointment_time → creates appointment</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Conversations Tab */}
+      <TabsContent value="history">
+        <Card variant="default" padding="md">
+          <CardHeader>
+            <CardTitle>Recent Conversations</CardTitle>
+            <CardDescription>
+              View AI conversation history and outcomes
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!conversations || conversations.length === 0 ? (
+              <div className="text-center py-8 text-content-tertiary">
+                <MessageSquare className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-small">No conversations yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {conversations.slice(0, 10).map((conv) => (
+                  <div
+                    key={conv.id}
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          "h-8 w-8 rounded-full flex items-center justify-center",
+                          conv.outcome === "qualified" || conv.outcome === "appointment_set"
+                            ? "bg-success/10 text-success"
+                            : conv.outcome === "not_qualified"
+                            ? "bg-warning/10 text-warning"
+                            : "bg-muted text-content-tertiary"
+                        )}
+                      >
+                        <Bot className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <p className="text-small font-medium">{conv.bot_name || "Bot"}</p>
+                        <p className="text-tiny text-content-tertiary">
+                          {conv.started_at &&
+                            formatDistanceToNow(new Date(conv.started_at), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge
+                        variant={
+                          conv.outcome === "qualified" || conv.outcome === "appointment_set"
+                            ? "success"
+                            : conv.outcome === "not_qualified"
+                            ? "warning"
+                            : "secondary"
+                        }
+                        size="sm"
+                      >
+                        {conv.outcome?.replace(/_/g, " ") || conv.status}
+                      </Badge>
+                      {conv.appointment_set && (
+                        <Badge variant="info" size="sm">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Appt Set
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+  );
+}
+
+function ClosebotSection() {
+  const { data: connection, isLoading } = useClosebotConnection();
+  const disconnectClosebot = useDisconnectClosebot();
+  const [connectModalOpen, setConnectModalOpen] = React.useState(false);
+
+  const isConnected = connection?.is_active;
+
+  return (
+    <>
+      <Card variant="default" padding="md">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-brand/10 flex items-center justify-center">
+                <Bot className="h-6 w-6 text-brand" />
+              </div>
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  Closebot.ai
+                  {isConnected ? (
+                    <Badge variant="success" size="sm">Connected</Badge>
+                  ) : (
+                    <Badge variant="destructive" size="sm">Not Connected</Badge>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {isConnected && connection?.account_name
+                    ? `Connected to ${connection.account_name}`
+                    : "AI-powered conversation management for lead qualification"}
+                </CardDescription>
+              </div>
+            </div>
+
+            {isConnected ? (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => disconnectClosebot.mutate()}
+                disabled={disconnectClosebot.isPending}
+              >
+                <Unlink className="h-4 w-4 mr-1" />
+                Disconnect
+              </Button>
+            ) : (
+              <Button variant="primary" onClick={() => setConnectModalOpen(true)}>
+                <Link2 className="h-4 w-4 mr-2" />
+                Connect Closebot.ai
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+
+        {isConnected && (
+          <CardContent className="pt-0">
+            <ClosebotConfiguration />
+          </CardContent>
+        )}
+      </Card>
+
+      <ConnectClosebotModal open={connectModalOpen} onOpenChange={setConnectModalOpen} />
+    </>
+  );
+}
+
 export default function SettingsIntegrations() {
   const { data: connection, isLoading } = useGHLConnection();
   const disconnectGHL = useDisconnectGHL();
@@ -806,6 +1328,9 @@ export default function SettingsIntegrations() {
             </CardContent>
           )}
         </Card>
+
+        {/* Closebot.ai Integration Card */}
+        <ClosebotSection />
 
         {/* Placeholder for future integrations */}
         <Card variant="default" padding="md" className="opacity-60">
