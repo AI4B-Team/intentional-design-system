@@ -15,6 +15,10 @@ import Analytics from "./pages/Analytics";
 import Marketplace from "./pages/Marketplace";
 import LenderBrowser from "./pages/LenderBrowser";
 import FundingRequest from "./pages/FundingRequest";
+import Capital from "./pages/Capital";
+import CapitalLenders from "./pages/CapitalLenders";
+import CapitalRequestNew from "./pages/CapitalRequestNew";
+import CapitalRequestDetail from "./pages/CapitalRequestDetail";
 import Settings from "./pages/Settings";
 import DealSources from "./pages/DealSources";
 import DealSourceDetail from "./pages/DealSourceDetail";
@@ -118,6 +122,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <FundingRequest />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capital"
+              element={
+                <ProtectedRoute>
+                  <Capital />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capital/lenders"
+              element={
+                <ProtectedRoute>
+                  <CapitalLenders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capital/request/new"
+              element={
+                <ProtectedRoute>
+                  <CapitalRequestNew />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/capital/request/:id"
+              element={
+                <ProtectedRoute>
+                  <CapitalRequestDetail />
                 </ProtectedRoute>
               }
             />

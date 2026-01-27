@@ -56,6 +56,7 @@ const navGroups: NavGroup[] = [
       { label: "Pipeline", href: "/pipeline", icon: Briefcase, badge: 3 },
       { label: "Marketplace", href: "/marketplace", icon: Banknote },
       { label: "Calculators", href: "/calculators", icon: Calculator },
+      { label: "Capital", href: "/capital", icon: Banknote },
       { label: "Analytics", href: "/analytics", icon: BarChart3 },
       { label: "Documents", href: "/documents", icon: FileText },
     ],
