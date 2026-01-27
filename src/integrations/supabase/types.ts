@@ -1339,6 +1339,57 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_properties: {
+        Row: {
+          address: string
+          baths: number | null
+          beds: number | null
+          city: string | null
+          created_at: string | null
+          id: string
+          monthly_rent: number | null
+          notes: string | null
+          property_type: string | null
+          sqft: number | null
+          state: string | null
+          updated_at: string | null
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          monthly_rent?: number | null
+          notes?: string | null
+          property_type?: string | null
+          sqft?: number | null
+          state?: string | null
+          updated_at?: string | null
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          created_at?: string | null
+          id?: string
+          monthly_rent?: number | null
+          notes?: string | null
+          property_type?: string | null
+          sqft?: number | null
+          state?: string | null
+          updated_at?: string | null
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: []
+      }
       properties: {
         Row: {
           address: string
@@ -1351,6 +1402,7 @@ export type Database = {
           created_at: string | null
           distress_signals: Json | null
           equity_percent: number | null
+          estimated_rent: number | null
           estimated_value: number | null
           id: string
           liens_total: number | null
@@ -1368,6 +1420,8 @@ export type Database = {
           owner_name: string | null
           owner_phone: string | null
           property_type: string | null
+          rent_confidence: string | null
+          rent_data_source: string | null
           repair_details: Json | null
           repair_estimate: number | null
           source: string | null
@@ -1393,6 +1447,7 @@ export type Database = {
           created_at?: string | null
           distress_signals?: Json | null
           equity_percent?: number | null
+          estimated_rent?: number | null
           estimated_value?: number | null
           id?: string
           liens_total?: number | null
@@ -1410,6 +1465,8 @@ export type Database = {
           owner_name?: string | null
           owner_phone?: string | null
           property_type?: string | null
+          rent_confidence?: string | null
+          rent_data_source?: string | null
           repair_details?: Json | null
           repair_estimate?: number | null
           source?: string | null
@@ -1435,6 +1492,7 @@ export type Database = {
           created_at?: string | null
           distress_signals?: Json | null
           equity_percent?: number | null
+          estimated_rent?: number | null
           estimated_value?: number | null
           id?: string
           liens_total?: number | null
@@ -1452,6 +1510,8 @@ export type Database = {
           owner_name?: string | null
           owner_phone?: string | null
           property_type?: string | null
+          rent_confidence?: string | null
+          rent_data_source?: string | null
           repair_details?: Json | null
           repair_estimate?: number | null
           source?: string | null
@@ -1472,6 +1532,62 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rent_comps: {
+        Row: {
+          baths: number | null
+          beds: number | null
+          comp_address: string
+          created_at: string | null
+          distance_miles: number | null
+          id: string
+          listed_date: string | null
+          property_id: string
+          rent_amount: number | null
+          source: string | null
+          sqft: number | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          baths?: number | null
+          beds?: number | null
+          comp_address: string
+          created_at?: string | null
+          distance_miles?: number | null
+          id?: string
+          listed_date?: string | null
+          property_id: string
+          rent_amount?: number | null
+          source?: string | null
+          sqft?: number | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          baths?: number | null
+          beds?: number | null
+          comp_address?: string
+          created_at?: string | null
+          distance_miles?: number | null
+          id?: string
+          listed_date?: string | null
+          property_id?: string
+          rent_amount?: number | null
+          source?: string | null
+          sqft?: number | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rent_comps_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]

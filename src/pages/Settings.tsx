@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/layout";
 import { AISettingsSection } from "@/components/ai";
+import { PortfolioPropertiesSection } from "@/components/settings/portfolio-properties-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,8 @@ import {
   Mail,
   Phone,
   Building2,
-  Save
+  Save,
+  Home
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -62,6 +64,10 @@ export default function Settings() {
             <TabsTrigger value="appearance" className="gap-2">
               <Palette className="h-4 w-4" />
               Appearance
+            </TabsTrigger>
+            <TabsTrigger value="portfolio" className="gap-2">
+              <Home className="h-4 w-4" />
+              Portfolio
             </TabsTrigger>
           </TabsList>
 
@@ -203,6 +209,11 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Portfolio Tab */}
+          <TabsContent value="portfolio">
+            <PortfolioPropertiesSection />
           </TabsContent>
         </Tabs>
       </div>

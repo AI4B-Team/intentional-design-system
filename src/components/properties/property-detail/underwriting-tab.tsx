@@ -38,6 +38,7 @@ import { usePropertyTitleReport, calculateTitleMetrics, type TitleReportSummary 
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import { AddCompModal } from "./add-comp-modal";
 import { AddRepairModal } from "./add-repair-modal";
+import { RentalAnalysisCard } from "./rental-analysis-card";
 import { BidsSection } from "@/components/contractors/bids-section";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -549,6 +550,25 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
           repairDetails={repairItems}
         />
       </Card>
+
+      {/* Rental Analysis Section */}
+      <RentalAnalysisCard
+        propertyId={id || ""}
+        propertyValue={property?.estimated_value ? Number(property.estimated_value) : arv}
+        propertySqft={property?.sqft || null}
+        estimatedRent={property?.estimated_rent ? Number(property.estimated_rent) : null}
+        onSetEstimatedRent={(rent, confidence, source) => {
+          if (!id) return;
+          updateProperty.mutate({
+            id,
+            updates: {
+              estimated_rent: rent,
+              rent_confidence: confidence,
+              rent_data_source: source,
+            },
+          });
+        }}
+      />
 
       {/* MAO Calculator Section */}
       <Card variant="default" padding="none">
