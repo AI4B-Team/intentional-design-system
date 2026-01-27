@@ -74,10 +74,16 @@ const marketingGroup: NavGroup = {
   ],
 };
 
-const bottomNavItems: NavItem[] = [
-  { label: "Calculators", href: "/calculators", icon: Calculator },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
-];
+const toolsGroup: NavGroup = {
+  label: "Tools",
+  icon: Calculator,
+  items: [
+    { label: "Calculators", href: "/calculators", icon: Calculator },
+    { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  ],
+};
+
+const bottomNavItems: NavItem[] = [];
 
 interface AppSidebarProps {
   collapsed: boolean;
@@ -100,12 +106,17 @@ export function AppSidebar({
     return marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
+  const [toolsOpen, setToolsOpen] = React.useState(() => {
+    return toolsGroup.items.some(item => location.pathname.startsWith(item.href));
+  });
+
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
     return 0;
   };
 
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
 
   const handleSignOut = async () => {
     await signOut();
@@ -279,29 +290,54 @@ export function AppSidebar({
             );
           })}
 
-          {/* Bottom Nav Items */}
-          {bottomNavItems.map((item) => {
-            const isActive = location.pathname === item.href;
-            const Icon = item.icon;
+          {/* Tools Group */}
+          <li>
+            <button
+              onClick={() => !collapsed && setToolsOpen(!toolsOpen)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                isToolsActive && "text-white",
+                collapsed && "justify-center"
+              )}
+            >
+              <toolsGroup.icon className={cn("h-5 w-5 flex-shrink-0", isToolsActive && "text-brand-accent")} />
+              {!collapsed && (
+                <>
+                  <span>{toolsGroup.label}</span>
+                  <ChevronDown className={cn(
+                    "h-4 w-4 ml-auto transition-transform",
+                    toolsOpen && "rotate-180"
+                  )} />
+                </>
+              )}
+            </button>
+            {!collapsed && toolsOpen && (
+              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
+                {toolsGroup.items.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  const Icon = item.icon;
 
-            return (
-              <li key={item.href}>
-                <NavLink
-                  to={item.href}
-                  onClick={onMobileClose}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                    "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                    isActive && "bg-brand-accent text-white font-medium",
-                    collapsed && "justify-center"
-                  )}
-                >
-                  <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
-                  {!collapsed && <span>{item.label}</span>}
-                </NavLink>
-              </li>
-            );
-          })}
+                  return (
+                    <li key={item.href}>
+                      <NavLink
+                        to={item.href}
+                        onClick={onMobileClose}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
+                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
+                          isActive && "bg-brand-accent/20 text-white font-medium"
+                        )}
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </li>
         </ul>
       </nav>
     </>
