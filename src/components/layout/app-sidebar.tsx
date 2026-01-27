@@ -283,25 +283,25 @@ export function MobileSidebar({ open, onOpenChange, user }: MobileSidebarProps) 
 // Bottom Tab Bar for Mobile
 export function MobileTabBar() {
   const tabs = [
-    { label: "Home", href: "/", icon: Home },
+    { label: "Dashboard", href: "/dashboard", icon: Home },
     { label: "Properties", href: "/properties", icon: Building2 },
-    { label: "Pipeline", href: "/pipeline", icon: Briefcase },
-    { label: "Contacts", href: "/contacts", icon: Users },
+    { label: "Sources", href: "/deal-sources", icon: MapPin },
+    { label: "Offers", href: "/offers", icon: Briefcase },
     { label: "More", href: "/settings", icon: Settings },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-border-subtle bg-white lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-border-subtle bg-white lg:hidden safe-area-pb">
       {tabs.map((tab) => (
         <NavLink
           key={tab.href}
           to={tab.href}
-          end={tab.href === "/"}
-          className="flex flex-col items-center gap-1 px-3 py-2 text-content-tertiary transition-colors"
-          activeClassName="text-brand-accent"
+          end={tab.href === "/dashboard"}
+          className="flex flex-col items-center gap-0.5 px-3 py-2 text-content-tertiary transition-colors min-w-[64px]"
+          activeClassName="text-brand"
         >
           <tab.icon className="h-5 w-5" />
-          <span className="text-tiny font-medium">{tab.label}</span>
+          <span className="text-[10px] font-medium">{tab.label}</span>
         </NavLink>
       ))}
     </nav>
