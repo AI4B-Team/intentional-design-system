@@ -124,6 +124,177 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_properties: {
+        Row: {
+          address: string
+          agent_email: string | null
+          agent_name: string | null
+          agent_phone: string | null
+          brokerage: string | null
+          campaign_id: string
+          city: string | null
+          created_at: string
+          days_on_market: number | null
+          id: string
+          list_price: number | null
+          offer_amount: number | null
+          opened_at: string | null
+          property_id: string | null
+          responded_at: string | null
+          response_notes: string | null
+          response_type: string | null
+          sent_at: string | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          agent_email?: string | null
+          agent_name?: string | null
+          agent_phone?: string | null
+          brokerage?: string | null
+          campaign_id: string
+          city?: string | null
+          created_at?: string
+          days_on_market?: number | null
+          id?: string
+          list_price?: number | null
+          offer_amount?: number | null
+          opened_at?: string | null
+          property_id?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          response_type?: string | null
+          sent_at?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          agent_email?: string | null
+          agent_name?: string | null
+          agent_phone?: string | null
+          brokerage?: string | null
+          campaign_id?: string
+          city?: string | null
+          created_at?: string
+          days_on_market?: number | null
+          id?: string
+          list_price?: number | null
+          offer_amount?: number | null
+          opened_at?: string | null
+          property_id?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          response_type?: string | null
+          sent_at?: string | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_properties_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_properties_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          campaign_type: string
+          closing_timeline: string | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          earnest_money: number | null
+          email_body: string | null
+          email_subject: string | null
+          id: string
+          include_earnest_money: boolean | null
+          name: string
+          offer_fixed_discount: number | null
+          offer_formula_type: string | null
+          offer_percentage: number | null
+          opened_count: number | null
+          properties_count: number | null
+          responded_count: number | null
+          sent_count: number | null
+          started_at: string | null
+          status: string
+          target_criteria: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_type?: string
+          closing_timeline?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          earnest_money?: number | null
+          email_body?: string | null
+          email_subject?: string | null
+          id?: string
+          include_earnest_money?: boolean | null
+          name: string
+          offer_fixed_discount?: number | null
+          offer_formula_type?: string | null
+          offer_percentage?: number | null
+          opened_count?: number | null
+          properties_count?: number | null
+          responded_count?: number | null
+          sent_count?: number | null
+          started_at?: string | null
+          status?: string
+          target_criteria?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_type?: string
+          closing_timeline?: string | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          earnest_money?: number | null
+          email_body?: string | null
+          email_subject?: string | null
+          id?: string
+          include_earnest_money?: boolean | null
+          name?: string
+          offer_fixed_discount?: number | null
+          offer_formula_type?: string | null
+          offer_percentage?: number | null
+          opened_count?: number | null
+          properties_count?: number | null
+          responded_count?: number | null
+          sent_count?: number | null
+          started_at?: string | null
+          status?: string
+          target_criteria?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       comps: {
         Row: {
           adjusted_value: number | null
