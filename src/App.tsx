@@ -30,6 +30,8 @@ import CampaignDetail from "./pages/CampaignDetail";
 import Offers from "./pages/Offers";
 import Contractors from "./pages/Contractors";
 import ContractorDetail from "./pages/ContractorDetail";
+import Buyers from "./pages/Buyers";
+import BuyerDetail from "./pages/BuyerDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +95,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ContractorDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyers"
+              element={
+                <ProtectedRoute>
+                  <Buyers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/buyers/:id"
+              element={
+                <ProtectedRoute>
+                  <BuyerDetail />
                 </ProtectedRoute>
               }
             />
