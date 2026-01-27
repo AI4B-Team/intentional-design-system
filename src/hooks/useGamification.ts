@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOrganization } from "@/contexts/OrganizationContext";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 
@@ -15,6 +16,7 @@ export interface Achievement {
   category: "deals" | "profit" | "speed" | "activity" | "special";
   threshold: number;
   points: number;
+  organization_id?: string;
 }
 
 export interface UserAchievement {
@@ -29,9 +31,11 @@ export interface UserAchievement {
 export interface ActivityPoint {
   id: string;
   user_id: string;
+  organization_id: string | null;
   activity_type: string;
   points: number;
   reference_id: string | null;
+  entity_id: string | null;
   created_at: string;
 }
 
@@ -44,17 +48,63 @@ export interface UserStats {
   dealsClosed: number;
   totalProfit: number;
   currentStreak: number;
+  longestStreak: number;
 }
 
 export interface LeaderboardEntry {
   user_id: string;
+  name: string;
   email: string;
+  avatar_url?: string;
   totalPoints: number;
   dealsClosed: number;
+  contactsMade: number;
+  offersSent: number;
   profit: number;
   streak: number;
   rank: number;
+  previousRank?: number;
+  rankChange?: "up" | "down" | "same" | "new";
 }
+
+export interface GamificationSettings {
+  id: string;
+  organization_id: string;
+  enabled: boolean;
+  point_values: PointValues;
+  streak_requirements: { daily_minimum_points: number };
+}
+
+export interface PointValues {
+  lead_added: number;
+  skip_trace: number;
+  contact_made: number;
+  appointment_set: number;
+  appointment_completed: number;
+  offer_made: number;
+  offer_accepted: number;
+  deal_closed: number;
+  deal_closed_10k_bonus: number;
+  deal_closed_25k_bonus: number;
+  streak_7_day: number;
+  streak_30_day: number;
+}
+
+// Default point values
+export const DEFAULT_POINT_VALUES: PointValues = {
+  lead_added: 10,
+  skip_trace: 5,
+  contact_made: 15,
+  appointment_set: 25,
+  appointment_completed: 20,
+  offer_made: 30,
+  offer_accepted: 50,
+  deal_closed: 100,
+  deal_closed_10k_bonus: 50,
+  deal_closed_25k_bonus: 100,
+  streak_7_day: 25,
+  streak_30_day: 100,
+};
 
 // ============ LEVEL SYSTEM ============
 
@@ -94,16 +144,91 @@ export function getLevel(points: number): { name: string; level: number; pointsT
 
 // ============ HOOKS ============
 
-export function useAchievements() {
+export function useGamificationSettings() {
+  const { organization } = useOrganization();
+
   return useQuery({
-    queryKey: ["achievements"],
+    queryKey: ["gamification-settings", organization?.id],
     queryFn: async () => {
+      if (!organization) return null;
+
       const { data, error } = await supabase
+        .from("gamification_settings")
+        .select("*")
+        .eq("organization_id", organization.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+      
+      // Return defaults if no settings exist
+      if (!data) {
+        return {
+          id: "",
+          organization_id: organization.id,
+          enabled: true,
+          point_values: DEFAULT_POINT_VALUES,
+          streak_requirements: { daily_minimum_points: 10 },
+        } as GamificationSettings;
+      }
+
+      return {
+        ...data,
+        point_values: data.point_values as unknown as PointValues,
+        streak_requirements: data.streak_requirements as unknown as { daily_minimum_points: number },
+      } as GamificationSettings;
+    },
+    enabled: !!organization,
+  });
+}
+
+export function useUpdateGamificationSettings() {
+  const { organization } = useOrganization();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (settings: Partial<GamificationSettings>) => {
+      if (!organization) throw new Error("No organization");
+
+      const { data, error } = await supabase
+        .from("gamification_settings")
+        .upsert({
+          organization_id: organization.id,
+          ...settings,
+          updated_at: new Date().toISOString(),
+        } as any)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["gamification-settings"] });
+      toast.success("Gamification settings updated");
+    },
+  });
+}
+
+export function useAchievements() {
+  const { organization } = useOrganization();
+
+  return useQuery({
+    queryKey: ["achievements", organization?.id],
+    queryFn: async () => {
+      let query = supabase
         .from("achievements")
         .select("*")
         .order("category", { ascending: true })
         .order("threshold", { ascending: true });
 
+      // Get both global and org-specific achievements
+      if (organization) {
+        query = query.or(`organization_id.is.null,organization_id.eq.${organization.id}`);
+      } else {
+        query = query.is("organization_id", null);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data as Achievement[];
     },
@@ -160,34 +285,77 @@ export function useActivityPoints(userId?: string) {
   });
 }
 
-export function useUserStats() {
+export function useUserStreak() {
   const { user } = useAuth();
+  const { organization } = useOrganization();
 
   return useQuery({
-    queryKey: ["user-stats", user?.id],
+    queryKey: ["user-streak", user?.id, organization?.id],
+    queryFn: async () => {
+      if (!user || !organization) return null;
+
+      const { data, error } = await supabase
+        .from("user_streaks")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("organization_id", organization.id)
+        .single();
+
+      if (error && error.code !== "PGRST116") throw error;
+      return data;
+    },
+    enabled: !!user && !!organization,
+  });
+}
+
+export function useUserStats() {
+  const { user } = useAuth();
+  const { organization } = useOrganization();
+  const { data: streakData } = useUserStreak();
+
+  return useQuery({
+    queryKey: ["user-stats", user?.id, organization?.id],
     queryFn: async () => {
       if (!user?.id) return null;
 
-      // Get total points
-      const { data: pointsData } = await supabase
+      // Get total points (org-scoped if available)
+      let pointsQuery = supabase
         .from("activity_points")
         .select("points")
         .eq("user_id", user.id);
 
+      if (organization) {
+        pointsQuery = pointsQuery.or(`organization_id.eq.${organization.id},organization_id.is.null`);
+      }
+
+      const { data: pointsData } = await pointsQuery;
       const totalPoints = (pointsData || []).reduce((sum, p) => sum + p.points, 0);
 
       // Get closed deals
-      const { count: dealsClosed } = await supabase
+      let dealsQuery = supabase
         .from("properties")
         .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
         .eq("status", "closed");
+
+      if (organization) {
+        dealsQuery = dealsQuery.eq("organization_id", organization.id);
+      }
+
+      const { count: dealsClosed } = await dealsQuery;
 
       // Get profit estimate
-      const { data: closedDeals } = await supabase
+      let profitQuery = supabase
         .from("properties")
         .select("arv, mao_standard")
+        .eq("user_id", user.id)
         .eq("status", "closed");
 
+      if (organization) {
+        profitQuery = profitQuery.eq("organization_id", organization.id);
+      }
+
+      const { data: closedDeals } = await profitQuery;
       const totalProfit = (closedDeals || []).reduce((sum, d) => {
         if (d.arv && d.mao_standard) {
           return sum + (d.arv - d.mao_standard);
@@ -206,63 +374,91 @@ export function useUserStats() {
         levelProgress: levelInfo.progress,
         dealsClosed: dealsClosed || 0,
         totalProfit,
-        currentStreak: 0, // Would need daily tracking to implement
+        currentStreak: streakData?.current_streak || 0,
+        longestStreak: streakData?.longest_streak || 0,
       } as UserStats;
     },
     enabled: !!user?.id,
   });
 }
 
-export function useLeaderboard(timeframe: "week" | "month" | "quarter" | "all" = "month") {
+export function useLeaderboard(timeframe: "today" | "week" | "month" | "all" = "month") {
+  const { organization, members } = useOrganization();
+
   return useQuery({
-    queryKey: ["leaderboard", timeframe],
+    queryKey: ["leaderboard", organization?.id, timeframe],
     queryFn: async () => {
+      if (!organization) return [];
+
       // Get all activity points with user info
-      let query = supabase.from("activity_points").select("user_id, points, created_at");
+      let query = supabase
+        .from("activity_points")
+        .select("user_id, points, activity_type, created_at")
+        .eq("organization_id", organization.id);
 
       // Filter by timeframe
       const now = new Date();
-      if (timeframe === "week") {
+      if (timeframe === "today") {
+        const todayStart = new Date(now);
+        todayStart.setHours(0, 0, 0, 0);
+        query = query.gte("created_at", todayStart.toISOString());
+      } else if (timeframe === "week") {
         const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         query = query.gte("created_at", weekAgo.toISOString());
       } else if (timeframe === "month") {
         const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         query = query.gte("created_at", monthAgo.toISOString());
-      } else if (timeframe === "quarter") {
-        const quarterAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-        query = query.gte("created_at", quarterAgo.toISOString());
       }
 
       const { data: pointsData } = await query;
 
       // Aggregate by user
-      const userPoints = new Map<string, number>();
+      const userStats = new Map<string, {
+        points: number;
+        contacts: number;
+        offers: number;
+        deals: number;
+      }>();
+
       (pointsData || []).forEach((p) => {
-        userPoints.set(p.user_id, (userPoints.get(p.user_id) || 0) + p.points);
+        const current = userStats.get(p.user_id) || { points: 0, contacts: 0, offers: 0, deals: 0 };
+        current.points += p.points;
+        
+        if (p.activity_type === "contact_made") current.contacts++;
+        if (p.activity_type === "offer_made") current.offers++;
+        if (p.activity_type === "deal_closed") current.deals++;
+        
+        userStats.set(p.user_id, current);
       });
 
-      // Get deal counts per user
-      const { data: properties } = await supabase
-        .from("properties")
-        .select("user_id, status");
+      // Get streaks for all users
+      const { data: streaks } = await supabase
+        .from("user_streaks")
+        .select("user_id, current_streak")
+        .eq("organization_id", organization.id);
 
-      const userDeals = new Map<string, number>();
-      (properties || []).forEach((p) => {
-        if (p.status === "closed") {
-          userDeals.set(p.user_id, (userDeals.get(p.user_id) || 0) + 1);
-        }
+      const streakMap = new Map<string, number>();
+      (streaks || []).forEach((s) => {
+        streakMap.set(s.user_id, s.current_streak);
       });
 
-      // Build leaderboard entries
-      const entries: LeaderboardEntry[] = Array.from(userPoints.entries()).map(([user_id, totalPoints]) => ({
-        user_id,
-        email: user_id.substring(0, 8) + "...", // Placeholder - would need profiles table
-        totalPoints,
-        dealsClosed: userDeals.get(user_id) || 0,
-        profit: (userDeals.get(user_id) || 0) * 15000,
-        streak: 0,
-        rank: 0,
-      }));
+      // Build leaderboard entries with member info
+      const entries: LeaderboardEntry[] = Array.from(userStats.entries()).map(([user_id, stats]) => {
+        const member = members.find((m) => m.user_id === user_id);
+        return {
+          user_id,
+          name: member?.user?.full_name || member?.user?.email || "Unknown",
+          email: member?.user?.email || "",
+          totalPoints: stats.points,
+          dealsClosed: stats.deals,
+          contactsMade: stats.contacts,
+          offersSent: stats.offers,
+          profit: stats.deals * 15000, // Estimate
+          streak: streakMap.get(user_id) || 0,
+          rank: 0,
+          rankChange: "same" as const,
+        };
+      });
 
       // Sort and rank
       entries.sort((a, b) => b.totalPoints - a.totalPoints);
@@ -272,43 +468,161 @@ export function useLeaderboard(timeframe: "week" | "month" | "quarter" | "all" =
 
       return entries;
     },
+    enabled: !!organization,
+    refetchInterval: 60000,
   });
+}
+
+export function useCategoryLeaderboard(
+  category: "points" | "leads" | "contacts" | "offers" | "deals" | "profit",
+  timeframe: "today" | "week" | "month" | "all" = "month"
+) {
+  const { data: leaderboard } = useLeaderboard(timeframe);
+
+  return {
+    data: (leaderboard || [])
+      .sort((a, b) => {
+        switch (category) {
+          case "points": return b.totalPoints - a.totalPoints;
+          case "leads": return b.totalPoints - a.totalPoints; // Would need separate tracking
+          case "contacts": return b.contactsMade - a.contactsMade;
+          case "offers": return b.offersSent - a.offersSent;
+          case "deals": return b.dealsClosed - a.dealsClosed;
+          case "profit": return b.profit - a.profit;
+          default: return 0;
+        }
+      })
+      .slice(0, 10)
+      .map((entry, idx) => ({ ...entry, rank: idx + 1 })),
+  };
 }
 
 // ============ MUTATIONS ============
 
 export function useAwardPoints() {
   const { user } = useAuth();
+  const { organization } = useOrganization();
   const queryClient = useQueryClient();
+  const { data: settings } = useGamificationSettings();
 
   return useMutation({
     mutationFn: async ({
       activityType,
       points,
       referenceId,
+      entityId,
+      showToast = true,
     }: {
       activityType: string;
-      points: number;
+      points?: number;
       referenceId?: string;
+      entityId?: string;
+      showToast?: boolean;
     }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase.from("activity_points").insert({
+      // Get point value from settings or use provided/default
+      const pointValues = settings?.point_values || DEFAULT_POINT_VALUES;
+      const finalPoints = points ?? (pointValues as any)[activityType] ?? 10;
+
+      const insertData: any = {
         user_id: user.id,
         activity_type: activityType,
-        points,
+        points: finalPoints,
         reference_id: referenceId || null,
-      }).select().single();
+      };
+
+      if (organization) {
+        insertData.organization_id = organization.id;
+      }
+
+      if (entityId) {
+        insertData.entity_id = entityId;
+      }
+
+      const { data, error } = await supabase
+        .from("activity_points")
+        .insert(insertData)
+        .select()
+        .single();
 
       if (error) throw error;
-      return data;
+
+      // Update streak
+      if (organization) {
+        await updateStreak(user.id, organization.id);
+      }
+
+      return { ...data, showToast, activityType, finalPoints };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      if (data.showToast) {
+        const actionLabels: Record<string, string> = {
+          lead_added: "Lead added",
+          contact_made: "Contact logged",
+          appointment_set: "Appointment set",
+          offer_made: "Offer sent",
+          deal_closed: "Deal closed",
+        };
+        const label = actionLabels[data.activityType] || data.activityType.replace("_", " ");
+        toast.success(`+${data.finalPoints} points`, { description: label, duration: 2000 });
+      }
+
       queryClient.invalidateQueries({ queryKey: ["activity-points"] });
       queryClient.invalidateQueries({ queryKey: ["user-stats"] });
       queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      queryClient.invalidateQueries({ queryKey: ["user-streak"] });
     },
   });
+}
+
+async function updateStreak(userId: string, organizationId: string) {
+  const today = new Date().toISOString().split("T")[0];
+
+  // Get existing streak record
+  const { data: existing } = await supabase
+    .from("user_streaks")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("organization_id", organizationId)
+    .single();
+
+  if (!existing) {
+    // Create new streak record
+    await supabase.from("user_streaks").insert({
+      user_id: userId,
+      organization_id: organizationId,
+      current_streak: 1,
+      longest_streak: 1,
+      last_activity_date: today,
+    } as any);
+    return;
+  }
+
+  const lastDate = existing.last_activity_date;
+  if (lastDate === today) return; // Already logged today
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+  let newStreak = 1;
+  if (lastDate === yesterdayStr) {
+    // Consecutive day
+    newStreak = (existing.current_streak || 0) + 1;
+  }
+
+  const longestStreak = Math.max(newStreak, existing.longest_streak || 0);
+
+  await supabase
+    .from("user_streaks")
+    .update({
+      current_streak: newStreak,
+      longest_streak: longestStreak,
+      last_activity_date: today,
+      updated_at: new Date().toISOString(),
+    } as any)
+    .eq("id", existing.id);
 }
 
 export function useAwardAchievement() {
@@ -320,9 +634,11 @@ export function useAwardAchievement() {
     mutationFn: async ({
       achievementId,
       dealId,
+      shareWithTeam = false,
     }: {
       achievementId: string;
       dealId?: string;
+      shareWithTeam?: boolean;
     }) => {
       if (!user?.id) throw new Error("Not authenticated");
 
@@ -334,7 +650,7 @@ export function useAwardAchievement() {
         .eq("achievement_id", achievementId)
         .single();
 
-      if (existing) return null; // Already earned
+      if (existing) return null;
 
       const { data, error } = await supabase.from("user_achievements").insert({
         user_id: user.id,
@@ -346,30 +662,30 @@ export function useAwardAchievement() {
       `).single();
 
       if (error) throw error;
-      return data;
+      return { ...data, shareWithTeam };
     },
     onSuccess: async (data) => {
       if (data) {
         const achievement = data.achievements as unknown as Achievement;
         
-        // Award bonus points
+        // Award bonus points (silent)
         await awardPoints.mutateAsync({
           activityType: "achievement_bonus",
           points: achievement.points,
           referenceId: data.id,
+          showToast: false,
         });
 
-        // Show celebration
-        toast.success(`Achievement Unlocked: ${achievement.name}!`, {
-          description: `+${achievement.points} points`,
-          duration: 5000,
-        });
-
-        // Confetti!
+        // Celebration!
         confetti({
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
+        });
+
+        toast.success(`Achievement Unlocked: ${achievement.name}!`, {
+          description: `+${achievement.points} points`,
+          duration: 5000,
         });
       }
 
@@ -382,6 +698,7 @@ export function useAwardAchievement() {
 
 export function useCheckAchievements() {
   const { user } = useAuth();
+  const { organization } = useOrganization();
   const { data: achievements } = useAchievements();
   const { data: userAchievements } = useUserAchievements();
   const awardAchievement = useAwardAchievement();
@@ -392,21 +709,22 @@ export function useCheckAchievements() {
     const earnedCodes = new Set(userAchievements.map((ua) => ua.achievement?.code));
 
     // Get user stats
-    const { count: dealsCount } = await supabase
+    let dealsQuery = supabase
       .from("properties")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("status", "closed");
 
-    const { data: pointsData } = await supabase
-      .from("activity_points")
-      .select("points")
-      .eq("user_id", user.id);
+    if (organization) {
+      dealsQuery = dealsQuery.eq("organization_id", organization.id);
+    }
+
+    const { count: dealsCount } = await dealsQuery;
 
     const { data: offersData } = await supabase
       .from("offers")
       .select("id")
-      .in("property_id", (await supabase.from("properties").select("id").eq("user_id", user.id)).data?.map(p => p.id) || []);
+      .eq("created_by", user.id);
 
     const { data: outreachData } = await supabase
       .from("outreach_log")
@@ -418,7 +736,7 @@ export function useCheckAchievements() {
     const totalContacts = outreachData?.length || 0;
 
     // Check deal milestones
-    const dealAchievements = [
+    const dealMilestones = [
       { code: "first_deal", threshold: 1 },
       { code: "5_deals", threshold: 5 },
       { code: "10_deals", threshold: 10 },
@@ -426,9 +744,9 @@ export function useCheckAchievements() {
       { code: "100_deals", threshold: 100 },
     ];
 
-    for (const da of dealAchievements) {
-      if (totalDeals >= da.threshold && !earnedCodes.has(da.code)) {
-        const achievement = achievements.find((a) => a.code === da.code);
+    for (const dm of dealMilestones) {
+      if (totalDeals >= dm.threshold && !earnedCodes.has(dm.code)) {
+        const achievement = achievements.find((a) => a.code === dm.code);
         if (achievement) {
           await awardAchievement.mutateAsync({ achievementId: achievement.id });
         }
@@ -454,11 +772,5 @@ export function useCheckAchievements() {
   return { checkAndAward };
 }
 
-// Activity point values
-export const POINT_VALUES = {
-  lead_added: 5,
-  contact_made: 10,
-  appointment_set: 25,
-  offer_sent: 20,
-  deal_closed: 100,
-};
+// Point values export for backward compatibility
+export const POINT_VALUES = DEFAULT_POINT_VALUES;
