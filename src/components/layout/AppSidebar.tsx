@@ -50,9 +50,8 @@ const topNavItems: NavItem[] = [
 ];
 
 const afterLeadsItems: NavItem[] = [
-  { label: "Offers", href: "/offers", icon: Send },
-  { label: "Financing", href: "/financing", icon: DollarSign },
   { label: "Marketplace", href: "/marketplace", icon: Store },
+  { label: "Financing", href: "/financing", icon: DollarSign },
 ];
 
 const leadsGroup: NavGroup = {
@@ -83,6 +82,7 @@ const marketingGroup: NavGroup = {
     { label: "Direct Mail", href: "/mail", icon: Mail },
     { label: "MLS", href: "/campaigns", icon: Megaphone },
     { label: "Website", href: "/marketing/website", icon: Globe },
+    { label: "Offers", href: "/offers", icon: Send },
   ],
 };
 
