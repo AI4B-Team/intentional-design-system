@@ -30,6 +30,8 @@ import {
   Camera,
   Save,
   Check,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 import { usePropertyComps, useDeleteComp } from "@/hooks/usePropertyComps";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
@@ -37,6 +39,18 @@ import { AddCompModal } from "./add-comp-modal";
 import { AddRepairModal } from "./add-repair-modal";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { AIAnalysisButton, AIBadge, ARVAnalysisModal, RepairEstimateModal, OfferRecommendationModal, ExitStrategyModal } from "@/components/ai";
+import {
+  calculateARV,
+  estimateRepairs,
+  generateOfferRecommendation,
+  analyzeExitStrategies,
+  type ARVAnalysis,
+  type RepairEstimate,
+  type OfferRecommendation,
+  type ExitStrategyAnalysis,
+  type PropertyAnalysisInput,
+} from "@/lib/ai-analysis";
 
 interface UnderwritingTabProps {
   property: {
@@ -100,6 +114,16 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
   
   // Repair items from property or local state
   const [repairItems, setRepairItems] = React.useState<RepairItem[]>([]);
+  
+  // AI Analysis state
+  const [arvAnalysis, setArvAnalysis] = React.useState<ARVAnalysis | null>(null);
+  const [repairAnalysis, setRepairAnalysis] = React.useState<RepairEstimate | null>(null);
+  const [offerAnalysis, setOfferAnalysis] = React.useState<OfferRecommendation | null>(null);
+  const [exitAnalysis, setExitAnalysis] = React.useState<ExitStrategyAnalysis | null>(null);
+  const [showArvModal, setShowArvModal] = React.useState(false);
+  const [showRepairModal, setShowRepairModal] = React.useState(false);
+  const [showOfferModal, setShowOfferModal] = React.useState(false);
+  const [showExitModal, setShowExitModal] = React.useState(false);
 
   // Initialize from property data
   React.useEffect(() => {
@@ -182,6 +206,71 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
     toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} MAO set to ${formatCurrency(value)}`);
   };
 
+  // Build AI analysis input
+  const buildAnalysisInput = (): PropertyAnalysisInput => ({
+    property: {
+      id: id || "",
+      address: property?.address || "",
+      city: property?.city,
+      state: property?.state,
+      zip: property?.zip,
+      beds: property?.beds,
+      baths: property?.baths,
+      sqft: property?.sqft,
+      year_built: property?.year_built,
+      property_type: property?.property_type,
+      estimated_value: property?.estimated_value ? Number(property.estimated_value) : undefined,
+      arv: arv,
+      repair_estimate: totalRepairs,
+      mortgage_balance: property?.mortgage_balance ? Number(property.mortgage_balance) : undefined,
+      equity_percent: property?.equity_percent ? Number(property.equity_percent) : undefined,
+      owner_name: property?.owner_name,
+      distress_signals: property?.distress_signals,
+      motivation_score: property?.motivation_score ? Number(property.motivation_score) : undefined,
+    },
+    comps: comps?.map(c => ({
+      id: c.id,
+      comp_address: c.comp_address,
+      sale_price: c.sale_price ? Number(c.sale_price) : null,
+      sqft: c.sqft,
+      beds: c.beds,
+      baths: c.baths,
+      sale_date: c.sale_date,
+      distance_miles: c.distance_miles ? Number(c.distance_miles) : null,
+      adjusted_value: c.adjusted_value ? Number(c.adjusted_value) : null,
+      adjustments: c.adjustments,
+      rating: c.rating,
+    })),
+  });
+
+  const handleRunARVAnalysis = async () => {
+    const input = buildAnalysisInput();
+    const result = await calculateARV(input);
+    setArvAnalysis(result);
+    setShowArvModal(true);
+  };
+
+  const handleRunRepairAnalysis = async () => {
+    const input = buildAnalysisInput();
+    const result = await estimateRepairs(input);
+    setRepairAnalysis(result);
+    setShowRepairModal(true);
+  };
+
+  const handleRunOfferAnalysis = async () => {
+    const input = buildAnalysisInput();
+    const result = await generateOfferRecommendation(input);
+    setOfferAnalysis(result);
+    setShowOfferModal(true);
+  };
+
+  const handleRunExitAnalysis = async () => {
+    const input = buildAnalysisInput();
+    const result = await analyzeExitStrategies(input, {});
+    setExitAnalysis(result);
+    setShowExitModal(true);
+  };
+
   if (propertyLoading) {
     return (
       <div className="p-lg space-y-lg">
@@ -207,9 +296,11 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
             <span className="text-display font-semibold text-foreground tabular-nums">
               {arv ? formatCurrency(arv) : "Not Set"}
             </span>
-            <Button variant="secondary" size="sm" icon={<Sparkles />}>
-              Run AI Analysis
-            </Button>
+            <AIAnalysisButton 
+              onClick={handleRunARVAnalysis} 
+              label="AI ARV Analysis"
+              showBadge={false}
+            />
             <Button variant="ghost" size="sm" icon={<Plus />} onClick={() => setShowAddCompModal(true)}>
               Add Comp
             </Button>
@@ -340,9 +431,12 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
             <span className="text-display font-semibold text-foreground tabular-nums">
               {formatCurrency(totalRepairs)}
             </span>
-            <Button variant="secondary" size="sm" icon={<Camera />}>
-              AI Estimate from Photos
-            </Button>
+            <AIAnalysisButton 
+              onClick={handleRunRepairAnalysis} 
+              label="AI Estimate"
+              showBadge={false}
+              icon={<Camera />}
+            />
             <Button variant="ghost" size="sm" icon={<Plus />} onClick={() => { setEditingRepair(null); setShowAddRepairModal(true); }}>
               Add Item
             </Button>
@@ -440,8 +534,22 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
 
       {/* MAO Calculator Section */}
       <Card variant="default" padding="none">
-        <CardHeader className="p-4 pb-0">
+        <CardHeader className="flex flex-row items-center justify-between p-4 pb-0 flex-wrap gap-3">
           <CardTitle className="text-h3 font-medium">Maximum Allowable Offer (MAO)</CardTitle>
+          <div className="flex items-center gap-2">
+            <AIAnalysisButton 
+              onClick={handleRunOfferAnalysis} 
+              label="AI Offer Analysis"
+              showBadge={false}
+              icon={<Target />}
+            />
+            <AIAnalysisButton 
+              onClick={handleRunExitAnalysis} 
+              label="Exit Strategies"
+              showBadge={false}
+              icon={<TrendingUp />}
+            />
+          </div>
         </CardHeader>
         <CardContent className="p-4">
           {/* Input Fields */}
@@ -583,6 +691,28 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
         onOpenChange={setShowAddRepairModal}
         onAdd={handleAddRepair}
         editingRepair={editingRepair}
+      />
+      
+      {/* AI Analysis Modals */}
+      <ARVAnalysisModal 
+        isOpen={showArvModal}
+        onClose={() => setShowArvModal(false)}
+        data={arvAnalysis}
+      />
+      <RepairEstimateModal
+        isOpen={showRepairModal}
+        onClose={() => setShowRepairModal(false)}
+        data={repairAnalysis}
+      />
+      <OfferRecommendationModal
+        isOpen={showOfferModal}
+        onClose={() => setShowOfferModal(false)}
+        data={offerAnalysis}
+      />
+      <ExitStrategyModal
+        isOpen={showExitModal}
+        onClose={() => setShowExitModal(false)}
+        data={exitAnalysis}
       />
     </div>
   );
