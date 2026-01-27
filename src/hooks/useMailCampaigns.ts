@@ -208,6 +208,39 @@ export function useDeleteMailTemplate() {
     },
   });
 }
+// Mail Campaign Stats (aggregated)
+export function useMailCampaignStats() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["mail-campaign-stats", user?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("mail_campaigns")
+        .select("total_sent, total_delivered, total_returned, total_responses, total_cost");
+
+      if (error) throw error;
+
+      const stats = (data || []).reduce(
+        (acc, campaign) => ({
+          totalSent: acc.totalSent + (campaign.total_sent || 0),
+          totalDelivered: acc.totalDelivered + (campaign.total_delivered || 0),
+          totalReturned: acc.totalReturned + (campaign.total_returned || 0),
+          totalResponses: acc.totalResponses + (campaign.total_responses || 0),
+          totalSpend: acc.totalSpend + (campaign.total_cost || 0),
+        }),
+        { totalSent: 0, totalDelivered: 0, totalReturned: 0, totalResponses: 0, totalSpend: 0 }
+      );
+
+      return {
+        ...stats,
+        deliveryRate: stats.totalSent > 0 ? (stats.totalDelivered / stats.totalSent) * 100 : 0,
+        responseRate: stats.totalDelivered > 0 ? (stats.totalResponses / stats.totalDelivered) * 100 : 0,
+      };
+    },
+    enabled: !!user,
+  });
+}
 
 // Mail Campaigns
 export function useMailCampaigns() {
