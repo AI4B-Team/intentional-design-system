@@ -47,35 +47,47 @@ function StatCard({ title, value, trend, icon: Icon, iconBg, isLoading, invertTr
 
   if (isLoading) {
     return (
-      <Card variant="default" padding="md">
+      <Card variant="default" padding="md" className="animate-pulse">
         <div className="flex items-start justify-between">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-8 w-16" />
-            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-9 w-20" />
+            <Skeleton className="h-4 w-28" />
           </div>
-          <Skeleton className="h-10 w-10 rounded-lg" />
+          <Skeleton className="h-12 w-12 rounded-xl" />
         </div>
       </Card>
     );
   }
 
   return (
-    <Card variant="default" padding="md" className="hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-small text-muted-foreground font-medium">{title}</p>
-          <p className="text-h1 font-bold text-foreground mt-1 tabular-nums">{value}</p>
+    <Card 
+      variant="default" 
+      padding="md" 
+      className="group relative overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+    >
+      {/* Subtle gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <div className="relative flex items-start justify-between">
+        <div className="space-y-1">
+          <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+          <p className="text-[2rem] font-bold text-foreground tabular-nums leading-tight">{value.toLocaleString()}</p>
           <div className={cn(
-            "flex items-center gap-1 text-small mt-1",
-            isPositive ? "text-success" : "text-destructive"
+            "inline-flex items-center gap-1.5 text-small font-medium px-2 py-0.5 rounded-full",
+            isPositive 
+              ? "text-success bg-success/10" 
+              : "text-destructive bg-destructive/10"
           )}>
-            <TrendIcon className="h-3 w-3" />
-            <span>{trend > 0 ? "+" : ""}{trend}% vs last period</span>
+            <TrendIcon className="h-3.5 w-3.5" />
+            <span>{trend > 0 ? "+" : ""}{trend}%</span>
           </div>
         </div>
-        <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", iconBg)}>
-          <Icon className="h-5 w-5 text-white" />
+        <div className={cn(
+          "h-12 w-12 rounded-xl flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-105",
+          iconBg
+        )}>
+          <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
     </Card>
@@ -122,21 +134,21 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
 
   return (
     <div 
-      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-medium cursor-pointer transition-colors group"
+      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group hover:shadow-sm"
       onClick={onClick}
     >
       {/* Score Badge */}
       <div className={cn(
-        "flex items-center gap-1 px-2 py-1 rounded-full text-tiny font-semibold min-w-[52px] justify-center",
+        "flex items-center gap-1 px-2.5 py-1 rounded-full text-tiny font-bold min-w-[56px] justify-center shadow-sm transition-transform duration-150 group-hover:scale-105",
         scoreColor
       )}>
-        {score > 800 && <Flame className="h-3 w-3" />}
+        {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
         {score}
       </div>
 
       {/* Address */}
       <div className="flex-1 min-w-0">
-        <p className="text-small font-medium text-foreground truncate">
+        <p className="text-small font-medium text-foreground truncate group-hover:text-primary transition-colors">
           {opportunity.address}
         </p>
         <p className="text-tiny text-muted-foreground">
@@ -146,31 +158,31 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
 
       {/* Days Since Contact */}
       {daysSinceUpdate !== null && (
-        <div className="text-tiny text-muted-foreground whitespace-nowrap">
-          {daysSinceUpdate === 0 ? "Today" : daysSinceUpdate === 1 ? "1 day" : `${daysSinceUpdate} days`}
+        <div className="text-tiny text-muted-foreground whitespace-nowrap tabular-nums">
+          {daysSinceUpdate === 0 ? "Today" : daysSinceUpdate === 1 ? "1 day" : `${daysSinceUpdate}d`}
         </div>
       )}
 
       {/* Status */}
-      <span className={cn("px-2 py-0.5 rounded-full text-tiny font-medium capitalize", statusColor)}>
+      <span className={cn("px-2 py-0.5 rounded-full text-tiny font-medium capitalize transition-all duration-150", statusColor)}>
         {(opportunity.status || "new").replace("_", " ")}
       </span>
 
       {/* Quick Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0">
         <button 
           onClick={onCall}
-          className="p-1.5 hover:bg-background-tertiary rounded-small transition-colors"
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
           title="Call"
         >
-          <Phone className="h-4 w-4 text-muted-foreground" />
+          <Phone className="h-4 w-4" />
         </button>
         <button 
           onClick={onEmail}
-          className="p-1.5 hover:bg-background-tertiary rounded-small transition-colors"
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
           title="Email"
         >
-          <Mail className="h-4 w-4 text-muted-foreground" />
+          <Mail className="h-4 w-4" />
         </button>
       </div>
     </div>
@@ -192,20 +204,27 @@ interface PipelineStageProps {
 
 function PipelineStage({ stage, total, previousCount, onClick }: PipelineStageProps) {
   const conversionRate = previousCount > 0 ? Math.round((stage.count / previousCount) * 100) : 0;
+  const percentage = total > 0 ? Math.round((stage.count / total) * 100) : 0;
 
   return (
     <div 
-      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-medium cursor-pointer transition-colors"
+      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group"
       onClick={onClick}
     >
-      <div className={cn("w-3 h-3 rounded-full", stage.color)} />
+      <div className={cn("w-3 h-3 rounded-full shadow-sm transition-transform duration-150 group-hover:scale-125", stage.color)} />
       <div className="flex-1">
-        <p className="text-small font-medium text-foreground">{stage.label}</p>
+        <p className="text-small font-medium text-foreground group-hover:text-primary transition-colors">{stage.label}</p>
       </div>
-      <div className="text-right">
-        <p className="text-body font-semibold text-foreground tabular-nums">{stage.count}</p>
-        {previousCount > 0 && (
-          <p className="text-tiny text-muted-foreground">{conversionRate}% conv.</p>
+      <div className="text-right flex items-center gap-3">
+        <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
+          <div 
+            className={cn("h-full rounded-full transition-all duration-300", stage.color)} 
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+        <p className="text-body font-bold text-foreground tabular-nums w-8 text-right">{stage.count}</p>
+        {previousCount > 0 && conversionRate > 0 && (
+          <p className="text-tiny text-muted-foreground w-12 text-right">{conversionRate}%</p>
         )}
       </div>
     </div>
@@ -230,31 +249,47 @@ function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
   const Icon = task.type === "appointment" ? CalendarCheck : Phone;
 
   return (
-    <div className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-medium transition-colors group">
+    <div className={cn(
+      "flex items-center gap-3 p-3 rounded-lg transition-all duration-150 group",
+      task.completed 
+        ? "bg-background-secondary/50" 
+        : "hover:bg-background-secondary hover:shadow-sm"
+    )}>
       <Checkbox 
         checked={task.completed}
         onCheckedChange={() => onToggle(task.id)}
-        className="h-5 w-5"
+        className="h-5 w-5 transition-transform duration-150 hover:scale-110"
       />
-      <Icon className={cn(
-        "h-4 w-4",
-        task.type === "appointment" ? "text-warning" : "text-info"
-      )} />
+      <div className={cn(
+        "p-1.5 rounded-md transition-all duration-150",
+        task.completed ? "opacity-50" : "",
+        task.type === "appointment" ? "bg-warning/10" : "bg-info/10"
+      )}>
+        <Icon className={cn(
+          "h-4 w-4",
+          task.type === "appointment" ? "text-warning" : "text-info"
+        )} />
+      </div>
       <div className="flex-1 min-w-0 cursor-pointer" onClick={onClick}>
         <p className={cn(
-          "text-small font-medium truncate",
-          task.completed ? "text-muted-foreground line-through" : "text-foreground"
+          "text-small font-medium truncate transition-colors",
+          task.completed 
+            ? "text-muted-foreground line-through" 
+            : "text-foreground group-hover:text-primary"
         )}>
           {task.title}
         </p>
       </div>
       {task.time && (
-        <div className="flex items-center gap-1 text-tiny text-muted-foreground">
+        <div className={cn(
+          "flex items-center gap-1.5 text-tiny px-2 py-0.5 rounded-full",
+          task.completed ? "text-muted-foreground" : "text-muted-foreground bg-background-secondary"
+        )}>
           <Clock className="h-3 w-3" />
           {task.time}
         </div>
       )}
-      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" onClick={onClick} />
+      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0 cursor-pointer" onClick={onClick} />
     </div>
   );
 }
@@ -284,17 +319,17 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 
   return (
     <div 
-      className="flex items-start gap-3 p-3 hover:bg-background-secondary rounded-medium cursor-pointer transition-colors group"
+      className="flex items-start gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group"
       onClick={onClick}
     >
-      <div className={cn("p-2 rounded-full", color)}>
+      <div className={cn("p-2 rounded-lg shadow-sm transition-transform duration-150 group-hover:scale-105", color)}>
         <Icon className="h-3.5 w-3.5" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-small text-foreground line-clamp-2">{activity.description}</p>
-        <p className="text-tiny text-muted-foreground mt-0.5">{activity.relativeTime}</p>
+        <p className="text-small text-foreground line-clamp-2 group-hover:text-primary transition-colors">{activity.description}</p>
+        <p className="text-tiny text-muted-foreground mt-1">{activity.relativeTime}</p>
       </div>
-      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1" />
+      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-150 mt-1 translate-x-2 group-hover:translate-x-0" />
     </div>
   );
 }
@@ -339,16 +374,18 @@ export default function Dashboard() {
 
   return (
     <AppLayout>
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-h1 font-bold text-foreground">Dashboard</h1>
-        <p className="text-body text-muted-foreground mt-1">
+      {/* Greeting Header */}
+      <div className="mb-8">
+        <p className="text-small text-muted-foreground font-medium">
           {format(new Date(), "EEEE, MMMM d, yyyy")}
         </p>
+        <h1 className="text-h1 font-bold text-foreground mt-1">
+          Welcome back 👋
+        </h1>
       </div>
 
       {/* Top Row - Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           title="Active Leads"
           value={stats?.activeLeads.count || 0}
@@ -385,16 +422,19 @@ export default function Dashboard() {
       </div>
 
       {/* Middle Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Hot Opportunities */}
-        <Card variant="default" padding="none">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
-            <div className="flex items-center gap-2">
-              <Flame className="h-5 w-5 text-destructive" />
-              <h2 className="text-h3 font-semibold text-foreground">Hot Opportunities</h2>
+        <Card variant="default" padding="none" className="overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-gradient-to-r from-destructive/5 to-transparent">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-destructive/10">
+                <Flame className="h-4 w-4 text-destructive" />
+              </div>
+              <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => navigate("/properties")}>
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => navigate("/properties")}>
               View All
+              <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
           <div className="max-h-[400px] overflow-y-auto">
@@ -432,15 +472,17 @@ export default function Dashboard() {
         </Card>
 
         {/* Pipeline Overview */}
-        <Card variant="default" padding="none">
+        <Card variant="default" padding="none" className="overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border-subtle">
-            <h2 className="text-h3 font-semibold text-foreground">Pipeline Overview</h2>
-            <span className="text-small text-muted-foreground">{totalPipeline} total</span>
+            <h2 className="text-body font-semibold text-foreground">Pipeline Overview</h2>
+            <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
+              {totalPipeline} total
+            </span>
           </div>
           {pipelineLoading ? (
             <div className="p-4 space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3">
+                <div key={i} className="flex items-center gap-3 animate-pulse">
                   <Skeleton className="h-3 w-3 rounded-full" />
                   <Skeleton className="h-4 w-24" />
                   <div className="flex-1" />
@@ -464,11 +506,11 @@ export default function Dashboard() {
           {/* Visual Bar */}
           {!pipelineLoading && totalPipeline > 0 && (
             <div className="px-4 pb-4">
-              <div className="flex h-3 rounded-full overflow-hidden bg-background-tertiary">
+              <div className="flex h-2.5 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
                 {pipelineStats?.map((stage) => (
                   <div
                     key={stage.status}
-                    className={cn("transition-all", stage.color)}
+                    className={cn("transition-all duration-500", stage.color)}
                     style={{ width: `${(stage.count / totalPipeline) * 100}%` }}
                   />
                 ))}
@@ -481,13 +523,15 @@ export default function Dashboard() {
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Tasks */}
-        <Card variant="default" padding="none">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-accent" />
-              <h2 className="text-h3 font-semibold text-foreground">Today's Tasks</h2>
+        <Card variant="default" padding="none" className="overflow-hidden">
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-gradient-to-r from-accent/5 to-transparent">
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-accent/10">
+                <Calendar className="h-4 w-4 text-accent" />
+              </div>
+              <h2 className="text-body font-semibold text-foreground">Today's Tasks</h2>
             </div>
-            <span className="text-small text-muted-foreground">
+            <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
               {todaysTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} remaining
             </span>
           </div>
@@ -495,7 +539,7 @@ export default function Dashboard() {
             {tasksLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-3">
+                  <div key={i} className="flex items-center gap-3 animate-pulse">
                     <Skeleton className="h-5 w-5 rounded" />
                     <Skeleton className="h-4 w-4" />
                     <div className="flex-1 space-y-1">
@@ -507,8 +551,9 @@ export default function Dashboard() {
               </div>
             ) : todaysTasks?.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                <CheckCircle className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p>No tasks for today</p>
+                <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">All caught up!</p>
+                <p className="text-tiny mt-1">No tasks for today</p>
               </div>
             ) : (
               <div className="p-2">
@@ -529,19 +574,21 @@ export default function Dashboard() {
         </Card>
 
         {/* Recent Activity */}
-        <Card variant="default" padding="none">
+        <Card variant="default" padding="none" className="overflow-hidden">
           <div className="flex items-center justify-between p-4 border-b border-border-subtle">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-muted-foreground" />
-              <h2 className="text-h3 font-semibold text-foreground">Recent Activity</h2>
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-muted">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <h2 className="text-body font-semibold text-foreground">Recent Activity</h2>
             </div>
           </div>
           <div className="max-h-[320px] overflow-y-auto">
             {activityLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full" />
+                  <div key={i} className="flex items-start gap-3 animate-pulse">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
                     <div className="flex-1 space-y-2">
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-3 w-20" />
@@ -551,8 +598,9 @@ export default function Dashboard() {
               </div>
             ) : recentActivity?.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                <Clock className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p>No recent activity</p>
+                <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p className="font-medium">No activity yet</p>
+                <p className="text-tiny mt-1">Start adding properties to see activity</p>
               </div>
             ) : (
               <div className="p-2">
