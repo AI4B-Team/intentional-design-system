@@ -1,31 +1,13 @@
-import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { MarketplaceDeal } from "@/hooks/useMockDeals";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { SegmentedControl } from "@/components/ui/segmented-control";
-import { Layers, ChevronDown } from "lucide-react";
+import { Layers, ChevronDown, MapPin } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Custom price marker icon
-const createPriceIcon = (price: number) => {
-  const formattedPrice = price >= 1000000 
-    ? `${(price / 1000000).toFixed(1)}M` 
-    : `${Math.round(price / 1000)}K`;
-  
-  return L.divIcon({
-    className: "custom-price-marker",
-    html: `<div class="price-marker">${formattedPrice}</div>`,
-    iconSize: [60, 28],
-    iconAnchor: [30, 28],
-  });
-};
+import { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface MarketplaceMapProps {
   deals: MarketplaceDeal[];
@@ -33,9 +15,84 @@ interface MarketplaceMapProps {
 
 export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [mapType, setMapType] = useState<"map" | "satellite">("map");
+  const [isMapReady, setIsMapReady] = useState(false);
+  const [MapComponents, setMapComponents] = useState<{
+    MapContainer: React.ComponentType<any>;
+    TileLayer: React.ComponentType<any>;
+    Marker: React.ComponentType<any>;
+    Popup: React.ComponentType<any>;
+    L: typeof import("leaflet");
+  } | null>(null);
 
   // Center of Florida
   const defaultCenter: [number, number] = [27.9944, -81.7603];
+
+  // Dynamically load leaflet and react-leaflet
+  useEffect(() => {
+    let mounted = true;
+
+    const loadMap = async () => {
+      try {
+        // Import leaflet CSS first
+        await import("leaflet/dist/leaflet.css");
+        
+        // Import leaflet and react-leaflet
+        const [leaflet, reactLeaflet] = await Promise.all([
+          import("leaflet"),
+          import("react-leaflet"),
+        ]);
+
+        if (mounted) {
+          setMapComponents({
+            MapContainer: reactLeaflet.MapContainer,
+            TileLayer: reactLeaflet.TileLayer,
+            Marker: reactLeaflet.Marker,
+            Popup: reactLeaflet.Popup,
+            L: leaflet.default,
+          });
+          setIsMapReady(true);
+        }
+      } catch (error) {
+        console.error("Failed to load map components:", error);
+      }
+    };
+
+    loadMap();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // Create price marker icon
+  const createPriceIcon = (price: number) => {
+    if (!MapComponents?.L) return undefined;
+    
+    const formattedPrice = price >= 1000000 
+      ? `${(price / 1000000).toFixed(1)}M` 
+      : `${Math.round(price / 1000)}K`;
+    
+    return MapComponents.L.divIcon({
+      className: "custom-price-marker",
+      html: `<div class="price-marker">${formattedPrice}</div>`,
+      iconSize: [60, 28],
+      iconAnchor: [30, 28],
+    });
+  };
+
+  // Loading state
+  if (!isMapReady || !MapComponents) {
+    return (
+      <div className="h-full w-full flex items-center justify-center bg-muted/30">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <MapPin className="h-10 w-10 animate-pulse" />
+          <p className="text-sm">Loading map...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { MapContainer, TileLayer, Marker, Popup } = MapComponents;
 
   return (
     <div className="relative h-full">
@@ -92,7 +149,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         zoomControl={true}
       >
         <TileLayer
-          attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url={
             mapType === "satellite"
               ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
