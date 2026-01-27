@@ -391,6 +391,56 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_checks: {
+        Row: {
+          check_type: string
+          created_at: string | null
+          deal_terms: Json | null
+          errors: string[] | null
+          id: string
+          passed: boolean | null
+          property_id: string | null
+          required_disclosures: string[] | null
+          state: string
+          user_id: string
+          warnings: string[] | null
+        }
+        Insert: {
+          check_type: string
+          created_at?: string | null
+          deal_terms?: Json | null
+          errors?: string[] | null
+          id?: string
+          passed?: boolean | null
+          property_id?: string | null
+          required_disclosures?: string[] | null
+          state: string
+          user_id: string
+          warnings?: string[] | null
+        }
+        Update: {
+          check_type?: string
+          created_at?: string | null
+          deal_terms?: Json | null
+          errors?: string[] | null
+          id?: string
+          passed?: boolean | null
+          property_id?: string | null
+          required_disclosures?: string[] | null
+          state?: string
+          user_id?: string
+          warnings?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_checks_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comps: {
         Row: {
           adjusted_value: number | null
@@ -1591,6 +1641,60 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      state_regulations: {
+        Row: {
+          created_at: string | null
+          foreclosure_type: string | null
+          id: string
+          land_contract_restrictions: string | null
+          last_updated: string | null
+          lease_option_restrictions: string | null
+          licensing_requirements: string | null
+          max_interest_rate: number | null
+          notes: string | null
+          redemption_period_days: number | null
+          required_disclosures: string[] | null
+          seller_financing_restrictions: string | null
+          state_code: string
+          state_name: string
+          usury_exemptions: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          foreclosure_type?: string | null
+          id?: string
+          land_contract_restrictions?: string | null
+          last_updated?: string | null
+          lease_option_restrictions?: string | null
+          licensing_requirements?: string | null
+          max_interest_rate?: number | null
+          notes?: string | null
+          redemption_period_days?: number | null
+          required_disclosures?: string[] | null
+          seller_financing_restrictions?: string | null
+          state_code: string
+          state_name: string
+          usury_exemptions?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          foreclosure_type?: string | null
+          id?: string
+          land_contract_restrictions?: string | null
+          last_updated?: string | null
+          lease_option_restrictions?: string | null
+          licensing_requirements?: string | null
+          max_interest_rate?: number | null
+          notes?: string | null
+          redemption_period_days?: number | null
+          required_disclosures?: string[] | null
+          seller_financing_restrictions?: string | null
+          state_code?: string
+          state_name?: string
+          usury_exemptions?: string | null
+        }
+        Relationships: []
       }
       title_reports: {
         Row: {
