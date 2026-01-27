@@ -34,6 +34,8 @@ import {
   OfferWizardModal,
   DispositionTab,
 } from "@/components/properties/property-detail";
+import { AVMCard } from "@/components/properties/property-detail/avm-card";
+import { RefreshDataModal } from "@/components/properties/property-detail/refresh-data-modal";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import {
   ArrowLeft,
@@ -49,6 +51,7 @@ import {
   Phone,
   Calendar,
   Pencil,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -150,6 +153,7 @@ export default function PropertyDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState("overview");
   const [showOfferWizard, setShowOfferWizard] = React.useState(false);
+  const [showRefreshModal, setShowRefreshModal] = React.useState(false);
 
   const { data: property, isLoading, error } = useProperty(id);
   const updateProperty = useUpdateProperty();
@@ -367,7 +371,11 @@ export default function PropertyDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 bg-white">
+              <DropdownMenuContent align="end" className="w-48 bg-white">
+                <DropdownMenuItem onClick={() => setShowRefreshModal(true)}>
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Property Data
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Copy className="h-4 w-4 mr-2" />
                   Duplicate
@@ -469,6 +477,26 @@ export default function PropertyDetail() {
           maoStandard: property.mao_standard ? Number(property.mao_standard) : undefined,
           maoAggressive: property.mao_aggressive ? Number(property.mao_aggressive) : undefined,
           maoConservative: property.mao_conservative ? Number(property.mao_conservative) : undefined,
+        }}
+      />
+
+      {/* Refresh Data Modal */}
+      <RefreshDataModal
+        open={showRefreshModal}
+        onOpenChange={setShowRefreshModal}
+        propertyId={property.id}
+        currentData={{
+          address: property.address,
+          city: property.city,
+          state: property.state,
+          zip: property.zip,
+          beds: property.beds,
+          baths: property.baths,
+          sqft: property.sqft,
+          year_built: property.year_built,
+          owner_name: property.owner_name,
+          assessed_value: (property as any).assessed_value,
+          tax_amount: (property as any).tax_amount,
         }}
       />
     </DashboardLayout>

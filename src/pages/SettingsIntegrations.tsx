@@ -64,6 +64,7 @@ import {
   type BotMappings,
   type TriggerSettings,
 } from "@/hooks/useClosebotIntegration";
+import { AttomSettingsSection } from "@/components/settings/attom-settings-section";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
 import { useBulkSyncToGHL, useUnsyncedPropertiesCount } from "@/lib/ghl-sync";
@@ -1331,6 +1332,9 @@ export default function SettingsIntegrations() {
 
         {/* Closebot.ai Integration Card */}
         <ClosebotSection />
+
+        {/* ATTOM Property Data Integration */}
+        <AttomSettingsSection />
 
         {/* Placeholder for future integrations */}
         <Card variant="default" padding="md" className="opacity-60">
