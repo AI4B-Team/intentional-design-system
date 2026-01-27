@@ -15,6 +15,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Send,
   X,
   Inbox,
 } from "lucide-react";
@@ -29,6 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Properties", href: "/properties", icon: Building2 },
+  { label: "Offers", href: "/offers", icon: Send },
   { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
   { label: "Deal Sources", href: "/deal-sources", icon: Users },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
