@@ -54,7 +54,11 @@ import {
   DealSourceDealsTab,
   DealSourceOutreachTab,
   DealSourcePerformanceTab,
+  LendingTermsTab,
+  ActiveLoansTab,
+  LoanHistoryTab,
 } from "@/components/deal-sources/deal-source-detail";
+import type { LendingCriteria } from "@/hooks/useLenderLoans";
 
 const typeColors: Record<string, string> = {
   agent: "bg-info/10 text-info",
@@ -288,6 +292,13 @@ export default function DealSourceDetail() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
+            {source.type === "lender" && (
+              <>
+                <TabsTrigger value="lending-terms">Lending Terms</TabsTrigger>
+                <TabsTrigger value="active-loans">Active Loans</TabsTrigger>
+                <TabsTrigger value="loan-history">Loan History</TabsTrigger>
+              </>
+            )}
             <TabsTrigger value="deals">Deals</TabsTrigger>
             <TabsTrigger value="outreach">Outreach</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
@@ -297,6 +308,22 @@ export default function DealSourceDetail() {
             <TabsContent value="overview" className="mt-0">
               <DealSourceOverviewTab source={source} />
             </TabsContent>
+            {source.type === "lender" && (
+              <>
+                <TabsContent value="lending-terms" className="mt-0">
+                  <LendingTermsTab
+                    sourceId={source.id}
+                    criteria={(source.lending_criteria as LendingCriteria) || null}
+                  />
+                </TabsContent>
+                <TabsContent value="active-loans" className="mt-0">
+                  <ActiveLoansTab lenderId={source.id} lenderName={source.name} />
+                </TabsContent>
+                <TabsContent value="loan-history" className="mt-0">
+                  <LoanHistoryTab lenderId={source.id} />
+                </TabsContent>
+              </>
+            )}
             <TabsContent value="deals" className="mt-0">
               <DealSourceDealsTab sourceId={source.id} sourceName={source.name} />
             </TabsContent>
