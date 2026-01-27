@@ -149,6 +149,33 @@ export type Database = {
           },
         ]
       }
+      api_pricing: {
+        Row: {
+          cost_to_us: number
+          id: string
+          is_active: boolean | null
+          price_to_user: number
+          service: string
+          updated_at: string | null
+        }
+        Insert: {
+          cost_to_us: number
+          id?: string
+          is_active?: boolean | null
+          price_to_user: number
+          service: string
+          updated_at?: string | null
+        }
+        Update: {
+          cost_to_us?: number
+          id?: string
+          is_active?: boolean | null
+          price_to_user?: number
+          service?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_type: string | null
@@ -914,6 +941,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contractors_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_transactions: {
+        Row: {
+          amount: number
+          balance_after: number
+          created_at: string | null
+          description: string | null
+          id: string
+          organization_id: string | null
+          reference_id: string | null
+          service: string | null
+          stripe_payment_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance_after: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          organization_id?: string | null
+          reference_id?: string | null
+          service?: string | null
+          stripe_payment_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance_after?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          organization_id?: string | null
+          reference_id?: string | null
+          service?: string | null
+          stripe_payment_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_transactions_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -2732,11 +2809,15 @@ export type Database = {
           owner_mailing_address: string | null
           owner_name: string | null
           owner_phone: string | null
+          phone_dnc: boolean | null
           property_type: string | null
           rent_confidence: string | null
           rent_data_source: string | null
           repair_details: Json | null
           repair_estimate: number | null
+          skip_trace_id: string | null
+          skip_traced: boolean | null
+          skip_traced_at: string | null
           source: string | null
           source_id: string | null
           sqft: number | null
@@ -2797,11 +2878,15 @@ export type Database = {
           owner_mailing_address?: string | null
           owner_name?: string | null
           owner_phone?: string | null
+          phone_dnc?: boolean | null
           property_type?: string | null
           rent_confidence?: string | null
           rent_data_source?: string | null
           repair_details?: Json | null
           repair_estimate?: number | null
+          skip_trace_id?: string | null
+          skip_traced?: boolean | null
+          skip_traced_at?: string | null
           source?: string | null
           source_id?: string | null
           sqft?: number | null
@@ -2862,11 +2947,15 @@ export type Database = {
           owner_mailing_address?: string | null
           owner_name?: string | null
           owner_phone?: string | null
+          phone_dnc?: boolean | null
           property_type?: string | null
           rent_confidence?: string | null
           rent_data_source?: string | null
           repair_details?: Json | null
           repair_estimate?: number | null
+          skip_trace_id?: string | null
+          skip_traced?: boolean | null
+          skip_traced_at?: string | null
           source?: string | null
           source_id?: string | null
           sqft?: number | null
@@ -2887,6 +2976,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "properties_skip_trace_id_fkey"
+            columns: ["skip_trace_id"]
+            isOneToOne: false
+            referencedRelation: "skip_trace_results"
             referencedColumns: ["id"]
           },
           {
@@ -2947,6 +3043,111 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "rent_comps_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skip_trace_results: {
+        Row: {
+          all_addresses: Json | null
+          all_emails: Json | null
+          all_phones: Json | null
+          bankruptcy: boolean | null
+          created_at: string | null
+          credit_cost: number
+          deceased: boolean | null
+          error_message: string | null
+          id: string
+          input_address: string | null
+          input_city: string | null
+          input_first_name: string | null
+          input_last_name: string | null
+          input_state: string | null
+          input_zip: string | null
+          organization_id: string | null
+          primary_email: string | null
+          primary_email_score: number | null
+          primary_phone: string | null
+          primary_phone_dnc: boolean | null
+          primary_phone_score: number | null
+          primary_phone_type: string | null
+          primary_phone_verified: boolean | null
+          property_id: string | null
+          relatives: Json | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          all_addresses?: Json | null
+          all_emails?: Json | null
+          all_phones?: Json | null
+          bankruptcy?: boolean | null
+          created_at?: string | null
+          credit_cost: number
+          deceased?: boolean | null
+          error_message?: string | null
+          id?: string
+          input_address?: string | null
+          input_city?: string | null
+          input_first_name?: string | null
+          input_last_name?: string | null
+          input_state?: string | null
+          input_zip?: string | null
+          organization_id?: string | null
+          primary_email?: string | null
+          primary_email_score?: number | null
+          primary_phone?: string | null
+          primary_phone_dnc?: boolean | null
+          primary_phone_score?: number | null
+          primary_phone_type?: string | null
+          primary_phone_verified?: boolean | null
+          property_id?: string | null
+          relatives?: Json | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          all_addresses?: Json | null
+          all_emails?: Json | null
+          all_phones?: Json | null
+          bankruptcy?: boolean | null
+          created_at?: string | null
+          credit_cost?: number
+          deceased?: boolean | null
+          error_message?: string | null
+          id?: string
+          input_address?: string | null
+          input_city?: string | null
+          input_first_name?: string | null
+          input_last_name?: string | null
+          input_state?: string | null
+          input_zip?: string | null
+          organization_id?: string | null
+          primary_email?: string | null
+          primary_email_score?: number | null
+          primary_phone?: string | null
+          primary_phone_dnc?: boolean | null
+          primary_phone_score?: number | null
+          primary_phone_type?: string | null
+          primary_phone_verified?: boolean | null
+          property_id?: string | null
+          relatives?: Json | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skip_trace_results_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skip_trace_results_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
@@ -3103,6 +3304,47 @@ export type Database = {
           },
         ]
       }
+      user_credits: {
+        Row: {
+          balance: number | null
+          created_at: string | null
+          id: string
+          lifetime_purchased: number | null
+          lifetime_used: number | null
+          organization_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_purchased?: number | null
+          lifetime_used?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          created_at?: string | null
+          id?: string
+          lifetime_purchased?: number | null
+          lifetime_used?: number | null
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_credits_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_streaks: {
         Row: {
           created_at: string | null
@@ -3149,6 +3391,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_stripe_payment_id?: string
+          p_type?: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      deduct_credits: {
+        Args: {
+          p_amount: number
+          p_description: string
+          p_reference_id?: string
+          p_service: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       get_user_organization: { Args: never; Returns: string }
       get_user_role: { Args: never; Returns: string }
       is_org_member: { Args: { org_id: string }; Returns: boolean }
