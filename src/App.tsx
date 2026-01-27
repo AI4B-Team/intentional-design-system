@@ -34,6 +34,7 @@ import Buyers from "./pages/Buyers";
 import BuyerDetail from "./pages/BuyerDetail";
 import NotFound from "./pages/NotFound";
 import JVPartners from "./pages/JVPartners";
+import DailyReport from "./pages/DailyReport";
 
 const queryClient = new QueryClient();
 
@@ -248,6 +249,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <JVPartners />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports/daily"
+              element={
+                <ProtectedRoute>
+                  <DailyReport />
                 </ProtectedRoute>
               }
             />

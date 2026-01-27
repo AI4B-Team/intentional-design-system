@@ -714,35 +714,157 @@ export function useMarketingAnalytics(dateRange: DateRange) {
 
 // ============ FINANCIAL ANALYTICS ============
 
+export interface DealEconomics {
+  id: string;
+  address: string;
+  type: string;
+  purchasePrice: number;
+  repairCost: number;
+  sellPrice: number;
+  profit: number;
+  roi: number;
+  daysToClose: number;
+  closedDate: string;
+}
+
+export interface MonthlyProfit {
+  month: string;
+  profit: number;
+  deals: number;
+}
+
+export interface ProfitByType {
+  type: string;
+  profit: number;
+  count: number;
+  avgProfit: number;
+}
+
+export interface ExpenseCategory {
+  name: string;
+  value: number;
+}
+
 export function useFinancialAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["analytics-financial", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-financial-enhanced", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
     queryFn: async () => {
       const { data: closedDeals } = await supabase
         .from("properties")
-        .select("id, arv, mao_standard, updated_at")
+        .select("id, address, property_type, arv, mao_standard, repair_estimate, created_at, updated_at")
         .eq("status", "closed")
         .gte("updated_at", dateRange.from.toISOString())
         .lte("updated_at", dateRange.to.toISOString());
 
       const deals = closedDeals || [];
       
-      // Calculate financial metrics
-      const totalRevenue = deals.reduce((sum, d) => {
-        // Estimate profit as ARV - MAO if available
-        const profit = d.arv && d.mao_standard 
-          ? (d.arv - d.mao_standard) * 0.3 // Rough profit margin
-          : 15000; // Default estimate
-        return sum + profit;
+      // Calculate individual deal economics
+      const dealEconomics: DealEconomics[] = deals.map((d) => {
+        const purchasePrice = d.mao_standard || 150000;
+        const repairCost = d.repair_estimate || 25000;
+        const sellPrice = d.arv || 200000;
+        const totalCost = purchasePrice + repairCost;
+        const profit = sellPrice - totalCost;
+        const roi = totalCost > 0 ? Math.round((profit / totalCost) * 100) : 0;
+        const daysToClose = Math.floor(
+          (new Date(d.updated_at!).getTime() - new Date(d.created_at!).getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        return {
+          id: d.id,
+          address: d.address,
+          type: d.property_type || "Wholesale",
+          purchasePrice,
+          repairCost,
+          sellPrice,
+          profit,
+          roi,
+          daysToClose: Math.max(1, daysToClose),
+          closedDate: format(new Date(d.updated_at!), "MMM d, yyyy"),
+        };
+      });
+
+      // Calculate totals
+      const grossRevenue = dealEconomics.reduce((sum, d) => sum + d.sellPrice, 0);
+      const totalCosts = dealEconomics.reduce((sum, d) => sum + d.purchasePrice + d.repairCost, 0);
+      const netProfit = dealEconomics.reduce((sum, d) => sum + d.profit, 0);
+      const profitMargin = grossRevenue > 0 ? Math.round((netProfit / grossRevenue) * 100) : 0;
+
+      // Monthly profit breakdown
+      const monthlyMap = new Map<string, { profit: number; deals: number }>();
+      dealEconomics.forEach((d) => {
+        const monthKey = format(new Date(d.closedDate), "MMM yyyy");
+        const existing = monthlyMap.get(monthKey) || { profit: 0, deals: 0 };
+        monthlyMap.set(monthKey, {
+          profit: existing.profit + d.profit,
+          deals: existing.deals + 1,
+        });
+      });
+      const monthlyProfit: MonthlyProfit[] = Array.from(monthlyMap.entries()).map(([month, data]) => ({
+        month,
+        profit: data.profit,
+        deals: data.deals,
+      }));
+
+      // Profit by deal type
+      const typeMap = new Map<string, { profit: number; count: number }>();
+      dealEconomics.forEach((d) => {
+        const type = d.type || "Wholesale";
+        const existing = typeMap.get(type) || { profit: 0, count: 0 };
+        typeMap.set(type, {
+          profit: existing.profit + d.profit,
+          count: existing.count + 1,
+        });
+      });
+      const profitByType: ProfitByType[] = Array.from(typeMap.entries()).map(([type, data]) => ({
+        type,
+        profit: data.profit,
+        count: data.count,
+        avgProfit: data.count > 0 ? Math.round(data.profit / data.count) : 0,
+      }));
+
+      // Expense breakdown (estimated)
+      const marketingCost = Math.round(totalCosts * 0.05); // 5% of costs
+      const acquisitionCost = Math.round(totalCosts * 0.02); // 2% closing costs
+      const holdingCost = Math.round(totalCosts * 0.03); // 3% holding
+      const closingCost = Math.round(totalCosts * 0.04); // 4% selling costs
+      const otherCost = Math.round(totalCosts * 0.01); // 1% misc
+
+      const expenseBreakdown: ExpenseCategory[] = [
+        { name: "Marketing", value: marketingCost },
+        { name: "Acquisition", value: acquisitionCost },
+        { name: "Holding", value: holdingCost },
+        { name: "Closing", value: closingCost },
+        { name: "Other", value: otherCost },
+      ];
+
+      // Get pipeline for projected value
+      const { data: pipelineDeals } = await supabase
+        .from("properties")
+        .select("id, arv, mao_standard")
+        .in("status", ["under_contract", "offer_made"]);
+
+      const projectedPipeline = (pipelineDeals || []).reduce((sum, d) => {
+        if (d.arv && d.mao_standard) {
+          return sum + (d.arv - d.mao_standard);
+        }
+        return sum + 15000;
       }, 0);
 
       return {
         closedDeals: deals.length,
-        totalRevenue,
-        avgDealValue: deals.length > 0 ? Math.round(totalRevenue / deals.length) : 0,
-        projectedPipeline: deals.length * 2 * 15000, // Rough projection
+        grossRevenue,
+        totalCosts,
+        netProfit,
+        profitMargin,
+        avgDealValue: deals.length > 0 ? Math.round(netProfit / deals.length) : 0,
+        projectedPipeline,
+        dealEconomics,
+        monthlyProfit,
+        profitByType,
+        expenseBreakdown,
       };
     },
     enabled: !!user,
