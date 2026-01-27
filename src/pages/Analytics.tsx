@@ -14,22 +14,28 @@ import {
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { subDays, startOfMonth, startOfQuarter, startOfYear } from "date-fns";
+import { subDays, startOfMonth, startOfQuarter, startOfYear, formatDistanceToNow } from "date-fns";
 import {
   Users,
-  Phone,
+  Calendar,
   FileText,
   DollarSign,
   TrendingUp,
-  Percent,
-  Calendar,
   Target,
   BarChart3,
   Send,
   Wallet,
-  UsersRound,
   Loader2,
   ArrowRight,
+  Clock,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Phone,
+  Archive,
+  Lightbulb,
+  Trophy,
+  Zap,
 } from "lucide-react";
 import {
   useOverviewAnalytics,
@@ -39,24 +45,29 @@ import {
   useMarketingAnalytics,
   useFinancialAnalytics,
   useAIInsights,
+  useStalledDeals,
+  useSourceRecommendations,
   type DateRange,
 } from "@/hooks/useAnalytics";
-
-// ============ DATE PRESETS ============
-
-const datePresets = [
-  { label: "This Week", getValue: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
-  { label: "This Month", getValue: () => ({ from: startOfMonth(new Date()), to: new Date() }) },
-  { label: "This Quarter", getValue: () => ({ from: startOfQuarter(new Date()), to: new Date() }) },
-  { label: "This Year", getValue: () => ({ from: startOfYear(new Date()), to: new Date() }) },
-];
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+  Legend,
+} from "recharts";
+import { cn } from "@/lib/utils";
 
 // ============ OVERVIEW TAB ============
 
 function OverviewTab({ dateRange }: { dateRange: DateRange }) {
   const navigate = useNavigate();
   const { data: overview, isLoading: overviewLoading } = useOverviewAnalytics(dateRange);
-  const { data: pipeline, isLoading: pipelineLoading } = usePipelineAnalytics(dateRange);
+  const { data: pipelineData, isLoading: pipelineLoading } = usePipelineAnalytics();
   const { data: sources, isLoading: sourcesLoading } = useSourceAnalytics(dateRange);
   const { data: dealFlow, isLoading: dealFlowLoading } = useDealFlowTimeSeries(dateRange);
   const insights = useAIInsights(overview);
@@ -109,7 +120,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRange }) {
   ] : [];
 
   // Format funnel data
-  const funnelData = pipeline ? pipeline.map((stage) => ({
+  const funnelData = pipelineData?.stages ? pipelineData.stages.map((stage) => ({
     name: stage.name,
     count: stage.count,
     value: stage.value,
@@ -122,7 +133,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRange }) {
     value: s.leads,
   })) : [];
 
-  // Deal type breakdown (placeholder - would need actual data)
+  // Deal type breakdown
   const dealTypeData = [
     { name: "Wholesale", value: 45 },
     { name: "Fix & Flip", value: 28 },
@@ -202,9 +213,9 @@ function OverviewTab({ dateRange }: { dateRange: DateRange }) {
 
 // ============ PIPELINE TAB ============
 
-function PipelineTab({ dateRange }: { dateRange: DateRange }) {
-  const { data: pipeline, isLoading } = usePipelineAnalytics(dateRange);
-  const { data: dealFlow } = useDealFlowTimeSeries(dateRange);
+function PipelineTab() {
+  const { data: pipelineData, isLoading } = usePipelineAnalytics();
+  const { data: stalledDeals, isLoading: stalledLoading } = useStalledDeals();
 
   if (isLoading) {
     return (
@@ -214,21 +225,73 @@ function PipelineTab({ dateRange }: { dateRange: DateRange }) {
     );
   }
 
-  const funnelData = pipeline ? pipeline.map((stage) => ({
+  const stages = pipelineData?.stages || [];
+  const velocity = pipelineData?.velocity || [];
+
+  const funnelData = stages.map((stage) => ({
     name: stage.name,
     count: stage.count,
     value: stage.value,
-  })) : [];
+  }));
 
   // Calculate overall metrics
-  const totalInPipeline = pipeline ? pipeline.reduce((sum, s) => sum + s.count, 0) : 0;
-  const overallConversion = pipeline && pipeline.length > 0 && pipeline[0].count > 0
-    ? Math.round((pipeline[pipeline.length - 1].count / pipeline[0].count) * 100)
+  const totalInPipeline = stages.reduce((sum, s) => sum + s.count, 0);
+  const overallConversion = stages.length > 0 && stages[0].count > 0
+    ? Math.round((stages[stages.length - 1].count / stages[0].count) * 100)
     : 0;
+  const totalDaysToClose = velocity.reduce((sum, v) => sum + v.avgDays, 0);
+
+  // Prepare health chart data
+  const healthChartData = stages.slice(0, -1).map((stage) => ({
+    name: stage.name.replace(" ", "\n"),
+    onTrack: stage.onTrack,
+    slowing: stage.slowing,
+    stalled: stage.stalled,
+  }));
+
+  // Find bottleneck (lowest conversion)
+  const bottleneck = stages.reduce((worst, stage, idx) => {
+    if (idx === 0) return worst;
+    if (stage.conversionRate < worst.rate) {
+      return { name: stages[idx - 1].name, rate: stage.conversionRate };
+    }
+    return worst;
+  }, { name: "", rate: 100 });
 
   return (
     <div className="space-y-lg">
-      {/* Pipeline Overview Cards */}
+      {/* Velocity Metrics */}
+      <div>
+        <h3 className="text-h3 font-medium text-content mb-md">Pipeline Velocity</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-md">
+          {velocity.map((v, idx) => (
+            <Card key={v.stage} variant="default" padding="md">
+              <div className="text-tiny text-content-secondary uppercase mb-1">
+                {idx === 0 ? "Lead → Contact" : `→ ${v.stage.split(" ").pop()}`}
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-h2 font-bold text-content">{v.avgDays}</span>
+                <span className="text-small text-content-secondary">days</span>
+              </div>
+              <div className={cn(
+                "text-tiny mt-1",
+                v.avgDays <= v.benchmark ? "text-success" : v.avgDays <= v.benchmark * 1.5 ? "text-warning" : "text-destructive"
+              )}>
+                Benchmark: {v.benchmark}d
+              </div>
+            </Card>
+          ))}
+          <Card variant="default" padding="md" className="bg-brand-accent/5 border-brand-accent/20">
+            <div className="text-tiny text-content-secondary uppercase mb-1">Total Lead → Close</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-h2 font-bold text-brand-accent">{totalDaysToClose}</span>
+              <span className="text-small text-content-secondary">days avg</span>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Pipeline Overview Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
         <Card variant="default" padding="md">
           <div className="text-tiny text-content-secondary uppercase">Total in Pipeline</div>
@@ -239,25 +302,124 @@ function PipelineTab({ dateRange }: { dateRange: DateRange }) {
           <div className="text-display font-bold text-content mt-1">{overallConversion}%</div>
         </Card>
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Avg Days to Close</div>
-          <div className="text-display font-bold text-content mt-1">32</div>
+          <div className="text-tiny text-content-secondary uppercase">Pipeline Value</div>
+          <div className="text-display font-bold text-content mt-1">
+            ${(pipelineData?.totalValue || 0).toLocaleString()}
+          </div>
         </Card>
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Pipeline Value</div>
-          <div className="text-display font-bold text-content mt-1">$1.2M</div>
+          <div className="text-tiny text-content-secondary uppercase">Weighted Value</div>
+          <div className="text-display font-bold text-success mt-1">
+            ${Math.round(pipelineData?.weightedValue || 0).toLocaleString()}
+          </div>
         </Card>
       </div>
 
-      {/* Main Funnel */}
-      <FunnelChart
-        data={funnelData}
-        title="Pipeline Funnel Analysis"
-        className="animate-fade-in"
-      />
-
-      {/* Stage Details Table */}
+      {/* Pipeline Health Chart */}
       <Card variant="default" padding="md">
-        <h3 className="text-h3 font-medium text-content mb-md">Stage Breakdown</h3>
+        <h3 className="text-h3 font-medium text-content mb-md">Pipeline Health by Stage</h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={healthChartData} layout="horizontal">
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 12 }} />
+              <Tooltip 
+                contentStyle={{ 
+                  backgroundColor: "white", 
+                  border: "1px solid hsl(var(--border))",
+                  borderRadius: "8px"
+                }} 
+              />
+              <Legend />
+              <Bar dataKey="onTrack" name="On Track" stackId="a" fill="hsl(var(--success))" />
+              <Bar dataKey="slowing" name="Slowing" stackId="a" fill="hsl(var(--warning))" />
+              <Bar dataKey="stalled" name="Stalled" stackId="a" fill="hsl(var(--destructive))" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex items-center justify-center gap-6 mt-4 text-small">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-sm bg-success" />
+            <span>On Track (≤ benchmark)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-sm bg-warning" />
+            <span>Slowing (1-1.5x)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-3 rounded-sm bg-destructive" />
+            <span>Stalled (&gt;2x)</span>
+          </div>
+        </div>
+      </Card>
+
+      {/* Stalled Deals Table */}
+      <Card variant="default" padding="md">
+        <div className="flex items-center justify-between mb-md">
+          <div>
+            <h3 className="text-h3 font-medium text-content">Stalled Deals</h3>
+            <p className="text-small text-content-secondary">Properties stuck at their current stage too long</p>
+          </div>
+          <Badge variant="destructive" size="sm">{stalledDeals?.length || 0} stalled</Badge>
+        </div>
+        
+        {stalledDeals && stalledDeals.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-small">
+              <thead>
+                <tr className="border-b border-border-subtle">
+                  <th className="text-left py-3 text-content-secondary font-medium">Address</th>
+                  <th className="text-left py-3 text-content-secondary font-medium">Stage</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Days at Stage</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Last Activity</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stalledDeals.slice(0, 10).map((deal) => (
+                  <tr key={deal.id} className="border-b border-border-subtle hover:bg-muted/50">
+                    <td className="py-3 font-medium">{deal.address}</td>
+                    <td className="py-3">
+                      <Badge variant="secondary" size="sm" className="capitalize">
+                        {deal.stage.replace("_", " ")}
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-right">
+                      <span className="text-destructive font-medium">{deal.daysAtStage} days</span>
+                    </td>
+                    <td className="py-3 text-right text-content-secondary">
+                      {formatDistanceToNow(new Date(deal.lastActivity), { addSuffix: true })}
+                    </td>
+                    <td className="py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                          <Phone className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
+                          <Archive className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-content-secondary">
+            <CheckCircle className="h-10 w-10 mx-auto mb-3 text-success opacity-50" />
+            <p>No stalled deals! Your pipeline is moving well.</p>
+          </div>
+        )}
+      </Card>
+
+      {/* Stage Conversion Analysis */}
+      <Card variant="default" padding="md">
+        <h3 className="text-h3 font-medium text-content mb-md">Stage Conversion Analysis</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-small">
             <thead>
@@ -265,36 +427,64 @@ function PipelineTab({ dateRange }: { dateRange: DateRange }) {
                 <th className="text-left py-3 text-content-secondary font-medium">Stage</th>
                 <th className="text-right py-3 text-content-secondary font-medium">Count</th>
                 <th className="text-right py-3 text-content-secondary font-medium">Conversion</th>
-                <th className="text-right py-3 text-content-secondary font-medium">Avg Time</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Avg Days</th>
                 <th className="text-right py-3 text-content-secondary font-medium">Value</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Health</th>
               </tr>
             </thead>
             <tbody>
-              {pipeline?.map((stage, idx) => (
+              {stages.map((stage, idx) => (
                 <tr key={stage.name} className="border-b border-border-subtle">
                   <td className="py-3 font-medium">{stage.name}</td>
                   <td className="py-3 text-right tabular-nums">{stage.count}</td>
                   <td className="py-3 text-right">
-                    <Badge variant={stage.conversionRate >= 50 ? "success" : stage.conversionRate >= 25 ? "warning" : "secondary"} size="sm">
-                      {stage.conversionRate}%
+                    <Badge 
+                      variant={stage.conversionRate >= 50 ? "success" : stage.conversionRate >= 25 ? "warning" : "secondary"} 
+                      size="sm"
+                    >
+                      {idx === 0 ? "—" : `${stage.conversionRate}%`}
                     </Badge>
                   </td>
-                  <td className="py-3 text-right text-content-secondary">{3 + idx * 2}d avg</td>
-                  <td className="py-3 text-right tabular-nums">${(stage.count * 15000).toLocaleString()}</td>
+                  <td className="py-3 text-right text-content-secondary">{stage.avgDays}d</td>
+                  <td className="py-3 text-right tabular-nums">${stage.value.toLocaleString()}</td>
+                  <td className="py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      {stage.onTrack > 0 && (
+                        <span className="flex items-center gap-0.5 text-success">
+                          <CheckCircle className="h-3 w-3" />{stage.onTrack}
+                        </span>
+                      )}
+                      {stage.slowing > 0 && (
+                        <span className="flex items-center gap-0.5 text-warning">
+                          <Clock className="h-3 w-3" />{stage.slowing}
+                        </span>
+                      )}
+                      {stage.stalled > 0 && (
+                        <span className="flex items-center gap-0.5 text-destructive">
+                          <XCircle className="h-3 w-3" />{stage.stalled}
+                        </span>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        
+        {/* Bottleneck Alert */}
+        {bottleneck.name && bottleneck.rate < 50 && (
+          <div className="mt-4 p-3 bg-warning/5 border border-warning/20 rounded-lg flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium text-content">Bottleneck Detected: {bottleneck.name}</p>
+              <p className="text-small text-content-secondary">
+                Only {bottleneck.rate}% of deals move past this stage. Review your process here.
+              </p>
+            </div>
+          </div>
+        )}
       </Card>
-
-      {/* Deal Flow Over Time */}
-      {dealFlow && dealFlow.length > 0 && (
-        <DealFlowChart
-          data={dealFlow}
-          title="Pipeline Movement Over Time"
-        />
-      )}
     </div>
   );
 }
@@ -303,6 +493,7 @@ function PipelineTab({ dateRange }: { dateRange: DateRange }) {
 
 function SourcesTab({ dateRange }: { dateRange: DateRange }) {
   const { data: sources, isLoading } = useSourceAnalytics(dateRange);
+  const recommendations = useSourceRecommendations(sources);
 
   if (isLoading) {
     return (
@@ -312,67 +503,212 @@ function SourcesTab({ dateRange }: { dateRange: DateRange }) {
     );
   }
 
-  const sourceChartData = sources ? sources.slice(0, 6).map((s) => ({
-    name: s.name || "Unknown",
-    value: s.leads,
-  })) : [];
+  const sortedSources = sources || [];
 
-  const tableColumns = [
-    { key: "name", label: "Source", sortable: true },
-    { key: "leads", label: "Leads", align: "right" as const, format: "number" as const, sortable: true },
-    { key: "contacted", label: "Contacted", align: "right" as const, format: "number" as const, sortable: true },
-    { key: "offers", label: "Offers", align: "right" as const, format: "number" as const, sortable: true },
-    { key: "closed", label: "Closed", align: "right" as const, format: "number" as const, sortable: true },
-    { key: "conversion", label: "Conversion", align: "right" as const, format: "progress" as const, sortable: true },
-    { key: "revenue", label: "Revenue", align: "right" as const, format: "currency" as const, sortable: true },
-  ];
+  // Top performers
+  const topByVolume = [...sortedSources].sort((a, b) => b.leads - a.leads)[0];
+  const topByConversion = [...sortedSources].filter(s => s.leads >= 3).sort((a, b) => b.conversion - a.conversion)[0];
+  const topByProfit = [...sortedSources].sort((a, b) => b.revenue - a.revenue)[0];
+
+  // Chart data
+  const leadsChartData = sortedSources.slice(0, 8).map(s => ({
+    name: s.name,
+    leads: s.leads,
+  }));
+
+  const conversionChartData = sortedSources.filter(s => s.leads >= 3).slice(0, 8).map(s => ({
+    name: s.name,
+    conversion: s.conversion,
+  }));
+
+  const profitChartData = sortedSources.filter(s => s.revenue > 0).slice(0, 8).map(s => ({
+    name: s.name,
+    profit: s.revenue,
+  }));
 
   return (
     <div className="space-y-lg">
-      {/* Source Overview */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
+      {/* Top Performers */}
+      <div>
+        <h3 className="text-h3 font-medium text-content mb-md flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-warning" />
+          Top Performers
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-md">
+          {topByVolume && (
+            <Card variant="default" padding="md" className="border-l-4 border-l-brand-accent">
+              <div className="text-tiny text-content-secondary uppercase mb-2">Highest Volume</div>
+              <div className="text-h3 font-bold text-content">{topByVolume.name}</div>
+              <div className="text-small text-content-secondary mt-1">
+                {topByVolume.leads} leads • {topByVolume.closed} closed
+              </div>
+            </Card>
+          )}
+          {topByConversion && (
+            <Card variant="default" padding="md" className="border-l-4 border-l-success">
+              <div className="text-tiny text-content-secondary uppercase mb-2">Best Conversion</div>
+              <div className="text-h3 font-bold text-content">{topByConversion.name}</div>
+              <div className="text-small text-content-secondary mt-1">
+                {topByConversion.conversion}% close rate
+              </div>
+            </Card>
+          )}
+          {topByProfit && (
+            <Card variant="default" padding="md" className="border-l-4 border-l-warning">
+              <div className="text-tiny text-content-secondary uppercase mb-2">Most Profitable</div>
+              <div className="text-h3 font-bold text-content">{topByProfit.name}</div>
+              <div className="text-small text-content-secondary mt-1">
+                ${topByProfit.revenue.toLocaleString()} profit
+              </div>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      {recommendations.length > 0 && (
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Total Sources</div>
-          <div className="text-display font-bold text-content mt-1">{sources?.length || 0}</div>
-        </Card>
-        <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Top Source</div>
-          <div className="text-h3 font-bold text-content mt-1">{sources?.[0]?.name || "—"}</div>
-          <div className="text-small text-content-secondary">{sources?.[0]?.leads || 0} leads</div>
-        </Card>
-        <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Best Converter</div>
-          <div className="text-h3 font-bold text-content mt-1">
-            {sources?.sort((a, b) => b.conversion - a.conversion)[0]?.name || "—"}
+          <h3 className="text-h3 font-medium text-content mb-md flex items-center gap-2">
+            <Lightbulb className="h-5 w-5 text-info" />
+            Recommendations
+          </h3>
+          <div className="space-y-3">
+            {recommendations.map((rec, idx) => (
+              <div 
+                key={idx}
+                className={cn(
+                  "p-3 rounded-lg border",
+                  rec.type === "success" && "bg-success/5 border-success/20",
+                  rec.type === "warning" && "bg-warning/5 border-warning/20",
+                  rec.type === "info" && "bg-info/5 border-info/20"
+                )}
+              >
+                <div className="flex items-start gap-3">
+                  {rec.type === "success" && <Zap className="h-5 w-5 text-success flex-shrink-0" />}
+                  {rec.type === "warning" && <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0" />}
+                  {rec.type === "info" && <Lightbulb className="h-5 w-5 text-info flex-shrink-0" />}
+                  <div>
+                    <p className="font-medium text-content">{rec.title}</p>
+                    <p className="text-small text-content-secondary">{rec.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="text-small text-content-secondary">
-            {sources?.sort((a, b) => b.conversion - a.conversion)[0]?.conversion || 0}% conversion
+        </Card>
+      )}
+
+      {/* Source Comparison Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+        {/* Leads by Source */}
+        <Card variant="default" padding="md">
+          <h4 className="text-body font-medium text-content mb-md">Leads by Source</h4>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={leadsChartData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                <XAxis type="number" tick={{ fontSize: 11 }} />
+                <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={100} />
+                <Tooltip />
+                <Bar dataKey="leads" fill="hsl(var(--brand-accent))" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </Card>
+
+        {/* Conversion by Source */}
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Total Revenue</div>
-          <div className="text-display font-bold text-content mt-1">
-            ${sources?.reduce((sum, s) => sum + s.revenue, 0).toLocaleString() || 0}
+          <h4 className="text-body font-medium text-content mb-md">Conversion Rate by Source</h4>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={conversionChartData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                <XAxis type="number" tick={{ fontSize: 11 }} unit="%" />
+                <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={100} />
+                <Tooltip />
+                <Bar dataKey="conversion" fill="hsl(var(--success))" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        {/* Profit by Source */}
+        <Card variant="default" padding="md">
+          <h4 className="text-body font-medium text-content mb-md">Profit by Source</h4>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={profitChartData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={100} />
+                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                <Bar dataKey="profit" fill="hsl(var(--warning))" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </Card>
       </div>
 
-      {/* Source Distribution Chart */}
-      <DonutChart
-        data={sourceChartData}
-        title="Lead Distribution by Source"
-        centerLabel="Total Leads"
-        centerValue={sourceChartData.reduce((sum, d) => sum + d.value, 0)}
-      />
-
-      {/* Source Performance Table */}
-      <AnalyticsTable
-        title="Source Performance"
-        columns={tableColumns}
-        data={sources || []}
-        onRowClick={(row) => console.log("Source clicked:", row)}
-        onExport={(format) => console.log("Export:", format)}
-      />
+      {/* Full Source Performance Table */}
+      <Card variant="default" padding="md">
+        <h3 className="text-h3 font-medium text-content mb-md">Source Performance</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-small">
+            <thead>
+              <tr className="border-b border-border-subtle">
+                <th className="text-left py-3 text-content-secondary font-medium">Source</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Leads</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Contacted</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Appts</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Offers</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Contracts</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Closed</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Conv.</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Profit</th>
+                <th className="text-right py-3 text-content-secondary font-medium">CPL</th>
+                <th className="text-right py-3 text-content-secondary font-medium">CPA</th>
+                <th className="text-right py-3 text-content-secondary font-medium">ROI</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedSources.map((source) => (
+                <tr key={source.name} className="border-b border-border-subtle hover:bg-muted/50 cursor-pointer">
+                  <td className="py-3 font-medium">{source.name}</td>
+                  <td className="py-3 text-right tabular-nums">{source.leads}</td>
+                  <td className="py-3 text-right tabular-nums">{source.contacted}</td>
+                  <td className="py-3 text-right tabular-nums">{source.appointments}</td>
+                  <td className="py-3 text-right tabular-nums">{source.offers}</td>
+                  <td className="py-3 text-right tabular-nums">{source.contracts}</td>
+                  <td className="py-3 text-right tabular-nums">{source.closed}</td>
+                  <td className="py-3 text-right">
+                    <Badge 
+                      variant={source.conversion >= 10 ? "success" : source.conversion >= 5 ? "warning" : "secondary"} 
+                      size="sm"
+                    >
+                      {source.conversion}%
+                    </Badge>
+                  </td>
+                  <td className="py-3 text-right tabular-nums text-success font-medium">
+                    ${source.revenue.toLocaleString()}
+                  </td>
+                  <td className="py-3 text-right tabular-nums text-content-secondary">${source.cpl}</td>
+                  <td className="py-3 text-right tabular-nums text-content-secondary">
+                    {source.cpa > 0 ? `$${source.cpa}` : "—"}
+                  </td>
+                  <td className="py-3 text-right">
+                    <Badge 
+                      variant={source.roi >= 500 ? "success" : source.roi >= 100 ? "info" : source.roi > 0 ? "warning" : "secondary"} 
+                      size="sm"
+                    >
+                      {source.roi > 0 ? `${source.roi}%` : "—"}
+                    </Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   );
 }
@@ -434,33 +770,6 @@ function MarketingTab({ dateRange }: { dateRange: DateRange }) {
           </div>
         </Card>
       </div>
-
-      {/* Channel Breakdown Table */}
-      <Card variant="default" padding="md">
-        <h3 className="text-h3 font-medium text-content mb-md">Channel Breakdown</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-small">
-            <thead>
-              <tr className="border-b border-border-subtle">
-                <th className="text-left py-3 text-content-secondary font-medium">Channel</th>
-                <th className="text-right py-3 text-content-secondary font-medium">Outreach</th>
-                <th className="text-right py-3 text-content-secondary font-medium">% of Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {channelData.map((channel) => (
-                <tr key={channel.name} className="border-b border-border-subtle">
-                  <td className="py-3 font-medium capitalize">{channel.name}</td>
-                  <td className="py-3 text-right tabular-nums">{channel.value}</td>
-                  <td className="py-3 text-right">
-                    {marketing?.outreach.total ? Math.round((channel.value / marketing.outreach.total) * 100) : 0}%
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
     </div>
   );
 }
@@ -508,19 +817,17 @@ function FinancialTab({ dateRange }: { dateRange: DateRange }) {
 
       {/* Revenue Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-        <Card variant="default" padding="md">
-          <h3 className="text-h3 font-medium text-content mb-md">Revenue by Deal Type</h3>
-          <DonutChart
-            data={[
-              { name: "Wholesale", value: 45000 },
-              { name: "Fix & Flip", value: 120000 },
-              { name: "Rental", value: 35000 },
-              { name: "Creative", value: 25000 },
-            ]}
-            centerLabel="Total"
-            centerValue="$225K"
-          />
-        </Card>
+        <DonutChart
+          data={[
+            { name: "Wholesale", value: 45000 },
+            { name: "Fix & Flip", value: 120000 },
+            { name: "Rental", value: 35000 },
+            { name: "Creative", value: 25000 },
+          ]}
+          title="Revenue by Deal Type"
+          centerLabel="Total"
+          centerValue="$225K"
+        />
         <Card variant="default" padding="md">
           <h3 className="text-h3 font-medium text-content mb-md">Profit Trends</h3>
           <div className="text-center py-8 text-content-secondary">
@@ -529,15 +836,6 @@ function FinancialTab({ dateRange }: { dateRange: DateRange }) {
           </div>
         </Card>
       </div>
-
-      {/* Financial Metrics Table */}
-      <Card variant="default" padding="md">
-        <h3 className="text-h3 font-medium text-content mb-md">Deal Financial Summary</h3>
-        <div className="text-center py-8 text-content-secondary">
-          <BarChart3 className="h-10 w-10 mx-auto mb-3 opacity-50" />
-          <p>Detailed financial data will appear as you close more deals</p>
-        </div>
-      </Card>
     </div>
   );
 }
@@ -599,7 +897,7 @@ export default function Analytics() {
         </TabsContent>
 
         <TabsContent value="pipeline">
-          <PipelineTab dateRange={dateRange} />
+          <PipelineTab />
         </TabsContent>
 
         <TabsContent value="sources">
