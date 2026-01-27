@@ -101,17 +101,6 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Post Deal Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => navigate("/submit-deal")}
-        className="hidden sm:flex gap-2"
-      >
-        <Send className="h-4 w-4" />
-        <span>Post Deal</span>
-      </Button>
-
       {/* Quick Add Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -125,7 +114,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40 bg-white">
+        <DropdownMenuContent align="end" className="w-40 bg-background">
           <DropdownMenuItem onClick={() => navigate("/properties/new")}>
             <UserPlus className="h-4 w-4 mr-2" />
             Lead
@@ -144,6 +133,17 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Post Deal Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigate("/submit-deal")}
+        className="hidden sm:flex gap-2"
+      >
+        <Send className="h-4 w-4" />
+        <span>Post Deal</span>
+      </Button>
 
       {/* Mobile Add Button */}
       <DropdownMenu>
