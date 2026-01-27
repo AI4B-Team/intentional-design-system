@@ -25,6 +25,7 @@ import {
   Hammer,
   CheckSquare,
   Send,
+  HelpCircle,
 } from "lucide-react";
 
 interface Breadcrumb {
@@ -174,6 +175,15 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Help */}
+      <button 
+        onClick={() => navigate("/help")}
+        className="p-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors"
+        title="Help"
+      >
+        <HelpCircle className="h-5 w-5" />
+      </button>
 
       {/* Notifications */}
       <button className="relative p-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors">
