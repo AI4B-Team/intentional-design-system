@@ -23,7 +23,7 @@ import CapitalRequestNew from "./pages/CapitalRequestNew";
 import CapitalRequestDetail from "./pages/CapitalRequestDetail";
 import Settings from "./pages/Settings";
 import SettingsIntegrations from "./pages/SettingsIntegrations";
-import DealSources from "./pages/DealSources";
+import Contacts from "./pages/Contacts";
 import DealSourceDetail from "./pages/DealSourceDetail";
 import SubmitDeal from "./pages/SubmitDeal";
 import Submissions from "./pages/Submissions";
@@ -140,7 +140,7 @@ const App = () => (
               path="/deal-sources"
               element={
                 <ProtectedRoute>
-                  <DealSources />
+                  <Contacts />
                 </ProtectedRoute>
               }
             />
