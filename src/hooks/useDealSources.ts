@@ -8,7 +8,7 @@ export type DealSource = Tables<"deal_sources">;
 export type DealSourceInsert = TablesInsert<"deal_sources">;
 export type DealSourceUpdate = TablesUpdate<"deal_sources">;
 
-export type DealSourceType = "agent" | "wholesaler" | "lender";
+export type DealSourceType = "agent" | "wholesaler" | "lender" | "buyer" | "seller";
 export type DealSourceStatus = "cold" | "contacted" | "responded" | "active" | "inactive";
 
 export interface DealSourceFilters {
