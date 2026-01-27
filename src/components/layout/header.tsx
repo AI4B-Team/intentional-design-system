@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Search, Bell, Plus, Menu, Command } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HelpButton } from "@/components/help";
+import { CreditsBadge } from "@/components/skip-trace";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -136,6 +137,9 @@ export function Header({
       <div className="flex items-center gap-2">
         {/* Custom Actions */}
         {actions}
+
+        {/* Credits Badge */}
+        <CreditsBadge />
 
         {/* Add Property Button */}
         <Button

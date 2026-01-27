@@ -13,6 +13,7 @@ import { BulkOfferModal } from "@/components/properties/bulk-offer-modal";
 import { BulkAIOutreachModal } from "@/components/properties/bulk-ai-outreach-modal";
 import { ColumnSettingsModal, DEFAULT_COLUMNS, type ColumnConfig } from "@/components/properties/column-settings-modal";
 import { ColorLabelPicker, ColorLabelDot } from "@/components/properties/color-label-picker";
+import { BulkSkipTraceModal } from "@/components/skip-trace";
 import {
   Select,
   SelectContent,
@@ -53,6 +54,7 @@ import {
   Send,
   Bot,
   Settings2,
+  UserSearch,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -409,6 +411,7 @@ export default function Properties() {
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
   const [isBulkAIOpen, setIsBulkAIOpen] = React.useState(false);
+  const [isBulkSkipTraceOpen, setIsBulkSkipTraceOpen] = React.useState(false);
   const [isColumnSettingsOpen, setIsColumnSettingsOpen] = React.useState(false);
   const [columns, setColumns] = React.useState<ColumnConfig[]>(() => {
     const saved = localStorage.getItem("propertyTableColumns");
@@ -714,6 +717,14 @@ export default function Properties() {
               onClick={() => setIsBulkAIOpen(true)}
             >
               AI Outreach
+            </Button>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              icon={<UserSearch className="h-4 w-4" />}
+              onClick={() => setIsBulkSkipTraceOpen(true)}
+            >
+              Skip Trace
             </Button>
             <Button variant="secondary" size="sm" icon={<Megaphone className="h-4 w-4" />}>
               Add to Campaign
@@ -1071,6 +1082,24 @@ export default function Properties() {
         open={isBulkAIOpen}
         onOpenChange={setIsBulkAIOpen}
         selectedPropertyIds={Array.from(selectedIds)}
+      />
+
+      {/* Bulk Skip Trace Modal */}
+      <BulkSkipTraceModal
+        open={isBulkSkipTraceOpen}
+        onOpenChange={setIsBulkSkipTraceOpen}
+        properties={properties.filter(p => selectedIds.has(p.id)).map(p => ({
+          id: p.id,
+          address: p.address,
+          city: p.city,
+          state: p.state,
+          zip: p.zip,
+          owner_name: p.owner_name,
+        }))}
+        onComplete={() => {
+          setSelectedIds(new Set());
+          refetch();
+        }}
       />
 
       {/* Column Settings Modal */}

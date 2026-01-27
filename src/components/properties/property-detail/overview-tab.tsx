@@ -8,6 +8,7 @@ import { MotivationIQModal } from "../motivation-iq-modal";
 import { MotivationIQBadge } from "../motivation-iq-badge";
 import { VelocityScoreCard } from "../velocity-score-card";
 import { GHLSyncCard } from "./ghl-sync-card";
+import { OwnerInfoCard } from "@/components/skip-trace";
 import { AIAnalysisButton, DistressAnalysisModal } from "@/components/ai";
 import { analyzeDistress, type DistressAnalysis, type PropertyAnalysisInput } from "@/lib/ai-analysis";
 import { getDefaultVelocityData } from "@/lib/velocity-scoring";
