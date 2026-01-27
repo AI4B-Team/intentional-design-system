@@ -20,6 +20,10 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  ChevronDown,
+  UserPlus,
+  Hammer,
+  CheckSquare,
 } from "lucide-react";
 
 interface Breadcrumb {
@@ -95,26 +99,69 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Quick Action */}
-      <Button
-        variant="primary"
-        size="sm"
-        icon={<Plus />}
-        onClick={() => navigate("/properties/new")}
-        className="hidden sm:flex"
-      >
-        <span className="hidden lg:inline">Add Property</span>
-      </Button>
+      {/* Quick Add Dropdown */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="primary"
+            size="sm"
+            className="hidden sm:flex gap-1"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add</span>
+            <ChevronDown className="h-3 w-3 ml-1" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40 bg-white">
+          <DropdownMenuItem onClick={() => navigate("/properties/new")}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Lead
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/buyers")}>
+            <User className="h-4 w-4 mr-2" />
+            Buyer
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/contractors")}>
+            <Hammer className="h-4 w-4 mr-2" />
+            Vendor
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+            <CheckSquare className="h-4 w-4 mr-2" />
+            Task
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Mobile Add Button */}
-      <Button
-        variant="primary"
-        size="icon"
-        onClick={() => navigate("/properties/new")}
-        className="sm:hidden h-9 w-9"
-      >
-        <Plus className="h-4 w-4" />
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="primary"
+            size="icon"
+            className="sm:hidden h-9 w-9"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-40 bg-white">
+          <DropdownMenuItem onClick={() => navigate("/properties/new")}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Lead
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/buyers")}>
+            <User className="h-4 w-4 mr-2" />
+            Buyer
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/contractors")}>
+            <Hammer className="h-4 w-4 mr-2" />
+            Vendor
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+            <CheckSquare className="h-4 w-4 mr-2" />
+            Task
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Notifications */}
       <button className="relative p-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors">
