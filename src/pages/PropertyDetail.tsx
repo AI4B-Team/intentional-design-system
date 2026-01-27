@@ -249,6 +249,8 @@ export default function PropertyDetail() {
       : undefined,
     arv: property.arv ? Number(property.arv) : undefined,
     repairs: property.repair_estimate ? Number(property.repair_estimate) : undefined,
+    ghl_contact_id: property.ghl_contact_id || null,
+    ghl_last_sync: property.ghl_last_sync || null,
   };
 
   return (

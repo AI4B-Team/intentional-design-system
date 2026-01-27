@@ -39,6 +39,8 @@ import {
   Zap,
   ExternalLink,
   Shield,
+  Upload,
+  Database,
 } from "lucide-react";
 import {
   useGHLConnection,
@@ -53,6 +55,8 @@ import {
 } from "@/hooks/useGHLIntegration";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
+import { useBulkSyncToGHL, useUnsyncedPropertiesCount } from "@/lib/ghl-sync";
+import { Progress } from "@/components/ui/progress";
 
 function ConnectGHLModal({
   open,
@@ -256,7 +260,15 @@ function GHLConfiguration() {
   const { data: connection } = useGHLConnection();
   const updateSettings = useUpdateGHLSettings();
   const triggerSync = useTriggerGHLSync();
-  const { data: syncLogs } = useGHLSyncLogs(10);
+  const { data: syncLogs } = useGHLSyncLogs(50);
+  const bulkSync = useBulkSyncToGHL();
+  const { data: unsyncedCount } = useUnsyncedPropertiesCount();
+  const [bulkSyncResult, setBulkSyncResult] = React.useState<{
+    synced: number;
+    failed: number;
+    total: number;
+    errors: Array<{ property_id: string; error: string }>;
+  } | null>(null);
 
   if (!connection) return null;
 
@@ -270,9 +282,15 @@ function GHLConfiguration() {
     });
   };
 
+  const handleBulkSync = async (resync = false) => {
+    setBulkSyncResult(null);
+    const result = await bulkSync.mutateAsync(resync ? undefined : undefined);
+    setBulkSyncResult(result);
+  };
+
   return (
     <Tabs defaultValue="contacts" className="space-y-md">
-      <TabsList>
+      <TabsList className="flex-wrap">
         <TabsTrigger value="contacts" className="gap-1.5">
           <Users className="h-4 w-4" />
           Contacts
@@ -289,9 +307,13 @@ function GHLConfiguration() {
           <ArrowRightLeft className="h-4 w-4" />
           Two-Way Sync
         </TabsTrigger>
+        <TabsTrigger value="bulk" className="gap-1.5">
+          <Upload className="h-4 w-4" />
+          Bulk Sync
+        </TabsTrigger>
         <TabsTrigger value="logs" className="gap-1.5">
-          <Settings2 className="h-4 w-4" />
-          Sync Logs
+          <Database className="h-4 w-4" />
+          Sync History
         </TabsTrigger>
       </TabsList>
 
@@ -545,6 +567,114 @@ function GHLConfiguration() {
                 </p>
               </div>
             )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* Bulk Sync Tab */}
+      <TabsContent value="bulk">
+        <Card variant="default" padding="md">
+          <CardHeader>
+            <CardTitle>Bulk Sync Options</CardTitle>
+            <CardDescription>
+              Sync multiple properties to GoHighLevel at once
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Unsynced Properties */}
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <p className="text-body font-medium text-content">
+                    Sync Unsynced Properties
+                  </p>
+                  <p className="text-small text-content-secondary">
+                    {unsyncedCount} properties not yet synced to GHL
+                  </p>
+                </div>
+                <Button
+                  variant="primary"
+                  onClick={() => handleBulkSync(false)}
+                  disabled={bulkSync.isPending || unsyncedCount === 0}
+                >
+                  {bulkSync.isPending ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Syncing...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Sync All ({unsyncedCount})
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {bulkSync.isPending && (
+                <div className="space-y-2">
+                  <Progress value={undefined} className="h-2" />
+                  <p className="text-tiny text-content-tertiary text-center">
+                    Syncing properties to GoHighLevel...
+                  </p>
+                </div>
+              )}
+
+              {bulkSyncResult && (
+                <div
+                  className={cn(
+                    "mt-4 p-3 rounded-lg",
+                    bulkSyncResult.failed === 0
+                      ? "bg-success/10 text-success"
+                      : "bg-warning/10 text-warning"
+                  )}
+                >
+                  <p className="text-small font-medium">
+                    {bulkSyncResult.synced} synced, {bulkSyncResult.failed} failed
+                  </p>
+                  {bulkSyncResult.errors.length > 0 && (
+                    <div className="mt-2 space-y-1">
+                      {bulkSyncResult.errors.slice(0, 5).map((err, i) => (
+                        <p key={i} className="text-tiny">
+                          {err.property_id.substring(0, 8)}... - {err.error}
+                        </p>
+                      ))}
+                      {bulkSyncResult.errors.length > 5 && (
+                        <p className="text-tiny">
+                          + {bulkSyncResult.errors.length - 5} more errors
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Full Re-sync */}
+            <div className="p-4 border border-border-subtle rounded-lg">
+              <div className="flex items-start gap-4">
+                <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-body font-medium text-content">
+                    Full Re-sync
+                  </p>
+                  <p className="text-small text-content-secondary mt-1">
+                    Update all existing GHL records with current DealFlow data.
+                    Use this after changing field mappings.
+                  </p>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="mt-3"
+                    onClick={() => handleBulkSync(true)}
+                    disabled={bulkSync.isPending}
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Re-sync All Properties
+                  </Button>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </TabsContent>

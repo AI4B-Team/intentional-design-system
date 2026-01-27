@@ -7,6 +7,7 @@ import { MotivationGauge } from "./motivation-gauge";
 import { MotivationIQModal } from "../motivation-iq-modal";
 import { MotivationIQBadge } from "../motivation-iq-badge";
 import { VelocityScoreCard } from "../velocity-score-card";
+import { GHLSyncCard } from "./ghl-sync-card";
 import { AIAnalysisButton, DistressAnalysisModal } from "@/components/ai";
 import { analyzeDistress, type DistressAnalysis, type PropertyAnalysisInput } from "@/lib/ai-analysis";
 import { getDefaultVelocityData } from "@/lib/velocity-scoring";
@@ -56,6 +57,8 @@ interface OverviewTabProps {
     velocityScore?: number;
     urgencyLevel?: string;
     distressSignals?: string[];
+    ghl_contact_id?: string | null;
+    ghl_last_sync?: string | null;
   };
   onUpdateScore?: (signals: string[], score: number) => void;
   isUpdating?: boolean;
@@ -316,6 +319,13 @@ export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTab
           onCompetitionFlag={(data) => {
             toast.success(data.detected ? "Competition flagged" : "Competition flag cleared");
           }}
+        />
+
+        {/* GHL Sync Card */}
+        <GHLSyncCard
+          propertyId={property.id}
+          ghlContactId={property.ghl_contact_id}
+          ghlLastSync={property.ghl_last_sync}
         />
 
         {/* Map Card */}
