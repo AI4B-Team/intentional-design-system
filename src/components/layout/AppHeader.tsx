@@ -57,6 +57,18 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
+      {/* Search - Far Left */}
+      <div className="hidden md:block relative flex-1 max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
+        <Input
+          type="search"
+          placeholder="Search properties, contacts..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-9 h-9 bg-surface-secondary border-0"
+        />
+      </div>
+
       {/* Breadcrumbs (only if provided and has multiple items) */}
       {breadcrumbs && breadcrumbs.length > 1 && (
         <nav className="flex items-center gap-1 text-small min-w-0">
@@ -82,18 +94,6 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
-
-      {/* Search */}
-      <div className="hidden md:block relative w-64 lg:w-80">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
-        <Input
-          type="search"
-          placeholder="Search properties, contacts..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-9 h-9 bg-surface-secondary border-0"
-        />
-      </div>
 
       {/* Quick Action */}
       <Button
