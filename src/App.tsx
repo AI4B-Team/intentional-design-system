@@ -28,6 +28,8 @@ import Campaigns from "./pages/Campaigns";
 import CampaignWizard from "./pages/CampaignWizard";
 import CampaignDetail from "./pages/CampaignDetail";
 import Offers from "./pages/Offers";
+import Contractors from "./pages/Contractors";
+import ContractorDetail from "./pages/ContractorDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +77,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <PropertyDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contractors"
+              element={
+                <ProtectedRoute>
+                  <Contractors />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/contractors/:id"
+              element={
+                <ProtectedRoute>
+                  <ContractorDetail />
                 </ProtectedRoute>
               }
             />
