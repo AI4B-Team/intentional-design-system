@@ -87,28 +87,30 @@ export function AppSidebar({
             <Building2 className="h-5 w-5 text-white" />
           </button>
           {!collapsed && (
-            <>
-              <span className="text-lg font-bold text-white whitespace-nowrap">
-                DealFlow
-              </span>
-              {/* Collapse Toggle - Desktop Only */}
-              <button
-                onClick={onToggle}
-                className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors ml-auto"
-                title="Collapse sidebar"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </button>
-            </>
+            <span className="text-lg font-bold text-white whitespace-nowrap">
+              DealFlow
+            </span>
           )}
         </div>
-        {/* Mobile close button */}
-        <button
-          onClick={onMobileClose}
-          className="lg:hidden p-1 text-slate-400 hover:text-white"
-        >
-          <X className="h-5 w-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Collapse Toggle - Desktop Only */}
+          {!collapsed && (
+            <button
+              onClick={onToggle}
+              className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+              title="Collapse sidebar"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </button>
+          )}
+          {/* Mobile close button */}
+          <button
+            onClick={onMobileClose}
+            className="lg:hidden p-1 text-slate-400 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Navigation */}
