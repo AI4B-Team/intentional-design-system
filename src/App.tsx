@@ -51,7 +51,7 @@ import MailCampaignDetail from "./pages/MailCampaignDetail";
 import MailTemplates from "./pages/MailTemplates";
 import MailTemplateEditor from "./pages/MailTemplateEditor";
 import MailSuppression from "./pages/MailSuppression";
-
+import AIVA from "./pages/AIVA";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -72,6 +72,14 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
             
             {/* Protected routes */}
+            <Route
+              path="/aiva"
+              element={
+                <ProtectedRoute>
+                  <AIVA />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={

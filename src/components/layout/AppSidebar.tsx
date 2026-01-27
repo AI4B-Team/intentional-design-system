@@ -22,6 +22,7 @@ import {
   Mail,
   ChevronDown,
   Globe,
+  Sparkles,
 } from "lucide-react";
 
 interface NavItem {
@@ -38,6 +39,7 @@ interface NavGroup {
 }
 
 const navItems: NavItem[] = [
+  { label: "AIVA", href: "/aiva", icon: Sparkles },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Leads", href: "/leads", icon: UserPlus },
   { label: "Properties", href: "/properties", icon: Building2 },
