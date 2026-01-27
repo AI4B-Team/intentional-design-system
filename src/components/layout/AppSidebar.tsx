@@ -45,13 +45,13 @@ const navItems: NavItem[] = [
   { label: "Contractors", href: "/contractors", icon: Hammer },
   { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
-  { label: "Campaigns", href: "/campaigns", icon: Megaphone },
 ];
 
 const marketingGroup: NavGroup = {
   label: "Marketing",
   icon: Megaphone,
   items: [
+    { label: "Campaigns", href: "/campaigns", icon: Megaphone },
     { label: "Direct Mail", href: "/mail", icon: Mail },
     { label: "Website", href: "/marketing/website", icon: Globe },
     { label: "MLS", href: "/marketing/mls", icon: Home },
