@@ -24,6 +24,7 @@ import {
   UserPlus,
   Hammer,
   CheckSquare,
+  Send,
 } from "lucide-react";
 
 interface Breadcrumb {
@@ -98,6 +99,17 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Post Deal Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => navigate("/submit-deal")}
+        className="hidden sm:flex gap-2"
+      >
+        <Send className="h-4 w-4" />
+        <span>Post Deal</span>
+      </Button>
 
       {/* Quick Add Dropdown */}
       <DropdownMenu>
