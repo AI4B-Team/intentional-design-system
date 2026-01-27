@@ -28,6 +28,9 @@ import CapitalRequestNew from "./pages/CapitalRequestNew";
 import CapitalRequestDetail from "./pages/CapitalRequestDetail";
 import Settings from "./pages/Settings";
 import SettingsIntegrations from "./pages/SettingsIntegrations";
+import TeamManagement from "./pages/TeamManagement";
+import OrganizationSettings from "./pages/OrganizationSettings";
+import BillingSettings from "./pages/BillingSettings";
 import Contacts from "./pages/Contacts";
 import DealSourceDetail from "./pages/DealSourceDetail";
 import SubmitDeal from "./pages/SubmitDeal";
@@ -307,6 +310,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SettingsIntegrations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/team"
+              element={
+                <ProtectedRoute>
+                  <TeamManagement />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/organization"
+              element={
+                <ProtectedRoute>
+                  <OrganizationSettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/billing"
+              element={
+                <ProtectedRoute>
+                  <BillingSettings />
                 </ProtectedRoute>
               }
             />
