@@ -77,9 +77,16 @@ export function AppSidebar({
       {/* Logo */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-brand-accent flex items-center justify-center flex-shrink-0">
+          <button
+            onClick={collapsed ? onToggle : undefined}
+            className={cn(
+              "h-8 w-8 rounded-lg bg-brand-accent flex items-center justify-center flex-shrink-0",
+              collapsed && "cursor-pointer hover:bg-brand-accent/80 transition-colors"
+            )}
+            title={collapsed ? "Expand sidebar" : undefined}
+          >
             <Building2 className="h-5 w-5 text-white" />
-          </div>
+          </button>
           {!collapsed && (
             <span className="text-lg font-bold text-white whitespace-nowrap">
               DealFlow
