@@ -380,7 +380,7 @@ export default function Dashboard() {
           {format(new Date(), "EEEE, MMMM d, yyyy")}
         </p>
         <h1 className="text-h1 font-bold text-foreground mt-1">
-          Welcome back 👋
+          Welcome Back 👋
         </h1>
       </div>
 
