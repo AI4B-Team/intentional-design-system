@@ -26,23 +26,26 @@ import {
   Plus,
   X,
   Eye,
-  Loader2,
-  Building2,
+  Calendar,
+  Clock,
+  Send,
+  Save,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   useCreateCampaign,
   useAddCampaignProperties,
   defaultEmailTemplate,
-  type CampaignPropertyInsert,
 } from "@/hooks/useCampaigns";
 import { toast } from "sonner";
+import { format, addDays } from "date-fns";
 
 const steps = [
   { id: 1, name: "Basics", icon: FileText },
   { id: 2, name: "Properties", icon: Target },
   { id: 3, name: "Offer", icon: DollarSign },
   { id: 4, name: "Message", icon: Mail },
+  { id: 5, name: "Schedule", icon: Calendar },
 ];
 
 const closingOptions = ["14 days", "21 days", "30 days", "Flexible"];
@@ -68,6 +71,13 @@ const emptyProperty: PropertyEntry = {
   agent_name: "",
   agent_email: "",
 };
+
+interface FollowUp {
+  enabled: boolean;
+  daysAfter: number;
+  subject: string;
+  body: string;
+}
 
 export default function CampaignWizard() {
   const navigate = useNavigate();
@@ -97,6 +107,41 @@ export default function CampaignWizard() {
   const [emailSubject, setEmailSubject] = useState(defaultEmailTemplate.subject);
   const [emailBody, setEmailBody] = useState(defaultEmailTemplate.body);
 
+  // Step 5: Schedule
+  const [sendOption, setSendOption] = useState<"immediately" | "scheduled">("immediately");
+  const [scheduledDate, setScheduledDate] = useState(format(addDays(new Date(), 1), "yyyy-MM-dd"));
+  const [scheduledTime, setScheduledTime] = useState("09:00");
+  const [batchSize, setBatchSize] = useState("50");
+  const [enableFollowUps, setEnableFollowUps] = useState(false);
+  const [followUp1, setFollowUp1] = useState<FollowUp>({
+    enabled: true,
+    daysAfter: 3,
+    subject: "Following up: Cash Offer - {property_address}",
+    body: `Hi {agent_name},
+
+I wanted to follow up on my previous email regarding {property_address}. Have you had a chance to discuss the cash offer with your seller?
+
+I'm still very interested and flexible on terms. Please let me know if there's anything I can do to move this forward.
+
+Best,
+{your_name}
+{your_phone}`,
+  });
+  const [followUp2, setFollowUp2] = useState<FollowUp>({
+    enabled: false,
+    daysAfter: 7,
+    subject: "Final follow-up: {property_address}",
+    body: `Hi {agent_name},
+
+This is my final follow-up regarding {property_address}. If I don't hear back, I'll assume the timing isn't right.
+
+If your seller's situation changes or they'd like to explore a cash offer in the future, please keep me in mind.
+
+Best regards,
+{your_name}
+{your_phone}`,
+  });
+
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
@@ -107,13 +152,15 @@ export default function CampaignWizard() {
         return true;
       case 4:
         return emailSubject.trim().length > 0 && emailBody.trim().length > 0;
+      case 5:
+        return true;
       default:
         return true;
     }
   };
 
   const handleNext = () => {
-    if (validateStep(currentStep) && currentStep < 4) {
+    if (validateStep(currentStep) && currentStep < 5) {
       setCurrentStep((prev) => prev + 1);
     }
   };
@@ -190,8 +237,8 @@ export default function CampaignWizard() {
     reader.readAsText(file);
   };
 
-  const handleSubmit = async () => {
-    if (!validateStep(4)) return;
+  const handleSubmit = async (saveAsDraft: boolean = false) => {
+    if (!saveAsDraft && !validateStep(5)) return;
 
     setIsSubmitting(true);
     try {
@@ -231,6 +278,12 @@ export default function CampaignWizard() {
         });
       }
 
+      if (saveAsDraft) {
+        toast.success("Campaign saved as draft");
+      } else {
+        toast.success("Campaign launched!");
+      }
+
       navigate(`/campaigns/${campaign.id}`);
     } catch (error) {
       console.error("Error creating campaign:", error);
@@ -264,6 +317,8 @@ export default function CampaignWizard() {
   };
 
   const validPropertyCount = properties.filter((p) => p.address.trim()).length;
+  const totalBatches = Math.ceil(validPropertyCount / Number(batchSize || 50));
+  const estimatedDays = totalBatches;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-surface-secondary to-background">
@@ -696,6 +751,212 @@ export default function CampaignWizard() {
               </div>
             )}
 
+            {/* Step 5: Schedule & Send */}
+            {currentStep === 5 && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-10 w-10 rounded-medium bg-brand/10 flex items-center justify-center">
+                    <Calendar className="h-5 w-5 text-brand" />
+                  </div>
+                  <div>
+                    <h2 className="text-h3 font-semibold text-content">Schedule & Send</h2>
+                    <p className="text-small text-content-secondary">Configure when and how to send your campaign</p>
+                  </div>
+                </div>
+
+                {/* Send Timing */}
+                <div className="space-y-3">
+                  <Label>When to Send</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setSendOption("immediately")}
+                      className={cn(
+                        "p-4 rounded-medium border text-left transition-all",
+                        sendOption === "immediately"
+                          ? "border-brand bg-brand/5"
+                          : "border-border hover:border-brand/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Send className="h-5 w-5 text-brand" />
+                        <div>
+                          <p className="text-body font-medium text-content">Send Immediately</p>
+                          <p className="text-small text-content-secondary">Start sending when you launch</p>
+                        </div>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setSendOption("scheduled")}
+                      className={cn(
+                        "p-4 rounded-medium border text-left transition-all",
+                        sendOption === "scheduled"
+                          ? "border-brand bg-brand/5"
+                          : "border-border hover:border-brand/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Clock className="h-5 w-5 text-brand" />
+                        <div>
+                          <p className="text-body font-medium text-content">Schedule for Later</p>
+                          <p className="text-small text-content-secondary">Pick a specific date & time</p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
+                {sendOption === "scheduled" && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="Start Date"
+                      type="date"
+                      value={scheduledDate}
+                      onChange={setScheduledDate}
+                    />
+                    <Input
+                      label="Time"
+                      type="time"
+                      value={scheduledTime}
+                      onChange={setScheduledTime}
+                    />
+                  </div>
+                )}
+
+                {/* Batch Size */}
+                <div className="border-t border-border-subtle pt-6">
+                  <Input
+                    label="Emails per Day (Batch Size)"
+                    type="number"
+                    value={batchSize}
+                    onChange={setBatchSize}
+                    hint={`With ${validPropertyCount} properties, this will take approximately ${estimatedDays} day${estimatedDays !== 1 ? "s" : ""}`}
+                  />
+                </div>
+
+                {/* Follow-up Sequence */}
+                <div className="border-t border-border-subtle pt-6 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={enableFollowUps}
+                      onCheckedChange={(c) => setEnableFollowUps(!!c)}
+                    />
+                    <div>
+                      <Label className="cursor-pointer">Enable Follow-up Sequence</Label>
+                      <p className="text-tiny text-content-tertiary">Automatically send follow-ups to non-responders</p>
+                    </div>
+                  </div>
+
+                  {enableFollowUps && (
+                    <div className="space-y-4 pl-7">
+                      {/* Follow-up 1 */}
+                      <div className="p-4 bg-surface-secondary rounded-medium space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-small font-medium text-content">Follow-up 1</span>
+                          <Checkbox
+                            checked={followUp1.enabled}
+                            onCheckedChange={(c) => setFollowUp1({ ...followUp1, enabled: !!c })}
+                          />
+                        </div>
+                        {followUp1.enabled && (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                label="Days After Initial Email"
+                                type="number"
+                                value={followUp1.daysAfter.toString()}
+                                onChange={(v) => setFollowUp1({ ...followUp1, daysAfter: Number(v) })}
+                                className="w-24"
+                              />
+                            </div>
+                            <Input
+                              label="Subject"
+                              value={followUp1.subject}
+                              onChange={(v) => setFollowUp1({ ...followUp1, subject: v })}
+                            />
+                            <div className="space-y-2">
+                              <Label>Body</Label>
+                              <Textarea
+                                value={followUp1.body}
+                                onChange={(e) => setFollowUp1({ ...followUp1, body: e.target.value })}
+                                rows={6}
+                                className="text-small"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+
+                      {/* Follow-up 2 */}
+                      <div className="p-4 bg-surface-secondary rounded-medium space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-small font-medium text-content">Follow-up 2</span>
+                          <Checkbox
+                            checked={followUp2.enabled}
+                            onCheckedChange={(c) => setFollowUp2({ ...followUp2, enabled: !!c })}
+                          />
+                        </div>
+                        {followUp2.enabled && (
+                          <>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                label="Days After Initial Email"
+                                type="number"
+                                value={followUp2.daysAfter.toString()}
+                                onChange={(v) => setFollowUp2({ ...followUp2, daysAfter: Number(v) })}
+                                className="w-24"
+                              />
+                            </div>
+                            <Input
+                              label="Subject"
+                              value={followUp2.subject}
+                              onChange={(v) => setFollowUp2({ ...followUp2, subject: v })}
+                            />
+                            <div className="space-y-2">
+                              <Label>Body</Label>
+                              <Textarea
+                                value={followUp2.body}
+                                onChange={(e) => setFollowUp2({ ...followUp2, body: e.target.value })}
+                                rows={6}
+                                className="text-small"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Summary */}
+                <div className="p-4 bg-brand/5 border border-brand/20 rounded-medium">
+                  <h4 className="text-body font-medium text-brand mb-2">Campaign Summary</h4>
+                  <ul className="space-y-1 text-small text-content">
+                    <li>• <strong>{validPropertyCount}</strong> properties to contact</li>
+                    <li>• Sending <strong>{batchSize}</strong> emails per day</li>
+                    <li>
+                      • Starting{" "}
+                      <strong>
+                        {sendOption === "immediately"
+                          ? "immediately after launch"
+                          : `on ${format(new Date(scheduledDate), "MMM d, yyyy")} at ${scheduledTime}`}
+                      </strong>
+                    </li>
+                    {enableFollowUps && (
+                      <li>
+                        • Follow-ups:{" "}
+                        {[
+                          followUp1.enabled && `${followUp1.daysAfter} days`,
+                          followUp2.enabled && `${followUp2.daysAfter} days`,
+                        ]
+                          .filter(Boolean)
+                          .join(", ") || "None"}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
+
             {/* Navigation Buttons */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-border-subtle">
               <Button
@@ -707,26 +968,40 @@ export default function CampaignWizard() {
                 Back
               </Button>
 
-              {currentStep < 4 ? (
-                <Button
-                  variant="primary"
-                  onClick={handleNext}
-                  disabled={!validateStep(currentStep)}
-                  icon={<ArrowRight />}
-                  iconPosition="right"
-                >
-                  Continue
-                </Button>
-              ) : (
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !validateStep(4)}
-                  loading={isSubmitting}
-                >
-                  Create Campaign
-                </Button>
-              )}
+              <div className="flex items-center gap-3">
+                {currentStep === 5 && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => handleSubmit(true)}
+                    disabled={isSubmitting}
+                    icon={<Save />}
+                  >
+                    Save as Draft
+                  </Button>
+                )}
+
+                {currentStep < 5 ? (
+                  <Button
+                    variant="primary"
+                    onClick={handleNext}
+                    disabled={!validateStep(currentStep)}
+                    icon={<ArrowRight />}
+                    iconPosition="right"
+                  >
+                    Continue
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    onClick={() => handleSubmit(false)}
+                    disabled={isSubmitting || !validateStep(5)}
+                    loading={isSubmitting}
+                    icon={<Send />}
+                  >
+                    Launch Campaign
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
