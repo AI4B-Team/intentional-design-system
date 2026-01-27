@@ -37,6 +37,11 @@ export interface OrganizationMember {
   joined_at: string | null;
   last_active_at: string | null;
   created_at: string;
+  user?: {
+    email: string;
+    full_name?: string;
+    avatar_url?: string;
+  };
 }
 
 interface OrganizationContextType {
@@ -44,11 +49,12 @@ interface OrganizationContextType {
   membership: OrganizationMember | null;
   members: OrganizationMember[];
   loading: boolean;
-  hasRole: (requiredRole: OrgRole) => boolean;
+  hasRole: (role: OrgRole | string) => boolean;
   canManageTeam: boolean;
+  canManageSettings: boolean;
   canManageBilling: boolean;
   canEditAllProperties: boolean;
-  refetchOrganization: () => Promise<void>;
+  refreshOrganization: () => Promise<void>;
   refetchMembers: () => Promise<void>;
 }
 
@@ -82,16 +88,21 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
 
     try {
-      // Get user's membership
-      const { data: membershipData, error: membershipError } = await supabase
+      setLoading(true);
+      
+      // Get user's membership with organization
+      const { data: memberData, error: memberError } = await supabase
         .from("organization_members")
-        .select("*")
+        .select(`
+          *,
+          organizations (*)
+        `)
         .eq("user_id", user.id)
         .eq("status", "active")
         .single();
 
-      if (membershipError || !membershipData) {
-        // User has no organization yet
+      if (memberError || !memberData) {
+        // User has no organization - will need to create or join one
         setOrganization(null);
         setMembership(null);
         setMembers([]);
@@ -99,30 +110,47 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         return;
       }
 
-      setMembership(membershipData as unknown as OrganizationMember);
+      // Extract organization from nested response
+      const orgData = (memberData as any).organizations as Organization;
+      const membershipData: OrganizationMember = {
+        id: memberData.id,
+        organization_id: memberData.organization_id,
+        user_id: memberData.user_id,
+        role: memberData.role as OrgRole,
+        status: memberData.status,
+        invited_by: memberData.invited_by,
+        invited_at: memberData.invited_at,
+        joined_at: memberData.joined_at,
+        last_active_at: memberData.last_active_at,
+        created_at: memberData.created_at,
+      };
 
-      // Get organization details
-      const { data: orgData, error: orgError } = await supabase
-        .from("organizations")
-        .select("*")
-        .eq("id", membershipData.organization_id)
-        .single();
+      setOrganization(orgData);
+      setMembership(membershipData);
 
-      if (orgError) {
-        console.error("Error fetching organization:", orgError);
-        setOrganization(null);
-      } else {
-        setOrganization(orgData as Organization);
-      }
+      // Update last_active_at
+      await supabase
+        .from("organization_members")
+        .update({ last_active_at: new Date().toISOString() })
+        .eq("id", memberData.id);
+
     } catch (error) {
-      console.error("Error in fetchOrganization:", error);
+      console.error("Error fetching organization:", error);
+      setOrganization(null);
+      setMembership(null);
     } finally {
       setLoading(false);
     }
   }, [user]);
 
   const fetchMembers = React.useCallback(async () => {
-    if (!organization) {
+    if (!organization || !membership) {
+      setMembers([]);
+      return;
+    }
+
+    // Only fetch members if user has permission
+    if (!["owner", "admin", "manager"].includes(membership.role)) {
       setMembers([]);
       return;
     }
@@ -143,29 +171,32 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     } catch (error) {
       console.error("Error in fetchMembers:", error);
     }
-  }, [organization]);
+  }, [organization, membership]);
 
   React.useEffect(() => {
     fetchOrganization();
   }, [fetchOrganization]);
 
   React.useEffect(() => {
-    if (organization) {
+    if (organization && membership) {
       fetchMembers();
     }
-  }, [organization, fetchMembers]);
+  }, [organization, membership, fetchMembers]);
 
-  // Role check helper
+  // Role check helper - supports hierarchical checking
   const hasRole = React.useCallback(
-    (requiredRole: OrgRole): boolean => {
+    (requiredRole: OrgRole | string): boolean => {
       if (!membership) return false;
-      return ROLE_HIERARCHY[membership.role] >= ROLE_HIERARCHY[requiredRole];
+      const userLevel = ROLE_HIERARCHY[membership.role] || 0;
+      const requiredLevel = ROLE_HIERARCHY[requiredRole as OrgRole] || 0;
+      return userLevel >= requiredLevel;
     },
     [membership]
   );
 
   // Computed permissions
   const canManageTeam = React.useMemo(() => hasRole("admin"), [hasRole]);
+  const canManageSettings = React.useMemo(() => hasRole("admin"), [hasRole]);
   const canManageBilling = React.useMemo(() => membership?.role === "owner", [membership]);
   const canEditAllProperties = React.useMemo(() => hasRole("manager"), [hasRole]);
 
@@ -178,9 +209,10 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         loading,
         hasRole,
         canManageTeam,
+        canManageSettings,
         canManageBilling,
         canEditAllProperties,
-        refetchOrganization: fetchOrganization,
+        refreshOrganization: fetchOrganization,
         refetchMembers: fetchMembers,
       }}
     >
