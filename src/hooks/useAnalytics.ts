@@ -1,17 +1,9 @@
+import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  startOfDay,
-  endOfDay,
   subDays,
-  startOfWeek,
-  startOfMonth,
-  startOfQuarter,
-  startOfYear,
-  subMonths,
-  subQuarters,
-  subYears,
   differenceInDays,
   format,
   eachDayOfInterval,
@@ -33,19 +25,45 @@ export interface AnalyticsMetric {
 
 export interface PipelineStageData {
   name: string;
+  status: string;
   count: number;
   value: number;
   conversionRate: number;
+  avgDays: number;
+  onTrack: number;
+  slowing: number;
+  stalled: number;
+}
+
+export interface VelocityMetric {
+  stage: string;
+  avgDays: number;
+  benchmark: number;
+}
+
+export interface StalledDeal {
+  id: string;
+  address: string;
+  stage: string;
+  daysAtStage: number;
+  lastActivity: string;
+  arv: number | null;
 }
 
 export interface SourceBreakdown {
   name: string;
   leads: number;
   contacted: number;
+  appointments: number;
   offers: number;
+  contracts: number;
   closed: number;
   conversion: number;
   revenue: number;
+  cost: number;
+  cpl: number;
+  cpa: number;
+  roi: number;
 }
 
 export interface DealTypeBreakdown {
@@ -61,6 +79,13 @@ export interface TimeSeriesPoint {
   contacts: number;
   offers: number;
   closed: number;
+}
+
+export interface SourceRecommendation {
+  type: "success" | "warning" | "info";
+  title: string;
+  description: string;
+  source: string;
 }
 
 // Get comparison period based on current range
@@ -234,40 +259,76 @@ export function useOverviewAnalytics(dateRange: DateRange) {
 
 // ============ PIPELINE ANALYTICS ============
 
-export function usePipelineAnalytics(dateRange: DateRange) {
+export function usePipelineAnalytics() {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["analytics-pipeline", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-pipeline-enhanced", user?.id],
     queryFn: async () => {
       const stages = [
-        { status: "new", name: "New Leads" },
-        { status: "contacted", name: "Contacted" },
-        { status: "appointment", name: "Appointments" },
-        { status: "offer_made", name: "Offers Made" },
-        { status: "under_contract", name: "Under Contract" },
-        { status: "closed", name: "Closed" },
+        { status: "new", name: "New Leads", benchmark: 3 },
+        { status: "contacted", name: "Contacted", benchmark: 5 },
+        { status: "appointment", name: "Appointments", benchmark: 7 },
+        { status: "offer_made", name: "Offers Made", benchmark: 10 },
+        { status: "under_contract", name: "Under Contract", benchmark: 30 },
+        { status: "closed", name: "Closed", benchmark: 0 },
       ];
 
-      const results = await Promise.all(
-        stages.map(async ({ status, name }) => {
-          const { count } = await supabase
-            .from("properties")
-            .select("id", { count: "exact", head: true })
-            .eq("status", status);
+      // Get all properties with their data
+      const { data: properties } = await supabase
+        .from("properties")
+        .select("id, address, status, created_at, updated_at, arv, mao_standard");
 
-          return {
-            name,
-            status,
-            count: count || 0,
-            value: 0, // Would calculate based on ARV/offer amounts
-          };
-        })
-      );
+      if (!properties) return { stages: [], velocity: [], totalValue: 0, weightedValue: 0 };
+
+      const now = new Date();
+
+      // Group properties by stage and calculate metrics
+      const stageResults = stages.map(({ status, name, benchmark }, index) => {
+        const stageProps = properties.filter(p => p.status === status);
+        const count = stageProps.length;
+        
+        // Calculate value (ARV - MAO spread)
+        const value = stageProps.reduce((sum, p) => {
+          if (p.arv && p.mao_standard) {
+            return sum + (p.arv - p.mao_standard);
+          }
+          return sum + 15000; // Default spread estimate
+        }, 0);
+
+        // Calculate health distribution
+        let onTrack = 0, slowing = 0, stalled = 0;
+        stageProps.forEach(p => {
+          const daysAtStage = Math.floor((now.getTime() - new Date(p.updated_at || p.created_at || now).getTime()) / (1000 * 60 * 60 * 24));
+          if (daysAtStage <= benchmark) onTrack++;
+          else if (daysAtStage <= benchmark * 1.5) slowing++;
+          else stalled++;
+        });
+
+        // Calculate average days at stage
+        const avgDays = stageProps.length > 0
+          ? Math.round(stageProps.reduce((sum, p) => {
+              return sum + Math.floor((now.getTime() - new Date(p.updated_at || p.created_at || now).getTime()) / (1000 * 60 * 60 * 24));
+            }, 0) / stageProps.length)
+          : 0;
+
+        return {
+          name,
+          status,
+          count,
+          value,
+          avgDays,
+          benchmark,
+          onTrack,
+          slowing,
+          stalled,
+          conversionRate: 0, // Will be calculated below
+        };
+      });
 
       // Calculate conversion rates
-      return results.map((stage, index) => {
-        const prevStage = results[index - 1];
+      const stagesWithConversion = stageResults.map((stage, index) => {
+        const prevStage = stageResults[index - 1];
         return {
           ...stage,
           conversionRate: prevStage && prevStage.count > 0
@@ -275,9 +336,140 @@ export function usePipelineAnalytics(dateRange: DateRange) {
             : 100,
         };
       });
+
+      // Calculate velocity metrics
+      const velocity: VelocityMetric[] = stages.slice(0, -1).map(({ name, benchmark }) => ({
+        stage: name,
+        avgDays: stagesWithConversion.find(s => s.name === name)?.avgDays || 0,
+        benchmark,
+      }));
+
+      // Calculate total and weighted pipeline value
+      const totalValue = stagesWithConversion.reduce((sum, s) => sum + s.value, 0);
+      const weightedValue = stagesWithConversion.reduce((sum, s, idx) => {
+        // Weight by conversion probability (higher stages = higher probability)
+        const weight = (idx + 1) / stagesWithConversion.length;
+        return sum + (s.value * weight);
+      }, 0);
+
+      return {
+        stages: stagesWithConversion,
+        velocity,
+        totalValue,
+        weightedValue,
+      };
     },
     enabled: !!user,
   });
+}
+
+// ============ STALLED DEALS ============
+
+export function useStalledDeals() {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ["stalled-deals", user?.id],
+    queryFn: async () => {
+      const stageBenchmarks: Record<string, number> = {
+        new: 3,
+        contacted: 5,
+        appointment: 7,
+        offer_made: 10,
+        under_contract: 30,
+      };
+
+      const { data: properties } = await supabase
+        .from("properties")
+        .select("id, address, status, created_at, updated_at, arv")
+        .in("status", ["new", "contacted", "appointment", "offer_made", "under_contract"]);
+
+      if (!properties) return [];
+
+      const now = new Date();
+      
+      const stalledDeals: StalledDeal[] = properties
+        .map(p => {
+          const daysAtStage = Math.floor(
+            (now.getTime() - new Date(p.updated_at || p.created_at || now).getTime()) / (1000 * 60 * 60 * 24)
+          );
+          const benchmark = stageBenchmarks[p.status || "new"] || 7;
+          
+          return {
+            id: p.id,
+            address: p.address,
+            stage: p.status || "new",
+            daysAtStage,
+            lastActivity: p.updated_at || p.created_at || now.toISOString(),
+            arv: p.arv,
+            isStalled: daysAtStage > benchmark * 2,
+            benchmark,
+          };
+        })
+        .filter(d => d.isStalled)
+        .sort((a, b) => b.daysAtStage - a.daysAtStage)
+        .slice(0, 20);
+
+      return stalledDeals;
+    },
+    enabled: !!user,
+  });
+}
+
+// ============ SOURCE RECOMMENDATIONS ============
+
+export function useSourceRecommendations(sources: SourceBreakdown[] | undefined) {
+  return React.useMemo(() => {
+    if (!sources || sources.length === 0) return [];
+
+    const recommendations: SourceRecommendation[] = [];
+
+    // Find highest ROI source
+    const highestROI = sources.reduce((best, s) => s.roi > best.roi ? s : best, sources[0]);
+    if (highestROI.roi > 100) {
+      recommendations.push({
+        type: "success",
+        title: `${highestROI.name} has exceptional ROI`,
+        description: `Consider increasing focus on ${highestROI.name} - ${highestROI.roi}% ROI is your best performer.`,
+        source: highestROI.name,
+      });
+    }
+
+    // Find low conversion sources
+    const lowConversion = sources.filter(s => s.leads >= 5 && s.conversion < 5);
+    if (lowConversion.length > 0) {
+      recommendations.push({
+        type: "warning",
+        title: `${lowConversion[0].name} has low conversion`,
+        description: `Only ${lowConversion[0].conversion}% of leads convert. Review lead quality or follow-up process.`,
+        source: lowConversion[0].name,
+      });
+    }
+
+    // Find high volume sources
+    const highVolume = sources.filter(s => s.leads > 10)[0];
+    if (highVolume && highVolume.conversion >= 10) {
+      recommendations.push({
+        type: "info",
+        title: `${highVolume.name} is your volume leader`,
+        description: `${highVolume.leads} leads with ${highVolume.conversion}% conversion. Solid performer.`,
+        source: highVolume.name,
+      });
+    }
+
+    // Find untapped potential
+    const untapped = sources.find(s => s.leads >= 3 && s.closed === 0 && s.contracts > 0);
+    if (untapped) {
+      recommendations.push({
+        type: "info",
+        title: `${untapped.name} has deals in pipeline`,
+        description: `${untapped.contracts} under contract - focus on closing these for first wins from this source.`,
+        source: untapped.name,
+      });
+    }
+
+    return recommendations;
+  }, [sources]);
 }
 
 // ============ SOURCE ANALYTICS ============
@@ -291,7 +483,7 @@ export function useSourceAnalytics(dateRange: DateRange) {
       // Get properties with their sources
       const { data: properties } = await supabase
         .from("properties")
-        .select("id, source, status, created_at")
+        .select("id, source, status, created_at, arv, mao_standard")
         .gte("created_at", dateRange.from.toISOString())
         .lte("created_at", dateRange.to.toISOString());
 
@@ -306,32 +498,60 @@ export function useSourceAnalytics(dateRange: DateRange) {
           name: source,
           leads: 0,
           contacted: 0,
+          appointments: 0,
           offers: 0,
+          contracts: 0,
           closed: 0,
           conversion: 0,
           revenue: 0,
+          cost: 0, // Would be tracked separately
+          cpl: 0,
+          cpa: 0,
+          roi: 0,
         };
 
         existing.leads++;
-        if (prop.status === "contacted" || prop.status === "appointment" || prop.status === "offer_made" || prop.status === "under_contract" || prop.status === "closed") {
+        if (["contacted", "appointment", "offer_made", "under_contract", "closed"].includes(prop.status || "")) {
           existing.contacted++;
         }
-        if (prop.status === "offer_made" || prop.status === "under_contract" || prop.status === "closed") {
+        if (prop.status === "appointment" || prop.status === "offer_made" || prop.status === "under_contract" || prop.status === "closed") {
+          existing.appointments++;
+        }
+        if (["offer_made", "under_contract", "closed"].includes(prop.status || "")) {
           existing.offers++;
+        }
+        if (prop.status === "under_contract" || prop.status === "closed") {
+          existing.contracts++;
         }
         if (prop.status === "closed") {
           existing.closed++;
-          existing.revenue += 15000; // Placeholder
+          // Calculate profit from ARV - MAO or use placeholder
+          const profit = prop.arv && prop.mao_standard 
+            ? (prop.arv - prop.mao_standard) * 0.3 
+            : 15000;
+          existing.revenue += profit;
         }
 
         sourceMap.set(source, existing);
       });
 
-      // Calculate conversion rates
-      const results = Array.from(sourceMap.values()).map((source) => ({
-        ...source,
-        conversion: source.leads > 0 ? Math.round((source.closed / source.leads) * 100) : 0,
-      }));
+      // Calculate derived metrics
+      const results = Array.from(sourceMap.values()).map((source) => {
+        // Estimate marketing cost per source type
+        const estimatedCost = source.name.toLowerCase().includes("mail") ? source.leads * 2 
+          : source.name.toLowerCase().includes("cold") ? source.leads * 0.5
+          : source.name.toLowerCase().includes("referral") ? 0
+          : source.leads * 1;
+        
+        return {
+          ...source,
+          cost: estimatedCost,
+          conversion: source.leads > 0 ? Math.round((source.closed / source.leads) * 100) : 0,
+          cpl: source.leads > 0 ? Math.round(estimatedCost / source.leads) : 0,
+          cpa: source.closed > 0 ? Math.round(estimatedCost / source.closed) : 0,
+          roi: estimatedCost > 0 ? Math.round(((source.revenue - estimatedCost) / estimatedCost) * 100) : source.revenue > 0 ? 999 : 0,
+        };
+      });
 
       return results.sort((a, b) => b.leads - a.leads);
     },
@@ -608,6 +828,3 @@ export function useAIInsights(overviewData: ReturnType<typeof useOverviewAnalyti
     return insights;
   }, [overviewData]);
 }
-
-// Re-export React for the useMemo in useAIInsights
-import * as React from "react";
