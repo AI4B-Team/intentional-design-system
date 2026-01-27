@@ -177,6 +177,14 @@ const App = () => (
               }
             />
             <Route
+              path="/financing"
+              element={
+                <ProtectedRoute>
+                  <Marketplace />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/marketplace"
               element={
                 <ProtectedRoute>
