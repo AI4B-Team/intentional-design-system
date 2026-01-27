@@ -35,6 +35,8 @@ import BuyerDetail from "./pages/BuyerDetail";
 import NotFound from "./pages/NotFound";
 import JVPartners from "./pages/JVPartners";
 import DailyReport from "./pages/DailyReport";
+import Achievements from "./pages/Achievements";
+import Leaderboard from "./pages/Leaderboard";
 
 const queryClient = new QueryClient();
 
@@ -257,6 +259,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DailyReport />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/achievements"
+              element={
+                <ProtectedRoute>
+                  <Achievements />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/leaderboard"
+              element={
+                <ProtectedRoute>
+                  <Leaderboard />
                 </ProtectedRoute>
               }
             />
