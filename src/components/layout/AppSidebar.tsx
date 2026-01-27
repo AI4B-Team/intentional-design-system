@@ -2,7 +2,7 @@ import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
+import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
   LayoutDashboard,
   Building2,
@@ -16,18 +16,20 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Inbox,
 } from "lucide-react";
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
-  badge?: number;
+  badgeKey?: string;
 }
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Properties", href: "/properties", icon: Building2 },
+  { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
   { label: "Deal Sources", href: "/deal-sources", icon: Users },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
   { label: "Campaigns", href: "/campaigns", icon: Megaphone },
@@ -51,8 +53,14 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+
+  const getBadgeCount = (badgeKey?: string) => {
+    if (badgeKey === "submissions") return pendingSubmissions || 0;
+    return 0;
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -88,6 +96,8 @@ export function AppSidebar({
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
 
+            const badgeCount = getBadgeCount(item.badgeKey);
+
             return (
               <li key={item.href}>
                 <NavLink
@@ -100,11 +110,18 @@ export function AppSidebar({
                     collapsed && "justify-center"
                   )}
                 >
-                  <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                  <div className="relative">
+                    <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                    {collapsed && badgeCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold text-white flex items-center justify-center">
+                        {badgeCount > 9 ? "9+" : badgeCount}
+                      </span>
+                    )}
+                  </div>
                   {!collapsed && <span>{item.label}</span>}
-                  {!collapsed && item.badge && (
-                    <span className="ml-auto bg-brand-accent/20 text-brand-accent text-xs font-medium px-2 py-0.5 rounded-full">
-                      {item.badge}
+                  {!collapsed && badgeCount > 0 && (
+                    <span className="ml-auto bg-warning text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                      {badgeCount}
                     </span>
                   )}
                 </NavLink>
