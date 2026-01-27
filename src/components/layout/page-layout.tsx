@@ -3,12 +3,32 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
 interface PageLayoutProps {
   children: React.ReactNode;
   className?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  fullWidth?: boolean;
+  headerActions?: React.ReactNode;
+  title?: string;
+  showSearch?: boolean;
+  user?: {
+    name: string;
+    email: string;
+    avatar?: string;
+  };
 }
 
-export function PageLayout({ children, className }: PageLayoutProps) {
+export function PageLayout({ 
+  children, 
+  className,
+  breadcrumbs,
+  fullWidth,
+}: PageLayoutProps) {
   const { user } = useAuth();
 
   // When the user is authenticated, always render inside the app shell
@@ -16,8 +36,8 @@ export function PageLayout({ children, className }: PageLayoutProps) {
   // existing lightweight layout.
   if (user) {
     return (
-      <AppLayout>
-        <div className={cn("page-container animate-fade-in", className)}>
+      <AppLayout breadcrumbs={breadcrumbs} fullWidth={fullWidth}>
+        <div className={cn("animate-fade-in", className)}>
           {children}
         </div>
       </AppLayout>
@@ -35,6 +55,7 @@ interface PageHeaderProps {
   title: string;
   description?: string;
   action?: React.ReactNode;
+  actions?: React.ReactNode; // Alias for backwards compatibility
   className?: string;
 }
 
@@ -42,8 +63,11 @@ export function PageHeader({
   title,
   description,
   action,
+  actions,
   className,
 }: PageHeaderProps) {
+  const actionContent = action || actions;
+  
   return (
     <div
       className={cn(
@@ -58,7 +82,7 @@ export function PageHeader({
           <p className="text-body text-muted-foreground mt-1">{description}</p>
         )}
       </div>
-      {action && <div className="mt-4 sm:mt-0">{action}</div>}
+      {actionContent && <div className="mt-4 sm:mt-0">{actionContent}</div>}
     </div>
   );
 }
