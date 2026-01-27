@@ -13,8 +13,7 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  ChevronLeft,
-  ChevronRight,
+  PanelLeftClose,
   Send,
   X,
   Inbox,
@@ -88,9 +87,19 @@ export function AppSidebar({
             <Building2 className="h-5 w-5 text-white" />
           </button>
           {!collapsed && (
-            <span className="text-lg font-bold text-white whitespace-nowrap">
-              DealFlow
-            </span>
+            <>
+              <span className="text-lg font-bold text-white whitespace-nowrap">
+                DealFlow
+              </span>
+              {/* Collapse Toggle - Desktop Only */}
+              <button
+                onClick={onToggle}
+                className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors ml-auto"
+                title="Collapse sidebar"
+              >
+                <PanelLeftClose className="h-4 w-4" />
+              </button>
+            </>
           )}
         </div>
         {/* Mobile close button */}
@@ -160,17 +169,6 @@ export function AppSidebar({
         </button>
       </div>
 
-      {/* Collapse Toggle - Desktop Only */}
-      <button
-        onClick={onToggle}
-        className="hidden lg:flex absolute -right-3 top-20 h-6 w-6 items-center justify-center rounded-full bg-slate-700 border border-slate-600 text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
-      >
-        {collapsed ? (
-          <ChevronRight className="h-4 w-4" />
-        ) : (
-          <ChevronLeft className="h-4 w-4" />
-        )}
-      </button>
     </>
   );
 
