@@ -54,7 +54,6 @@ const marketingGroup: NavGroup = {
     { label: "Campaigns", href: "/campaigns", icon: Megaphone },
     { label: "Direct Mail", href: "/mail", icon: Mail },
     { label: "Website", href: "/marketing/website", icon: Globe },
-    { label: "MLS", href: "/marketing/mls", icon: Home },
   ],
 };
 
