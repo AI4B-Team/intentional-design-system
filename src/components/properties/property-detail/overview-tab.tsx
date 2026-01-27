@@ -4,6 +4,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MotivationGauge } from "./motivation-gauge";
+import { MotivationIQModal } from "../motivation-iq-modal";
+import { MotivationIQBadge } from "../motivation-iq-badge";
 import {
   Pencil,
   Home,
@@ -22,13 +24,14 @@ import {
   ChevronUp,
   Copy,
   ExternalLink,
-  RefreshCw,
+  Settings,
   Zap,
 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface OverviewTabProps {
   property: {
+    id: string;
     beds: number;
     baths: number;
     sqft: number;
@@ -48,8 +51,10 @@ interface OverviewTabProps {
     score: number;
     velocityScore?: number;
     urgencyLevel?: string;
-    scoreBreakdown?: { signal: string; points: number }[];
+    distressSignals?: string[];
   };
+  onUpdateScore?: (signals: string[], score: number) => void;
+  isUpdating?: boolean;
 }
 
 function InfoRow({ label, value, icon: Icon, copyable, onClick }: { 
@@ -62,7 +67,7 @@ function InfoRow({ label, value, icon: Icon, copyable, onClick }: {
   const handleCopy = () => {
     if (typeof value === "string") {
       navigator.clipboard.writeText(value);
-      toast({ title: "Copied!", description: `${label} copied to clipboard` });
+      toast.success(`${label} copied to clipboard`);
     }
   };
 
@@ -102,9 +107,31 @@ function SectionCard({ title, onEdit, children }: { title: string; onEdit?: () =
   );
 }
 
-export function OverviewTab({ property }: OverviewTabProps) {
+export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTabProps) {
   const [showBreakdown, setShowBreakdown] = React.useState(false);
+  const [showMotivationModal, setShowMotivationModal] = React.useState(false);
   const hasGoodRate = property.mortgageRate && property.mortgageRate < 5;
+
+  const handleSaveScore = (signals: string[], score: number) => {
+    onUpdateScore?.(signals, score);
+    setShowMotivationModal(false);
+  };
+
+  // Get breakdown from distress signals if available
+  const getScoreBreakdown = () => {
+    if (!property.distressSignals || property.distressSignals.length === 0) {
+      return [
+        { signal: "Equity > 40%", points: 150 },
+        { signal: "Vacant Property", points: 200 },
+        { signal: "Tax Delinquent", points: 175 },
+      ];
+    }
+    // If we have real signals, we would compute breakdown from motivationiq.ts
+    return property.distressSignals.slice(0, 5).map((signal) => ({
+      signal: signal.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      points: 50,
+    }));
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-lg p-lg">
@@ -193,12 +220,23 @@ export function OverviewTab({ property }: OverviewTabProps) {
 
         {/* Motivation Score Card */}
         <Card variant="default" padding="md">
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-small text-content-secondary">MotivationIQ Score</span>
+            <MotivationIQBadge score={property.score} size="sm" showLabel />
+          </div>
+          
           <div className="text-center mb-4">
             <MotivationGauge score={property.score} size="lg" />
           </div>
           
-          <Button variant="secondary" size="sm" fullWidth icon={<RefreshCw />}>
-            Recalculate Score
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            fullWidth 
+            icon={<Settings />}
+            onClick={() => setShowMotivationModal(true)}
+          >
+            Configure Signals
           </Button>
 
           {/* Score Breakdown */}
@@ -217,13 +255,7 @@ export function OverviewTab({ property }: OverviewTabProps) {
 
             {showBreakdown && (
               <div className="mt-3 space-y-2 animate-fade-in">
-                {(property.scoreBreakdown || [
-                  { signal: "Equity > 40%", points: 150 },
-                  { signal: "Vacant Property", points: 200 },
-                  { signal: "Tax Delinquent", points: 175 },
-                  { signal: "Probate", points: 250 },
-                  { signal: "Long Ownership (15+ yrs)", points: 117 },
-                ]).map((item, i) => (
+                {getScoreBreakdown().map((item, i) => (
                   <div key={i} className="flex items-center justify-between text-small">
                     <span className="text-content-secondary">{item.signal}</span>
                     <span className="font-medium text-success tabular-nums">+{item.points}</span>
@@ -263,6 +295,15 @@ export function OverviewTab({ property }: OverviewTabProps) {
           </div>
         </Card>
       </div>
+
+      {/* MotivationIQ Modal */}
+      <MotivationIQModal
+        open={showMotivationModal}
+        onOpenChange={setShowMotivationModal}
+        currentSignals={property.distressSignals || []}
+        onSave={handleSaveScore}
+        isSaving={isUpdating}
+      />
     </div>
   );
 }
