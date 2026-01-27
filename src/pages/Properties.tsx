@@ -10,6 +10,7 @@ import { EmptyPropertiesState, NoResultsState } from "@/components/ui/empty-stat
 import { SkeletonPropertyCard } from "@/components/ui/skeleton";
 import { AddPropertyModal } from "@/components/properties/AddPropertyModal";
 import { BulkOfferModal } from "@/components/properties/bulk-offer-modal";
+import { BulkAIOutreachModal } from "@/components/properties/bulk-ai-outreach-modal";
 import {
   Select,
   SelectContent,
@@ -48,6 +49,7 @@ import {
   Megaphone,
   X,
   Send,
+  Bot,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -403,6 +405,7 @@ export default function Properties() {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
+  const [isBulkAIOpen, setIsBulkAIOpen] = React.useState(false);
   const itemsPerPage = 25;
 
   // Fetch properties
@@ -667,6 +670,14 @@ export default function Properties() {
             <Button variant="secondary" size="sm">
               Change Status
             </Button>
+            <Button 
+              variant="secondary" 
+              size="sm" 
+              icon={<Bot className="h-4 w-4" />}
+              onClick={() => setIsBulkAIOpen(true)}
+            >
+              AI Outreach
+            </Button>
             <Button variant="secondary" size="sm" icon={<Megaphone className="h-4 w-4" />}>
               Add to Campaign
             </Button>
@@ -867,6 +878,11 @@ export default function Properties() {
           setSelectedIds(new Set());
           refetch();
         }}
+      />
+      <BulkAIOutreachModal
+        open={isBulkAIOpen}
+        onOpenChange={setIsBulkAIOpen}
+        selectedPropertyIds={Array.from(selectedIds)}
       />
     </AppLayout>
   );

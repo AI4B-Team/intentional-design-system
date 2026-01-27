@@ -8,3 +8,4 @@ export { VelocityScoreCard } from "./velocity-score-card";
 export { VelocityBadge, VelocityScoreCell } from "./velocity-badge";
 export { BulkOfferModal } from "./bulk-offer-modal";
 export { TitleStatusBadge } from "./title-status-badge";
+export { BulkAIOutreachModal } from "./bulk-ai-outreach-modal";
