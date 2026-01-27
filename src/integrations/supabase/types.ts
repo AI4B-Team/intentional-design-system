@@ -252,6 +252,81 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_submissions: {
+        Row: {
+          created_at: string
+          deal_source_id: string | null
+          id: string
+          notes: string | null
+          property_id: string | null
+          referral_source: string | null
+          response_sent: boolean | null
+          reviewed: boolean | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          submitted_at: string
+          submitter_company: string | null
+          submitter_email: string
+          submitter_name: string
+          submitter_phone: string
+          submitter_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deal_source_id?: string | null
+          id?: string
+          notes?: string | null
+          property_id?: string | null
+          referral_source?: string | null
+          response_sent?: boolean | null
+          reviewed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_at?: string
+          submitter_company?: string | null
+          submitter_email: string
+          submitter_name: string
+          submitter_phone: string
+          submitter_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deal_source_id?: string | null
+          id?: string
+          notes?: string | null
+          property_id?: string | null
+          referral_source?: string | null
+          response_sent?: boolean | null
+          reviewed?: boolean | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          submitted_at?: string
+          submitter_company?: string | null
+          submitter_email?: string
+          submitter_name?: string
+          submitter_phone?: string
+          submitter_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_submissions_deal_source_id_fkey"
+            columns: ["deal_source_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_submissions_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lender_loans: {
         Row: {
           created_at: string

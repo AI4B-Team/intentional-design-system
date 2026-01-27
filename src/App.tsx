@@ -18,6 +18,8 @@ import FundingRequest from "./pages/FundingRequest";
 import Settings from "./pages/Settings";
 import DealSources from "./pages/DealSources";
 import DealSourceDetail from "./pages/DealSourceDetail";
+import SubmitDeal from "./pages/SubmitDeal";
+import Submissions from "./pages/Submissions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,7 @@ const App = () => (
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/submit-deal" element={<SubmitDeal />} />
             
             {/* Protected routes */}
             <Route
@@ -120,6 +123,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/submissions"
+              element={
+                <ProtectedRoute>
+                  <Submissions />
                 </ProtectedRoute>
               }
             />
