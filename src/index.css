@@ -550,3 +550,150 @@
 .animate-shake {
   animation: shake 0.3s ease-in-out;
 }
+
+/* ================================================
+   MOBILE RESPONSIVE UTILITIES
+   ================================================ */
+
+/* Safe area padding for notched devices */
+.safe-area-pt {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-pr {
+  padding-right: env(safe-area-inset-right);
+}
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-pl {
+  padding-left: env(safe-area-inset-left);
+}
+
+.safe-area-p {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* Touch-friendly targets (min 44x44px) */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Horizontal scroll snap */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.scroll-snap-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+/* Pull to refresh indicator space */
+.pull-to-refresh-space {
+  margin-top: env(safe-area-inset-top);
+}
+
+/* Mobile card swipe actions */
+.swipe-actions {
+  @apply absolute inset-y-0 right-0 flex items-center;
+  transform: translateX(100%);
+  transition: transform 0.2s ease-out;
+}
+
+.swipe-container.swiped .swipe-actions {
+  transform: translateX(0);
+}
+
+/* Floating action button */
+.fab {
+  @apply fixed right-4 z-40 h-14 w-14 rounded-full shadow-lg flex items-center justify-center;
+  bottom: calc(1rem + 64px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .fab {
+    @apply right-6 bottom-6;
+  }
+}
+
+/* Mobile-optimized modals */
+@media (max-width: 640px) {
+  .mobile-sheet {
+    @apply fixed inset-x-0 bottom-0 rounded-t-2xl max-h-[85vh] overflow-y-auto;
+  }
+  
+  .mobile-sheet::before {
+    content: '';
+    @apply block w-12 h-1 bg-border rounded-full mx-auto mt-3 mb-2;
+  }
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth momentum scrolling */
+.momentum-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Haptic feedback hint */
+@media (hover: none) and (pointer: coarse) {
+  .haptic-hint:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+}
+
+/* Mobile sticky header */
+.mobile-sticky-header {
+  @apply sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border-subtle;
+}
+
+/* Responsive text that prevents wrapping issues */
+.text-balance {
+  text-wrap: balance;
+}
+
+/* Phone number links on mobile */
+@media (hover: none) and (pointer: coarse) {
+  a[href^="tel:"] {
+    @apply text-brand underline-offset-4 hover:underline;
+  }
+}
+
+/* Mobile bottom sheet animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}

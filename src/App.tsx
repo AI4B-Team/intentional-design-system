@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { PWAProvider } from "@/components/pwa";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -40,6 +41,7 @@ import Achievements from "./pages/Achievements";
 import Leaderboard from "./pages/Leaderboard";
 import ClosebotTemplates from "./pages/ClosebotTemplates";
 import GHLSnapshot from "./pages/GHLSnapshot";
+import Install from "./pages/Install";
 
 const queryClient = new QueryClient();
 
@@ -47,14 +49,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/submit-deal" element={<SubmitDeal />} />
+        <PWAProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/submit-deal" element={<SubmitDeal />} />
+              <Route path="/install" element={<Install />} />
             
             {/* Protected routes */}
             <Route
@@ -313,6 +317,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        </PWAProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
