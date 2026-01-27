@@ -32,16 +32,6 @@ interface AppHeaderProps {
   breadcrumbs?: Breadcrumb[];
 }
 
-const routeTitles: Record<string, string> = {
-  "/dashboard": "Dashboard",
-  "/properties": "Properties",
-  "/deal-sources": "Deal Sources",
-  "/buyers": "Buyers",
-  "/campaigns": "Campaigns",
-  "/calculators": "Calculators",
-  "/analytics": "Analytics",
-  "/settings": "Settings",
-};
 
 export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
@@ -49,7 +39,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const { user, signOut } = useAuth();
   const [searchQuery, setSearchQuery] = React.useState("");
 
-  const pageTitle = routeTitles[location.pathname] || "DealFlow";
+  
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
 
   const handleSignOut = async () => {
@@ -67,34 +57,28 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Breadcrumbs / Title */}
-      <div className="flex items-center gap-2 min-w-0">
-        {breadcrumbs && breadcrumbs.length > 0 ? (
-          <nav className="flex items-center gap-1 text-small">
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && (
-                  <ChevronRight className="h-4 w-4 text-content-tertiary" />
-                )}
-                {crumb.href ? (
-                  <button
-                    onClick={() => navigate(crumb.href!)}
-                    className="text-content-secondary hover:text-content transition-colors"
-                  >
-                    {crumb.label}
-                  </button>
-                ) : (
-                  <span className="text-content font-medium">{crumb.label}</span>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
-        ) : (
-          <h1 className="text-h3 font-semibold text-content truncate">
-            {pageTitle}
-          </h1>
-        )}
-      </div>
+      {/* Breadcrumbs (only if provided and has multiple items) */}
+      {breadcrumbs && breadcrumbs.length > 1 && (
+        <nav className="flex items-center gap-1 text-small min-w-0">
+          {breadcrumbs.map((crumb, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && (
+                <ChevronRight className="h-4 w-4 text-content-tertiary" />
+              )}
+              {crumb.href ? (
+                <button
+                  onClick={() => navigate(crumb.href!)}
+                  className="text-content-secondary hover:text-content transition-colors"
+                >
+                  {crumb.label}
+                </button>
+              ) : (
+                <span className="text-content font-medium">{crumb.label}</span>
+              )}
+            </React.Fragment>
+          ))}
+        </nav>
+      )}
 
       {/* Spacer */}
       <div className="flex-1" />
