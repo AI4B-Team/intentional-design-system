@@ -525,6 +525,149 @@ export type Database = {
           },
         ]
       }
+      funding_requests: {
+        Row: {
+          arv: number | null
+          created_at: string | null
+          credit_score_range: string | null
+          exit_strategy: string | null
+          experience_level: string | null
+          id: string
+          loan_amount_requested: number | null
+          notes: string | null
+          property_id: string | null
+          property_value: number | null
+          purchase_price: number | null
+          purpose: string | null
+          rehab_budget: number | null
+          request_type: string
+          status: string | null
+          timeline_needed: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          arv?: number | null
+          created_at?: string | null
+          credit_score_range?: string | null
+          exit_strategy?: string | null
+          experience_level?: string | null
+          id?: string
+          loan_amount_requested?: number | null
+          notes?: string | null
+          property_id?: string | null
+          property_value?: number | null
+          purchase_price?: number | null
+          purpose?: string | null
+          rehab_budget?: number | null
+          request_type: string
+          status?: string | null
+          timeline_needed?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          arv?: number | null
+          created_at?: string | null
+          credit_score_range?: string | null
+          exit_strategy?: string | null
+          experience_level?: string | null
+          id?: string
+          loan_amount_requested?: number | null
+          notes?: string | null
+          property_id?: string | null
+          property_value?: number | null
+          purchase_price?: number | null
+          purpose?: string | null
+          rehab_budget?: number | null
+          request_type?: string
+          status?: string | null
+          timeline_needed?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_requests_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      funding_submissions: {
+        Row: {
+          conditions: string | null
+          created_at: string | null
+          expiration_date: string | null
+          funding_request_id: string
+          id: string
+          lender_id: string
+          notes: string | null
+          offered_amount: number | null
+          offered_points: number | null
+          offered_rate: number | null
+          offered_term: number | null
+          response_at: string | null
+          selected: boolean | null
+          status: string | null
+          submitted_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          conditions?: string | null
+          created_at?: string | null
+          expiration_date?: string | null
+          funding_request_id: string
+          id?: string
+          lender_id: string
+          notes?: string | null
+          offered_amount?: number | null
+          offered_points?: number | null
+          offered_rate?: number | null
+          offered_term?: number | null
+          response_at?: string | null
+          selected?: boolean | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          conditions?: string | null
+          created_at?: string | null
+          expiration_date?: string | null
+          funding_request_id?: string
+          id?: string
+          lender_id?: string
+          notes?: string | null
+          offered_amount?: number | null
+          offered_points?: number | null
+          offered_rate?: number | null
+          offered_term?: number | null
+          response_at?: string | null
+          selected?: boolean | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funding_submissions_funding_request_id_fkey"
+            columns: ["funding_request_id"]
+            isOneToOne: false
+            referencedRelation: "funding_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "funding_submissions_lender_id_fkey"
+            columns: ["lender_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_lenders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lender_loans: {
         Row: {
           created_at: string
@@ -605,6 +748,90 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      marketplace_lenders: {
+        Row: {
+          application_url: string | null
+          company: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          lender_type: string
+          loan_purposes: string[] | null
+          logo_url: string | null
+          max_arv_ltv: number | null
+          max_loan_amount: number | null
+          max_ltv: number | null
+          min_credit_score: number | null
+          min_loan_amount: number | null
+          name: string
+          points_range_max: number | null
+          points_range_min: number | null
+          prepayment_penalty: boolean | null
+          property_types: string[] | null
+          rate_range_max: number | null
+          rate_range_min: number | null
+          states_served: string[] | null
+          typical_funding_days: number | null
+        }
+        Insert: {
+          application_url?: string | null
+          company?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          lender_type: string
+          loan_purposes?: string[] | null
+          logo_url?: string | null
+          max_arv_ltv?: number | null
+          max_loan_amount?: number | null
+          max_ltv?: number | null
+          min_credit_score?: number | null
+          min_loan_amount?: number | null
+          name: string
+          points_range_max?: number | null
+          points_range_min?: number | null
+          prepayment_penalty?: boolean | null
+          property_types?: string[] | null
+          rate_range_max?: number | null
+          rate_range_min?: number | null
+          states_served?: string[] | null
+          typical_funding_days?: number | null
+        }
+        Update: {
+          application_url?: string | null
+          company?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          lender_type?: string
+          loan_purposes?: string[] | null
+          logo_url?: string | null
+          max_arv_ltv?: number | null
+          max_loan_amount?: number | null
+          max_ltv?: number | null
+          min_credit_score?: number | null
+          min_loan_amount?: number | null
+          name?: string
+          points_range_max?: number | null
+          points_range_min?: number | null
+          prepayment_penalty?: boolean | null
+          property_types?: string[] | null
+          rate_range_max?: number | null
+          rate_range_min?: number | null
+          states_served?: string[] | null
+          typical_funding_days?: number | null
+        }
+        Relationships: []
       }
       offers: {
         Row: {
