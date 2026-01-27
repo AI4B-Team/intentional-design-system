@@ -1,5 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 interface PageLayoutProps {
   children: React.ReactNode;
@@ -7,6 +9,21 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ children, className }: PageLayoutProps) {
+  const { user } = useAuth();
+
+  // When the user is authenticated, always render inside the app shell
+  // (left sidebar + top header). For unauthenticated pages, keep the
+  // existing lightweight layout.
+  if (user) {
+    return (
+      <AppLayout>
+        <div className={cn("page-container animate-fade-in", className)}>
+          {children}
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <main className={cn("page-container animate-fade-in", className)}>
       {children}
