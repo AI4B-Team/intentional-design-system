@@ -32,6 +32,7 @@ import {
   TitleTab,
   NegotiationCoachTab,
   OfferWizardModal,
+  DispositionTab,
 } from "@/components/properties/property-detail";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import {
@@ -68,6 +69,7 @@ const tabs = [
   { id: "exit-strategy", label: "Exit Strategy" },
   { id: "negotiation", label: "Negotiation Coach" },
   { id: "offers", label: "Offers" },
+  { id: "disposition", label: "Disposition" },
   { id: "outreach", label: "Outreach" },
   { id: "appointments", label: "Appointments" },
   { id: "documents", label: "Documents" },
@@ -426,6 +428,25 @@ export default function PropertyDetail() {
           />
         )}
         {activeTab === "offers" && <OffersTab />}
+        {activeTab === "disposition" && (
+          <DispositionTab
+            property={{
+              id: property.id,
+              address: property.address,
+              city: property.city,
+              state: property.state,
+              zip: property.zip,
+              property_type: property.property_type,
+              beds: property.beds,
+              baths: property.baths,
+              sqft: property.sqft,
+              arv: property.arv ? Number(property.arv) : null,
+              repair_estimate: property.repair_estimate ? Number(property.repair_estimate) : null,
+              mao_standard: property.mao_standard ? Number(property.mao_standard) : null,
+              status: property.status,
+            }}
+          />
+        )}
         {activeTab === "outreach" && <OutreachTab />}
         {activeTab === "appointments" && <AppointmentsTab />}
         {activeTab === "documents" && <DocumentsTab />}
