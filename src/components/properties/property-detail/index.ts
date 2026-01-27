@@ -6,3 +6,5 @@ export { UnderwritingTab } from "./underwriting-tab";
 export { OffersTab } from "./offers-tab";
 export { OutreachTab } from "./outreach-tab";
 export { AppointmentsTab } from "./appointments-tab";
+export { DocumentsTab } from "./documents-tab";
+export { NotesTab } from "./notes-tab";
