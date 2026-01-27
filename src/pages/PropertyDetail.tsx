@@ -31,6 +31,7 @@ import {
   NotesTab,
   TitleTab,
   NegotiationCoachTab,
+  OfferWizardModal,
 } from "@/components/properties/property-detail";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import {
@@ -146,6 +147,7 @@ export default function PropertyDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState("overview");
+  const [showOfferWizard, setShowOfferWizard] = React.useState(false);
 
   const { data: property, isLoading, error } = useProperty(id);
   const updateProperty = useUpdateProperty();
@@ -351,7 +353,7 @@ export default function PropertyDetail() {
             <Button variant="secondary" size="sm" icon={<Pencil />}>
               Edit Property
             </Button>
-            <Button variant="primary" size="sm">
+            <Button variant="primary" size="sm" onClick={() => setShowOfferWizard(true)}>
               Make Offer
             </Button>
 
@@ -429,6 +431,23 @@ export default function PropertyDetail() {
         {activeTab === "documents" && <DocumentsTab />}
         {activeTab === "notes" && <NotesTab />}
       </div>
+
+      {/* Offer Wizard Modal */}
+      <OfferWizardModal
+        open={showOfferWizard}
+        onOpenChange={setShowOfferWizard}
+        propertyId={property.id}
+        property={{
+          address: property.address,
+          ownerName: property.owner_name || undefined,
+          ownerEmail: property.owner_email || undefined,
+          ownerPhone: property.owner_phone || undefined,
+          ownerAddress: property.owner_mailing_address || undefined,
+          maoStandard: property.mao_standard ? Number(property.mao_standard) : undefined,
+          maoAggressive: property.mao_aggressive ? Number(property.mao_aggressive) : undefined,
+          maoConservative: property.mao_conservative ? Number(property.mao_conservative) : undefined,
+        }}
+      />
     </DashboardLayout>
   );
 }

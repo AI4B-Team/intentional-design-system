@@ -833,6 +833,128 @@ export type Database = {
         }
         Relationships: []
       }
+      offer_deliveries: {
+        Row: {
+          channel: string
+          clicked_at: string | null
+          content: Json | null
+          created_at: string
+          delivered_at: string | null
+          error_message: string | null
+          id: string
+          offer_id: string
+          opened_at: string | null
+          property_id: string
+          recipient_address: string | null
+          recipient_email: string | null
+          recipient_phone: string | null
+          sent_at: string | null
+          status: string
+          tracking_id: string | null
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          clicked_at?: string | null
+          content?: Json | null
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          id?: string
+          offer_id: string
+          opened_at?: string | null
+          property_id: string
+          recipient_address?: string | null
+          recipient_email?: string | null
+          recipient_phone?: string | null
+          sent_at?: string | null
+          status?: string
+          tracking_id?: string | null
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          clicked_at?: string | null
+          content?: Json | null
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          id?: string
+          offer_id?: string
+          opened_at?: string | null
+          property_id?: string
+          recipient_address?: string | null
+          recipient_email?: string | null
+          recipient_phone?: string | null
+          sent_at?: string | null
+          status?: string
+          tracking_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_deliveries_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_deliveries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offer_followups: {
+        Row: {
+          channel: string
+          content: Json | null
+          created_at: string
+          id: string
+          offer_id: string
+          scheduled_for: string
+          sent_at: string | null
+          sequence_number: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          offer_id: string
+          scheduled_for: string
+          sent_at?: string | null
+          sequence_number: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          content?: Json | null
+          created_at?: string
+          id?: string
+          offer_id?: string
+          scheduled_for?: string
+          sent_at?: string | null
+          sequence_number?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_followups_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offers: {
         Row: {
           counter_amount: number | null
