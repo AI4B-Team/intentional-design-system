@@ -46,6 +46,7 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "AIVA", href: "/aiva", icon: Sparkles },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Inbox", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
   { label: "Properties", href: "/properties", icon: Building2 },
   { label: "Contacts", href: "/deal-sources", icon: Users },
 ];
