@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Home, Bed, Bath, Maximize, MapPin, Flame } from "lucide-react";
+import { TitleStatusBadge, type TitleStatus } from "./title-status-badge";
 
 interface PropertyCardProps {
   id: string | number;
@@ -19,6 +20,7 @@ interface PropertyCardProps {
   status: "Hot Lead" | "Warm" | "New" | "In Review" | "On Hold" | "Closed";
   source?: string;
   imageUrl?: string;
+  titleStatus?: TitleStatus;
   onClick?: () => void;
   className?: string;
   style?: React.CSSProperties;
@@ -72,6 +74,7 @@ export function PropertyCard({
   status,
   source,
   imageUrl,
+  titleStatus,
   onClick,
   className,
   style,
@@ -160,16 +163,19 @@ export function PropertyCard({
 
         {/* Bottom Row */}
         <div className="flex items-center justify-between">
-          {/* Motivation Score */}
-          <div
-            className={cn(
-              "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-small font-medium",
-              scoreColors.bg,
-              scoreColors.text
-            )}
-          >
-            {isHot && <Flame className="h-3 w-3" />}
-            <span>{score}</span>
+          {/* Motivation Score & Title Status */}
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-small font-medium",
+                scoreColors.bg,
+                scoreColors.text
+              )}
+            >
+              {isHot && <Flame className="h-3 w-3" />}
+              <span>{score}</span>
+            </div>
+            {titleStatus && <TitleStatusBadge status={titleStatus} />}
           </div>
 
           {/* ARV/Spread */}
