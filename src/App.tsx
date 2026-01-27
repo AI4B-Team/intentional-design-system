@@ -52,6 +52,8 @@ import MailTemplates from "./pages/MailTemplates";
 import MailTemplateEditor from "./pages/MailTemplateEditor";
 import MailSuppression from "./pages/MailSuppression";
 import AIVA from "./pages/AIVA";
+import MarketplaceDeals from "./pages/MarketplaceDeals";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -188,7 +190,7 @@ const App = () => (
               path="/marketplace"
               element={
                 <ProtectedRoute>
-                  <Marketplace />
+                  <MarketplaceDeals />
                 </ProtectedRoute>
               }
             />
