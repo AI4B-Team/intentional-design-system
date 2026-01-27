@@ -389,6 +389,10 @@ const App = () => (
             
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/markets" element={<Navigate to="/settings" replace />} />
+            <Route path="/contacts" element={<Navigate to="/deal-sources" replace />} />
+            <Route path="/pipeline" element={<Navigate to="/properties" replace />} />
+            <Route path="/documents" element={<Navigate to="/properties" replace />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
