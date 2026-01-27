@@ -8,6 +8,7 @@ import {
   Building2,
   Users,
   UserCheck,
+  UserPlus,
   Megaphone,
   Calculator,
   BarChart3,
@@ -21,7 +22,6 @@ import {
   Mail,
   ChevronDown,
   Globe,
-  Home,
 } from "lucide-react";
 
 interface NavItem {
@@ -39,6 +39,7 @@ interface NavGroup {
 
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Leads", href: "/leads", icon: UserPlus },
   { label: "Properties", href: "/properties", icon: Building2 },
   { label: "Contacts", href: "/deal-sources", icon: Users },
   { label: "Offers", href: "/offers", icon: Send },
