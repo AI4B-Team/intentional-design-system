@@ -70,12 +70,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             className={cn(
               "flex w-full px-3.5 py-2.5 rounded-small border bg-background text-body transition-all duration-150",
+              "min-h-[44px]", // Touch-friendly target
               "placeholder:text-content-tertiary",
               "focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary",
+              "hover:border-content-tertiary",
               icon && "pl-10",
               hasError
-                ? "border-destructive ring-2 ring-destructive/10"
+                ? "border-destructive ring-2 ring-destructive/10 animate-shake"
                 : "border-border",
               className
             )}
