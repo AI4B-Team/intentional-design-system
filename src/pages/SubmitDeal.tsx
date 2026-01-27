@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useSubmitDeal, type SubmitDealData } from "@/hooks/useDealSubmissions";
-import { PageLayout } from "@/components/layout";
+import { AppLayout } from "@/components/layout/AppLayout";
 
 const steps = [
   { id: 1, name: "Your Info", icon: User },
@@ -223,7 +223,7 @@ export default function SubmitDeal() {
 
   if (isSuccess) {
     return (
-      <PageLayout>
+      <AppLayout>
         <div className="max-w-2xl mx-auto py-8">
           <Card variant="elevated" padding="lg" className="text-center">
             <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-6">
@@ -255,12 +255,12 @@ export default function SubmitDeal() {
             </div>
           </Card>
         </div>
-      </PageLayout>
+      </AppLayout>
     );
   }
 
   return (
-    <PageLayout>
+    <AppLayout>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -906,6 +906,6 @@ export default function SubmitDeal() {
           </CardContent>
         </Card>
       </div>
-    </PageLayout>
+    </AppLayout>
   );
 }
