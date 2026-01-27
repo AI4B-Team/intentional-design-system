@@ -31,6 +31,7 @@ import SettingsIntegrations from "./pages/SettingsIntegrations";
 import TeamManagement from "./pages/TeamManagement";
 import OrganizationSettings from "./pages/OrganizationSettings";
 import BillingSettings from "./pages/BillingSettings";
+import CreditsHistory from "./pages/CreditsHistory";
 import Contacts from "./pages/Contacts";
 import DealSourceDetail from "./pages/DealSourceDetail";
 import SubmitDeal from "./pages/SubmitDeal";
@@ -335,6 +336,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <BillingSettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/credits"
+              element={
+                <ProtectedRoute>
+                  <CreditsHistory />
                 </ProtectedRoute>
               }
             />
