@@ -61,7 +61,7 @@ export function AppSidebar({
   const { user, signOut } = useAuth();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
-  const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+  
 
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
@@ -144,34 +144,20 @@ export function AppSidebar({
         </ul>
       </nav>
 
-      {/* User Section */}
+      {/* Sign Out Button */}
       <div className="border-t border-slate-700 p-4">
-        {!collapsed ? (
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-full bg-slate-600 flex items-center justify-center text-white font-medium text-sm flex-shrink-0">
-              {userName.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{userName}</p>
-              <p className="text-xs text-slate-400 truncate">{user?.email}</p>
-            </div>
-            <button
-              onClick={handleSignOut}
-              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded-md transition-colors"
-              title="Sign out"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <button
-            onClick={handleSignOut}
-            className="w-full flex justify-center p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-md transition-colors"
-            title="Sign out"
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
-        )}
+        <button
+          onClick={handleSignOut}
+          className={cn(
+            "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg transition-colors",
+            "text-slate-300 hover:text-white hover:bg-slate-700/50",
+            collapsed && "justify-center"
+          )}
+          title="Sign out"
+        >
+          <LogOut className="h-5 w-5 flex-shrink-0" />
+          {!collapsed && <span>Sign out</span>}
+        </button>
       </div>
 
       {/* Collapse Toggle - Desktop Only */}
