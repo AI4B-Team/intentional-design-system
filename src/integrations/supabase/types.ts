@@ -1059,6 +1059,62 @@ export type Database = {
           },
         ]
       }
+      title_reports: {
+        Row: {
+          cost: number | null
+          created_at: string
+          id: string
+          ordered_at: string | null
+          property_id: string
+          provider: string | null
+          received_at: string | null
+          report_type: string
+          report_url: string | null
+          status: string
+          summary: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          id?: string
+          ordered_at?: string | null
+          property_id: string
+          provider?: string | null
+          received_at?: string | null
+          report_type?: string
+          report_url?: string | null
+          status?: string
+          summary?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          id?: string
+          ordered_at?: string | null
+          property_id?: string
+          provider?: string | null
+          received_at?: string | null
+          report_type?: string
+          report_url?: string | null
+          status?: string
+          summary?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "title_reports_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

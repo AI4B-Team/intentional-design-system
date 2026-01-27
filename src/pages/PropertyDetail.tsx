@@ -28,6 +28,7 @@ import {
   AppointmentsTab,
   DocumentsTab,
   NotesTab,
+  TitleTab,
 } from "@/components/properties/property-detail";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import {
@@ -59,6 +60,7 @@ const statuses = [
 
 const tabs = [
   { id: "overview", label: "Overview" },
+  { id: "title", label: "Title" },
   { id: "underwriting", label: "Underwriting" },
   { id: "offers", label: "Offers" },
   { id: "outreach", label: "Outreach" },
@@ -389,6 +391,13 @@ export default function PropertyDetail() {
             property={propertyForTabs} 
             onUpdateScore={handleUpdateScore}
             isUpdating={updateProperty.isPending}
+          />
+        )}
+        {activeTab === "title" && (
+          <TitleTab 
+            propertyId={property.id}
+            propertyValue={property.arv ? Number(property.arv) : (property.estimated_value ? Number(property.estimated_value) : null)}
+            propertyAddress={property.address}
           />
         )}
         {activeTab === "underwriting" && <UnderwritingTab property={propertyForTabs} />}
