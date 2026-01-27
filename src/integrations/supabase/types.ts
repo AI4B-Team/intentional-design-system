@@ -812,6 +812,157 @@ export type Database = {
           },
         ]
       }
+      jv_inquiries: {
+        Row: {
+          created_at: string | null
+          id: string
+          inquirer_user_id: string
+          message: string | null
+          opportunity_id: string
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          inquirer_user_id: string
+          message?: string | null
+          opportunity_id: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          inquirer_user_id?: string
+          message?: string | null
+          opportunity_id?: string
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jv_inquiries_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "jv_opportunities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jv_opportunities: {
+        Row: {
+          capital_needed: number | null
+          created_at: string | null
+          deal_type: string | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          location: string | null
+          property_id: string | null
+          proposed_split: string | null
+          seeking: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          visibility: string | null
+          your_contribution: string | null
+        }
+        Insert: {
+          capital_needed?: number | null
+          created_at?: string | null
+          deal_type?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          property_id?: string | null
+          proposed_split?: string | null
+          seeking?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          visibility?: string | null
+          your_contribution?: string | null
+        }
+        Update: {
+          capital_needed?: number | null
+          created_at?: string | null
+          deal_type?: string | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          location?: string | null
+          property_id?: string | null
+          proposed_split?: string | null
+          seeking?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          visibility?: string | null
+          your_contribution?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jv_opportunities_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jv_profiles: {
+        Row: {
+          available_capital: number | null
+          bio: string | null
+          created_at: string | null
+          deals_completed: number | null
+          experience_level: string | null
+          id: string
+          is_public: boolean | null
+          preferred_role: string | null
+          profile_type: string
+          target_areas: string[] | null
+          target_deal_types: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          available_capital?: number | null
+          bio?: string | null
+          created_at?: string | null
+          deals_completed?: number | null
+          experience_level?: string | null
+          id?: string
+          is_public?: boolean | null
+          preferred_role?: string | null
+          profile_type?: string
+          target_areas?: string[] | null
+          target_deal_types?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          available_capital?: number | null
+          bio?: string | null
+          created_at?: string | null
+          deals_completed?: number | null
+          experience_level?: string | null
+          id?: string
+          is_public?: boolean | null
+          preferred_role?: string | null
+          profile_type?: string
+          target_areas?: string[] | null
+          target_deal_types?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lender_loans: {
         Row: {
           created_at: string
@@ -1389,7 +1540,16 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      jv_experience_level:
+        | "beginner"
+        | "intermediate"
+        | "experienced"
+        | "expert"
+      jv_inquiry_status: "pending" | "accepted" | "declined"
+      jv_opportunity_status: "open" | "in_discussion" | "closed" | "cancelled"
+      jv_preferred_role: "passive" | "active" | "either"
+      jv_profile_type: "capital_partner" | "operating_partner" | "both"
+      jv_visibility: "public" | "connections_only" | "private"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1516,6 +1676,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      jv_experience_level: [
+        "beginner",
+        "intermediate",
+        "experienced",
+        "expert",
+      ],
+      jv_inquiry_status: ["pending", "accepted", "declined"],
+      jv_opportunity_status: ["open", "in_discussion", "closed", "cancelled"],
+      jv_preferred_role: ["passive", "active", "either"],
+      jv_profile_type: ["capital_partner", "operating_partner", "both"],
+      jv_visibility: ["public", "connections_only", "private"],
+    },
   },
 } as const

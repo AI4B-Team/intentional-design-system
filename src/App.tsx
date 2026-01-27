@@ -33,6 +33,7 @@ import ContractorDetail from "./pages/ContractorDetail";
 import Buyers from "./pages/Buyers";
 import BuyerDetail from "./pages/BuyerDetail";
 import NotFound from "./pages/NotFound";
+import JVPartners from "./pages/JVPartners";
 
 const queryClient = new QueryClient();
 
@@ -239,6 +240,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CampaignDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/jv"
+              element={
+                <ProtectedRoute>
+                  <JVPartners />
                 </ProtectedRoute>
               }
             />
