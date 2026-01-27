@@ -78,6 +78,8 @@ const toolsGroup: NavGroup = {
   label: "Tools",
   icon: Calculator,
   items: [
+    { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
+    { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
     { label: "Calculators", href: "/calculators", icon: Calculator },
     { label: "Analytics", href: "/analytics", icon: BarChart3 },
   ],

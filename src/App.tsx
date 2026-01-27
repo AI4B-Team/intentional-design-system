@@ -54,6 +54,8 @@ import MailSuppression from "./pages/MailSuppression";
 import AIVA from "./pages/AIVA";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
+import DealAnalyzer from "./pages/DealAnalyzer";
+import MarketAnalyzer from "./pages/MarketAnalyzer";
 
 const queryClient = new QueryClient();
 
@@ -410,6 +412,24 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MailTemplates />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* AI Tools Routes */}
+            <Route
+              path="/tools/deal-analyzer"
+              element={
+                <ProtectedRoute>
+                  <DealAnalyzer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tools/market-analyzer"
+              element={
+                <ProtectedRoute>
+                  <MarketAnalyzer />
                 </ProtectedRoute>
               }
             />
