@@ -32,6 +32,7 @@ import {
 import { usePropertyOffers } from "@/hooks/useProperty";
 import { useDeleteOffer } from "@/hooks/usePropertyMutations";
 import { AddOfferModal } from "./add-offer-modal";
+import { OfferDeliveryDetails } from "./offer-delivery-details";
 import { format } from "date-fns";
 
 function formatCurrency(value: number): string {
@@ -289,6 +290,9 @@ export function OffersTab() {
                         {offer.notes}
                       </p>
                     )}
+
+                    {/* Delivery Details */}
+                    <OfferDeliveryDetails offerId={offer.id} className="mt-3" />
 
                     {offer.response === "countered" && (
                       <div className="flex gap-2 mt-4">

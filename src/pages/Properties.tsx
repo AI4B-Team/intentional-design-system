@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { EmptyPropertiesState, NoResultsState } from "@/components/ui/empty-state";
 import { SkeletonPropertyCard } from "@/components/ui/skeleton";
 import { AddPropertyModal } from "@/components/properties/AddPropertyModal";
+import { BulkOfferModal } from "@/components/properties/bulk-offer-modal";
 import {
   Select,
   SelectContent,
@@ -46,6 +47,7 @@ import {
   Download,
   Megaphone,
   X,
+  Send,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -400,19 +402,20 @@ export default function Properties() {
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
   const itemsPerPage = 25;
 
   // Fetch properties
-  const { data: properties = [], isLoading } = useQuery({
+  const { data: properties = [], isLoading, refetch } = useQuery({
     queryKey: ["properties"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("properties")
-        .select("id, address, city, state, zip, beds, baths, sqft, arv, mao_standard, motivation_score, status, source, property_type, owner_name, created_at, updated_at")
+        .select("id, address, city, state, zip, beds, baths, sqft, arv, mao_standard, mao_aggressive, mao_conservative, motivation_score, status, source, property_type, owner_name, owner_email, owner_phone, owner_mailing_address, created_at, updated_at")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Property[];
+      return data as (Property & { mao_aggressive: number | null; mao_conservative: number | null; owner_email: string | null; owner_phone: string | null; owner_mailing_address: string | null })[];
     },
   });
 
@@ -653,6 +656,14 @@ export default function Properties() {
             {selectedIds.size} selected
           </span>
           <div className="flex gap-2 ml-auto">
+            <Button 
+              variant="primary" 
+              size="sm" 
+              icon={<Send className="h-4 w-4" />}
+              onClick={() => setIsBulkOfferOpen(true)}
+            >
+              Send Offers
+            </Button>
             <Button variant="secondary" size="sm">
               Change Status
             </Button>
@@ -845,6 +856,17 @@ export default function Properties() {
       <AddPropertyModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
+      />
+
+      {/* Bulk Offer Modal */}
+      <BulkOfferModal
+        open={isBulkOfferOpen}
+        onOpenChange={setIsBulkOfferOpen}
+        properties={properties.filter(p => selectedIds.has(p.id)) as any}
+        onComplete={() => {
+          setSelectedIds(new Set());
+          refetch();
+        }}
       />
     </AppLayout>
   );
