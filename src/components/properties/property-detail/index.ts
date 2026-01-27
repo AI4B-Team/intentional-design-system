@@ -8,3 +8,5 @@ export { OutreachTab } from "./outreach-tab";
 export { AppointmentsTab } from "./appointments-tab";
 export { DocumentsTab } from "./documents-tab";
 export { NotesTab } from "./notes-tab";
+export { TitleIntelligenceCard } from "./title-intelligence-card";
+export { TitleTab } from "./title-tab";
