@@ -19,3 +19,5 @@ export { OfferDeliveryDetails } from "./offer-delivery-details";
 export { DispositionTab } from "./disposition-tab";
 export { SendDealModal } from "./send-deal-modal";
 export { DispositionPipeline } from "./disposition-pipeline";
+export { RentalAnalysisCard } from "./rental-analysis-card";
+export { AddRentCompModal } from "./add-rent-comp-modal";
