@@ -61,7 +61,6 @@ const marketingGroup: NavGroup = {
 const bottomNavItems: NavItem[] = [
   { label: "Calculators", href: "/calculators", icon: Calculator },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 interface AppSidebarProps {
