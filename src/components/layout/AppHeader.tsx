@@ -105,9 +105,8 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="primary"
             size="sm"
-            className="hidden sm:flex gap-1"
+            className="hidden sm:flex gap-1 bg-slate-800 hover:bg-slate-700 text-white"
           >
             <Plus className="h-4 w-4" />
             <span>Add</span>
@@ -149,9 +148,8 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="primary"
             size="icon"
-            className="sm:hidden h-9 w-9"
+            className="sm:hidden h-9 w-9 bg-slate-800 hover:bg-slate-700 text-white"
           >
             <Plus className="h-4 w-4" />
           </Button>
