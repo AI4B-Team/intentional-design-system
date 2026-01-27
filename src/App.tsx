@@ -20,6 +20,9 @@ import DealSources from "./pages/DealSources";
 import DealSourceDetail from "./pages/DealSourceDetail";
 import SubmitDeal from "./pages/SubmitDeal";
 import Submissions from "./pages/Submissions";
+import Campaigns from "./pages/Campaigns";
+import CampaignWizard from "./pages/CampaignWizard";
+import CampaignDetail from "./pages/CampaignDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -131,6 +134,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Submissions />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/campaigns"
+              element={
+                <ProtectedRoute>
+                  <Campaigns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/campaigns/new"
+              element={
+                <ProtectedRoute>
+                  <CampaignWizard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/campaigns/:id"
+              element={
+                <ProtectedRoute>
+                  <CampaignDetail />
                 </ProtectedRoute>
               }
             />
