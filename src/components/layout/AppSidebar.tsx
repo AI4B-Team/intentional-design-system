@@ -40,10 +40,10 @@ interface NavGroup {
 const navItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Properties", href: "/properties", icon: Building2 },
+  { label: "Contacts", href: "/deal-sources", icon: Users },
   { label: "Offers", href: "/offers", icon: Send },
   { label: "Contractors", href: "/contractors", icon: Hammer },
   { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
-  { label: "Deal Sources", href: "/deal-sources", icon: Users },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
   { label: "Campaigns", href: "/campaigns", icon: Megaphone },
 ];
