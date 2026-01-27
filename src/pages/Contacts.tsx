@@ -115,6 +115,10 @@ export default function Contacts() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
+      case "seller":
+        return "bg-primary/10 text-primary";
+      case "buyer":
+        return "bg-purple-500/10 text-purple-600";
       case "agent":
         return "bg-info/10 text-info";
       case "wholesaler":
@@ -150,7 +154,7 @@ export default function Contacts() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Contacts</h1>
             <p className="text-muted-foreground mt-1">
-              Manage your network of agents, wholesalers, and lenders
+              Manage your network of sellers, buyers, agents, wholesalers, and lenders
             </p>
           </div>
           <Button variant="primary" onClick={() => setShowAddModal(true)}>
@@ -182,8 +186,10 @@ export default function Contacts() {
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background">
                   <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="seller">Seller</SelectItem>
+                  <SelectItem value="buyer">Buyer</SelectItem>
                   <SelectItem value="agent">Agent</SelectItem>
                   <SelectItem value="wholesaler">Wholesaler</SelectItem>
                   <SelectItem value="lender">Lender</SelectItem>
@@ -195,7 +201,7 @@ export default function Contacts() {
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="cold">Cold</SelectItem>
                   <SelectItem value="contacted">Contacted</SelectItem>
@@ -211,7 +217,7 @@ export default function Contacts() {
                   <ArrowUpDown className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Sort" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-background">
                   <SelectItem value="newest">Newest First</SelectItem>
                   <SelectItem value="oldest">Oldest First</SelectItem>
                   <SelectItem value="name">Name A-Z</SelectItem>
@@ -231,10 +237,18 @@ export default function Contacts() {
         </Card>
 
         {/* Stats Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           <Card className="p-4">
-            <p className="text-sm text-muted-foreground">Total Contacts</p>
+            <p className="text-sm text-muted-foreground">Total</p>
             <p className="text-2xl font-bold text-foreground">{contacts.length}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Sellers</p>
+            <p className="text-2xl font-bold text-primary">{contacts.filter(c => c.type === "seller").length}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Buyers</p>
+            <p className="text-2xl font-bold text-purple-600">{contacts.filter(c => c.type === "buyer").length}</p>
           </Card>
           <Card className="p-4">
             <p className="text-sm text-muted-foreground">Agents</p>
