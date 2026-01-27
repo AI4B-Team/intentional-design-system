@@ -2,14 +2,15 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout, PageHeader } from "@/components/layout";
 import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
+import { EmptyPropertiesState, NoResultsState } from "@/components/ui/empty-state";
+import { SkeletonPropertyCard, SkeletonTable } from "@/components/ui/skeleton";
 import {
   PropertyCard,
   PropertyFilters,
   PropertiesTable,
   AddPropertyModal,
 } from "@/components/properties";
-import { Plus, Upload, Home } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 
 // Sample properties data
 const sampleProperties = [
@@ -168,6 +169,13 @@ export default function Properties() {
   const [selectedIds, setSelectedIds] = React.useState<(string | number)[]>([]);
   const [showAddModal, setShowAddModal] = React.useState(false);
   const [properties] = React.useState(sampleProperties);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  // Simulate loading state
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Filter and sort properties
   const filteredProperties = React.useMemo(() => {
@@ -243,19 +251,25 @@ export default function Properties() {
         }
       />
 
-      {isEmpty ? (
-        /* Empty State */
-        <div className="flex items-center justify-center min-h-[400px]">
-          <EmptyState
-            icon={<Home className="h-12 w-12" />}
-            title="No properties yet"
-            description="Add your first property to get started tracking leads and deals."
-            action={{
-              label: "Add Property",
-              onClick: () => setShowAddModal(true),
-            }}
-          />
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="mt-md">
+          {viewMode === "cards" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonPropertyCard key={i} />
+              ))}
+            </div>
+          ) : (
+            <SkeletonTable rows={8} columns={6} />
+          )}
         </div>
+      ) : isEmpty ? (
+        /* Empty State */
+        <EmptyPropertiesState onAdd={() => setShowAddModal(true)} />
+      ) : filteredProperties.length === 0 ? (
+        /* No Results State */
+        <NoResultsState query={searchQuery} onClear={handleClearFilters} />
       ) : (
         <>
           {/* Filter Bar */}
