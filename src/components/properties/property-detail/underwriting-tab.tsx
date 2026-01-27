@@ -34,6 +34,7 @@ import {
   Target,
 } from "lucide-react";
 import { usePropertyComps, useDeleteComp } from "@/hooks/usePropertyComps";
+import { usePropertyTitleReport, calculateTitleMetrics, type TitleReportSummary } from "@/hooks/useTitleReports";
 import { useProperty, useUpdateProperty } from "@/hooks/useProperty";
 import { AddCompModal } from "./add-comp-modal";
 import { AddRepairModal } from "./add-repair-modal";
@@ -100,6 +101,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
   const { id } = useParams();
   const { data: property, isLoading: propertyLoading } = useProperty(id);
   const { data: comps, isLoading: compsLoading } = usePropertyComps(id);
+  const { data: titleReport } = usePropertyTitleReport(id);
   const deleteComp = useDeleteComp();
   const updateProperty = useUpdateProperty();
 
@@ -111,6 +113,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
   const [arvPercentage, setArvPercentage] = React.useState(68);
   const [wholesaleFee, setWholesaleFee] = React.useState(10000);
   const [holdingCosts, setHoldingCosts] = React.useState(0);
+  const [adjustForTitleIssues, setAdjustForTitleIssues] = React.useState(false);
   
   // Repair items from property or local state
   const [repairItems, setRepairItems] = React.useState<RepairItem[]>([]);
@@ -137,10 +140,15 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
 
   const arv = property?.arv ? Number(property.arv) : propFromParent.arv || 0;
   const totalRepairs = repairItems.reduce((sum, item) => sum + item.cost, 0);
+  
+  // Title adjustment calculation
+  const titleSummary = titleReport?.summary as TitleReportSummary | null;
+  const titleMetrics = calculateTitleMetrics(titleSummary, arv);
+  const titleAdjustment = adjustForTitleIssues ? titleMetrics.costToClear : 0;
 
   // MAO Calculations
   const calculateMAO = (percentage: number) => {
-    return (arv * (percentage / 100)) - totalRepairs - wholesaleFee - holdingCosts;
+    return (arv * (percentage / 100)) - totalRepairs - wholesaleFee - holdingCosts - titleAdjustment;
   };
 
   const maoAggressive = calculateMAO(70);
@@ -586,6 +594,32 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                 className="mt-1"
               />
             </div>
+
+            {/* Title Issues Adjustment */}
+            {titleMetrics.costToClear > 0 && (
+              <div className="mt-4 p-4 bg-warning/5 border border-warning/20 rounded-medium">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-small font-medium text-content">Adjust for Title Issues</span>
+                    <Badge variant="warning" size="sm">{formatCurrency(titleMetrics.costToClear)}</Badge>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={adjustForTitleIssues}
+                      onChange={(e) => setAdjustForTitleIssues(e.target.checked)}
+                      className="w-4 h-4 rounded"
+                    />
+                    <span className="text-small text-content-secondary">Enable</span>
+                  </label>
+                </div>
+                {adjustForTitleIssues && (
+                  <p className="text-small text-warning">
+                    MAO adjusted for {formatCurrency(titleMetrics.costToClear)} in liens/title issues
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* ARV Percentage Slider */}
