@@ -778,6 +778,8 @@ function MarketingTab({ dateRange }: { dateRange: DateRange }) {
 
 function FinancialTab({ dateRange }: { dateRange: DateRange }) {
   const { data: financial, isLoading } = useFinancialAnalytics(dateRange);
+  const [sortBy, setSortBy] = React.useState<"profit" | "roi" | "days">("profit");
+  const [sortDir, setSortDir] = React.useState<"asc" | "desc">("desc");
 
   if (isLoading) {
     return (
@@ -787,55 +789,235 @@ function FinancialTab({ dateRange }: { dateRange: DateRange }) {
     );
   }
 
+  const handleExportCSV = () => {
+    if (!financial?.dealEconomics) return;
+    const headers = ["Address", "Type", "Purchase", "Repairs", "Sell Price", "Profit", "ROI %", "Days"];
+    const rows = financial.dealEconomics.map((d) => [
+      d.address,
+      d.type,
+      d.purchasePrice,
+      d.repairCost,
+      d.sellPrice,
+      d.profit,
+      d.roi,
+      d.daysToClose,
+    ]);
+    const csv = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "deal-economics.csv";
+    a.click();
+  };
+
+  const sortedDeals = [...(financial?.dealEconomics || [])].sort((a, b) => {
+    const multiplier = sortDir === "desc" ? -1 : 1;
+    if (sortBy === "profit") return (a.profit - b.profit) * multiplier;
+    if (sortBy === "roi") return (a.roi - b.roi) * multiplier;
+    return (a.daysToClose - b.daysToClose) * multiplier;
+  });
+
+  // Prepare scatter plot data
+  const scatterData = (financial?.dealEconomics || []).map((d) => ({
+    x: d.daysToClose,
+    y: d.profit,
+    address: d.address,
+  }));
+
   return (
     <div className="space-y-lg">
-      {/* Financial Overview */}
+      {/* Revenue Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Deals Closed</div>
-          <div className="text-display font-bold text-content mt-1">{financial?.closedDeals || 0}</div>
-        </Card>
-        <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Total Revenue</div>
-          <div className="text-display font-bold text-success mt-1">
-            ${financial?.totalRevenue.toLocaleString() || 0}
-          </div>
-        </Card>
-        <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Avg Deal Value</div>
+          <div className="text-tiny text-content-secondary uppercase">Gross Revenue</div>
           <div className="text-display font-bold text-content mt-1">
-            ${financial?.avgDealValue.toLocaleString() || 0}
+            ${(financial?.grossRevenue || 0).toLocaleString()}
           </div>
         </Card>
         <Card variant="default" padding="md">
-          <div className="text-tiny text-content-secondary uppercase">Pipeline Value</div>
-          <div className="text-display font-bold text-info mt-1">
-            ${financial?.projectedPipeline.toLocaleString() || 0}
+          <div className="text-tiny text-content-secondary uppercase">Total Costs</div>
+          <div className="text-display font-bold text-destructive mt-1">
+            ${(financial?.totalCosts || 0).toLocaleString()}
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Net Profit</div>
+          <div className="text-display font-bold text-success mt-1">
+            ${(financial?.netProfit || 0).toLocaleString()}
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Profit Margin</div>
+          <div className="text-display font-bold text-content mt-1">
+            {financial?.profitMargin || 0}%
           </div>
         </Card>
       </div>
 
-      {/* Revenue Breakdown */}
+      {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
-        <DonutChart
-          data={[
-            { name: "Wholesale", value: 45000 },
-            { name: "Fix & Flip", value: 120000 },
-            { name: "Rental", value: 35000 },
-            { name: "Creative", value: 25000 },
-          ]}
-          title="Revenue by Deal Type"
-          centerLabel="Total"
-          centerValue="$225K"
-        />
+        {/* Profit Over Time */}
         <Card variant="default" padding="md">
-          <h3 className="text-h3 font-medium text-content mb-md">Profit Trends</h3>
-          <div className="text-center py-8 text-content-secondary">
-            <Wallet className="h-10 w-10 mx-auto mb-3 opacity-50" />
-            <p>Track more deals to see profit trends over time</p>
-          </div>
+          <h3 className="text-h3 font-medium text-content mb-md">Profit Over Time</h3>
+          {financial?.monthlyProfit && financial.monthlyProfit.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={financial.monthlyProfit}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                  <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+                  <Bar dataKey="profit" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 flex items-center justify-center text-content-secondary">
+              <Wallet className="h-10 w-10 opacity-30" />
+              <p className="ml-3">Close deals to see profit trends</p>
+            </div>
+          )}
+        </Card>
+
+        {/* Profit by Deal Type */}
+        <Card variant="default" padding="md">
+          <h3 className="text-h3 font-medium text-content mb-md">Profit by Deal Type</h3>
+          {financial?.profitByType && financial.profitByType.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={financial.profitByType} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                  <XAxis type="number" tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} />
+                  <YAxis dataKey="type" type="category" tick={{ fontSize: 11 }} width={80} />
+                  <Tooltip
+                    formatter={(v: number, name: string) => [`$${v.toLocaleString()}`, name]}
+                    labelFormatter={(label: string) => {
+                      const item = financial.profitByType.find((p) => p.type === label);
+                      return `${label} (${item?.count || 0} deals)`;
+                    }}
+                  />
+                  <Bar dataKey="profit" fill="hsl(var(--brand-accent))" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 flex items-center justify-center text-content-secondary">
+              <p>No deals data available</p>
+            </div>
+          )}
         </Card>
       </div>
+
+      {/* Second Row: Expense Breakdown & Scatter */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        {/* Expense Breakdown */}
+        <DonutChart
+          data={financial?.expenseBreakdown || []}
+          title="Expense Breakdown"
+          centerLabel="Total Costs"
+          centerValue={`$${((financial?.totalCosts || 0) / 1000).toFixed(0)}k`}
+        />
+
+        {/* Deal Profitability Scatter */}
+        <Card variant="default" padding="md">
+          <h3 className="text-h3 font-medium text-content mb-md">Deal Profitability (Speed vs Profit)</h3>
+          {scatterData.length > 0 ? (
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={scatterData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
+                  <XAxis dataKey="x" tick={{ fontSize: 11 }} label={{ value: "Days to Close", position: "bottom", fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `$${(v/1000).toFixed(0)}k`} label={{ value: "Profit", angle: -90, position: "insideLeft", fontSize: 10 }} />
+                  <Tooltip
+                    formatter={(v: number) => `$${v.toLocaleString()}`}
+                    labelFormatter={(v) => `${v} days`}
+                  />
+                  <Bar dataKey="y" fill="hsl(var(--chart-4))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-64 flex items-center justify-center text-content-secondary">
+              <p>Close more deals to see profitability patterns</p>
+            </div>
+          )}
+          <p className="text-tiny text-content-secondary text-center mt-2">
+            Sweet spot: Quick closes with high profit (bottom-right)
+          </p>
+        </Card>
+      </div>
+
+      {/* Individual Deal Economics Table */}
+      <Card variant="default" padding="md">
+        <div className="flex items-center justify-between mb-md">
+          <h3 className="text-h3 font-medium text-content">Deal Economics</h3>
+          <Button variant="outline" size="sm" onClick={handleExportCSV} disabled={!financial?.dealEconomics?.length}>
+            Export CSV
+          </Button>
+        </div>
+        
+        {sortedDeals.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-small">
+              <thead>
+                <tr className="border-b border-border-subtle">
+                  <th className="text-left py-3 text-content-secondary font-medium">Property</th>
+                  <th className="text-left py-3 text-content-secondary font-medium">Type</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Purchase</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Repairs</th>
+                  <th className="text-right py-3 text-content-secondary font-medium">Sell/Assign</th>
+                  <th 
+                    className="text-right py-3 text-content-secondary font-medium cursor-pointer hover:text-content"
+                    onClick={() => { setSortBy("profit"); setSortDir(sortDir === "desc" ? "asc" : "desc"); }}
+                  >
+                    Profit {sortBy === "profit" && (sortDir === "desc" ? "↓" : "↑")}
+                  </th>
+                  <th 
+                    className="text-right py-3 text-content-secondary font-medium cursor-pointer hover:text-content"
+                    onClick={() => { setSortBy("roi"); setSortDir(sortDir === "desc" ? "asc" : "desc"); }}
+                  >
+                    ROI {sortBy === "roi" && (sortDir === "desc" ? "↓" : "↑")}
+                  </th>
+                  <th 
+                    className="text-right py-3 text-content-secondary font-medium cursor-pointer hover:text-content"
+                    onClick={() => { setSortBy("days"); setSortDir(sortDir === "desc" ? "asc" : "desc"); }}
+                  >
+                    Days {sortBy === "days" && (sortDir === "desc" ? "↓" : "↑")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedDeals.map((deal) => (
+                  <tr key={deal.id} className="border-b border-border-subtle hover:bg-muted/50">
+                    <td className="py-3 font-medium">{deal.address}</td>
+                    <td className="py-3">
+                      <Badge variant="secondary" size="sm">{deal.type}</Badge>
+                    </td>
+                    <td className="py-3 text-right tabular-nums">${deal.purchasePrice.toLocaleString()}</td>
+                    <td className="py-3 text-right tabular-nums">${deal.repairCost.toLocaleString()}</td>
+                    <td className="py-3 text-right tabular-nums">${deal.sellPrice.toLocaleString()}</td>
+                    <td className="py-3 text-right tabular-nums font-medium text-success">
+                      ${deal.profit.toLocaleString()}
+                    </td>
+                    <td className="py-3 text-right">
+                      <Badge variant={deal.roi >= 30 ? "success" : deal.roi >= 15 ? "warning" : "secondary"} size="sm">
+                        {deal.roi}%
+                      </Badge>
+                    </td>
+                    <td className="py-3 text-right tabular-nums text-content-secondary">{deal.daysToClose}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-8 text-content-secondary">
+            <Wallet className="h-10 w-10 mx-auto mb-3 opacity-50" />
+            <p>No closed deals in this period</p>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
