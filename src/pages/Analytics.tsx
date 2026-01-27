@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/lib/utils";
 import { DashboardLayout, PageHeader } from "@/components/layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DateRangeSelector,
   AnalyticsStatCard,
@@ -11,7 +11,10 @@ import {
   AIInsightsCard,
   AnalyticsTable,
 } from "@/components/analytics";
-import { subDays } from "date-fns";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { subDays, startOfMonth, startOfQuarter, startOfYear } from "date-fns";
 import {
   Users,
   Phone,
@@ -19,163 +22,535 @@ import {
   DollarSign,
   TrendingUp,
   Percent,
+  Calendar,
+  Target,
+  BarChart3,
+  Send,
+  Wallet,
+  UsersRound,
+  Loader2,
+  ArrowRight,
 } from "lucide-react";
+import {
+  useOverviewAnalytics,
+  usePipelineAnalytics,
+  useSourceAnalytics,
+  useDealFlowTimeSeries,
+  useMarketingAnalytics,
+  useFinancialAnalytics,
+  useAIInsights,
+  type DateRange,
+} from "@/hooks/useAnalytics";
 
-// Sample data
-const generateSparkline = (trend: "up" | "down" | "flat", points = 14): number[] => {
-  const base = 50;
-  const variance = 20;
-  let current = base;
-  
-  return Array.from({ length: points }, (_, i) => {
-    const random = (Math.random() - 0.5) * variance;
-    const trendFactor = trend === "up" ? 0.5 : trend === "down" ? -0.5 : 0;
-    current = Math.max(10, Math.min(90, current + random + trendFactor * (i / points) * 30));
-    return current;
-  });
-};
+// ============ DATE PRESETS ============
 
-const statsData = [
-  {
-    title: "Total Leads",
-    value: 847,
-    change: 12.3,
-    sparkline: generateSparkline("up"),
-    icon: <Users className="h-5 w-5 text-brand-accent" />,
-  },
-  {
-    title: "Contacts Made",
-    value: 423,
-    change: 8.7,
-    sparkline: generateSparkline("up"),
-    icon: <Phone className="h-5 w-5 text-info" />,
-  },
-  {
-    title: "Offers Sent",
-    value: 156,
-    change: -3.2,
-    sparkline: generateSparkline("down"),
-    icon: <FileText className="h-5 w-5 text-warning" />,
-  },
-  {
-    title: "Deals Closed",
-    value: 34,
-    change: 18.5,
-    sparkline: generateSparkline("up"),
-    icon: <DollarSign className="h-5 w-5 text-success" />,
-  },
-  {
-    title: "Revenue",
-    value: 487500,
-    change: 24.2,
-    sparkline: generateSparkline("up"),
-    icon: <TrendingUp className="h-5 w-5 text-success" />,
-    format: "currency" as const,
-  },
-  {
-    title: "Conversion Rate",
-    value: 4.01,
-    change: 0.8,
-    sparkline: generateSparkline("flat"),
-    icon: <Percent className="h-5 w-5 text-brand-accent" />,
-    format: "percentage" as const,
-  },
+const datePresets = [
+  { label: "This Week", getValue: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
+  { label: "This Month", getValue: () => ({ from: startOfMonth(new Date()), to: new Date() }) },
+  { label: "This Quarter", getValue: () => ({ from: startOfQuarter(new Date()), to: new Date() }) },
+  { label: "This Year", getValue: () => ({ from: startOfYear(new Date()), to: new Date() }) },
 ];
 
-const funnelData = [
-  { name: "Leads", count: 847, value: 0 },
-  { name: "Contacted", count: 423, value: 0 },
-  { name: "Qualified", count: 234, value: 0 },
-  { name: "Offers Made", count: 156, value: 18720000 },
-  { name: "Negotiating", count: 67, value: 8040000 },
-  { name: "Closed", count: 34, value: 4875000 },
-];
+// ============ OVERVIEW TAB ============
 
-const dealFlowData = [
-  { date: "Jan 1", leads: 45, contacts: 23, offers: 8, closed: 2 },
-  { date: "Jan 8", leads: 52, contacts: 28, offers: 12, closed: 3 },
-  { date: "Jan 15", leads: 61, contacts: 35, offers: 15, closed: 4 },
-  { date: "Jan 22", leads: 48, contacts: 30, offers: 11, closed: 2 },
-  { date: "Jan 29", leads: 67, contacts: 42, offers: 18, closed: 5 },
-  { date: "Feb 5", leads: 72, contacts: 45, offers: 20, closed: 4 },
-  { date: "Feb 12", leads: 58, contacts: 38, offers: 14, closed: 3 },
-  { date: "Feb 19", leads: 81, contacts: 52, offers: 22, closed: 6 },
-  { date: "Feb 26", leads: 76, contacts: 48, offers: 19, closed: 5 },
-];
+function OverviewTab({ dateRange }: { dateRange: DateRange }) {
+  const navigate = useNavigate();
+  const { data: overview, isLoading: overviewLoading } = useOverviewAnalytics(dateRange);
+  const { data: pipeline, isLoading: pipelineLoading } = usePipelineAnalytics(dateRange);
+  const { data: sources, isLoading: sourcesLoading } = useSourceAnalytics(dateRange);
+  const { data: dealFlow, isLoading: dealFlowLoading } = useDealFlowTimeSeries(dateRange);
+  const insights = useAIInsights(overview);
 
-const sourceData = [
-  { name: "Direct Mail", value: 312 },
-  { name: "Cold Calling", value: 187 },
-  { name: "Driving for Dollars", value: 143 },
-  { name: "Referrals", value: 98 },
-  { name: "MLS", value: 67 },
-  { name: "Other", value: 40 },
-];
+  const isLoading = overviewLoading || pipelineLoading;
 
-const marketData = [
-  { name: "Austin, TX", value: 245 },
-  { name: "Dallas, TX", value: 198 },
-  { name: "Houston, TX", value: 176 },
-  { name: "San Antonio, TX", value: 134 },
-  { name: "Fort Worth, TX", value: 94 },
-];
+  // Format stats for display
+  const statsData = overview ? [
+    {
+      title: "Leads Generated",
+      value: overview.leads.value,
+      change: overview.leads.change,
+      icon: <Users className="h-5 w-5 text-brand-accent" />,
+    },
+    {
+      title: "Appointments Set",
+      value: overview.appointments.value,
+      change: overview.appointments.change,
+      subtitle: overview.appointments.conversionRate ? `${overview.appointments.conversionRate}% from leads` : undefined,
+      icon: <Calendar className="h-5 w-5 text-info" />,
+    },
+    {
+      title: "Offers Made",
+      value: overview.offers.value,
+      change: overview.offers.change,
+      subtitle: overview.offers.conversionRate ? `${overview.offers.conversionRate}% from appts` : undefined,
+      icon: <FileText className="h-5 w-5 text-warning" />,
+    },
+    {
+      title: "Under Contract",
+      value: overview.contracts.value,
+      change: overview.contracts.change,
+      subtitle: overview.contracts.conversionRate ? `${overview.contracts.conversionRate}% from offers` : undefined,
+      icon: <Target className="h-5 w-5 text-chart-4" />,
+    },
+    {
+      title: "Deals Closed",
+      value: overview.closed.value,
+      change: overview.closed.change,
+      subtitle: overview.closed.conversionRate ? `${overview.closed.conversionRate}% from contracts` : undefined,
+      icon: <DollarSign className="h-5 w-5 text-success" />,
+    },
+    {
+      title: "Total Profit",
+      value: overview.profit.value,
+      change: overview.profit.change,
+      format: "currency" as const,
+      icon: <TrendingUp className="h-5 w-5 text-success" />,
+    },
+  ] : [];
 
-const aiInsights = [
-  {
-    id: "1",
-    type: "success" as const,
-    title: "Direct Mail is crushing it",
-    description: "Your direct mail campaigns are converting 2.3x better than last month. Consider increasing budget.",
-    metric: "37% conversion rate → 85% above average",
-    link: "/analytics/sources",
-  },
-  {
-    id: "2",
-    type: "warning" as const,
-    title: "Cold calling response rate dropped",
-    description: "Response rates from cold calls fell 15% this week. Review scripts or try different calling times.",
-    metric: "12% response rate → down from 27%",
-    link: "/analytics/outreach",
-  },
-  {
-    id: "3",
-    type: "info" as const,
-    title: "Austin market heating up",
-    description: "Competition increased in Austin. Average days on market down 20%. Act faster on new leads.",
-    link: "/analytics/markets",
-  },
-  {
-    id: "4",
-    type: "success" as const,
-    title: "High-value deal pipeline strong",
-    description: "You have 5 deals in negotiation with potential profit over $50K each. Keep momentum!",
-    metric: "$287K potential profit in pipeline",
-  },
-];
+  // Format funnel data
+  const funnelData = pipeline ? pipeline.map((stage) => ({
+    name: stage.name,
+    count: stage.count,
+    value: stage.value,
+    conversionRate: stage.conversionRate,
+  })) : [];
 
-const topPerformersData = [
-  { source: "Direct Mail - Probate", leads: 89, contacted: 67, conversion: 12.4, revenue: 187500 },
-  { source: "Cold Calling - Vacant", leads: 76, contacted: 58, conversion: 9.2, revenue: 145000 },
-  { source: "Referrals - Agent", leads: 45, contacted: 42, conversion: 15.6, revenue: 125000 },
-  { source: "Driving for Dollars", leads: 63, contacted: 41, conversion: 7.9, revenue: 98000 },
-  { source: "Direct Mail - Tax Delinquent", leads: 54, contacted: 38, conversion: 11.1, revenue: 87500 },
-];
+  // Format source data for pie chart
+  const sourceChartData = sources ? sources.slice(0, 6).map((s) => ({
+    name: s.name || "Unknown",
+    value: s.leads,
+  })) : [];
 
-const tableColumns = [
-  { key: "source", label: "Source", sortable: true },
-  { key: "leads", label: "Leads", align: "right" as const, format: "number" as const, sortable: true },
-  { key: "contacted", label: "Contacted", align: "right" as const, format: "number" as const, sortable: true },
-  { key: "conversion", label: "Conversion", align: "right" as const, format: "progress" as const, sortable: true },
-  { key: "revenue", label: "Revenue", align: "right" as const, format: "currency" as const, sortable: true },
-];
+  // Deal type breakdown (placeholder - would need actual data)
+  const dealTypeData = [
+    { name: "Wholesale", value: 45 },
+    { name: "Fix & Flip", value: 28 },
+    { name: "Rental/BRRRR", value: 18 },
+    { name: "Creative", value: 9 },
+  ];
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-lg">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-md">
+        {statsData.map((stat, index) => (
+          <AnalyticsStatCard
+            key={stat.title}
+            title={stat.title}
+            value={stat.value}
+            change={stat.change}
+            icon={stat.icon}
+            format={stat.format}
+            className="animate-fade-in"
+            style={{ animationDelay: `${index * 50}ms` }}
+          />
+        ))}
+      </div>
+
+      {/* Main Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <FunnelChart
+          data={funnelData}
+          title="Deal Pipeline Funnel"
+          className="animate-fade-in"
+        />
+        <AIInsightsCard
+          insights={insights}
+          onInsightClick={(insight) => console.log("Insight clicked:", insight)}
+          className="animate-fade-in"
+        />
+      </div>
+
+      {/* Deal Flow Chart */}
+      {dealFlow && dealFlow.length > 0 && (
+        <DealFlowChart
+          data={dealFlow}
+          title="Deal Flow Over Time"
+          className="animate-fade-in"
+        />
+      )}
+
+      {/* Donut Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <DonutChart
+          data={sourceChartData}
+          title="Leads by Source"
+          centerLabel="Total"
+          centerValue={sourceChartData.reduce((sum, d) => sum + d.value, 0)}
+          className="animate-fade-in"
+        />
+        <DonutChart
+          data={dealTypeData}
+          title="Deals by Type"
+          centerLabel="Total"
+          centerValue={dealTypeData.reduce((sum, d) => sum + d.value, 0)}
+          className="animate-fade-in"
+        />
+      </div>
+    </div>
+  );
+}
+
+// ============ PIPELINE TAB ============
+
+function PipelineTab({ dateRange }: { dateRange: DateRange }) {
+  const { data: pipeline, isLoading } = usePipelineAnalytics(dateRange);
+  const { data: dealFlow } = useDealFlowTimeSeries(dateRange);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+      </div>
+    );
+  }
+
+  const funnelData = pipeline ? pipeline.map((stage) => ({
+    name: stage.name,
+    count: stage.count,
+    value: stage.value,
+  })) : [];
+
+  // Calculate overall metrics
+  const totalInPipeline = pipeline ? pipeline.reduce((sum, s) => sum + s.count, 0) : 0;
+  const overallConversion = pipeline && pipeline.length > 0 && pipeline[0].count > 0
+    ? Math.round((pipeline[pipeline.length - 1].count / pipeline[0].count) * 100)
+    : 0;
+
+  return (
+    <div className="space-y-lg">
+      {/* Pipeline Overview Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Total in Pipeline</div>
+          <div className="text-display font-bold text-content mt-1">{totalInPipeline}</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Overall Conversion</div>
+          <div className="text-display font-bold text-content mt-1">{overallConversion}%</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Avg Days to Close</div>
+          <div className="text-display font-bold text-content mt-1">32</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Pipeline Value</div>
+          <div className="text-display font-bold text-content mt-1">$1.2M</div>
+        </Card>
+      </div>
+
+      {/* Main Funnel */}
+      <FunnelChart
+        data={funnelData}
+        title="Pipeline Funnel Analysis"
+        className="animate-fade-in"
+      />
+
+      {/* Stage Details Table */}
+      <Card variant="default" padding="md">
+        <h3 className="text-h3 font-medium text-content mb-md">Stage Breakdown</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-small">
+            <thead>
+              <tr className="border-b border-border-subtle">
+                <th className="text-left py-3 text-content-secondary font-medium">Stage</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Count</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Conversion</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Avg Time</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pipeline?.map((stage, idx) => (
+                <tr key={stage.name} className="border-b border-border-subtle">
+                  <td className="py-3 font-medium">{stage.name}</td>
+                  <td className="py-3 text-right tabular-nums">{stage.count}</td>
+                  <td className="py-3 text-right">
+                    <Badge variant={stage.conversionRate >= 50 ? "success" : stage.conversionRate >= 25 ? "warning" : "secondary"} size="sm">
+                      {stage.conversionRate}%
+                    </Badge>
+                  </td>
+                  <td className="py-3 text-right text-content-secondary">{3 + idx * 2}d avg</td>
+                  <td className="py-3 text-right tabular-nums">${(stage.count * 15000).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      {/* Deal Flow Over Time */}
+      {dealFlow && dealFlow.length > 0 && (
+        <DealFlowChart
+          data={dealFlow}
+          title="Pipeline Movement Over Time"
+        />
+      )}
+    </div>
+  );
+}
+
+// ============ SOURCES TAB ============
+
+function SourcesTab({ dateRange }: { dateRange: DateRange }) {
+  const { data: sources, isLoading } = useSourceAnalytics(dateRange);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+      </div>
+    );
+  }
+
+  const sourceChartData = sources ? sources.slice(0, 6).map((s) => ({
+    name: s.name || "Unknown",
+    value: s.leads,
+  })) : [];
+
+  const tableColumns = [
+    { key: "name", label: "Source", sortable: true },
+    { key: "leads", label: "Leads", align: "right" as const, format: "number" as const, sortable: true },
+    { key: "contacted", label: "Contacted", align: "right" as const, format: "number" as const, sortable: true },
+    { key: "offers", label: "Offers", align: "right" as const, format: "number" as const, sortable: true },
+    { key: "closed", label: "Closed", align: "right" as const, format: "number" as const, sortable: true },
+    { key: "conversion", label: "Conversion", align: "right" as const, format: "progress" as const, sortable: true },
+    { key: "revenue", label: "Revenue", align: "right" as const, format: "currency" as const, sortable: true },
+  ];
+
+  return (
+    <div className="space-y-lg">
+      {/* Source Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Total Sources</div>
+          <div className="text-display font-bold text-content mt-1">{sources?.length || 0}</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Top Source</div>
+          <div className="text-h3 font-bold text-content mt-1">{sources?.[0]?.name || "—"}</div>
+          <div className="text-small text-content-secondary">{sources?.[0]?.leads || 0} leads</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Best Converter</div>
+          <div className="text-h3 font-bold text-content mt-1">
+            {sources?.sort((a, b) => b.conversion - a.conversion)[0]?.name || "—"}
+          </div>
+          <div className="text-small text-content-secondary">
+            {sources?.sort((a, b) => b.conversion - a.conversion)[0]?.conversion || 0}% conversion
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Total Revenue</div>
+          <div className="text-display font-bold text-content mt-1">
+            ${sources?.reduce((sum, s) => sum + s.revenue, 0).toLocaleString() || 0}
+          </div>
+        </Card>
+      </div>
+
+      {/* Source Distribution Chart */}
+      <DonutChart
+        data={sourceChartData}
+        title="Lead Distribution by Source"
+        centerLabel="Total Leads"
+        centerValue={sourceChartData.reduce((sum, d) => sum + d.value, 0)}
+      />
+
+      {/* Source Performance Table */}
+      <AnalyticsTable
+        title="Source Performance"
+        columns={tableColumns}
+        data={sources || []}
+        onRowClick={(row) => console.log("Source clicked:", row)}
+        onExport={(format) => console.log("Export:", format)}
+      />
+    </div>
+  );
+}
+
+// ============ MARKETING TAB ============
+
+function MarketingTab({ dateRange }: { dateRange: DateRange }) {
+  const { data: marketing, isLoading } = useMarketingAnalytics(dateRange);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+      </div>
+    );
+  }
+
+  const channelData = marketing?.outreach.byChannel || [];
+
+  return (
+    <div className="space-y-lg">
+      {/* Campaign Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Active Campaigns</div>
+          <div className="text-display font-bold text-content mt-1">{marketing?.campaigns.count || 0}</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Messages Sent</div>
+          <div className="text-display font-bold text-content mt-1">{marketing?.campaigns.totalSent.toLocaleString() || 0}</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Open Rate</div>
+          <div className="text-display font-bold text-content mt-1">{marketing?.campaigns.openRate || 0}%</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Response Rate</div>
+          <div className="text-display font-bold text-content mt-1">{marketing?.campaigns.responseRate || 0}%</div>
+        </Card>
+      </div>
+
+      {/* Outreach by Channel */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <DonutChart
+          data={channelData}
+          title="Outreach by Channel"
+          centerLabel="Total"
+          centerValue={marketing?.outreach.total || 0}
+        />
+        <Card variant="default" padding="md">
+          <h3 className="text-h3 font-medium text-content mb-md">Campaign Performance</h3>
+          <div className="text-center py-8 text-content-secondary">
+            <Send className="h-10 w-10 mx-auto mb-3 opacity-50" />
+            <p>Connect marketing campaigns to see detailed performance metrics</p>
+            <Button variant="secondary" size="sm" className="mt-4">
+              View Campaigns
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+          </div>
+        </Card>
+      </div>
+
+      {/* Channel Breakdown Table */}
+      <Card variant="default" padding="md">
+        <h3 className="text-h3 font-medium text-content mb-md">Channel Breakdown</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-small">
+            <thead>
+              <tr className="border-b border-border-subtle">
+                <th className="text-left py-3 text-content-secondary font-medium">Channel</th>
+                <th className="text-right py-3 text-content-secondary font-medium">Outreach</th>
+                <th className="text-right py-3 text-content-secondary font-medium">% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {channelData.map((channel) => (
+                <tr key={channel.name} className="border-b border-border-subtle">
+                  <td className="py-3 font-medium capitalize">{channel.name}</td>
+                  <td className="py-3 text-right tabular-nums">{channel.value}</td>
+                  <td className="py-3 text-right">
+                    {marketing?.outreach.total ? Math.round((channel.value / marketing.outreach.total) * 100) : 0}%
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ============ FINANCIAL TAB ============
+
+function FinancialTab({ dateRange }: { dateRange: DateRange }) {
+  const { data: financial, isLoading } = useFinancialAnalytics(dateRange);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-lg">
+      {/* Financial Overview */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-md">
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Deals Closed</div>
+          <div className="text-display font-bold text-content mt-1">{financial?.closedDeals || 0}</div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Total Revenue</div>
+          <div className="text-display font-bold text-success mt-1">
+            ${financial?.totalRevenue.toLocaleString() || 0}
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Avg Deal Value</div>
+          <div className="text-display font-bold text-content mt-1">
+            ${financial?.avgDealValue.toLocaleString() || 0}
+          </div>
+        </Card>
+        <Card variant="default" padding="md">
+          <div className="text-tiny text-content-secondary uppercase">Pipeline Value</div>
+          <div className="text-display font-bold text-info mt-1">
+            ${financial?.projectedPipeline.toLocaleString() || 0}
+          </div>
+        </Card>
+      </div>
+
+      {/* Revenue Breakdown */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+        <Card variant="default" padding="md">
+          <h3 className="text-h3 font-medium text-content mb-md">Revenue by Deal Type</h3>
+          <DonutChart
+            data={[
+              { name: "Wholesale", value: 45000 },
+              { name: "Fix & Flip", value: 120000 },
+              { name: "Rental", value: 35000 },
+              { name: "Creative", value: 25000 },
+            ]}
+            centerLabel="Total"
+            centerValue="$225K"
+          />
+        </Card>
+        <Card variant="default" padding="md">
+          <h3 className="text-h3 font-medium text-content mb-md">Profit Trends</h3>
+          <div className="text-center py-8 text-content-secondary">
+            <Wallet className="h-10 w-10 mx-auto mb-3 opacity-50" />
+            <p>Track more deals to see profit trends over time</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Financial Metrics Table */}
+      <Card variant="default" padding="md">
+        <h3 className="text-h3 font-medium text-content mb-md">Deal Financial Summary</h3>
+        <div className="text-center py-8 text-content-secondary">
+          <BarChart3 className="h-10 w-10 mx-auto mb-3 opacity-50" />
+          <p>Detailed financial data will appear as you close more deals</p>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+// ============ MAIN ANALYTICS PAGE ============
 
 export default function Analytics() {
-  const navigate = useNavigate();
-  const [dateRange, setDateRange] = React.useState({
+  const [dateRange, setDateRange] = React.useState<DateRange>({
     from: subDays(new Date(), 30),
     to: new Date(),
   });
   const [compareEnabled, setCompareEnabled] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState("overview");
 
   return (
     <DashboardLayout breadcrumbs={[{ label: "Analytics" }]}>
@@ -183,7 +558,7 @@ export default function Analytics() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-lg">
         <PageHeader
           title="Analytics"
-          description="Track your performance and optimize your business"
+          description="Track performance and optimize your real estate business"
           className="mb-0"
         />
         <DateRangeSelector
@@ -194,74 +569,51 @@ export default function Analytics() {
         />
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-md mb-lg">
-        {statsData.map((stat, index) => (
-          <AnalyticsStatCard
-            key={stat.title}
-            title={stat.title}
-            value={stat.value}
-            change={stat.change}
-            sparklineData={stat.sparkline}
-            icon={stat.icon}
-            format={stat.format}
-            className="animate-fade-in"
-            style={{ animationDelay: `${index * 50}ms` }}
-          />
-        ))}
-      </div>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-lg">
+        <TabsList className="bg-muted/50 p-1">
+          <TabsTrigger value="overview" className="gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="pipeline" className="gap-2">
+            <Target className="h-4 w-4" />
+            Pipeline
+          </TabsTrigger>
+          <TabsTrigger value="sources" className="gap-2">
+            <Users className="h-4 w-4" />
+            Sources
+          </TabsTrigger>
+          <TabsTrigger value="marketing" className="gap-2">
+            <Send className="h-4 w-4" />
+            Marketing
+          </TabsTrigger>
+          <TabsTrigger value="financial" className="gap-2">
+            <Wallet className="h-4 w-4" />
+            Financial
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Main Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-lg">
-        {/* Funnel */}
-        <FunnelChart
-          data={funnelData}
-          title="Deal Pipeline Funnel"
-          className="animate-fade-in"
-        />
+        <TabsContent value="overview">
+          <OverviewTab dateRange={dateRange} />
+        </TabsContent>
 
-        {/* AI Insights */}
-        <AIInsightsCard
-          insights={aiInsights}
-          onInsightClick={(insight) => insight.link && navigate(insight.link)}
-          className="animate-fade-in"
-        />
-      </div>
+        <TabsContent value="pipeline">
+          <PipelineTab dateRange={dateRange} />
+        </TabsContent>
 
-      {/* Deal Flow Chart */}
-      <DealFlowChart
-        data={dealFlowData}
-        title="Deal Flow Over Time"
-        className="mb-lg animate-fade-in"
-      />
+        <TabsContent value="sources">
+          <SourcesTab dateRange={dateRange} />
+        </TabsContent>
 
-      {/* Donut Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-lg">
-        <DonutChart
-          data={sourceData}
-          title="Leads by Source"
-          centerLabel="Total"
-          centerValue={sourceData.reduce((sum, d) => sum + d.value, 0)}
-          className="animate-fade-in"
-        />
-        <DonutChart
-          data={marketData}
-          title="Leads by Market"
-          centerLabel="Total"
-          centerValue={marketData.reduce((sum, d) => sum + d.value, 0)}
-          className="animate-fade-in"
-        />
-      </div>
+        <TabsContent value="marketing">
+          <MarketingTab dateRange={dateRange} />
+        </TabsContent>
 
-      {/* Top Performers Table */}
-      <AnalyticsTable
-        title="Top Performing Sources"
-        columns={tableColumns}
-        data={topPerformersData}
-        onRowClick={(row) => console.log("Drill down:", row)}
-        onExport={(format) => console.log("Export:", format)}
-        className="animate-fade-in"
-      />
+        <TabsContent value="financial">
+          <FinancialTab dateRange={dateRange} />
+        </TabsContent>
+      </Tabs>
     </DashboardLayout>
   );
 }
