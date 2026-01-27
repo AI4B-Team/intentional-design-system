@@ -39,6 +39,7 @@ import DailyReport from "./pages/DailyReport";
 import Achievements from "./pages/Achievements";
 import Leaderboard from "./pages/Leaderboard";
 import ClosebotTemplates from "./pages/ClosebotTemplates";
+import GHLSnapshot from "./pages/GHLSnapshot";
 
 const queryClient = new QueryClient();
 
@@ -293,6 +294,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ClosebotTemplates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/ghl-snapshot"
+              element={
+                <ProtectedRoute>
+                  <GHLSnapshot />
                 </ProtectedRoute>
               }
             />
