@@ -46,6 +46,7 @@ import Install from "./pages/Install";
 import Onboarding from "./pages/Onboarding";
 import MailDashboard from "./pages/MailDashboard";
 import MailCampaigns from "./pages/MailCampaigns";
+import MailCampaignWizard from "./pages/MailCampaignWizard";
 import MailTemplates from "./pages/MailTemplates";
 import MailTemplateEditor from "./pages/MailTemplateEditor";
 
@@ -339,7 +340,7 @@ const App = () => (
               path="/mail/campaigns/new"
               element={
                 <ProtectedRoute>
-                  <MailCampaigns />
+                  <MailCampaignWizard />
                 </ProtectedRoute>
               }
             />
