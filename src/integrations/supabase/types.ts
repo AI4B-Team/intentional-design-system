@@ -2266,6 +2266,77 @@ export type Database = {
         }
         Relationships: []
       }
+      material_library: {
+        Row: {
+          brand: string | null
+          category: string
+          color: string | null
+          created_at: string | null
+          id: string
+          image_key: string | null
+          image_url: string
+          is_favorite: boolean | null
+          material_description: string | null
+          name: string
+          organization_id: string | null
+          price_per_unit: number | null
+          product_name: string | null
+          source_name: string | null
+          source_url: string | null
+          unit: string | null
+          use_count: number | null
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          category: string
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          image_key?: string | null
+          image_url: string
+          is_favorite?: boolean | null
+          material_description?: string | null
+          name: string
+          organization_id?: string | null
+          price_per_unit?: number | null
+          product_name?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          unit?: string | null
+          use_count?: number | null
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          category?: string
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          image_key?: string | null
+          image_url?: string
+          is_favorite?: boolean | null
+          material_description?: string | null
+          name?: string
+          organization_id?: string | null
+          price_per_unit?: number | null
+          product_name?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          unit?: string | null
+          use_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_library_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -2990,6 +3061,191 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      renovation_images: {
+        Row: {
+          area_label: string | null
+          created_at: string | null
+          generated_images: Json | null
+          height: number | null
+          id: string
+          organization_id: string | null
+          original_image_key: string | null
+          original_image_url: string
+          project_id: string
+          room_type: string | null
+          selected_after_id: string | null
+          selected_after_url: string | null
+          total_credits_used: number | null
+          updated_at: string | null
+          user_id: string
+          width: number | null
+        }
+        Insert: {
+          area_label?: string | null
+          created_at?: string | null
+          generated_images?: Json | null
+          height?: number | null
+          id?: string
+          organization_id?: string | null
+          original_image_key?: string | null
+          original_image_url: string
+          project_id: string
+          room_type?: string | null
+          selected_after_id?: string | null
+          selected_after_url?: string | null
+          total_credits_used?: number | null
+          updated_at?: string | null
+          user_id: string
+          width?: number | null
+        }
+        Update: {
+          area_label?: string | null
+          created_at?: string | null
+          generated_images?: Json | null
+          height?: number | null
+          id?: string
+          organization_id?: string | null
+          original_image_key?: string | null
+          original_image_url?: string
+          project_id?: string
+          room_type?: string | null
+          selected_after_id?: string | null
+          selected_after_url?: string | null
+          total_credits_used?: number | null
+          updated_at?: string | null
+          user_id?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renovation_images_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renovation_images_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "renovation_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      renovation_presets: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          example_image_url: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          organization_id: string | null
+          popularity: number | null
+          room_types: string[] | null
+          style_prompt: string
+          suggested_materials: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          example_image_url?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          organization_id?: string | null
+          popularity?: number | null
+          room_types?: string[] | null
+          style_prompt: string
+          suggested_materials?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          example_image_url?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          organization_id?: string | null
+          popularity?: number | null
+          room_types?: string[] | null
+          style_prompt?: string
+          suggested_materials?: Json | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renovation_presets_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      renovation_projects: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          organization_id: string | null
+          property_id: string | null
+          status: string | null
+          total_images: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          organization_id?: string | null
+          property_id?: string | null
+          status?: string | null
+          total_images?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string | null
+          property_id?: string | null
+          status?: string | null
+          total_images?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "renovation_projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "renovation_projects_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
