@@ -27,6 +27,10 @@ export interface Campaign {
   updated_at: string;
   started_at: string | null;
   completed_at: string | null;
+  followup_enabled: boolean | null;
+  followup_sequences: Array<{ days_after: number; subject: string; body: string }> | null;
+  batch_size_per_day: number | null;
+  scheduled_start: string | null;
 }
 
 export interface CampaignProperty {
@@ -51,6 +55,11 @@ export interface CampaignProperty {
   responded_at: string | null;
   response_type: string | null;
   response_notes: string | null;
+  response_status: string | null;
+  response_content: string | null;
+  followup_count: number | null;
+  last_followup_at: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
