@@ -10,6 +10,9 @@ import { PWAProvider } from "@/components/pwa";
 import { ErrorBoundary } from "@/components/error-boundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import OnboardingOrganization from "./pages/OnboardingOrganization";
+import OnboardingCreate from "./pages/OnboardingCreate";
+import OnboardingJoin from "./pages/OnboardingJoin";
 import CreateOrganization from "./pages/CreateOrganization";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
@@ -78,9 +81,33 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/submit-deal" element={<SubmitDeal />} />
                   <Route path="/install" element={<Install />} />
-                  <Route path="/onboarding" element={<Onboarding />} />
+                  <Route path="/onboarding-old" element={<Onboarding />} />
                   
-                  {/* Organization setup - requires auth but not organization */}
+                  {/* Organization onboarding - requires auth but not organization */}
+                  <Route
+                    path="/onboarding"
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <OnboardingOrganization />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/onboarding/create"
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <OnboardingCreate />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/onboarding/join"
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <OnboardingJoin />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route
                     path="/create-organization"
                     element={

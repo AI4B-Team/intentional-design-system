@@ -15,7 +15,7 @@ function generateSlug(name: string): string {
 
 export function useCreateOrganization() {
   const { user } = useAuth();
-  const { refetchOrganization } = useOrganization();
+  const { refreshOrganization } = useOrganization();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -59,7 +59,7 @@ export function useCreateOrganization() {
       return org as Organization;
     },
     onSuccess: async () => {
-      await refetchOrganization();
+      await refreshOrganization();
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       toast.success("Organization created successfully!");
     },
@@ -71,7 +71,7 @@ export function useCreateOrganization() {
 }
 
 export function useUpdateOrganization() {
-  const { organization, refetchOrganization } = useOrganization();
+  const { organization, refreshOrganization } = useOrganization();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -89,7 +89,7 @@ export function useUpdateOrganization() {
       return data as Organization;
     },
     onSuccess: async () => {
-      await refetchOrganization();
+      await refreshOrganization();
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       toast.success("Organization updated");
     },
@@ -225,7 +225,7 @@ export function useUpdateMemberRole() {
 
 export function useAcceptInvite() {
   const { user } = useAuth();
-  const { refetchOrganization } = useOrganization();
+  const { refreshOrganization } = useOrganization();
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -269,7 +269,7 @@ export function useAcceptInvite() {
       return invite;
     },
     onSuccess: async () => {
-      await refetchOrganization();
+      await refreshOrganization();
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       toast.success("You've joined the organization!");
     },
