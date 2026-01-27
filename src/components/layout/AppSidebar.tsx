@@ -250,23 +250,6 @@ export function AppSidebar({
           })}
         </ul>
       </nav>
-
-      {/* Sign Out Button */}
-      <div className="border-t border-slate-700 p-4">
-        <button
-          onClick={handleSignOut}
-          className={cn(
-            "flex items-center gap-3 w-full px-3 py-2.5 rounded-lg transition-colors",
-            "text-slate-300 hover:text-white hover:bg-slate-700/50",
-            collapsed && "justify-center"
-          )}
-          title="Sign out"
-        >
-          <LogOut className="h-5 w-5 flex-shrink-0" />
-          {!collapsed && <span>Sign out</span>}
-        </button>
-      </div>
-
     </>
   );
 
