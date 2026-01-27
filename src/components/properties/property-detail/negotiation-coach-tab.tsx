@@ -4,6 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -54,6 +61,7 @@ import { toast } from "sonner";
 interface NegotiationCoachTabProps {
   property: {
     id: string;
+    address?: string;
     ownerName?: string;
     ownerPhone?: string;
     score: number;
@@ -129,164 +137,99 @@ interface CallScript {
   id: string;
   title: string;
   script: string;
+  rawScript: string; // Template with placeholders
+}
+
+interface PropertyVariables {
+  ownerName: string;
+  streetName: string;
+  offerAmount: string;
+  timeline: string;
+  arv?: number;
+  repairs?: number;
+}
+
+function replaceVariables(template: string, vars: PropertyVariables): string {
+  return template
+    .replace(/\[Owner Name\]/g, vars.ownerName)
+    .replace(/\[Your Name\]/g, "[Your Name]")
+    .replace(/\[Company\]/g, "[Company]")
+    .replace(/\[Street Name\]/g, vars.streetName)
+    .replace(/\[ADDRESS\]/g, vars.streetName)
+    .replace(/\[Offer Amount\]/g, vars.offerAmount)
+    .replace(/\[Timeline\]/g, vars.timeline);
 }
 
 function generateCallScripts(
   ownerName: string,
-  signals: string[],
-  score: number,
+  streetName: string,
+  offerAmount: string,
+  timeline: string,
   arv?: number,
   repairs?: number
 ): CallScript[] {
-  const signalSet = new Set(signals.map(s => s.toLowerCase()));
   const scripts: CallScript[] = [];
+  const vars: PropertyVariables = { ownerName, streetName, offerAmount, timeline, arv, repairs };
   
-  // Opening Script
-  let opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I'm reaching out because I noticed your property at [ADDRESS] and wanted to see if you'd consider an offer.
-
-[PAUSE - Let them respond]
-
-I'm a local real estate investor and I buy properties in as-is condition. I can close quickly and cover all the closing costs. Is that something you might be interested in discussing?`;
-
-  if (signalSet.has("foreclosure") || signalSet.has("pre-foreclosure")) {
-    opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I understand you might be dealing with a difficult situation regarding your property at [ADDRESS].
-
-[PAUSE - Let them respond]
-
-I work with homeowners facing similar challenges. I can move very quickly - often within a week or two - which might help with your timeline. Would you be open to a brief conversation about your options?`;
-  } else if (signalSet.has("tired landlord")) {
-    opening = `Hi, is this ${ownerName}? This is [YOUR NAME]. I'm calling about your rental property at [ADDRESS].
-
-I work with landlords who are ready to move on from their investment properties. If you're tired of the headaches - tenants, repairs, late-night calls - I can make you a fair cash offer and close on your timeline. Any interest in hearing what I could offer?`;
-  } else if (signalSet.has("probate") || signalSet.has("inherited")) {
-    opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I'm calling about the property at [ADDRESS].
-
-First, I'm sorry if you're dealing with a difficult family situation. I work with families who've inherited properties and aren't sure what to do with them. If selling is something you're considering, I'd be happy to make a no-obligation offer. Would that be helpful?`;
-  }
-  
+  // 1. Opening Script
+  const openingRaw = `Hi, is this [Owner Name]? Great! This is [Your Name] with [Company]. I'm calling about your property on [Street Name]. Do you have a few minutes to chat about possibly selling?`;
   scripts.push({
     id: "opening",
     title: "Opening Script",
-    script: opening,
+    script: replaceVariables(openingRaw, vars),
+    rawScript: openingRaw,
   });
 
-  // Discovery Questions Script
+  // 2. Qualifying Questions Script
+  const qualifyingRaw = `"What's the main reason you're considering selling?"
+
+"On a scale of 1-10, how motivated are you to sell quickly?"
+
+"Is there a mortgage on the property? Roughly what's owed?"
+
+"Are the payments current?"
+
+"What condition is the property in?"
+
+"Have you had it listed or tried selling before?"
+
+"If we could agree on terms, when would you ideally want to close?"`;
   scripts.push({
-    id: "discovery",
-    title: "Discovery Questions",
-    script: `Great, I appreciate you being open to talking. Let me ask you a few quick questions so I can put together the best possible offer:
-
-1. "What's your ideal timeline for selling? Are you looking to move quickly, or do you have some flexibility?"
-
-2. "Is the property currently occupied, or is it vacant?"
-
-3. "On a scale of 1-10, how motivated are you to sell right now?"
-
-4. "What would a perfect outcome look like for you in this sale?"
-
-5. "Is there anything about the property I should know - repairs needed, liens, anything like that?"
-
-6. "Have you had any other offers? What did you think of them?"
-
-[LISTEN ACTIVELY - Take notes on their answers. These reveal their true motivation and help you structure your offer.]`,
+    id: "qualifying",
+    title: "Qualifying Questions",
+    script: qualifyingRaw,
+    rawScript: qualifyingRaw,
   });
 
-  // Presenting Offer Script
-  const offerScript = arv && repairs 
-    ? `Based on what you've told me and my research on the property, here's what I can offer:
-
-[STATE YOUR OFFER CLEARLY]
-
-Let me walk you through how I got to this number:
-
-- Properties like yours in good condition are selling for around ${formatCurrency(arv)}
-- After accounting for the repairs needed (approximately ${formatCurrency(repairs)}) and my costs to renovate and resell...
-- This offer allows me to take on all the risk while you walk away with cash in hand, on your timeline
-
-I can close in as little as [X] days, pay all closing costs, and buy the property exactly as it sits today. No repairs, no cleaning, no showings.
-
-How does that sound to you?`
-    : `Based on what you've told me and my research on the property, here's what I can offer:
-
-[STATE YOUR OFFER CLEARLY]
-
-This is a cash offer - no financing contingencies, no bank approvals to wait for. I can close in as little as [X] days, pay all closing costs, and buy the property exactly as it sits today.
-
-You don't need to make any repairs, do any cleaning, or deal with showings. Just pick your closing date and I'll handle the rest.
-
-How does that sound to you?`;
-
+  // 3. Making the Offer Script
+  const offerRaw = `Based on what you've told me and my research on the property, I can offer [Offer Amount] cash, close in as little as [Timeline]. You wouldn't need to make any repairs or clean anything out. How does that sound as a starting point?`;
   scripts.push({
     id: "offer",
-    title: "Presenting Your Offer",
-    script: offerScript,
+    title: "Making the Offer",
+    script: replaceVariables(offerRaw, vars),
+    rawScript: offerRaw,
   });
 
-  // Handling "Too Low" Objection
+  // 4. Handling "Too Low" Script
+  const tooLowRaw = `I completely understand that's less than you hoped for. Let me walk you through how I got to that number...
+
+[Explain: repairs needed, current market conditions, timeline benefits, certainty value]
+
+What number would you need to make this work for you?`;
   scripts.push({
     id: "too-low",
-    title: "Handling 'That's Too Low'",
-    script: `I completely understand - and I respect that you want top dollar for your property. Let me ask you this:
-
-"What number would you need to make this work for you?"
-
-[WAIT FOR THEIR NUMBER]
-
-Okay, I appreciate you sharing that. Here's the thing - there's a gap between our numbers, but let me see if we can find some common ground.
-
-[IF THEIR NUMBER IS REASONABLE:]
-"If I could get closer to that number, would you be ready to move forward today?"
-
-[IF THEIR NUMBER IS TOO HIGH:]
-"Help me understand how you arrived at that number. Did you have an appraisal done, or is that based on what you've seen other homes sell for?"
-
-[THEN:]
-"What if instead of adjusting the price, I could offer [ALTERNATIVE - faster close, cover moving costs, lease-back option]? Would that help bridge the gap?"`,
+    title: "Handling 'Too Low'",
+    script: tooLowRaw,
+    rawScript: tooLowRaw,
   });
 
-  // Follow-Up Script
-  scripts.push({
-    id: "followup",
-    title: "Follow-Up Call Script",
-    script: `Hi ${ownerName}, this is [YOUR NAME] following up on our conversation about [ADDRESS].
-
-[PAUSE]
-
-I wanted to check in and see if you've had a chance to think about the offer. Any questions I can answer?
-
-[LISTEN TO THEIR RESPONSE]
-
-[IF THEY'RE STILL THINKING:]
-"I totally understand - it's a big decision. What's holding you back from moving forward?"
-
-[IF THEY'VE DECIDED NOT TO SELL:]
-"I respect that. Just know my offer stands if anything changes. Can I check back in a month or so, just in case your situation changes?"
-
-[IF THEY'RE READY:]
-"That's great! Let me get the paperwork started. What's the best email to send the contract to?"`,
-  });
-
-  // Closing Script
+  // 5. Closing for Appointment Script
+  const closingRaw = `It sounds like we might be able to work something out. The next step would be for me to come see the property in person. Would tomorrow at [time] or [alternative time] work better for you?`;
   scripts.push({
     id: "closing",
-    title: "Closing the Deal",
-    script: `${ownerName}, it sounds like we have a deal. Congratulations!
-
-Here's what happens next:
-
-1. I'll email you the purchase agreement today. It's straightforward - take your time to review it.
-
-2. Once you sign, we'll open escrow with [TITLE COMPANY]. They'll handle all the paperwork.
-
-3. We'll schedule the closing for [DATE] - or sooner if you prefer.
-
-4. On closing day, you'll receive [AMOUNT] via wire transfer or cashier's check - your choice.
-
-Do you have any questions about the process? 
-
-Great. And ${ownerName}, I want you to know - I appreciate you trusting me with this. I'll make sure this is a smooth transaction from start to finish.
-
-I'll send that contract over now. Talk soon!`,
+    title: "Closing for Appointment",
+    script: closingRaw,
+    rawScript: closingRaw,
   });
 
   return scripts;
@@ -531,6 +474,8 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
   const [sellerAsks, setSellerAsks] = useState<string>("");
   const [counterAnalysis, setCounterAnalysis] = useState<CounterAnalysis | null>(null);
   const [copiedScript, setCopiedScript] = useState<string | null>(null);
+  const [customizingScript, setCustomizingScript] = useState<CallScript | null>(null);
+  const [editedScript, setEditedScript] = useState<string>("");
   
   // Check if we have sufficient data
   const hasOwnerInfo = property.ownerName;
@@ -553,14 +498,33 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
     ? (property.arv * 0.7) - property.repairs 
     : 0);
   
-  // Generate call scripts
+  // Extract street name from address (simplified)
+  const streetName = property.address?.split(',')[0] || "[Street Name]";
+  
+  // Generate call scripts with property-specific variables
   const callScripts = generateCallScripts(
     property.ownerName || "Owner",
-    signals,
-    property.score,
+    streetName,
+    formatCurrency(initialOffer),
+    "7-10 days",
     property.arv,
     property.repairs
   );
+  
+  const handleCustomizeScript = (script: CallScript) => {
+    setCustomizingScript(script);
+    setEditedScript(script.script);
+  };
+  
+  const handleCopyCustomizedScript = async () => {
+    try {
+      await navigator.clipboard.writeText(editedScript);
+      toast.success("Customized script copied!");
+      setCustomizingScript(null);
+    } catch {
+      toast.error("Failed to copy");
+    }
+  };
 
   const handleAnalyzeCounter = () => {
     const askAmount = parseFloat(sellerAsks.replace(/[^0-9.-]+/g, ""));
@@ -955,7 +919,7 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
           <h2 className="text-h3 font-semibold text-content">Call Scripts</h2>
         </div>
         <p className="text-small text-content-secondary mb-4">
-          Customized scripts based on {property.ownerName}'s situation. Click to copy.
+          Pre-filled with {property.ownerName}'s details. Copy or customize for your style.
         </p>
 
         <Accordion type="single" collapsible className="space-y-2">
@@ -972,24 +936,67 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
                 </div>
               </AccordionTrigger>
               <AccordionContent className="pb-4">
-                <div className="relative">
+                <div className="space-y-3">
                   <pre className="whitespace-pre-wrap text-small text-content bg-background-secondary p-4 rounded-medium font-sans leading-relaxed">
                     {script.script}
                   </pre>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => handleCopyScript(script.id, script.script)}
-                    icon={copiedScript === script.id ? <Check className="text-success" /> : <Copy />}
-                  >
-                    {copiedScript === script.id ? "Copied!" : "Copy"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleCopyScript(script.id, script.script)}
+                      icon={copiedScript === script.id ? <Check className="text-success" /> : <Copy />}
+                    >
+                      {copiedScript === script.id ? "Copied!" : "Copy Script"}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCustomizeScript(script)}
+                      icon={<FileText />}
+                    >
+                      Customize for This Property
+                    </Button>
+                  </div>
                 </div>
               </AccordionContent>
             </AccordionItem>
           ))}
         </Accordion>
+
+        {/* Customize Script Modal */}
+        {customizingScript && (
+          <Dialog open={!!customizingScript} onOpenChange={() => setCustomizingScript(null)}>
+            <DialogContent className="sm:max-w-[600px] bg-white">
+              <DialogHeader>
+                <DialogTitle>Customize: {customizingScript.title}</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="text-tiny text-content-secondary">
+                  Edit the script below to match your style. Variables like [Your Name], [Company] can be filled in.
+                </div>
+                <Textarea
+                  value={editedScript}
+                  onChange={(e) => setEditedScript(e.target.value)}
+                  className="min-h-[200px] font-mono text-small"
+                  placeholder="Edit your script..."
+                />
+                <div className="flex justify-end gap-2">
+                  <Button variant="ghost" onClick={() => setCustomizingScript(null)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    variant="primary" 
+                    onClick={handleCopyCustomizedScript}
+                    icon={<Copy />}
+                  >
+                    Copy Customized Script
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </Card>
       <Card variant="default" padding="md">
         <div className="flex items-center gap-2 mb-4">
