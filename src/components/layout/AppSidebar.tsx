@@ -27,6 +27,7 @@ import {
   ListFilter,
   Phone,
   DollarSign,
+  Store,
 } from "lucide-react";
 
 interface NavItem {
@@ -56,6 +57,7 @@ const afterMarketingItems: NavItem[] = [
   { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
   { label: "Financing", href: "/financing", icon: DollarSign },
+  { label: "Marketplace", href: "/marketplace", icon: Store },
 ];
 
 const marketingGroup: NavGroup = {
