@@ -23,6 +23,7 @@ import {
   PropertyTabs,
   OverviewTab,
   UnderwritingTab,
+  ExitStrategyTab,
   OffersTab,
   OutreachTab,
   AppointmentsTab,
@@ -63,6 +64,7 @@ const tabs = [
   { id: "overview", label: "Overview" },
   { id: "title", label: "Title" },
   { id: "underwriting", label: "Underwriting" },
+  { id: "exit-strategy", label: "Exit Strategy" },
   { id: "negotiation", label: "Negotiation Coach" },
   { id: "offers", label: "Offers" },
   { id: "outreach", label: "Outreach" },
@@ -403,9 +405,21 @@ export default function PropertyDetail() {
           />
         )}
         {activeTab === "underwriting" && <UnderwritingTab property={propertyForTabs} />}
+        {activeTab === "exit-strategy" && (
+          <ExitStrategyTab 
+            property={{
+              ...propertyForTabs,
+              estimatedValue: property.estimated_value ? Number(property.estimated_value) : undefined,
+            }} 
+            onNavigateToUnderwriting={() => setActiveTab("underwriting")}
+          />
+        )}
         {activeTab === "negotiation" && (
           <NegotiationCoachTab 
-            property={propertyForTabs} 
+            property={{
+              ...propertyForTabs,
+              address: property.address,
+            }} 
             onCompleteProfile={() => setActiveTab("overview")}
           />
         )}
