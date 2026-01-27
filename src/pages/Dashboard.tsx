@@ -340,16 +340,11 @@ export default function Dashboard() {
   return (
     <AppLayout>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-h1 font-bold text-foreground">Dashboard</h1>
-          <p className="text-body text-muted-foreground mt-1">
-            {format(new Date(), "EEEE, MMMM d, yyyy")}
-          </p>
-        </div>
-        <Button variant="primary" size="sm" icon={<Plus />} onClick={() => navigate("/properties/new")}>
-          Add Property
-        </Button>
+      <div className="mb-6">
+        <h1 className="text-h1 font-bold text-foreground">Dashboard</h1>
+        <p className="text-body text-muted-foreground mt-1">
+          {format(new Date(), "EEEE, MMMM d, yyyy")}
+        </p>
       </div>
 
       {/* Top Row - Stat Cards */}
