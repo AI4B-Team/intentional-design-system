@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { MotivationGauge } from "./motivation-gauge";
 import { MotivationIQModal } from "../motivation-iq-modal";
 import { MotivationIQBadge } from "../motivation-iq-badge";
+import { AIAnalysisButton, DistressAnalysisModal } from "@/components/ai";
+import { analyzeDistress, type DistressAnalysis, type PropertyAnalysisInput } from "@/lib/ai-analysis";
 import {
   Pencil,
   Home,
@@ -26,6 +28,7 @@ import {
   ExternalLink,
   Settings,
   Zap,
+  Brain,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -110,11 +113,35 @@ function SectionCard({ title, onEdit, children }: { title: string; onEdit?: () =
 export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTabProps) {
   const [showBreakdown, setShowBreakdown] = React.useState(false);
   const [showMotivationModal, setShowMotivationModal] = React.useState(false);
+  const [distressAnalysis, setDistressAnalysis] = React.useState<DistressAnalysis | null>(null);
+  const [showDistressModal, setShowDistressModal] = React.useState(false);
   const hasGoodRate = property.mortgageRate && property.mortgageRate < 5;
 
   const handleSaveScore = (signals: string[], score: number) => {
     onUpdateScore?.(signals, score);
     setShowMotivationModal(false);
+  };
+
+  const handleRunDistressAnalysis = async () => {
+    const input: PropertyAnalysisInput = {
+      property: {
+        id: property.id,
+        address: "", // Would come from parent
+        beds: property.beds,
+        baths: property.baths,
+        sqft: property.sqft,
+        year_built: property.yearBuilt,
+        property_type: property.propertyType,
+        mortgage_balance: property.mortgageBalance,
+        mortgage_rate: property.mortgageRate,
+        owner_name: property.ownerName,
+        distress_signals: property.distressSignals,
+        motivation_score: property.score,
+      },
+    };
+    const result = await analyzeDistress(input);
+    setDistressAnalysis(result);
+    setShowDistressModal(true);
   };
 
   // Get breakdown from distress signals if available
@@ -229,15 +256,25 @@ export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTab
             <MotivationGauge score={property.score} size="lg" />
           </div>
           
-          <Button 
-            variant="secondary" 
-            size="sm" 
-            fullWidth 
-            icon={<Settings />}
-            onClick={() => setShowMotivationModal(true)}
-          >
-            Configure Signals
-          </Button>
+          <div className="space-y-2">
+            <AIAnalysisButton
+              onClick={handleRunDistressAnalysis}
+              label="AI Distress Analysis"
+              showBadge={false}
+              variant="secondary"
+              icon={<Brain />}
+              className="w-full [&>button]:w-full"
+            />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              fullWidth 
+              icon={<Settings />}
+              onClick={() => setShowMotivationModal(true)}
+            >
+              Configure Signals
+            </Button>
+          </div>
 
           {/* Score Breakdown */}
           <div className="mt-4 pt-4 border-t border-border-subtle">
@@ -303,6 +340,13 @@ export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTab
         currentSignals={property.distressSignals || []}
         onSave={handleSaveScore}
         isSaving={isUpdating}
+      />
+      
+      {/* AI Distress Analysis Modal */}
+      <DistressAnalysisModal
+        isOpen={showDistressModal}
+        onClose={() => setShowDistressModal(false)}
+        data={distressAnalysis}
       />
     </div>
   );

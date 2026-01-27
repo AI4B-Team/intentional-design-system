@@ -15,6 +15,7 @@ import Analytics from "./pages/Analytics";
 import Marketplace from "./pages/Marketplace";
 import LenderBrowser from "./pages/LenderBrowser";
 import FundingRequest from "./pages/FundingRequest";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +94,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <FundingRequest />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               }
             />
