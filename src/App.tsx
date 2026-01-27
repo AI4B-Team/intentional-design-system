@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PWAProvider } from "@/components/pwa";
+import { ErrorBoundary } from "@/components/error-boundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
@@ -42,23 +43,26 @@ import Leaderboard from "./pages/Leaderboard";
 import ClosebotTemplates from "./pages/ClosebotTemplates";
 import GHLSnapshot from "./pages/GHLSnapshot";
 import Install from "./pages/Install";
+import Onboarding from "./pages/Onboarding";
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <PWAProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/submit-deal" element={<SubmitDeal />} />
-              <Route path="/install" element={<Install />} />
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <PWAProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/submit-deal" element={<SubmitDeal />} />
+                <Route path="/install" element={<Install />} />
+                <Route path="/onboarding" element={<Onboarding />} />
             
             {/* Protected routes */}
             <Route
@@ -319,8 +323,9 @@ const App = () => (
         </BrowserRouter>
         </PWAProvider>
       </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
