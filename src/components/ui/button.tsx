@@ -77,6 +77,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     const isDisabled = disabled || loading;
 
+    // When asChild is true, we don't render icons - they should be in the child element
+    // This prevents the "React.Children.only" error from Radix Slot
+    if (asChild) {
+      return (
+        <Comp
+          className={cn(buttonVariants({ variant, size, fullWidth, className }))}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </Comp>
+      );
+    }
+
     const iconElement = loading ? (
       <Loader2 className="h-4 w-4 animate-spin" />
     ) : icon ? (
