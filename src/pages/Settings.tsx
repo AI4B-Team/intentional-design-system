@@ -1,6 +1,8 @@
 import { DashboardLayout } from "@/components/layout";
 import { AISettingsSection } from "@/components/ai";
 import { PortfolioPropertiesSection } from "@/components/settings/portfolio-properties-section";
+import { TeamManagementSection } from "@/components/settings/team-management-section";
+import { OrganizationSettingsSection } from "@/components/settings/organization-settings-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +24,7 @@ import {
   Home,
   Zap,
   ChevronRight,
+  Users,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -51,8 +54,16 @@ export default function Settings() {
         </div>
 
         {/* Settings Tabs */}
-        <Tabs defaultValue="ai" className="space-y-lg">
-          <TabsList>
+        <Tabs defaultValue="organization" className="space-y-lg">
+          <TabsList className="flex-wrap">
+            <TabsTrigger value="organization" className="gap-2">
+              <Building2 className="h-4 w-4" />
+              Organization
+            </TabsTrigger>
+            <TabsTrigger value="team" className="gap-2">
+              <Users className="h-4 w-4" />
+              Team
+            </TabsTrigger>
             <TabsTrigger value="profile" className="gap-2">
               <User className="h-4 w-4" />
               Profile
@@ -79,6 +90,16 @@ export default function Settings() {
               Integrations
             </TabsTrigger>
           </TabsList>
+
+          {/* Organization Tab */}
+          <TabsContent value="organization">
+            <OrganizationSettingsSection />
+          </TabsContent>
+
+          {/* Team Tab */}
+          <TabsContent value="team">
+            <TeamManagementSection />
+          </TabsContent>
 
           {/* Profile Tab */}
           <TabsContent value="profile" className="space-y-lg">

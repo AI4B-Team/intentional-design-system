@@ -6,6 +6,7 @@ import { toast } from "sonner";
 export interface Campaign {
   id: string;
   user_id: string;
+  organization_id: string | null;
   name: string;
   description: string | null;
   campaign_type: string;
@@ -28,7 +29,7 @@ export interface Campaign {
   started_at: string | null;
   completed_at: string | null;
   followup_enabled: boolean | null;
-  followup_sequences: Array<{ days_after: number; subject: string; body: string }> | null;
+  followup_sequences: unknown;
   batch_size_per_day: number | null;
   scheduled_start: string | null;
 }
@@ -106,7 +107,7 @@ export function useCampaigns() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Campaign[];
+      return data as unknown as Campaign[];
     },
     enabled: !!user?.id,
   });
@@ -126,7 +127,7 @@ export function useCampaign(id: string | undefined) {
         .single();
 
       if (error) throw error;
-      return data as Campaign;
+      return data as unknown as Campaign;
     },
     enabled: !!id && !!user?.id,
   });
@@ -195,7 +196,7 @@ export function useCreateCampaign() {
         .single();
 
       if (error) throw error;
-      return result as Campaign;
+      return result as unknown as Campaign;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
@@ -213,16 +214,16 @@ export function useUpdateCampaign() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Omit<Campaign, 'target_criteria'>> }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Omit<Campaign, 'target_criteria' | 'followup_sequences'>> & { followup_sequences?: unknown } }) => {
       const { data, error } = await supabase
         .from("campaigns")
-        .update(updates)
+        .update(updates as Record<string, unknown>)
         .eq("id", id)
         .select()
         .single();
 
       if (error) throw error;
-      return data as Campaign;
+      return data as unknown as Campaign;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });

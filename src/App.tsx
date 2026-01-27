@@ -4,11 +4,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PWAProvider } from "@/components/pwa";
 import { ErrorBoundary } from "@/components/error-boundary";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import CreateOrganization from "./pages/CreateOrganization";
 import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
@@ -64,18 +66,29 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <PWAProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                {/* Public routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/submit-deal" element={<SubmitDeal />} />
-                <Route path="/install" element={<Install />} />
-                <Route path="/onboarding" element={<Onboarding />} />
+        <OrganizationProvider>
+          <TooltipProvider>
+            <PWAProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/submit-deal" element={<SubmitDeal />} />
+                  <Route path="/install" element={<Install />} />
+                  <Route path="/onboarding" element={<Onboarding />} />
+                  
+                  {/* Organization setup - requires auth but not organization */}
+                  <Route
+                    path="/create-organization"
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <CreateOrganization />
+                      </ProtectedRoute>
+                    }
+                  />
             
             {/* Protected routes */}
             <Route
@@ -452,10 +465,11 @@ const App = () => (
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-        </PWAProvider>
-      </TooltipProvider>
+                </Routes>
+              </BrowserRouter>
+            </PWAProvider>
+          </TooltipProvider>
+        </OrganizationProvider>
       </AuthProvider>
     </QueryClientProvider>
   </ErrorBoundary>

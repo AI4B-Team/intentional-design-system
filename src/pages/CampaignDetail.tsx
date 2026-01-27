@@ -839,10 +839,10 @@ export default function CampaignDetail() {
                   </div>
                 </div>
 
-                {campaign.followup_enabled && campaign.followup_sequences && campaign.followup_sequences.length > 0 && (
+                {campaign.followup_enabled && campaign.followup_sequences && Array.isArray(campaign.followup_sequences) && campaign.followup_sequences.length > 0 && (
                   <div className="space-y-4">
                     <h3 className="text-h3 font-medium text-content pt-4">Follow-up Sequences</h3>
-                    {campaign.followup_sequences.map((seq, idx) => (
+                    {(campaign.followup_sequences as Array<{ days_after: number; subject: string; body: string }>).map((seq, idx) => (
                       <div key={idx} className="p-3 bg-surface-secondary rounded-medium">
                         <p className="text-small font-medium text-content">
                           Follow-up {idx + 1} ({seq.days_after} days after)
