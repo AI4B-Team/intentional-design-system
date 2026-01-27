@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -84,6 +85,8 @@ function DealCard({
   onSelect: (checked: boolean) => void;
   viewMode: "list" | "grid";
 }) {
+  const navigate = useNavigate();
+  
   const tagColors: Record<string, string> = {
     "Single Family": "bg-primary text-primary-foreground",
     "Condo": "bg-info text-white",
@@ -108,8 +111,12 @@ function DealCard({
     "Cash Flow": "bg-slate-700 text-white",
   };
 
+  const handleCardClick = () => {
+    navigate(`/marketplace/deal/${deal.id}`);
+  };
+
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={handleCardClick}>
       {/* Image */}
       <div className="relative aspect-[16/10]">
         <img
@@ -120,7 +127,7 @@ function DealCard({
         
         {/* Top Controls */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
             <Checkbox
               checked={isSelected}
               onCheckedChange={onSelect}
@@ -130,7 +137,7 @@ function DealCard({
               <Badge className="bg-primary text-primary-foreground">New</Badge>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
             <Button
               variant="ghost"
               size="icon"
