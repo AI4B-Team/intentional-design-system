@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -17,10 +17,10 @@ import {
   Phone,
   Trash2,
   Mail,
-  ExternalLink,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow, isPast, parseISO, format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import type { DealSource } from "@/hooks/useDealSources";
 
 interface DealSourcesTableProps {
@@ -33,18 +33,19 @@ interface DealSourcesTableProps {
   onDelete: (id: string) => void;
 }
 
-const typeColors: Record<string, string> = {
-  agent: "bg-info/10 text-info",
-  wholesaler: "bg-success/10 text-success",
-  lender: "bg-brand-accent/10 text-brand-accent",
+// Monday.com style status colors with left border accent
+const statusConfig: Record<string, { bg: string; text: string; border: string }> = {
+  cold: { bg: "bg-slate-100", text: "text-slate-600", border: "border-l-slate-400" },
+  contacted: { bg: "bg-sky-100", text: "text-sky-700", border: "border-l-sky-500" },
+  responded: { bg: "bg-amber-100", text: "text-amber-700", border: "border-l-amber-500" },
+  active: { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-l-emerald-500" },
+  inactive: { bg: "bg-red-100", text: "text-red-700", border: "border-l-red-500" },
 };
 
-const statusColors: Record<string, string> = {
-  cold: "bg-surface-secondary text-content-tertiary",
-  contacted: "bg-info/10 text-info",
-  responded: "bg-warning/10 text-warning",
-  active: "bg-success/10 text-success",
-  inactive: "bg-destructive/10 text-destructive",
+const typeConfig: Record<string, { bg: string; text: string }> = {
+  agent: { bg: "bg-violet-100", text: "text-violet-700" },
+  wholesaler: { bg: "bg-cyan-100", text: "text-cyan-700" },
+  lender: { bg: "bg-rose-100", text: "text-rose-700" },
 };
 
 function getInitials(name: string): string {
@@ -56,14 +57,52 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-function formatCurrency(value: number | null): string {
-  if (!value) return "$0";
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
+function formatPhone(phone: string | null): string {
+  if (!phone) return "—";
+  // Simple format: (XXX) XXX-XXXX
+  const cleaned = phone.replace(/\D/g, "");
+  if (cleaned.length === 10) {
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+  }
+  return phone;
+}
+
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return "—";
+  try {
+    return format(parseISO(dateStr), "MMM d, yyyy");
+  } catch {
+    return "—";
+  }
+}
+
+// Column header component for consistency
+function TableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <th className={cn(
+      "px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500",
+      className
+    )}>
+      {children}
+    </th>
+  );
+}
+
+// Column cell component
+function TableCell({ 
+  children, 
+  className,
+  onClick 
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  onClick?: (e: React.MouseEvent) => void;
+}) {
+  return (
+    <td className={cn("px-4 py-3", className)} onClick={onClick}>
+      {children}
+    </td>
+  );
 }
 
 export function DealSourcesTable({
@@ -77,219 +116,229 @@ export function DealSourcesTable({
 }: DealSourcesTableProps) {
   const navigate = useNavigate();
   const allSelected = data.length > 0 && selectedIds.length === data.length;
+  const someSelected = selectedIds.length > 0 && selectedIds.length < data.length;
 
   if (isLoading) {
     return (
-      <div className="space-y-2">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-16" />
-        ))}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="p-4 space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-14 rounded-lg" />
+          ))}
+        </div>
       </div>
     );
   }
 
   if (data.length === 0) {
     return (
-      <div className="text-center py-12 bg-surface-secondary/50 rounded-medium border border-border-subtle">
-        <p className="text-body text-content-secondary mb-2">No deal sources found</p>
-        <p className="text-small text-content-tertiary">
-          Add your first agent, wholesaler, or lender to get started
-        </p>
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="flex flex-col items-center justify-center py-16 px-4">
+          <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <Users className="h-8 w-8 text-slate-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">No contacts found</h3>
+          <p className="text-sm text-slate-500">
+            Add your first contact to get started
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-medium border border-border-subtle overflow-hidden bg-white">
+    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-surface-secondary">
-            <tr>
-              <th className="w-10 px-4 py-3">
+          <thead>
+            <tr className="border-b border-slate-200 bg-slate-50/80">
+              <th className="w-12 px-4 py-3.5">
                 <Checkbox
                   checked={allSelected}
+                  ref={(el) => {
+                    if (el) {
+                      (el as any).indeterminate = someSelected;
+                    }
+                  }}
                   onCheckedChange={onSelectAll}
                   aria-label="Select all"
+                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 />
               </th>
-              <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Type
-              </th>
-              <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Company
-              </th>
-              <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Contact
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Sent
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Closed
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Conv %
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Profit
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Last Contact
-              </th>
-              <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-tertiary">
-                Follow-up
-              </th>
-              <th className="w-10"></th>
+              <TableHeader>Contact</TableHeader>
+              <TableHeader>City</TableHeader>
+              <TableHeader>State</TableHeader>
+              <TableHeader>Zip</TableHeader>
+              <TableHeader>Phone</TableHeader>
+              <TableHeader>Created</TableHeader>
+              <TableHeader>Modified</TableHeader>
+              <TableHeader className="text-center">Type</TableHeader>
+              <TableHeader className="text-center">Status</TableHeader>
+              <th className="w-12"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border-subtle">
-            {data.map((source, index) => {
-              const conversionRate =
-                source.deals_sent && source.deals_sent > 0
-                  ? ((source.deals_closed || 0) / source.deals_sent) * 100
-                  : 0;
-              const isOverdue =
-                source.next_followup_date &&
-                isPast(parseISO(source.next_followup_date));
+          <tbody className="divide-y divide-slate-100">
+            {data.map((source) => {
+              const isSelected = selectedIds.includes(source.id);
+              const status = source.status || "cold";
+              const statusStyle = statusConfig[status] || statusConfig.cold;
+              const typeStyle = typeConfig[source.type] || typeConfig.agent;
 
               return (
                 <tr
                   key={source.id}
                   className={cn(
-                    "h-14 transition-colors hover:bg-surface-secondary/50 cursor-pointer",
-                    index % 2 === 0 ? "bg-white" : "bg-surface-secondary/20"
+                    "group transition-colors cursor-pointer",
+                    isSelected 
+                      ? "bg-primary/5" 
+                      : "hover:bg-slate-50/80"
                   )}
                   onClick={() => navigate(`/deal-sources/${source.id}`)}
                 >
-                  <td className="px-4" onClick={(e) => e.stopPropagation()}>
+                  {/* Checkbox */}
+                  <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     <Checkbox
-                      checked={selectedIds.includes(source.id)}
+                      checked={isSelected}
                       onCheckedChange={() => onSelect(source.id)}
                       aria-label={`Select ${source.name}`}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                  </td>
-                  <td className="px-4">
+                  </TableCell>
+
+                  {/* Contact Name with Avatar */}
+                  <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-brand/10 flex items-center justify-center text-brand font-medium text-small flex-shrink-0">
+                      <div className={cn(
+                        "h-9 w-9 rounded-full flex items-center justify-center text-sm font-medium flex-shrink-0",
+                        typeStyle.bg, typeStyle.text
+                      )}>
                         {getInitials(source.name)}
                       </div>
-                      <span className="text-body font-medium text-content truncate max-w-[150px]">
-                        {source.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4">
-                    <Badge className={cn("capitalize", typeColors[source.type])} size="sm">
-                      {source.type}
-                    </Badge>
-                  </td>
-                  <td className="px-4 text-small text-content-secondary truncate max-w-[120px]">
-                    {source.company || "—"}
-                  </td>
-                  <td className="px-4 text-center">
-                    <Badge className={cn("capitalize", statusColors[source.status || "cold"])} size="sm">
-                      {source.status || "cold"}
-                    </Badge>
-                  </td>
-                  <td className="px-4" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-2">
-                      {source.phone && (
-                        <a
-                          href={`tel:${source.phone}`}
-                          className="p-1.5 rounded-small hover:bg-surface-tertiary transition-colors"
-                          title={source.phone}
-                        >
-                          <Phone className="h-4 w-4 text-content-tertiary hover:text-content" />
-                        </a>
-                      )}
-                      {source.email && (
-                        <a
-                          href={`mailto:${source.email}`}
-                          className="p-1.5 rounded-small hover:bg-surface-tertiary transition-colors"
-                          title={source.email}
-                        >
-                          <Mail className="h-4 w-4 text-content-tertiary hover:text-content" />
-                        </a>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-4 text-right text-small tabular-nums text-content">
-                    {source.deals_sent || 0}
-                  </td>
-                  <td className="px-4 text-right text-small tabular-nums font-medium text-content">
-                    {source.deals_closed || 0}
-                  </td>
-                  <td className="px-4 text-right text-small tabular-nums">
-                    <span
-                      className={cn(
-                        conversionRate >= 20
-                          ? "text-success"
-                          : conversionRate >= 10
-                          ? "text-warning"
-                          : "text-content-secondary"
-                      )}
-                    >
-                      {conversionRate.toFixed(0)}%
-                    </span>
-                  </td>
-                  <td className="px-4 text-right text-small tabular-nums font-medium text-success">
-                    {formatCurrency(Number(source.total_profit))}
-                  </td>
-                  <td className="px-4 text-right text-small text-content-secondary">
-                    {source.last_contact_date
-                      ? formatDistanceToNow(parseISO(source.last_contact_date), { addSuffix: true })
-                      : "—"}
-                  </td>
-                  <td className="px-4 text-right">
-                    {source.next_followup_date ? (
-                      <span
-                        className={cn(
-                          "text-small",
-                          isOverdue ? "text-destructive font-medium" : "text-content-secondary"
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-900 truncate">
+                          {source.name}
+                        </p>
+                        {source.company && (
+                          <p className="text-xs text-slate-500 truncate">
+                            {source.company}
+                          </p>
                         )}
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* City */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600">
+                      {source.company ? "—" : "—"}
+                    </span>
+                  </TableCell>
+
+                  {/* State */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600">—</span>
+                  </TableCell>
+
+                  {/* Zip */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600">—</span>
+                  </TableCell>
+
+                  {/* Phone */}
+                  <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                    {source.phone ? (
+                      <a
+                        href={`tel:${source.phone}`}
+                        className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-primary transition-colors"
                       >
-                        {isOverdue ? "Overdue" : format(parseISO(source.next_followup_date), "MMM d")}
-                      </span>
+                        <Phone className="h-3.5 w-3.5" />
+                        {formatPhone(source.phone)}
+                      </a>
                     ) : (
-                      <span className="text-small text-content-tertiary">—</span>
+                      <span className="text-sm text-slate-400">—</span>
                     )}
-                  </td>
-                  <td className="px-2" onClick={(e) => e.stopPropagation()}>
+                  </TableCell>
+
+                  {/* Created */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600 tabular-nums">
+                      {formatDate(source.created_at)}
+                    </span>
+                  </TableCell>
+
+                  {/* Modified */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600 tabular-nums">
+                      {formatDate(source.updated_at)}
+                    </span>
+                  </TableCell>
+
+                  {/* Type */}
+                  <TableCell className="text-center">
+                    <span className={cn(
+                      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize",
+                      typeStyle.bg, typeStyle.text
+                    )}>
+                      {source.type}
+                    </span>
+                  </TableCell>
+
+                  {/* Status */}
+                  <TableCell className="text-center">
+                    <span className={cn(
+                      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium capitalize",
+                      statusStyle.bg, statusStyle.text
+                    )}>
+                      {status}
+                    </span>
+                  </TableCell>
+
+                  {/* Actions */}
+                  <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 hover:bg-surface-tertiary rounded-small transition-colors">
-                          <MoreHorizontal className="h-4 w-4 text-content-tertiary" />
+                        <button className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-slate-100 transition-all">
+                          <MoreHorizontal className="h-4 w-4 text-slate-500" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-40 bg-white">
-                        <DropdownMenuItem onClick={() => navigate(`/deal-sources/${source.id}`)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View
+                      <DropdownMenuContent align="end" className="w-44 bg-white shadow-lg border border-slate-200">
+                        <DropdownMenuItem 
+                          onClick={() => navigate(`/deal-sources/${source.id}`)}
+                          className="text-sm"
+                        >
+                          <Eye className="h-4 w-4 mr-2 text-slate-500" />
+                          View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Pencil className="h-4 w-4 mr-2" />
+                        <DropdownMenuItem className="text-sm">
+                          <Pencil className="h-4 w-4 mr-2 text-slate-500" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onLogContact(source.id)}>
-                          <Phone className="h-4 w-4 mr-2" />
+                        {source.email && (
+                          <DropdownMenuItem asChild>
+                            <a href={`mailto:${source.email}`} className="text-sm">
+                              <Mail className="h-4 w-4 mr-2 text-slate-500" />
+                              Send Email
+                            </a>
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem 
+                          onClick={() => onLogContact(source.id)}
+                          className="text-sm"
+                        >
+                          <Phone className="h-4 w-4 mr-2 text-slate-500" />
                           Log Contact
                         </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => onDelete(source.id)}
-                          className="text-destructive"
+                          className="text-sm text-red-600 focus:text-red-600 focus:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </td>
+                  </TableCell>
                 </tr>
               );
             })}
