@@ -11,6 +11,8 @@ import { SkeletonPropertyCard } from "@/components/ui/skeleton";
 import { AddPropertyModal } from "@/components/properties/AddPropertyModal";
 import { BulkOfferModal } from "@/components/properties/bulk-offer-modal";
 import { BulkAIOutreachModal } from "@/components/properties/bulk-ai-outreach-modal";
+import { ColumnSettingsModal, DEFAULT_COLUMNS, type ColumnConfig } from "@/components/properties/column-settings-modal";
+import { ColorLabelPicker, ColorLabelDot } from "@/components/properties/color-label-picker";
 import {
   Select,
   SelectContent,
@@ -50,11 +52,12 @@ import {
   X,
   Send,
   Bot,
+  Settings2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 
 interface Property {
   id: string;
@@ -406,7 +409,31 @@ export default function Properties() {
   const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
   const [isBulkAIOpen, setIsBulkAIOpen] = React.useState(false);
+  const [isColumnSettingsOpen, setIsColumnSettingsOpen] = React.useState(false);
+  const [columns, setColumns] = React.useState<ColumnConfig[]>(() => {
+    const saved = localStorage.getItem("propertyTableColumns");
+    return saved ? JSON.parse(saved) : DEFAULT_COLUMNS;
+  });
+  const [colorLabels, setColorLabels] = React.useState<Record<string, string | null>>(() => {
+    const saved = localStorage.getItem("propertyColorLabels");
+    return saved ? JSON.parse(saved) : {};
+  });
   const itemsPerPage = 25;
+
+  // Save columns to localStorage
+  const handleColumnsChange = (newColumns: ColumnConfig[]) => {
+    setColumns(newColumns);
+    localStorage.setItem("propertyTableColumns", JSON.stringify(newColumns));
+  };
+
+  // Save color labels to localStorage
+  const handleColorLabelChange = (propertyId: string, color: string | null) => {
+    setColorLabels((prev) => {
+      const next = { ...prev, [propertyId]: color };
+      localStorage.setItem("propertyColorLabels", JSON.stringify(next));
+      return next;
+    });
+  };
 
   // Fetch properties
   const { data: properties = [], isLoading, refetch } = useQuery({
@@ -643,6 +670,16 @@ export default function Properties() {
               </button>
             </div>
 
+            {/* Column Settings Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsColumnSettingsOpen(true)}
+              title="Customize columns"
+            >
+              <Settings2 className="h-4 w-4" />
+            </Button>
+
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters} icon={<X className="h-4 w-4" />}>
                 Clear
@@ -733,22 +770,37 @@ export default function Properties() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border-subtle bg-background-secondary">
-                    <th className="text-left p-4 w-12">
-                      <Checkbox
-                        checked={allSelected}
-                        onCheckedChange={toggleAllSelection}
-                      />
-                    </th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Address</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">City</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Type</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Status</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Motivation</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">ARV</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Spread</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Source</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground">Days</th>
-                    <th className="text-left p-4 text-small font-medium text-muted-foreground w-12">Actions</th>
+                    {columns.filter(c => c.visible).map((col) => {
+                      if (col.id === "checkbox") {
+                        return (
+                          <th key={col.id} className="text-left p-4 w-12">
+                            <Checkbox
+                              checked={allSelected}
+                              onCheckedChange={toggleAllSelection}
+                            />
+                          </th>
+                        );
+                      }
+                      if (col.id === "colorLabel") {
+                        return (
+                          <th key={col.id} className="text-left p-4 w-12 text-small font-medium text-muted-foreground">
+                            Label
+                          </th>
+                        );
+                      }
+                      if (col.id === "actions") {
+                        return (
+                          <th key={col.id} className="text-left p-4 w-12 text-small font-medium text-muted-foreground">
+                            Actions
+                          </th>
+                        );
+                      }
+                      return (
+                        <th key={col.id} className="text-left p-4 text-small font-medium text-muted-foreground">
+                          {col.label}
+                        </th>
+                      );
+                    })}
                   </tr>
                 </thead>
                 <tbody>
@@ -761,91 +813,227 @@ export default function Properties() {
                     const spread = property.arv && property.mao_standard 
                       ? property.arv - property.mao_standard 
                       : null;
+                    const dateAdded = property.created_at
+                      ? format(new Date(property.created_at), "MMM d, yyyy")
+                      : "—";
 
                     return (
                       <tr
                         key={property.id}
                         className={cn(
-                          "border-b border-border-subtle hover:bg-background-secondary transition-colors",
+                          "border-b border-border-subtle hover:bg-background-secondary transition-colors cursor-pointer",
                           selectedIds.has(property.id) && "bg-accent/5"
                         )}
+                        onClick={() => navigate(`/properties/${property.id}`)}
                       >
-                        <td className="p-4">
-                          <Checkbox
-                            checked={selectedIds.has(property.id)}
-                            onCheckedChange={(checked) => toggleSelection(property.id, !!checked)}
-                          />
-                        </td>
-                        <td 
-                          className="p-4 cursor-pointer"
-                          onClick={() => navigate(`/properties/${property.id}`)}
-                        >
-                          <span className="font-medium text-foreground">{property.address}</span>
-                        </td>
-                        <td className="p-4 text-muted-foreground">
-                          {[property.city, property.state].filter(Boolean).join(", ") || "—"}
-                        </td>
-                        <td className="p-4">
-                          {property.property_type ? (
-                            <Badge variant="secondary" size="sm">
-                              {formatPropertyType(property.property_type)}
-                            </Badge>
-                          ) : "—"}
-                        </td>
-                        <td className="p-4">
-                          <Badge variant={getStatusVariant(property.status)} size="sm">
-                            {formatStatus(property.status)}
-                          </Badge>
-                        </td>
-                        <td className="p-4">
-                          <div className={cn(
-                            "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-small font-medium",
-                            scoreColors.bg, scoreColors.text
-                          )}>
-                            {score >= 800 && <Flame className="h-3 w-3" />}
-                            {score}
-                          </div>
-                        </td>
-                        <td className="p-4 tabular-nums">
-                          {property.arv ? formatCurrency(property.arv) : "—"}
-                        </td>
-                        <td className="p-4 tabular-nums">
-                          {spread !== null ? (
-                            <span className={spread > 0 ? "text-success" : "text-muted-foreground"}>
-                              {formatCurrency(spread)}
-                            </span>
-                          ) : "—"}
-                        </td>
-                        <td className="p-4 text-muted-foreground">
-                          {property.source || "—"}
-                        </td>
-                        <td className="p-4 tabular-nums text-muted-foreground">
-                          {daysInPipeline}d
-                        </td>
-                        <td className="p-4">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <button className="p-1 hover:bg-background-tertiary rounded-small transition-colors">
-                                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-                              </button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-40 bg-white">
-                              <DropdownMenuItem onClick={() => navigate(`/properties/${property.id}`)}>
-                                <Eye className="h-4 w-4 mr-2" />
-                                View
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => navigate(`/properties/${property.id}/edit`)}>
-                                <Pencil className="h-4 w-4 mr-2" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-destructive">
-                                <Archive className="h-4 w-4 mr-2" />
-                                Archive
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </td>
+                        {columns.filter(c => c.visible).map((col) => {
+                          switch (col.id) {
+                            case "checkbox":
+                              return (
+                                <td key={col.id} className="p-4" onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox
+                                    checked={selectedIds.has(property.id)}
+                                    onCheckedChange={(checked) => toggleSelection(property.id, !!checked)}
+                                  />
+                                </td>
+                              );
+                            case "colorLabel":
+                              return (
+                                <td key={col.id} className="p-4" onClick={(e) => e.stopPropagation()}>
+                                  <ColorLabelPicker
+                                    value={colorLabels[property.id] || null}
+                                    onChange={(color) => handleColorLabelChange(property.id, color)}
+                                  />
+                                </td>
+                              );
+                            case "address":
+                              return (
+                                <td key={col.id} className="p-4">
+                                  <div className="flex items-center gap-2">
+                                    {colorLabels[property.id] && <ColorLabelDot color={colorLabels[property.id]} />}
+                                    <span className="font-medium text-foreground">{property.address}</span>
+                                  </div>
+                                </td>
+                              );
+                            case "city":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {property.city || "—"}
+                                </td>
+                              );
+                            case "state":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {property.state || "—"}
+                                </td>
+                              );
+                            case "zip":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {property.zip || "—"}
+                                </td>
+                              );
+                            case "status":
+                              return (
+                                <td key={col.id} className="p-4">
+                                  <Badge variant={getStatusVariant(property.status)} size="sm">
+                                    {formatStatus(property.status)}
+                                  </Badge>
+                                </td>
+                              );
+                            case "dateAdded":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {dateAdded}
+                                </td>
+                              );
+                            case "propertyType":
+                              return (
+                                <td key={col.id} className="p-4">
+                                  {property.property_type ? (
+                                    <Badge variant="secondary" size="sm">
+                                      {formatPropertyType(property.property_type)}
+                                    </Badge>
+                                  ) : "—"}
+                                </td>
+                              );
+                            case "motivation":
+                              return (
+                                <td key={col.id} className="p-4">
+                                  <div className={cn(
+                                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-small font-medium",
+                                    scoreColors.bg, scoreColors.text
+                                  )}>
+                                    {score >= 800 && <Flame className="h-3 w-3" />}
+                                    {score}
+                                  </div>
+                                </td>
+                              );
+                            case "arv":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {property.arv ? formatCurrency(property.arv) : "—"}
+                                </td>
+                              );
+                            case "mao":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {property.mao_standard ? formatCurrency(property.mao_standard) : "—"}
+                                </td>
+                              );
+                            case "spread":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {spread !== null ? (
+                                    <span className={spread > 0 ? "text-success" : "text-muted-foreground"}>
+                                      {formatCurrency(spread)}
+                                    </span>
+                                  ) : "—"}
+                                </td>
+                              );
+                            case "beds":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {property.beds ?? "—"}
+                                </td>
+                              );
+                            case "baths":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {property.baths ?? "—"}
+                                </td>
+                              );
+                            case "sqft":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums">
+                                  {property.sqft?.toLocaleString() ?? "—"}
+                                </td>
+                              );
+                            case "source":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {property.source || "—"}
+                                </td>
+                              );
+                            case "ownerName":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {property.owner_name || "—"}
+                                </td>
+                              );
+                            case "ownerEmail":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {(property as any).owner_email || "—"}
+                                </td>
+                              );
+                            case "ownerPhone":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  {(property as any).owner_phone || "—"}
+                                </td>
+                              );
+                            case "county":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  —
+                                </td>
+                              );
+                            case "dealType":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  —
+                                </td>
+                              );
+                            case "appointment":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  —
+                                </td>
+                              );
+                            case "lastContact":
+                              return (
+                                <td key={col.id} className="p-4 text-muted-foreground">
+                                  —
+                                </td>
+                              );
+                            case "daysInPipeline":
+                              return (
+                                <td key={col.id} className="p-4 tabular-nums text-muted-foreground">
+                                  {daysInPipeline}d
+                                </td>
+                              );
+                            case "actions":
+                              return (
+                                <td key={col.id} className="p-4" onClick={(e) => e.stopPropagation()}>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <button className="p-1 hover:bg-background-tertiary rounded-small transition-colors">
+                                        <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                                      </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className="w-40 bg-white">
+                                      <DropdownMenuItem onClick={() => navigate(`/properties/${property.id}`)}>
+                                        <Eye className="h-4 w-4 mr-2" />
+                                        View
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => navigate(`/properties/${property.id}/edit`)}>
+                                        <Pencil className="h-4 w-4 mr-2" />
+                                        Edit
+                                      </DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem className="text-destructive">
+                                        <Archive className="h-4 w-4 mr-2" />
+                                        Archive
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </td>
+                              );
+                            default:
+                              return <td key={col.id} className="p-4">—</td>;
+                          }
+                        })}
                       </tr>
                     );
                   })}
@@ -883,6 +1071,14 @@ export default function Properties() {
         open={isBulkAIOpen}
         onOpenChange={setIsBulkAIOpen}
         selectedPropertyIds={Array.from(selectedIds)}
+      />
+
+      {/* Column Settings Modal */}
+      <ColumnSettingsModal
+        open={isColumnSettingsOpen}
+        onOpenChange={setIsColumnSettingsOpen}
+        columns={columns}
+        onColumnsChange={handleColumnsChange}
       />
     </AppLayout>
   );
