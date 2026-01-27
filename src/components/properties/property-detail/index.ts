@@ -12,3 +12,4 @@ export { TitleIntelligenceCard } from "./title-intelligence-card";
 export { TitleTab } from "./title-tab";
 export { OrderTitleModal } from "./order-title-modal";
 export { ManualTitleEntryModal } from "./manual-title-entry-modal";
+export { NegotiationCoachTab } from "./negotiation-coach-tab";
