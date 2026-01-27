@@ -449,7 +449,7 @@ export default function PropertyDetail() {
             }}
           />
         )}
-        {activeTab === "outreach" && <OutreachTab />}
+        {activeTab === "outreach" && <OutreachTab ownerPhone={property.owner_phone} />}
         {activeTab === "appointments" && <AppointmentsTab />}
         {activeTab === "documents" && <DocumentsTab />}
         {activeTab === "notes" && <NotesTab />}

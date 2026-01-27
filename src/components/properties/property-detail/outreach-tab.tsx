@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { usePropertyOutreach } from "@/hooks/useProperty";
 import { AddOutreachModal } from "./add-outreach-modal";
+import { AIConversationsSection } from "./ai-conversations-section";
 import { format, formatDistanceToNow } from "date-fns";
 
 type Channel = "sms" | "email" | "call" | "dm" | "mail" | "voicemail";
@@ -80,7 +81,11 @@ function getStatusVariant(status: string | null): "success" | "warning" | "info"
 
 const channelFilters = ["all", "sms", "email", "call", "dm", "mail"] as const;
 
-export function OutreachTab() {
+interface OutreachTabProps {
+  ownerPhone?: string | null;
+}
+
+export function OutreachTab({ ownerPhone }: OutreachTabProps) {
   const { id } = useParams();
   const { data: outreach, isLoading } = usePropertyOutreach(id);
   
@@ -126,7 +131,12 @@ export function OutreachTab() {
   }
 
   return (
-    <div className="p-lg">
+    <div className="p-lg space-y-lg">
+      {/* AI Conversations Section */}
+      {id && <AIConversationsSection propertyId={id} ownerPhone={ownerPhone} />}
+
+      {/* Manual Outreach Section */}
+      <div>
       {/* Opt-in Banner */}
       {hasOptedIn ? (
         <div className="flex items-center gap-2 p-3 mb-lg bg-success/10 border border-success/20 rounded-medium">
@@ -308,6 +318,7 @@ export function OutreachTab() {
         onOpenChange={setShowAddModal}
         propertyId={id || ""}
       />
+      </div>
     </div>
   );
 }

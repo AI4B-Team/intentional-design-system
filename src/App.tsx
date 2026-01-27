@@ -38,6 +38,7 @@ import JVPartners from "./pages/JVPartners";
 import DailyReport from "./pages/DailyReport";
 import Achievements from "./pages/Achievements";
 import Leaderboard from "./pages/Leaderboard";
+import ClosebotTemplates from "./pages/ClosebotTemplates";
 
 const queryClient = new QueryClient();
 
@@ -284,6 +285,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Leaderboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/templates/closebot"
+              element={
+                <ProtectedRoute>
+                  <ClosebotTemplates />
                 </ProtectedRoute>
               }
             />
