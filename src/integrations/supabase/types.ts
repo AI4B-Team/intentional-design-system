@@ -14,6 +14,172 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_type: string | null
+          assigned_to: string | null
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          outcome: string | null
+          property_id: string
+          scheduled_time: string
+          status: string | null
+        }
+        Insert: {
+          appointment_type?: string | null
+          assigned_to?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          outcome?: string | null
+          property_id: string
+          scheduled_time: string
+          status?: string | null
+        }
+        Update: {
+          appointment_type?: string | null
+          assigned_to?: string | null
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          outcome?: string | null
+          property_id?: string
+          scheduled_time?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buyers: {
+        Row: {
+          avg_close_days: number | null
+          buy_box: Json | null
+          company: string | null
+          created_at: string | null
+          deals_closed: number | null
+          deals_viewed: number | null
+          email: string | null
+          id: string
+          last_activity: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+          pof_verified: boolean | null
+          preferred_contact: string | null
+          reliability_score: number | null
+          total_volume: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_close_days?: number | null
+          buy_box?: Json | null
+          company?: string | null
+          created_at?: string | null
+          deals_closed?: number | null
+          deals_viewed?: number | null
+          email?: string | null
+          id?: string
+          last_activity?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+          pof_verified?: boolean | null
+          preferred_contact?: string | null
+          reliability_score?: number | null
+          total_volume?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_close_days?: number | null
+          buy_box?: Json | null
+          company?: string | null
+          created_at?: string | null
+          deals_closed?: number | null
+          deals_viewed?: number | null
+          email?: string | null
+          id?: string
+          last_activity?: string | null
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          pof_verified?: boolean | null
+          preferred_contact?: string | null
+          reliability_score?: number | null
+          total_volume?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      comps: {
+        Row: {
+          adjusted_value: number | null
+          adjustments: Json | null
+          baths: number | null
+          beds: number | null
+          comp_address: string
+          created_at: string | null
+          distance_miles: number | null
+          id: string
+          property_id: string
+          rating: string | null
+          sale_date: string | null
+          sale_price: number | null
+          sqft: number | null
+        }
+        Insert: {
+          adjusted_value?: number | null
+          adjustments?: Json | null
+          baths?: number | null
+          beds?: number | null
+          comp_address: string
+          created_at?: string | null
+          distance_miles?: number | null
+          id?: string
+          property_id: string
+          rating?: string | null
+          sale_date?: string | null
+          sale_price?: number | null
+          sqft?: number | null
+        }
+        Update: {
+          adjusted_value?: number | null
+          adjustments?: Json | null
+          baths?: number | null
+          beds?: number | null
+          comp_address?: string
+          created_at?: string | null
+          distance_miles?: number | null
+          id?: string
+          property_id?: string
+          rating?: string | null
+          sale_date?: string | null
+          sale_price?: number | null
+          sqft?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comps_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_sources: {
         Row: {
           company: string | null
@@ -79,6 +245,95 @@ export type Database = {
           total_profit?: number | null
           type?: string
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      offers: {
+        Row: {
+          counter_amount: number | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          offer_amount: number
+          offer_type: string | null
+          property_id: string
+          response: string | null
+          sent_date: string | null
+          sent_via: string | null
+        }
+        Insert: {
+          counter_amount?: number | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          offer_amount: number
+          offer_type?: string | null
+          property_id: string
+          response?: string | null
+          sent_date?: string | null
+          sent_via?: string | null
+        }
+        Update: {
+          counter_amount?: number | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          offer_amount?: number
+          offer_type?: string | null
+          property_id?: string
+          response?: string | null
+          sent_date?: string | null
+          sent_via?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offers_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      outreach_log: {
+        Row: {
+          channel: string
+          content: string | null
+          created_at: string | null
+          direction: string | null
+          id: string
+          opted_in: boolean | null
+          response_content: string | null
+          status: string | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Insert: {
+          channel: string
+          content?: string | null
+          created_at?: string | null
+          direction?: string | null
+          id?: string
+          opted_in?: boolean | null
+          response_content?: string | null
+          status?: string | null
+          target_id: string
+          target_type: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          content?: string | null
+          created_at?: string | null
+          direction?: string | null
+          id?: string
+          opted_in?: boolean | null
+          response_content?: string | null
+          status?: string | null
+          target_id?: string
+          target_type?: string
           user_id?: string
         }
         Relationships: []
