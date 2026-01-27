@@ -2,6 +2,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Check } from "lucide-react";
+import { Check, Search, Sparkles } from "lucide-react";
+import { useAttomLookup } from "@/hooks/useAttom";
+import { mapPropertyType, type AttomPropertyData } from "@/lib/attom";
+import { toast } from "sonner";
 
 interface AddPropertyModalProps {
   open: boolean;
@@ -39,6 +44,18 @@ interface PropertyFormData {
   arv: string;
   source: string;
   notes: string;
+  // ATTOM fields
+  attom_id?: number;
+  apn?: string;
+  fips?: string;
+  latitude?: number;
+  longitude?: number;
+  owner_name?: string;
+  owner_mailing_address?: string;
+  assessed_value?: number;
+  tax_amount?: number;
+  last_sale_date?: string;
+  last_sale_price?: number;
 }
 
 const initialFormData: PropertyFormData = {
@@ -78,17 +95,30 @@ const sources = [
 
 const states = ["TX", "FL", "CA", "AZ", "GA", "NC", "TN", "OH", "PA", "NY"];
 
+// Track which fields were auto-filled
+type AutoFilledFields = Set<keyof PropertyFormData>;
+
 export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModalProps) {
   const [formData, setFormData] = React.useState<PropertyFormData>(initialFormData);
+  const [autoFilledFields, setAutoFilledFields] = React.useState<AutoFilledFields>(new Set());
   const [step, setStep] = React.useState(1);
   const totalSteps = 3;
 
+  const attomLookup = useAttomLookup();
+
   const updateField = (field: keyof PropertyFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+    // Remove auto-fill badge if user manually edits
+    setAutoFilledFields((prev) => {
+      const next = new Set(prev);
+      next.delete(field);
+      return next;
+    });
   };
 
   const handleClose = () => {
     setFormData(initialFormData);
+    setAutoFilledFields(new Set());
     setStep(1);
     onOpenChange(false);
   };
@@ -96,6 +126,76 @@ export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModa
   const handleSave = () => {
     onSave?.(formData);
     handleClose();
+  };
+
+  const handleAutoFill = async () => {
+    if (!formData.address || !formData.city || !formData.state) {
+      toast.error("Please enter address, city, and state first");
+      return;
+    }
+
+    try {
+      const data = await attomLookup.mutateAsync({
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zipCode,
+      });
+
+      // Map ATTOM data to form fields
+      const newAutoFilled = new Set<keyof PropertyFormData>();
+      const updates: Partial<PropertyFormData> = {};
+
+      if (data.property_type) {
+        updates.propertyType = mapPropertyType(data.property_type);
+        newAutoFilled.add("propertyType");
+      }
+      if (data.beds) {
+        updates.beds = String(data.beds);
+        newAutoFilled.add("beds");
+      }
+      if (data.baths) {
+        updates.baths = String(data.baths);
+        newAutoFilled.add("baths");
+      }
+      if (data.sqft) {
+        updates.sqft = String(data.sqft);
+        newAutoFilled.add("sqft");
+      }
+      if (data.year_built) {
+        updates.yearBuilt = String(data.year_built);
+        newAutoFilled.add("yearBuilt");
+      }
+
+      // Store ATTOM-specific data
+      if (data.attom_id) updates.attom_id = data.attom_id;
+      if (data.apn) updates.apn = data.apn;
+      if (data.fips) updates.fips = data.fips;
+      if (data.latitude) updates.latitude = data.latitude;
+      if (data.longitude) updates.longitude = data.longitude;
+      if (data.owner_name) {
+        updates.owner_name = data.owner_name;
+        newAutoFilled.add("owner_name" as any);
+      }
+      if (data.owner_mailing_address) {
+        updates.owner_mailing_address = data.owner_mailing_address;
+      }
+      if (data.assessed_value) updates.assessed_value = data.assessed_value;
+      if (data.tax_amount) updates.tax_amount = data.tax_amount;
+      if (data.last_sale_date) updates.last_sale_date = data.last_sale_date;
+      if (data.last_sale_price) updates.last_sale_price = data.last_sale_price;
+
+      setFormData((prev) => ({ ...prev, ...updates }));
+      setAutoFilledFields(newAutoFilled);
+
+      toast.success("Property data loaded!", {
+        description: "Review the auto-filled fields and save.",
+      });
+    } catch (error: any) {
+      toast.warning("Property not found in database", {
+        description: "Please enter details manually.",
+      });
+    }
   };
 
   const isStepValid = (stepNum: number): boolean => {
@@ -112,6 +212,29 @@ export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModa
   };
 
   const canProceed = isStepValid(step);
+  const canAutoFill = formData.address && formData.city && formData.state;
+
+  const renderFieldWithBadge = (
+    field: keyof PropertyFormData,
+    element: React.ReactNode
+  ) => {
+    if (autoFilledFields.has(field)) {
+      return (
+        <div className="relative">
+          {element}
+          <Badge
+            variant="success"
+            size="sm"
+            className="absolute -top-2 -right-2 text-[10px] px-1.5 py-0"
+          >
+            <Sparkles className="h-2.5 w-2.5 mr-0.5" />
+            Auto
+          </Badge>
+        </div>
+      );
+    }
+    return element;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -207,6 +330,31 @@ export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModa
                   value={formData.zipCode}
                   onChange={(v) => updateField("zipCode", v)}
                 />
+
+                {/* Auto-Fill Button */}
+                <div className="pt-2">
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className="w-full"
+                    onClick={handleAutoFill}
+                    disabled={!canAutoFill || attomLookup.isPending}
+                    icon={
+                      attomLookup.isPending ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <Search className="h-4 w-4" />
+                      )
+                    }
+                  >
+                    {attomLookup.isPending
+                      ? "Fetching property data from ATTOM..."
+                      : "Auto-Fill Property Data"}
+                  </Button>
+                  <p className="text-tiny text-content-tertiary text-center mt-2">
+                    Automatically fetch beds, baths, sqft, year built, and more
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -216,56 +364,71 @@ export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModa
             <div className="space-y-6 animate-fade-in">
               <div className="space-y-4">
                 <h4 className="text-body font-medium text-content">Property Details</h4>
-                <div className="space-y-1.5">
-                  <label className="block text-small font-medium text-content">
-                    Property Type <span className="text-destructive">*</span>
-                  </label>
-                  <Select
-                    value={formData.propertyType}
-                    onValueChange={(v) => updateField("propertyType", v)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {propertyTypes.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                {renderFieldWithBadge(
+                  "propertyType",
+                  <div className="space-y-1.5">
+                    <label className="block text-small font-medium text-content">
+                      Property Type <span className="text-destructive">*</span>
+                    </label>
+                    <Select
+                      value={formData.propertyType}
+                      onValueChange={(v) => updateField("propertyType", v)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {propertyTypes.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <div className="grid grid-cols-3 gap-4">
-                  <Input
-                    label="Beds"
-                    type="number"
-                    placeholder="3"
-                    value={formData.beds}
-                    onChange={(v) => updateField("beds", v)}
-                  />
-                  <Input
-                    label="Baths"
-                    type="number"
-                    placeholder="2"
-                    value={formData.baths}
-                    onChange={(v) => updateField("baths", v)}
-                  />
-                  <Input
-                    label="Sq Ft"
-                    type="number"
-                    placeholder="1,500"
-                    value={formData.sqft}
-                    onChange={(v) => updateField("sqft", v)}
-                  />
+                  {renderFieldWithBadge(
+                    "beds",
+                    <Input
+                      label="Beds"
+                      type="number"
+                      placeholder="3"
+                      value={formData.beds}
+                      onChange={(v) => updateField("beds", v)}
+                    />
+                  )}
+                  {renderFieldWithBadge(
+                    "baths",
+                    <Input
+                      label="Baths"
+                      type="number"
+                      placeholder="2"
+                      value={formData.baths}
+                      onChange={(v) => updateField("baths", v)}
+                    />
+                  )}
+                  {renderFieldWithBadge(
+                    "sqft",
+                    <Input
+                      label="Sq Ft"
+                      type="number"
+                      placeholder="1,500"
+                      value={formData.sqft}
+                      onChange={(v) => updateField("sqft", v)}
+                    />
+                  )}
                 </div>
-                <Input
-                  label="Year Built"
-                  type="number"
-                  placeholder="1985"
-                  value={formData.yearBuilt}
-                  onChange={(v) => updateField("yearBuilt", v)}
-                />
+                {renderFieldWithBadge(
+                  "yearBuilt",
+                  <Input
+                    label="Year Built"
+                    type="number"
+                    placeholder="1985"
+                    value={formData.yearBuilt}
+                    onChange={(v) => updateField("yearBuilt", v)}
+                  />
+                )}
                 <div className="space-y-1.5">
                   <label className="block text-small font-medium text-content">
                     Lead Source
@@ -323,6 +486,16 @@ export function AddPropertyModal({ open, onOpenChange, onSave }: AddPropertyModa
                     className="flex min-h-[100px] w-full rounded-small border border-border bg-background px-3.5 py-2.5 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10 resize-none"
                   />
                 </div>
+
+                {/* Show auto-filled info */}
+                {autoFilledFields.size > 0 && (
+                  <div className="p-3 rounded-medium bg-success/5 border border-success/20">
+                    <p className="text-small text-content">
+                      <Sparkles className="h-4 w-4 inline-block mr-1.5 text-success" />
+                      {autoFilledFields.size} fields were auto-filled from ATTOM data
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}

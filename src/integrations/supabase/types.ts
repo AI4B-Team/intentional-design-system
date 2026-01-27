@@ -2688,9 +2688,16 @@ export type Database = {
       properties: {
         Row: {
           address: string
+          apn: string | null
           arv: number | null
           arv_confidence: string | null
+          assessed_value: number | null
           assigned_to: string | null
+          attom_id: number | null
+          avm_confidence: string | null
+          avm_high: number | null
+          avm_low: number | null
+          avm_value: number | null
           baths: number | null
           beds: number | null
           city: string | null
@@ -2701,10 +2708,16 @@ export type Database = {
           equity_percent: number | null
           estimated_rent: number | null
           estimated_value: number | null
+          fips: string | null
           ghl_contact_id: string | null
           ghl_last_sync: string | null
           id: string
+          last_data_pull: string | null
+          last_sale_date: string | null
+          last_sale_price: number | null
+          latitude: number | null
           liens_total: number | null
+          longitude: number | null
           lot_size: number | null
           mao_aggressive: number | null
           mao_conservative: number | null
@@ -2729,6 +2742,7 @@ export type Database = {
           sqft: number | null
           state: string | null
           status: string | null
+          tax_amount: number | null
           title_status: string | null
           updated_at: string | null
           updated_by: string | null
@@ -2739,9 +2753,16 @@ export type Database = {
         }
         Insert: {
           address: string
+          apn?: string | null
           arv?: number | null
           arv_confidence?: string | null
+          assessed_value?: number | null
           assigned_to?: string | null
+          attom_id?: number | null
+          avm_confidence?: string | null
+          avm_high?: number | null
+          avm_low?: number | null
+          avm_value?: number | null
           baths?: number | null
           beds?: number | null
           city?: string | null
@@ -2752,10 +2773,16 @@ export type Database = {
           equity_percent?: number | null
           estimated_rent?: number | null
           estimated_value?: number | null
+          fips?: string | null
           ghl_contact_id?: string | null
           ghl_last_sync?: string | null
           id?: string
+          last_data_pull?: string | null
+          last_sale_date?: string | null
+          last_sale_price?: number | null
+          latitude?: number | null
           liens_total?: number | null
+          longitude?: number | null
           lot_size?: number | null
           mao_aggressive?: number | null
           mao_conservative?: number | null
@@ -2780,6 +2807,7 @@ export type Database = {
           sqft?: number | null
           state?: string | null
           status?: string | null
+          tax_amount?: number | null
           title_status?: string | null
           updated_at?: string | null
           updated_by?: string | null
@@ -2790,9 +2818,16 @@ export type Database = {
         }
         Update: {
           address?: string
+          apn?: string | null
           arv?: number | null
           arv_confidence?: string | null
+          assessed_value?: number | null
           assigned_to?: string | null
+          attom_id?: number | null
+          avm_confidence?: string | null
+          avm_high?: number | null
+          avm_low?: number | null
+          avm_value?: number | null
           baths?: number | null
           beds?: number | null
           city?: string | null
@@ -2803,10 +2838,16 @@ export type Database = {
           equity_percent?: number | null
           estimated_rent?: number | null
           estimated_value?: number | null
+          fips?: string | null
           ghl_contact_id?: string | null
           ghl_last_sync?: string | null
           id?: string
+          last_data_pull?: string | null
+          last_sale_date?: string | null
+          last_sale_price?: number | null
+          latitude?: number | null
           liens_total?: number | null
+          longitude?: number | null
           lot_size?: number | null
           mao_aggressive?: number | null
           mao_conservative?: number | null
@@ -2831,6 +2872,7 @@ export type Database = {
           sqft?: number | null
           state?: string | null
           status?: string | null
+          tax_amount?: number | null
           title_status?: string | null
           updated_at?: string | null
           updated_by?: string | null
