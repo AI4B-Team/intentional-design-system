@@ -2,7 +2,7 @@ import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DashboardLayout, PageHeader } from "@/components/layout";
-import { WholesaleCalculator, FixFlipCalculator, CreativeCalculator } from "@/components/calculators";
+import { WholesaleCalculator, FixFlipCalculator, RentalCalculator, BRRRRCalculator, CreativeCalculator } from "@/components/calculators";
 import { useProperty } from "@/hooks/useProperty";
 import { Calculator, Home, TrendingUp, Building, Bed, Sparkles, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -164,10 +164,29 @@ export default function Calculators() {
             initialValues={propertyInitialValues}
           />
         )}
+        {activeCalculator === "rental" && (
+          <RentalCalculator 
+            propertyId={propertyId || undefined}
+            initialValues={propertyInitialValues ? {
+              purchasePrice: propertyInitialValues.purchasePrice,
+              rehabCosts: propertyInitialValues.repairCosts,
+            } : undefined}
+          />
+        )}
+        {activeCalculator === "brrrr" && (
+          <BRRRRCalculator 
+            propertyId={propertyId || undefined}
+            initialValues={propertyInitialValues ? {
+              purchasePrice: propertyInitialValues.purchasePrice,
+              rehabBudget: propertyInitialValues.repairCosts,
+              arv: propertyInitialValues.arv,
+            } : undefined}
+          />
+        )}
         {activeCalculator === "creative" && <CreativeCalculator />}
         
         {/* Placeholder for other calculators */}
-        {!["wholesale", "flip", "creative"].includes(activeCalculator) && (
+        {!["wholesale", "flip", "rental", "brrrr", "creative"].includes(activeCalculator) && (
           <div className="flex items-center justify-center min-h-[400px] bg-surface-secondary/50 rounded-medium border border-border-subtle">
             <div className="text-center">
               <div className="h-16 w-16 rounded-full bg-surface-tertiary flex items-center justify-center mx-auto mb-4">
