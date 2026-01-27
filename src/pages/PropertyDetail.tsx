@@ -199,8 +199,21 @@ export default function PropertyDetail() {
     ? property.arv - (property.repair_estimate || 0) - property.mao_standard
     : null;
 
+  // Handle score update
+  const handleUpdateScore = (signals: string[], score: number) => {
+    if (!id) return;
+    updateProperty.mutate({ 
+      id, 
+      updates: { 
+        motivation_score: score, 
+        distress_signals: signals 
+      } 
+    });
+  };
+
   // Build property object for tabs
   const propertyForTabs = {
+    id: property.id,
     beds: property.beds || 0,
     baths: property.baths || 0,
     sqft: property.sqft || 0,
@@ -221,11 +234,8 @@ export default function PropertyDetail() {
     score: score,
     velocityScore: property.velocity_score || 50,
     urgencyLevel: score >= 800 ? "high" : score >= 500 ? "medium" : "low",
-    scoreBreakdown: property.distress_signals && Array.isArray(property.distress_signals) 
-      ? (property.distress_signals as Array<{ signal?: string; points?: number }>).map((s) => ({
-          signal: s.signal || "Unknown",
-          points: s.points || 0,
-        }))
+    distressSignals: property.distress_signals && Array.isArray(property.distress_signals) 
+      ? (property.distress_signals as string[])
       : undefined,
     arv: property.arv ? Number(property.arv) : undefined,
     repairs: property.repair_estimate ? Number(property.repair_estimate) : undefined,
@@ -374,7 +384,13 @@ export default function PropertyDetail() {
 
       {/* Tab Content */}
       <div className="animate-fade-in">
-        {activeTab === "overview" && <OverviewTab property={propertyForTabs} />}
+        {activeTab === "overview" && (
+          <OverviewTab 
+            property={propertyForTabs} 
+            onUpdateScore={handleUpdateScore}
+            isUpdating={updateProperty.isPending}
+          />
+        )}
         {activeTab === "underwriting" && <UnderwritingTab property={propertyForTabs} />}
         {activeTab === "offers" && <OffersTab />}
         {activeTab === "outreach" && <OutreachTab />}
