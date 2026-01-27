@@ -19,6 +19,9 @@ import {
   Inbox,
   Hammer,
   Mail,
+  ChevronDown,
+  Globe,
+  Home,
 } from "lucide-react";
 
 interface NavItem {
@@ -26,6 +29,12 @@ interface NavItem {
   href: string;
   icon: React.ElementType;
   badgeKey?: string;
+}
+
+interface NavGroup {
+  label: string;
+  icon: React.ElementType;
+  items: NavItem[];
 }
 
 const navItems: NavItem[] = [
@@ -37,7 +46,19 @@ const navItems: NavItem[] = [
   { label: "Deal Sources", href: "/deal-sources", icon: Users },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
   { label: "Campaigns", href: "/campaigns", icon: Megaphone },
-  { label: "Direct Mail", href: "/mail", icon: Mail },
+];
+
+const marketingGroup: NavGroup = {
+  label: "Marketing",
+  icon: Megaphone,
+  items: [
+    { label: "Direct Mail", href: "/mail", icon: Mail },
+    { label: "Website", href: "/marketing/website", icon: Globe },
+    { label: "MLS", href: "/marketing/mls", icon: Home },
+  ],
+};
+
+const bottomNavItems: NavItem[] = [
   { label: "Calculators", href: "/calculators", icon: Calculator },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },
@@ -60,12 +81,16 @@ export function AppSidebar({
   const { user, signOut } = useAuth();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
-  
+  const [marketingOpen, setMarketingOpen] = React.useState(() => {
+    return marketingGroup.items.some(item => location.pathname.startsWith(item.href));
+  });
 
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
     return 0;
   };
+
+  const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
 
   const handleSignOut = async () => {
     await signOut();
@@ -119,7 +144,6 @@ export function AppSidebar({
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
-
             const badgeCount = getBadgeCount(item.badgeKey);
 
             return (
@@ -148,6 +172,79 @@ export function AppSidebar({
                       {badgeCount}
                     </span>
                   )}
+                </NavLink>
+              </li>
+            );
+          })}
+
+          {/* Marketing Group */}
+          <li>
+            <button
+              onClick={() => !collapsed && setMarketingOpen(!marketingOpen)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                isMarketingActive && "text-white",
+                collapsed && "justify-center"
+              )}
+            >
+              <marketingGroup.icon className={cn("h-5 w-5 flex-shrink-0", isMarketingActive && "text-brand-accent")} />
+              {!collapsed && (
+                <>
+                  <span>{marketingGroup.label}</span>
+                  <ChevronDown className={cn(
+                    "h-4 w-4 ml-auto transition-transform",
+                    marketingOpen && "rotate-180"
+                  )} />
+                </>
+              )}
+            </button>
+            {!collapsed && marketingOpen && (
+              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
+                {marketingGroup.items.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  const Icon = item.icon;
+
+                  return (
+                    <li key={item.href}>
+                      <NavLink
+                        to={item.href}
+                        onClick={onMobileClose}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
+                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
+                          isActive && "bg-brand-accent/20 text-white font-medium"
+                        )}
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </li>
+
+          {/* Bottom Nav Items */}
+          {bottomNavItems.map((item) => {
+            const isActive = location.pathname === item.href;
+            const Icon = item.icon;
+
+            return (
+              <li key={item.href}>
+                <NavLink
+                  to={item.href}
+                  onClick={onMobileClose}
+                  className={cn(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                    "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                    isActive && "bg-brand-accent text-white font-medium",
+                    collapsed && "justify-center"
+                  )}
+                >
+                  <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                  {!collapsed && <span>{item.label}</span>}
                 </NavLink>
               </li>
             );
