@@ -50,6 +50,53 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          created_at: string | null
+          entity_id: string | null
+          entity_name: string | null
+          entity_type: string
+          id: string
+          metadata: Json | null
+          organization_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          created_at?: string | null
+          entity_id?: string | null
+          entity_name?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       activity_points: {
         Row: {
           activity_type: string
@@ -82,6 +129,7 @@ export type Database = {
           appointment_type: string | null
           assigned_to: string | null
           created_at: string | null
+          created_by: string | null
           duration_minutes: number | null
           id: string
           notes: string | null
@@ -90,11 +138,13 @@ export type Database = {
           property_id: string
           scheduled_time: string
           status: string | null
+          updated_by: string | null
         }
         Insert: {
           appointment_type?: string | null
           assigned_to?: string | null
           created_at?: string | null
+          created_by?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
@@ -103,11 +153,13 @@ export type Database = {
           property_id: string
           scheduled_time: string
           status?: string | null
+          updated_by?: string | null
         }
         Update: {
           appointment_type?: string | null
           assigned_to?: string | null
           created_at?: string | null
+          created_by?: string | null
           duration_minutes?: number | null
           id?: string
           notes?: string | null
@@ -116,6 +168,7 @@ export type Database = {
           property_id?: string
           scheduled_time?: string
           status?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -2073,6 +2126,50 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          link: string | null
+          message: string | null
+          organization_id: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          link?: string | null
+          message?: string | null
+          organization_id?: string | null
+          read_at?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          link?: string | null
+          message?: string | null
+          organization_id?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offer_deliveries: {
         Row: {
           channel: string
@@ -2199,6 +2296,7 @@ export type Database = {
         Row: {
           counter_amount: number | null
           created_at: string | null
+          created_by: string | null
           id: string
           notes: string | null
           offer_amount: number
@@ -2208,10 +2306,12 @@ export type Database = {
           response: string | null
           sent_date: string | null
           sent_via: string | null
+          updated_by: string | null
         }
         Insert: {
           counter_amount?: number | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           notes?: string | null
           offer_amount: number
@@ -2221,10 +2321,12 @@ export type Database = {
           response?: string | null
           sent_date?: string | null
           sent_via?: string | null
+          updated_by?: string | null
         }
         Update: {
           counter_amount?: number | null
           created_at?: string | null
+          created_by?: string | null
           id?: string
           notes?: string | null
           offer_amount?: number
@@ -2234,6 +2336,7 @@ export type Database = {
           response?: string | null
           sent_date?: string | null
           sent_via?: string | null
+          updated_by?: string | null
         }
         Relationships: [
           {
@@ -2414,6 +2517,7 @@ export type Database = {
           channel: string
           content: string | null
           created_at: string | null
+          created_by: string | null
           direction: string | null
           id: string
           opted_in: boolean | null
@@ -2422,12 +2526,14 @@ export type Database = {
           status: string | null
           target_id: string
           target_type: string
+          updated_by: string | null
           user_id: string
         }
         Insert: {
           channel: string
           content?: string | null
           created_at?: string | null
+          created_by?: string | null
           direction?: string | null
           id?: string
           opted_in?: boolean | null
@@ -2436,12 +2542,14 @@ export type Database = {
           status?: string | null
           target_id: string
           target_type: string
+          updated_by?: string | null
           user_id: string
         }
         Update: {
           channel?: string
           content?: string | null
           created_at?: string | null
+          created_by?: string | null
           direction?: string | null
           id?: string
           opted_in?: boolean | null
@@ -2450,6 +2558,7 @@ export type Database = {
           status?: string | null
           target_id?: string
           target_type?: string
+          updated_by?: string | null
           user_id?: string
         }
         Relationships: [
@@ -2559,6 +2668,7 @@ export type Database = {
           status: string | null
           title_status: string | null
           updated_at: string | null
+          updated_by: string | null
           user_id: string
           velocity_score: number | null
           year_built: number | null
@@ -2609,6 +2719,7 @@ export type Database = {
           status?: string | null
           title_status?: string | null
           updated_at?: string | null
+          updated_by?: string | null
           user_id: string
           velocity_score?: number | null
           year_built?: number | null
@@ -2659,6 +2770,7 @@ export type Database = {
           status?: string | null
           title_status?: string | null
           updated_at?: string | null
+          updated_by?: string | null
           user_id?: string
           velocity_score?: number | null
           year_built?: number | null

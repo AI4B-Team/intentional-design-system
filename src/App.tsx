@@ -65,6 +65,7 @@ import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import OfferBlaster from "./pages/OfferBlaster";
+import Activity from "./pages/Activity";
 
 const queryClient = new QueryClient();
 
