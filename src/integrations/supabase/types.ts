@@ -191,6 +191,7 @@ export type Database = {
           id: string
           instagram: string | null
           last_contact_date: string | null
+          lending_criteria: Json | null
           linkedin: string | null
           name: string
           next_followup_date: string | null
@@ -213,6 +214,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           last_contact_date?: string | null
+          lending_criteria?: Json | null
           linkedin?: string | null
           name: string
           next_followup_date?: string | null
@@ -235,6 +237,7 @@ export type Database = {
           id?: string
           instagram?: string | null
           last_contact_date?: string | null
+          lending_criteria?: Json | null
           linkedin?: string | null
           name?: string
           next_followup_date?: string | null
@@ -248,6 +251,87 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      lender_loans: {
+        Row: {
+          created_at: string
+          funding_date: string
+          id: string
+          interest_rate: number
+          lender_id: string
+          loan_amount: number
+          ltv_at_funding: number | null
+          maturity_date: string
+          notes: string | null
+          payoff_amount: number | null
+          payoff_date: string | null
+          points: number | null
+          property_id: string
+          status: string
+          term_months: number
+          total_interest_paid: number | null
+          total_payments_made: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          funding_date: string
+          id?: string
+          interest_rate: number
+          lender_id: string
+          loan_amount: number
+          ltv_at_funding?: number | null
+          maturity_date: string
+          notes?: string | null
+          payoff_amount?: number | null
+          payoff_date?: string | null
+          points?: number | null
+          property_id: string
+          status?: string
+          term_months: number
+          total_interest_paid?: number | null
+          total_payments_made?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          funding_date?: string
+          id?: string
+          interest_rate?: number
+          lender_id?: string
+          loan_amount?: number
+          ltv_at_funding?: number | null
+          maturity_date?: string
+          notes?: string | null
+          payoff_amount?: number | null
+          payoff_date?: string | null
+          points?: number | null
+          property_id?: string
+          status?: string
+          term_months?: number
+          total_interest_paid?: number | null
+          total_payments_made?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lender_loans_lender_id_fkey"
+            columns: ["lender_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lender_loans_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       offers: {
         Row: {
