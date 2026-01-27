@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -15,6 +17,12 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   MessageSquare,
   Zap,
@@ -32,8 +40,16 @@ import {
   Target,
   Brain,
   Lightbulb,
+  Calculator,
+  Copy,
+  Check,
+  TrendingUp,
+  TrendingDown,
+  FileText,
+  HandshakeIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface NegotiationCoachTabProps {
   property: {
@@ -48,7 +64,232 @@ interface NegotiationCoachTabProps {
     source?: string;
     addedDate?: string;
   };
+  mao?: number;
   onCompleteProfile?: () => void;
+}
+
+interface CounterAnalysis {
+  acceptCeiling: number;
+  counterAt: number;
+  counterTerms: string;
+  walkAwayMax: number;
+  spreadAtCounter: number;
+  roiAtCounter: number;
+  recommendation: "accept" | "counter" | "walk";
+}
+
+function analyzeCounter(
+  initialOffer: number,
+  sellerAsks: number,
+  arv: number,
+  repairs: number,
+  profitMargin: number = 0.15
+): CounterAnalysis {
+  // Calculate ceiling (max we can pay and still hit profit margin)
+  const maxAllowable = arv * (1 - profitMargin) - repairs;
+  const acceptCeiling = Math.round(maxAllowable * 0.95); // 95% of max
+  const walkAwayMax = Math.round(maxAllowable);
+  
+  // Counter at midpoint between initial and ceiling, but not above ceiling
+  const midpoint = (initialOffer + sellerAsks) / 2;
+  const counterAt = Math.min(Math.round(midpoint), acceptCeiling);
+  
+  // Determine recommendation
+  let recommendation: "accept" | "counter" | "walk" = "counter";
+  if (sellerAsks <= acceptCeiling) {
+    recommendation = "accept";
+  } else if (sellerAsks > walkAwayMax) {
+    recommendation = "walk";
+  }
+  
+  // Calculate spread and ROI at counter price
+  const spreadAtCounter = arv - repairs - counterAt;
+  const roiAtCounter = ((spreadAtCounter / counterAt) * 100);
+  
+  // Suggest terms based on situation
+  let counterTerms = "standard terms";
+  if (sellerAsks > walkAwayMax * 0.9) {
+    counterTerms = "seller financing (monthly payments)";
+  } else if (sellerAsks > acceptCeiling) {
+    counterTerms = "faster 7-day close";
+  }
+  
+  return {
+    acceptCeiling,
+    counterAt,
+    counterTerms,
+    walkAwayMax,
+    spreadAtCounter,
+    roiAtCounter,
+    recommendation,
+  };
+}
+
+interface CallScript {
+  id: string;
+  title: string;
+  script: string;
+}
+
+function generateCallScripts(
+  ownerName: string,
+  signals: string[],
+  score: number,
+  arv?: number,
+  repairs?: number
+): CallScript[] {
+  const signalSet = new Set(signals.map(s => s.toLowerCase()));
+  const scripts: CallScript[] = [];
+  
+  // Opening Script
+  let opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I'm reaching out because I noticed your property at [ADDRESS] and wanted to see if you'd consider an offer.
+
+[PAUSE - Let them respond]
+
+I'm a local real estate investor and I buy properties in as-is condition. I can close quickly and cover all the closing costs. Is that something you might be interested in discussing?`;
+
+  if (signalSet.has("foreclosure") || signalSet.has("pre-foreclosure")) {
+    opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I understand you might be dealing with a difficult situation regarding your property at [ADDRESS].
+
+[PAUSE - Let them respond]
+
+I work with homeowners facing similar challenges. I can move very quickly - often within a week or two - which might help with your timeline. Would you be open to a brief conversation about your options?`;
+  } else if (signalSet.has("tired landlord")) {
+    opening = `Hi, is this ${ownerName}? This is [YOUR NAME]. I'm calling about your rental property at [ADDRESS].
+
+I work with landlords who are ready to move on from their investment properties. If you're tired of the headaches - tenants, repairs, late-night calls - I can make you a fair cash offer and close on your timeline. Any interest in hearing what I could offer?`;
+  } else if (signalSet.has("probate") || signalSet.has("inherited")) {
+    opening = `Hi, is this ${ownerName}? This is [YOUR NAME] with [YOUR COMPANY]. I'm calling about the property at [ADDRESS].
+
+First, I'm sorry if you're dealing with a difficult family situation. I work with families who've inherited properties and aren't sure what to do with them. If selling is something you're considering, I'd be happy to make a no-obligation offer. Would that be helpful?`;
+  }
+  
+  scripts.push({
+    id: "opening",
+    title: "Opening Script",
+    script: opening,
+  });
+
+  // Discovery Questions Script
+  scripts.push({
+    id: "discovery",
+    title: "Discovery Questions",
+    script: `Great, I appreciate you being open to talking. Let me ask you a few quick questions so I can put together the best possible offer:
+
+1. "What's your ideal timeline for selling? Are you looking to move quickly, or do you have some flexibility?"
+
+2. "Is the property currently occupied, or is it vacant?"
+
+3. "On a scale of 1-10, how motivated are you to sell right now?"
+
+4. "What would a perfect outcome look like for you in this sale?"
+
+5. "Is there anything about the property I should know - repairs needed, liens, anything like that?"
+
+6. "Have you had any other offers? What did you think of them?"
+
+[LISTEN ACTIVELY - Take notes on their answers. These reveal their true motivation and help you structure your offer.]`,
+  });
+
+  // Presenting Offer Script
+  const offerScript = arv && repairs 
+    ? `Based on what you've told me and my research on the property, here's what I can offer:
+
+[STATE YOUR OFFER CLEARLY]
+
+Let me walk you through how I got to this number:
+
+- Properties like yours in good condition are selling for around ${formatCurrency(arv)}
+- After accounting for the repairs needed (approximately ${formatCurrency(repairs)}) and my costs to renovate and resell...
+- This offer allows me to take on all the risk while you walk away with cash in hand, on your timeline
+
+I can close in as little as [X] days, pay all closing costs, and buy the property exactly as it sits today. No repairs, no cleaning, no showings.
+
+How does that sound to you?`
+    : `Based on what you've told me and my research on the property, here's what I can offer:
+
+[STATE YOUR OFFER CLEARLY]
+
+This is a cash offer - no financing contingencies, no bank approvals to wait for. I can close in as little as [X] days, pay all closing costs, and buy the property exactly as it sits today.
+
+You don't need to make any repairs, do any cleaning, or deal with showings. Just pick your closing date and I'll handle the rest.
+
+How does that sound to you?`;
+
+  scripts.push({
+    id: "offer",
+    title: "Presenting Your Offer",
+    script: offerScript,
+  });
+
+  // Handling "Too Low" Objection
+  scripts.push({
+    id: "too-low",
+    title: "Handling 'That's Too Low'",
+    script: `I completely understand - and I respect that you want top dollar for your property. Let me ask you this:
+
+"What number would you need to make this work for you?"
+
+[WAIT FOR THEIR NUMBER]
+
+Okay, I appreciate you sharing that. Here's the thing - there's a gap between our numbers, but let me see if we can find some common ground.
+
+[IF THEIR NUMBER IS REASONABLE:]
+"If I could get closer to that number, would you be ready to move forward today?"
+
+[IF THEIR NUMBER IS TOO HIGH:]
+"Help me understand how you arrived at that number. Did you have an appraisal done, or is that based on what you've seen other homes sell for?"
+
+[THEN:]
+"What if instead of adjusting the price, I could offer [ALTERNATIVE - faster close, cover moving costs, lease-back option]? Would that help bridge the gap?"`,
+  });
+
+  // Follow-Up Script
+  scripts.push({
+    id: "followup",
+    title: "Follow-Up Call Script",
+    script: `Hi ${ownerName}, this is [YOUR NAME] following up on our conversation about [ADDRESS].
+
+[PAUSE]
+
+I wanted to check in and see if you've had a chance to think about the offer. Any questions I can answer?
+
+[LISTEN TO THEIR RESPONSE]
+
+[IF THEY'RE STILL THINKING:]
+"I totally understand - it's a big decision. What's holding you back from moving forward?"
+
+[IF THEY'VE DECIDED NOT TO SELL:]
+"I respect that. Just know my offer stands if anything changes. Can I check back in a month or so, just in case your situation changes?"
+
+[IF THEY'RE READY:]
+"That's great! Let me get the paperwork started. What's the best email to send the contract to?"`,
+  });
+
+  // Closing Script
+  scripts.push({
+    id: "closing",
+    title: "Closing the Deal",
+    script: `${ownerName}, it sounds like we have a deal. Congratulations!
+
+Here's what happens next:
+
+1. I'll email you the purchase agreement today. It's straightforward - take your time to review it.
+
+2. Once you sign, we'll open escrow with [TITLE COMPANY]. They'll handle all the paperwork.
+
+3. We'll schedule the closing for [DATE] - or sooner if you prefer.
+
+4. On closing day, you'll receive [AMOUNT] via wire transfer or cashier's check - your choice.
+
+Do you have any questions about the process? 
+
+Great. And ${ownerName}, I want you to know - I appreciate you trusting me with this. I'll make sure this is a smooth transaction from start to finish.
+
+I'll send that contract over now. Talk soon!`,
+  });
+
+  return scripts;
 }
 
 // Strategy mapping based on distress signals
@@ -285,8 +526,11 @@ function formatCurrency(value: number | null | undefined): string {
   }).format(value);
 }
 
-export function NegotiationCoachTab({ property, onCompleteProfile }: NegotiationCoachTabProps) {
+export function NegotiationCoachTab({ property, mao, onCompleteProfile }: NegotiationCoachTabProps) {
   const [showTimingDetails, setShowTimingDetails] = useState(false);
+  const [sellerAsks, setSellerAsks] = useState<string>("");
+  const [counterAnalysis, setCounterAnalysis] = useState<CounterAnalysis | null>(null);
+  const [copiedScript, setCopiedScript] = useState<string | null>(null);
   
   // Check if we have sufficient data
   const hasOwnerInfo = property.ownerName;
@@ -303,6 +547,52 @@ export function NegotiationCoachTab({ property, onCompleteProfile }: Negotiation
   const objections = generateObjections(signals, property.score, property.mortgageBalance, property.arv, property.repairs);
   const timing = getOptimalTiming();
   const StrategyIcon = strategy.icon;
+  
+  // Initial offer calculation
+  const initialOffer = mao || (property.arv && property.repairs 
+    ? (property.arv * 0.7) - property.repairs 
+    : 0);
+  
+  // Generate call scripts
+  const callScripts = generateCallScripts(
+    property.ownerName || "Owner",
+    signals,
+    property.score,
+    property.arv,
+    property.repairs
+  );
+
+  const handleAnalyzeCounter = () => {
+    const askAmount = parseFloat(sellerAsks.replace(/[^0-9.-]+/g, ""));
+    if (isNaN(askAmount) || askAmount <= 0) {
+      toast.error("Please enter a valid amount");
+      return;
+    }
+    
+    const analysis = analyzeCounter(
+      initialOffer,
+      askAmount,
+      property.arv || 0,
+      property.repairs || 0
+    );
+    setCounterAnalysis(analysis);
+  };
+
+  const handleCopyScript = async (scriptId: string, scriptText: string) => {
+    try {
+      await navigator.clipboard.writeText(scriptText);
+      setCopiedScript(scriptId);
+      toast.success("Script copied to clipboard");
+      setTimeout(() => setCopiedScript(null), 2000);
+    } catch {
+      toast.error("Failed to copy script");
+    }
+  };
+
+  // Calculate range positions for visual
+  const getPositionPercent = (value: number, min: number, max: number) => {
+    return Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
+  };
 
   // Insufficient data state
   if (!hasSufficientData) {
@@ -455,7 +745,252 @@ export function NegotiationCoachTab({ property, onCompleteProfile }: Negotiation
         </Table>
       </Card>
 
-      {/* Optimal Timing */}
+      {/* Counter-Offer Strategy */}
+      <Card variant="default" padding="md">
+        <div className="flex items-center gap-2 mb-4">
+          <HandshakeIcon className="h-5 w-5 text-content-tertiary" />
+          <h2 className="text-h3 font-semibold text-content">If They Counter...</h2>
+        </div>
+
+        {/* Interactive Calculator */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <Label className="text-small text-content-secondary">Your Initial Offer</Label>
+            <div className="text-h2 font-bold text-content mt-1">{formatCurrency(initialOffer)}</div>
+            <p className="text-tiny text-content-tertiary">Based on MAO calculation</p>
+          </div>
+          <div>
+            <Label className="text-small text-content-secondary">Seller Asks For</Label>
+            <div className="flex gap-2 mt-1">
+              <Input
+                placeholder="$150,000"
+                value={sellerAsks}
+                onChange={(v) => setSellerAsks(v)}
+                className="flex-1"
+              />
+              <Button variant="primary" onClick={handleAnalyzeCounter} icon={<Calculator />}>
+                Analyze
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Analysis Results */}
+        {counterAnalysis && (
+          <div className="space-y-4">
+            {/* Recommendation Panel */}
+            <div className={cn(
+              "p-4 rounded-medium border-2",
+              counterAnalysis.recommendation === "accept" ? "bg-success/5 border-success/20" :
+              counterAnalysis.recommendation === "walk" ? "bg-destructive/5 border-destructive/20" :
+              "bg-warning/5 border-warning/20"
+            )}>
+              <div className="flex items-center gap-2 mb-3">
+                {counterAnalysis.recommendation === "accept" ? (
+                  <>
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                    <span className="text-body font-semibold text-success">Accept This Counter</span>
+                  </>
+                ) : counterAnalysis.recommendation === "walk" ? (
+                  <>
+                    <XCircle className="h-5 w-5 text-destructive" />
+                    <span className="text-body font-semibold text-destructive">Walk Away</span>
+                  </>
+                ) : (
+                  <>
+                    <Target className="h-5 w-5 text-warning" />
+                    <span className="text-body font-semibold text-warning">Counter Offer Recommended</span>
+                  </>
+                )}
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="p-3 bg-background-secondary rounded-small">
+                  <div className="flex items-center gap-1 text-tiny text-success mb-1">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Accept if under
+                  </div>
+                  <span className="text-body font-bold text-content">{formatCurrency(counterAnalysis.acceptCeiling)}</span>
+                </div>
+                <div className="p-3 bg-background-secondary rounded-small">
+                  <div className="flex items-center gap-1 text-tiny text-warning mb-1">
+                    <Target className="h-3 w-3" />
+                    Counter at
+                  </div>
+                  <span className="text-body font-bold text-content">{formatCurrency(counterAnalysis.counterAt)}</span>
+                  <p className="text-tiny text-content-tertiary mt-1">with {counterAnalysis.counterTerms}</p>
+                </div>
+                <div className="p-3 bg-background-secondary rounded-small">
+                  <div className="flex items-center gap-1 text-tiny text-destructive mb-1">
+                    <XCircle className="h-3 w-3" />
+                    Walk away if above
+                  </div>
+                  <span className="text-body font-bold text-content">{formatCurrency(counterAnalysis.walkAwayMax)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Calculation Details */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <Card variant="default" padding="sm" className="text-center">
+                <p className="text-tiny text-content-tertiary">Spread at Counter</p>
+                <p className={cn("text-h3 font-bold", counterAnalysis.spreadAtCounter > 0 ? "text-success" : "text-destructive")}>
+                  {formatCurrency(counterAnalysis.spreadAtCounter)}
+                </p>
+              </Card>
+              <Card variant="default" padding="sm" className="text-center">
+                <p className="text-tiny text-content-tertiary">ROI at Counter</p>
+                <p className={cn("text-h3 font-bold", counterAnalysis.roiAtCounter > 15 ? "text-success" : "text-warning")}>
+                  {counterAnalysis.roiAtCounter.toFixed(1)}%
+                </p>
+              </Card>
+              <Card variant="default" padding="sm" className="text-center">
+                <p className="text-tiny text-content-tertiary">ARV</p>
+                <p className="text-h3 font-bold text-content">{formatCurrency(property.arv)}</p>
+              </Card>
+              <Card variant="default" padding="sm" className="text-center">
+                <p className="text-tiny text-content-tertiary">Est. Repairs</p>
+                <p className="text-h3 font-bold text-content">{formatCurrency(property.repairs)}</p>
+              </Card>
+            </div>
+
+            {/* Visual Negotiation Range */}
+            <div className="p-4 bg-muted/30 rounded-medium">
+              <p className="text-small font-medium text-content mb-3">Negotiation Range</p>
+              <div className="relative h-8 bg-gradient-to-r from-success/30 via-warning/30 to-destructive/30 rounded-full overflow-hidden">
+                {/* Initial offer marker */}
+                <div 
+                  className="absolute top-0 bottom-0 w-1 bg-success"
+                  style={{ left: `${getPositionPercent(initialOffer, initialOffer, counterAnalysis.walkAwayMax * 1.2)}%` }}
+                >
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-tiny text-success font-medium whitespace-nowrap">
+                    Initial
+                  </div>
+                </div>
+                
+                {/* Counter zone marker */}
+                <div 
+                  className="absolute top-0 bottom-0 w-1 bg-warning"
+                  style={{ left: `${getPositionPercent(counterAnalysis.counterAt, initialOffer, counterAnalysis.walkAwayMax * 1.2)}%` }}
+                >
+                  <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-tiny text-warning font-medium whitespace-nowrap">
+                    Counter
+                  </div>
+                </div>
+                
+                {/* Walk away marker */}
+                <div 
+                  className="absolute top-0 bottom-0 w-1 bg-destructive"
+                  style={{ left: `${getPositionPercent(counterAnalysis.walkAwayMax, initialOffer, counterAnalysis.walkAwayMax * 1.2)}%` }}
+                >
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-tiny text-destructive font-medium whitespace-nowrap">
+                    Max
+                  </div>
+                </div>
+
+                {/* Seller asks marker */}
+                <div 
+                  className="absolute top-1 bottom-1 w-2 bg-content rounded-full border-2 border-background"
+                  style={{ left: `${getPositionPercent(parseFloat(sellerAsks.replace(/[^0-9.-]+/g, "")), initialOffer, counterAnalysis.walkAwayMax * 1.2)}%` }}
+                />
+              </div>
+              <div className="flex justify-between mt-6 text-tiny text-content-tertiary">
+                <span>{formatCurrency(initialOffer)}</span>
+                <span>Seller: {sellerAsks}</span>
+                <span>{formatCurrency(counterAnalysis.walkAwayMax)}</span>
+              </div>
+            </div>
+
+            {/* Alternative Offers */}
+            <div className="border-t border-border-subtle pt-4">
+              <h3 className="text-small font-semibold text-content mb-3">
+                If price is stuck, try these alternatives:
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex items-start gap-2 p-3 bg-background-secondary rounded-small">
+                  <Zap className="h-4 w-4 text-brand mt-0.5" />
+                  <div>
+                    <p className="text-small font-medium text-content">Faster Close</p>
+                    <p className="text-tiny text-content-secondary">Offer 7-day close - reduces their holding costs</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2 p-3 bg-background-secondary rounded-small">
+                  <TrendingUp className="h-4 w-4 text-brand mt-0.5" />
+                  <div>
+                    <p className="text-small font-medium text-content">Seller Financing</p>
+                    <p className="text-tiny text-content-secondary">Higher price with monthly payments - income appeal</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2 p-3 bg-background-secondary rounded-small">
+                  <TrendingDown className="h-4 w-4 text-brand mt-0.5" />
+                  <div>
+                    <p className="text-small font-medium text-content">Cover Moving Costs</p>
+                    <p className="text-tiny text-content-secondary">Add $2-5K for moving expenses instead of price</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-2 p-3 bg-background-secondary rounded-small">
+                  <Calendar className="h-4 w-4 text-brand mt-0.5" />
+                  <div>
+                    <p className="text-small font-medium text-content">Leaseback Period</p>
+                    <p className="text-tiny text-content-secondary">Let them stay 30-60 days rent-free after close</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!counterAnalysis && (
+          <div className="text-center py-6 bg-muted/20 rounded-medium">
+            <Calculator className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+            <p className="text-small text-content-secondary">Enter the seller's counter to see strategy recommendations</p>
+          </div>
+        )}
+      </Card>
+
+      {/* Call Scripts */}
+      <Card variant="default" padding="md">
+        <div className="flex items-center gap-2 mb-4">
+          <FileText className="h-5 w-5 text-content-tertiary" />
+          <h2 className="text-h3 font-semibold text-content">Call Scripts</h2>
+        </div>
+        <p className="text-small text-content-secondary mb-4">
+          Customized scripts based on {property.ownerName}'s situation. Click to copy.
+        </p>
+
+        <Accordion type="single" collapsible className="space-y-2">
+          {callScripts.map((script) => (
+            <AccordionItem 
+              key={script.id} 
+              value={script.id}
+              className="border rounded-medium px-4"
+            >
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" size="sm">{script.id.toUpperCase()}</Badge>
+                  <span className="font-medium">{script.title}</span>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="relative">
+                  <pre className="whitespace-pre-wrap text-small text-content bg-background-secondary p-4 rounded-medium font-sans leading-relaxed">
+                    {script.script}
+                  </pre>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => handleCopyScript(script.id, script.script)}
+                    icon={copiedScript === script.id ? <Check className="text-success" /> : <Copy />}
+                  >
+                    {copiedScript === script.id ? "Copied!" : "Copy"}
+                  </Button>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Card>
       <Card variant="default" padding="md">
         <div className="flex items-center gap-2 mb-4">
           <Clock className="h-5 w-5 text-content-tertiary" />
