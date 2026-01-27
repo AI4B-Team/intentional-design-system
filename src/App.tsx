@@ -17,6 +17,7 @@ import LenderBrowser from "./pages/LenderBrowser";
 import FundingRequest from "./pages/FundingRequest";
 import Settings from "./pages/Settings";
 import DealSources from "./pages/DealSources";
+import DealSourceDetail from "./pages/DealSourceDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DealSources />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/deal-sources/:id"
+              element={
+                <ProtectedRoute>
+                  <DealSourceDetail />
                 </ProtectedRoute>
               }
             />
