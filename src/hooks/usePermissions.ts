@@ -1,7 +1,7 @@
 import { useOrganization } from "@/contexts/OrganizationContext";
 
 export function usePermissions() {
-  const { membership, hasRole } = useOrganization();
+  const { membership, hasRole, canManageTeam, canManageSettings, canManageBilling } = useOrganization();
 
   return {
     // Property permissions
@@ -29,11 +29,13 @@ export function usePermissions() {
     canInviteMembers: hasRole("admin"),
     canRemoveMembers: hasRole("admin"),
     canChangeRoles: hasRole("admin"),
+    canManageTeam,
 
     // Settings permissions
     canManageIntegrations: hasRole("admin"),
     canManageTemplates: hasRole("manager"),
-    canManageBilling: membership?.role === "owner",
+    canManageSettings,
+    canManageBilling,
 
     // Data access
     canExportData: hasRole("manager"),

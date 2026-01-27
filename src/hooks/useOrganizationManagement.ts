@@ -278,3 +278,130 @@ export function useAcceptInvite() {
     },
   });
 }
+
+export function useCancelInvite() {
+  const { organization } = useOrganization();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (inviteId: string) => {
+      if (!organization) throw new Error("No organization");
+
+      const { error } = await supabase
+        .from("organization_invites")
+        .delete()
+        .eq("id", inviteId)
+        .eq("organization_id", organization.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["organization-invites"] });
+      toast.success("Invitation cancelled");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to cancel invitation");
+    },
+  });
+}
+
+export function useResendInvite() {
+  const { organization } = useOrganization();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (inviteId: string) => {
+      if (!organization) throw new Error("No organization");
+
+      // Update expires_at to extend the invite
+      const { data, error } = await supabase
+        .from("organization_invites")
+        .update({ 
+          expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString() 
+        })
+        .eq("id", inviteId)
+        .eq("organization_id", organization.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["organization-invites"] });
+      toast.success("Invitation resent");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to resend invitation");
+    },
+  });
+}
+
+export function useTransferOwnership() {
+  const { organization, refreshOrganization, membership } = useOrganization();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (newOwnerId: string) => {
+      if (!organization || !membership) throw new Error("No organization");
+      if (membership.role !== "owner") throw new Error("Only owners can transfer ownership");
+
+      // Update current owner to admin
+      const { error: demoteError } = await supabase
+        .from("organization_members")
+        .update({ role: "admin" })
+        .eq("id", membership.id);
+
+      if (demoteError) throw demoteError;
+
+      // Update target user to owner
+      const { error: promoteError } = await supabase
+        .from("organization_members")
+        .update({ role: "owner" })
+        .eq("organization_id", organization.id)
+        .eq("user_id", newOwnerId);
+
+      if (promoteError) {
+        // Rollback
+        await supabase
+          .from("organization_members")
+          .update({ role: "owner" })
+          .eq("id", membership.id);
+        throw promoteError;
+      }
+    },
+    onSuccess: async () => {
+      await refreshOrganization();
+      queryClient.invalidateQueries({ queryKey: ["organization"] });
+      toast.success("Ownership transferred successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to transfer ownership");
+    },
+  });
+}
+
+export function useDeleteOrganization() {
+  const { organization, membership } = useOrganization();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!organization || !membership) throw new Error("No organization");
+      if (membership.role !== "owner") throw new Error("Only owners can delete the organization");
+
+      const { error } = await supabase
+        .from("organizations")
+        .delete()
+        .eq("id", organization.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Organization deleted");
+      // User will be redirected by the caller
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to delete organization");
+    },
+  });
+}
