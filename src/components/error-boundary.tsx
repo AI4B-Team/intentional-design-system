@@ -2,7 +2,6 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertTriangle, RefreshCw, Home, Bug } from "lucide-react";
-import { Link } from "react-router-dom";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -90,10 +89,10 @@ export function ErrorFallback({ error, onRetry }: ErrorFallbackProps) {
               </Button>
             )}
             <Button variant="secondary" asChild className="w-full">
-              <Link to="/dashboard">
+              <a href="/dashboard">
                 <Home className="h-4 w-4 mr-2" />
                 Go to Dashboard
-              </Link>
+              </a>
             </Button>
           </div>
 
