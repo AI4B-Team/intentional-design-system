@@ -47,8 +47,10 @@ import Onboarding from "./pages/Onboarding";
 import MailDashboard from "./pages/MailDashboard";
 import MailCampaigns from "./pages/MailCampaigns";
 import MailCampaignWizard from "./pages/MailCampaignWizard";
+import MailCampaignDetail from "./pages/MailCampaignDetail";
 import MailTemplates from "./pages/MailTemplates";
 import MailTemplateEditor from "./pages/MailTemplateEditor";
+import MailSuppression from "./pages/MailSuppression";
 
 const queryClient = new QueryClient();
 
@@ -348,7 +350,15 @@ const App = () => (
               path="/mail/campaigns/:id"
               element={
                 <ProtectedRoute>
-                  <MailCampaigns />
+                  <MailCampaignDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/suppression"
+              element={
+                <ProtectedRoute>
+                  <MailSuppression />
                 </ProtectedRoute>
               }
             />
