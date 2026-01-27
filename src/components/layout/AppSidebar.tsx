@@ -19,6 +19,7 @@ import {
   X,
   Inbox,
   Hammer,
+  Mail,
 } from "lucide-react";
 
 interface NavItem {
@@ -37,6 +38,7 @@ const navItems: NavItem[] = [
   { label: "Deal Sources", href: "/deal-sources", icon: Users },
   { label: "Buyers", href: "/buyers", icon: UserCheck },
   { label: "Campaigns", href: "/campaigns", icon: Megaphone },
+  { label: "Direct Mail", href: "/mail", icon: Mail },
   { label: "Calculators", href: "/calculators", icon: Calculator },
   { label: "Analytics", href: "/analytics", icon: BarChart3 },
   { label: "Settings", href: "/settings", icon: Settings },

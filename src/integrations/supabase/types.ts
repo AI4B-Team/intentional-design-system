@@ -1372,6 +1372,423 @@ export type Database = {
           },
         ]
       }
+      lob_connections: {
+        Row: {
+          account_name: string | null
+          api_key_encrypted: string | null
+          created_at: string
+          default_mail_class: string | null
+          default_postcard_size: string | null
+          id: string
+          is_active: boolean | null
+          return_address_line1: string | null
+          return_address_line2: string | null
+          return_city: string | null
+          return_name: string | null
+          return_state: string | null
+          return_zip: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          api_key_encrypted?: string | null
+          created_at?: string
+          default_mail_class?: string | null
+          default_postcard_size?: string | null
+          id?: string
+          is_active?: boolean | null
+          return_address_line1?: string | null
+          return_address_line2?: string | null
+          return_city?: string | null
+          return_name?: string | null
+          return_state?: string | null
+          return_zip?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          api_key_encrypted?: string | null
+          created_at?: string
+          default_mail_class?: string | null
+          default_postcard_size?: string | null
+          id?: string
+          is_active?: boolean | null
+          return_address_line1?: string | null
+          return_address_line2?: string | null
+          return_city?: string | null
+          return_name?: string | null
+          return_state?: string | null
+          return_zip?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mail_campaigns: {
+        Row: {
+          cost_per_piece: number | null
+          created_at: string
+          description: string | null
+          drip_settings: Json | null
+          id: string
+          is_drip: boolean | null
+          list_filters: Json | null
+          list_type: string | null
+          name: string
+          scheduled_date: string | null
+          send_time: string | null
+          status: string | null
+          template_id: string | null
+          total_cost: number | null
+          total_delivered: number | null
+          total_recipients: number | null
+          total_responses: number | null
+          total_returned: number | null
+          total_sent: number | null
+          tracking_phone: string | null
+          tracking_url: string | null
+          updated_at: string
+          uploaded_list_id: string | null
+          user_id: string
+        }
+        Insert: {
+          cost_per_piece?: number | null
+          created_at?: string
+          description?: string | null
+          drip_settings?: Json | null
+          id?: string
+          is_drip?: boolean | null
+          list_filters?: Json | null
+          list_type?: string | null
+          name: string
+          scheduled_date?: string | null
+          send_time?: string | null
+          status?: string | null
+          template_id?: string | null
+          total_cost?: number | null
+          total_delivered?: number | null
+          total_recipients?: number | null
+          total_responses?: number | null
+          total_returned?: number | null
+          total_sent?: number | null
+          tracking_phone?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+          uploaded_list_id?: string | null
+          user_id: string
+        }
+        Update: {
+          cost_per_piece?: number | null
+          created_at?: string
+          description?: string | null
+          drip_settings?: Json | null
+          id?: string
+          is_drip?: boolean | null
+          list_filters?: Json | null
+          list_type?: string | null
+          name?: string
+          scheduled_date?: string | null
+          send_time?: string | null
+          status?: string | null
+          template_id?: string | null
+          total_cost?: number | null
+          total_delivered?: number | null
+          total_recipients?: number | null
+          total_responses?: number | null
+          total_returned?: number | null
+          total_sent?: number | null
+          tracking_phone?: string | null
+          tracking_url?: string | null
+          updated_at?: string
+          uploaded_list_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mail_campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "mail_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mail_campaigns_uploaded_list_id_fkey"
+            columns: ["uploaded_list_id"]
+            isOneToOne: false
+            referencedRelation: "mail_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mail_list_records: {
+        Row: {
+          created_at: string
+          duplicate_of: string | null
+          id: string
+          is_duplicate: boolean | null
+          is_valid: boolean | null
+          list_id: string
+          mailing_address: string | null
+          mailing_city: string | null
+          mailing_state: string | null
+          mailing_zip: string | null
+          owner_name: string | null
+          property_address: string | null
+          property_city: string | null
+          property_state: string | null
+          property_zip: string | null
+          validation_error: string | null
+        }
+        Insert: {
+          created_at?: string
+          duplicate_of?: string | null
+          id?: string
+          is_duplicate?: boolean | null
+          is_valid?: boolean | null
+          list_id: string
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          owner_name?: string | null
+          property_address?: string | null
+          property_city?: string | null
+          property_state?: string | null
+          property_zip?: string | null
+          validation_error?: string | null
+        }
+        Update: {
+          created_at?: string
+          duplicate_of?: string | null
+          id?: string
+          is_duplicate?: boolean | null
+          is_valid?: boolean | null
+          list_id?: string
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          owner_name?: string | null
+          property_address?: string | null
+          property_city?: string | null
+          property_state?: string | null
+          property_zip?: string | null
+          validation_error?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mail_list_records_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "mail_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mail_lists: {
+        Row: {
+          column_mapping: Json | null
+          created_at: string
+          duplicate_records: number | null
+          file_name: string | null
+          id: string
+          invalid_records: number | null
+          name: string
+          status: string | null
+          total_records: number | null
+          user_id: string
+          valid_records: number | null
+        }
+        Insert: {
+          column_mapping?: Json | null
+          created_at?: string
+          duplicate_records?: number | null
+          file_name?: string | null
+          id?: string
+          invalid_records?: number | null
+          name: string
+          status?: string | null
+          total_records?: number | null
+          user_id: string
+          valid_records?: number | null
+        }
+        Update: {
+          column_mapping?: Json | null
+          created_at?: string
+          duplicate_records?: number | null
+          file_name?: string | null
+          id?: string
+          invalid_records?: number | null
+          name?: string
+          status?: string | null
+          total_records?: number | null
+          user_id?: string
+          valid_records?: number | null
+        }
+        Relationships: []
+      }
+      mail_pieces: {
+        Row: {
+          campaign_id: string
+          cost: number | null
+          created_at: string
+          delivered_at: string | null
+          id: string
+          list_record_id: string | null
+          lob_id: string | null
+          property_id: string | null
+          recipient_address: string | null
+          recipient_city: string | null
+          recipient_name: string | null
+          recipient_state: string | null
+          recipient_zip: string | null
+          response_date: string | null
+          response_received: boolean | null
+          return_reason: string | null
+          returned_at: string | null
+          sent_at: string | null
+          status: string | null
+        }
+        Insert: {
+          campaign_id: string
+          cost?: number | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          list_record_id?: string | null
+          lob_id?: string | null
+          property_id?: string | null
+          recipient_address?: string | null
+          recipient_city?: string | null
+          recipient_name?: string | null
+          recipient_state?: string | null
+          recipient_zip?: string | null
+          response_date?: string | null
+          response_received?: boolean | null
+          return_reason?: string | null
+          returned_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          cost?: number | null
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          list_record_id?: string | null
+          lob_id?: string | null
+          property_id?: string | null
+          recipient_address?: string | null
+          recipient_city?: string | null
+          recipient_name?: string | null
+          recipient_state?: string | null
+          recipient_zip?: string | null
+          response_date?: string | null
+          response_received?: boolean | null
+          return_reason?: string | null
+          returned_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mail_pieces_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "mail_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mail_pieces_list_record_id_fkey"
+            columns: ["list_record_id"]
+            isOneToOne: false
+            referencedRelation: "mail_list_records"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mail_pieces_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mail_suppression_list: {
+        Row: {
+          added_at: string
+          address: string
+          id: string
+          reason: string | null
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          address: string
+          id?: string
+          reason?: string | null
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          address?: string
+          id?: string
+          reason?: string | null
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      mail_templates: {
+        Row: {
+          back_html: string | null
+          created_at: string
+          description: string | null
+          front_html: string | null
+          id: string
+          is_default: boolean | null
+          merge_fields: string[] | null
+          name: string
+          thumbnail_url: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          back_html?: string | null
+          created_at?: string
+          description?: string | null
+          front_html?: string | null
+          id?: string
+          is_default?: boolean | null
+          merge_fields?: string[] | null
+          name: string
+          thumbnail_url?: string | null
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          back_html?: string | null
+          created_at?: string
+          description?: string | null
+          front_html?: string | null
+          id?: string
+          is_default?: boolean | null
+          merge_fields?: string[] | null
+          name?: string
+          thumbnail_url?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       marketplace_lenders: {
         Row: {
           application_url: string | null

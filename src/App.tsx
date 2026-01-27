@@ -44,6 +44,10 @@ import ClosebotTemplates from "./pages/ClosebotTemplates";
 import GHLSnapshot from "./pages/GHLSnapshot";
 import Install from "./pages/Install";
 import Onboarding from "./pages/Onboarding";
+import MailDashboard from "./pages/MailDashboard";
+import MailCampaigns from "./pages/MailCampaigns";
+import MailTemplates from "./pages/MailTemplates";
+import MailTemplateEditor from "./pages/MailTemplateEditor";
 
 const queryClient = new QueryClient();
 
@@ -310,6 +314,64 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <GHLSnapshot />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Direct Mail Routes */}
+            <Route
+              path="/mail"
+              element={
+                <ProtectedRoute>
+                  <MailDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/campaigns"
+              element={
+                <ProtectedRoute>
+                  <MailCampaigns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/campaigns/new"
+              element={
+                <ProtectedRoute>
+                  <MailCampaigns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/campaigns/:id"
+              element={
+                <ProtectedRoute>
+                  <MailCampaigns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/templates"
+              element={
+                <ProtectedRoute>
+                  <MailTemplates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/templates/new"
+              element={
+                <ProtectedRoute>
+                  <MailTemplateEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/mail/templates/:id"
+              element={
+                <ProtectedRoute>
+                  <MailTemplates />
                 </ProtectedRoute>
               }
             />
