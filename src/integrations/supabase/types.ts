@@ -925,6 +925,117 @@ export type Database = {
           },
         ]
       }
+      ghl_connections: {
+        Row: {
+          access_token: string | null
+          account_name: string | null
+          api_key: string | null
+          conflict_resolution: string | null
+          created_at: string | null
+          expires_at: string | null
+          field_mappings: Json | null
+          ghl_calendar_id: string | null
+          ghl_pipeline_id: string | null
+          id: string
+          is_active: boolean | null
+          last_sync_at: string | null
+          location_id: string | null
+          refresh_token: string | null
+          stage_mappings: Json | null
+          sync_appointments_enabled: boolean | null
+          sync_contacts_enabled: boolean | null
+          sync_pipeline_enabled: boolean | null
+          two_way_sync_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token?: string | null
+          account_name?: string | null
+          api_key?: string | null
+          conflict_resolution?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          field_mappings?: Json | null
+          ghl_calendar_id?: string | null
+          ghl_pipeline_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          location_id?: string | null
+          refresh_token?: string | null
+          stage_mappings?: Json | null
+          sync_appointments_enabled?: boolean | null
+          sync_contacts_enabled?: boolean | null
+          sync_pipeline_enabled?: boolean | null
+          two_way_sync_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string | null
+          account_name?: string | null
+          api_key?: string | null
+          conflict_resolution?: string | null
+          created_at?: string | null
+          expires_at?: string | null
+          field_mappings?: Json | null
+          ghl_calendar_id?: string | null
+          ghl_pipeline_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          location_id?: string | null
+          refresh_token?: string | null
+          stage_mappings?: Json | null
+          sync_appointments_enabled?: boolean | null
+          sync_contacts_enabled?: boolean | null
+          sync_pipeline_enabled?: boolean | null
+          two_way_sync_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ghl_sync_log: {
+        Row: {
+          created_at: string | null
+          direction: string
+          error_message: string | null
+          ghl_id: string | null
+          id: string
+          record_id: string | null
+          record_type: string
+          status: string
+          sync_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          direction: string
+          error_message?: string | null
+          ghl_id?: string | null
+          id?: string
+          record_id?: string | null
+          record_type: string
+          status: string
+          sync_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          direction?: string
+          error_message?: string | null
+          ghl_id?: string | null
+          id?: string
+          record_id?: string | null
+          record_type?: string
+          status?: string
+          sync_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       jv_inquiries: {
         Row: {
           created_at: string | null
@@ -1517,6 +1628,8 @@ export type Database = {
           equity_percent: number | null
           estimated_rent: number | null
           estimated_value: number | null
+          ghl_contact_id: string | null
+          ghl_last_sync: string | null
           id: string
           liens_total: number | null
           lot_size: number | null
@@ -1562,6 +1675,8 @@ export type Database = {
           equity_percent?: number | null
           estimated_rent?: number | null
           estimated_value?: number | null
+          ghl_contact_id?: string | null
+          ghl_last_sync?: string | null
           id?: string
           liens_total?: number | null
           lot_size?: number | null
@@ -1607,6 +1722,8 @@ export type Database = {
           equity_percent?: number | null
           estimated_rent?: number | null
           estimated_value?: number | null
+          ghl_contact_id?: string | null
+          ghl_last_sync?: string | null
           id?: string
           liens_total?: number | null
           lot_size?: number | null

@@ -19,13 +19,18 @@ import {
   Phone,
   Building2,
   Save,
-  Home
+  Home,
+  Zap,
+  ChevronRight,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
+import { Link } from "react-router-dom";
+import { useGHLConnection } from "@/hooks/useGHLIntegration";
 
 export default function Settings() {
   const { user } = useAuth();
+  const { data: ghlConnection } = useGHLConnection();
 
   const handleSaveProfile = () => {
     toast({
@@ -68,6 +73,10 @@ export default function Settings() {
             <TabsTrigger value="portfolio" className="gap-2">
               <Home className="h-4 w-4" />
               Portfolio
+            </TabsTrigger>
+            <TabsTrigger value="integrations" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Integrations
             </TabsTrigger>
           </TabsList>
 
@@ -214,6 +223,56 @@ export default function Settings() {
           {/* Portfolio Tab */}
           <TabsContent value="portfolio">
             <PortfolioPropertiesSection />
+          </TabsContent>
+
+          {/* Integrations Tab */}
+          <TabsContent value="integrations" className="space-y-lg">
+            <Card variant="default" padding="md">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-brand/10 flex items-center justify-center">
+                      <Zap className="h-6 w-6 text-brand" />
+                    </div>
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        GoHighLevel
+                        {ghlConnection?.is_active ? (
+                          <Badge variant="success" size="sm">Connected</Badge>
+                        ) : (
+                          <Badge variant="destructive" size="sm">Not Connected</Badge>
+                        )}
+                      </CardTitle>
+                      <CardDescription>
+                        Sync contacts, pipelines, and appointments with GHL
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/settings/integrations">
+                      Configure
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+
+            <Card variant="default" padding="md" className="opacity-60">
+              <CardHeader>
+                <div className="flex items-center gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-muted flex items-center justify-center">
+                    <SettingsIcon className="h-6 w-6 text-content-tertiary" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-content-secondary">More Integrations Coming Soon</CardTitle>
+                    <CardDescription>
+                      Zapier, Make, Google Sheets, and more
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

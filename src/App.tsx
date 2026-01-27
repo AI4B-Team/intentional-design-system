@@ -20,6 +20,7 @@ import CapitalLenders from "./pages/CapitalLenders";
 import CapitalRequestNew from "./pages/CapitalRequestNew";
 import CapitalRequestDetail from "./pages/CapitalRequestDetail";
 import Settings from "./pages/Settings";
+import SettingsIntegrations from "./pages/SettingsIntegrations";
 import DealSources from "./pages/DealSources";
 import DealSourceDetail from "./pages/DealSourceDetail";
 import SubmitDeal from "./pages/SubmitDeal";
@@ -211,6 +212,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Settings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/integrations"
+              element={
+                <ProtectedRoute>
+                  <SettingsIntegrations />
                 </ProtectedRoute>
               }
             />
