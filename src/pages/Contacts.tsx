@@ -19,6 +19,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -38,8 +45,11 @@ import {
   Edit,
   Trash2,
   Users,
+  Filter,
+  ArrowUpDown,
+  X,
 } from "lucide-react";
-import { useDealSources, useDeleteDealSource } from "@/hooks/useDealSources";
+import { useDealSources, useDeleteDealSource, type DealSourceType, type DealSourceStatus } from "@/hooks/useDealSources";
 import { AddDealSourceModal } from "@/components/deal-sources";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -49,21 +59,43 @@ export default function Contacts() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  
+  // Filter states
+  const [typeFilter, setTypeFilter] = useState<DealSourceType | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<DealSourceStatus | "all">("all");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "type">("newest");
 
-  const { data: contacts = [], isLoading } = useDealSources({ type: "all" });
+  const { data: contacts = [], isLoading } = useDealSources({ 
+    type: typeFilter,
+    status: statusFilter,
+    sortBy: "newest",
+  });
   const deleteMutation = useDeleteDealSource();
 
-  // Filter contacts by search
-  const filteredContacts = contacts.filter((contact) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    return (
-      contact.name.toLowerCase().includes(query) ||
-      contact.company?.toLowerCase().includes(query) ||
-      contact.email?.toLowerCase().includes(query) ||
-      contact.phone?.toLowerCase().includes(query)
-    );
-  });
+  // Filter and sort contacts
+  const filteredContacts = contacts
+    .filter((contact) => {
+      if (!searchQuery) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        contact.name.toLowerCase().includes(query) ||
+        contact.company?.toLowerCase().includes(query) ||
+        contact.email?.toLowerCase().includes(query) ||
+        contact.phone?.toLowerCase().includes(query)
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        return a.name.localeCompare(b.name);
+      }
+      if (sortBy === "oldest") {
+        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+      }
+      if (sortBy === "type") {
+        return a.type.localeCompare(b.type);
+      }
+      return 0; // Default sorting handled by query
+    });
 
   const handleDeleteConfirm = () => {
     if (deleteId) {
@@ -71,6 +103,15 @@ export default function Contacts() {
       setDeleteId(null);
     }
   };
+
+  const clearFilters = () => {
+    setTypeFilter("all");
+    setStatusFilter("all");
+    setSortBy("newest");
+    setSearchQuery("");
+  };
+
+  const hasActiveFilters = typeFilter !== "all" || statusFilter !== "all" || searchQuery;
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -80,6 +121,22 @@ export default function Contacts() {
         return "bg-warning/10 text-warning";
       case "lender":
         return "bg-success/10 text-success";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getStatusColor = (status: string | null) => {
+    switch (status) {
+      case "active":
+        return "bg-success/10 text-success";
+      case "contacted":
+        return "bg-info/10 text-info";
+      case "responded":
+        return "bg-primary/10 text-primary";
+      case "inactive":
+        return "bg-muted text-muted-foreground";
+      case "cold":
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -102,16 +159,95 @@ export default function Contacts() {
           </Button>
         </div>
 
-        {/* Search */}
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search contacts..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
+        {/* Search and Filters */}
+        <Card className="p-4">
+          <div className="flex flex-col lg:flex-row gap-4">
+            {/* Search */}
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search by name, company, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            {/* Filter Controls */}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Type Filter */}
+              <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as DealSourceType | "all")}>
+                <SelectTrigger className="w-[140px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="agent">Agent</SelectItem>
+                  <SelectItem value="wholesaler">Wholesaler</SelectItem>
+                  <SelectItem value="lender">Lender</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
+              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as DealSourceStatus | "all")}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="cold">Cold</SelectItem>
+                  <SelectItem value="contacted">Contacted</SelectItem>
+                  <SelectItem value="responded">Responded</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
+                <SelectTrigger className="w-[150px]">
+                  <ArrowUpDown className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Sort" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest First</SelectItem>
+                  <SelectItem value="oldest">Oldest First</SelectItem>
+                  <SelectItem value="name">Name A-Z</SelectItem>
+                  <SelectItem value="type">Type</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Clear Filters */}
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="text-muted-foreground">
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+              )}
+            </div>
+          </div>
+        </Card>
+
+        {/* Stats Summary */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Total Contacts</p>
+            <p className="text-2xl font-bold text-foreground">{contacts.length}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Agents</p>
+            <p className="text-2xl font-bold text-info">{contacts.filter(c => c.type === "agent").length}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Wholesalers</p>
+            <p className="text-2xl font-bold text-warning">{contacts.filter(c => c.type === "wholesaler").length}</p>
+          </Card>
+          <Card className="p-4">
+            <p className="text-sm text-muted-foreground">Lenders</p>
+            <p className="text-2xl font-bold text-success">{contacts.filter(c => c.type === "lender").length}</p>
+          </Card>
         </div>
 
         {/* Table */}
@@ -127,6 +263,7 @@ export default function Contacts() {
                 <TableHead className="font-semibold">Created</TableHead>
                 <TableHead className="font-semibold">Modified</TableHead>
                 <TableHead className="font-semibold">Type</TableHead>
+                <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -143,16 +280,21 @@ export default function Contacts() {
                     <TableCell><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-16" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-8" /></TableCell>
                   </TableRow>
                 ))
               ) : filteredContacts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="h-32 text-center">
+                  <TableCell colSpan={10} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                       <Users className="h-10 w-10 mb-2 opacity-50" />
                       <p className="font-medium">No contacts found</p>
-                      <p className="text-sm">Add your first contact to get started</p>
+                      <p className="text-sm">
+                        {hasActiveFilters 
+                          ? "Try adjusting your filters" 
+                          : "Add your first contact to get started"}
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -204,13 +346,18 @@ export default function Contacts() {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <Badge variant="outline" className={cn("capitalize", getStatusColor(contact.status))}>
+                        {contact.status || "cold"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white">
+                        <DropdownMenuContent align="end" className="bg-background">
                           <DropdownMenuItem onClick={(e) => {
                             e.stopPropagation();
                             navigate(`/deal-sources/${contact.id}`);
@@ -239,9 +386,9 @@ export default function Contacts() {
         </Card>
 
         {/* Results count */}
-        {!isLoading && filteredContacts.length > 0 && (
+        {!isLoading && (
           <div className="text-sm text-muted-foreground">
-            Showing {filteredContacts.length} contact{filteredContacts.length !== 1 ? "s" : ""}
+            Showing {filteredContacts.length} of {contacts.length} contact{contacts.length !== 1 ? "s" : ""}
           </div>
         )}
       </div>
