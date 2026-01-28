@@ -32,19 +32,21 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     const hasError = Boolean(error);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (onChange) {
-        // Check if it's expecting a string or event
-        if (onChange.length === 1) {
-          try {
-            // Try calling with string first
-            (onChange as (value: string) => void)(e.target.value);
-          } catch {
-            // If that fails, call with event
-            (onChange as (e: React.ChangeEvent<HTMLInputElement>) => void)(e);
-          }
-        } else {
+      if (!onChange) return;
+
+      // Support both styles:
+      // 1) onChange={(e) => ... e.target.value}
+      // 2) onChange={(value) => ...}
+      // We attempt the value-first call for compatibility.
+      // NOTE: Call sites that use a functional state updater must NOT read from `e` later.
+      if (onChange.length === 1) {
+        try {
+          (onChange as (value: string) => void)(e.target.value);
+        } catch {
           (onChange as (e: React.ChangeEvent<HTMLInputElement>) => void)(e);
         }
+      } else {
+        (onChange as (e: React.ChangeEvent<HTMLInputElement>) => void)(e);
       }
     };
 

@@ -42,6 +42,33 @@ export default function OnboardingCreate() {
     title: "",
     phone: "",
   }));
+
+  // Our Input component may call onChange with either a string value OR a change event.
+  // Avoid referencing the argument inside a functional state updater (it may be evaluated later).
+  const coerceInputValue = React.useCallback(
+    (eOrValue: string | React.ChangeEvent<HTMLInputElement>) => {
+      return typeof eOrValue === "string" ? eOrValue : eOrValue.target.value;
+    },
+    []
+  );
+
+  const updateCompanyField = React.useCallback(
+    (field: keyof typeof companyData) =>
+      (eOrValue: string | React.ChangeEvent<HTMLInputElement>) => {
+        const value = coerceInputValue(eOrValue);
+        setCompanyData((prev) => ({ ...prev, [field]: value }));
+      },
+    [coerceInputValue]
+  );
+
+  const updateProfileField = React.useCallback(
+    (field: keyof typeof profileData) =>
+      (eOrValue: string | React.ChangeEvent<HTMLInputElement>) => {
+        const value = coerceInputValue(eOrValue);
+        setProfileData((prev) => ({ ...prev, [field]: value }));
+      },
+    [coerceInputValue]
+  );
   
   // Update profileData when user loads
   React.useEffect(() => {
@@ -143,7 +170,7 @@ export default function OnboardingCreate() {
                     id="company-name"
                     placeholder="ABC Investments LLC"
                     value={companyData.name}
-                    onChange={(e) => setCompanyData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={updateCompanyField("name")}
                     className="pl-10"
                     required
                   />
@@ -159,7 +186,7 @@ export default function OnboardingCreate() {
                     type="url"
                     placeholder="https://yourcompany.com"
                     value={companyData.website}
-                    onChange={(e) => setCompanyData(prev => ({ ...prev, website: e.target.value }))}
+                    onChange={updateCompanyField("website")}
                     className="pl-10"
                   />
                 </div>
@@ -174,7 +201,7 @@ export default function OnboardingCreate() {
                     type="tel"
                     placeholder="(555) 123-4567"
                     value={companyData.phone}
-                    onChange={(e) => setCompanyData(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={updateCompanyField("phone")}
                     className="pl-10"
                   />
                 </div>
@@ -188,7 +215,7 @@ export default function OnboardingCreate() {
                     id="team-size"
                     placeholder="e.g., 5"
                     value={companyData.teamSize}
-                    onChange={(e) => setCompanyData(prev => ({ ...prev, teamSize: e.target.value }))}
+                    onChange={updateCompanyField("teamSize")}
                     className="pl-10"
                   />
                 </div>
@@ -240,7 +267,7 @@ export default function OnboardingCreate() {
                     id="full-name"
                     placeholder="John Doe"
                     value={profileData.fullName}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, fullName: e.target.value }))}
+                    onChange={updateProfileField("fullName")}
                     className="pl-10"
                   />
                 </div>
@@ -252,7 +279,7 @@ export default function OnboardingCreate() {
                   id="title"
                   placeholder="e.g., Owner, Acquisitions Manager"
                   value={profileData.title}
-                  onChange={(e) => setProfileData(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={updateProfileField("title")}
                 />
               </div>
 
@@ -265,7 +292,7 @@ export default function OnboardingCreate() {
                     type="tel"
                     placeholder="(555) 123-4567"
                     value={profileData.phone}
-                    onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+                    onChange={updateProfileField("phone")}
                     className="pl-10"
                   />
                 </div>
