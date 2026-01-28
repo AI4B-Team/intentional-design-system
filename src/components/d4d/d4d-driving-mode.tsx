@@ -20,6 +20,11 @@ import { D4DTagPropertySheet } from "./d4d-tag-property-sheet";
 import { D4DPauseOverlay } from "./d4d-pause-overlay";
 import { D4DEndSessionDialog } from "./d4d-end-session-dialog";
 import { D4DMapView } from "./d4d-map-view";
+import { VoiceNoteRecorder } from "./voice-note-recorder";
+import { CameraCapture } from "./camera-capture";
+import { useVoiceNote } from "@/hooks/useVoiceNote";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface DrivingSession {
@@ -68,14 +73,24 @@ export function D4DDrivingMode({
 }: D4DDrivingModeProps) {
   const [showTagSheet, setShowTagSheet] = useState(false);
   const [showEndDialog, setShowEndDialog] = useState(false);
-  const [isRecordingVoice, setIsRecordingVoice] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+  
+  const {
+    isRecording: isRecordingVoice,
+    duration: voiceDuration,
+    startRecording,
+    stopRecording,
+    cancelRecording,
+    uploadVoiceNote,
+    transcribeVoiceNote
+  } = useVoiceNote();
 
   const handleBackPress = () => {
     setShowEndDialog(true);
   };
 
   const handleTagProperty = () => {
-    // Haptic feedback
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
@@ -85,34 +100,84 @@ export function D4DDrivingMode({
   const handlePropertySaved = useCallback(() => {
     onPropertyTagged();
     setShowTagSheet(false);
-    // Haptic feedback on success
     if (navigator.vibrate) {
       navigator.vibrate([50, 50, 50]);
     }
   }, [onPropertyTagged]);
 
-  const handleVoiceNote = () => {
-    setIsRecordingVoice(!isRecordingVoice);
-    if (navigator.vibrate) {
-      navigator.vibrate(30);
+  // Voice note handlers
+  const handleVoiceStart = async () => {
+    const started = await startRecording();
+    if (started) {
+      setShowVoiceRecorder(true);
+    }
+  };
+
+  const handleVoiceStop = async () => {
+    const result = await stopRecording();
+    setShowVoiceRecorder(false);
+    
+    if (result && result.blob) {
+      toast.loading('Saving voice note...');
+      
+      // Upload the voice note
+      const url = await uploadVoiceNote(result.blob, session.id);
+      
+      if (url) {
+        // Optionally transcribe
+        const transcript = await transcribeVoiceNote(url);
+        
+        // Save to session notes or last tagged property
+        await supabase.from('driving_sessions').update({
+          notes_recorded: (session as any).notesRecorded ? (session as any).notesRecorded + 1 : 1
+        }).eq('id', session.id);
+        
+        toast.dismiss();
+        toast.success(transcript ? 'Voice note saved & transcribed!' : 'Voice note saved!');
+      } else {
+        toast.dismiss();
+        toast.error('Failed to save voice note');
+      }
+    }
+  };
+
+  const handleVoiceCancel = () => {
+    cancelRecording();
+    setShowVoiceRecorder(false);
+  };
+
+  // Camera handlers
+  const handleCameraCapture = async (blob: Blob) => {
+    toast.loading('Uploading photo...');
+    
+    try {
+      const fileName = `${session.id}-${Date.now()}.jpg`;
+      
+      const { error } = await supabase.storage
+        .from('d4d-photos')
+        .upload(`photos/${fileName}`, blob, {
+          contentType: 'image/jpeg'
+        });
+      
+      if (error) throw error;
+      
+      onPhotoTaken();
+      setShowCamera(false);
+      toast.dismiss();
+      toast.success('Photo saved!');
+      
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
+    } catch (error) {
+      console.error('Photo upload error:', error);
+      toast.dismiss();
+      toast.error('Failed to save photo');
     }
   };
 
   const handlePhoto = () => {
-    // Trigger native camera
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.capture = 'environment';
-    input.onchange = () => {
-      if (input.files?.length) {
-        onPhotoTaken();
-        if (navigator.vibrate) {
-          navigator.vibrate(30);
-        }
-      }
-    };
-    input.click();
+    setShowCamera(true);
   };
 
   return (
@@ -209,7 +274,7 @@ export function D4DDrivingMode({
             "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors min-w-[60px]",
             isRecordingVoice ? "bg-destructive/10 text-destructive" : "hover:bg-muted"
           )}
-          onClick={handleVoiceNote}
+          onClick={isRecordingVoice ? handleVoiceStop : handleVoiceStart}
         >
           <Mic className={cn("h-6 w-6", isRecordingVoice && "animate-pulse")} />
           <span className="text-xs">{isRecordingVoice ? "Stop" : "Voice"}</span>
@@ -253,22 +318,42 @@ export function D4DDrivingMode({
         className={cn(
           "absolute bottom-24 left-1/2 -translate-x-1/2 z-20",
           "w-[72px] h-[72px] rounded-full",
-          "bg-gradient-to-br from-orange-500 to-red-600",
+          "bg-gradient-to-br from-destructive to-destructive/80",
           "flex items-center justify-center",
-          "shadow-lg shadow-orange-500/30",
+          "shadow-lg shadow-destructive/30",
           "active:scale-95 transition-transform",
-          "focus:outline-none focus:ring-4 focus:ring-orange-500/30"
+          "focus:outline-none focus:ring-4 focus:ring-destructive/30"
         )}
         onClick={handleTagProperty}
       >
-        <Plus className="h-8 w-8 text-white" />
+        <Plus className="h-8 w-8 text-destructive-foreground" />
         <span className="absolute -bottom-6 text-xs font-medium text-muted-foreground">
           Tag Property
         </span>
       </button>
 
+      {/* Voice Recorder Overlay */}
+      {showVoiceRecorder && (
+        <VoiceNoteRecorder
+          isRecording={isRecordingVoice}
+          duration={voiceDuration}
+          onStart={handleVoiceStart}
+          onStop={handleVoiceStop}
+          onCancel={handleVoiceCancel}
+          variant="fullscreen"
+        />
+      )}
+
+      {/* Camera Capture */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
+
       {/* Pause Overlay */}
-      {isPaused && (
+      {isPaused && !showVoiceRecorder && !showCamera && (
         <D4DPauseOverlay
           duration={duration}
           onResume={onResume}
