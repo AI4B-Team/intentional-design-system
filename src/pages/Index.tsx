@@ -7,6 +7,7 @@ import {
   PipelineFunnel,
   TasksList,
   RecentActivityList,
+  RecentAnalysesWidget,
 } from "@/components/dashboard";
 import { WorkflowShowcase, RenovationDemo } from "@/components/landing";
 import { Users, Calendar, FileText, DollarSign } from "lucide-react";
@@ -156,8 +157,8 @@ export default function Index() {
         </Card>
       </div>
 
-      {/* Bottom Section: Tasks + Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-md">
+      {/* Bottom Section: Tasks + Activity + Analyses */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-md">
         {/* Today's Tasks */}
         <Card padding="md" className="animate-fade-in" style={{ animationDelay: "600ms" }}>
           <div className="flex items-center justify-between mb-4">
@@ -174,6 +175,11 @@ export default function Index() {
           <h3 className="text-h3 font-semibold text-content mb-4">Recent Activity</h3>
           <RecentActivityList activities={recentActivities} />
         </Card>
+
+        {/* Recent Analyses Widget */}
+        <div className="animate-fade-in" style={{ animationDelay: "800ms" }}>
+          <RecentAnalysesWidget />
+        </div>
       </div>
 
       {/* Workflow Showcase */}

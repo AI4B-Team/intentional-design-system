@@ -384,6 +384,18 @@ export default function PropertyDetail() {
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh Property Data
                 </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => navigate(`/calculators?tab=deal&property_id=${property.id}`)}
+                >
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Quick Analysis
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => navigate(`/calculators?tab=comps&address=${encodeURIComponent(property.address)}&city=${encodeURIComponent(property.city || "")}&state=${encodeURIComponent(property.state || "")}`)}
+                >
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Find Comps
+                </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Copy className="h-4 w-4 mr-2" />
                   Duplicate
