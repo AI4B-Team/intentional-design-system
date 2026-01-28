@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Layers, ChevronDown, MapPin } from "lucide-react";
 import {
@@ -15,84 +15,121 @@ interface MarketplaceMapProps {
 
 export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [mapType, setMapType] = useState<"map" | "satellite">("map");
-  const [isMapReady, setIsMapReady] = useState(false);
-  const [MapComponents, setMapComponents] = useState<{
-    MapContainer: React.ComponentType<any>;
-    TileLayer: React.ComponentType<any>;
-    Marker: React.ComponentType<any>;
-    Popup: React.ComponentType<any>;
-    L: typeof import("leaflet");
-  } | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const loadedRef = useRef(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
 
-  // Center of Florida
   const defaultCenter: [number, number] = [27.9944, -81.7603];
 
-  // Dynamically load leaflet and react-leaflet
   useEffect(() => {
-    let mounted = true;
+    if (loadedRef.current || !mapContainerRef.current) return;
+    loadedRef.current = true;
 
-    const loadMap = async () => {
+    const initMap = async () => {
       try {
-        // Import leaflet CSS first
+        // Import leaflet CSS
         await import("leaflet/dist/leaflet.css");
         
-        // Import leaflet and react-leaflet
-        const [leaflet, reactLeaflet] = await Promise.all([
-          import("leaflet"),
-          import("react-leaflet"),
-        ]);
+        // Import leaflet
+        const L = (await import("leaflet")).default;
 
-        if (mounted) {
-          setMapComponents({
-            MapContainer: reactLeaflet.MapContainer,
-            TileLayer: reactLeaflet.TileLayer,
-            Marker: reactLeaflet.Marker,
-            Popup: reactLeaflet.Popup,
-            L: leaflet.default,
+        // Fix default marker icons
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+          iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        });
+
+        // Create map instance
+        if (mapContainerRef.current && !mapInstanceRef.current) {
+          const map = L.map(mapContainerRef.current).setView(defaultCenter, 7);
+          mapInstanceRef.current = { map, L };
+
+          // Add tile layer
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }).addTo(map);
+
+          // Add markers for deals
+          deals.forEach((deal) => {
+            const formattedPrice = deal.price >= 1000000 
+              ? `${(deal.price / 1000000).toFixed(1)}M` 
+              : `${Math.round(deal.price / 1000)}K`;
+
+            const priceIcon = L.divIcon({
+              className: "custom-price-marker",
+              html: `<div class="price-marker">${formattedPrice}</div>`,
+              iconSize: [60, 28],
+              iconAnchor: [30, 28],
+            });
+
+            const marker = L.marker([deal.lat, deal.lng], { icon: priceIcon }).addTo(map);
+            
+            marker.bindPopup(`
+              <div class="p-2 min-w-[200px]">
+                <img src="${deal.imageUrl}" alt="${deal.address}" class="w-full h-24 object-cover rounded-md mb-2" />
+                <p class="font-semibold text-sm">${deal.address}</p>
+                <p class="text-xs text-gray-500">${deal.city}, ${deal.state} ${deal.zip}</p>
+                <p class="text-lg font-bold text-emerald-600 mt-1">$${deal.price.toLocaleString()}</p>
+                <p class="text-xs text-gray-500">${deal.beds} bd | ${deal.baths} ba | ${deal.sqft.toLocaleString()} sqft</p>
+              </div>
+            `);
           });
-          setIsMapReady(true);
+
+          setIsReady(true);
         }
       } catch (error) {
-        console.error("Failed to load map components:", error);
+        console.error("Failed to load map:", error);
+        setHasError(true);
       }
     };
 
-    loadMap();
+    initMap();
 
     return () => {
-      mounted = false;
+      if (mapInstanceRef.current?.map) {
+        mapInstanceRef.current.map.remove();
+        mapInstanceRef.current = null;
+      }
     };
-  }, []);
+  }, [deals]);
 
-  // Create price marker icon
-  const createPriceIcon = (price: number) => {
-    if (!MapComponents?.L) return undefined;
+  // Update tile layer when map type changes
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
     
-    const formattedPrice = price >= 1000000 
-      ? `${(price / 1000000).toFixed(1)}M` 
-      : `${Math.round(price / 1000)}K`;
+    const { map, L } = mapInstanceRef.current;
     
-    return MapComponents.L.divIcon({
-      className: "custom-price-marker",
-      html: `<div class="price-marker">${formattedPrice}</div>`,
-      iconSize: [60, 28],
-      iconAnchor: [30, 28],
+    // Remove existing tile layers
+    map.eachLayer((layer: any) => {
+      if (layer instanceof L.TileLayer) {
+        map.removeLayer(layer);
+      }
     });
-  };
 
-  // Loading state
-  if (!isMapReady || !MapComponents) {
+    // Add new tile layer based on mapType
+    const tileUrl = mapType === "satellite"
+      ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+      : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+    L.tileLayer(tileUrl, {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+  }, [mapType]);
+
+  if (hasError) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-muted/30">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
-          <MapPin className="h-10 w-10 animate-pulse" />
-          <p className="text-sm">Loading map...</p>
+          <MapPin className="h-10 w-10" />
+          <p className="text-sm">Failed to load map</p>
         </div>
       </div>
     );
   }
-
-  const { MapContainer, TileLayer, Marker, Popup } = MapComponents;
 
   return (
     <div className="relative h-full">
@@ -141,49 +178,18 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </DropdownMenu>
       </div>
 
-      {/* Leaflet Map */}
-      <MapContainer
-        center={defaultCenter}
-        zoom={7}
-        className="h-full w-full"
-        zoomControl={true}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url={
-            mapType === "satellite"
-              ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          }
-        />
-        {deals.map((deal) => (
-          <Marker
-            key={deal.id}
-            position={[deal.lat, deal.lng]}
-            icon={createPriceIcon(deal.price)}
-          >
-            <Popup>
-              <div className="p-2 min-w-[200px]">
-                <img
-                  src={deal.imageUrl}
-                  alt={deal.address}
-                  className="w-full h-24 object-cover rounded-md mb-2"
-                />
-                <p className="font-semibold text-sm">{deal.address}</p>
-                <p className="text-xs text-muted-foreground">
-                  {deal.city}, {deal.state} {deal.zip}
-                </p>
-                <p className="text-lg font-bold text-primary mt-1">
-                  ${deal.price.toLocaleString()}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {deal.beds} bd | {deal.baths} ba | {deal.sqft.toLocaleString()} sqft
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+      {/* Loading state overlay */}
+      {!isReady && (
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/30 z-[500]">
+          <div className="flex flex-col items-center gap-3 text-muted-foreground">
+            <MapPin className="h-10 w-10 animate-pulse" />
+            <p className="text-sm">Loading map...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Leaflet Map Container */}
+      <div ref={mapContainerRef} className="h-full w-full" />
 
       {/* Custom CSS for price markers */}
       <style>{`
