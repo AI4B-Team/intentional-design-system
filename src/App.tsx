@@ -123,7 +123,8 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
-                <Routes>
+                <div className="flex flex-col h-full">
+                  <Routes>
                 {/* Public routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
@@ -926,6 +927,7 @@ const App = () => (
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
                 </Routes>
+                </div>
               </BrowserRouter>
             </PWAProvider>
           </TooltipProvider>
