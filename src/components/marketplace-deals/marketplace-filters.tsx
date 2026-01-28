@@ -128,15 +128,15 @@ export function MarketplaceFilters({
         {/* Left aligned filters */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {/* Address Search */}
-          <div className="relative w-[280px] flex-shrink-0">
+          <div className="relative flex-shrink-0">
             <Input
               type="text"
               placeholder="Address, City, County, State, or Zip"
               value={filters.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              className="h-9 bg-background text-sm pr-8"
+              className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
             />
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
 
           {/* All Listings */}
