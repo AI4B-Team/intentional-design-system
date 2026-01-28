@@ -12,4 +12,8 @@ export { QueueSettingsPanel } from "./queue-settings-panel";
 export { ScriptEditor } from "./script-editor";
 export { ScriptPreviewModal } from "./script-preview-modal";
 export { MergeFieldsSidebar } from "./merge-fields-sidebar";
+export { RecordingPlayer } from "./recording-player";
+export { CallDetailSheet } from "./call-detail-sheet";
+export { CallHistoryTable } from "./call-history-table";
+export { CallAnalytics } from "./call-analytics";
 
