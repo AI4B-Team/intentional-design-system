@@ -147,7 +147,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]">
+            <SelectContent className="bg-background z-[100]" align="start">
               <SelectItem value="all">All Listings</SelectItem>
               <SelectItem value="on-market">On-Market</SelectItem>
               <SelectItem value="off-market">Off-Market</SelectItem>
@@ -162,7 +162,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Lead Type" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]">
+            <SelectContent className="bg-background z-[100]" align="start">
               {leadTypeOptions.map((type) => (
                 <SelectItem 
                   key={type} 
@@ -225,7 +225,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Price" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]">
+            <SelectContent className="bg-background z-[100]" align="start">
               {priceRangeOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
