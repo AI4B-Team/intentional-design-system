@@ -103,6 +103,7 @@ import PublicDealPage from "./pages/PublicDealPage";
 import DispoDeals from "./pages/DispoDeals";
 import DispoDealForm from "./pages/DispoDealForm";
 import DispoDealDetail from "./pages/DispoDealDetail";
+import CashBuyers from "./pages/CashBuyers";
 
 const queryClient = new QueryClient();
 
@@ -760,6 +761,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DispoDealForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/buyers"
+              element={
+                <ProtectedRoute>
+                  <CashBuyers />
                 </ProtectedRoute>
               }
             />
