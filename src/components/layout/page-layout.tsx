@@ -37,7 +37,7 @@ export function PageLayout({
   if (user) {
     return (
       <AppLayout breadcrumbs={breadcrumbs} fullWidth={fullWidth}>
-        <div className={cn("animate-fade-in", className)}>
+        <div className={cn("animate-fade-in flex-1 flex flex-col", className)}>
           {children}
         </div>
       </AppLayout>

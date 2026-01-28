@@ -54,11 +54,13 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         {/* Page Content */}
         <main
           className={cn(
-            "flex-1 p-4 lg:p-6",
+            "flex-1 flex flex-col p-4 lg:p-6",
             !fullWidth && "max-w-7xl mx-auto w-full"
           )}
         >
-          {children}
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
         </main>
       </div>
     </div>
