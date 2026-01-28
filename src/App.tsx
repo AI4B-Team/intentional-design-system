@@ -88,6 +88,8 @@ import D4DMileage from "./pages/D4DMileage";
 import Dialer from "./pages/Dialer";
 import DialerQueues from "./pages/DialerQueues";
 import DialerQueueDetail from "./pages/DialerQueueDetail";
+import DialerScripts from "./pages/DialerScripts";
+import DialerScriptDetail from "./pages/DialerScriptDetail";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -710,6 +712,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DialerQueueDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dialer/scripts"
+              element={
+                <ProtectedRoute>
+                  <DialerScripts />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dialer/scripts/:id"
+              element={
+                <ProtectedRoute>
+                  <DialerScriptDetail />
                 </ProtectedRoute>
               }
             />
