@@ -170,35 +170,36 @@ function DealCard({
         />
         
         {/* Top Controls */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-white/90 rounded p-0.5">
+        <div className="absolute top-2 left-2 right-2 flex items-start justify-between">
+          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white/95 rounded shadow-sm p-0.5 flex items-center justify-center">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={onSelect}
+                className="h-3.5 w-3.5"
               />
             </div>
             {deal.isNew && (
-              <Badge className="bg-primary text-primary-foreground font-medium">New</Badge>
+              <Badge className="bg-slate-800 text-white text-[10px] font-medium px-2 py-0.5">New</Badge>
             )}
           </div>
           <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 bg-white/90 hover:bg-white rounded-full"
+              className="h-6 w-6 bg-white/95 hover:bg-white rounded shadow-sm"
             >
-              <ExternalLink className="h-4 w-4" />
+              <ExternalLink className="h-3 w-3 text-slate-600" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               className={cn(
-                "h-8 w-8 bg-white/90 hover:bg-white rounded-full",
+                "h-6 w-6 bg-white/95 hover:bg-white rounded shadow-sm",
                 deal.isFavorite && "text-destructive"
               )}
             >
-              <Heart className={cn("h-4 w-4", deal.isFavorite && "fill-current")} />
+              <Heart className={cn("h-3 w-3", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
             </Button>
           </div>
         </div>
