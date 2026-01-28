@@ -27,7 +27,7 @@ interface UseMockDealsOptions {
   filters: {
     address: string;
     leadType: string;
-    homeType: string;
+    homeTypes: string[];
     priceMin: string;
     priceMax: string;
     bedsMin: string;
@@ -387,10 +387,33 @@ export function useMockDeals({ filters, sortBy, page, perPage }: UseMockDealsOpt
       }
     }
 
-    if (filters.homeType && filters.homeType !== "all") {
-      result = result.filter((d) => 
-        d.propertyType.toLowerCase() === filters.homeType.toLowerCase()
-      );
+    // Filter by home types - map filter IDs to property type names
+    if (filters.homeTypes && filters.homeTypes.length > 0 && filters.homeTypes.length < 7) {
+      const homeTypeMap: Record<string, string[]> = {
+        "houses": ["Single Family"],
+        "townhomes": ["Townhouse"],
+        "multi-family": ["Duplex", "Multi-Family"],
+        "condos": ["Condo", "Co-op"],
+        "lots-land": ["Land", "Lot"],
+        "apartments": ["Apartment"],
+        "manufactured": ["Mobile Home", "Manufactured"],
+      };
+      
+      const allowedTypes: string[] = [];
+      filters.homeTypes.forEach(ht => {
+        const mapped = homeTypeMap[ht];
+        if (mapped) {
+          allowedTypes.push(...mapped);
+        }
+      });
+      
+      if (allowedTypes.length > 0) {
+        result = result.filter((d) => 
+          allowedTypes.some(type => 
+            d.propertyType.toLowerCase() === type.toLowerCase()
+          )
+        );
+      }
     }
 
     if (filters.priceMin) {
@@ -425,6 +448,10 @@ export function useMockDeals({ filters, sortBy, page, perPage }: UseMockDealsOpt
         break;
       case "arv":
         result.sort((a, b) => a.arvPercent - b.arvPercent);
+        break;
+      case "most_viewed":
+        // For mock data, just use a random but stable sort based on id
+        result.sort((a, b) => parseInt(b.id) - parseInt(a.id));
         break;
     }
 
