@@ -14,11 +14,14 @@ export default function MarketplaceDeals() {
   const [currentPage, setCurrentPage] = useState(1);
   
   // Filters state
+  // All home types selected by default
+  const allHomeTypes = ["houses", "townhomes", "multi-family", "condos", "lots-land", "apartments", "manufactured"];
+  
   const [filters, setFilters] = useState({
     address: "",
     listingStatus: "all",
     leadType: "all",
-    homeTypes: [] as string[],
+    homeTypes: allHomeTypes,
     priceRange: "any",
     bedsMin: "",
     bathsMin: "",
