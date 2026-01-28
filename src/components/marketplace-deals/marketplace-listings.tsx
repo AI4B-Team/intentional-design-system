@@ -57,10 +57,15 @@ interface MarketplaceListingsProps {
 }
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
-  // Calculate position on the meter (50% to 100% scale)
-  const position = ((arvPercent - 50) / 50) * 100;
+  // The meter shows 50% to 100% ARV range
+  // Clamp arvPercent to the visible range
+  const clampedPercent = Math.min(Math.max(arvPercent, 50), 100);
+  
+  // Calculate position on the meter (50% to 100% scale maps to 0% to 100% of bar width)
+  const position = ((clampedPercent - 50) / 50) * 100;
   
   // Determine color based on ARV percentage
+  // Lower ARV% = better deal (green), Higher ARV% = riskier (red)
   const getBadgeColor = () => {
     if (arvPercent <= 70) {
       return "bg-emerald-100 text-emerald-700 border-emerald-300";
@@ -70,6 +75,11 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
       return "bg-red-100 text-red-700 border-red-300";
     }
   };
+  
+  // Segment widths based on the percentage ranges:
+  // 50%-70% = 20 points out of 50 total = 40%
+  // 70%-85% = 15 points out of 50 total = 30%
+  // 85%-100% = 15 points out of 50 total = 30%
   
   return (
     <div className="mt-4">
@@ -85,8 +95,11 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
       <div className="relative h-4 flex items-center">
         <div className="absolute inset-x-0 h-2.5 rounded-full overflow-hidden bg-muted">
           <div className="absolute inset-0 flex">
+            {/* Green: 50%-70% = 40% of bar width */}
             <div className="w-[40%] bg-emerald-500" />
+            {/* Yellow: 70%-85% = 30% of bar width */}
             <div className="w-[30%] bg-amber-400" />
+            {/* Red: 85%-100% = 30% of bar width */}
             <div className="w-[30%] bg-red-500" />
           </div>
         </div>
@@ -98,11 +111,12 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
           }}
         />
       </div>
-      <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
-        <span>50%</span>
-        <span>70%</span>
-        <span>85%</span>
-        <span>100%</span>
+      {/* Labels positioned to align with segment boundaries */}
+      <div className="relative flex text-xs text-muted-foreground mt-1.5 h-4">
+        <span className="absolute left-0">50%</span>
+        <span className="absolute left-[40%] -translate-x-1/2">70%</span>
+        <span className="absolute left-[70%] -translate-x-1/2">85%</span>
+        <span className="absolute right-0">100%</span>
       </div>
     </div>
   );
