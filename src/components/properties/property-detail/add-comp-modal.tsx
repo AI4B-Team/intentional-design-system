@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Trash2 } from "lucide-react";
 import { useAddComp } from "@/hooks/usePropertyComps";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface Adjustment {
   type: string;
@@ -49,6 +50,7 @@ const ratingOptions = [
 ];
 
 export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalProps) {
+  const { user } = useAuth();
   const addComp = useAddComp();
   
   const [formData, setFormData] = React.useState({
@@ -106,17 +108,18 @@ export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalPro
     }
 
     await addComp.mutateAsync({
-      property_id: propertyId,
-      comp_address: formData.address,
+      user_id: user!.id,
+      subject_property_id: propertyId,
+      address: formData.address,
       sale_price: parseFloat(formData.salePrice),
       sale_date: formData.saleDate || null,
       beds: formData.beds ? parseInt(formData.beds) : null,
       baths: formData.baths ? parseFloat(formData.baths) : null,
       sqft: formData.sqft ? parseInt(formData.sqft) : null,
       distance_miles: formData.distance ? parseFloat(formData.distance) : null,
-      rating: formData.rating,
+      condition: formData.rating,
       adjustments: adjustments.length > 0 ? JSON.parse(JSON.stringify(adjustments)) : null,
-      adjusted_value: calculateAdjustedValue(),
+      adjusted_price: calculateAdjustedValue(),
     });
 
     resetForm();

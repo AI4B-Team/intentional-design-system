@@ -1362,54 +1362,139 @@ export type Database = {
       }
       comps: {
         Row: {
-          adjusted_value: number | null
+          address: string
+          adjusted_price: number | null
           adjustments: Json | null
+          analysis_id: string | null
           baths: number | null
           beds: number | null
-          comp_address: string
+          city: string | null
+          condition: string | null
+          condition_notes: string | null
+          county: string | null
           created_at: string | null
+          days_on_market: number | null
           distance_miles: number | null
+          garage_spaces: number | null
           id: string
+          is_selected: boolean | null
+          latitude: number | null
+          list_price: number | null
+          longitude: number | null
+          lot_sqft: number | null
           organization_id: string | null
-          property_id: string
-          rating: string | null
+          original_list_price: number | null
+          photos: Json | null
+          pool: boolean | null
+          price_per_sqft: number | null
+          property_type: string | null
           sale_date: string | null
           sale_price: number | null
+          sale_type: string | null
+          source: string | null
+          source_id: string | null
           sqft: number | null
+          state: string | null
+          stories: number | null
+          subject_property_id: string | null
+          updated_at: string | null
+          user_id: string
+          weight: number | null
+          year_built: number | null
+          zip: string | null
         }
         Insert: {
-          adjusted_value?: number | null
+          address: string
+          adjusted_price?: number | null
           adjustments?: Json | null
+          analysis_id?: string | null
           baths?: number | null
           beds?: number | null
-          comp_address: string
+          city?: string | null
+          condition?: string | null
+          condition_notes?: string | null
+          county?: string | null
           created_at?: string | null
+          days_on_market?: number | null
           distance_miles?: number | null
+          garage_spaces?: number | null
           id?: string
+          is_selected?: boolean | null
+          latitude?: number | null
+          list_price?: number | null
+          longitude?: number | null
+          lot_sqft?: number | null
           organization_id?: string | null
-          property_id: string
-          rating?: string | null
+          original_list_price?: number | null
+          photos?: Json | null
+          pool?: boolean | null
+          price_per_sqft?: number | null
+          property_type?: string | null
           sale_date?: string | null
           sale_price?: number | null
+          sale_type?: string | null
+          source?: string | null
+          source_id?: string | null
           sqft?: number | null
+          state?: string | null
+          stories?: number | null
+          subject_property_id?: string | null
+          updated_at?: string | null
+          user_id: string
+          weight?: number | null
+          year_built?: number | null
+          zip?: string | null
         }
         Update: {
-          adjusted_value?: number | null
+          address?: string
+          adjusted_price?: number | null
           adjustments?: Json | null
+          analysis_id?: string | null
           baths?: number | null
           beds?: number | null
-          comp_address?: string
+          city?: string | null
+          condition?: string | null
+          condition_notes?: string | null
+          county?: string | null
           created_at?: string | null
+          days_on_market?: number | null
           distance_miles?: number | null
+          garage_spaces?: number | null
           id?: string
+          is_selected?: boolean | null
+          latitude?: number | null
+          list_price?: number | null
+          longitude?: number | null
+          lot_sqft?: number | null
           organization_id?: string | null
-          property_id?: string
-          rating?: string | null
+          original_list_price?: number | null
+          photos?: Json | null
+          pool?: boolean | null
+          price_per_sqft?: number | null
+          property_type?: string | null
           sale_date?: string | null
           sale_price?: number | null
+          sale_type?: string | null
+          source?: string | null
+          source_id?: string | null
           sqft?: number | null
+          state?: string | null
+          stories?: number | null
+          subject_property_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+          weight?: number | null
+          year_built?: number | null
+          zip?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "comps_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "deal_analyses"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "comps_organization_id_fkey"
             columns: ["organization_id"]
@@ -1418,8 +1503,8 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "comps_property_id_fkey"
-            columns: ["property_id"]
+            foreignKeyName: "comps_subject_property_id_fkey"
+            columns: ["subject_property_id"]
             isOneToOne: false
             referencedRelation: "properties"
             referencedColumns: ["id"]
@@ -1884,6 +1969,282 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "driving_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_analyses: {
+        Row: {
+          address: string
+          agent_commission_pct: number | null
+          analysis_type: string | null
+          annualized_roi: number | null
+          arv: number | null
+          arv_high: number | null
+          arv_low: number | null
+          arv_method: string | null
+          arv_notes: string | null
+          arv_price_per_sqft: number | null
+          asking_price: number | null
+          assignment_fee: number | null
+          attachments: Json | null
+          baths: number | null
+          beds: number | null
+          break_even_price: number | null
+          buyer_agent_commission_pct: number | null
+          cash_on_cash: number | null
+          city: string | null
+          created_at: string | null
+          down_payment_amount: number | null
+          down_payment_pct: number | null
+          earnest_money: number | null
+          end_buyer_name: string | null
+          equity_capture: number | null
+          financing_type: string | null
+          gross_profit: number | null
+          hoa_monthly: number | null
+          holding_months: number | null
+          id: string
+          insurance_monthly: number | null
+          interest_rate: number | null
+          is_shared: boolean | null
+          lawn_maintenance_monthly: number | null
+          loan_amount: number | null
+          loan_origination_fee: number | null
+          loan_payment_monthly: number | null
+          loan_points: number | null
+          loan_term_months: number | null
+          lot_sqft: number | null
+          mao_70_pct: number | null
+          mao_75_pct: number | null
+          mao_80_pct: number | null
+          mao_custom: number | null
+          mao_custom_pct: number | null
+          marketing_costs: number | null
+          name: string
+          net_profit: number | null
+          notes: string | null
+          organization_id: string | null
+          other_holding_monthly: number | null
+          photography_costs: number | null
+          profit_per_month: number | null
+          property_id: string | null
+          property_taxes_monthly: number | null
+          property_type: string | null
+          purchase_closing_costs: number | null
+          purchase_closing_pct: number | null
+          purchase_price: number
+          repair_breakdown: Json | null
+          repair_contingency_pct: number | null
+          repair_estimate: number | null
+          repair_scope: string | null
+          repair_timeline_weeks: number | null
+          roi_percentage: number | null
+          seller_closing_costs_pct: number | null
+          seller_concessions: number | null
+          shared_link_id: string | null
+          spread: number | null
+          sqft: number | null
+          staging_costs: number | null
+          state: string | null
+          status: string | null
+          total_financing_cost: number | null
+          total_holding_cost: number | null
+          total_project_cost: number | null
+          total_purchase_cost: number | null
+          total_repair_cost: number | null
+          total_selling_cost: number | null
+          updated_at: string | null
+          user_id: string
+          utilities_monthly: number | null
+          year_built: number | null
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          agent_commission_pct?: number | null
+          analysis_type?: string | null
+          annualized_roi?: number | null
+          arv?: number | null
+          arv_high?: number | null
+          arv_low?: number | null
+          arv_method?: string | null
+          arv_notes?: string | null
+          arv_price_per_sqft?: number | null
+          asking_price?: number | null
+          assignment_fee?: number | null
+          attachments?: Json | null
+          baths?: number | null
+          beds?: number | null
+          break_even_price?: number | null
+          buyer_agent_commission_pct?: number | null
+          cash_on_cash?: number | null
+          city?: string | null
+          created_at?: string | null
+          down_payment_amount?: number | null
+          down_payment_pct?: number | null
+          earnest_money?: number | null
+          end_buyer_name?: string | null
+          equity_capture?: number | null
+          financing_type?: string | null
+          gross_profit?: number | null
+          hoa_monthly?: number | null
+          holding_months?: number | null
+          id?: string
+          insurance_monthly?: number | null
+          interest_rate?: number | null
+          is_shared?: boolean | null
+          lawn_maintenance_monthly?: number | null
+          loan_amount?: number | null
+          loan_origination_fee?: number | null
+          loan_payment_monthly?: number | null
+          loan_points?: number | null
+          loan_term_months?: number | null
+          lot_sqft?: number | null
+          mao_70_pct?: number | null
+          mao_75_pct?: number | null
+          mao_80_pct?: number | null
+          mao_custom?: number | null
+          mao_custom_pct?: number | null
+          marketing_costs?: number | null
+          name: string
+          net_profit?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          other_holding_monthly?: number | null
+          photography_costs?: number | null
+          profit_per_month?: number | null
+          property_id?: string | null
+          property_taxes_monthly?: number | null
+          property_type?: string | null
+          purchase_closing_costs?: number | null
+          purchase_closing_pct?: number | null
+          purchase_price: number
+          repair_breakdown?: Json | null
+          repair_contingency_pct?: number | null
+          repair_estimate?: number | null
+          repair_scope?: string | null
+          repair_timeline_weeks?: number | null
+          roi_percentage?: number | null
+          seller_closing_costs_pct?: number | null
+          seller_concessions?: number | null
+          shared_link_id?: string | null
+          spread?: number | null
+          sqft?: number | null
+          staging_costs?: number | null
+          state?: string | null
+          status?: string | null
+          total_financing_cost?: number | null
+          total_holding_cost?: number | null
+          total_project_cost?: number | null
+          total_purchase_cost?: number | null
+          total_repair_cost?: number | null
+          total_selling_cost?: number | null
+          updated_at?: string | null
+          user_id: string
+          utilities_monthly?: number | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          agent_commission_pct?: number | null
+          analysis_type?: string | null
+          annualized_roi?: number | null
+          arv?: number | null
+          arv_high?: number | null
+          arv_low?: number | null
+          arv_method?: string | null
+          arv_notes?: string | null
+          arv_price_per_sqft?: number | null
+          asking_price?: number | null
+          assignment_fee?: number | null
+          attachments?: Json | null
+          baths?: number | null
+          beds?: number | null
+          break_even_price?: number | null
+          buyer_agent_commission_pct?: number | null
+          cash_on_cash?: number | null
+          city?: string | null
+          created_at?: string | null
+          down_payment_amount?: number | null
+          down_payment_pct?: number | null
+          earnest_money?: number | null
+          end_buyer_name?: string | null
+          equity_capture?: number | null
+          financing_type?: string | null
+          gross_profit?: number | null
+          hoa_monthly?: number | null
+          holding_months?: number | null
+          id?: string
+          insurance_monthly?: number | null
+          interest_rate?: number | null
+          is_shared?: boolean | null
+          lawn_maintenance_monthly?: number | null
+          loan_amount?: number | null
+          loan_origination_fee?: number | null
+          loan_payment_monthly?: number | null
+          loan_points?: number | null
+          loan_term_months?: number | null
+          lot_sqft?: number | null
+          mao_70_pct?: number | null
+          mao_75_pct?: number | null
+          mao_80_pct?: number | null
+          mao_custom?: number | null
+          mao_custom_pct?: number | null
+          marketing_costs?: number | null
+          name?: string
+          net_profit?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          other_holding_monthly?: number | null
+          photography_costs?: number | null
+          profit_per_month?: number | null
+          property_id?: string | null
+          property_taxes_monthly?: number | null
+          property_type?: string | null
+          purchase_closing_costs?: number | null
+          purchase_closing_pct?: number | null
+          purchase_price?: number
+          repair_breakdown?: Json | null
+          repair_contingency_pct?: number | null
+          repair_estimate?: number | null
+          repair_scope?: string | null
+          repair_timeline_weeks?: number | null
+          roi_percentage?: number | null
+          seller_closing_costs_pct?: number | null
+          seller_concessions?: number | null
+          shared_link_id?: string | null
+          spread?: number | null
+          sqft?: number | null
+          staging_costs?: number | null
+          state?: string | null
+          status?: string | null
+          total_financing_cost?: number | null
+          total_holding_cost?: number | null
+          total_project_cost?: number | null
+          total_purchase_cost?: number | null
+          total_repair_cost?: number | null
+          total_selling_cost?: number | null
+          updated_at?: string | null
+          user_id?: string
+          utilities_monthly?: number | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_analyses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_analyses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
@@ -3565,6 +3926,122 @@ export type Database = {
           },
         ]
       }
+      market_data: {
+        Row: {
+          active_listings: number | null
+          avg_dom: number | null
+          avg_rent: number | null
+          avg_sale_price: number | null
+          cap_rate_estimate: number | null
+          city: string | null
+          county: string | null
+          created_at: string | null
+          data_date: string | null
+          data_source: string | null
+          gross_yield_pct: number | null
+          id: string
+          list_to_sale_ratio: number | null
+          location_type: string
+          location_value: string
+          median_dom: number | null
+          median_price_per_sqft: number | null
+          median_rent: number | null
+          median_sale_price: number | null
+          months_of_inventory: number | null
+          new_listings: number | null
+          organization_id: string | null
+          pct_over_asking: number | null
+          pending_sales: number | null
+          price_change_1m_pct: number | null
+          price_change_1y_pct: number | null
+          price_change_3m_pct: number | null
+          price_to_rent_ratio: number | null
+          rent_per_sqft: number | null
+          state: string | null
+          total_sales: number | null
+          user_id: string | null
+          vacancy_rate: number | null
+        }
+        Insert: {
+          active_listings?: number | null
+          avg_dom?: number | null
+          avg_rent?: number | null
+          avg_sale_price?: number | null
+          cap_rate_estimate?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          data_date?: string | null
+          data_source?: string | null
+          gross_yield_pct?: number | null
+          id?: string
+          list_to_sale_ratio?: number | null
+          location_type: string
+          location_value: string
+          median_dom?: number | null
+          median_price_per_sqft?: number | null
+          median_rent?: number | null
+          median_sale_price?: number | null
+          months_of_inventory?: number | null
+          new_listings?: number | null
+          organization_id?: string | null
+          pct_over_asking?: number | null
+          pending_sales?: number | null
+          price_change_1m_pct?: number | null
+          price_change_1y_pct?: number | null
+          price_change_3m_pct?: number | null
+          price_to_rent_ratio?: number | null
+          rent_per_sqft?: number | null
+          state?: string | null
+          total_sales?: number | null
+          user_id?: string | null
+          vacancy_rate?: number | null
+        }
+        Update: {
+          active_listings?: number | null
+          avg_dom?: number | null
+          avg_rent?: number | null
+          avg_sale_price?: number | null
+          cap_rate_estimate?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          data_date?: string | null
+          data_source?: string | null
+          gross_yield_pct?: number | null
+          id?: string
+          list_to_sale_ratio?: number | null
+          location_type?: string
+          location_value?: string
+          median_dom?: number | null
+          median_price_per_sqft?: number | null
+          median_rent?: number | null
+          median_sale_price?: number | null
+          months_of_inventory?: number | null
+          new_listings?: number | null
+          organization_id?: string | null
+          pct_over_asking?: number | null
+          pending_sales?: number | null
+          price_change_1m_pct?: number | null
+          price_change_1y_pct?: number | null
+          price_change_3m_pct?: number | null
+          price_to_rent_ratio?: number | null
+          rent_per_sqft?: number | null
+          state?: string | null
+          total_sales?: number | null
+          user_id?: string | null
+          vacancy_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_data_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_lenders: {
         Row: {
           application_url: string | null
@@ -4685,6 +5162,409 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rental_analyses: {
+        Row: {
+          address: string
+          appreciation_rate_pct: number | null
+          arv: number | null
+          baths: number | null
+          beds: number | null
+          cap_rate: number | null
+          capex_reserve_pct: number | null
+          cash_left_in_deal: number | null
+          cash_on_cash_return: number | null
+          cash_out_amount: number | null
+          city: string | null
+          closing_costs: number | null
+          created_at: string | null
+          credit_loss_pct: number | null
+          deal_analysis_id: string | null
+          debt_coverage_ratio: number | null
+          effective_gross_income: number | null
+          gross_monthly_income: number | null
+          gross_rent_multiplier: number | null
+          hoa_monthly: number | null
+          id: string
+          initial_down_payment: number | null
+          initial_down_payment_pct: number | null
+          initial_financing_type: string | null
+          initial_interest_rate: number | null
+          initial_loan_amount: number | null
+          initial_loan_term_years: number | null
+          initial_monthly_pi: number | null
+          initial_pmi: number | null
+          insurance_yearly: number | null
+          is_brrrr: boolean | null
+          maintenance_pct: number | null
+          monthly_cash_flow: number | null
+          monthly_debt_service: number | null
+          monthly_rent: number
+          name: string
+          noi: number | null
+          notes: string | null
+          one_pct_rule_met: boolean | null
+          organization_id: string | null
+          other_expenses_monthly: number | null
+          other_monthly_income: number | null
+          property_id: string | null
+          property_management_pct: number | null
+          property_taxes_yearly: number | null
+          property_type: string | null
+          purchase_price: number
+          refinance_interest_rate: number | null
+          refinance_loan_amount: number | null
+          refinance_ltv_pct: number | null
+          refinance_monthly_pi: number | null
+          rehab_costs: number | null
+          rent_growth_rate_pct: number | null
+          sqft: number | null
+          state: string | null
+          status: string | null
+          total_acquisition: number | null
+          total_cash_invested: number | null
+          total_monthly_expenses: number | null
+          total_operating_expenses: number | null
+          two_pct_rule_met: boolean | null
+          units: number | null
+          updated_at: string | null
+          user_id: string
+          utilities_monthly: number | null
+          vacancy_rate_pct: number | null
+          year_10_projection: Json | null
+          year_5_projection: Json | null
+          yearly_cash_flow: number | null
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          appreciation_rate_pct?: number | null
+          arv?: number | null
+          baths?: number | null
+          beds?: number | null
+          cap_rate?: number | null
+          capex_reserve_pct?: number | null
+          cash_left_in_deal?: number | null
+          cash_on_cash_return?: number | null
+          cash_out_amount?: number | null
+          city?: string | null
+          closing_costs?: number | null
+          created_at?: string | null
+          credit_loss_pct?: number | null
+          deal_analysis_id?: string | null
+          debt_coverage_ratio?: number | null
+          effective_gross_income?: number | null
+          gross_monthly_income?: number | null
+          gross_rent_multiplier?: number | null
+          hoa_monthly?: number | null
+          id?: string
+          initial_down_payment?: number | null
+          initial_down_payment_pct?: number | null
+          initial_financing_type?: string | null
+          initial_interest_rate?: number | null
+          initial_loan_amount?: number | null
+          initial_loan_term_years?: number | null
+          initial_monthly_pi?: number | null
+          initial_pmi?: number | null
+          insurance_yearly?: number | null
+          is_brrrr?: boolean | null
+          maintenance_pct?: number | null
+          monthly_cash_flow?: number | null
+          monthly_debt_service?: number | null
+          monthly_rent: number
+          name: string
+          noi?: number | null
+          notes?: string | null
+          one_pct_rule_met?: boolean | null
+          organization_id?: string | null
+          other_expenses_monthly?: number | null
+          other_monthly_income?: number | null
+          property_id?: string | null
+          property_management_pct?: number | null
+          property_taxes_yearly?: number | null
+          property_type?: string | null
+          purchase_price: number
+          refinance_interest_rate?: number | null
+          refinance_loan_amount?: number | null
+          refinance_ltv_pct?: number | null
+          refinance_monthly_pi?: number | null
+          rehab_costs?: number | null
+          rent_growth_rate_pct?: number | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          total_acquisition?: number | null
+          total_cash_invested?: number | null
+          total_monthly_expenses?: number | null
+          total_operating_expenses?: number | null
+          two_pct_rule_met?: boolean | null
+          units?: number | null
+          updated_at?: string | null
+          user_id: string
+          utilities_monthly?: number | null
+          vacancy_rate_pct?: number | null
+          year_10_projection?: Json | null
+          year_5_projection?: Json | null
+          yearly_cash_flow?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          appreciation_rate_pct?: number | null
+          arv?: number | null
+          baths?: number | null
+          beds?: number | null
+          cap_rate?: number | null
+          capex_reserve_pct?: number | null
+          cash_left_in_deal?: number | null
+          cash_on_cash_return?: number | null
+          cash_out_amount?: number | null
+          city?: string | null
+          closing_costs?: number | null
+          created_at?: string | null
+          credit_loss_pct?: number | null
+          deal_analysis_id?: string | null
+          debt_coverage_ratio?: number | null
+          effective_gross_income?: number | null
+          gross_monthly_income?: number | null
+          gross_rent_multiplier?: number | null
+          hoa_monthly?: number | null
+          id?: string
+          initial_down_payment?: number | null
+          initial_down_payment_pct?: number | null
+          initial_financing_type?: string | null
+          initial_interest_rate?: number | null
+          initial_loan_amount?: number | null
+          initial_loan_term_years?: number | null
+          initial_monthly_pi?: number | null
+          initial_pmi?: number | null
+          insurance_yearly?: number | null
+          is_brrrr?: boolean | null
+          maintenance_pct?: number | null
+          monthly_cash_flow?: number | null
+          monthly_debt_service?: number | null
+          monthly_rent?: number
+          name?: string
+          noi?: number | null
+          notes?: string | null
+          one_pct_rule_met?: boolean | null
+          organization_id?: string | null
+          other_expenses_monthly?: number | null
+          other_monthly_income?: number | null
+          property_id?: string | null
+          property_management_pct?: number | null
+          property_taxes_yearly?: number | null
+          property_type?: string | null
+          purchase_price?: number
+          refinance_interest_rate?: number | null
+          refinance_loan_amount?: number | null
+          refinance_ltv_pct?: number | null
+          refinance_monthly_pi?: number | null
+          rehab_costs?: number | null
+          rent_growth_rate_pct?: number | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          total_acquisition?: number | null
+          total_cash_invested?: number | null
+          total_monthly_expenses?: number | null
+          total_operating_expenses?: number | null
+          two_pct_rule_met?: boolean | null
+          units?: number | null
+          updated_at?: string | null
+          user_id?: string
+          utilities_monthly?: number | null
+          vacancy_rate_pct?: number | null
+          year_10_projection?: Json | null
+          year_5_projection?: Json | null
+          yearly_cash_flow?: number | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_analyses_deal_analysis_id_fkey"
+            columns: ["deal_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "deal_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rental_analyses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rental_analyses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repair_estimates: {
+        Row: {
+          address: string | null
+          category_totals: Json | null
+          contingency_amount: number | null
+          contingency_pct: number | null
+          created_at: string | null
+          deal_analysis_id: string | null
+          estimated_weeks: number | null
+          id: string
+          line_items: Json | null
+          method: string | null
+          name: string
+          notes: string | null
+          organization_id: string | null
+          property_id: string | null
+          quick_per_sqft: number | null
+          quick_total: number | null
+          scope: string | null
+          sqft: number | null
+          subtotal: number | null
+          total_estimate: number | null
+          total_labor: number | null
+          total_materials: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          category_totals?: Json | null
+          contingency_amount?: number | null
+          contingency_pct?: number | null
+          created_at?: string | null
+          deal_analysis_id?: string | null
+          estimated_weeks?: number | null
+          id?: string
+          line_items?: Json | null
+          method?: string | null
+          name: string
+          notes?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          quick_per_sqft?: number | null
+          quick_total?: number | null
+          scope?: string | null
+          sqft?: number | null
+          subtotal?: number | null
+          total_estimate?: number | null
+          total_labor?: number | null
+          total_materials?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          category_totals?: Json | null
+          contingency_amount?: number | null
+          contingency_pct?: number | null
+          created_at?: string | null
+          deal_analysis_id?: string | null
+          estimated_weeks?: number | null
+          id?: string
+          line_items?: Json | null
+          method?: string | null
+          name?: string
+          notes?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          quick_per_sqft?: number | null
+          quick_total?: number | null
+          scope?: string | null
+          sqft?: number | null
+          subtotal?: number | null
+          total_estimate?: number | null
+          total_labor?: number | null
+          total_materials?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repair_estimates_deal_analysis_id_fkey"
+            columns: ["deal_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "deal_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repair_estimates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repair_estimates_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      repair_items_library: {
+        Row: {
+          category: string
+          cost_high: number | null
+          cost_low: number | null
+          created_at: string | null
+          default_cost: number
+          description: string | null
+          id: string
+          includes_labor: boolean | null
+          is_active: boolean | null
+          is_system: boolean | null
+          name: string
+          organization_id: string | null
+          unit: string | null
+          user_id: string | null
+        }
+        Insert: {
+          category: string
+          cost_high?: number | null
+          cost_low?: number | null
+          created_at?: string | null
+          default_cost: number
+          description?: string | null
+          id?: string
+          includes_labor?: boolean | null
+          is_active?: boolean | null
+          is_system?: boolean | null
+          name: string
+          organization_id?: string | null
+          unit?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          cost_high?: number | null
+          cost_low?: number | null
+          created_at?: string | null
+          default_cost?: number
+          description?: string | null
+          id?: string
+          includes_labor?: boolean | null
+          is_active?: boolean | null
+          is_system?: boolean | null
+          name?: string
+          organization_id?: string | null
+          unit?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "repair_items_library_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]

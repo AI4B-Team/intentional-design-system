@@ -240,16 +240,16 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
     },
     comps: comps?.map(c => ({
       id: c.id,
-      comp_address: c.comp_address,
+      comp_address: c.address,
       sale_price: c.sale_price ? Number(c.sale_price) : null,
       sqft: c.sqft,
       beds: c.beds,
       baths: c.baths,
       sale_date: c.sale_date,
       distance_miles: c.distance_miles ? Number(c.distance_miles) : null,
-      adjusted_value: c.adjusted_value ? Number(c.adjusted_value) : null,
+      adjusted_value: c.adjusted_price ? Number(c.adjusted_price) : null,
       adjustments: c.adjustments,
-      rating: c.rating,
+      rating: c.condition,
     })),
   });
 
@@ -372,7 +372,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                       )}
                     >
                       <td className="px-4 text-body font-medium text-foreground">
-                        {comp.comp_address}
+                        {comp.address}
                       </td>
                       <td className="px-4 text-right text-body tabular-nums">
                         {comp.sale_price ? formatCurrency(Number(comp.sale_price)) : "—"}
@@ -390,11 +390,11 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                         {comp.distance_miles ? `${comp.distance_miles} mi` : "—"}
                       </td>
                       <td className="px-4 text-right text-body tabular-nums font-medium">
-                        {comp.adjusted_value ? formatCurrency(Number(comp.adjusted_value)) : "—"}
+                        {comp.adjusted_price ? formatCurrency(Number(comp.adjusted_price)) : "—"}
                       </td>
                       <td className="px-4 text-center">
-                        <Badge variant={getRatingVariant(comp.rating)} size="sm">
-                          {comp.rating || "—"}
+                        <Badge variant={getRatingVariant(comp.condition)} size="sm">
+                          {comp.condition || "—"}
                         </Badge>
                       </td>
                       <td className="px-2">

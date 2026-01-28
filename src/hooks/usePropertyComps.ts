@@ -15,7 +15,7 @@ export function usePropertyComps(propertyId: string | undefined) {
       const { data, error } = await supabase
         .from("comps")
         .select("*")
-        .eq("property_id", propertyId)
+        .eq("subject_property_id", propertyId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -40,10 +40,10 @@ export function useAddComp() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["property-comps", data.property_id] });
+      queryClient.invalidateQueries({ queryKey: ["property-comps", data.subject_property_id] });
       toast.success("Comp added successfully");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to add comp");
     },
   });
@@ -65,10 +65,10 @@ export function useUpdateComp() {
       return data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["property-comps", data.property_id] });
+      queryClient.invalidateQueries({ queryKey: ["property-comps", data.subject_property_id] });
       toast.success("Comp updated");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to update comp");
     },
   });
@@ -91,7 +91,7 @@ export function useDeleteComp() {
       queryClient.invalidateQueries({ queryKey: ["property-comps", data.propertyId] });
       toast.success("Comp deleted");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error.message || "Failed to delete comp");
     },
   });
