@@ -82,17 +82,19 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
           {arvPercent}% ARV
         </Badge>
       </div>
-      <div className="relative h-2.5 rounded-full overflow-hidden bg-muted">
-        <div className="absolute inset-0 flex">
-          <div className="w-[40%] bg-emerald-500" />
-          <div className="w-[30%] bg-amber-400" />
-          <div className="w-[30%] bg-red-500" />
+      <div className="relative h-4 flex items-center">
+        <div className="absolute inset-x-0 h-2.5 rounded-full overflow-hidden bg-muted">
+          <div className="absolute inset-0 flex">
+            <div className="w-[40%] bg-emerald-500" />
+            <div className="w-[30%] bg-amber-400" />
+            <div className="w-[30%] bg-red-500" />
+          </div>
         </div>
         <div
-          className="absolute top-1/2 w-4 h-4 bg-white border-2 border-slate-700 rounded-full shadow-md"
+          className="absolute w-4 h-4 bg-white border-2 border-slate-700 rounded-full shadow-md z-10"
           style={{ 
-            left: `${Math.min(Math.max(position, 2), 98)}%`, 
-            transform: "translate(-50%, -50%)" 
+            left: `${Math.min(Math.max(position, 0), 100)}%`, 
+            transform: "translateX(-50%)" 
           }}
         />
       </div>
