@@ -244,7 +244,7 @@ export function MarketplaceFilters({
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
-                Beds/Baths
+                Beds & Baths
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
@@ -334,7 +334,7 @@ export function MarketplaceFilters({
             className="h-9 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0"
           >
             <Bookmark className="h-4 w-4" />
-            Save
+            Save Search
           </Button>
         </div>
 
