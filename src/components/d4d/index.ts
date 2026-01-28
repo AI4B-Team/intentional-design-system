@@ -12,3 +12,5 @@ export { D4DPhotoCarousel } from "./d4d-photo-carousel";
 export { D4DSessionCard } from "./d4d-session-card";
 export { D4DMileageCard } from "./d4d-mileage-card";
 export { D4DIncompleteSessionDialog } from "./d4d-incomplete-session-dialog";
+export { D4DAreaCard } from "./d4d-area-card";
+export { D4DHeatMapLegend } from "./d4d-heat-map-legend";

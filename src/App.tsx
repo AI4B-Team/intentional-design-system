@@ -77,6 +77,10 @@ import D4DProperties from "./pages/D4DProperties";
 import D4DPropertyDetail from "./pages/D4DPropertyDetail";
 import D4DHistory from "./pages/D4DHistory";
 import D4DSessionDetail from "./pages/D4DSessionDetail";
+import D4DHeatMap from "./pages/D4DHeatMap";
+import D4DAreas from "./pages/D4DAreas";
+import D4DAreaDetail from "./pages/D4DAreaDetail";
+import D4DAreaEdit from "./pages/D4DAreaEdit";
 
 const queryClient = new QueryClient();
 
@@ -574,6 +578,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <D4DSessionDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/heatmap"
+              element={
+                <ProtectedRoute>
+                  <D4DHeatMap />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/areas"
+              element={
+                <ProtectedRoute>
+                  <D4DAreas />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/areas/:id"
+              element={
+                <ProtectedRoute>
+                  <D4DAreaDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/areas/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <D4DAreaEdit />
                 </ProtectedRoute>
               }
             />
