@@ -72,6 +72,7 @@ import RenovationDetail from "./pages/RenovationDetail";
 import ImageEditor from "./pages/ImageEditor";
 import MaterialLibrary from "./pages/MaterialLibrary";
 import PropertyScout from "./pages/PropertyScout";
+import D4D from "./pages/D4D";
 
 const queryClient = new QueryClient();
 
@@ -529,6 +530,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <PropertyScout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d"
+              element={
+                <ProtectedRoute>
+                  <D4D />
                 </ProtectedRoute>
               }
             />
