@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -114,6 +114,8 @@ const sourceOptions = [
   { value: "wholesaler", label: "Wholesaler" },
   { value: "marketing", label: "Marketing" },
   { value: "referral", label: "Referral" },
+  { value: "seller_calls_in", label: "Seller Calls In" },
+  { value: "other", label: "Other" },
 ];
 
 const motivationOptions = [
@@ -396,11 +398,15 @@ function Pagination({
 
 export default function Properties() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Check for pre-population data from navigation state
+  const initialPropertyData = location.state?.propertyData || null;
   
   // State
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [viewMode, setViewMode] = React.useState<"cards" | "table">("cards");
+  const [viewMode, setViewMode] = React.useState<"cards" | "table">("table");
   const [sortBy, setSortBy] = React.useState("newest");
   const [statusFilter, setStatusFilter] = React.useState(searchParams.get("status") || "all");
   const [typeFilter, setTypeFilter] = React.useState("all");
@@ -408,7 +414,7 @@ export default function Properties() {
   const [motivationFilter, setMotivationFilter] = React.useState("all");
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(!!initialPropertyData);
   const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
   const [isBulkAIOpen, setIsBulkAIOpen] = React.useState(false);
   const [isBulkSkipTraceOpen, setIsBulkSkipTraceOpen] = React.useState(false);
@@ -1065,7 +1071,14 @@ export default function Properties() {
       {/* Add Property Modal */}
       <AddPropertyModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          // Clear navigation state after modal closes
+          if (initialPropertyData) {
+            navigate(location.pathname, { replace: true });
+          }
+        }}
+        initialValues={initialPropertyData}
       />
 
       {/* Bulk Offer Modal */}

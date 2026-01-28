@@ -38,9 +38,27 @@ const propertySchema = z.object({
 
 type PropertyFormData = z.infer<typeof propertySchema>;
 
+interface PropertyFormDefaults {
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  property_type?: string;
+  beds?: string | number;
+  baths?: string | number;
+  sqft?: string | number;
+  year_built?: string | number;
+  owner_name?: string;
+  owner_phone?: string;
+  owner_email?: string;
+  source?: string;
+  notes?: string;
+}
+
 interface AddPropertyModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialValues?: PropertyFormDefaults;
 }
 
 const propertyTypes = [
@@ -63,13 +81,31 @@ const sources = [
   { value: "wholesaler", label: "Wholesaler" },
   { value: "marketing", label: "Marketing" },
   { value: "referral", label: "Referral" },
+  { value: "seller_calls_in", label: "Seller Calls In" },
   { value: "other", label: "Other" },
 ];
 
-export function AddPropertyModal({ isOpen, onClose }: AddPropertyModalProps) {
+export function AddPropertyModal({ isOpen, onClose, initialValues }: AddPropertyModalProps) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [saveAndAddAnother, setSaveAndAddAnother] = React.useState(false);
+
+  const defaultValues = React.useMemo((): PropertyFormData => ({
+    address: initialValues?.address || "",
+    city: initialValues?.city || "",
+    state: initialValues?.state || "",
+    zip: initialValues?.zip || "",
+    property_type: initialValues?.property_type || "",
+    beds: initialValues?.beds ? Number(initialValues.beds) : "",
+    baths: initialValues?.baths ? Number(initialValues.baths) : "",
+    sqft: initialValues?.sqft ? Number(initialValues.sqft) : "",
+    year_built: initialValues?.year_built ? Number(initialValues.year_built) : "",
+    owner_name: initialValues?.owner_name || "",
+    owner_phone: initialValues?.owner_phone || "",
+    owner_email: initialValues?.owner_email || "",
+    source: initialValues?.source || "",
+    notes: initialValues?.notes || "",
+  }), [initialValues]);
 
   const {
     register,
@@ -80,23 +116,15 @@ export function AddPropertyModal({ isOpen, onClose }: AddPropertyModalProps) {
     formState: { errors },
   } = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
-    defaultValues: {
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-      property_type: "",
-      beds: "",
-      baths: "",
-      sqft: "",
-      year_built: "",
-      owner_name: "",
-      owner_phone: "",
-      owner_email: "",
-      source: "",
-      notes: "",
-    },
+    defaultValues,
   });
+
+  // Reset form when initialValues change
+  React.useEffect(() => {
+    if (isOpen) {
+      reset(defaultValues);
+    }
+  }, [isOpen, defaultValues, reset]);
 
   const onSubmit = async (data: PropertyFormData, addAnother: boolean = false) => {
     setIsSubmitting(true);
