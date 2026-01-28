@@ -13,7 +13,24 @@
 
 @layer base {
   html {
-    zoom: 0.8;
+    --app-zoom: 0.8;
+  }
+
+  /* The app is intentionally scaled down globally.
+     When `zoom` is supported, compensate layout size so the UI still fills the viewport
+     (prevents bottom/right blank space caused by scaling). */
+  @supports (zoom: 1) {
+    html {
+      zoom: var(--app-zoom);
+      min-height: calc(100vh / var(--app-zoom));
+      min-width: calc(100vw / var(--app-zoom));
+    }
+
+    body,
+    #root {
+      min-height: calc(100vh / var(--app-zoom));
+      min-width: calc(100vw / var(--app-zoom));
+    }
   }
   
   :root {
