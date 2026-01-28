@@ -130,7 +130,7 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="flex items-center gap-2 p-3 bg-white border-b border-border flex-wrap">
+      <div className="flex items-center gap-2 p-3 bg-white border-b border-border overflow-x-auto whitespace-nowrap">
         {/* Address Search */}
         <div className="relative min-w-[200px] flex-shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
