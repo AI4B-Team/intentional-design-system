@@ -1,0 +1,9 @@
+export { WebsiteHero } from './WebsiteHero';
+export { ValuePropsSection } from './ValuePropsSection';
+export { LeadCaptureForm } from './LeadCaptureForm';
+export { HowItWorksSection } from './HowItWorksSection';
+export { TestimonialsSection } from './TestimonialsSection';
+export { FAQSection } from './FAQSection';
+export { AboutSection } from './AboutSection';
+export { WebsiteFooter } from './WebsiteFooter';
+export { SEOHead } from './SEOHead';
