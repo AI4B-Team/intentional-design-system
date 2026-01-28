@@ -80,12 +80,12 @@ export default function MarketplaceDeals() {
         {/* Main Content - Split view - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
           {/* Map Section - 50% width */}
-          <div className="hidden lg:block lg:w-1/2 h-full">
+          <div className="hidden lg:block w-1/2 h-full">
             <MarketplaceMap deals={deals} />
           </div>
 
           {/* Listings Section - 50% width */}
-          <div className="flex-1 lg:w-1/2 h-full overflow-y-auto">
+          <div className="flex-1 lg:flex-none lg:w-1/2 h-full overflow-y-auto">
             <MarketplaceListings
               deals={deals}
               totalCount={totalCount}
