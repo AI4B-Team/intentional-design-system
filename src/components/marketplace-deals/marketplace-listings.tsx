@@ -382,7 +382,7 @@ export function MarketplaceListings({
               <SelectTrigger className="w-[65px] h-8 bg-background">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
+              <SelectContent className="bg-background z-[100]" align="start">
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="25">25</SelectItem>
                 <SelectItem value="50">50</SelectItem>
@@ -401,7 +401,7 @@ export function MarketplaceListings({
               <SelectTrigger className="w-[130px] h-8 bg-background">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
+              <SelectContent className="bg-background z-[100]" align="end">
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="oldest">Oldest</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
