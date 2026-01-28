@@ -13,7 +13,7 @@
 
 @layer base {
   html {
-    --app-zoom: 0.8;
+    --app-zoom: 0.9;
   }
 
   /* The app is intentionally scaled down globally.
