@@ -214,25 +214,25 @@ function DealCard({
         {/* Top Controls */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-white rounded-md shadow-sm p-1 flex items-center justify-center">
+            <div className="bg-white rounded shadow-sm h-6 w-6 flex items-center justify-center">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={onSelect}
-                className="h-4 w-4"
+                className="h-3.5 w-3.5"
               />
             </div>
-            <Badge className={cn("text-xs font-medium px-2.5 py-1 rounded-md", listingBadge.className)}>
+            <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded", listingBadge.className)}>
               {listingBadge.text}
             </Badge>
           </div>
           <TooltipProvider delayDuration={300}>
-            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 bg-white hover:bg-white/90 rounded-full shadow-sm"
+                    className="h-7 w-7 bg-slate-800/60 hover:bg-slate-800/80 rounded-full"
                     onClick={(e) => {
                       e.stopPropagation();
                       const url = `${window.location.origin}/marketplace/deal/${deal.id}`;
@@ -240,7 +240,7 @@ function DealCard({
                       toast.success("Link copied to clipboard!");
                     }}
                   >
-                    <ExternalLink className="h-4 w-4 text-slate-600" />
+                    <ExternalLink className="h-3.5 w-3.5 text-white" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -253,7 +253,7 @@ function DealCard({
                     variant="ghost"
                     size="icon"
                     className={cn(
-                      "h-8 w-8 bg-white hover:bg-white/90 rounded-full shadow-sm",
+                      "h-7 w-7 bg-slate-800/60 hover:bg-slate-800/80 rounded-full",
                       deal.isFavorite && "text-destructive"
                     )}
                     onClick={(e) => {
@@ -261,7 +261,7 @@ function DealCard({
                       toast.success(deal.isFavorite ? "Removed from favorites" : "Added to favorites");
                     }}
                   >
-                    <Heart className={cn("h-4 w-4", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
+                    <Heart className={cn("h-3.5 w-3.5", deal.isFavorite ? "fill-current text-destructive" : "text-white")} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
