@@ -9,4 +9,7 @@ export { CreateQueueModal } from "./create-queue-modal";
 export { QueueContactsTable } from "./queue-contacts-table";
 export { QueueAnalytics } from "./queue-analytics";
 export { QueueSettingsPanel } from "./queue-settings-panel";
+export { ScriptEditor } from "./script-editor";
+export { ScriptPreviewModal } from "./script-preview-modal";
+export { MergeFieldsSidebar } from "./merge-fields-sidebar";
 
