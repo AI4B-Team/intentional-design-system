@@ -55,6 +55,7 @@ import {
   Bot,
   Settings2,
   UserSearch,
+  BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -190,14 +191,16 @@ function PropertyCard({
   onClick,
   onView,
   onEdit,
+  onAnalyze,
   onArchive,
-}: { 
+}: {
   property: Property; 
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
   onClick: () => void;
   onView: () => void;
   onEdit: () => void;
+  onAnalyze: () => void;
   onArchive: () => void;
 }) {
   const score = property.motivation_score || 0;
@@ -292,6 +295,10 @@ function PropertyCard({
               <DropdownMenuItem onClick={onEdit}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onAnalyze}>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Quick Analysis
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={onArchive} className="text-destructive">
@@ -768,6 +775,7 @@ export default function Properties() {
                 onClick={() => navigate(`/properties/${property.id}`)}
                 onView={() => navigate(`/properties/${property.id}`)}
                 onEdit={() => navigate(`/properties/${property.id}/edit`)}
+                onAnalyze={() => navigate(`/tools/market-analyzer?tab=deals&property=${property.id}`)}
                 onArchive={() => {}}
               />
             ))}
