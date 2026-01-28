@@ -18,14 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
   ExternalLink,
-  Heart,
   Home,
   List,
   LayoutGrid,
@@ -45,7 +38,6 @@ import {
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 interface MarketplaceListingsProps {
   deals: MarketplaceDeal[];
@@ -225,51 +217,6 @@ function DealCard({
               {listingBadge.text}
             </Badge>
           </div>
-          <TooltipProvider delayDuration={300}>
-            <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 bg-slate-800/60 hover:bg-slate-800/80 rounded-full"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      const url = `${window.location.origin}/marketplace/deal/${deal.id}`;
-                      navigator.clipboard.writeText(url);
-                      toast.success("Link copied to clipboard!");
-                    }}
-                  >
-                    <ExternalLink className="h-3.5 w-3.5 text-white" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>Copy link</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                      "h-7 w-7 bg-slate-800/60 hover:bg-slate-800/80 rounded-full",
-                      deal.isFavorite && "text-destructive"
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toast.success(deal.isFavorite ? "Removed from favorites" : "Added to favorites");
-                    }}
-                  >
-                    <Heart className={cn("h-3.5 w-3.5", deal.isFavorite ? "fill-current text-destructive" : "text-white")} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>{deal.isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-          </TooltipProvider>
         </div>
 
         {/* Tags at bottom of image */}
@@ -282,7 +229,6 @@ function DealCard({
                 i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
               )}
             >
-              {i === 0 && <Home className="h-3 w-3 mr-1" />}
               {tag}
             </Badge>
           ))}
