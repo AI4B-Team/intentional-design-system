@@ -279,7 +279,7 @@ function DealCard({
               key={i}
               className={cn(
                 "text-xs font-medium px-2.5 py-1 rounded-md",
-                tagColors[tag] || "bg-slate-700 text-white"
+                i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
               )}
             >
               {i === 0 && <Home className="h-3 w-3 mr-1" />}
