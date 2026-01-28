@@ -1722,6 +1722,341 @@ export type Database = {
           },
         ]
       }
+      list_criteria_presets: {
+        Row: {
+          created_at: string | null
+          criteria: Json
+          description: string | null
+          id: string
+          is_favorite: boolean | null
+          is_system: boolean | null
+          name: string
+          organization_id: string | null
+          use_count: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          criteria: Json
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_system?: boolean | null
+          name: string
+          organization_id?: string | null
+          use_count?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          criteria?: Json
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          is_system?: boolean | null
+          name?: string
+          organization_id?: string | null
+          use_count?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "list_criteria_presets_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      list_records: {
+        Row: {
+          address: string | null
+          address_hash: string | null
+          assessed_value: number | null
+          baths: number | null
+          beds: number | null
+          city: string | null
+          county: string | null
+          created_at: string | null
+          distress_details: Json | null
+          distress_indicators: string[] | null
+          email: string | null
+          estimated_equity_amount: number | null
+          estimated_equity_percent: number | null
+          estimated_value: number | null
+          id: string
+          is_absentee: boolean | null
+          is_valid: boolean | null
+          last_sale_date: string | null
+          last_sale_price: number | null
+          list_id: string
+          list_match_count: number | null
+          lot_size: number | null
+          mailing_address: string | null
+          mailing_city: string | null
+          mailing_state: string | null
+          mailing_zip: string | null
+          mortgage_balance: number | null
+          mortgage_date: string | null
+          mortgage_lender: string | null
+          motivation_score: number | null
+          normalized_address: string | null
+          organization_id: string | null
+          owner_first_name: string | null
+          owner_last_name: string | null
+          owner_name: string | null
+          owner_type: string | null
+          phone: string | null
+          property_id: string | null
+          property_type: string | null
+          raw_data: Json | null
+          skip_reason: string | null
+          source_lists: string[] | null
+          sqft: number | null
+          state: string | null
+          status: string | null
+          street_name: string | null
+          street_number: string | null
+          unit: string | null
+          updated_at: string | null
+          user_id: string
+          validation_errors: string[] | null
+          year_built: number | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          address_hash?: string | null
+          assessed_value?: number | null
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          distress_details?: Json | null
+          distress_indicators?: string[] | null
+          email?: string | null
+          estimated_equity_amount?: number | null
+          estimated_equity_percent?: number | null
+          estimated_value?: number | null
+          id?: string
+          is_absentee?: boolean | null
+          is_valid?: boolean | null
+          last_sale_date?: string | null
+          last_sale_price?: number | null
+          list_id: string
+          list_match_count?: number | null
+          lot_size?: number | null
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          mortgage_balance?: number | null
+          mortgage_date?: string | null
+          mortgage_lender?: string | null
+          motivation_score?: number | null
+          normalized_address?: string | null
+          organization_id?: string | null
+          owner_first_name?: string | null
+          owner_last_name?: string | null
+          owner_name?: string | null
+          owner_type?: string | null
+          phone?: string | null
+          property_id?: string | null
+          property_type?: string | null
+          raw_data?: Json | null
+          skip_reason?: string | null
+          source_lists?: string[] | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          street_name?: string | null
+          street_number?: string | null
+          unit?: string | null
+          updated_at?: string | null
+          user_id: string
+          validation_errors?: string[] | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          address_hash?: string | null
+          assessed_value?: number | null
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string | null
+          distress_details?: Json | null
+          distress_indicators?: string[] | null
+          email?: string | null
+          estimated_equity_amount?: number | null
+          estimated_equity_percent?: number | null
+          estimated_value?: number | null
+          id?: string
+          is_absentee?: boolean | null
+          is_valid?: boolean | null
+          last_sale_date?: string | null
+          last_sale_price?: number | null
+          list_id?: string
+          list_match_count?: number | null
+          lot_size?: number | null
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          mortgage_balance?: number | null
+          mortgage_date?: string | null
+          mortgage_lender?: string | null
+          motivation_score?: number | null
+          normalized_address?: string | null
+          organization_id?: string | null
+          owner_first_name?: string | null
+          owner_last_name?: string | null
+          owner_name?: string | null
+          owner_type?: string | null
+          phone?: string | null
+          property_id?: string | null
+          property_type?: string | null
+          raw_data?: Json | null
+          skip_reason?: string | null
+          source_lists?: string[] | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          street_name?: string | null
+          street_number?: string | null
+          unit?: string | null
+          updated_at?: string | null
+          user_id?: string
+          validation_errors?: string[] | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "list_records_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "lists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_records_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "list_records_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lists: {
+        Row: {
+          avg_motivation_score: number | null
+          built_at: string | null
+          column_mapping: Json | null
+          created_at: string | null
+          criteria: Json | null
+          description: string | null
+          high_motivation_count: number | null
+          id: string
+          invalid_records: number | null
+          last_exported_at: string | null
+          last_mailed_at: string | null
+          list_type: string
+          matched_to_properties: number | null
+          name: string
+          organization_id: string | null
+          skipped_duplicates: number | null
+          source_file_name: string | null
+          source_file_url: string | null
+          stack_criteria: string | null
+          stacked_from: Json | null
+          status: string | null
+          times_exported: number | null
+          times_mailed: number | null
+          total_records: number | null
+          unique_records: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_motivation_score?: number | null
+          built_at?: string | null
+          column_mapping?: Json | null
+          created_at?: string | null
+          criteria?: Json | null
+          description?: string | null
+          high_motivation_count?: number | null
+          id?: string
+          invalid_records?: number | null
+          last_exported_at?: string | null
+          last_mailed_at?: string | null
+          list_type: string
+          matched_to_properties?: number | null
+          name: string
+          organization_id?: string | null
+          skipped_duplicates?: number | null
+          source_file_name?: string | null
+          source_file_url?: string | null
+          stack_criteria?: string | null
+          stacked_from?: Json | null
+          status?: string | null
+          times_exported?: number | null
+          times_mailed?: number | null
+          total_records?: number | null
+          unique_records?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_motivation_score?: number | null
+          built_at?: string | null
+          column_mapping?: Json | null
+          created_at?: string | null
+          criteria?: Json | null
+          description?: string | null
+          high_motivation_count?: number | null
+          id?: string
+          invalid_records?: number | null
+          last_exported_at?: string | null
+          last_mailed_at?: string | null
+          list_type?: string
+          matched_to_properties?: number | null
+          name?: string
+          organization_id?: string | null
+          skipped_duplicates?: number | null
+          source_file_name?: string | null
+          source_file_url?: string | null
+          stack_criteria?: string | null
+          stacked_from?: Json | null
+          status?: string | null
+          times_exported?: number | null
+          times_mailed?: number | null
+          total_records?: number | null
+          unique_records?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lists_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lob_connections: {
         Row: {
           account_name: string | null
@@ -3465,6 +3800,68 @@ export type Database = {
         }
         Relationships: []
       }
+      suppression_list: {
+        Row: {
+          added_at: string | null
+          address: string | null
+          address_hash: string
+          city: string | null
+          expires_at: string | null
+          id: string
+          normalized_address: string
+          organization_id: string | null
+          reason: string
+          reason_notes: string | null
+          source: string | null
+          source_reference_id: string | null
+          state: string | null
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          added_at?: string | null
+          address?: string | null
+          address_hash: string
+          city?: string | null
+          expires_at?: string | null
+          id?: string
+          normalized_address: string
+          organization_id?: string | null
+          reason: string
+          reason_notes?: string | null
+          source?: string | null
+          source_reference_id?: string | null
+          state?: string | null
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          added_at?: string | null
+          address?: string | null
+          address_hash?: string
+          city?: string | null
+          expires_at?: string | null
+          id?: string
+          normalized_address?: string
+          organization_id?: string | null
+          reason?: string
+          reason_notes?: string | null
+          source?: string | null
+          source_reference_id?: string | null
+          state?: string | null
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suppression_list_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       title_reports: {
         Row: {
           cost: number | null
@@ -3667,9 +4064,26 @@ export type Database = {
         }
         Returns: Json
       }
+      generate_address_hash: {
+        Args: { normalized_address: string }
+        Returns: string
+      }
       get_user_organization: { Args: never; Returns: string }
       get_user_role: { Args: never; Returns: string }
       is_org_member: { Args: { org_id: string }; Returns: boolean }
+      is_suppressed: {
+        Args: { p_address_hash: string; p_user_id: string }
+        Returns: boolean
+      }
+      normalize_address: {
+        Args: {
+          p_address: string
+          p_city?: string
+          p_state?: string
+          p_zip?: string
+        }
+        Returns: string
+      }
       user_has_role: { Args: { required_role: string }; Returns: boolean }
     }
     Enums: {
