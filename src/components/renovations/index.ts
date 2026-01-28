@@ -8,3 +8,7 @@ export * from "./before-after-slider";
 export * from "./style-preset-selector";
 export * from "./thumbnail-strip";
 export * from "./variations-grid";
+export * from "./material-type-selector";
+export * from "./material-card";
+export * from "./add-material-modal";
+export * from "./material-swap-panel";
