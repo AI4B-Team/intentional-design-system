@@ -45,6 +45,8 @@ import ContractorDetail from "./pages/ContractorDetail";
 import Buyers from "./pages/Buyers";
 import BuyerDetail from "./pages/BuyerDetail";
 import NotFound from "./pages/NotFound";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import JVPartners from "./pages/JVPartners";
 import DailyReport from "./pages/DailyReport";
 import Achievements from "./pages/Achievements";
@@ -133,6 +135,8 @@ const App = () => (
                   <Route path="/deals/:slug" element={<PublicDealPage />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/onboarding-old" element={<Onboarding />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
 
                   {/* Buyer Portal Routes */}
                   <Route path="/register/buyer" element={<BuyerAuthProvider><BuyerRegister /></BuyerAuthProvider>} />
