@@ -73,6 +73,7 @@ import ImageEditor from "./pages/ImageEditor";
 import MaterialLibrary from "./pages/MaterialLibrary";
 import PropertyScout from "./pages/PropertyScout";
 import Lists from "./pages/Lists";
+import ListDetail from "./pages/ListDetail";
 import D4D from "./pages/D4D";
 import D4DProperties from "./pages/D4DProperties";
 import D4DPropertyDetail from "./pages/D4DPropertyDetail";
@@ -516,6 +517,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Lists />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketing/lists/:id"
+              element={
+                <ProtectedRoute>
+                  <ListDetail />
                 </ProtectedRoute>
               }
             />
