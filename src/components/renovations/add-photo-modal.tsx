@@ -154,7 +154,8 @@ export function AddPhotoModal({
 
       try {
         const fileExt = file.file.name.split(".").pop();
-        const filePath = `${projectId}/${crypto.randomUUID()}.${fileExt}`;
+        // Use user.id as first folder to match RLS policy, then projectId for organization
+        const filePath = `${user?.id}/${projectId}/${crypto.randomUUID()}.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from("renovation-originals")
