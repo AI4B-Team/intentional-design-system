@@ -6,7 +6,6 @@ import { useDialer } from "@/hooks/useDialer";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
-import { AppLayout } from "@/components/layout";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -254,10 +253,9 @@ export default function Dialer() {
   };
 
   return (
-    <AppLayout>
-      <PageLayout
-        title="Power Dialer"
-        headerActions={
+    <PageLayout
+      title="Power Dialer"
+      headerActions={
           <div className="flex items-center gap-4">
             {/* Status Indicator */}
             <div className="flex items-center gap-2">
@@ -406,7 +404,6 @@ export default function Dialer() {
             onComplete={handleCountdownComplete}
           />
         )}
-      </PageLayout>
-    </AppLayout>
+    </PageLayout>
   );
 }
