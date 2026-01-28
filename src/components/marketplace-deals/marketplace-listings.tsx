@@ -68,13 +68,24 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
   // Calculate position on the meter (50% to 100% scale)
   const position = ((arvPercent - 50) / 50) * 100;
   
+  // Determine color based on ARV percentage
+  const getBadgeColor = () => {
+    if (arvPercent <= 70) {
+      return "bg-emerald-100 text-emerald-700 border-emerald-300";
+    } else if (arvPercent <= 85) {
+      return "bg-amber-100 text-amber-700 border-amber-300";
+    } else {
+      return "bg-red-100 text-red-700 border-red-300";
+    }
+  };
+  
   return (
     <div className="mt-4">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs text-muted-foreground">Deal Risk</span>
         <Badge 
           variant="outline" 
-          className="border-primary text-primary text-xs font-semibold px-2 py-0 bg-primary/5"
+          className={cn("text-xs font-semibold px-2 py-0", getBadgeColor())}
         >
           {arvPercent}% ARV
         </Badge>
