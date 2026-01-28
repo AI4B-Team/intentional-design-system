@@ -20,7 +20,7 @@ import {
   SlidersHorizontal,
   Bookmark,
   Plus,
-  Sparkles,
+  Zap,
   ChevronDown,
   Check,
 } from "lucide-react";
@@ -352,8 +352,8 @@ export function MarketplaceFilters({
           </Button>
 
           {/* Buy Box */}
-          <Button variant="outline" className="h-9 gap-2 bg-background text-sm">
-            <Sparkles className="h-4 w-4" />
+          <Button variant="outline" className="h-9 gap-2 bg-amber-50 border-amber-400 text-amber-700 hover:bg-amber-100 hover:border-amber-500 text-sm">
+            <Zap className="h-4 w-4 fill-amber-400 text-amber-400" />
             Buy Box
           </Button>
         </div>
