@@ -336,102 +336,104 @@ export function MarketplaceListings({
       <div className="p-4 border-b border-border bg-white">
         <h2 className="text-xl font-bold text-foreground mb-4">Find Your Next Deal</h2>
         
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="h-8 px-2 gap-1 border-border bg-background">
-                    <Checkbox
-                      checked={allSelected}
-                      onCheckedChange={(checked) => {
-                        onSelectAll(!!checked);
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40 p-1 bg-background z-[60]" align="start">
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
-                    onClick={() => onSelectAll(true)}
-                  >
-                    Select Page ({deals.length})
-                  </button>
-                  <button
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
-                    onClick={() => onSelectAll(true)}
-                  >
-                    Select All ({totalCount})
-                  </button>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <span className="text-sm font-medium">{totalCount} Results Found</span>
+        {/* Single row toolbar */}
+        <div className="flex items-center gap-4 flex-nowrap overflow-x-auto">
+          {/* Select checkbox */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="h-8 px-2 gap-1 border-border bg-background">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={(checked) => {
+                      onSelectAll(!!checked);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40 p-1 bg-background z-[60]" align="start">
+                <button
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
+                  onClick={() => onSelectAll(true)}
+                >
+                  Select Page ({deals.length})
+                </button>
+                <button
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
+                  onClick={() => onSelectAll(true)}
+                >
+                  Select All ({totalCount})
+                </button>
+              </PopoverContent>
+            </Popover>
+            <span className="text-sm font-medium whitespace-nowrap">{totalCount} Results Found</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Results Per Page:</span>
-              <Select
-                value={resultsPerPage.toString()}
-                onValueChange={(v) => onResultsPerPageChange(parseInt(v))}
-              >
-                <SelectTrigger className="w-[70px] h-8 bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-[60]">
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
-                </SelectContent>
-              </Select>
-              <span className="text-muted-foreground">| {startIndex}-{endIndex} of {totalCount}</span>
-            </div>
+          {/* Results per page */}
+          <div className="flex items-center gap-2 text-sm shrink-0">
+            <span className="text-muted-foreground whitespace-nowrap">Per Page:</span>
+            <Select
+              value={resultsPerPage.toString()}
+              onValueChange={(v) => onResultsPerPageChange(parseInt(v))}
+            >
+              <SelectTrigger className="w-[65px] h-8 bg-background">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[60]">
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-            <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Sort:</span>
-              <Select value={sortBy} onValueChange={onSortChange}>
-                <SelectTrigger className="w-[150px] h-8 bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-background z-[60]">
-                  <SelectItem value="newest" className="text-primary data-[state=checked]:text-primary">Newest</SelectItem>
-                  <SelectItem value="oldest">Oldest</SelectItem>
-                  <SelectItem value="price_low">Price: Low to High</SelectItem>
-                  <SelectItem value="price_high">Price: High to Low</SelectItem>
-                  <SelectItem value="most_viewed">Most Viewed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Pagination info */}
+          <span className="text-sm text-muted-foreground whitespace-nowrap shrink-0">| {startIndex}-{endIndex} of {totalCount}</span>
 
-            {/* View Mode Toggle */}
-            <div className="flex border border-border rounded-md overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8 rounded-none border-0",
-                  viewMode === "list" ? "bg-muted" : "bg-background"
-                )}
-                onClick={() => onViewModeChange("list")}
-              >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8 rounded-none border-0",
-                  viewMode === "grid" ? "bg-slate-800 text-white" : "bg-background"
-                )}
-                onClick={() => onViewModeChange("grid")}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </div>
+          {/* Sort */}
+          <div className="flex items-center gap-2 text-sm shrink-0">
+            <span className="text-muted-foreground">Sort:</span>
+            <Select value={sortBy} onValueChange={onSortChange}>
+              <SelectTrigger className="w-[130px] h-8 bg-background">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[60]">
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="oldest">Oldest</SelectItem>
+                <SelectItem value="price_low">Price: Low to High</SelectItem>
+                <SelectItem value="price_high">Price: High to Low</SelectItem>
+                <SelectItem value="most_viewed">Most Viewed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex border border-border rounded-md overflow-hidden shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-none border-0",
+                viewMode === "list" ? "bg-muted" : "bg-background"
+              )}
+              onClick={() => onViewModeChange("list")}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "h-8 w-8 rounded-none border-0",
+                viewMode === "grid" ? "bg-slate-800 text-white" : "bg-background"
+              )}
+              onClick={() => onViewModeChange("grid")}
+            >
+              <LayoutGrid className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
