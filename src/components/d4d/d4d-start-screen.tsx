@@ -176,7 +176,7 @@ export function D4DStartScreen({
           </button>
           <button 
             className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => navigate('/tools/property-scout')}
+            onClick={() => navigate('/d4d/history')}
           >
             <History className="h-5 w-5" />
             <span className="text-xs">History</span>
