@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DashboardLayout } from "@/components/layout";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -166,7 +166,7 @@ export default function PropertyDetail() {
 
   if (isLoading) {
     return (
-      <DashboardLayout
+      <AppLayout
         breadcrumbs={[
           { label: "Properties", href: "/properties" },
           { label: "Loading..." },
@@ -182,13 +182,13 @@ export default function PropertyDetail() {
             ))}
           </div>
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
   if (error || !property) {
     return (
-      <DashboardLayout
+      <AppLayout
         breadcrumbs={[
           { label: "Properties", href: "/properties" },
           { label: "Not Found" },
@@ -201,7 +201,7 @@ export default function PropertyDetail() {
             Back to Properties
           </Button>
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
@@ -259,7 +259,7 @@ export default function PropertyDetail() {
   };
 
   return (
-    <DashboardLayout
+    <AppLayout
       breadcrumbs={[
         { label: "Properties", href: "/properties" },
         { label: property.address },
@@ -527,6 +527,6 @@ export default function PropertyDetail() {
           tax_amount: (property as any).tax_amount,
         }}
       />
-    </DashboardLayout>
+    </AppLayout>
   );
 }

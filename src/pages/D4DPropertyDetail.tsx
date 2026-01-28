@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { DashboardLayout } from '@/components/layout';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -129,27 +129,27 @@ export default function D4DPropertyDetail() {
 
   if (isLoading) {
     return (
-      <DashboardLayout>
+      <AppLayout fullWidth>
         <div className="p-4 space-y-4">
           <Skeleton className="h-10 w-48" />
           <Skeleton className="h-48 w-full rounded-xl" />
           <Skeleton className="h-32 w-full rounded-xl" />
           <Skeleton className="h-64 w-full rounded-xl" />
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
   if (!property) {
     return (
-      <DashboardLayout>
+      <AppLayout fullWidth>
         <div className="flex flex-col items-center justify-center h-full py-16">
           <p className="text-muted-foreground">Property not found</p>
           <Button variant="link" onClick={() => navigate('/d4d/properties')}>
             Back to properties
           </Button>
         </div>
-      </DashboardLayout>
+      </AppLayout>
     );
   }
 
@@ -248,7 +248,7 @@ export default function D4DPropertyDetail() {
   };
 
   return (
-    <DashboardLayout>
+    <AppLayout fullWidth>
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex-shrink-0 border-b bg-background">
@@ -569,6 +569,6 @@ export default function D4DPropertyDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </DashboardLayout>
+    </AppLayout>
   );
 }
