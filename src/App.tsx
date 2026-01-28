@@ -93,6 +93,10 @@ import DialerScriptDetail from "./pages/DialerScriptDetail";
 import DialerHistory from "./pages/DialerHistory";
 import DialerSettings from "./pages/DialerSettings";
 import SellerWebsitePage from "./pages/SellerWebsitePage";
+import SellerWebsites from "./pages/SellerWebsites";
+import SellerWebsiteWizard from "./pages/SellerWebsiteWizard";
+import SellerWebsiteEditor from "./pages/SellerWebsiteEditor";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -542,6 +546,32 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ListDedupe />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Seller Websites Routes */}
+            <Route
+              path="/websites"
+              element={
+                <ProtectedRoute>
+                  <SellerWebsites />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/websites/new"
+              element={
+                <ProtectedRoute>
+                  <SellerWebsiteWizard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/websites/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <SellerWebsiteEditor />
                 </ProtectedRoute>
               }
             />
