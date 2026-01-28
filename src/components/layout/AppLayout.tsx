@@ -17,10 +17,12 @@ interface AppLayoutProps {
 
 // Routes where sidebar should be collapsed by default
 const collapsedByDefaultRoutes = ["/marketplace", "/marketplace/deals", "/marketplace/lenders"];
+const collapsedByDefaultPrefixes = ["/properties/", "/d4d/properties/"];
 
 export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) {
   const location = useLocation();
-  const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname);
+  const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname) ||
+    collapsedByDefaultPrefixes.some(prefix => location.pathname.startsWith(prefix));
   
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(shouldCollapseByDefault);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
