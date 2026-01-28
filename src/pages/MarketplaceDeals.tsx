@@ -32,7 +32,9 @@ export default function MarketplaceDeals() {
   const mockDealFilters = {
     address: filters.address,
     leadType: filters.leadType,
-    homeType: filters.homeTypes.length === 1 ? filters.homeTypes[0] : "all",
+    homeType: filters.homeTypes.length > 0 
+      ? (filters.homeTypes.length === 1 ? filters.homeTypes[0] : "all")
+      : "all",
     priceMin: filters.priceRange !== "any" ? filters.priceRange.split("-")[0] : "",
     priceMax: filters.priceRange !== "any" && !filters.priceRange.includes("+") 
       ? filters.priceRange.split("-")[1] 

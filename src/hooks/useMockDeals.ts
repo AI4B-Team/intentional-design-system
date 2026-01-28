@@ -365,6 +365,28 @@ export function useMockDeals({ filters, sortBy, page, perPage }: UseMockDealsOpt
       );
     }
 
+    if (filters.leadType && filters.leadType !== "all") {
+      const leadTypeMap: Record<string, string[]> = {
+        "high-equity": ["High Equity"],
+        "cash-buyer": ["Cash Buyer"],
+        "absentee-owner": ["Absentee Owner"],
+        "distressed": ["Distressed", "Fixer Upper"],
+        "foreclosure": ["Foreclosure", "Bank Owned"],
+        "pre-foreclosure": ["Pre-Foreclosure"],
+        "vacant": ["Vacant"],
+        "tax-lien": ["Tax Lien"],
+        "probate": ["Probate"],
+        "divorce": ["Divorce"],
+        "motivated-seller": ["Motivated Seller"],
+      };
+      const tags = leadTypeMap[filters.leadType] || [];
+      if (tags.length > 0) {
+        result = result.filter((d) => 
+          d.tags.some(tag => tags.includes(tag))
+        );
+      }
+    }
+
     if (filters.homeType && filters.homeType !== "all") {
       result = result.filter((d) => 
         d.propertyType.toLowerCase() === filters.homeType.toLowerCase()
