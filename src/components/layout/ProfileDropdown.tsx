@@ -66,7 +66,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
       </PopoverTrigger>
       <PopoverContent 
         align="end" 
-        className="w-80 p-0 bg-background shadow-xl border"
+        className="w-80 p-0 bg-background shadow-xl border z-[100]"
         sideOffset={8}
       >
         {/* User Info */}
