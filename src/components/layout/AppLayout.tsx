@@ -34,7 +34,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   }, [location.pathname, shouldCollapseByDefault]);
 
   return (
-    <div className="min-h-screen flex bg-surface-secondary">
+    <div className="h-full flex bg-surface-secondary">
       {/* Sidebar */}
       <AppSidebar
         collapsed={sidebarCollapsed}
@@ -44,7 +44,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+      <div className="flex-1 flex flex-col h-full min-w-0">
         {/* Header */}
         <AppHeader
           onMenuClick={() => setMobileMenuOpen(true)}
@@ -54,13 +54,11 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         {/* Page Content */}
         <main
           className={cn(
-            "flex-1 flex flex-col p-4 lg:p-6",
-            !fullWidth && "max-w-7xl mx-auto w-full"
+            "flex-1 flex flex-col",
+            fullWidth ? "overflow-hidden" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >
-          <div className="flex-1 flex flex-col">
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
