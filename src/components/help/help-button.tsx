@@ -50,45 +50,28 @@ export function HelpButton({ variant = "icon", className }: HelpButtonProps) {
             </Button>
           )}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem onClick={() => setShowGuide(true)}>
-            <Rocket className="h-4 w-4 mr-2" />
-            Getting Started
+            <HelpCircle className="h-4 w-4 mr-2" />
+            Help
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/onboarding">
-              <Lightbulb className="h-4 w-4 mr-2" />
-              Take a Tour
+              <Rocket className="h-4 w-4 mr-2" />
+              Tour
             </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <a
-              href="https://docs.lovable.dev"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <BookOpen className="h-4 w-4 mr-2" />
-              Documentation
-              <ExternalLink className="h-3 w-3 ml-auto opacity-50" />
-            </a>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link to="/settings?tab=faq">
-              <FileQuestion className="h-4 w-4 mr-2" />
-              FAQ
+              <BookOpen className="h-4 w-4 mr-2" />
+              Tutorial
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <a href="mailto:support@dealflow.app">
               <MessageSquare className="h-4 w-4 mr-2" />
-              Contact Support
+              Feedback
             </a>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Keyboard className="h-4 w-4 mr-2" />
-            Keyboard Shortcuts
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
