@@ -81,6 +81,7 @@ import D4DHeatMap from "./pages/D4DHeatMap";
 import D4DAreas from "./pages/D4DAreas";
 import D4DAreaDetail from "./pages/D4DAreaDetail";
 import D4DAreaEdit from "./pages/D4DAreaEdit";
+import D4DMileage from "./pages/D4DMileage";
 
 const queryClient = new QueryClient();
 
@@ -610,6 +611,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <D4DAreaEdit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/mileage"
+              element={
+                <ProtectedRoute>
+                  <D4DMileage />
                 </ProtectedRoute>
               }
             />
