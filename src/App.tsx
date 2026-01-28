@@ -73,6 +73,8 @@ import ImageEditor from "./pages/ImageEditor";
 import MaterialLibrary from "./pages/MaterialLibrary";
 import PropertyScout from "./pages/PropertyScout";
 import D4D from "./pages/D4D";
+import D4DProperties from "./pages/D4DProperties";
+import D4DPropertyDetail from "./pages/D4DPropertyDetail";
 
 const queryClient = new QueryClient();
 
@@ -538,6 +540,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <D4D />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/properties"
+              element={
+                <ProtectedRoute>
+                  <D4DProperties />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/properties/:id"
+              element={
+                <ProtectedRoute>
+                  <D4DPropertyDetail />
                 </ProtectedRoute>
               }
             />
