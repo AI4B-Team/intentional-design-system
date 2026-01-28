@@ -99,7 +99,7 @@ export default function MarketplaceDealDetail() {
 
   // Get deal data from mock
   const { deals } = useMockDeals({
-    filters: { address: "", leadType: "all", homeType: "all", priceMin: "", priceMax: "", bedsMin: "", bathsMin: "" },
+    filters: { address: "", leadType: "all", homeTypes: [], priceMin: "", priceMax: "", bedsMin: "", bathsMin: "" },
     sortBy: "newest",
     page: 1,
     perPage: 100,
