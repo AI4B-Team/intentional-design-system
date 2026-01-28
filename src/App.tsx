@@ -107,6 +107,7 @@ import CashBuyers from "./pages/CashBuyers";
 import DispoCampaigns from "./pages/DispoCampaigns";
 import DispoCampaignForm from "./pages/DispoCampaignForm";
 import DispoCampaignDetail from "./pages/DispoCampaignDetail";
+import DispoSettings from "./pages/DispoSettings";
 import { BuyerRegister, BuyerLogin, BuyerAuthCallback, BuyerDashboard, BuyerProfile } from "./pages/buyer";
 import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
 
@@ -812,6 +813,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DispoCampaignForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/settings"
+              element={
+                <ProtectedRoute>
+                  <DispoSettings />
                 </ProtectedRoute>
               }
             />

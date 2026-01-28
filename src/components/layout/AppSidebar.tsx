@@ -34,6 +34,8 @@ import {
   Trophy,
   Award,
   FileText,
+  Home,
+  Package,
 } from "lucide-react";
 
 interface NavItem {
@@ -89,6 +91,17 @@ const marketingGroup: NavGroup = {
     { label: "MLS", href: "/campaigns", icon: Megaphone },
     { label: "Website", href: "/websites", icon: Globe },
     { label: "Offers", href: "/offers", icon: Send },
+  ],
+};
+
+const dispoGroup: NavGroup = {
+  label: "Deal Marketing",
+  icon: Package,
+  items: [
+    { label: "Deals", href: "/dispo/deals", icon: Home },
+    { label: "Cash Buyers", href: "/dispo/buyers", icon: UserCheck },
+    { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
+    { label: "Settings", href: "/dispo/settings", icon: Settings },
   ],
 };
 
@@ -155,6 +168,10 @@ export function AppSidebar({
     return moreGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
+  const [dispoOpen, setDispoOpen] = React.useState(() => {
+    return dispoGroup.items.some(item => location.pathname.startsWith(item.href));
+  });
+
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
     return 0;
@@ -165,6 +182,7 @@ export function AppSidebar({
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isDispoActive = dispoGroup.items.some(item => location.pathname.startsWith(item.href));
 
   const handleSignOut = async () => {
     await signOut();
@@ -490,7 +508,55 @@ export function AppSidebar({
             )}
           </li>
 
-          {/* More Group */}
+          {/* Dispo / Deal Marketing Group */}
+          <li>
+            <button
+              onClick={() => !collapsed && setDispoOpen(!dispoOpen)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                isDispoActive && "text-white",
+                collapsed && "justify-center"
+              )}
+            >
+              <dispoGroup.icon className={cn("h-5 w-5 flex-shrink-0", isDispoActive && "text-brand-accent")} />
+              {!collapsed && (
+                <>
+                  <span>{dispoGroup.label}</span>
+                  <ChevronDown className={cn(
+                    "h-4 w-4 ml-auto transition-transform",
+                    dispoOpen && "rotate-180"
+                  )} />
+                </>
+              )}
+            </button>
+            {!collapsed && dispoOpen && (
+              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
+                {dispoGroup.items.map((item) => {
+                  const isActive = location.pathname === item.href;
+                  const Icon = item.icon;
+
+                  return (
+                    <li key={item.href}>
+                      <NavLink
+                        to={item.href}
+                        onClick={onMobileClose}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
+                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
+                          isActive && "bg-brand-accent/20 text-white font-medium"
+                        )}
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </li>
+
           <li>
             <button
               onClick={() => !collapsed && setMoreOpen(!moreOpen)}

@@ -52,6 +52,7 @@ import {
   Calendar,
   Pencil,
   RefreshCw,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -395,6 +396,13 @@ export default function PropertyDetail() {
                 >
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Find Comps
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => navigate(`/dispo/deals/new?property_id=${property.id}`)}
+                >
+                  <Megaphone className="h-4 w-4 mr-2" />
+                  Market This Deal
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Copy className="h-4 w-4 mr-2" />
