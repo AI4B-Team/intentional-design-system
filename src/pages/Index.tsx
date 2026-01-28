@@ -8,7 +8,7 @@ import {
   TasksList,
   RecentActivityList,
 } from "@/components/dashboard";
-import { WorkflowShowcase } from "@/components/landing";
+import { WorkflowShowcase, RenovationDemo } from "@/components/landing";
 import { Users, Calendar, FileText, DollarSign } from "lucide-react";
 
 // Get greeting based on time of day
@@ -180,6 +180,11 @@ export default function Index() {
       <Card padding="none" className="mt-lg animate-fade-in" style={{ animationDelay: "800ms" }}>
         <WorkflowShowcase />
       </Card>
+
+      {/* Renovation Demo */}
+      <div className="mt-lg animate-fade-in" style={{ animationDelay: "900ms" }}>
+        <RenovationDemo />
+      </div>
     </DashboardLayout>
   );
 }
