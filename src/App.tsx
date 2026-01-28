@@ -100,6 +100,9 @@ import SellerWebsiteEditor from "./pages/SellerWebsiteEditor";
 import SellerLeads from "./pages/SellerLeads";
 import WebsiteAnalytics from "./pages/WebsiteAnalytics";
 import PublicDealPage from "./pages/PublicDealPage";
+import DispoDeals from "./pages/DispoDeals";
+import DispoDealForm from "./pages/DispoDealForm";
+import DispoDealDetail from "./pages/DispoDealDetail";
 
 const queryClient = new QueryClient();
 
@@ -727,7 +730,40 @@ const App = () => (
               }
             />
             
-            {/* Renovation Routes */}
+            {/* Dispo Deals Routes */}
+            <Route
+              path="/dispo/deals"
+              element={
+                <ProtectedRoute>
+                  <DispoDeals />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/deals/new"
+              element={
+                <ProtectedRoute>
+                  <DispoDealForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/deals/:id"
+              element={
+                <ProtectedRoute>
+                  <DispoDealDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/deals/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <DispoDealForm />
+                </ProtectedRoute>
+              }
+            />
+            
             <Route
               path="/renovations"
               element={
