@@ -65,6 +65,7 @@ import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
+import DealAnalysisDetail from "./pages/DealAnalysisDetail";
 import OfferBlaster from "./pages/OfferBlaster";
 import Activity from "./pages/Activity";
 import Renovations from "./pages/Renovations";
@@ -616,6 +617,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MarketAnalyzer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tools/market-analyzer/:id"
+              element={
+                <ProtectedRoute>
+                  <DealAnalysisDetail />
                 </ProtectedRoute>
               }
             />
