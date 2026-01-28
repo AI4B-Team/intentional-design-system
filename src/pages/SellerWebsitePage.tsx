@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { getPublicWebsite, trackWebsiteEvent, submitSellerLead } from "@/lib/getPublicWebsite";
+import { getPublicWebsite, trackWebsiteEvent } from "@/lib/getPublicWebsite";
+import { useLeadSubmit } from "@/hooks/useLeadSubmit";
 import { WebsiteHero } from "@/components/seller-website/WebsiteHero";
 import { ValuePropsSection } from "@/components/seller-website/ValuePropsSection";
 import { LeadCaptureForm, type FormData } from "@/components/seller-website/LeadCaptureForm";
@@ -60,9 +61,10 @@ export default function SellerWebsitePage() {
   const [website, setWebsite] = useState<SellerWebsite | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [companyPhone, setCompanyPhone] = useState<string | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
+  
+  const { submitLead, submitting, success, error: submitError } = useLeadSubmit();
 
   useEffect(() => {
     async function loadWebsite() {
@@ -77,6 +79,7 @@ export default function SellerWebsitePage() {
         setError(true);
       } else {
         setWebsite(data);
+        setCompanyPhone(data.company_phone);
         // Track page view
         trackWebsiteEvent(data.id, 'page_view', window.location.href, {
           referrer: document.referrer,
@@ -98,38 +101,28 @@ export default function SellerWebsitePage() {
   const handleFormSubmit = async (formData: FormData) => {
     if (!website) return;
 
-    setIsSubmitting(true);
-    
-    // Track form submission
-    await trackWebsiteEvent(website.id, 'form_submit', window.location.href);
-
-    const params = new URLSearchParams(window.location.search);
-    
-    const { error } = await submitSellerLead(website.id, website.user_id, {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      fullName: `${formData.firstName} ${formData.lastName}`.trim(),
-      email: formData.email,
-      phone: formData.phone,
-      propertyAddress: formData.propertyAddress,
-      propertyCity: formData.propertyCity,
-      propertyState: formData.propertyState,
-      propertyZip: formData.propertyZip,
-      propertyCondition: formData.propertyCondition,
-      sellTimeline: formData.sellTimeline,
-      reasonSelling: formData.reasonSelling,
-      notes: formData.notes,
-      sourceUrl: window.location.href,
-      utmSource: params.get('utm_source') || undefined,
-      utmMedium: params.get('utm_medium') || undefined,
-      utmCampaign: params.get('utm_campaign') || undefined,
-      utmContent: params.get('utm_content') || undefined,
-    });
-
-    setIsSubmitting(false);
-
-    if (!error) {
-      setIsSubmitted(true);
+    try {
+      const result = await submitLead(website.id, {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        fullName: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        phone: formData.phone,
+        propertyAddress: formData.propertyAddress,
+        propertyCity: formData.propertyCity,
+        propertyState: formData.propertyState,
+        propertyZip: formData.propertyZip,
+        propertyCondition: formData.propertyCondition,
+        sellTimeline: formData.sellTimeline,
+        reasonSelling: formData.reasonSelling,
+        notes: formData.notes,
+      });
+      
+      if (result?.companyPhone) {
+        setCompanyPhone(result.companyPhone);
+      }
+    } catch (err) {
+      console.error('Form submission error:', err);
     }
   };
 
@@ -257,8 +250,8 @@ export default function SellerWebsitePage() {
                 accentColor={website.accent_color || "#10B981"}
                 primaryColor={website.primary_color || "#2563EB"}
                 onSubmit={handleFormSubmit}
-                isSubmitting={isSubmitting}
-                isSubmitted={isSubmitted}
+                isSubmitting={submitting}
+                isSubmitted={success}
               />
             </div>
           </div>
