@@ -99,7 +99,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         `)
         .eq("user_id", user.id)
         .eq("status", "active")
-        .single();
+        .maybeSingle();
 
       if (memberError || !memberData) {
         // User has no organization - will need to create or join one
