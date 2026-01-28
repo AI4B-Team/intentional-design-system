@@ -16,15 +16,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  Search,
   SlidersHorizontal,
   Bookmark,
-  Plus,
-  Zap,
   ChevronDown,
-  Check,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
 
@@ -88,7 +83,6 @@ export function MarketplaceFilters({
   advancedFilters = defaultFilters,
   onAdvancedFiltersChange,
 }: MarketplaceFiltersProps) {
-  const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [bedsPopoverOpen, setBedsPopoverOpen] = useState(false);
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
@@ -134,15 +128,15 @@ export function MarketplaceFilters({
         {/* Left aligned filters */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {/* Address Search */}
-          <div className="relative w-[180px] flex-shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative w-[280px] flex-shrink-0">
             <Input
               type="text"
-              placeholder="Search location..."
+              placeholder="Address, City, County, State, or Zip"
               value={filters.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              className="pl-9 h-9 bg-background text-sm"
+              className="h-9 bg-background text-sm pr-8"
             />
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
 
           {/* All Listings */}
@@ -150,7 +144,7 @@ export function MarketplaceFilters({
             value={filters.listingStatus || "all"} 
             onValueChange={(v) => handleChange("listingStatus", v)}
           >
-            <SelectTrigger className="w-[130px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-auto min-w-[120px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -165,7 +159,7 @@ export function MarketplaceFilters({
             value={filters.leadType || "all"} 
             onValueChange={(v) => handleChange("leadType", v)}
           >
-            <SelectTrigger className="w-[140px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Lead Type" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -183,9 +177,9 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[120px] justify-between font-normal">
                 {getHomeTypeLabel()}
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-56 bg-background z-[100]" align="start">
@@ -228,7 +222,7 @@ export function MarketplaceFilters({
             value={filters.priceRange || "any"} 
             onValueChange={(v) => handleChange("priceRange", v)}
           >
-            <SelectTrigger className="w-[90px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-auto min-w-[80px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Price" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -243,9 +237,9 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[130px] justify-between font-normal">
                 Beds & Baths
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-72 bg-background z-[100]" align="start">
@@ -321,7 +315,7 @@ export function MarketplaceFilters({
           {/* More Filters */}
           <Button 
             variant="outline" 
-            className="h-9 gap-2 bg-background text-sm flex-shrink-0"
+            className="h-9 gap-2 bg-background text-sm flex-shrink-0 font-normal"
             onClick={() => setMoreFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -330,31 +324,11 @@ export function MarketplaceFilters({
 
           {/* Save Search */}
           <Button 
-            variant="secondary" 
+            variant="default" 
             className="h-9 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0"
           >
             <Bookmark className="h-4 w-4" />
             Save Search
-          </Button>
-        </div>
-
-
-
-        {/* Right aligned action buttons */}
-        <div className="flex items-center gap-2 flex-shrink-0 ml-auto">
-          {/* Post A Deal */}
-          <Button 
-            className="h-9 gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-sm"
-            onClick={() => navigate("/submit-deal")}
-          >
-            <Plus className="h-4 w-4" />
-            Post Deal
-          </Button>
-
-          {/* Buy Box */}
-          <Button variant="outline" className="h-9 gap-2 bg-amber-50 border-amber-400 text-amber-700 hover:bg-amber-100 hover:border-amber-500 text-sm">
-            <Zap className="h-4 w-4 fill-amber-400 text-amber-400" />
-            Buy Box
           </Button>
         </div>
       </div>
