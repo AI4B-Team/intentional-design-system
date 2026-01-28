@@ -12,6 +12,10 @@
  */
 
 @layer base {
+  html {
+    zoom: 0.8;
+  }
+  
   :root {
     /* Background Colors */
     --background: 0 0% 100%;
