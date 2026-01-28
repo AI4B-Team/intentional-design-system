@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   ExternalLink,
   Heart,
@@ -39,6 +45,7 @@ import {
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface MarketplaceListingsProps {
   deals: MarketplaceDeal[];
@@ -183,25 +190,52 @@ function DealCard({
               <Badge className="bg-slate-800 text-white text-[10px] font-medium px-2 py-0.5">New</Badge>
             )}
           </div>
-          <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 bg-white/95 hover:bg-white rounded shadow-sm"
-            >
-              <ExternalLink className="h-3 w-3 text-slate-600" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-6 w-6 bg-white/95 hover:bg-white rounded shadow-sm",
-                deal.isFavorite && "text-destructive"
-              )}
-            >
-              <Heart className={cn("h-3 w-3", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
-            </Button>
-          </div>
+          <TooltipProvider delayDuration={300}>
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 bg-white/95 hover:bg-white rounded shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const url = `${window.location.origin}/marketplace/deal/${deal.id}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success("Link copied to clipboard!");
+                    }}
+                  >
+                    <ExternalLink className="h-2.5 w-2.5 text-slate-600" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Copy link</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "h-5 w-5 bg-white/95 hover:bg-white rounded shadow-sm",
+                      deal.isFavorite && "text-destructive"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Toggle favorite - in real app this would update state/database
+                      toast.success(deal.isFavorite ? "Removed from favorites" : "Added to favorites");
+                    }}
+                  >
+                    <Heart className={cn("h-2.5 w-2.5", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>{deal.isFavorite ? "Remove from favorites" : "Add to favorites"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
         </div>
 
         {/* Tags at bottom of image */}
