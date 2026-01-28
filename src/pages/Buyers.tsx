@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -123,7 +123,7 @@ export default function Buyers() {
   const { data: stats } = useBuyerStats();
 
   return (
-    <DashboardLayout>
+    <AppLayout>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -313,6 +313,6 @@ export default function Buyers() {
       </Card>
 
       <AddBuyerModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
-    </DashboardLayout>
+    </AppLayout>
   );
 }
