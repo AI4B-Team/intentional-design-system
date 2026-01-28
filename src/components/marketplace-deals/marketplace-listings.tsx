@@ -207,8 +207,8 @@ function DealCard({
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-5 w-5 bg-white/95 hover:bg-white rounded shadow-sm"
+                    size="sm"
+                    className="h-6 px-2 bg-white/95 hover:bg-white rounded-md shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       const url = `${window.location.origin}/marketplace/deal/${deal.id}`;
@@ -216,7 +216,7 @@ function DealCard({
                       toast.success("Link copied to clipboard!");
                     }}
                   >
-                    <ExternalLink className="h-2.5 w-2.5 text-slate-600" />
+                    <ExternalLink className="h-3 w-3 text-slate-600" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -227,18 +227,17 @@ function DealCard({
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
+                    size="sm"
                     className={cn(
-                      "h-5 w-5 bg-white/95 hover:bg-white rounded shadow-sm",
+                      "h-6 px-2 bg-white/95 hover:bg-white rounded-md shadow-sm",
                       deal.isFavorite && "text-destructive"
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Toggle favorite - in real app this would update state/database
                       toast.success(deal.isFavorite ? "Removed from favorites" : "Added to favorites");
                     }}
                   >
-                    <Heart className={cn("h-2.5 w-2.5", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
+                    <Heart className={cn("h-3 w-3", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
