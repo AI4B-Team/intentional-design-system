@@ -239,6 +239,66 @@ export type Database = {
           },
         ]
       }
+      auto_responders: {
+        Row: {
+          body: string
+          created_at: string | null
+          delay_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          organization_id: string | null
+          subject: string | null
+          type: string
+          updated_at: string | null
+          user_id: string | null
+          website_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          delay_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          organization_id?: string | null
+          subject?: string | null
+          type: string
+          updated_at?: string | null
+          user_id?: string | null
+          website_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          delay_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          organization_id?: string | null
+          subject?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string | null
+          website_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auto_responders_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auto_responders_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "seller_websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bids: {
         Row: {
           bid_amount: number | null
@@ -4629,6 +4689,363 @@ export type Database = {
           },
         ]
       }
+      seller_leads: {
+        Row: {
+          asking_price: number | null
+          auto_email_sent: boolean | null
+          auto_score: number | null
+          auto_sms_sent: boolean | null
+          baths: number | null
+          beds: number | null
+          converted_at: string | null
+          created_at: string | null
+          email: string | null
+          first_name: string | null
+          followup_notes: string | null
+          full_name: string | null
+          has_mortgage: boolean | null
+          how_heard: string | null
+          id: string
+          ip_address: string | null
+          is_listed: boolean | null
+          is_owner: boolean | null
+          last_contacted_at: string | null
+          last_name: string | null
+          lot_size: string | null
+          mortgage_balance: number | null
+          motivation_indicators: string[] | null
+          next_followup_at: string | null
+          notes: string | null
+          organization_id: string | null
+          owner_notified: boolean | null
+          phone: string | null
+          property_address: string
+          property_city: string | null
+          property_condition: string | null
+          property_id: string | null
+          property_state: string | null
+          property_type: string | null
+          property_zip: string | null
+          reason_selling: string | null
+          sell_timeline: string | null
+          source_url: string | null
+          sqft: number | null
+          status: string | null
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          website_id: string | null
+          year_built: number | null
+        }
+        Insert: {
+          asking_price?: number | null
+          auto_email_sent?: boolean | null
+          auto_score?: number | null
+          auto_sms_sent?: boolean | null
+          baths?: number | null
+          beds?: number | null
+          converted_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          followup_notes?: string | null
+          full_name?: string | null
+          has_mortgage?: boolean | null
+          how_heard?: string | null
+          id?: string
+          ip_address?: string | null
+          is_listed?: boolean | null
+          is_owner?: boolean | null
+          last_contacted_at?: string | null
+          last_name?: string | null
+          lot_size?: string | null
+          mortgage_balance?: number | null
+          motivation_indicators?: string[] | null
+          next_followup_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          owner_notified?: boolean | null
+          phone?: string | null
+          property_address: string
+          property_city?: string | null
+          property_condition?: string | null
+          property_id?: string | null
+          property_state?: string | null
+          property_type?: string | null
+          property_zip?: string | null
+          reason_selling?: string | null
+          sell_timeline?: string | null
+          source_url?: string | null
+          sqft?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          website_id?: string | null
+          year_built?: number | null
+        }
+        Update: {
+          asking_price?: number | null
+          auto_email_sent?: boolean | null
+          auto_score?: number | null
+          auto_sms_sent?: boolean | null
+          baths?: number | null
+          beds?: number | null
+          converted_at?: string | null
+          created_at?: string | null
+          email?: string | null
+          first_name?: string | null
+          followup_notes?: string | null
+          full_name?: string | null
+          has_mortgage?: boolean | null
+          how_heard?: string | null
+          id?: string
+          ip_address?: string | null
+          is_listed?: boolean | null
+          is_owner?: boolean | null
+          last_contacted_at?: string | null
+          last_name?: string | null
+          lot_size?: string | null
+          mortgage_balance?: number | null
+          motivation_indicators?: string[] | null
+          next_followup_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          owner_notified?: boolean | null
+          phone?: string | null
+          property_address?: string
+          property_city?: string | null
+          property_condition?: string | null
+          property_id?: string | null
+          property_state?: string | null
+          property_type?: string | null
+          property_zip?: string | null
+          reason_selling?: string | null
+          sell_timeline?: string | null
+          source_url?: string | null
+          sqft?: number | null
+          status?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          website_id?: string | null
+          year_built?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_leads_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seller_leads_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "seller_websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seller_websites: {
+        Row: {
+          about_content: string | null
+          about_headline: string | null
+          about_image_url: string | null
+          accent_color: string | null
+          auto_respond_email: boolean | null
+          auto_respond_sms: boolean | null
+          background_color: string | null
+          company_email: string | null
+          company_name: string
+          company_phone: string | null
+          created_at: string | null
+          custom_domain: string | null
+          domain_ssl_enabled: boolean | null
+          domain_verified: boolean | null
+          facebook_pixel_id: string | null
+          faqs: Json | null
+          favicon_url: string | null
+          footer_text: string | null
+          form_fields: Json | null
+          form_headline: string | null
+          form_subheadline: string | null
+          form_submit_text: string | null
+          google_analytics_id: string | null
+          google_tag_manager_id: string | null
+          hero_headline: string | null
+          hero_image_url: string | null
+          hero_subheadline: string | null
+          hero_video_url: string | null
+          id: string
+          lead_notification_email: string | null
+          lead_notification_sms: string | null
+          logo_url: string | null
+          meta_description: string | null
+          meta_keywords: string[] | null
+          meta_title: string | null
+          name: string
+          og_image_url: string | null
+          organization_id: string | null
+          primary_color: string | null
+          process_steps: Json | null
+          published_at: string | null
+          secondary_color: string | null
+          site_type: string | null
+          slug: string
+          social_links: Json | null
+          status: string | null
+          team_members: Json | null
+          testimonials: Json | null
+          text_color: string | null
+          total_submissions: number | null
+          total_views: number | null
+          updated_at: string | null
+          user_id: string
+          value_props: Json | null
+        }
+        Insert: {
+          about_content?: string | null
+          about_headline?: string | null
+          about_image_url?: string | null
+          accent_color?: string | null
+          auto_respond_email?: boolean | null
+          auto_respond_sms?: boolean | null
+          background_color?: string | null
+          company_email?: string | null
+          company_name: string
+          company_phone?: string | null
+          created_at?: string | null
+          custom_domain?: string | null
+          domain_ssl_enabled?: boolean | null
+          domain_verified?: boolean | null
+          facebook_pixel_id?: string | null
+          faqs?: Json | null
+          favicon_url?: string | null
+          footer_text?: string | null
+          form_fields?: Json | null
+          form_headline?: string | null
+          form_subheadline?: string | null
+          form_submit_text?: string | null
+          google_analytics_id?: string | null
+          google_tag_manager_id?: string | null
+          hero_headline?: string | null
+          hero_image_url?: string | null
+          hero_subheadline?: string | null
+          hero_video_url?: string | null
+          id?: string
+          lead_notification_email?: string | null
+          lead_notification_sms?: string | null
+          logo_url?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
+          name: string
+          og_image_url?: string | null
+          organization_id?: string | null
+          primary_color?: string | null
+          process_steps?: Json | null
+          published_at?: string | null
+          secondary_color?: string | null
+          site_type?: string | null
+          slug: string
+          social_links?: Json | null
+          status?: string | null
+          team_members?: Json | null
+          testimonials?: Json | null
+          text_color?: string | null
+          total_submissions?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+          user_id: string
+          value_props?: Json | null
+        }
+        Update: {
+          about_content?: string | null
+          about_headline?: string | null
+          about_image_url?: string | null
+          accent_color?: string | null
+          auto_respond_email?: boolean | null
+          auto_respond_sms?: boolean | null
+          background_color?: string | null
+          company_email?: string | null
+          company_name?: string
+          company_phone?: string | null
+          created_at?: string | null
+          custom_domain?: string | null
+          domain_ssl_enabled?: boolean | null
+          domain_verified?: boolean | null
+          facebook_pixel_id?: string | null
+          faqs?: Json | null
+          favicon_url?: string | null
+          footer_text?: string | null
+          form_fields?: Json | null
+          form_headline?: string | null
+          form_subheadline?: string | null
+          form_submit_text?: string | null
+          google_analytics_id?: string | null
+          google_tag_manager_id?: string | null
+          hero_headline?: string | null
+          hero_image_url?: string | null
+          hero_subheadline?: string | null
+          hero_video_url?: string | null
+          id?: string
+          lead_notification_email?: string | null
+          lead_notification_sms?: string | null
+          logo_url?: string | null
+          meta_description?: string | null
+          meta_keywords?: string[] | null
+          meta_title?: string | null
+          name?: string
+          og_image_url?: string | null
+          organization_id?: string | null
+          primary_color?: string | null
+          process_steps?: Json | null
+          published_at?: string | null
+          secondary_color?: string | null
+          site_type?: string | null
+          slug?: string
+          social_links?: Json | null
+          status?: string | null
+          team_members?: Json | null
+          testimonials?: Json | null
+          text_color?: string | null
+          total_submissions?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+          user_id?: string
+          value_props?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seller_websites_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       skip_trace_results: {
         Row: {
           all_addresses: Json | null
@@ -5027,6 +5444,140 @@ export type Database = {
           },
         ]
       }
+      website_analytics: {
+        Row: {
+          browser: string | null
+          created_at: string | null
+          device_type: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          os: string | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          visitor_id: string | null
+          website_id: string
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_id?: string | null
+          website_id: string
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          os?: string | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          visitor_id?: string | null
+          website_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_analytics_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "seller_websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      website_pages: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          meta_description: string | null
+          meta_title: string | null
+          nav_order: number | null
+          organization_id: string | null
+          show_form: boolean | null
+          show_in_nav: boolean | null
+          slug: string
+          status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          website_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          nav_order?: number | null
+          organization_id?: string | null
+          show_form?: boolean | null
+          show_in_nav?: boolean | null
+          slug: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          website_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_title?: string | null
+          nav_order?: number | null
+          organization_id?: string | null
+          show_form?: boolean | null
+          show_in_nav?: boolean | null
+          slug?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          website_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "website_pages_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "website_pages_website_id_fkey"
+            columns: ["website_id"]
+            isOneToOne: false
+            referencedRelation: "seller_websites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -5044,6 +5595,16 @@ export type Database = {
       }
       calculate_distance_miles: {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number }
+        Returns: number
+      }
+      calculate_lead_score: {
+        Args: {
+          p_condition: string
+          p_has_mortgage: boolean
+          p_is_listed: boolean
+          p_reason: string
+          p_timeline: string
+        }
         Returns: number
       }
       deduct_credits: {
