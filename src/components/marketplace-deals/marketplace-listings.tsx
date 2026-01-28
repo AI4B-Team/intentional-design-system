@@ -324,19 +324,19 @@ function DealCard({
         <div className="mt-4 grid grid-cols-4 gap-2 border-t border-border pt-4">
           <div className="flex flex-col items-center text-center">
             <Bed className="h-5 w-5 text-muted-foreground mb-1" />
-            <span className="text-sm font-medium">{deal.beds} Beds</span>
+            <span className="text-sm font-medium whitespace-nowrap">{deal.beds} Beds</span>
           </div>
           <div className="flex flex-col items-center text-center">
             <Bath className="h-5 w-5 text-muted-foreground mb-1" />
-            <span className="text-sm font-medium">{deal.baths} Baths</span>
+            <span className="text-sm font-medium whitespace-nowrap">{deal.baths} Baths</span>
           </div>
           <div className="flex flex-col items-center text-center">
             <Tag className="h-5 w-5 text-muted-foreground mb-1" />
-            <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
+            <span className="text-sm font-medium whitespace-nowrap">{deal.sqft.toLocaleString()} SqFt</span>
           </div>
           <div className="flex flex-col items-center text-center">
             <Calendar className="h-5 w-5 text-muted-foreground mb-1" />
-            <span className="text-sm font-medium">Built {yearBuilt}</span>
+            <span className="text-sm font-medium whitespace-nowrap">Built {yearBuilt}</span>
           </div>
         </div>
       </div>
