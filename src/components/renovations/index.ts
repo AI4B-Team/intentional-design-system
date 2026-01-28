@@ -4,3 +4,7 @@ export * from "./project-card";
 export * from "./empty-state";
 export * from "./add-photo-modal";
 export * from "./image-card";
+export * from "./before-after-slider";
+export * from "./style-preset-selector";
+export * from "./thumbnail-strip";
+export * from "./variations-grid";

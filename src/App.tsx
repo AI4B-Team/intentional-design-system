@@ -69,6 +69,7 @@ import OfferBlaster from "./pages/OfferBlaster";
 import Activity from "./pages/Activity";
 import Renovations from "./pages/Renovations";
 import RenovationDetail from "./pages/RenovationDetail";
+import ImageEditor from "./pages/ImageEditor";
 
 const queryClient = new QueryClient();
 
@@ -536,6 +537,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <RenovationDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/renovations/:projectId/images/:imageId"
+              element={
+                <ProtectedRoute>
+                  <ImageEditor />
                 </ProtectedRoute>
               }
             />

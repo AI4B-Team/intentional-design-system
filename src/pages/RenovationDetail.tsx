@@ -323,8 +323,7 @@ export default function RenovationDetail() {
               key={image.id}
               image={image}
               onClick={() => {
-                // TODO: Navigate to image detail/editor
-                toast.info("Image editor coming soon!");
+                navigate(`/renovations/${project.id}/images/${image.id}`);
               }}
               onDelete={() => setImageToDelete(image.id)}
             />
