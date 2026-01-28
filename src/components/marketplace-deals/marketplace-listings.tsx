@@ -13,6 +13,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   ExternalLink,
   Heart,
   Home,
@@ -20,6 +25,7 @@ import {
   LayoutGrid,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   ChevronsLeft,
   ChevronsRight,
   TrendingUp,
@@ -333,14 +339,34 @@ export function MarketplaceListings({
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-              <Select value="">
-                <SelectTrigger className="w-10 h-8 p-0 justify-center border-border">
-                  <Checkbox
-                    checked={allSelected}
-                    onCheckedChange={onSelectAll}
-                  />
-                </SelectTrigger>
-              </Select>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="h-8 px-2 gap-1 border-border bg-background">
+                    <Checkbox
+                      checked={allSelected}
+                      onCheckedChange={(checked) => {
+                        onSelectAll(!!checked);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-1 bg-background" align="start">
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
+                    onClick={() => onSelectAll(true)}
+                  >
+                    Select Page ({deals.length})
+                  </button>
+                  <button
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
+                    onClick={() => onSelectAll(true)}
+                  >
+                    Select All ({totalCount})
+                  </button>
+                </PopoverContent>
+              </Popover>
             </div>
             <span className="text-sm font-medium">{totalCount} Results Found</span>
           </div>
