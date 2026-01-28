@@ -75,6 +75,8 @@ import PropertyScout from "./pages/PropertyScout";
 import D4D from "./pages/D4D";
 import D4DProperties from "./pages/D4DProperties";
 import D4DPropertyDetail from "./pages/D4DPropertyDetail";
+import D4DHistory from "./pages/D4DHistory";
+import D4DSessionDetail from "./pages/D4DSessionDetail";
 
 const queryClient = new QueryClient();
 
@@ -556,6 +558,22 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <D4DPropertyDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/history"
+              element={
+                <ProtectedRoute>
+                  <D4DHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/d4d/history/:sessionId"
+              element={
+                <ProtectedRoute>
+                  <D4DSessionDetail />
                 </ProtectedRoute>
               }
             />
