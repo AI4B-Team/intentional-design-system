@@ -6,3 +6,6 @@ export { D4DEndSessionDialog } from "./d4d-end-session-dialog";
 export { D4DMapView } from "./d4d-map-view";
 export { VoiceNoteRecorder } from "./voice-note-recorder";
 export { CameraCapture } from "./camera-capture";
+export { D4DPropertyCard } from "./d4d-property-card";
+export { D4DQuickEditModal } from "./d4d-quick-edit-modal";
+export { D4DPhotoCarousel } from "./d4d-photo-carousel";
