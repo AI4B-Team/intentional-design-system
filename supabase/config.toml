@@ -1,1 +1,7 @@
 project_id = "iaenzywwyiaccnnpdqzt"
+
+[functions.ai-stage-room]
+verify_jwt = false
+
+[functions.ai-material-swap]
+verify_jwt = false
