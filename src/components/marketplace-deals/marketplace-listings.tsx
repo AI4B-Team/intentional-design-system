@@ -148,6 +148,30 @@ function DealCard({
   
   // Year built (mock - random between 1970-2020)
   const yearBuilt = 1970 + Math.floor(Math.random() * 50);
+  
+  // Calculate days since listing
+  const getDaysListed = () => {
+    const createdDate = new Date(deal.createdAt);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+  
+  const daysListed = getDaysListed();
+  
+  // Get badge text and style based on days listed
+  const getListingBadge = () => {
+    if (daysListed < 1) {
+      return { text: "New", className: "bg-amber-400 text-slate-900" };
+    } else if (daysListed <= 5) {
+      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
+    } else {
+      return { text: "For Sale", className: "bg-primary text-primary-foreground" };
+    }
+  };
+  
+  const listingBadge = getListingBadge();
 
   const tagColors: Record<string, string> = {
     "Single Family": "bg-primary text-primary-foreground",
@@ -197,11 +221,9 @@ function DealCard({
                 className="h-4 w-4"
               />
             </div>
-            {deal.isNew && (
-              <Badge className="bg-amber-400 text-slate-900 text-xs font-medium px-2.5 py-1 rounded-md">
-                New 2 Days Ago
-              </Badge>
-            )}
+            <Badge className={cn("text-xs font-medium px-2.5 py-1 rounded-md", listingBadge.className)}>
+              {listingBadge.text}
+            </Badge>
           </div>
           <TooltipProvider delayDuration={300}>
             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
