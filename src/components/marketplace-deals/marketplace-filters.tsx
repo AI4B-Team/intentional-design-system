@@ -144,7 +144,7 @@ export function MarketplaceFilters({
             value={filters.listingStatus || "all"} 
             onValueChange={(v) => handleChange("listingStatus", v)}
           >
-            <SelectTrigger className="w-auto min-w-[120px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -177,7 +177,7 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[120px] justify-between font-normal">
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[110px] justify-between font-normal">
                 {getHomeTypeLabel()}
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
@@ -222,7 +222,7 @@ export function MarketplaceFilters({
             value={filters.priceRange || "any"} 
             onValueChange={(v) => handleChange("priceRange", v)}
           >
-            <SelectTrigger className="w-auto min-w-[80px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Price" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -237,7 +237,7 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[130px] justify-between font-normal">
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[120px] justify-between font-normal">
                 Beds & Baths
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
