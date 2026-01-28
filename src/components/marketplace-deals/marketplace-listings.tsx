@@ -22,6 +22,14 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  TrendingUp,
+  DollarSign,
+  Wrench,
+  CircleDollarSign,
+  Bed,
+  Bath,
+  Tag,
+  Calendar,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -48,23 +56,31 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
   const position = ((arvPercent - 50) / 50) * 100;
   
   return (
-    <div className="mt-3">
-      <div className="flex items-center justify-between text-sm mb-1">
-        <span className="text-muted-foreground">Deal Risk</span>
-        <span className="font-semibold text-primary">{arvPercent}% ARV</span>
+    <div className="mt-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-sm text-muted-foreground">Deal Risk</span>
+        <Badge 
+          variant="outline" 
+          className="border-primary text-primary font-semibold bg-primary/5"
+        >
+          {arvPercent}% ARV
+        </Badge>
       </div>
-      <div className="relative h-2 rounded-full overflow-hidden">
+      <div className="relative h-2.5 rounded-full overflow-hidden bg-muted">
         <div className="absolute inset-0 flex">
-          <div className="flex-1 bg-success" />
-          <div className="flex-1 bg-warning" />
-          <div className="flex-1 bg-destructive" />
+          <div className="w-[40%] bg-emerald-500" />
+          <div className="w-[30%] bg-amber-400" />
+          <div className="w-[30%] bg-red-500" />
         </div>
         <div
-          className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-foreground rounded-full shadow"
-          style={{ left: `${Math.min(Math.max(position, 0), 100)}%`, transform: "translate(-50%, -50%)" }}
+          className="absolute top-1/2 w-4 h-4 bg-white border-2 border-slate-700 rounded-full shadow-md"
+          style={{ 
+            left: `${Math.min(Math.max(position, 2), 98)}%`, 
+            transform: "translate(-50%, -50%)" 
+          }}
         />
       </div>
-      <div className="flex justify-between text-xs text-muted-foreground mt-1">
+      <div className="flex justify-between text-xs text-muted-foreground mt-1.5">
         <span>50%</span>
         <span>70%</span>
         <span>85%</span>
@@ -72,6 +88,15 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
       </div>
     </div>
   );
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
 }
 
 function DealCard({
@@ -87,16 +112,29 @@ function DealCard({
 }) {
   const navigate = useNavigate();
   
+  // Calculate financial details
+  const askingPrice = deal.price;
+  const arvValue = deal.arv;
+  const estRepairs = Math.round(arvValue * 0.1); // Estimate 10% of ARV for repairs
+  const profitPotential = arvValue - askingPrice - estRepairs;
+  
+  // Estimated rent and PITI (mock calculations)
+  const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
+  const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
+  
+  // Year built (mock - random between 1970-2020)
+  const yearBuilt = 1970 + Math.floor(Math.random() * 50);
+
   const tagColors: Record<string, string> = {
     "Single Family": "bg-primary text-primary-foreground",
-    "Condo": "bg-info text-white",
-    "Townhouse": "bg-purple-500 text-white",
-    "Duplex": "bg-indigo-500 text-white",
-    "Mobile Home": "bg-orange-500 text-white",
+    "Condo": "bg-primary text-primary-foreground",
+    "Townhouse": "bg-primary text-primary-foreground",
+    "Duplex": "bg-primary text-primary-foreground",
+    "Mobile Home": "bg-primary text-primary-foreground",
     "High Equity": "bg-slate-700 text-white",
     "Cash Buyer": "bg-slate-700 text-white",
     "Motivated Seller": "bg-slate-700 text-white",
-    "Divorce": "bg-warning text-white",
+    "Divorce": "bg-amber-500 text-white",
     "Probate": "bg-slate-700 text-white",
     "Pre-Foreclosure": "bg-destructive text-white",
     "Vacant": "bg-slate-700 text-white",
@@ -116,7 +154,7 @@ function DealCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={handleCardClick}>
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-white" onClick={handleCardClick}>
       {/* Image */}
       <div className="relative aspect-[16/10]">
         <img
@@ -128,20 +166,21 @@ function DealCard({
         {/* Top Controls */}
         <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={onSelect}
-              className="bg-white/80 border-white"
-            />
+            <div className="bg-white/90 rounded p-0.5">
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={onSelect}
+              />
+            </div>
             {deal.isNew && (
-              <Badge className="bg-primary text-primary-foreground">New</Badge>
+              <Badge className="bg-primary text-primary-foreground font-medium">New</Badge>
             )}
           </div>
           <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 bg-white/80 hover:bg-white"
+              className="h-8 w-8 bg-white/90 hover:bg-white rounded-full"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>
@@ -149,7 +188,7 @@ function DealCard({
               variant="ghost"
               size="icon"
               className={cn(
-                "h-8 w-8 bg-white/80 hover:bg-white",
+                "h-8 w-8 bg-white/90 hover:bg-white rounded-full",
                 deal.isFavorite && "text-destructive"
               )}
             >
@@ -158,13 +197,13 @@ function DealCard({
           </div>
         </div>
 
-        {/* Tags */}
+        {/* Tags at bottom of image */}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
           {deal.tags.slice(0, 3).map((tag, i) => (
             <Badge
               key={i}
               className={cn(
-                "text-xs font-medium",
+                "text-xs font-medium px-2.5 py-1",
                 tagColors[tag] || "bg-slate-700 text-white"
               )}
             >
@@ -173,7 +212,7 @@ function DealCard({
             </Badge>
           ))}
           {deal.tags.length > 3 && (
-            <Badge className="bg-slate-700 text-white text-xs">
+            <Badge className="bg-slate-700/80 text-white text-xs px-2.5 py-1">
               +{deal.tags.length - 3}
             </Badge>
           )}
@@ -182,12 +221,83 @@ function DealCard({
 
       {/* Content */}
       <div className="p-4">
+        {/* Location */}
         <p className="text-sm text-muted-foreground">{deal.county}</p>
-        <p className="font-semibold text-primary">
+        <p className="font-semibold text-primary text-base">
           {deal.address}, {deal.city}, {deal.state} {deal.zip}
         </p>
 
+        {/* Deal Risk Meter */}
         <DealRiskMeter arvPercent={deal.arvPercent} />
+
+        {/* Financial Breakdown */}
+        <div className="mt-4 space-y-2 border-t border-border pt-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <TrendingUp className="h-4 w-4" />
+              <span><span className="font-medium text-foreground">ARV</span> (After Repair Value)</span>
+            </div>
+            <span className="font-semibold text-foreground">{formatCurrency(arvValue)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <DollarSign className="h-4 w-4" />
+              <span className="font-medium text-foreground">Asking Price:</span>
+            </div>
+            <span className="font-medium text-foreground">- {formatCurrency(askingPrice)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Wrench className="h-4 w-4" />
+              <span className="font-medium text-foreground">Est. Repairs:</span>
+            </div>
+            <span className="font-medium text-foreground">- {formatCurrency(estRepairs)}</span>
+          </div>
+          <div className="flex items-center justify-between border-t border-border pt-2">
+            <div className="flex items-center gap-2 text-sm">
+              <CircleDollarSign className="h-4 w-4 text-primary" />
+              <span className="font-semibold text-foreground">Profit Potential:</span>
+            </div>
+            <span className={cn(
+              "font-bold",
+              profitPotential >= 0 ? "text-primary" : "text-destructive"
+            )}>
+              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
+            </span>
+          </div>
+        </div>
+
+        {/* Rent & PITI Row */}
+        <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Rent</span>
+            <span className="font-semibold text-foreground">{formatCurrency(monthlyRent)}/mo</span>
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <span className="text-sm text-muted-foreground">PITI</span>
+            <span className="font-semibold text-foreground">{formatCurrency(piti)}/mo</span>
+          </div>
+        </div>
+
+        {/* Property Specs */}
+        <div className="mt-4 grid grid-cols-4 gap-2 border-t border-border pt-4">
+          <div className="flex flex-col items-center text-center">
+            <Bed className="h-5 w-5 text-muted-foreground mb-1" />
+            <span className="text-sm font-medium">{deal.beds} Beds</span>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <Bath className="h-5 w-5 text-muted-foreground mb-1" />
+            <span className="text-sm font-medium">{deal.baths} Baths</span>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <Tag className="h-5 w-5 text-muted-foreground mb-1" />
+            <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <Calendar className="h-5 w-5 text-muted-foreground mb-1" />
+            <span className="text-sm font-medium">Built {yearBuilt}</span>
+          </div>
+        </div>
       </div>
     </Card>
   );
@@ -215,17 +325,23 @@ export function MarketplaceListings({
   const allSelected = deals.length > 0 && selectedDeals.length === deals.length;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="p-4 border-b border-border bg-white">
         <h2 className="text-xl font-bold text-foreground mb-4">Find Your Next Deal</h2>
         
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div className="flex items-center gap-3">
-            <Checkbox
-              checked={allSelected}
-              onCheckedChange={onSelectAll}
-            />
+            <div className="flex items-center gap-2">
+              <Select value="">
+                <SelectTrigger className="w-10 h-8 p-0 justify-center border-border">
+                  <Checkbox
+                    checked={allSelected}
+                    onCheckedChange={onSelectAll}
+                  />
+                </SelectTrigger>
+              </Select>
+            </div>
             <span className="text-sm font-medium">{totalCount} Results Found</span>
           </div>
 
@@ -236,7 +352,7 @@ export function MarketplaceListings({
                 value={resultsPerPage.toString()}
                 onValueChange={(v) => onResultsPerPageChange(parseInt(v))}
               >
-                <SelectTrigger className="w-[70px] h-8">
+                <SelectTrigger className="w-[70px] h-8 bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-background">
@@ -252,7 +368,7 @@ export function MarketplaceListings({
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Sort:</span>
               <Select value={sortBy} onValueChange={onSortChange}>
-                <SelectTrigger className="w-[120px] h-8">
+                <SelectTrigger className="w-[120px] h-8 bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-background">
@@ -266,13 +382,13 @@ export function MarketplaceListings({
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex border rounded-md overflow-hidden">
+            <div className="flex border border-border rounded-md overflow-hidden">
               <Button
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  "h-8 w-8 rounded-none",
-                  viewMode === "list" && "bg-muted"
+                  "h-8 w-8 rounded-none border-0",
+                  viewMode === "list" ? "bg-muted" : "bg-background"
                 )}
                 onClick={() => onViewModeChange("list")}
               >
@@ -282,8 +398,8 @@ export function MarketplaceListings({
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  "h-8 w-8 rounded-none",
-                  viewMode === "grid" && "bg-muted"
+                  "h-8 w-8 rounded-none border-0",
+                  viewMode === "grid" ? "bg-slate-800 text-white" : "bg-background"
                 )}
                 onClick={() => onViewModeChange("grid")}
               >
@@ -368,7 +484,7 @@ export function MarketplaceListings({
                   onPageChange(page);
                 }
               }}
-              className="w-12 h-8 text-center border rounded text-sm"
+              className="w-12 h-8 text-center border rounded text-sm bg-background"
             />
             <span className="text-sm text-muted-foreground">of {totalPages}</span>
           </div>
