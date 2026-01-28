@@ -1,22 +1,58 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronDown, MapPin } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
+import { cn } from "@/lib/utils";
 
 interface MarketplaceMapProps {
   deals: MarketplaceDeal[];
 }
 
+const heatMapOptions = [
+  "Property Value By County",
+  "Property Value By Zip",
+  "Flips By County",
+  "Flips By Zip",
+  "Signal AI By County",
+  "Signal AI By Zip",
+];
+
+const parcelMapOptions = [
+  "All Parcels",
+  "AI Retail Score",
+  "AI Rental Score",
+  "AI Wholesale Score",
+  "Cash Buyer",
+  "Vacant",
+  "Loan to Value",
+  "Square Footage",
+  "Lot Size",
+  "Last Sale Date",
+  "Last Sale Price",
+];
+
 export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [mapType, setMapType] = useState<"map" | "satellite">("map");
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [overlaysOpen, setOverlaysOpen] = useState(false);
+  
+  // Overlay states
+  const [heatMapsEnabled, setHeatMapsEnabled] = useState(false);
+  const [selectedHeatMap, setSelectedHeatMap] = useState<string | null>(null);
+  const [parcelMapsEnabled, setParcelMapsEnabled] = useState(false);
+  const [selectedParcelMap, setSelectedParcelMap] = useState<string>("All Parcels");
+  const [showLegend, setShowLegend] = useState(false);
+  const [showLocationOutline, setShowLocationOutline] = useState(true);
+  const [showClusters, setShowClusters] = useState(true);
+  
   const loadedRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -161,21 +197,109 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* Overlays Dropdown */}
       <div className="absolute top-3 right-3 z-10">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+        <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
+          <PopoverTrigger asChild>
             <Button variant="outline" className="bg-white shadow-md gap-2">
               <Layers className="h-4 w-4" />
               Overlays
-              <ChevronDown className="h-4 w-4" />
+              {overlaysOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-background z-20">
-            <DropdownMenuItem>County Lines</DropdownMenuItem>
-            <DropdownMenuItem>Zip Codes</DropdownMenuItem>
-            <DropdownMenuItem>School Districts</DropdownMenuItem>
-            <DropdownMenuItem>Flood Zones</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          </PopoverTrigger>
+          <PopoverContent className="w-72 bg-white p-0 shadow-lg" align="end">
+            <div className="max-h-[70vh] overflow-y-auto">
+              {/* Heat Maps Section */}
+              <div className="p-3 border-b">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-sm">Heat Maps</span>
+                  <Checkbox 
+                    checked={heatMapsEnabled}
+                    onCheckedChange={(checked) => {
+                      setHeatMapsEnabled(!!checked);
+                      if (!checked) setSelectedHeatMap(null);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1.5 pl-2">
+                  {heatMapOptions.map((option) => (
+                    <div key={option} className="flex items-center justify-between">
+                      <Label className="text-sm text-muted-foreground cursor-pointer">{option}</Label>
+                      <input
+                        type="radio"
+                        name="heatMap"
+                        checked={selectedHeatMap === option}
+                        onChange={() => {
+                          setSelectedHeatMap(option);
+                          setHeatMapsEnabled(true);
+                        }}
+                        className="h-4 w-4 text-primary border-muted-foreground"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Parcel Maps Section */}
+              <div className="p-3 border-b">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-semibold text-sm">Parcel Maps</span>
+                  <Checkbox 
+                    checked={parcelMapsEnabled}
+                    onCheckedChange={(checked) => setParcelMapsEnabled(!!checked)}
+                  />
+                </div>
+                <div className="space-y-1.5 pl-2">
+                  {parcelMapOptions.map((option) => (
+                    <div key={option} className="flex items-center justify-between">
+                      <Label 
+                        className={cn(
+                          "text-sm cursor-pointer",
+                          selectedParcelMap === option ? "text-primary font-medium" : "text-muted-foreground"
+                        )}
+                      >
+                        {option}
+                      </Label>
+                      <input
+                        type="radio"
+                        name="parcelMap"
+                        checked={selectedParcelMap === option}
+                        onChange={() => {
+                          setSelectedParcelMap(option);
+                          setParcelMapsEnabled(true);
+                        }}
+                        className="h-4 w-4 text-primary border-muted-foreground accent-primary"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bottom Options */}
+              <div className="p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Legend</Label>
+                  <Checkbox 
+                    checked={showLegend}
+                    onCheckedChange={(checked) => setShowLegend(!!checked)}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Location outline</Label>
+                  <Checkbox 
+                    checked={showLocationOutline}
+                    onCheckedChange={(checked) => setShowLocationOutline(!!checked)}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Clusters</Label>
+                  <Checkbox 
+                    checked={showClusters}
+                    onCheckedChange={(checked) => setShowClusters(!!checked)}
+                  />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       {/* Loading state overlay */}
