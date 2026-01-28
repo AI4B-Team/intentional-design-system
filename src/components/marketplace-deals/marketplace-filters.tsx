@@ -130,7 +130,7 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="flex items-center gap-2 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
+      <div className="relative z-50 flex items-center gap-2 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters */}
         <div className="flex items-center gap-2 flex-shrink-0">
           {/* Address Search */}
@@ -153,7 +153,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-[100px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[60]">
+            <SelectContent className="bg-background z-[100]">
               <SelectItem value="all">All Listings</SelectItem>
               <SelectItem value="on-market">On-Market</SelectItem>
               <SelectItem value="off-market">Off-Market</SelectItem>
@@ -168,7 +168,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-[100px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Lead Type" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[60]">
+            <SelectContent className="bg-background z-[100]">
               {leadTypeOptions.map((type) => (
                 <SelectItem 
                   key={type} 
@@ -188,7 +188,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 bg-background z-[60]" align="start">
+            <PopoverContent className="w-56 bg-background z-[100]" align="start">
               <div className="space-y-3">
                 <div className="font-semibold">Home Type</div>
                 <button
@@ -231,7 +231,7 @@ export function MarketplaceFilters({
             <SelectTrigger className="w-[90px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Price" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[60]">
+            <SelectContent className="bg-background z-[100]">
               {priceRangeOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -248,7 +248,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-72 bg-background z-[60]" align="start">
+            <PopoverContent className="w-72 bg-background z-[100]" align="start">
               <div className="space-y-4">
                 {/* Bedrooms */}
                 <div className="space-y-2">

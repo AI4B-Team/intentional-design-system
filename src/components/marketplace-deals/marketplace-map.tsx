@@ -132,9 +132,9 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   }
 
   return (
-    <div className="relative h-full">
+    <div className="relative h-full z-0">
       {/* Map Type Toggle */}
-      <div className="absolute top-3 left-3 z-[1000]">
+      <div className="absolute top-3 left-3 z-10">
         <div className="bg-white rounded-lg shadow-md overflow-hidden flex">
           <button
             onClick={() => setMapType("map")}
@@ -160,7 +160,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
       </div>
 
       {/* Overlays Dropdown */}
-      <div className="absolute top-3 right-3 z-[1000]">
+      <div className="absolute top-3 right-3 z-10">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="bg-white shadow-md gap-2">
@@ -169,7 +169,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
               <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-background">
+          <DropdownMenuContent className="bg-background z-20">
             <DropdownMenuItem>County Lines</DropdownMenuItem>
             <DropdownMenuItem>Zip Codes</DropdownMenuItem>
             <DropdownMenuItem>School Districts</DropdownMenuItem>
@@ -180,7 +180,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* Loading state overlay */}
       {!isReady && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/30 z-[500]">
+        <div className="absolute inset-0 flex items-center justify-center bg-muted/30 z-[5]">
           <div className="flex flex-col items-center gap-3 text-muted-foreground">
             <MapPin className="h-10 w-10 animate-pulse" />
             <p className="text-sm">Loading map...</p>
@@ -193,6 +193,33 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* Custom CSS for price markers */}
       <style>{`
+        .leaflet-container {
+          z-index: 0 !important;
+        }
+        .leaflet-pane {
+          z-index: 0 !important;
+        }
+        .leaflet-tile-pane {
+          z-index: 0 !important;
+        }
+        .leaflet-overlay-pane {
+          z-index: 1 !important;
+        }
+        .leaflet-shadow-pane {
+          z-index: 2 !important;
+        }
+        .leaflet-marker-pane {
+          z-index: 3 !important;
+        }
+        .leaflet-tooltip-pane {
+          z-index: 4 !important;
+        }
+        .leaflet-popup-pane {
+          z-index: 5 !important;
+        }
+        .leaflet-control {
+          z-index: 10 !important;
+        }
         .price-marker {
           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
           color: white;
