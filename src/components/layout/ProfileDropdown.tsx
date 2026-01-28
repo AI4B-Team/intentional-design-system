@@ -88,7 +88,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
         {/* Primary Actions */}
         <div className="px-4 pb-4 space-y-2">
           <Button 
-            className="w-full bg-primary hover:bg-primary/90 text-white gap-2"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
             onClick={() => handleNavigate("/settings/billing")}
           >
             <Zap className="h-4 w-4" />
@@ -175,11 +175,10 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
           </Button>
         </div>
 
-        {/* Log Out */}
         <div className="border-t border-border p-4">
           <Button 
             variant="destructive" 
-            className="w-full gap-2 bg-red-500 hover:bg-red-600"
+            className="w-full gap-2 bg-red-500 hover:bg-red-600 text-white"
             onClick={handleSignOut}
           >
             <Power className="h-4 w-4" />
