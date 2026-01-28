@@ -70,11 +70,11 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
   
   return (
     <div className="mt-4">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm text-muted-foreground">Deal Risk</span>
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs text-muted-foreground">Deal Risk</span>
         <Badge 
           variant="outline" 
-          className="border-primary text-primary font-semibold bg-primary/5"
+          className="border-primary text-primary text-xs font-semibold px-2 py-0 bg-primary/5"
         >
           {arvPercent}% ARV
         </Badge>
