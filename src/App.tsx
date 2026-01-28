@@ -67,6 +67,8 @@ import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import OfferBlaster from "./pages/OfferBlaster";
 import Activity from "./pages/Activity";
+import Renovations from "./pages/Renovations";
+import RenovationDetail from "./pages/RenovationDetail";
 
 const queryClient = new QueryClient();
 
@@ -516,6 +518,24 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <OfferBlaster />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Renovation Routes */}
+            <Route
+              path="/renovations"
+              element={
+                <ProtectedRoute>
+                  <Renovations />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/renovations/:id"
+              element={
+                <ProtectedRoute>
+                  <RenovationDetail />
                 </ProtectedRoute>
               }
             />
