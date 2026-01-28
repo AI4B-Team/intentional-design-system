@@ -8,7 +8,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -17,8 +16,6 @@ import {
   Plus,
   Bell,
   User,
-  Settings,
-  LogOut,
   ChevronRight,
   ChevronDown,
   UserPlus,
@@ -27,6 +24,7 @@ import {
   Send,
   HelpCircle,
 } from "lucide-react";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 interface Breadcrumb {
   label: string;
@@ -42,16 +40,10 @@ interface AppHeaderProps {
 export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = React.useState("");
-
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/login");
-  };
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6 gap-4">
@@ -190,35 +182,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       </button>
 
       {/* User Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 p-1.5 hover:bg-surface-secondary rounded-md transition-colors">
-            <div className="h-8 w-8 rounded-full bg-brand-accent/10 text-brand-accent flex items-center justify-center font-medium text-sm">
-              {userName.charAt(0).toUpperCase()}
-            </div>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <div className="px-2 py-1.5">
-            <p className="text-sm font-medium">{userName}</p>
-            <p className="text-xs text-content-secondary">{user?.email}</p>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate("/settings")}>
-            <User className="h-4 w-4 mr-2" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/settings")}>
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <ProfileDropdown />
     </header>
   );
 }
