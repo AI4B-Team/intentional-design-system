@@ -315,7 +315,7 @@ export function MarketplaceFilters({
           {/* More Filters */}
           <Button 
             variant="outline" 
-            className="h-9 gap-2 bg-background text-sm flex-shrink-0 font-normal"
+            className="h-9 gap-2 bg-background text-sm flex-shrink-0 font-normal px-4"
             onClick={() => setMoreFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
