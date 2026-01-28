@@ -361,6 +361,14 @@ export default function PropertyDetail() {
             <Button variant="secondary" size="sm" icon={<Pencil />}>
               Edit Property
             </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Calculator />}
+              onClick={() => navigate(`/tools/market-analyzer?tab=deals&property=${property.id}`)}
+            >
+              Analyze
+            </Button>
             <Button variant="primary" size="sm" onClick={() => setShowOfferWizard(true)}>
               Make Offer
             </Button>
