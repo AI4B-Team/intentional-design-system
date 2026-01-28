@@ -150,7 +150,7 @@ export function MarketplaceFilters({
             value={filters.listingStatus || "all"} 
             onValueChange={(v) => handleChange("listingStatus", v)}
           >
-            <SelectTrigger className="w-[110px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-[130px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
@@ -165,7 +165,7 @@ export function MarketplaceFilters({
             value={filters.leadType || "all"} 
             onValueChange={(v) => handleChange("leadType", v)}
           >
-            <SelectTrigger className="w-[100px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className="w-[140px] h-9 bg-background text-sm flex-shrink-0">
               <SelectValue placeholder="Lead Type" />
             </SelectTrigger>
             <SelectContent className="bg-background z-[100]">
