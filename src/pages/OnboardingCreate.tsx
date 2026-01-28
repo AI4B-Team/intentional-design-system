@@ -215,7 +215,7 @@ export default function OnboardingCreate() {
               </div>
 
               <div className="space-y-2">
-                <Label>How many team members?</Label>
+                <Label>How Many Team Members?</Label>
                 <div className="relative">
                   <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary z-10 pointer-events-none" />
                   <Select
@@ -223,7 +223,7 @@ export default function OnboardingCreate() {
                     onValueChange={(value) => setCompanyData((prev) => ({ ...prev, teamSize: value }))}
                   >
                     <SelectTrigger className="pl-10">
-                      <SelectValue placeholder="Select team size" />
+                      <SelectValue placeholder="Select Team Size" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Just me">Just me</SelectItem>
