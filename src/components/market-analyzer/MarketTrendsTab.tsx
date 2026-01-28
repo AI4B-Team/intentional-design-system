@@ -1,133 +1,158 @@
 import * as React from "react";
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   MapPin,
   TrendingUp,
-  TrendingDown,
-  Home,
-  DollarSign,
-  Users,
-  Building2,
   Loader2,
   Sparkles,
+  LineChart,
 } from "lucide-react";
+import {
+  generateMockMetrics,
+  generatePriceHistory,
+  generateInventoryData,
+  generateDOMDistribution,
+  generateRentalData,
+  generateInvestmentMetrics,
+  generateRecentSales,
+  type MarketAlerts,
+} from "./market-trends/types";
+import { MetricCard } from "./market-trends/MetricCard";
+import { PriceTrendsChart } from "./market-trends/PriceTrendsChart";
+import { InventoryChart } from "./market-trends/InventoryChart";
+import { DaysOnMarketChart } from "./market-trends/DaysOnMarketChart";
+import { RentalMarketTable } from "./market-trends/RentalMarketTable";
+import { InvestmentMetricsCard } from "./market-trends/InvestmentMetricsCard";
+import { RecentSalesTable } from "./market-trends/RecentSalesTable";
+import { MarketAlertsCard } from "./market-trends/MarketAlertsCard";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-interface MarketData {
-  marketScore: number;
-  trend: "hot" | "warm" | "neutral" | "cooling" | "cold";
-  summary: string;
-  medianPrice: string;
-  priceChange: string;
-  daysOnMarket: number;
-  inventory: string;
-  demandLevel: string;
-  investorActivity: string;
-  topStrategies: string[];
-  opportunities: string[];
-  risks: string[];
-  forecast: string;
-}
-
 export function MarketTrendsTab() {
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [result, setResult] = useState<MarketData | null>(null);
-  
-  const [formData, setFormData] = useState({
-    location: "",
-    radius: "5",
-    propertyType: "single_family",
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [hasData, setHasData] = React.useState(false);
+  const [location, setLocation] = React.useState("");
+  const [currentLocation, setCurrentLocation] = React.useState("Austin, TX 78701");
+  const [period, setPeriod] = React.useState("12");
+  const [alerts, setAlerts] = React.useState<MarketAlerts>({
+    priceChange: false,
+    inventoryChange: false,
+    weeklySummary: false,
   });
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  // Mock data - in production, this would come from an API
+  const metrics = React.useMemo(() => generateMockMetrics(), []);
+  const priceHistory = React.useMemo(() => generatePriceHistory(), []);
+  const inventoryData = React.useMemo(() => generateInventoryData(), []);
+  const domDistribution = React.useMemo(() => generateDOMDistribution(), []);
+  const rentalData = React.useMemo(() => generateRentalData(), []);
+  const investmentMetrics = React.useMemo(() => generateInvestmentMetrics(), []);
+  const recentSales = React.useMemo(() => generateRecentSales(), []);
 
-  const handleAnalyze = async () => {
-    if (!formData.location) {
+  const handleSearch = async () => {
+    if (!location.trim()) {
       toast.error("Please enter a location");
       return;
     }
 
-    setIsAnalyzing(true);
-    setResult(null);
-
-    try {
-      const response = await supabase.functions.invoke("ai-market-analyzer", {
-        body: { marketData: formData },
-      });
-
-      if (response.error) throw response.error;
-
-      setResult(response.data);
-      toast.success("Market analysis complete!");
-    } catch (error) {
-      console.error("Analysis error:", error);
-      toast.error("Failed to analyze market. Please try again.");
-    } finally {
-      setIsAnalyzing(false);
-    }
+    setIsLoading(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setCurrentLocation(location);
+    setHasData(true);
+    setIsLoading(false);
+    toast.success("Market data loaded!");
   };
 
-  const getTrendColor = (trend: string) => {
-    switch (trend) {
-      case "hot": return "bg-red-100 text-red-700";
-      case "warm": return "bg-orange-100 text-orange-700";
-      case "neutral": return "bg-slate-100 text-slate-700";
-      case "cooling": return "bg-blue-100 text-blue-700";
-      case "cold": return "bg-cyan-100 text-cyan-700";
-      default: return "bg-slate-100 text-slate-700";
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Search Section */}
+      {/* Header */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
+            <LineChart className="h-5 w-5 text-primary-foreground" />
+          </div>
+          <div>
+            <h2 className="text-h3 font-bold text-foreground">Market Trends</h2>
+            <p className="text-small text-muted-foreground">
+              Track local market conditions
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
       <Card className="p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
-            <Label htmlFor="location">Location (City, ZIP, or Address)</Label>
+            <Label htmlFor="location" className="text-small">Location</Label>
             <div className="relative mt-1">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 id="location"
                 className="pl-9"
-                placeholder="Enter city, ZIP code, or address..."
-                value={formData.location}
-                onChange={(e) => handleInputChange("location", e.target.value)}
+                placeholder="Search city, zip, or county..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                onKeyPress={handleKeyPress}
               />
             </div>
           </div>
-          <div className="w-32">
-            <Label htmlFor="radius">Radius (miles)</Label>
-            <Input
-              id="radius"
-              type="number"
-              className="mt-1"
-              value={formData.radius}
-              onChange={(e) => handleInputChange("radius", e.target.value)}
-            />
+          
+          {hasData && (
+            <div className="md:w-48">
+              <Label className="text-small">Current</Label>
+              <div className="mt-1 h-9 px-3 flex items-center bg-surface-secondary rounded-md text-small font-medium">
+                {currentLocation}
+              </div>
+            </div>
+          )}
+
+          <div className="md:w-40">
+            <Label className="text-small">Period</Label>
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="mt-1">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="3">Last 3 months</SelectItem>
+                <SelectItem value="6">Last 6 months</SelectItem>
+                <SelectItem value="12">Last 12 months</SelectItem>
+                <SelectItem value="24">Last 24 months</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
           <div className="flex items-end">
-            <Button
-              onClick={handleAnalyze}
-              disabled={isAnalyzing}
-            >
-              {isAnalyzing ? (
+            <Button onClick={handleSearch} disabled={isLoading}>
+              {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Analyzing...
+                  Loading...
                 </>
               ) : (
                 <>
                   <Sparkles className="h-4 w-4 mr-2" />
-                  Analyze Market
+                  Analyze
                 </>
               )}
             </Button>
@@ -136,7 +161,7 @@ export function MarketTrendsTab() {
       </Card>
 
       {/* Empty State */}
-      {!result && !isAnalyzing && (
+      {!hasData && !isLoading && (
         <Card className="p-12 flex flex-col items-center justify-center text-center">
           <div className="h-16 w-16 rounded-full bg-surface-secondary flex items-center justify-center mb-4">
             <MapPin className="h-8 w-8 text-muted-foreground" />
@@ -145,153 +170,62 @@ export function MarketTrendsTab() {
             Enter a Location to Analyze
           </h3>
           <p className="text-body text-muted-foreground max-w-md">
-            Get AI-powered insights on market conditions, pricing trends, investment opportunities, and more.
+            Get comprehensive market data including pricing trends, inventory levels, days on market, and rental analysis.
           </p>
         </Card>
       )}
 
       {/* Loading State */}
-      {isAnalyzing && (
+      {isLoading && (
         <Card className="p-12 flex flex-col items-center justify-center text-center">
           <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
           <h3 className="text-h3 font-semibold text-foreground mb-2">
             Analyzing Market...
           </h3>
           <p className="text-body text-muted-foreground">
-            Gathering data on pricing, inventory, trends, and investor activity
+            Gathering pricing, inventory, and trend data
           </p>
         </Card>
       )}
 
       {/* Results */}
-      {result && (
+      {hasData && !isLoading && (
         <>
-          {/* Market Overview */}
-          <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-h3 font-semibold">Market Overview</h3>
-              <Badge className={`text-sm px-3 py-1 capitalize ${getTrendColor(result.trend)}`}>
-                {result.trend} Market
-              </Badge>
-            </div>
-            
-            {/* Score */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className="text-3xl font-bold text-foreground">{result.marketScore}</div>
-              <div className="text-muted-foreground">/100</div>
-              <div className="flex-1 h-3 bg-surface-secondary rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all"
-                  style={{ width: `${result.marketScore}%` }}
-                />
-              </div>
-            </div>
-
-            <p className="text-muted-foreground">{result.summary}</p>
-          </Card>
-
-          {/* Key Metrics */}
+          {/* Key Metrics Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="p-4">
-              <div className="flex items-center gap-2 text-small text-muted-foreground mb-1">
-                <DollarSign className="h-4 w-4" />
-                Median Price
-              </div>
-              <div className="text-xl font-bold text-foreground">{result.medianPrice}</div>
-              <div className={`text-small flex items-center gap-1 mt-1 ${result.priceChange.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                {result.priceChange.startsWith('+') ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                {result.priceChange} YoY
-              </div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center gap-2 text-small text-muted-foreground mb-1">
-                <Home className="h-4 w-4" />
-                Days on Market
-              </div>
-              <div className="text-xl font-bold text-foreground">{result.daysOnMarket}</div>
-              <div className="text-small text-muted-foreground mt-1">Average</div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center gap-2 text-small text-muted-foreground mb-1">
-                <Building2 className="h-4 w-4" />
-                Inventory
-              </div>
-              <div className="text-xl font-bold text-foreground">{result.inventory}</div>
-              <div className="text-small text-muted-foreground mt-1">Active Listings</div>
-            </Card>
-            
-            <Card className="p-4">
-              <div className="flex items-center gap-2 text-small text-muted-foreground mb-1">
-                <Users className="h-4 w-4" />
-                Demand Level
-              </div>
-              <div className="text-xl font-bold text-foreground">{result.demandLevel}</div>
-              <div className="text-small text-muted-foreground mt-1">Buyer Activity</div>
-            </Card>
+            {metrics.map((metric) => (
+              <MetricCard key={metric.label} metric={metric} />
+            ))}
           </div>
 
-          {/* Strategies & Insights */}
+          {/* Charts Row 1 */}
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h4 className="font-semibold text-foreground mb-4">Top Investment Strategies</h4>
-              <div className="flex flex-wrap gap-2">
-                {result.topStrategies.map((strategy, i) => (
-                  <Badge key={i} variant="secondary" className="bg-primary/10 text-primary">
-                    {strategy}
-                  </Badge>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h4 className="font-semibold text-foreground mb-4">Investor Activity</h4>
-              <p className="text-muted-foreground">{result.investorActivity}</p>
-            </Card>
+            <PriceTrendsChart data={priceHistory} />
+            <InventoryChart data={inventoryData} />
           </div>
 
-          {/* Opportunities & Risks */}
+          {/* Charts Row 2 */}
           <div className="grid md:grid-cols-2 gap-6">
-            <Card className="p-6 border-green-200 bg-green-50/50">
-              <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-600" />
-                Opportunities
-              </h4>
-              <ul className="space-y-2">
-                {result.opportunities.map((item, i) => (
-                  <li key={i} className="text-small text-muted-foreground flex items-start gap-2">
-                    <span className="text-green-600 mt-0.5">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </Card>
-
-            <Card className="p-6 border-amber-200 bg-amber-50/50">
-              <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-amber-600" />
-                Risks to Watch
-              </h4>
-              <ul className="space-y-2">
-                {result.risks.map((item, i) => (
-                  <li key={i} className="text-small text-muted-foreground flex items-start gap-2">
-                    <span className="text-amber-600 mt-0.5">•</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </Card>
+            <DaysOnMarketChart
+              currentDOM={18}
+              yearAgoDOM={24}
+              distribution={domDistribution}
+            />
+            <RentalMarketTable data={rentalData} vacancyRate={5.2} />
           </div>
 
-          {/* Forecast */}
-          <Card className="p-6 bg-gradient-to-br from-surface-secondary to-surface-tertiary/50">
-            <h4 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              12-Month Forecast
-            </h4>
-            <p className="text-muted-foreground">{result.forecast}</p>
-          </Card>
+          {/* Investment Metrics & Alerts */}
+          <div className="grid md:grid-cols-2 gap-6">
+            <InvestmentMetricsCard metrics={investmentMetrics} />
+            <MarketAlertsCard alerts={alerts} onAlertsChange={setAlerts} />
+          </div>
+
+          {/* Recent Sales */}
+          <RecentSalesTable
+            sales={recentSales}
+            onViewMap={() => toast.info("Map view coming soon")}
+            onExport={() => toast.info("Export coming soon")}
+          />
         </>
       )}
     </div>
