@@ -4,3 +4,4 @@ export { LeadSubmissionForm } from './LeadSubmissionForm';
 export { ScoutPortalDashboard } from './ScoutPortalDashboard';
 export { LeadPipelineManager } from './LeadPipelineManager';
 export { AIPropertyIntelligence } from './AIPropertyIntelligence';
+export { NotificationSystem } from './NotificationSystem';
