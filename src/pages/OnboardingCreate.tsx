@@ -37,11 +37,18 @@ export default function OnboardingCreate() {
     phone: "",
     teamSize: "",
   });
-  const [profileData, setProfileData] = React.useState({
-    fullName: user?.user_metadata?.full_name || "",
+  const [profileData, setProfileData] = React.useState(() => ({
+    fullName: user?.user_metadata?.full_name ?? "",
     title: "",
     phone: "",
-  });
+  }));
+  
+  // Update profileData when user loads
+  React.useEffect(() => {
+    if (user?.user_metadata?.full_name && !profileData.fullName) {
+      setProfileData(prev => ({ ...prev, fullName: user.user_metadata.full_name }));
+    }
+  }, [user]);
 
   // Redirect if user already has an organization
   React.useEffect(() => {
