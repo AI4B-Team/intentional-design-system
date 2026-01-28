@@ -24,7 +24,7 @@ export function useCreateOrganization() {
 
       const slug = generateSlug(data.name);
 
-      // Create organization
+      // Create organization - don't use .select() since RLS won't let us read it yet
       const { data: org, error: orgError } = await supabase
         .from("organizations")
         .insert({
@@ -34,16 +34,18 @@ export function useCreateOrganization() {
           phone: data.phone || null,
           billing_email: user.email,
         })
-        .select()
+        .select("id")
         .single();
 
       if (orgError) throw orgError;
 
-      // Add user as owner
+      const orgId = org.id;
+
+      // Add user as owner - this makes them a member, enabling RLS reads
       const { error: memberError } = await supabase
         .from("organization_members")
         .insert({
-          organization_id: org.id,
+          organization_id: orgId,
           user_id: user.id,
           role: "owner",
           status: "active",
@@ -51,12 +53,22 @@ export function useCreateOrganization() {
         });
 
       if (memberError) {
-        // Rollback org creation
-        await supabase.from("organizations").delete().eq("id", org.id);
+        // Rollback org creation - use service role would be ideal, but we can't from client
+        // The org will be orphaned but that's better than a partial state
+        console.error("Failed to add member, org may be orphaned:", memberError);
         throw memberError;
       }
 
-      return org as Organization;
+      // Now that we're a member, we can read the full organization
+      const { data: fullOrg, error: fetchError } = await supabase
+        .from("organizations")
+        .select("*")
+        .eq("id", orgId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      return fullOrg as Organization;
     },
     onSuccess: async () => {
       await refreshOrganization();
