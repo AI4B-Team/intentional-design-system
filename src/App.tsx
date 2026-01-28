@@ -97,6 +97,7 @@ import SellerWebsites from "./pages/SellerWebsites";
 import SellerWebsiteWizard from "./pages/SellerWebsiteWizard";
 import SellerWebsiteEditor from "./pages/SellerWebsiteEditor";
 import SellerLeads from "./pages/SellerLeads";
+import WebsiteAnalytics from "./pages/WebsiteAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -589,6 +590,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <SellerLeads />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/websites/:id/analytics"
+              element={
+                <ProtectedRoute>
+                  <WebsiteAnalytics />
                 </ProtectedRoute>
               }
             />
