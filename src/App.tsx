@@ -71,6 +71,7 @@ import Renovations from "./pages/Renovations";
 import RenovationDetail from "./pages/RenovationDetail";
 import ImageEditor from "./pages/ImageEditor";
 import MaterialLibrary from "./pages/MaterialLibrary";
+import PropertyScout from "./pages/PropertyScout";
 
 const queryClient = new QueryClient();
 
@@ -520,6 +521,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <OfferBlaster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tools/property-scout"
+              element={
+                <ProtectedRoute>
+                  <PropertyScout />
                 </ProtectedRoute>
               }
             />
