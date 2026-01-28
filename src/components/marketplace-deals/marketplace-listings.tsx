@@ -368,15 +368,15 @@ export function MarketplaceListings({
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Sort:</span>
               <Select value={sortBy} onValueChange={onSortChange}>
-                <SelectTrigger className="w-[120px] h-8 bg-background">
+                <SelectTrigger className="w-[150px] h-8 bg-background">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-background">
-                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="newest" className="text-primary data-[state=checked]:text-primary">Newest</SelectItem>
                   <SelectItem value="oldest">Oldest</SelectItem>
-                  <SelectItem value="price_low">Price: Low</SelectItem>
-                  <SelectItem value="price_high">Price: High</SelectItem>
-                  <SelectItem value="arv">Best ARV</SelectItem>
+                  <SelectItem value="price_low">Price: Low to High</SelectItem>
+                  <SelectItem value="price_high">Price: High to Low</SelectItem>
+                  <SelectItem value="most_viewed">Most Viewed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
