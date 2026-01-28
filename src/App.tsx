@@ -107,6 +107,8 @@ import CashBuyers from "./pages/CashBuyers";
 import DispoCampaigns from "./pages/DispoCampaigns";
 import DispoCampaignForm from "./pages/DispoCampaignForm";
 import DispoCampaignDetail from "./pages/DispoCampaignDetail";
+import { BuyerRegister, BuyerLogin, BuyerAuthCallback, BuyerDashboard, BuyerProfile } from "./pages/buyer";
+import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
 
 const queryClient = new QueryClient();
 
@@ -129,7 +131,13 @@ const App = () => (
                   <Route path="/deals/:slug" element={<PublicDealPage />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/onboarding-old" element={<Onboarding />} />
-                  
+
+                  {/* Buyer Portal Routes */}
+                  <Route path="/register/buyer" element={<BuyerAuthProvider><BuyerRegister /></BuyerAuthProvider>} />
+                  <Route path="/buyer/login" element={<BuyerAuthProvider><BuyerLogin /></BuyerAuthProvider>} />
+                  <Route path="/buyer/auth" element={<BuyerAuthProvider><BuyerAuthCallback /></BuyerAuthProvider>} />
+                  <Route path="/buyer/dashboard" element={<BuyerAuthProvider><BuyerDashboard /></BuyerAuthProvider>} />
+                  <Route path="/buyer/profile" element={<BuyerAuthProvider><BuyerProfile /></BuyerAuthProvider>} />
                   {/* Organization onboarding - requires auth but not organization */}
                   <Route
                     path="/onboarding"
