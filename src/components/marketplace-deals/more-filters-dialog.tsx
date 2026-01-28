@@ -83,7 +83,7 @@ export interface AdvancedFilters {
   listingPriceMin: string;
   listingPriceMax: string;
   mlsKeywords: string[];
-  
+  customKeywords: string;
   // Status & Listing Type
   lastStatusUpdates: string[];
   listingTypes: string[];
@@ -131,6 +131,7 @@ const defaultFilters: AdvancedFilters = {
   listingPriceMin: "",
   listingPriceMax: "",
   mlsKeywords: [],
+  customKeywords: "",
   lastStatusUpdates: [],
   listingTypes: [],
   amenities: [],
@@ -681,7 +682,7 @@ export function MoreFiltersDialog({
                   />
                 </div>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <Label className="text-sm text-muted-foreground">MLS Keywords</Label>
                 <div className="flex flex-wrap gap-4">
                   {["Investor-Owned", "Creative Financing", "Motivated Seller", "Fixer Upper"].map((keyword) => (
@@ -696,6 +697,17 @@ export function MoreFiltersDialog({
                       </Label>
                     </div>
                   ))}
+                </div>
+                <div className="mt-2">
+                  <Input
+                    placeholder="Add custom keywords (comma-separated)"
+                    value={localFilters.customKeywords}
+                    onChange={(e) => updateFilter("customKeywords", e.target.value)}
+                    className="bg-background"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Enter additional keywords separated by commas (e.g., "distressed, rehab, flip")
+                  </p>
                 </div>
               </div>
             </div>
