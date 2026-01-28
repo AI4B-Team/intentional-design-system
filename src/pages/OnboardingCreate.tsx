@@ -208,16 +208,22 @@ export default function OnboardingCreate() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="team-size">How many team members?</Label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
-                  <Input
-                    id="team-size"
-                    placeholder="e.g., 5"
-                    value={companyData.teamSize}
-                    onChange={updateCompanyField("teamSize")}
-                    className="pl-10"
-                  />
+                <Label>How many team members?</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["Just me", "2-5", "6-10", "11-25", "26-50", "50+"].map((size) => (
+                    <button
+                      key={size}
+                      type="button"
+                      onClick={() => setCompanyData((prev) => ({ ...prev, teamSize: size }))}
+                      className={`px-3 py-2.5 rounded-small border text-small font-medium transition-all ${
+                        companyData.teamSize === size
+                          ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
+                          : "border-border bg-background text-content-secondary hover:border-content-tertiary"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
                 </div>
               </div>
 
