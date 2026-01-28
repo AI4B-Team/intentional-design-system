@@ -4,8 +4,6 @@ import { PageLayout, PageHeader } from "@/components/layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -18,7 +16,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -32,32 +29,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Plus,
   Search,
-  MoreHorizontal,
   Phone,
-  Mail,
-  MessageSquare,
-  Eye,
-  UserPlus,
   Trash2,
-  Flame,
-  Filter,
   Download,
   Users,
   Calendar,
   TrendingUp,
   CheckCircle,
+  RefreshCw,
 } from "lucide-react";
-import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
   useSellerLeads,
@@ -74,6 +56,10 @@ import { AddLeadModal } from "@/components/leads/AddLeadModal";
 import { AddToPropertiesModal } from "@/components/leads/AddToPropertiesModal";
 import { SendSmsModal } from "@/components/leads/SendSmsModal";
 import { SendEmailModal } from "@/components/leads/SendEmailModal";
+import { ViewToggle, type ViewType } from "@/components/leads/ViewToggle";
+import { LeadListView } from "@/components/leads/LeadListView";
+import { LeadGridView } from "@/components/leads/LeadGridView";
+import { LeadKanbanView } from "@/components/leads/LeadKanbanView";
 
 const STATUS_OPTIONS = [
   { value: "new", label: "New", color: "bg-success" },
@@ -98,6 +84,9 @@ type SortOption = "newest" | "oldest" | "score_high" | "name_asc";
 export default function SellerLeads() {
   const { websiteId } = useParams<{ websiteId?: string }>();
   const [searchParams] = useSearchParams();
+
+  // View type
+  const [viewType, setViewType] = useState<ViewType>("list");
 
   // Filters
   const [search, setSearch] = useState("");
@@ -129,7 +118,7 @@ export default function SellerLeads() {
     [websiteFilter, statusFilter, timelineFilter, search]
   );
 
-  const { data: leads, isLoading } = useSellerLeads(filters);
+  const { data: leads, isLoading, refetch } = useSellerLeads(filters);
   const { data: stats } = useLeadStats(websiteFilter || undefined);
   const { data: websites } = useSellerWebsites();
   const updateLead = useUpdateLead();
@@ -195,38 +184,13 @@ export default function SellerLeads() {
     setSelectedIds(new Set());
   };
 
+  const handleStatusChange = (id: string, status: string) => {
+    updateLead.mutate({ id, data: { status } });
+  };
+
   const openLeadDetail = (lead: SellerLead) => {
     setSelectedLead(lead);
     setDetailSheetOpen(true);
-  };
-
-  const getScoreBadge = (score: number | null) => {
-    if (score === null) return <span className="text-content-tertiary">—</span>;
-    if (score >= 800) {
-      return (
-        <Badge variant="destructive" className="gap-1">
-          <Flame className="h-3 w-3" /> {score}
-        </Badge>
-      );
-    }
-    if (score >= 600) {
-      return <Badge variant="warning">{score}</Badge>;
-    }
-    if (score >= 400) {
-      return <Badge variant="secondary">{score}</Badge>;
-    }
-    return <Badge variant="secondary">{score}</Badge>;
-  };
-
-  const getStatusBadge = (status: string | null) => {
-    const opt = STATUS_OPTIONS.find((s) => s.value === status);
-    if (!opt) return <Badge variant="secondary">Unknown</Badge>;
-    return (
-      <Badge variant="secondary" className="gap-1">
-        <span className={cn("w-2 h-2 rounded-full", opt.color)} />
-        {opt.label}
-      </Badge>
-    );
   };
 
   const selectedWebsite = websites?.find((w) => w.id === websiteFilter);
@@ -238,9 +202,19 @@ export default function SellerLeads() {
         title={pageTitle}
         description="Manage leads from your seller websites"
         action={
-          <Button variant="primary" icon={<Plus />} onClick={() => setAddModalOpen(true)}>
-            Add Lead
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => refetch()}
+              disabled={isLoading}
+            >
+              <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
+            </Button>
+            <Button variant="primary" icon={<Plus />} onClick={() => setAddModalOpen(true)}>
+              Add Lead
+            </Button>
+          </div>
         }
       />
 
@@ -387,6 +361,8 @@ export default function SellerLeads() {
               <SelectItem value="name_asc">Name A-Z</SelectItem>
             </SelectContent>
           </Select>
+
+          <ViewToggle value={viewType} onChange={setViewType} />
         </div>
       </Card>
 
@@ -419,7 +395,7 @@ export default function SellerLeads() {
         </div>
       )}
 
-      {/* Leads Table */}
+      {/* Content */}
       {isLoading ? (
         <Card variant="default" padding="none">
           <div className="p-6 space-y-4">
@@ -439,133 +415,42 @@ export default function SellerLeads() {
             Add Your First Lead
           </Button>
         </Card>
+      ) : viewType === "list" ? (
+        <LeadListView
+          leads={sortedLeads}
+          selectedIds={selectedIds}
+          onSelectAll={handleSelectAll}
+          onSelectLead={handleSelectLead}
+          onViewDetail={openLeadDetail}
+          onCall={(phone) => window.open(`tel:${phone}`)}
+          onSms={setSmsLead}
+          onEmail={setEmailLead}
+          onAddToProperties={setAddToPropertiesLead}
+          onDelete={(id) => setDeleteIds([id])}
+        />
+      ) : viewType === "grid" ? (
+        <LeadGridView
+          leads={sortedLeads}
+          selectedIds={selectedIds}
+          onSelectLead={handleSelectLead}
+          onViewDetail={openLeadDetail}
+          onCall={(phone) => window.open(`tel:${phone}`)}
+          onSms={setSmsLead}
+          onEmail={setEmailLead}
+          onAddToProperties={setAddToPropertiesLead}
+          onDelete={(id) => setDeleteIds([id])}
+        />
       ) : (
-        <Card variant="default" padding="none" className="overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={selectedIds.size === sortedLeads.length && sortedLeads.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableHead>
-                <TableHead>Lead</TableHead>
-                <TableHead>Property</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Timeline</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="w-12"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedLeads.map((lead) => (
-                <TableRow
-                  key={lead.id}
-                  className="cursor-pointer hover:bg-surface-secondary"
-                  onClick={() => openLeadDetail(lead)}
-                >
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Checkbox
-                      checked={selectedIds.has(lead.id)}
-                      onCheckedChange={(checked) => handleSelectLead(lead.id, !!checked)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium">
-                        {lead.full_name || `${lead.first_name || ""} ${lead.last_name || ""}`.trim() || "—"}
-                      </p>
-                      {lead.phone && (
-                        <p className="text-small text-content-secondary">{lead.phone}</p>
-                      )}
-                      {lead.email && (
-                        <p className="text-tiny text-content-tertiary truncate max-w-[200px]">
-                          {lead.email}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium truncate max-w-[200px]">{lead.property_address}</p>
-                      <p className="text-small text-content-secondary">
-                        {[lead.property_city, lead.property_state].filter(Boolean).join(", ")}
-                      </p>
-                      {lead.property_condition && (
-                        <Badge variant="secondary" className="mt-1 text-tiny">
-                          {lead.property_condition.replace(/_/g, " ")}
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>{getScoreBadge(lead.auto_score)}</TableCell>
-                  <TableCell>
-                    <span className="text-small capitalize">
-                      {lead.sell_timeline?.replace(/_/g, " ") || "—"}
-                    </span>
-                  </TableCell>
-                  <TableCell>{getStatusBadge(lead.status)}</TableCell>
-                  <TableCell>
-                    <span className="text-small text-content-secondary">
-                      {lead.created_at ? format(new Date(lead.created_at), "MMM d, yyyy") : "—"}
-                    </span>
-                  </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48 bg-white">
-                        <DropdownMenuItem onClick={() => openLeadDetail(lead)}>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </DropdownMenuItem>
-                        {lead.phone && (
-                          <DropdownMenuItem onClick={() => window.open(`tel:${lead.phone}`)}>
-                            <Phone className="h-4 w-4 mr-2" />
-                            Call
-                          </DropdownMenuItem>
-                        )}
-                        {lead.email && (
-                          <DropdownMenuItem onClick={() => setEmailLead(lead)}>
-                            <Mail className="h-4 w-4 mr-2" />
-                            Send Email
-                          </DropdownMenuItem>
-                        )}
-                        {lead.phone && (
-                          <DropdownMenuItem onClick={() => setSmsLead(lead)}>
-                            <MessageSquare className="h-4 w-4 mr-2" />
-                            Send SMS
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => setAddToPropertiesLead(lead)}
-                          disabled={!!lead.property_id}
-                        >
-                          <UserPlus className="h-4 w-4 mr-2" />
-                          Add to Properties
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => setDeleteIds([lead.id])}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
+        <LeadKanbanView
+          leads={sortedLeads}
+          onViewDetail={openLeadDetail}
+          onCall={(phone) => window.open(`tel:${phone}`)}
+          onSms={setSmsLead}
+          onEmail={setEmailLead}
+          onAddToProperties={setAddToPropertiesLead}
+          onDelete={(id) => setDeleteIds([id])}
+          onStatusChange={handleStatusChange}
+        />
       )}
 
       {/* Modals */}
