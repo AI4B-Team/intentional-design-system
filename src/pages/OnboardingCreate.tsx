@@ -8,6 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingPage, Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   Building2, 
   Globe, 
@@ -209,21 +216,24 @@ export default function OnboardingCreate() {
 
               <div className="space-y-2">
                 <Label>How many team members?</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {["Just me", "2-5", "6-10", "11-25", "26-50", "50+"].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => setCompanyData((prev) => ({ ...prev, teamSize: size }))}
-                      className={`px-3 py-2.5 rounded-small border text-small font-medium transition-all ${
-                        companyData.teamSize === size
-                          ? "border-brand-accent bg-brand-accent/10 text-brand-accent"
-                          : "border-border bg-background text-content-secondary hover:border-content-tertiary"
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                <div className="relative">
+                  <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary z-10 pointer-events-none" />
+                  <Select
+                    value={companyData.teamSize}
+                    onValueChange={(value) => setCompanyData((prev) => ({ ...prev, teamSize: value }))}
+                  >
+                    <SelectTrigger className="pl-10">
+                      <SelectValue placeholder="Select team size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Just me">Just me</SelectItem>
+                      <SelectItem value="2-5">2-5</SelectItem>
+                      <SelectItem value="6-10">6-10</SelectItem>
+                      <SelectItem value="11-25">11-25</SelectItem>
+                      <SelectItem value="26-50">26-50</SelectItem>
+                      <SelectItem value="50+">50+</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
