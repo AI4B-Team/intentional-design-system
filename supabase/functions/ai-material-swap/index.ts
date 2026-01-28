@@ -61,33 +61,43 @@ serve(async (req) => {
     // Get request data
     const { 
       imageUrl,
-      maskImageUrl,
       materialType,
+      description,
+      referenceImageUrl,
+      userId,
+      imageId,
+      // Legacy support
+      maskImageUrl,
       materialDescription,
       materialImageUrl,
       renovationImageId
     } = await req.json()
 
-    if (!imageUrl || !materialType || !materialDescription) {
+    // Support both new and legacy field names
+    const finalMaterialType = materialType
+    const finalDescription = description || materialDescription
+    const finalImageId = imageId || renovationImageId
+
+    if (!imageUrl || !finalMaterialType || !finalDescription) {
       return new Response(JSON.stringify({ 
-        error: 'imageUrl, materialType, and materialDescription are required' 
+        error: 'imageUrl, materialType, and description are required' 
       }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
     // Build targeted prompt based on material type
     const materialPrompts: Record<string, string> = {
-      flooring: `interior with new ${materialDescription} flooring, seamlessly installed, professional finish`,
-      backsplash: `kitchen with new ${materialDescription} backsplash, professionally installed, grouted perfectly`,
-      countertop: `kitchen/bathroom with new ${materialDescription} countertops, polished finish, professional installation`,
-      cabinets: `room with new ${materialDescription} cabinets, modern hardware, professional installation`,
-      paint: `room with walls painted in ${materialDescription}, fresh professional paint job, clean edges`,
-      roofing: `house exterior with new ${materialDescription} roof, professionally installed`,
-      siding: `house exterior with new ${materialDescription} siding, clean installation`,
-      windows: `building with new ${materialDescription} windows, modern frames, clean installation`,
-      landscaping: `property with ${materialDescription} landscaping, professional design`
+      flooring: `interior with new ${finalDescription} flooring, seamlessly installed, professional finish`,
+      backsplash: `kitchen with new ${finalDescription} backsplash, professionally installed, grouted perfectly`,
+      countertops: `kitchen/bathroom with new ${finalDescription} countertops, polished finish, professional installation`,
+      cabinets: `room with new ${finalDescription} cabinets, modern hardware, professional installation`,
+      paint: `room with walls painted in ${finalDescription}, fresh professional paint job, clean edges`,
+      roofing: `house exterior with new ${finalDescription} roof, professionally installed`,
+      siding: `house exterior with new ${finalDescription} siding, clean installation`,
+      windows: `building with new ${finalDescription} windows, modern frames, clean installation`,
+      landscaping: `property with ${finalDescription} landscaping, professional design`
     }
 
-    const prompt = materialPrompts[materialType] || `with new ${materialDescription}, professional quality`
+    const prompt = materialPrompts[finalMaterialType] || `with new ${finalDescription}, professional quality`
     const fullPrompt = `${prompt}, photorealistic, high quality real estate photography, natural lighting, keep the rest of the room unchanged`
 
     // Build Replicate request
@@ -102,6 +112,12 @@ serve(async (req) => {
 
     if (maskImageUrl) {
       replicateInput.mask = maskImageUrl
+    }
+    
+    if (referenceImageUrl) {
+      // Use reference image for style guidance if provided
+      replicateInput.image_guidance = referenceImageUrl
+      replicateInput.image_guidance_scale = 1.5
     }
 
     const replicateResponse = await fetch('https://api.replicate.com/v1/predictions', {
@@ -151,25 +167,27 @@ serve(async (req) => {
     await supabase.rpc('deduct_credits', {
       p_user_id: user.id,
       p_amount: MATERIAL_SWAP_PRICE,
-      p_description: `Material swap: ${materialType} - ${materialDescription.slice(0, 50)}`,
+      p_description: `Material swap: ${finalMaterialType} - ${finalDescription.slice(0, 50)}`,
       p_service: 'material_swap',
-      p_reference_id: renovationImageId || null
+      p_reference_id: finalImageId || null
     })
 
-    // Update renovation_images
-    if (renovationImageId) {
+    // Generate variation ID
+    const variationId = crypto.randomUUID()
+
+    // Update renovation_images if ID provided
+    if (finalImageId) {
       const { data: existingImage } = await supabase
         .from('renovation_images')
         .select('generated_images, total_credits_used')
-        .eq('id', renovationImageId)
+        .eq('id', finalImageId)
         .single()
 
       const newGenerated = {
-        id: crypto.randomUUID(),
+        id: variationId,
         url: generatedImageUrl,
         type: 'material_swap',
-        materialType,
-        materialDescription,
+        style: finalMaterialType,
         prompt: fullPrompt,
         created_at: new Date().toISOString()
       }
@@ -179,11 +197,11 @@ serve(async (req) => {
         .update({
           generated_images: [...(existingImage?.generated_images || []), newGenerated],
           selected_after_url: generatedImageUrl,
-          selected_after_id: newGenerated.id,
+          selected_after_id: variationId,
           total_credits_used: (existingImage?.total_credits_used || 0) + MATERIAL_SWAP_PRICE,
           updated_at: new Date().toISOString()
         })
-        .eq('id', renovationImageId)
+        .eq('id', finalImageId)
     }
 
     const { data: newCredits } = await supabase
@@ -194,6 +212,7 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       success: true,
+      variationId,
       imageUrl: generatedImageUrl,
       creditsUsed: MATERIAL_SWAP_PRICE,
       newBalance: newCredits?.balance || 0,

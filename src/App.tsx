@@ -70,6 +70,7 @@ import Activity from "./pages/Activity";
 import Renovations from "./pages/Renovations";
 import RenovationDetail from "./pages/RenovationDetail";
 import ImageEditor from "./pages/ImageEditor";
+import MaterialLibrary from "./pages/MaterialLibrary";
 
 const queryClient = new QueryClient();
 
@@ -545,6 +546,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ImageEditor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/renovations/materials"
+              element={
+                <ProtectedRoute>
+                  <MaterialLibrary />
                 </ProtectedRoute>
               }
             />
