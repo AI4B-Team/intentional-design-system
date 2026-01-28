@@ -3312,6 +3312,7 @@ export type Database = {
         Row: {
           accent_color: string | null
           auto_approve_buyers: boolean | null
+          buyer_slug: string | null
           company_email: string | null
           company_logo_url: string | null
           company_name: string | null
@@ -3322,21 +3323,27 @@ export type Database = {
           default_earnest_money: number | null
           default_financing_allowed: string[] | null
           default_theme: string | null
+          default_visibility: string | null
           disclaimer_text: string | null
           email_footer_text: string | null
           email_from_name: string | null
           email_reply_to: string | null
           email_signature: string | null
+          email_unsubscribe_text: string | null
           id: string
           notification_email: string | null
+          notification_phone: string | null
           notification_sms: string | null
           notify_deal_interest: boolean | null
           notify_deal_view: boolean | null
+          notify_interest: boolean | null
           notify_new_buyer: boolean | null
           notify_offer: boolean | null
           organization_id: string | null
           primary_color: string | null
           privacy_url: string | null
+          registration_fields: string[] | null
+          require_email_verification: boolean | null
           require_proof_of_funds: boolean | null
           require_registration: boolean | null
           terms_url: string | null
@@ -3346,6 +3353,7 @@ export type Database = {
         Insert: {
           accent_color?: string | null
           auto_approve_buyers?: boolean | null
+          buyer_slug?: string | null
           company_email?: string | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -3356,21 +3364,27 @@ export type Database = {
           default_earnest_money?: number | null
           default_financing_allowed?: string[] | null
           default_theme?: string | null
+          default_visibility?: string | null
           disclaimer_text?: string | null
           email_footer_text?: string | null
           email_from_name?: string | null
           email_reply_to?: string | null
           email_signature?: string | null
+          email_unsubscribe_text?: string | null
           id?: string
           notification_email?: string | null
+          notification_phone?: string | null
           notification_sms?: string | null
           notify_deal_interest?: boolean | null
           notify_deal_view?: boolean | null
+          notify_interest?: boolean | null
           notify_new_buyer?: boolean | null
           notify_offer?: boolean | null
           organization_id?: string | null
           primary_color?: string | null
           privacy_url?: string | null
+          registration_fields?: string[] | null
+          require_email_verification?: boolean | null
           require_proof_of_funds?: boolean | null
           require_registration?: boolean | null
           terms_url?: string | null
@@ -3380,6 +3394,7 @@ export type Database = {
         Update: {
           accent_color?: string | null
           auto_approve_buyers?: boolean | null
+          buyer_slug?: string | null
           company_email?: string | null
           company_logo_url?: string | null
           company_name?: string | null
@@ -3390,21 +3405,27 @@ export type Database = {
           default_earnest_money?: number | null
           default_financing_allowed?: string[] | null
           default_theme?: string | null
+          default_visibility?: string | null
           disclaimer_text?: string | null
           email_footer_text?: string | null
           email_from_name?: string | null
           email_reply_to?: string | null
           email_signature?: string | null
+          email_unsubscribe_text?: string | null
           id?: string
           notification_email?: string | null
+          notification_phone?: string | null
           notification_sms?: string | null
           notify_deal_interest?: boolean | null
           notify_deal_view?: boolean | null
+          notify_interest?: boolean | null
           notify_new_buyer?: boolean | null
           notify_offer?: boolean | null
           organization_id?: string | null
           primary_color?: string | null
           privacy_url?: string | null
+          registration_fields?: string[] | null
+          require_email_verification?: boolean | null
           require_proof_of_funds?: boolean | null
           require_registration?: boolean | null
           terms_url?: string | null

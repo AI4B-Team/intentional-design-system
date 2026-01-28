@@ -10,6 +10,7 @@ import { useHotOpportunities } from "@/hooks/useHotOpportunities";
 import { usePipelineStats } from "@/hooks/usePipelineStats";
 import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
+import { DispoWidget } from "@/components/dashboard/DispoWidget";
 import {
   Building2,
   Calendar,
@@ -518,6 +519,11 @@ export default function Dashboard() {
             </div>
           )}
         </Card>
+      </div>
+
+      {/* Dispo Widget */}
+      <div className="mb-8">
+        <DispoWidget />
       </div>
 
       {/* Bottom Row */}
