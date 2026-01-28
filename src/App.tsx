@@ -104,6 +104,9 @@ import DispoDeals from "./pages/DispoDeals";
 import DispoDealForm from "./pages/DispoDealForm";
 import DispoDealDetail from "./pages/DispoDealDetail";
 import CashBuyers from "./pages/CashBuyers";
+import DispoCampaigns from "./pages/DispoCampaigns";
+import DispoCampaignForm from "./pages/DispoCampaignForm";
+import DispoCampaignDetail from "./pages/DispoCampaignDetail";
 
 const queryClient = new QueryClient();
 
@@ -769,6 +772,38 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <CashBuyers />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/campaigns"
+              element={
+                <ProtectedRoute>
+                  <DispoCampaigns />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/campaigns/new"
+              element={
+                <ProtectedRoute>
+                  <DispoCampaignForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/campaigns/:id"
+              element={
+                <ProtectedRoute>
+                  <DispoCampaignDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dispo/campaigns/:id/edit"
+              element={
+                <ProtectedRoute>
+                  <DispoCampaignForm />
                 </ProtectedRoute>
               }
             />

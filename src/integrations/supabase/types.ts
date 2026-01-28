@@ -2947,6 +2947,153 @@ export type Database = {
           },
         ]
       }
+      dispo_campaign_recipients: {
+        Row: {
+          bounced_at: string | null
+          buyer_id: string | null
+          campaign_id: string
+          clicked_at: string | null
+          created_at: string
+          email: string
+          id: string
+          opened_at: string | null
+          sent_at: string | null
+          status: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          bounced_at?: string | null
+          buyer_id?: string | null
+          campaign_id: string
+          clicked_at?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          status?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          bounced_at?: string | null
+          buyer_id?: string | null
+          campaign_id?: string
+          clicked_at?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          opened_at?: string | null
+          sent_at?: string | null
+          status?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispo_campaign_recipients_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispo_campaign_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "dispo_campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispo_campaigns: {
+        Row: {
+          body_html: string
+          body_json: Json | null
+          bounced_count: number | null
+          clicked_count: number | null
+          created_at: string
+          deal_id: string | null
+          id: string
+          name: string
+          opened_count: number | null
+          organization_id: string | null
+          preview_text: string | null
+          recipient_count: number | null
+          recipient_filter: Json | null
+          scheduled_at: string | null
+          sent_at: string | null
+          sent_count: number | null
+          status: string
+          subject: string
+          template_type: string | null
+          unsubscribed_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body_html?: string
+          body_json?: Json | null
+          bounced_count?: number | null
+          clicked_count?: number | null
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          name: string
+          opened_count?: number | null
+          organization_id?: string | null
+          preview_text?: string | null
+          recipient_count?: number | null
+          recipient_filter?: Json | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          subject: string
+          template_type?: string | null
+          unsubscribed_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body_html?: string
+          body_json?: Json | null
+          bounced_count?: number | null
+          clicked_count?: number | null
+          created_at?: string
+          deal_id?: string | null
+          id?: string
+          name?: string
+          opened_count?: number | null
+          organization_id?: string | null
+          preview_text?: string | null
+          recipient_count?: number | null
+          recipient_filter?: Json | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          sent_count?: number | null
+          status?: string
+          subject?: string
+          template_type?: string | null
+          unsubscribed_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispo_campaigns_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "dispo_deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispo_campaigns_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dispo_deals: {
         Row: {
           access_password: string | null
