@@ -92,6 +92,7 @@ import DialerScripts from "./pages/DialerScripts";
 import DialerScriptDetail from "./pages/DialerScriptDetail";
 import DialerHistory from "./pages/DialerHistory";
 import DialerSettings from "./pages/DialerSettings";
+import SellerWebsitePage from "./pages/SellerWebsitePage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -109,6 +110,7 @@ const App = () => (
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/submit-deal" element={<SubmitDeal />} />
+                  <Route path="/s/:slug" element={<SellerWebsitePage />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/onboarding-old" element={<Onboarding />} />
                   
