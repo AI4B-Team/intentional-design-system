@@ -50,6 +50,8 @@ import {
 } from "lucide-react";
 import { CreateListModal } from "@/components/lists/create-list-modal";
 import { ListPresetsSection } from "@/components/lists/list-presets-section";
+import { ListHealthWidget } from "@/components/lists/list-health-widget";
+import { DuplicateReportWidget } from "@/components/lists/duplicate-report-widget";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -372,6 +374,12 @@ export default function Lists() {
             )}
           </CardContent>
         </Card>
+
+        {/* Health & Duplicate Report */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ListHealthWidget />
+          <DuplicateReportWidget />
+        </div>
       </div>
 
       <CreateListModal
