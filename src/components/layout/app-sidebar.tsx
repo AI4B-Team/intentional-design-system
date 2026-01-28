@@ -55,10 +55,18 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Pipeline", href: "/pipeline", icon: Briefcase, badge: 3 },
       { label: "Marketplace", href: "/marketplace", icon: Banknote },
-      { label: "Calculators", href: "/calculators", icon: Calculator },
       { label: "Capital", href: "/capital", icon: Banknote },
-      { label: "Analytics", href: "/analytics", icon: BarChart3 },
       { label: "Documents", href: "/documents", icon: FileText },
+    ],
+  },
+  {
+    label: "Analysis Tools",
+    items: [
+      { label: "Deal Analyzer", href: "/calculators?tab=deal", icon: Calculator },
+      { label: "Comp Search", href: "/calculators?tab=comps", icon: MapPin },
+      { label: "Rental Calculator", href: "/calculators?tab=rental", icon: Home },
+      { label: "Repair Estimator", href: "/calculators?tab=repairs", icon: Briefcase },
+      { label: "Market Trends", href: "/calculators?tab=trends", icon: BarChart3 },
     ],
   },
   {

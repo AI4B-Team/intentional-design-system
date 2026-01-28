@@ -6,3 +6,4 @@ export { RecentActivityList } from "./recent-activity-list";
 export { TeamActivityFeed } from "./team-activity-feed";
 export { TeamWorkloadCard } from "./team-workload-card";
 export { LeaderboardWidget } from "./leaderboard-widget";
+export { RecentAnalysesWidget } from "./RecentAnalysesWidget";
