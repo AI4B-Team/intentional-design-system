@@ -352,7 +352,7 @@ export function MarketplaceListings({
                     <ChevronDown className="h-3 w-3 text-muted-foreground" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-40 p-1 bg-background" align="start">
+                <PopoverContent className="w-40 p-1 bg-background z-[60]" align="start">
                   <button
                     className="w-full text-left px-3 py-2 text-sm hover:bg-muted rounded-sm"
                     onClick={() => onSelectAll(true)}
@@ -381,7 +381,7 @@ export function MarketplaceListings({
                 <SelectTrigger className="w-[70px] h-8 bg-background">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-background">
+                <SelectContent className="bg-background z-[60]">
                   <SelectItem value="10">10</SelectItem>
                   <SelectItem value="25">25</SelectItem>
                   <SelectItem value="50">50</SelectItem>
@@ -397,7 +397,7 @@ export function MarketplaceListings({
                 <SelectTrigger className="w-[150px] h-8 bg-background">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-background">
+                <SelectContent className="bg-background z-[60]">
                   <SelectItem value="newest" className="text-primary data-[state=checked]:text-primary">Newest</SelectItem>
                   <SelectItem value="oldest">Oldest</SelectItem>
                   <SelectItem value="price_low">Price: Low to High</SelectItem>

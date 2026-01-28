@@ -130,16 +130,16 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="flex items-center gap-3 p-4 bg-white border-b border-border overflow-x-auto">
+      <div className="flex items-center gap-2 p-3 bg-white border-b border-border flex-wrap">
         {/* Address Search */}
-        <div className="relative min-w-[240px]">
+        <div className="relative min-w-[200px] flex-shrink-0">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Address, City, County, State, or Zip"
             value={filters.address}
             onChange={(e) => handleChange("address", e.target.value)}
-            className="pl-9 h-10 bg-background"
+            className="pl-9 h-9 bg-background text-sm"
           />
         </div>
 
@@ -148,10 +148,10 @@ export function MarketplaceFilters({
           value={filters.listingStatus || "all"} 
           onValueChange={(v) => handleChange("listingStatus", v)}
         >
-          <SelectTrigger className="w-[130px] h-10 bg-background">
+          <SelectTrigger className="w-[110px] h-9 bg-background text-sm flex-shrink-0">
             <SelectValue placeholder="All Listings" />
           </SelectTrigger>
-          <SelectContent className="bg-background z-50">
+          <SelectContent className="bg-background z-[60]">
             <SelectItem value="all">
               <span className="flex items-center gap-2">
                 All Listings
@@ -168,10 +168,10 @@ export function MarketplaceFilters({
           value={filters.leadType || "all"} 
           onValueChange={(v) => handleChange("leadType", v)}
         >
-          <SelectTrigger className="w-[140px] h-10 bg-background">
+          <SelectTrigger className="w-[120px] h-9 bg-background text-sm flex-shrink-0">
             <SelectValue placeholder="Lead Type" />
           </SelectTrigger>
-          <SelectContent className="bg-background z-50">
+          <SelectContent className="bg-background z-[60]">
             {leadTypeOptions.map((type) => (
               <SelectItem 
                 key={type} 
@@ -190,12 +190,12 @@ export function MarketplaceFilters({
         {/* Home Type */}
         <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 gap-1 bg-background">
+            <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
               {getHomeTypeLabel()}
               <ChevronDown className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-56 bg-background z-50" align="start">
+          <PopoverContent className="w-56 bg-background z-[60]" align="start">
             <div className="space-y-3">
               <div className="font-semibold">Home Type</div>
               <button
@@ -235,10 +235,10 @@ export function MarketplaceFilters({
           value={filters.priceRange || "any"} 
           onValueChange={(v) => handleChange("priceRange", v)}
         >
-          <SelectTrigger className="w-[130px] h-10 bg-background">
+          <SelectTrigger className="w-[110px] h-9 bg-background text-sm flex-shrink-0">
             <SelectValue placeholder="Price" />
           </SelectTrigger>
-          <SelectContent className="bg-background z-50">
+          <SelectContent className="bg-background z-[60]">
             {priceRangeOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 <span className={cn(
@@ -254,12 +254,12 @@ export function MarketplaceFilters({
         {/* Beds & Baths */}
         <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="h-10 gap-1 bg-background">
+            <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
               Beds & Baths
               <ChevronDown className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 bg-background z-50" align="start">
+          <PopoverContent className="w-72 bg-background z-[60]" align="start">
             <div className="space-y-4">
               {/* Bedrooms */}
               <div className="space-y-2">
@@ -332,7 +332,7 @@ export function MarketplaceFilters({
         {/* More Filters */}
         <Button 
           variant="outline" 
-          className="h-10 gap-2 bg-background"
+          className="h-9 gap-2 bg-background text-sm flex-shrink-0"
           onClick={() => setMoreFiltersOpen(true)}
         >
           <SlidersHorizontal className="h-4 w-4" />
@@ -342,18 +342,18 @@ export function MarketplaceFilters({
         {/* Save Search */}
         <Button 
           variant="secondary" 
-          className="h-10 gap-2 bg-slate-800 text-white hover:bg-slate-700"
+          className="h-9 gap-2 bg-slate-800 text-white hover:bg-slate-700 text-sm flex-shrink-0"
         >
           <Bookmark className="h-4 w-4" />
           Save Search
         </Button>
 
         {/* Spacer */}
-        <div className="flex-1" />
+        <div className="flex-1 min-w-0" />
 
         {/* Post A Deal */}
         <Button 
-          className="h-10 gap-2 bg-primary hover:bg-primary/90 text-white"
+          className="h-9 gap-2 bg-primary hover:bg-primary/90 text-white text-sm flex-shrink-0"
           onClick={() => navigate("/submit-deal")}
         >
           <Plus className="h-4 w-4" />
@@ -361,7 +361,7 @@ export function MarketplaceFilters({
         </Button>
 
         {/* Buy Box */}
-        <Button variant="outline" className="h-10 gap-2 bg-background">
+        <Button variant="outline" className="h-9 gap-2 bg-background text-sm flex-shrink-0">
           <Sparkles className="h-4 w-4" />
           Buy Box
         </Button>
