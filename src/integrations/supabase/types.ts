@@ -998,6 +998,332 @@ export type Database = {
           },
         ]
       }
+      d4d_areas: {
+        Row: {
+          boundary_coordinates: Json | null
+          center_lat: number | null
+          center_lng: number | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_favorite: boolean | null
+          last_driven_at: string | null
+          name: string
+          organization_id: string | null
+          properties_tagged: number | null
+          times_driven: number | null
+          total_miles_driven: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          boundary_coordinates?: Json | null
+          center_lat?: number | null
+          center_lng?: number | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          last_driven_at?: string | null
+          name: string
+          organization_id?: string | null
+          properties_tagged?: number | null
+          times_driven?: number | null
+          total_miles_driven?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          boundary_coordinates?: Json | null
+          center_lat?: number | null
+          center_lng?: number | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_favorite?: boolean | null
+          last_driven_at?: string | null
+          name?: string
+          organization_id?: string | null
+          properties_tagged?: number | null
+          times_driven?: number | null
+          total_miles_driven?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "d4d_areas_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      d4d_mileage_log: {
+        Row: {
+          calculated_miles: number | null
+          created_at: string | null
+          date: string
+          deduction_amount: number | null
+          description: string | null
+          end_odometer: number | null
+          final_miles: number | null
+          id: string
+          mileage_rate: number | null
+          notes: string | null
+          organization_id: string | null
+          purpose: string | null
+          session_id: string | null
+          start_odometer: number | null
+          user_id: string
+        }
+        Insert: {
+          calculated_miles?: number | null
+          created_at?: string | null
+          date: string
+          deduction_amount?: number | null
+          description?: string | null
+          end_odometer?: number | null
+          final_miles?: number | null
+          id?: string
+          mileage_rate?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          purpose?: string | null
+          session_id?: string | null
+          start_odometer?: number | null
+          user_id: string
+        }
+        Update: {
+          calculated_miles?: number | null
+          created_at?: string | null
+          date?: string
+          deduction_amount?: number | null
+          description?: string | null
+          end_odometer?: number | null
+          final_miles?: number | null
+          id?: string
+          mileage_rate?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          purpose?: string | null
+          session_id?: string | null
+          start_odometer?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "d4d_mileage_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "d4d_mileage_log_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "driving_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      d4d_properties: {
+        Row: {
+          address: string | null
+          city: string | null
+          condition: string | null
+          county: string | null
+          created_at: string | null
+          formatted_address: string | null
+          has_abandoned_vehicles: boolean | null
+          has_boarded_windows: boolean | null
+          has_broken_windows: boolean | null
+          has_code_violations: boolean | null
+          has_for_sale_sign: boolean | null
+          has_mail_pileup: boolean | null
+          has_notice_on_door: boolean | null
+          has_overgrown_lawn: boolean | null
+          has_peeling_paint: boolean | null
+          has_roof_damage: boolean | null
+          id: string
+          latitude: number
+          longitude: number
+          occupancy: string | null
+          organization_id: string | null
+          photos: Json | null
+          priority: number | null
+          property_type: string | null
+          session_id: string | null
+          state: string | null
+          street_name: string | null
+          street_number: string | null
+          sync_status: string | null
+          synced_at: string | null
+          synced_to_property_id: string | null
+          tagged_at: string | null
+          tags: string[] | null
+          updated_at: string | null
+          user_id: string
+          voice_note_transcript: string | null
+          voice_note_url: string | null
+          written_notes: string | null
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          condition?: string | null
+          county?: string | null
+          created_at?: string | null
+          formatted_address?: string | null
+          has_abandoned_vehicles?: boolean | null
+          has_boarded_windows?: boolean | null
+          has_broken_windows?: boolean | null
+          has_code_violations?: boolean | null
+          has_for_sale_sign?: boolean | null
+          has_mail_pileup?: boolean | null
+          has_notice_on_door?: boolean | null
+          has_overgrown_lawn?: boolean | null
+          has_peeling_paint?: boolean | null
+          has_roof_damage?: boolean | null
+          id?: string
+          latitude: number
+          longitude: number
+          occupancy?: string | null
+          organization_id?: string | null
+          photos?: Json | null
+          priority?: number | null
+          property_type?: string | null
+          session_id?: string | null
+          state?: string | null
+          street_name?: string | null
+          street_number?: string | null
+          sync_status?: string | null
+          synced_at?: string | null
+          synced_to_property_id?: string | null
+          tagged_at?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          voice_note_transcript?: string | null
+          voice_note_url?: string | null
+          written_notes?: string | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          condition?: string | null
+          county?: string | null
+          created_at?: string | null
+          formatted_address?: string | null
+          has_abandoned_vehicles?: boolean | null
+          has_boarded_windows?: boolean | null
+          has_broken_windows?: boolean | null
+          has_code_violations?: boolean | null
+          has_for_sale_sign?: boolean | null
+          has_mail_pileup?: boolean | null
+          has_notice_on_door?: boolean | null
+          has_overgrown_lawn?: boolean | null
+          has_peeling_paint?: boolean | null
+          has_roof_damage?: boolean | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          occupancy?: string | null
+          organization_id?: string | null
+          photos?: Json | null
+          priority?: number | null
+          property_type?: string | null
+          session_id?: string | null
+          state?: string | null
+          street_name?: string | null
+          street_number?: string | null
+          sync_status?: string | null
+          synced_at?: string | null
+          synced_to_property_id?: string | null
+          tagged_at?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          voice_note_transcript?: string | null
+          voice_note_url?: string | null
+          written_notes?: string | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "d4d_properties_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "d4d_properties_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "driving_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "d4d_properties_synced_to_property_id_fkey"
+            columns: ["synced_to_property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      d4d_route_points: {
+        Row: {
+          accuracy: number | null
+          altitude: number | null
+          heading: number | null
+          id: string
+          latitude: number
+          longitude: number
+          recorded_at: string | null
+          session_id: string
+          speed: number | null
+        }
+        Insert: {
+          accuracy?: number | null
+          altitude?: number | null
+          heading?: number | null
+          id?: string
+          latitude: number
+          longitude: number
+          recorded_at?: string | null
+          session_id: string
+          speed?: number | null
+        }
+        Update: {
+          accuracy?: number | null
+          altitude?: number | null
+          heading?: number | null
+          id?: string
+          latitude?: number
+          longitude?: number
+          recorded_at?: string | null
+          session_id?: string
+          speed?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "d4d_route_points_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "driving_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_sources: {
         Row: {
           company: string | null
@@ -1152,6 +1478,92 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driving_sessions: {
+        Row: {
+          active_duration_seconds: number | null
+          bounds_east: number | null
+          bounds_north: number | null
+          bounds_south: number | null
+          bounds_west: number | null
+          created_at: string | null
+          ended_at: string | null
+          id: string
+          name: string | null
+          notes_recorded: number | null
+          organization_id: string | null
+          photos_taken: number | null
+          properties_tagged: number | null
+          route_coordinates: Json | null
+          route_polyline: string | null
+          started_at: string | null
+          status: string | null
+          temperature_f: number | null
+          total_duration_seconds: number | null
+          total_miles: number | null
+          updated_at: string | null
+          user_id: string
+          weather_conditions: string | null
+        }
+        Insert: {
+          active_duration_seconds?: number | null
+          bounds_east?: number | null
+          bounds_north?: number | null
+          bounds_south?: number | null
+          bounds_west?: number | null
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          name?: string | null
+          notes_recorded?: number | null
+          organization_id?: string | null
+          photos_taken?: number | null
+          properties_tagged?: number | null
+          route_coordinates?: Json | null
+          route_polyline?: string | null
+          started_at?: string | null
+          status?: string | null
+          temperature_f?: number | null
+          total_duration_seconds?: number | null
+          total_miles?: number | null
+          updated_at?: string | null
+          user_id: string
+          weather_conditions?: string | null
+        }
+        Update: {
+          active_duration_seconds?: number | null
+          bounds_east?: number | null
+          bounds_north?: number | null
+          bounds_south?: number | null
+          bounds_west?: number | null
+          created_at?: string | null
+          ended_at?: string | null
+          id?: string
+          name?: string | null
+          notes_recorded?: number | null
+          organization_id?: string | null
+          photos_taken?: number | null
+          properties_tagged?: number | null
+          route_coordinates?: Json | null
+          route_polyline?: string | null
+          started_at?: string | null
+          status?: string | null
+          temperature_f?: number | null
+          total_duration_seconds?: number | null
+          total_miles?: number | null
+          updated_at?: string | null
+          user_id?: string
+          weather_conditions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driving_sessions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -4053,6 +4465,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: Json
+      }
+      calculate_distance_miles: {
+        Args: { lat1: number; lat2: number; lng1: number; lng2: number }
+        Returns: number
       }
       deduct_credits: {
         Args: {
