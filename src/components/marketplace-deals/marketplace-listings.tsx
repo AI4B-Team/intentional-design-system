@@ -188,27 +188,29 @@ function DealCard({
         />
         
         {/* Top Controls */}
-        <div className="absolute top-2 left-2 right-2 flex items-start justify-between">
-          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-white/95 rounded shadow-sm p-0.5 flex items-center justify-center">
+        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white rounded-md shadow-sm p-1 flex items-center justify-center">
               <Checkbox
                 checked={isSelected}
                 onCheckedChange={onSelect}
-                className="h-3.5 w-3.5"
+                className="h-4 w-4"
               />
             </div>
             {deal.isNew && (
-              <Badge className="bg-slate-800 text-white text-[10px] font-medium px-2 py-0.5">New</Badge>
+              <Badge className="bg-amber-400 text-slate-900 text-xs font-medium px-2.5 py-1 rounded-md">
+                New 2 Days Ago
+              </Badge>
             )}
           </div>
           <TooltipProvider delayDuration={300}>
-            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="h-6 px-2 bg-white/95 hover:bg-white rounded-md shadow-sm"
+                    size="icon"
+                    className="h-8 w-8 bg-white hover:bg-white/90 rounded-full shadow-sm"
                     onClick={(e) => {
                       e.stopPropagation();
                       const url = `${window.location.origin}/marketplace/deal/${deal.id}`;
@@ -216,7 +218,7 @@ function DealCard({
                       toast.success("Link copied to clipboard!");
                     }}
                   >
-                    <ExternalLink className="h-3 w-3 text-slate-600" />
+                    <ExternalLink className="h-4 w-4 text-slate-600" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -227,9 +229,9 @@ function DealCard({
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     className={cn(
-                      "h-6 px-2 bg-white/95 hover:bg-white rounded-md shadow-sm",
+                      "h-8 w-8 bg-white hover:bg-white/90 rounded-full shadow-sm",
                       deal.isFavorite && "text-destructive"
                     )}
                     onClick={(e) => {
@@ -237,7 +239,7 @@ function DealCard({
                       toast.success(deal.isFavorite ? "Removed from favorites" : "Added to favorites");
                     }}
                   >
-                    <Heart className={cn("h-3 w-3", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
+                    <Heart className={cn("h-4 w-4", deal.isFavorite ? "fill-current text-destructive" : "text-slate-600")} />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -254,7 +256,7 @@ function DealCard({
             <Badge
               key={i}
               className={cn(
-                "text-xs font-medium px-2.5 py-1",
+                "text-xs font-medium px-2.5 py-1 rounded-md",
                 tagColors[tag] || "bg-slate-700 text-white"
               )}
             >
@@ -263,7 +265,7 @@ function DealCard({
             </Badge>
           ))}
           {deal.tags.length > 3 && (
-            <Badge className="bg-slate-700/80 text-white text-xs px-2.5 py-1">
+            <Badge className="bg-slate-700/90 text-white text-xs px-2.5 py-1 rounded-md">
               +{deal.tags.length - 3}
             </Badge>
           )}
@@ -282,7 +284,7 @@ function DealCard({
         <DealRiskMeter arvPercent={deal.arvPercent} />
 
         {/* Financial Breakdown */}
-        <div className="mt-4 space-y-2 border-t border-border pt-4">
+        <div className="mt-4 space-y-2.5 border-t border-border pt-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <TrendingUp className="h-4 w-4" />
@@ -304,7 +306,7 @@ function DealCard({
             </div>
             <span className="font-medium text-foreground">- {formatCurrency(estRepairs)}</span>
           </div>
-          <div className="flex items-center justify-between border-t border-border pt-2">
+          <div className="flex items-center justify-between border-t border-border pt-2.5">
             <div className="flex items-center gap-2 text-sm">
               <CircleDollarSign className="h-4 w-4 text-primary" />
               <span className="font-semibold text-foreground">Profit Potential:</span>
@@ -319,32 +321,36 @@ function DealCard({
         </div>
 
         {/* Rent & PITI Row */}
-        <div className="mt-4 grid grid-cols-2 gap-4 border-t border-border pt-4">
-          <div className="flex items-center gap-2">
+        <div className="mt-4 flex items-center border-t border-border pt-4">
+          <div className="flex-1 flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Rent</span>
             <span className="font-semibold text-foreground">{formatCurrency(monthlyRent)}/mo</span>
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="w-px h-6 bg-border mx-4" />
+          <div className="flex-1 flex items-center justify-end gap-2">
             <span className="text-sm text-muted-foreground">PITI</span>
             <span className="font-semibold text-foreground">{formatCurrency(piti)}/mo</span>
           </div>
         </div>
 
         {/* Property Specs */}
-        <div className="mt-4 grid grid-cols-4 gap-2 border-t border-border pt-4">
-          <div className="flex flex-col items-center text-center">
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-4">
+          <div className="flex flex-col items-center text-center flex-1">
             <Bed className="h-5 w-5 text-muted-foreground mb-1" />
             <span className="text-sm font-medium whitespace-nowrap">{deal.beds} Beds</span>
           </div>
-          <div className="flex flex-col items-center text-center">
+          <div className="w-px h-10 bg-border" />
+          <div className="flex flex-col items-center text-center flex-1">
             <Bath className="h-5 w-5 text-muted-foreground mb-1" />
             <span className="text-sm font-medium whitespace-nowrap">{deal.baths} Baths</span>
           </div>
-          <div className="flex flex-col items-center text-center">
+          <div className="w-px h-10 bg-border" />
+          <div className="flex flex-col items-center text-center flex-1">
             <Tag className="h-5 w-5 text-muted-foreground mb-1" />
             <span className="text-sm font-medium whitespace-nowrap">{deal.sqft.toLocaleString()} SqFt</span>
           </div>
-          <div className="flex flex-col items-center text-center">
+          <div className="w-px h-10 bg-border" />
+          <div className="flex flex-col items-center text-center flex-1">
             <Calendar className="h-5 w-5 text-muted-foreground mb-1" />
             <span className="text-sm font-medium whitespace-nowrap">Built {yearBuilt}</span>
           </div>
