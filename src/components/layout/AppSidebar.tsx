@@ -622,7 +622,7 @@ export function AppSidebar({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed lg:relative inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200",
+          "fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200 h-full lg:h-screen",
           collapsed ? "lg:w-16" : "lg:w-64",
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
         )}
