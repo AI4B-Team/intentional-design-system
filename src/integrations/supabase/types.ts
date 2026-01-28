@@ -378,6 +378,53 @@ export type Database = {
           },
         ]
       }
+      buyer_portal_sessions: {
+        Row: {
+          buyer_id: string
+          created_at: string | null
+          expires_at: string
+          id: string
+          ip_address: string | null
+          last_active_at: string | null
+          magic_link_expires_at: string | null
+          magic_link_token: string | null
+          session_token: string
+          user_agent: string | null
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: string | null
+          last_active_at?: string | null
+          magic_link_expires_at?: string | null
+          magic_link_token?: string | null
+          session_token: string
+          user_agent?: string | null
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          last_active_at?: string | null
+          magic_link_expires_at?: string | null
+          magic_link_token?: string | null
+          session_token?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_portal_sessions_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       buyers: {
         Row: {
           avg_close_days: number | null
@@ -1171,6 +1218,162 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cash_buyers: {
+        Row: {
+          buyer_rating: number | null
+          buying_strategy: string[] | null
+          can_close_days: number | null
+          company_name: string | null
+          condition_preference: string[] | null
+          created_at: string | null
+          deals_interested: number | null
+          deals_purchased: number | null
+          deals_viewed: number | null
+          email: string
+          email_opt_in: boolean | null
+          first_name: string | null
+          full_name: string | null
+          funding_type: string | null
+          id: string
+          is_verified: boolean | null
+          last_active_at: string | null
+          last_name: string | null
+          markets: string[] | null
+          max_arv: number | null
+          max_price: number | null
+          min_arv: number | null
+          min_equity_pct: number | null
+          min_price: number | null
+          notes: string | null
+          organization_id: string | null
+          phone: string | null
+          proof_of_funds_amount: number | null
+          proof_of_funds_url: string | null
+          proof_of_funds_verified: boolean | null
+          property_types: string[] | null
+          rating_notes: string | null
+          referred_by: string | null
+          sms_opt_in: boolean | null
+          source: string | null
+          source_detail: string | null
+          status: string | null
+          tags: string[] | null
+          total_purchase_volume: number | null
+          updated_at: string | null
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+          zip_codes: string[] | null
+        }
+        Insert: {
+          buyer_rating?: number | null
+          buying_strategy?: string[] | null
+          can_close_days?: number | null
+          company_name?: string | null
+          condition_preference?: string[] | null
+          created_at?: string | null
+          deals_interested?: number | null
+          deals_purchased?: number | null
+          deals_viewed?: number | null
+          email: string
+          email_opt_in?: boolean | null
+          first_name?: string | null
+          full_name?: string | null
+          funding_type?: string | null
+          id?: string
+          is_verified?: boolean | null
+          last_active_at?: string | null
+          last_name?: string | null
+          markets?: string[] | null
+          max_arv?: number | null
+          max_price?: number | null
+          min_arv?: number | null
+          min_equity_pct?: number | null
+          min_price?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          proof_of_funds_amount?: number | null
+          proof_of_funds_url?: string | null
+          proof_of_funds_verified?: boolean | null
+          property_types?: string[] | null
+          rating_notes?: string | null
+          referred_by?: string | null
+          sms_opt_in?: boolean | null
+          source?: string | null
+          source_detail?: string | null
+          status?: string | null
+          tags?: string[] | null
+          total_purchase_volume?: number | null
+          updated_at?: string | null
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+          zip_codes?: string[] | null
+        }
+        Update: {
+          buyer_rating?: number | null
+          buying_strategy?: string[] | null
+          can_close_days?: number | null
+          company_name?: string | null
+          condition_preference?: string[] | null
+          created_at?: string | null
+          deals_interested?: number | null
+          deals_purchased?: number | null
+          deals_viewed?: number | null
+          email?: string
+          email_opt_in?: boolean | null
+          first_name?: string | null
+          full_name?: string | null
+          funding_type?: string | null
+          id?: string
+          is_verified?: boolean | null
+          last_active_at?: string | null
+          last_name?: string | null
+          markets?: string[] | null
+          max_arv?: number | null
+          max_price?: number | null
+          min_arv?: number | null
+          min_equity_pct?: number | null
+          min_price?: number | null
+          notes?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          proof_of_funds_amount?: number | null
+          proof_of_funds_url?: string | null
+          proof_of_funds_verified?: boolean | null
+          property_types?: string[] | null
+          rating_notes?: string | null
+          referred_by?: string | null
+          sms_opt_in?: boolean | null
+          source?: string | null
+          source_detail?: string | null
+          status?: string | null
+          tags?: string[] | null
+          total_purchase_volume?: number | null
+          updated_at?: string | null
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          zip_codes?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cash_buyers_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cash_buyers_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
             referencedColumns: ["id"]
           },
         ]
@@ -2249,6 +2452,205 @@ export type Database = {
           },
         ]
       }
+      deal_campaigns: {
+        Row: {
+          click_rate: number | null
+          created_at: string | null
+          deal_id: string
+          email_body: string | null
+          emails_clicked: number | null
+          emails_delivered: number | null
+          emails_opened: number | null
+          emails_sent: number | null
+          id: string
+          interests_generated: number | null
+          name: string
+          offers_received: number | null
+          open_rate: number | null
+          organization_id: string | null
+          preview_text: string | null
+          recipient_count: number | null
+          recipient_filter: Json | null
+          recipient_ids: string[] | null
+          scheduled_at: string | null
+          sent_at: string | null
+          status: string | null
+          subject: string
+          unique_clicks: number | null
+          unique_opens: number | null
+          unsubscribes: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          click_rate?: number | null
+          created_at?: string | null
+          deal_id: string
+          email_body?: string | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          interests_generated?: number | null
+          name: string
+          offers_received?: number | null
+          open_rate?: number | null
+          organization_id?: string | null
+          preview_text?: string | null
+          recipient_count?: number | null
+          recipient_filter?: Json | null
+          recipient_ids?: string[] | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject: string
+          unique_clicks?: number | null
+          unique_opens?: number | null
+          unsubscribes?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          click_rate?: number | null
+          created_at?: string | null
+          deal_id?: string
+          email_body?: string | null
+          emails_clicked?: number | null
+          emails_delivered?: number | null
+          emails_opened?: number | null
+          emails_sent?: number | null
+          id?: string
+          interests_generated?: number | null
+          name?: string
+          offers_received?: number | null
+          open_rate?: number | null
+          organization_id?: string | null
+          preview_text?: string | null
+          recipient_count?: number | null
+          recipient_filter?: Json | null
+          recipient_ids?: string[] | null
+          scheduled_at?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string
+          unique_clicks?: number | null
+          unique_opens?: number | null
+          unsubscribes?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_campaigns_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "dispo_deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_campaigns_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_interests: {
+        Row: {
+          buyer_id: string | null
+          campaign_id: string | null
+          created_at: string | null
+          deal_id: string
+          follow_up_notes: string | null
+          follow_up_status: string | null
+          guest_email: string | null
+          guest_name: string | null
+          guest_phone: string | null
+          id: string
+          interest_type: string
+          last_contacted_at: string | null
+          message: string | null
+          offer_amount: number | null
+          offer_notes: string | null
+          offer_submitted_at: string | null
+          organization_id: string | null
+          questions: string | null
+          source: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          buyer_id?: string | null
+          campaign_id?: string | null
+          created_at?: string | null
+          deal_id: string
+          follow_up_notes?: string | null
+          follow_up_status?: string | null
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          interest_type: string
+          last_contacted_at?: string | null
+          message?: string | null
+          offer_amount?: number | null
+          offer_notes?: string | null
+          offer_submitted_at?: string | null
+          organization_id?: string | null
+          questions?: string | null
+          source?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          buyer_id?: string | null
+          campaign_id?: string | null
+          created_at?: string | null
+          deal_id?: string
+          follow_up_notes?: string | null
+          follow_up_status?: string | null
+          guest_email?: string | null
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          interest_type?: string
+          last_contacted_at?: string | null
+          message?: string | null
+          offer_amount?: number | null
+          offer_notes?: string | null
+          offer_submitted_at?: string | null
+          organization_id?: string | null
+          questions?: string | null
+          source?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_interests_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_interests_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "dispo_deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_interests_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_sources: {
         Row: {
           company: string | null
@@ -2407,6 +2809,72 @@ export type Database = {
           },
         ]
       }
+      deal_views: {
+        Row: {
+          buyer_id: string | null
+          deal_id: string
+          documents_accessed: boolean | null
+          id: string
+          ip_address: string | null
+          photos_viewed: number | null
+          referrer: string | null
+          time_on_page_seconds: number | null
+          user_agent: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          viewed_at: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          buyer_id?: string | null
+          deal_id: string
+          documents_accessed?: boolean | null
+          id?: string
+          ip_address?: string | null
+          photos_viewed?: number | null
+          referrer?: string | null
+          time_on_page_seconds?: number | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          viewed_at?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          buyer_id?: string | null
+          deal_id?: string
+          documents_accessed?: boolean | null
+          id?: string
+          ip_address?: string | null
+          photos_viewed?: number | null
+          referrer?: string | null
+          time_on_page_seconds?: number | null
+          user_agent?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          viewed_at?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_views_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_views_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "dispo_deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dialer_sessions: {
         Row: {
           appointments_set: number | null
@@ -2475,6 +2943,333 @@ export type Database = {
             columns: ["queue_id"]
             isOneToOne: false
             referencedRelation: "call_queues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispo_deals: {
+        Row: {
+          access_password: string | null
+          address: string
+          arv: number | null
+          asking_price: number
+          assignment_fee: number | null
+          assignment_or_double: boolean | null
+          baths: number | null
+          beds: number | null
+          city: string
+          closing_timeline: string | null
+          comps_data: Json | null
+          comps_summary: string | null
+          contract_price: number | null
+          county: string | null
+          created_at: string | null
+          description: string | null
+          documents: Json | null
+          earnest_money_required: number | null
+          equity_amount: number | null
+          equity_percentage: number | null
+          expires_at: string | null
+          final_sale_price: number | null
+          financing_allowed: string[] | null
+          garage: string | null
+          id: string
+          inquiry_count: number | null
+          interest_count: number | null
+          investment_highlights: string[] | null
+          lot_sqft: number | null
+          neighborhood: string | null
+          notify_on_interest: boolean | null
+          notify_on_view: boolean | null
+          organization_id: string | null
+          password_protected: boolean | null
+          photos: Json | null
+          pool: boolean | null
+          price_per_sqft: number | null
+          property_id: string | null
+          property_type: string | null
+          published_at: string | null
+          repair_details: string | null
+          repair_estimate: number | null
+          show_assignment_fee: boolean | null
+          slug: string
+          sold_at: string | null
+          sold_to_buyer_id: string | null
+          sqft: number | null
+          state: string
+          status: string | null
+          stories: number | null
+          title: string
+          under_contract_at: string | null
+          unique_views: number | null
+          updated_at: string | null
+          user_id: string
+          video_url: string | null
+          view_count: number | null
+          virtual_tour_url: string | null
+          visibility: string | null
+          year_built: number | null
+          zip: string | null
+        }
+        Insert: {
+          access_password?: string | null
+          address: string
+          arv?: number | null
+          asking_price: number
+          assignment_fee?: number | null
+          assignment_or_double?: boolean | null
+          baths?: number | null
+          beds?: number | null
+          city: string
+          closing_timeline?: string | null
+          comps_data?: Json | null
+          comps_summary?: string | null
+          contract_price?: number | null
+          county?: string | null
+          created_at?: string | null
+          description?: string | null
+          documents?: Json | null
+          earnest_money_required?: number | null
+          equity_amount?: number | null
+          equity_percentage?: number | null
+          expires_at?: string | null
+          final_sale_price?: number | null
+          financing_allowed?: string[] | null
+          garage?: string | null
+          id?: string
+          inquiry_count?: number | null
+          interest_count?: number | null
+          investment_highlights?: string[] | null
+          lot_sqft?: number | null
+          neighborhood?: string | null
+          notify_on_interest?: boolean | null
+          notify_on_view?: boolean | null
+          organization_id?: string | null
+          password_protected?: boolean | null
+          photos?: Json | null
+          pool?: boolean | null
+          price_per_sqft?: number | null
+          property_id?: string | null
+          property_type?: string | null
+          published_at?: string | null
+          repair_details?: string | null
+          repair_estimate?: number | null
+          show_assignment_fee?: boolean | null
+          slug: string
+          sold_at?: string | null
+          sold_to_buyer_id?: string | null
+          sqft?: number | null
+          state: string
+          status?: string | null
+          stories?: number | null
+          title: string
+          under_contract_at?: string | null
+          unique_views?: number | null
+          updated_at?: string | null
+          user_id: string
+          video_url?: string | null
+          view_count?: number | null
+          virtual_tour_url?: string | null
+          visibility?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Update: {
+          access_password?: string | null
+          address?: string
+          arv?: number | null
+          asking_price?: number
+          assignment_fee?: number | null
+          assignment_or_double?: boolean | null
+          baths?: number | null
+          beds?: number | null
+          city?: string
+          closing_timeline?: string | null
+          comps_data?: Json | null
+          comps_summary?: string | null
+          contract_price?: number | null
+          county?: string | null
+          created_at?: string | null
+          description?: string | null
+          documents?: Json | null
+          earnest_money_required?: number | null
+          equity_amount?: number | null
+          equity_percentage?: number | null
+          expires_at?: string | null
+          final_sale_price?: number | null
+          financing_allowed?: string[] | null
+          garage?: string | null
+          id?: string
+          inquiry_count?: number | null
+          interest_count?: number | null
+          investment_highlights?: string[] | null
+          lot_sqft?: number | null
+          neighborhood?: string | null
+          notify_on_interest?: boolean | null
+          notify_on_view?: boolean | null
+          organization_id?: string | null
+          password_protected?: boolean | null
+          photos?: Json | null
+          pool?: boolean | null
+          price_per_sqft?: number | null
+          property_id?: string | null
+          property_type?: string | null
+          published_at?: string | null
+          repair_details?: string | null
+          repair_estimate?: number | null
+          show_assignment_fee?: boolean | null
+          slug?: string
+          sold_at?: string | null
+          sold_to_buyer_id?: string | null
+          sqft?: number | null
+          state?: string
+          status?: string | null
+          stories?: number | null
+          title?: string
+          under_contract_at?: string | null
+          unique_views?: number | null
+          updated_at?: string | null
+          user_id?: string
+          video_url?: string | null
+          view_count?: number | null
+          virtual_tour_url?: string | null
+          visibility?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispo_deals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispo_deals_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dispo_deals_sold_to_buyer_id_fkey"
+            columns: ["sold_to_buyer_id"]
+            isOneToOne: false
+            referencedRelation: "cash_buyers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dispo_settings: {
+        Row: {
+          accent_color: string | null
+          auto_approve_buyers: boolean | null
+          company_email: string | null
+          company_logo_url: string | null
+          company_name: string | null
+          company_phone: string | null
+          company_website: string | null
+          created_at: string | null
+          default_closing_timeline: string | null
+          default_earnest_money: number | null
+          default_financing_allowed: string[] | null
+          default_theme: string | null
+          disclaimer_text: string | null
+          email_footer_text: string | null
+          email_from_name: string | null
+          email_reply_to: string | null
+          email_signature: string | null
+          id: string
+          notification_email: string | null
+          notification_sms: string | null
+          notify_deal_interest: boolean | null
+          notify_deal_view: boolean | null
+          notify_new_buyer: boolean | null
+          notify_offer: boolean | null
+          organization_id: string | null
+          primary_color: string | null
+          privacy_url: string | null
+          require_proof_of_funds: boolean | null
+          require_registration: boolean | null
+          terms_url: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string | null
+          auto_approve_buyers?: boolean | null
+          company_email?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          company_phone?: string | null
+          company_website?: string | null
+          created_at?: string | null
+          default_closing_timeline?: string | null
+          default_earnest_money?: number | null
+          default_financing_allowed?: string[] | null
+          default_theme?: string | null
+          disclaimer_text?: string | null
+          email_footer_text?: string | null
+          email_from_name?: string | null
+          email_reply_to?: string | null
+          email_signature?: string | null
+          id?: string
+          notification_email?: string | null
+          notification_sms?: string | null
+          notify_deal_interest?: boolean | null
+          notify_deal_view?: boolean | null
+          notify_new_buyer?: boolean | null
+          notify_offer?: boolean | null
+          organization_id?: string | null
+          primary_color?: string | null
+          privacy_url?: string | null
+          require_proof_of_funds?: boolean | null
+          require_registration?: boolean | null
+          terms_url?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accent_color?: string | null
+          auto_approve_buyers?: boolean | null
+          company_email?: string | null
+          company_logo_url?: string | null
+          company_name?: string | null
+          company_phone?: string | null
+          company_website?: string | null
+          created_at?: string | null
+          default_closing_timeline?: string | null
+          default_earnest_money?: number | null
+          default_financing_allowed?: string[] | null
+          default_theme?: string | null
+          disclaimer_text?: string | null
+          email_footer_text?: string | null
+          email_from_name?: string | null
+          email_reply_to?: string | null
+          email_signature?: string | null
+          id?: string
+          notification_email?: string | null
+          notification_sms?: string | null
+          notify_deal_interest?: boolean | null
+          notify_deal_view?: boolean | null
+          notify_new_buyer?: boolean | null
+          notify_offer?: boolean | null
+          organization_id?: string | null
+          primary_color?: string | null
+          privacy_url?: string | null
+          require_proof_of_funds?: boolean | null
+          require_registration?: boolean | null
+          terms_url?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dispo_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]
@@ -6499,6 +7294,10 @@ export type Database = {
       }
       generate_address_hash: {
         Args: { normalized_address: string }
+        Returns: string
+      }
+      generate_deal_slug: {
+        Args: { deal_address: string; deal_city: string; deal_user_id: string }
         Returns: string
       }
       get_next_queue_contact: {
