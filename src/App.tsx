@@ -99,6 +99,7 @@ import SellerWebsiteWizard from "./pages/SellerWebsiteWizard";
 import SellerWebsiteEditor from "./pages/SellerWebsiteEditor";
 import SellerLeads from "./pages/SellerLeads";
 import WebsiteAnalytics from "./pages/WebsiteAnalytics";
+import PublicDealPage from "./pages/PublicDealPage";
 
 const queryClient = new QueryClient();
 
@@ -113,11 +114,12 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <Routes>
-                  {/* Public routes */}
+                {/* Public routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/submit-deal" element={<SubmitDeal />} />
                   <Route path="/s/:slug" element={<SellerWebsitePage />} />
+                  <Route path="/deals/:slug" element={<PublicDealPage />} />
                   <Route path="/install" element={<Install />} />
                   <Route path="/onboarding-old" element={<Onboarding />} />
                   
