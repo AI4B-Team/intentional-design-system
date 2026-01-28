@@ -14,3 +14,6 @@ export { D4DMileageCard } from "./d4d-mileage-card";
 export { D4DIncompleteSessionDialog } from "./d4d-incomplete-session-dialog";
 export { D4DAreaCard } from "./d4d-area-card";
 export { D4DHeatMapLegend } from "./d4d-heat-map-legend";
+export { AddMileageModal } from "./add-mileage-modal";
+export { MileageExportModal } from "./mileage-export-modal";
+export { MileageWidget } from "./mileage-widget";

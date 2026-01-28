@@ -15,8 +15,10 @@ import {
   Lightbulb,
   AlertCircle,
   Play,
-  Flame
+  Flame,
+  DollarSign
 } from "lucide-react";
+import { MileageWidget } from "./mileage-widget";
 import { cn } from "@/lib/utils";
 
 interface D4DStartScreenProps {
@@ -101,31 +103,9 @@ export function D4DStartScreen({
           Find distressed properties while driving neighborhoods
         </p>
 
-        {/* Quick Stats */}
-        <div className="w-full max-w-sm mb-8 overflow-x-auto pb-2 -mx-2 px-2">
-          <div className="flex gap-3 min-w-max">
-            <Card className="flex-shrink-0 w-28">
-              <CardContent className="p-3 text-center">
-                <Route className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="text-lg font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Miles Driven</p>
-              </CardContent>
-            </Card>
-            <Card className="flex-shrink-0 w-28">
-              <CardContent className="p-3 text-center">
-                <MapPin className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="text-lg font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Properties</p>
-              </CardContent>
-            </Card>
-            <Card className="flex-shrink-0 w-28">
-              <CardContent className="p-3 text-center">
-                <Camera className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                <p className="text-lg font-bold">0</p>
-                <p className="text-xs text-muted-foreground">Photos</p>
-              </CardContent>
-            </Card>
-          </div>
+        {/* Mileage Widget */}
+        <div className="w-full max-w-sm mb-6">
+          <MileageWidget />
         </div>
 
         {/* Session Name Input */}
@@ -167,7 +147,7 @@ export function D4DStartScreen({
         </Button>
 
         {/* Quick Links */}
-        <div className="flex gap-6 mt-6">
+        <div className="flex gap-5 mt-6">
           <button 
             className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => navigate('/d4d/properties')}
@@ -181,6 +161,13 @@ export function D4DStartScreen({
           >
             <History className="h-5 w-5" />
             <span className="text-xs">History</span>
+          </button>
+          <button 
+            className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => navigate('/d4d/mileage')}
+          >
+            <DollarSign className="h-5 w-5" />
+            <span className="text-xs">Mileage</span>
           </button>
           <button 
             className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
