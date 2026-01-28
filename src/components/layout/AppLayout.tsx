@@ -16,7 +16,7 @@ interface AppLayoutProps {
 }
 
 // Routes where sidebar should be collapsed by default
-const collapsedByDefaultRoutes = ["/marketplace"];
+const collapsedByDefaultRoutes = ["/marketplace", "/marketplace/deals", "/marketplace/lenders"];
 
 export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) {
   const location = useLocation();

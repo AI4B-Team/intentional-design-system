@@ -65,9 +65,9 @@ export default function MarketplaceDeals() {
   };
 
   return (
-    <AppLayout>
+    <AppLayout fullWidth>
       <div className="flex flex-col h-[calc(100vh-4rem)] -m-4 lg:-m-6">
-        {/* Filters Bar */}
+        {/* Filters Bar - Full width */}
         <MarketplaceFilters 
           filters={filters} 
           onFiltersChange={setFilters}
@@ -75,15 +75,15 @@ export default function MarketplaceDeals() {
           onAdvancedFiltersChange={setAdvancedFilters}
         />
 
-        {/* Main Content */}
+        {/* Main Content - Split view */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Map Section */}
-          <div className="hidden lg:block w-1/2 border-r border-border">
+          {/* Map Section - 60% width */}
+          <div className="hidden lg:block w-[60%] flex-shrink-0">
             <MarketplaceMap deals={deals} />
           </div>
 
-          {/* Listings Section */}
-          <div className="flex-1 lg:w-1/2 overflow-hidden">
+          {/* Listings Section - 40% width */}
+          <div className="flex-1 lg:w-[40%] overflow-hidden">
             <MarketplaceListings
               deals={deals}
               totalCount={totalCount}
