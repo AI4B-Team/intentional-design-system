@@ -91,6 +91,7 @@ import DialerQueueDetail from "./pages/DialerQueueDetail";
 import DialerScripts from "./pages/DialerScripts";
 import DialerScriptDetail from "./pages/DialerScriptDetail";
 import DialerHistory from "./pages/DialerHistory";
+import DialerSettings from "./pages/DialerSettings";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -737,6 +738,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <DialerHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/dialer"
+              element={
+                <ProtectedRoute>
+                  <DialerSettings />
                 </ProtectedRoute>
               }
             />
