@@ -14,7 +14,8 @@ import {
   Bookmark,
   Lightbulb,
   AlertCircle,
-  Play
+  Play,
+  Flame
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -181,7 +182,17 @@ export function D4DStartScreen({
             <History className="h-5 w-5" />
             <span className="text-xs">History</span>
           </button>
-          <button className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+          <button 
+            className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => navigate('/d4d/heatmap')}
+          >
+            <Flame className="h-5 w-5" />
+            <span className="text-xs">Heat Map</span>
+          </button>
+          <button 
+            className="flex flex-col items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            onClick={() => navigate('/d4d/areas')}
+          >
             <Bookmark className="h-5 w-5" />
             <span className="text-xs">Areas</span>
           </button>
