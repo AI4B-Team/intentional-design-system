@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
@@ -14,14 +15,23 @@ interface AppLayoutProps {
   fullWidth?: boolean;
 }
 
+// Routes where sidebar should be collapsed by default
+const collapsedByDefaultRoutes = ["/marketplace"];
+
 export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+  const location = useLocation();
+  const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname);
+  
+  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(shouldCollapseByDefault);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-  // Close mobile menu on route change
+  // Update sidebar state when navigating to/from collapsed routes
   React.useEffect(() => {
+    if (shouldCollapseByDefault) {
+      setSidebarCollapsed(true);
+    }
     setMobileMenuOpen(false);
-  }, []);
+  }, [location.pathname, shouldCollapseByDefault]);
 
   return (
     <div className="min-h-screen flex bg-surface-secondary">
