@@ -130,241 +130,234 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="flex items-center gap-2 p-3 bg-white border-b border-border overflow-x-auto whitespace-nowrap">
-        {/* Address Search */}
-        <div className="relative min-w-[200px] flex-shrink-0">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Address, City, County, State, or Zip"
-            value={filters.address}
-            onChange={(e) => handleChange("address", e.target.value)}
-            className="pl-9 h-9 bg-background text-sm"
-          />
-        </div>
+      <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-border">
+        {/* Left aligned filters */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Address Search */}
+          <div className="relative w-[220px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Address, City, County, State, or Zip"
+              value={filters.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+              className="pl-9 h-9 bg-background text-sm"
+            />
+          </div>
 
-        {/* All Listings */}
-        <Select 
-          value={filters.listingStatus || "all"} 
-          onValueChange={(v) => handleChange("listingStatus", v)}
-        >
-          <SelectTrigger className="w-[110px] h-9 bg-background text-sm flex-shrink-0">
-            <SelectValue placeholder="All Listings" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[60]">
-            <SelectItem value="all">
-              <span className="flex items-center gap-2">
-                All Listings
-                {filters.listingStatus === "all" && <Check className="h-4 w-4 text-primary" />}
-              </span>
-            </SelectItem>
-            <SelectItem value="on-market">On-Market</SelectItem>
-            <SelectItem value="off-market">Off-Market</SelectItem>
-          </SelectContent>
-        </Select>
+          {/* All Listings */}
+          <Select 
+            value={filters.listingStatus || "all"} 
+            onValueChange={(v) => handleChange("listingStatus", v)}
+          >
+            <SelectTrigger className="w-[120px] h-9 bg-background text-sm">
+              <SelectValue placeholder="All Listings" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[60]">
+              <SelectItem value="all">All Listings</SelectItem>
+              <SelectItem value="on-market">On-Market</SelectItem>
+              <SelectItem value="off-market">Off-Market</SelectItem>
+            </SelectContent>
+          </Select>
 
-        {/* Lead Type */}
-        <Select 
-          value={filters.leadType || "all"} 
-          onValueChange={(v) => handleChange("leadType", v)}
-        >
-          <SelectTrigger className="w-[120px] h-9 bg-background text-sm flex-shrink-0">
-            <SelectValue placeholder="Lead Type" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[60]">
-            {leadTypeOptions.map((type) => (
-              <SelectItem 
-                key={type} 
-                value={type === "All Lead Types" ? "all" : type.toLowerCase().replace(/ /g, "-")}
-              >
-                <span className={cn(
-                  type === "All Lead Types" && filters.leadType === "all" ? "text-primary" : ""
-                )}>
+          {/* Lead Type */}
+          <Select 
+            value={filters.leadType || "all"} 
+            onValueChange={(v) => handleChange("leadType", v)}
+          >
+            <SelectTrigger className="w-[120px] h-9 bg-background text-sm">
+              <SelectValue placeholder="Lead Type" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[60]">
+              {leadTypeOptions.map((type) => (
+                <SelectItem 
+                  key={type} 
+                  value={type === "All Lead Types" ? "all" : type.toLowerCase().replace(/ /g, "-")}
+                >
                   {type}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        {/* Home Type */}
-        <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
-              {getHomeTypeLabel()}
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-56 bg-background z-[60]" align="start">
-            <div className="space-y-3">
-              <div className="font-semibold">Home Type</div>
-              <button
-                type="button"
-                onClick={allHomeTypesSelected ? deselectAllHomeTypes : selectAllHomeTypes}
-                className="flex items-center gap-2 text-sm text-primary hover:underline"
-              >
-                <Checkbox checked={allHomeTypesSelected} />
-                {allHomeTypesSelected ? "Deselect All" : "Select All"}
-              </button>
-              <div className="space-y-2">
-                {homeTypeOptions.map((type) => (
-                  <div key={type.id} className="flex items-center space-x-2">
+          {/* Home Type */}
+          <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm">
+                {getHomeTypeLabel()}
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 bg-background z-[60]" align="start">
+              <div className="space-y-3">
+                <div className="font-semibold">Home Type</div>
+                <button
+                  type="button"
+                  onClick={allHomeTypesSelected ? deselectAllHomeTypes : selectAllHomeTypes}
+                  className="flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  <Checkbox checked={allHomeTypesSelected} />
+                  {allHomeTypesSelected ? "Deselect All" : "Select All"}
+                </button>
+                <div className="space-y-2">
+                  {homeTypeOptions.map((type) => (
+                    <div key={type.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`home-${type.id}`}
+                        checked={filters.homeTypes?.includes(type.id)}
+                        onCheckedChange={() => toggleHomeType(type.id)}
+                      />
+                      <Label htmlFor={`home-${type.id}`} className="cursor-pointer text-sm">
+                        {type.label}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90" 
+                  onClick={() => setHomeTypePopoverOpen(false)}
+                >
+                  Apply
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          {/* Price */}
+          <Select 
+            value={filters.priceRange || "any"} 
+            onValueChange={(v) => handleChange("priceRange", v)}
+          >
+            <SelectTrigger className="w-[100px] h-9 bg-background text-sm">
+              <SelectValue placeholder="Price" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[60]">
+              {priceRangeOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Beds & Baths */}
+          <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="h-9 gap-1 bg-background text-sm">
+                Beds & Baths
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-72 bg-background z-[60]" align="start">
+              <div className="space-y-4">
+                {/* Bedrooms */}
+                <div className="space-y-2">
+                  <Label className="font-semibold">Bedrooms</Label>
+                  <div className="flex gap-1">
+                    {bedsOptions.map((option) => (
+                      <Button
+                        key={option}
+                        type="button"
+                        variant={filters.bedsMin === (option === "Any" ? "" : option.replace("+", "")) ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "flex-1 h-9",
+                          filters.bedsMin === (option === "Any" ? "" : option.replace("+", ""))
+                            ? "bg-primary text-white hover:bg-primary/90"
+                            : "bg-background"
+                        )}
+                        onClick={() => handleChange("bedsMin", option === "Any" ? "" : option.replace("+", ""))}
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
+                  <div className="flex items-center space-x-2">
                     <Checkbox
-                      id={`home-${type.id}`}
-                      checked={filters.homeTypes?.includes(type.id)}
-                      onCheckedChange={() => toggleHomeType(type.id)}
+                      id="exact-match"
+                      checked={filters.exactMatch}
+                      onCheckedChange={(checked) => handleChange("exactMatch", checked)}
                     />
-                    <Label htmlFor={`home-${type.id}`} className="cursor-pointer text-sm">
-                      {type.label}
+                    <Label htmlFor="exact-match" className="text-sm cursor-pointer">
+                      Use Exact Match
                     </Label>
                   </div>
-                ))}
-              </div>
-              <Button 
-                className="w-full bg-primary hover:bg-primary/90" 
-                onClick={() => setHomeTypePopoverOpen(false)}
-              >
-                Apply
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* Price */}
-        <Select 
-          value={filters.priceRange || "any"} 
-          onValueChange={(v) => handleChange("priceRange", v)}
-        >
-          <SelectTrigger className="w-[110px] h-9 bg-background text-sm flex-shrink-0">
-            <SelectValue placeholder="Price" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[60]">
-            {priceRangeOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                <span className={cn(
-                  option.value === "any" && filters.priceRange === "any" ? "text-primary" : ""
-                )}>
-                  {option.label}
-                </span>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {/* Beds & Baths */}
-        <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0">
-              Beds & Baths
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72 bg-background z-[60]" align="start">
-            <div className="space-y-4">
-              {/* Bedrooms */}
-              <div className="space-y-2">
-                <Label className="font-semibold">Bedrooms</Label>
-                <div className="flex gap-1">
-                  {bedsOptions.map((option) => (
-                    <Button
-                      key={option}
-                      type="button"
-                      variant={filters.bedsMin === (option === "Any" ? "" : option.replace("+", "")) ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "flex-1 h-9",
-                        filters.bedsMin === (option === "Any" ? "" : option.replace("+", ""))
-                          ? "bg-primary text-white hover:bg-primary/90"
-                          : "bg-background"
-                      )}
-                      onClick={() => handleChange("bedsMin", option === "Any" ? "" : option.replace("+", ""))}
-                    >
-                      {option}
-                    </Button>
-                  ))}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="exact-match"
-                    checked={filters.exactMatch}
-                    onCheckedChange={(checked) => handleChange("exactMatch", checked)}
-                  />
-                  <Label htmlFor="exact-match" className="text-sm cursor-pointer">
-                    Use Exact Match
-                  </Label>
+
+                {/* Bathrooms */}
+                <div className="space-y-2">
+                  <Label className="font-semibold">Bathrooms</Label>
+                  <div className="flex gap-1">
+                    {bathsOptions.map((option) => (
+                      <Button
+                        key={option}
+                        type="button"
+                        variant={filters.bathsMin === (option === "Any" ? "" : option.replace("+", "")) ? "default" : "outline"}
+                        size="sm"
+                        className={cn(
+                          "flex-1 h-9",
+                          filters.bathsMin === (option === "Any" ? "" : option.replace("+", ""))
+                            ? "bg-primary text-white hover:bg-primary/90"
+                            : "bg-background"
+                        )}
+                        onClick={() => handleChange("bathsMin", option === "Any" ? "" : option.replace("+", ""))}
+                      >
+                        {option}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
+
+                <Button 
+                  className="w-full bg-primary hover:bg-primary/90" 
+                  onClick={() => setBedsPopoverOpen(false)}
+                >
+                  Apply
+                </Button>
               </div>
+            </PopoverContent>
+          </Popover>
 
-              {/* Bathrooms */}
-              <div className="space-y-2">
-                <Label className="font-semibold">Bathrooms</Label>
-                <div className="flex gap-1">
-                  {bathsOptions.map((option) => (
-                    <Button
-                      key={option}
-                      type="button"
-                      variant={filters.bathsMin === (option === "Any" ? "" : option.replace("+", "")) ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "flex-1 h-9",
-                        filters.bathsMin === (option === "Any" ? "" : option.replace("+", ""))
-                          ? "bg-primary text-white hover:bg-primary/90"
-                          : "bg-background"
-                      )}
-                      onClick={() => handleChange("bathsMin", option === "Any" ? "" : option.replace("+", ""))}
-                    >
-                      {option}
-                    </Button>
-                  ))}
-                </div>
-              </div>
+          {/* More Filters */}
+          <Button 
+            variant="outline" 
+            className="h-9 gap-2 bg-background text-sm"
+            onClick={() => setMoreFiltersOpen(true)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            Filter
+          </Button>
 
-              <Button 
-                className="w-full bg-primary hover:bg-primary/90" 
-                onClick={() => setBedsPopoverOpen(false)}
-              >
-                Apply
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-
-        {/* More Filters */}
-        <Button 
-          variant="outline" 
-          className="h-9 gap-2 bg-background text-sm flex-shrink-0"
-          onClick={() => setMoreFiltersOpen(true)}
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          Filter
-        </Button>
-
-        {/* Save Search */}
-        <Button 
-          variant="secondary" 
-          className="h-9 gap-2 bg-slate-800 text-white hover:bg-slate-700 text-sm flex-shrink-0"
-        >
-          <Bookmark className="h-4 w-4" />
-          Save Search
-        </Button>
+          {/* Save Search */}
+          <Button 
+            variant="secondary" 
+            className="h-9 gap-2 bg-slate-800 text-white hover:bg-slate-700 text-sm"
+          >
+            <Bookmark className="h-4 w-4" />
+            Save Search
+          </Button>
+        </div>
 
         {/* Spacer */}
-        <div className="flex-1 min-w-0" />
+        <div className="flex-1" />
 
-        {/* Post A Deal */}
-        <Button 
-          className="h-9 gap-2 bg-primary hover:bg-primary/90 text-white text-sm flex-shrink-0"
-          onClick={() => navigate("/submit-deal")}
-        >
-          <Plus className="h-4 w-4" />
-          Post A Deal
-        </Button>
+        {/* Right aligned action buttons */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Post A Deal */}
+          <Button 
+            className="h-9 gap-2 bg-primary hover:bg-primary/90 text-white text-sm"
+            onClick={() => navigate("/submit-deal")}
+          >
+            <Plus className="h-4 w-4" />
+            Post A Deal
+          </Button>
 
-        {/* Buy Box */}
-        <Button variant="outline" className="h-9 gap-2 bg-background text-sm flex-shrink-0">
-          <Sparkles className="h-4 w-4" />
-          Buy Box
-        </Button>
+          {/* Buy Box */}
+          <Button variant="outline" className="h-9 gap-2 bg-background text-sm">
+            <Sparkles className="h-4 w-4" />
+            Buy Box
+          </Button>
+        </div>
       </div>
 
       {/* More Filters Dialog */}
