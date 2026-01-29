@@ -299,6 +299,106 @@ export type Database = {
           },
         ]
       }
+      batch_offer_items: {
+        Row: {
+          batch_id: string
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contact_type: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          list_price: number | null
+          offer_amount: number | null
+          offer_id: string | null
+          opened_at: string | null
+          property_address: string
+          property_city: string | null
+          property_id: string | null
+          property_state: string | null
+          property_zip: string | null
+          responded_at: string | null
+          response_notes: string | null
+          response_type: string | null
+          sent_at: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          batch_id: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_type?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          list_price?: number | null
+          offer_amount?: number | null
+          offer_id?: string | null
+          opened_at?: string | null
+          property_address: string
+          property_city?: string | null
+          property_id?: string | null
+          property_state?: string | null
+          property_zip?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          response_type?: string | null
+          sent_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          batch_id?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_type?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          list_price?: number | null
+          offer_amount?: number | null
+          offer_id?: string | null
+          opened_at?: string | null
+          property_address?: string
+          property_city?: string | null
+          property_id?: string | null
+          property_state?: string | null
+          property_zip?: string | null
+          responded_at?: string | null
+          response_notes?: string | null
+          response_type?: string | null
+          sent_at?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "batch_offer_items_batch_id_fkey"
+            columns: ["batch_id"]
+            isOneToOne: false
+            referencedRelation: "offer_batches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_offer_items_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "batch_offer_items_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bids: {
         Row: {
           bid_amount: number | null
@@ -3841,6 +3941,133 @@ export type Database = {
         }
         Relationships: []
       }
+      inbox_messages: {
+        Row: {
+          body: string | null
+          body_html: string | null
+          campaign_id: string | null
+          campaign_property_id: string | null
+          channel: string
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          contact_type: string | null
+          created_at: string | null
+          direction: Database["public"]["Enums"]["message_direction"]
+          external_id: string | null
+          id: string
+          in_reply_to: string | null
+          is_archived: boolean | null
+          is_read: boolean | null
+          is_starred: boolean | null
+          metadata: Json | null
+          offer_id: string | null
+          organization_id: string | null
+          property_id: string | null
+          subject: string | null
+          thread_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          body_html?: string | null
+          campaign_id?: string | null
+          campaign_property_id?: string | null
+          channel?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_type?: string | null
+          created_at?: string | null
+          direction: Database["public"]["Enums"]["message_direction"]
+          external_id?: string | null
+          id?: string
+          in_reply_to?: string | null
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          metadata?: Json | null
+          offer_id?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          subject?: string | null
+          thread_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          body_html?: string | null
+          campaign_id?: string | null
+          campaign_property_id?: string | null
+          channel?: string
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          contact_type?: string | null
+          created_at?: string | null
+          direction?: Database["public"]["Enums"]["message_direction"]
+          external_id?: string | null
+          id?: string
+          in_reply_to?: string | null
+          is_archived?: boolean | null
+          is_read?: boolean | null
+          is_starred?: boolean | null
+          metadata?: Json | null
+          offer_id?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          subject?: string | null
+          thread_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inbox_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inbox_messages_campaign_property_id_fkey"
+            columns: ["campaign_property_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inbox_messages_in_reply_to_fkey"
+            columns: ["in_reply_to"]
+            isOneToOne: false
+            referencedRelation: "inbox_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inbox_messages_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inbox_messages_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inbox_messages_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jv_inquiries: {
         Row: {
           created_at: string | null
@@ -4487,6 +4714,86 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lob_connections_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loi_templates: {
+        Row: {
+          balloon_months: number | null
+          body_html: string | null
+          body_text: string | null
+          closing_days: number | null
+          created_at: string | null
+          description: string | null
+          down_payment_percentage: number | null
+          earnest_money_percentage: number | null
+          id: string
+          interest_rate: number | null
+          is_default: boolean | null
+          loi_type: Database["public"]["Enums"]["loi_type"]
+          monthly_payment_formula: string | null
+          name: string
+          offer_percentage: number | null
+          organization_id: string | null
+          subject_line: string | null
+          term_months: number | null
+          updated_at: string | null
+          use_count: number | null
+          user_id: string
+        }
+        Insert: {
+          balloon_months?: number | null
+          body_html?: string | null
+          body_text?: string | null
+          closing_days?: number | null
+          created_at?: string | null
+          description?: string | null
+          down_payment_percentage?: number | null
+          earnest_money_percentage?: number | null
+          id?: string
+          interest_rate?: number | null
+          is_default?: boolean | null
+          loi_type?: Database["public"]["Enums"]["loi_type"]
+          monthly_payment_formula?: string | null
+          name: string
+          offer_percentage?: number | null
+          organization_id?: string | null
+          subject_line?: string | null
+          term_months?: number | null
+          updated_at?: string | null
+          use_count?: number | null
+          user_id: string
+        }
+        Update: {
+          balloon_months?: number | null
+          body_html?: string | null
+          body_text?: string | null
+          closing_days?: number | null
+          created_at?: string | null
+          description?: string | null
+          down_payment_percentage?: number | null
+          earnest_money_percentage?: number | null
+          id?: string
+          interest_rate?: number | null
+          is_default?: boolean | null
+          loi_type?: Database["public"]["Enums"]["loi_type"]
+          monthly_payment_formula?: string | null
+          name?: string
+          offer_percentage?: number | null
+          organization_id?: string | null
+          subject_line?: string | null
+          term_months?: number | null
+          updated_at?: string | null
+          use_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loi_templates_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -5197,6 +5504,102 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "notifications_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      offer_batches: {
+        Row: {
+          closing_days: number | null
+          completed_at: string | null
+          created_at: string | null
+          daily_limit: number | null
+          delivery_channels: string[] | null
+          down_payment_percentage: number | null
+          earnest_money: number | null
+          id: string
+          interest_rate: number | null
+          loi_template_id: string | null
+          loi_type: Database["public"]["Enums"]["loi_type"]
+          name: string | null
+          offer_percentage: number | null
+          offers_opened: number | null
+          offers_responded: number | null
+          offers_sent: number | null
+          organization_id: string | null
+          scheduled_for: string | null
+          started_at: string | null
+          status: string | null
+          term_months: number | null
+          total_properties: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          closing_days?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          daily_limit?: number | null
+          delivery_channels?: string[] | null
+          down_payment_percentage?: number | null
+          earnest_money?: number | null
+          id?: string
+          interest_rate?: number | null
+          loi_template_id?: string | null
+          loi_type?: Database["public"]["Enums"]["loi_type"]
+          name?: string | null
+          offer_percentage?: number | null
+          offers_opened?: number | null
+          offers_responded?: number | null
+          offers_sent?: number | null
+          organization_id?: string | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string | null
+          term_months?: number | null
+          total_properties?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          closing_days?: number | null
+          completed_at?: string | null
+          created_at?: string | null
+          daily_limit?: number | null
+          delivery_channels?: string[] | null
+          down_payment_percentage?: number | null
+          earnest_money?: number | null
+          id?: string
+          interest_rate?: number | null
+          loi_template_id?: string | null
+          loi_type?: Database["public"]["Enums"]["loi_type"]
+          name?: string | null
+          offer_percentage?: number | null
+          offers_opened?: number | null
+          offers_responded?: number | null
+          offers_sent?: number | null
+          organization_id?: string | null
+          scheduled_for?: string | null
+          started_at?: string | null
+          status?: string | null
+          term_months?: number | null
+          total_properties?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_batches_loi_template_id_fkey"
+            columns: ["loi_template_id"]
+            isOneToOne: false
+            referencedRelation: "loi_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offer_batches_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -7502,6 +7905,8 @@ export type Database = {
       jv_preferred_role: "passive" | "active" | "either"
       jv_profile_type: "capital_partner" | "operating_partner" | "both"
       jv_visibility: "public" | "connections_only" | "private"
+      loi_type: "cash" | "creative" | "hybrid"
+      message_direction: "inbound" | "outbound"
       org_role:
         | "owner"
         | "admin"
@@ -7648,6 +8053,8 @@ export const Constants = {
       jv_preferred_role: ["passive", "active", "either"],
       jv_profile_type: ["capital_partner", "operating_partner", "both"],
       jv_visibility: ["public", "connections_only", "private"],
+      loi_type: ["cash", "creative", "hybrid"],
+      message_direction: ["inbound", "outbound"],
       org_role: [
         "owner",
         "admin",
