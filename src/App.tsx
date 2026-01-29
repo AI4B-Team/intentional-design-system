@@ -5,9 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { OrganizationProvider } from "@/contexts/OrganizationContext";
+import { AIVAProvider } from "@/contexts/AIVAContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PWAProvider } from "@/components/pwa";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { AIVAPanel } from "@/components/aiva/AIVAPanel";
+import { AIVAPanelWrapper } from "@/components/aiva/AIVAPanelWrapper";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import OnboardingOrganization from "./pages/OnboardingOrganization";
@@ -120,12 +123,14 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <OrganizationProvider>
-          <TooltipProvider>
-            <PWAProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <div className="flex flex-col h-full">
+          <AIVAProvider>
+            <TooltipProvider>
+              <PWAProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <AIVAPanelWrapper />
+                  <div className="flex flex-col h-full">
                   <Routes>
                 {/* Public routes */}
                   <Route path="/login" element={<Login />} />
@@ -933,8 +938,9 @@ const App = () => (
                 </Routes>
                 </div>
               </BrowserRouter>
-            </PWAProvider>
-          </TooltipProvider>
+              </PWAProvider>
+            </TooltipProvider>
+          </AIVAProvider>
         </OrganizationProvider>
       </AuthProvider>
     </QueryClientProvider>
