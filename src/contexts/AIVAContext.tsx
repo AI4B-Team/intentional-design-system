@@ -26,7 +26,18 @@ export function AIVAProvider({ children }: { children: React.ReactNode }) {
 export function useAIVA() {
   const context = useContext(AIVAContext);
   if (context === undefined) {
-    throw new Error("useAIVA must be used within an AIVAProvider");
+    // Fail-safe: avoid crashing the entire app shell if a component
+    // accidentally renders outside the provider.
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.warn("useAIVA used outside AIVAProvider; returning no-op context");
+    }
+    return {
+      isOpen: false,
+      openAIVA: () => {},
+      closeAIVA: () => {},
+      toggleAIVA: () => {},
+    };
   }
   return context;
 }
