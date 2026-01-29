@@ -130,7 +130,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         variant="outline"
         size="sm"
         onClick={() => navigate("/submit-deal")}
-        className="hidden sm:flex gap-2"
+        className="hidden sm:flex gap-2 border-primary"
       >
         <Send className="h-4 w-4" />
         <span>Post Deal</span>
