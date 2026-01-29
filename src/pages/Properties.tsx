@@ -874,10 +874,7 @@ export default function Properties() {
                             case "address":
                               return (
                                 <td key={col.id} className="p-4">
-                                  <div className="flex items-center gap-2">
-                                    {colorLabels[property.id] && <ColorLabelDot color={colorLabels[property.id]} />}
-                                    <span className="font-medium text-foreground">{property.address}</span>
-                                  </div>
+                                  <span className="font-medium text-foreground">{property.address}</span>
                                 </td>
                               );
                             case "city":
