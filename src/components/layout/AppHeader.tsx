@@ -48,7 +48,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6 gap-4">
+    <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6 gap-2">
       {/* Mobile Menu Button */}
       <button
         onClick={onMenuClick}
