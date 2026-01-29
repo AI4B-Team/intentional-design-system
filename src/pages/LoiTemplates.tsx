@@ -96,7 +96,7 @@ function TemplateCard({
             <div className="flex items-center gap-2 mt-0.5">
               <Badge variant="secondary" size="sm">{typeInfo.label}</Badge>
               {template.is_default && (
-                <Badge variant="primary" size="sm" className="gap-1">
+                <Badge variant="default" size="sm" className="gap-1">
                   <Star className="h-3 w-3" />
                   Default
                 </Badge>
@@ -182,8 +182,10 @@ export default function LoiTemplates() {
     interest_rate: 6,
     term_months: 360,
     balloon_months: 60,
+    monthly_payment_formula: null as string | null,
     subject_line: "",
     body_html: "",
+    body_text: null as string | null,
   });
 
   const filteredTemplates = React.useMemo(() => {
@@ -204,8 +206,10 @@ export default function LoiTemplates() {
       interest_rate: 6,
       term_months: 360,
       balloon_months: 60,
+      monthly_payment_formula: null,
       subject_line: "",
       body_html: "",
+      body_text: null,
     });
     setIsCreating(true);
   };
@@ -222,8 +226,10 @@ export default function LoiTemplates() {
       interest_rate: template.interest_rate || 6,
       term_months: template.term_months || 360,
       balloon_months: template.balloon_months || 60,
+      monthly_payment_formula: template.monthly_payment_formula || null,
       subject_line: template.subject_line || "",
       body_html: template.body_html || "",
+      body_text: template.body_text || null,
     });
     setEditingTemplate(template);
   };
@@ -240,8 +246,10 @@ export default function LoiTemplates() {
       interest_rate: template.interest_rate || 6,
       term_months: template.term_months || 360,
       balloon_months: template.balloon_months || 60,
+      monthly_payment_formula: template.monthly_payment_formula || null,
       subject_line: template.subject_line || "",
       body_html: template.body_html || "",
+      body_text: template.body_text || null,
     });
     setIsCreating(true);
   };
