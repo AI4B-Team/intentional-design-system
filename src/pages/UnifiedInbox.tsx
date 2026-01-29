@@ -330,7 +330,7 @@ export default function UnifiedInbox() {
               <Inbox className="h-4 w-4" />
               <span className="flex-1 font-medium">Inbox</span>
               {stats?.unread ? (
-                <Badge variant="primary" size="sm">{stats.unread}</Badge>
+                <Badge variant="default" size="sm">{stats.unread}</Badge>
               ) : null}
             </button>
             <button

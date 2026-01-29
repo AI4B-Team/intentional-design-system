@@ -168,12 +168,12 @@ export default function BulkOfferSender() {
     setLoadingProperties(true);
     const { data, error } = await supabase
       .from("properties")
-      .select("id, address, city, state, zip, list_price, arv, owner_name, owner_email, owner_phone")
+      .select("id, address, city, state, zip, arv, owner_name, owner_email, owner_phone")
       .order("created_at", { ascending: false })
       .limit(500);
 
     if (!error && data) {
-      setProperties(data);
+      setProperties(data as Property[]);
     }
     setLoadingProperties(false);
   };
@@ -595,7 +595,7 @@ export default function BulkOfferSender() {
                 </p>
               </div>
 
-              <Card variant="muted" padding="md">
+              <Card variant="bordered" padding="md">
                 <div className="flex items-center gap-3">
                   <TrendingUp className="h-8 w-8 text-brand" />
                   <div>
@@ -631,7 +631,7 @@ export default function BulkOfferSender() {
                   <div key={property.id} className="p-4 border-b last:border-b-0">
                     <div className="flex items-center justify-between mb-2">
                       <p className="font-medium">{property.address}</p>
-                      <Badge variant="primary">{formatCurrency(offerAmount)}</Badge>
+                      <Badge variant="default">{formatCurrency(offerAmount)}</Badge>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-small text-content-secondary">
                       <span>List: {formatCurrency(basePrice)}</span>
