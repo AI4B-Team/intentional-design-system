@@ -2,6 +2,7 @@ import * as React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAIVA } from "@/contexts/AIVAContext";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
   LayoutDashboard,
@@ -52,7 +53,6 @@ interface NavGroup {
 }
 
 const topNavItems: NavItem[] = [
-  { label: "AIVA", href: "/aiva", icon: Sparkles },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Properties", href: "/properties", icon: Building2 },
 ];
@@ -146,6 +146,7 @@ export function AppSidebar({
 }: AppSidebarProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
   const [leadsOpen, setLeadsOpen] = React.useState(() => {
@@ -233,7 +234,34 @@ export function AppSidebar({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-2">
         <ul className="space-y-1">
-          {/* Top Nav Items (before Marketing) */}
+          {/* AIVA Button - Opens Panel */}
+          <li>
+            <button
+              onClick={() => {
+                openAIVA();
+                onMobileClose();
+              }}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                aivaOpen && "bg-gradient-to-r from-primary to-primary/60 text-white font-medium",
+                collapsed && "justify-center"
+              )}
+            >
+              <div className="relative">
+                <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-white")} />
+                {!aivaOpen && (
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
+                )}
+              </div>
+              {!collapsed && <span>AIVA</span>}
+              {!collapsed && (
+                <span className="ml-auto text-[10px] text-slate-400 bg-slate-700 px-1.5 py-0.5 rounded">AI</span>
+              )}
+            </button>
+          </li>
+
+          {/* Top Nav Items */}
           {topNavItems.map((item) => {
             const isActive = location.pathname === item.href;
             const Icon = item.icon;
