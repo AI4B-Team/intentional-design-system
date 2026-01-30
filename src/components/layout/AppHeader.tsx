@@ -131,29 +131,6 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Post Deal & Buy Box Buttons – Marketplace only */}
-      {isMarketplacePage && (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/submit-deal")}
-            className="hidden sm:flex gap-2 border-primary"
-          >
-            <Send className="h-4 w-4" />
-            <span>Post Deal</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigate("/marketplace/buy-box")}
-            className="hidden sm:flex gap-2"
-          >
-            <Target className="h-4 w-4" />
-            <span>Buy Box</span>
-          </Button>
-        </>
-      )}
 
       {/* Mobile Add Button */}
       <DropdownMenu>
