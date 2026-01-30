@@ -266,7 +266,7 @@ const App = () => (
               }
             />
             <Route
-              path="/deal-sources"
+              path="/contacts"
               element={
                 <ProtectedRoute>
                   <Contacts />
@@ -274,7 +274,7 @@ const App = () => (
               }
             />
             <Route
-              path="/deal-sources/:id"
+              path="/contacts/:id"
               element={
                 <ProtectedRoute>
                   <DealSourceDetail />
@@ -938,7 +938,7 @@ const App = () => (
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
-            <Route path="/contacts" element={<Navigate to="/deal-sources" replace />} />
+            <Route path="/deal-sources" element={<Navigate to="/contacts" replace />} />
             <Route path="/pipeline" element={<Navigate to="/properties" replace />} />
             <Route path="/documents" element={<Navigate to="/properties" replace />} />
             

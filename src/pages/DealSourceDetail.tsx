@@ -103,7 +103,7 @@ export default function DealSourceDetail() {
   const handleDelete = async () => {
     if (!source) return;
     await deleteDealSource.mutateAsync(source.id);
-    navigate("/deal-sources");
+    navigate("/contacts");
   };
 
   const handleLogContact = async () => {
@@ -138,8 +138,8 @@ export default function DealSourceDetail() {
           <p className="text-body text-content-secondary mb-4">
             This deal source may have been deleted or you don't have access.
           </p>
-          <Button variant="secondary" onClick={() => navigate("/deal-sources")}>
-            Back to Deal Sources
+          <Button variant="secondary" onClick={() => navigate("/contacts")}>
+            Back to Contacts
           </Button>
         </div>
       </DashboardLayout>
@@ -161,7 +161,7 @@ export default function DealSourceDetail() {
               variant="ghost"
               size="sm"
               icon={<ArrowLeft />}
-              onClick={() => navigate("/deal-sources")}
+              onClick={() => navigate("/contacts")}
             >
               Back
             </Button>

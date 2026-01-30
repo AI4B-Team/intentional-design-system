@@ -202,7 +202,7 @@ export function DealSourcesTable({
                       ? "bg-primary/5" 
                       : "hover:bg-slate-50/80"
                   )}
-                  onClick={() => navigate(`/deal-sources/${source.id}`)}
+                  onClick={() => navigate(`/contacts/${source.id}`)}
                 >
                   {/* Checkbox */}
                   <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
@@ -312,7 +312,7 @@ export function DealSourcesTable({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-44 bg-white shadow-lg border border-slate-200">
                         <DropdownMenuItem 
-                          onClick={() => navigate(`/deal-sources/${source.id}`)}
+                          onClick={() => navigate(`/contacts/${source.id}`)}
                           className="text-sm"
                         >
                           <Eye className="h-4 w-4 mr-2 text-slate-500" />

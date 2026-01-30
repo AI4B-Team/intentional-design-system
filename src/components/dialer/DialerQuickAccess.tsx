@@ -521,7 +521,7 @@ export function DialerQuickAccess() {
                 size="sm"
                 className="w-full"
                 onClick={() => {
-                  navigate("/deal-sources");
+                  navigate("/contacts");
                   setOpen(false);
                 }}
               >

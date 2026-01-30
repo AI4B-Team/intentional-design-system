@@ -107,7 +107,7 @@ export function HelpButton({ variant = "icon", className }: HelpButtonProps) {
                 step: 3,
                 title: "Set Up Deal Sources",
                 desc: "Add your wholesalers, agents, and other lead sources",
-                link: "/deal-sources",
+                link: "/contacts",
               },
               {
                 step: 4,

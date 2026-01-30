@@ -188,7 +188,7 @@ export function ContactsTable({
                       ? "bg-primary/5" 
                       : "hover:bg-slate-50/80"
                   )}
-                  onClick={() => navigate(`/deal-sources/${contact.id}`)}
+                  onClick={() => navigate(`/contacts/${contact.id}`)}
                 >
                   {/* Checkbox */}
                   <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>

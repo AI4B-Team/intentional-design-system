@@ -293,7 +293,7 @@ export function MobileTabBar() {
   const tabs = [
     { label: "Dashboard", href: "/dashboard", icon: Home },
     { label: "Properties", href: "/properties", icon: Building2 },
-    { label: "Sources", href: "/deal-sources", icon: MapPin },
+    { label: "Contacts", href: "/contacts", icon: MapPin },
     { label: "Offers", href: "/offers", icon: Briefcase },
     { label: "More", href: "/settings", icon: Settings },
   ];
