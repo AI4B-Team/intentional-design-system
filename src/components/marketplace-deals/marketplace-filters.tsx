@@ -25,9 +25,12 @@ import {
   List,
   LayoutGrid,
   Map,
+  Columns,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
+
+export type LayoutMode = "cards" | "split" | "map";
 
 interface MarketplaceFiltersProps {
   filters: {
@@ -45,8 +48,8 @@ interface MarketplaceFiltersProps {
   onAdvancedFiltersChange?: (filters: AdvancedFilters) => void;
   viewMode?: "list" | "grid";
   onViewModeChange?: (mode: "list" | "grid") => void;
-  isMapFullscreen?: boolean;
-  onMapFullscreenChange?: (fullscreen: boolean) => void;
+  layoutMode?: LayoutMode;
+  onLayoutModeChange?: (mode: LayoutMode) => void;
 }
 
 const leadTypeOptions = [
@@ -94,8 +97,8 @@ export function MarketplaceFilters({
   onAdvancedFiltersChange,
   viewMode = "grid",
   onViewModeChange,
-  isMapFullscreen = false,
-  onMapFullscreenChange,
+  layoutMode = "cards",
+  onLayoutModeChange,
 }: MarketplaceFiltersProps) {
   const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
@@ -388,18 +391,18 @@ export function MarketplaceFilters({
           </Button>
           
           {/* View Mode Toggle */}
-          {onViewModeChange && (
+          {onViewModeChange && onLayoutModeChange && (
             <div className="flex border border-border rounded-md overflow-hidden">
               <Button
                 variant="ghost"
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  viewMode === "list" && !isMapFullscreen ? "bg-primary text-white" : "bg-background"
+                  viewMode === "list" && layoutMode === "cards" ? "bg-primary text-white" : "bg-background"
                 )}
                 onClick={() => {
                   onViewModeChange("list");
-                  onMapFullscreenChange?.(false);
+                  onLayoutModeChange("cards");
                 }}
                 title="List view"
               >
@@ -410,30 +413,40 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  viewMode === "grid" && !isMapFullscreen ? "bg-primary text-white" : "bg-background"
+                  viewMode === "grid" && layoutMode === "cards" ? "bg-primary text-white" : "bg-background"
                 )}
                 onClick={() => {
                   onViewModeChange("grid");
-                  onMapFullscreenChange?.(false);
+                  onLayoutModeChange("cards");
                 }}
                 title="Grid view"
               >
                 <LayoutGrid className="h-4 w-4" />
               </Button>
-              {onMapFullscreenChange && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    "h-10 w-10 rounded-none border-0",
-                    isMapFullscreen ? "bg-primary text-white" : "bg-background"
-                  )}
-                  onClick={() => onMapFullscreenChange(true)}
-                  title="Map view"
-                >
-                  <Map className="h-4 w-4" />
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-10 w-10 rounded-none border-0",
+                  layoutMode === "split" ? "bg-primary text-white" : "bg-background"
+                )}
+                onClick={() => onLayoutModeChange("split")}
+                title="Split view (Grid + Map)"
+              >
+                <Columns className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-10 w-10 rounded-none border-0",
+                  layoutMode === "map" ? "bg-primary text-white" : "bg-background"
+                )}
+                onClick={() => onLayoutModeChange("map")}
+                title="Map view"
+              >
+                <Map className="h-4 w-4" />
+              </Button>
             </div>
           )}
         </div>

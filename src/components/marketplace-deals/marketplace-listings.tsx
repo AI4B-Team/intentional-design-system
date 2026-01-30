@@ -55,8 +55,7 @@ interface MarketplaceListingsProps {
   onResultsPerPageChange: (count: number) => void;
   currentPage: number;
   onPageChange: (page: number) => void;
-  isMapFullscreen?: boolean;
-  onMapFullscreenChange?: (fullscreen: boolean) => void;
+  isSplitView?: boolean;
 }
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
@@ -222,20 +221,11 @@ function DealCard({
           className="w-full h-full object-cover"
         />
         
-        {/* Top Controls */}
-        <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <div className="bg-white rounded shadow-sm h-6 w-6 flex items-center justify-center">
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={onSelect}
-                className="h-3.5 w-3.5"
-              />
-            </div>
-            <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded", listingBadge.className)}>
-              {listingBadge.text}
-            </Badge>
-          </div>
+        {/* Top Badge */}
+        <div className="absolute top-3 left-3">
+          <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded", listingBadge.className)}>
+            {listingBadge.text}
+          </Badge>
         </div>
 
         {/* Tags at bottom of image */}
@@ -362,8 +352,7 @@ export function MarketplaceListings({
   onResultsPerPageChange,
   currentPage,
   onPageChange,
-  isMapFullscreen = false,
-  onMapFullscreenChange,
+  isSplitView = false,
 }: MarketplaceListingsProps) {
   const totalPages = Math.ceil(totalCount / resultsPerPage);
   const startIndex = (currentPage - 1) * resultsPerPage + 1;
@@ -482,7 +471,11 @@ export function MarketplaceListings({
         ) : (
           <div className={cn(
             "grid gap-4",
-            viewMode === "grid" ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1"
+            viewMode === "grid" 
+              ? isSplitView 
+                ? "grid-cols-1 md:grid-cols-2" 
+                : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              : "grid-cols-1"
           )}>
             {deals.map((deal) => (
               <DealCard
