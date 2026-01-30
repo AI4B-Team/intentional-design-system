@@ -374,49 +374,9 @@ export function MarketplaceListings({
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="p-4 border-b border-border bg-white">
-        {/* Row 1: Title and View Toggle */}
+        {/* Row 1: Title */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
-          
-          {/* View Mode Toggle */}
-          <div className="flex border border-border rounded-md overflow-hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-8 w-8 rounded-none border-0",
-                viewMode === "list" ? "bg-muted" : "bg-background"
-              )}
-              onClick={() => onViewModeChange("list")}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-8 w-8 rounded-none border-0",
-                viewMode === "grid" ? "bg-primary text-white" : "bg-background"
-              )}
-              onClick={() => onViewModeChange("grid")}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </Button>
-            {onMapFullscreenChange && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-8 w-8 rounded-none border-0",
-                  isMapFullscreen ? "bg-primary text-white" : "bg-background"
-                )}
-                onClick={() => onMapFullscreenChange(!isMapFullscreen)}
-                title="Toggle fullscreen map"
-              >
-                <Map className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
         </div>
         
         {/* Row 2: Toolbar */}

@@ -72,12 +72,16 @@ export default function MarketplaceDeals() {
   return (
     <AppLayout fullWidth>
       <div className="flex flex-col flex-1 overflow-hidden">
-        {/* Filters Bar - Full width */}
+        {/* Filters Bar - Full width with view toggles */}
         <MarketplaceFilters 
           filters={filters} 
           onFiltersChange={setFilters}
           advancedFilters={advancedFilters}
           onAdvancedFiltersChange={setAdvancedFilters}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          isMapFullscreen={isMapFullscreen}
+          onMapFullscreenChange={setIsMapFullscreen}
         />
 
         {/* Main Content - Split view - fills remaining height */}
@@ -112,8 +116,6 @@ export default function MarketplaceDeals() {
               onResultsPerPageChange={setResultsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
-              isMapFullscreen={isMapFullscreen}
-              onMapFullscreenChange={setIsMapFullscreen}
             />
           </div>
         </div>

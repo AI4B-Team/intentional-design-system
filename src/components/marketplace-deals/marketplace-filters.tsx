@@ -22,6 +22,9 @@ import {
   ChevronDown,
   Send,
   Target,
+  List,
+  LayoutGrid,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
@@ -40,6 +43,10 @@ interface MarketplaceFiltersProps {
   onFiltersChange: (filters: any) => void;
   advancedFilters?: AdvancedFilters;
   onAdvancedFiltersChange?: (filters: AdvancedFilters) => void;
+  viewMode?: "list" | "grid";
+  onViewModeChange?: (mode: "list" | "grid") => void;
+  isMapFullscreen?: boolean;
+  onMapFullscreenChange?: (fullscreen: boolean) => void;
 }
 
 const leadTypeOptions = [
@@ -85,6 +92,10 @@ export function MarketplaceFilters({
   onFiltersChange,
   advancedFilters = defaultFilters,
   onAdvancedFiltersChange,
+  viewMode = "grid",
+  onViewModeChange,
+  isMapFullscreen = false,
+  onMapFullscreenChange,
 }: MarketplaceFiltersProps) {
   const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
@@ -357,7 +368,7 @@ export function MarketplaceFilters({
           </Button>
         </div>
 
-        {/* Right aligned actions – Post Deal & Buy Box */}
+        {/* Right aligned actions – Post Deal, Buy Box, View Toggles */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <Button
             variant="outline"
@@ -375,6 +386,53 @@ export function MarketplaceFilters({
             <Target className="h-4 w-4" />
             Buy Box
           </Button>
+          
+          {/* View Mode Toggle */}
+          {onViewModeChange && (
+            <div className="flex border border-border rounded-md overflow-hidden">
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-10 w-10 rounded-none border-0",
+                  viewMode === "list" ? "bg-muted" : "bg-background"
+                )}
+                onClick={() => onViewModeChange("list")}
+                title="List view"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-10 w-10 rounded-none border-0",
+                  viewMode === "grid" && !isMapFullscreen ? "bg-primary text-white" : "bg-background"
+                )}
+                onClick={() => {
+                  onViewModeChange("grid");
+                  onMapFullscreenChange?.(false);
+                }}
+                title="Grid view"
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              {onMapFullscreenChange && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-10 w-10 rounded-none border-0",
+                    isMapFullscreen ? "bg-primary text-white" : "bg-background"
+                  )}
+                  onClick={() => onMapFullscreenChange(!isMapFullscreen)}
+                  title="Fullscreen map"
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
