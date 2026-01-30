@@ -37,7 +37,7 @@ const SelectTrigger = React.forwardRef<
         ref={ref}
         id={id}
         className={cn(
-          "flex w-full items-center justify-between px-3.5 py-2.5 rounded-small border bg-background text-body transition-all duration-150",
+          "flex w-full items-center justify-between px-3.5 rounded-small border bg-background text-body transition-all duration-150",
           "placeholder:text-content-tertiary",
           "focus:outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/10",
           "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary",
@@ -45,6 +45,8 @@ const SelectTrigger = React.forwardRef<
           hasError
             ? "border-destructive ring-2 ring-destructive/10"
             : "border-border",
+          // Default vertical padding when no explicit height class is passed
+          !className?.includes("h-") && "py-2.5",
           className
         )}
         {...props}
