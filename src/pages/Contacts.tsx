@@ -165,9 +165,9 @@ export default function Contacts() {
 
         {/* Search and Filters */}
         <Card className="p-4">
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex items-center gap-3">
             {/* Search */}
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
@@ -178,8 +178,8 @@ export default function Contacts() {
               />
             </div>
 
-            {/* Filter Controls */}
-            <div className="flex flex-wrap items-center gap-3">
+            {/* Filter Controls - all on one row */}
+            <div className="flex items-center gap-3 flex-shrink-0">
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as DealSourceType | "all")}>
                 <SelectTrigger className="w-[140px]">
