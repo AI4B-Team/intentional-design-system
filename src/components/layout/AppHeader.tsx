@@ -117,11 +117,11 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <UserPlus className="h-4 w-4 mr-2" />
             Lead
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/buyers")}>
+          <DropdownMenuItem onClick={() => navigate("/deal-sources?add=buyer")}>
             <User className="h-4 w-4 mr-2" />
             Buyer
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/contractors")}>
+          <DropdownMenuItem onClick={() => navigate("/deal-sources?add=contractor")}>
             <Hammer className="h-4 w-4 mr-2" />
             Vendor
           </DropdownMenuItem>
@@ -148,11 +148,11 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <UserPlus className="h-4 w-4 mr-2" />
             Lead
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/buyers")}>
+          <DropdownMenuItem onClick={() => navigate("/deal-sources?add=buyer")}>
             <User className="h-4 w-4 mr-2" />
             Buyer
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/contractors")}>
+          <DropdownMenuItem onClick={() => navigate("/deal-sources?add=contractor")}>
             <Hammer className="h-4 w-4 mr-2" />
             Vendor
           </DropdownMenuItem>

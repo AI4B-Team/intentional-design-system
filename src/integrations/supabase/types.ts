@@ -2753,6 +2753,10 @@ export type Database = {
       }
       deal_sources: {
         Row: {
+          address: string | null
+          avg_close_days: number | null
+          buy_box: Json | null
+          city: string | null
           company: string | null
           created_at: string | null
           deals_closed: number | null
@@ -2761,22 +2765,40 @@ export type Database = {
           facebook: string | null
           id: string
           instagram: string | null
+          insurance_verified: boolean | null
+          jobs_completed: number | null
           last_contact_date: string | null
           lending_criteria: Json | null
+          license_number: string | null
+          license_verified: boolean | null
           linkedin: string | null
           name: string
           next_followup_date: string | null
           notes: string | null
+          on_time_percentage: number | null
           organization_id: string | null
           phone: string | null
+          pof_amount: number | null
+          pof_verified: boolean | null
+          rating: number | null
+          reliability_score: number | null
+          service_areas: string[] | null
           source: string | null
+          specialty: string[] | null
+          state: string | null
           status: string | null
+          tags: string[] | null
           total_profit: number | null
           type: string
           updated_at: string | null
           user_id: string
+          zip: string | null
         }
         Insert: {
+          address?: string | null
+          avg_close_days?: number | null
+          buy_box?: Json | null
+          city?: string | null
           company?: string | null
           created_at?: string | null
           deals_closed?: number | null
@@ -2785,22 +2807,40 @@ export type Database = {
           facebook?: string | null
           id?: string
           instagram?: string | null
+          insurance_verified?: boolean | null
+          jobs_completed?: number | null
           last_contact_date?: string | null
           lending_criteria?: Json | null
+          license_number?: string | null
+          license_verified?: boolean | null
           linkedin?: string | null
           name: string
           next_followup_date?: string | null
           notes?: string | null
+          on_time_percentage?: number | null
           organization_id?: string | null
           phone?: string | null
+          pof_amount?: number | null
+          pof_verified?: boolean | null
+          rating?: number | null
+          reliability_score?: number | null
+          service_areas?: string[] | null
           source?: string | null
+          specialty?: string[] | null
+          state?: string | null
           status?: string | null
+          tags?: string[] | null
           total_profit?: number | null
           type: string
           updated_at?: string | null
           user_id: string
+          zip?: string | null
         }
         Update: {
+          address?: string | null
+          avg_close_days?: number | null
+          buy_box?: Json | null
+          city?: string | null
           company?: string | null
           created_at?: string | null
           deals_closed?: number | null
@@ -2809,20 +2849,34 @@ export type Database = {
           facebook?: string | null
           id?: string
           instagram?: string | null
+          insurance_verified?: boolean | null
+          jobs_completed?: number | null
           last_contact_date?: string | null
           lending_criteria?: Json | null
+          license_number?: string | null
+          license_verified?: boolean | null
           linkedin?: string | null
           name?: string
           next_followup_date?: string | null
           notes?: string | null
+          on_time_percentage?: number | null
           organization_id?: string | null
           phone?: string | null
+          pof_amount?: number | null
+          pof_verified?: boolean | null
+          rating?: number | null
+          reliability_score?: number | null
+          service_areas?: string[] | null
           source?: string | null
+          specialty?: string[] | null
+          state?: string | null
           status?: string | null
+          tags?: string[] | null
           total_profit?: number | null
           type?: string
           updated_at?: string | null
           user_id?: string
+          zip?: string | null
         }
         Relationships: [
           {
