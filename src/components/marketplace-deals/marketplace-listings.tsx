@@ -22,6 +22,7 @@ import {
   Home,
   List,
   LayoutGrid,
+  Map,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
@@ -54,6 +55,8 @@ interface MarketplaceListingsProps {
   onResultsPerPageChange: (count: number) => void;
   currentPage: number;
   onPageChange: (page: number) => void;
+  isMapFullscreen?: boolean;
+  onMapFullscreenChange?: (fullscreen: boolean) => void;
 }
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
@@ -359,6 +362,8 @@ export function MarketplaceListings({
   onResultsPerPageChange,
   currentPage,
   onPageChange,
+  isMapFullscreen = false,
+  onMapFullscreenChange,
 }: MarketplaceListingsProps) {
   const totalPages = Math.ceil(totalCount / resultsPerPage);
   const startIndex = (currentPage - 1) * resultsPerPage + 1;
@@ -397,6 +402,20 @@ export function MarketplaceListings({
             >
               <LayoutGrid className="h-4 w-4" />
             </Button>
+            {onMapFullscreenChange && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-8 w-8 rounded-none border-0",
+                  isMapFullscreen ? "bg-primary text-white" : "bg-background"
+                )}
+                onClick={() => onMapFullscreenChange(!isMapFullscreen)}
+                title="Toggle fullscreen map"
+              >
+                <Map className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
         

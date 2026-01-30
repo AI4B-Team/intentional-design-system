@@ -5,6 +5,7 @@ import { MarketplaceMap } from "@/components/marketplace-deals/marketplace-map";
 import { MarketplaceListings } from "@/components/marketplace-deals/marketplace-listings";
 import { useMockDeals } from "@/hooks/useMockDeals";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
+import { cn } from "@/lib/utils";
 
 export default function MarketplaceDeals() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -12,6 +13,7 @@ export default function MarketplaceDeals() {
   const [sortBy, setSortBy] = useState("newest");
   const [resultsPerPage, setResultsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   
   // Filters state
   // All home types selected by default
@@ -80,13 +82,21 @@ export default function MarketplaceDeals() {
 
         {/* Main Content - Split view - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Map Section - 50% width */}
-          <div className="hidden lg:block w-1/2 h-full">
+          {/* Map Section - 50% or 100% width based on fullscreen */}
+          <div className={cn(
+            "hidden lg:block h-full transition-all duration-300",
+            isMapFullscreen ? "w-full" : "w-1/2"
+          )}>
             <MarketplaceMap deals={deals} />
           </div>
 
-          {/* Listings Section - 50% width */}
-          <div className="flex-1 lg:flex-none lg:w-1/2 h-full overflow-y-auto">
+          {/* Listings Section - 50% width, hidden when map is fullscreen */}
+          <div className={cn(
+            "h-full overflow-y-auto transition-all duration-300",
+            isMapFullscreen 
+              ? "hidden" 
+              : "flex-1 lg:flex-none lg:w-1/2"
+          )}>
             <MarketplaceListings
               deals={deals}
               totalCount={totalCount}
@@ -102,6 +112,8 @@ export default function MarketplaceDeals() {
               onResultsPerPageChange={setResultsPerPage}
               currentPage={currentPage}
               onPageChange={setCurrentPage}
+              isMapFullscreen={isMapFullscreen}
+              onMapFullscreenChange={setIsMapFullscreen}
             />
           </div>
         </div>
