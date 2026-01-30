@@ -395,9 +395,12 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  viewMode === "list" ? "bg-muted" : "bg-background"
+                  viewMode === "list" && !isMapFullscreen ? "bg-primary text-white" : "bg-background"
                 )}
-                onClick={() => onViewModeChange("list")}
+                onClick={() => {
+                  onViewModeChange("list");
+                  onMapFullscreenChange?.(false);
+                }}
                 title="List view"
               >
                 <List className="h-4 w-4" />
@@ -425,8 +428,8 @@ export function MarketplaceFilters({
                     "h-10 w-10 rounded-none border-0",
                     isMapFullscreen ? "bg-primary text-white" : "bg-background"
                   )}
-                  onClick={() => onMapFullscreenChange(!isMapFullscreen)}
-                  title="Fullscreen map"
+                  onClick={() => onMapFullscreenChange(true)}
+                  title="Map view"
                 >
                   <Map className="h-4 w-4" />
                 </Button>
