@@ -308,7 +308,7 @@ export function DialerQuickAccess() {
           <TabsContent value="keypad" className="m-0 p-4">
             {/* Caller ID Selector */}
             <div className="mb-3">
-              <label className="text-xs text-muted-foreground mb-1.5 block">Call from</label>
+              <label className="text-xs text-muted-foreground mb-1.5 block">Call From</label>
               <Select value={selectedCallerId} onValueChange={setSelectedCallerId}>
                 <SelectTrigger className="h-9 text-sm">
                   <SelectValue>
@@ -347,7 +347,7 @@ export function DialerQuickAccess() {
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/[^\d+*#]/g, ""))}
-                placeholder="Enter number"
+                placeholder="Enter Number"
                 className="h-12 text-center text-xl font-mono tracking-wider pr-10"
               />
               {phoneNumber && (
