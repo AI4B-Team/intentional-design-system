@@ -347,7 +347,7 @@ export function DialerQuickAccess() {
               <Input
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value.replace(/[^\d+*#]/g, ""))}
-                placeholder="Enter Number"
+                placeholder="Enter Phone Number"
                 className="h-12 text-center text-xl font-mono tracking-wider pr-10"
               />
               {phoneNumber && (
