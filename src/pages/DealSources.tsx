@@ -122,9 +122,9 @@ export default function DealSources() {
         <ContactStatsCard stats={stats || null} isLoading={statsLoading} activeType={activeTab} />
 
         {/* Tabs */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="space-y-4">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
-            <TabsList>
+            <TabsList className="flex-wrap h-auto gap-1">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="agent">Agents</TabsTrigger>
               <TabsTrigger value="seller">Sellers</TabsTrigger>
