@@ -1,22 +1,23 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus } from "lucide-react";
 import {
-  AddDealSourceModal,
-  DealSourcesTable,
-  DealSourceFiltersBar,
-  DealSourceStats,
-} from "@/components/deal-sources";
+  AddContactModal,
+  ContactsTable,
+  ContactFiltersBar,
+  ContactStatsCard,
+} from "@/components/contacts";
 import {
-  useDealSources,
-  useDealSourceStats,
-  useLogContact,
-  useDeleteDealSource,
-  type DealSourceFilters,
-  type DealSourceType,
-} from "@/hooks/useDealSources";
+  useContacts,
+  useContactStats,
+  useLogContactInteraction,
+  useDeleteContact,
+  type ContactFilters,
+  type ContactType,
+} from "@/hooks/useContacts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,9 +30,13 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function DealSources() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const addType = searchParams.get("add") as ContactType | null;
+  
   const [showAddModal, setShowAddModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<DealSourceType | "all">("all");
-  const [filters, setFilters] = useState<DealSourceFilters>({
+  const [defaultAddType, setDefaultAddType] = useState<ContactType | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<ContactType | "all">("all");
+  const [filters, setFilters] = useState<ContactFilters>({
     type: "all",
     status: "all",
     performance: "all",
@@ -40,6 +45,16 @@ export default function DealSources() {
   });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Handle ?add=type query param
+  useEffect(() => {
+    if (addType) {
+      setDefaultAddType(addType);
+      setShowAddModal(true);
+      // Clear the query param
+      setSearchParams({});
+    }
+  }, [addType, setSearchParams]);
 
   // Combine tab with filters
   const combinedFilters = useMemo(
@@ -50,17 +65,17 @@ export default function DealSources() {
     [filters, activeTab]
   );
 
-  const { data: dealSources = [], isLoading } = useDealSources(combinedFilters);
-  const { data: stats, isLoading: statsLoading } = useDealSourceStats();
-  const logContact = useLogContact();
-  const deleteDealSource = useDeleteDealSource();
+  const { data: contacts = [], isLoading } = useContacts(combinedFilters);
+  const { data: stats, isLoading: statsLoading } = useContactStats(activeTab);
+  const logContact = useLogContactInteraction();
+  const deleteContact = useDeleteContact();
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value as DealSourceType | "all");
+    setActiveTab(value as ContactType | "all");
     setSelectedIds([]);
   };
 
-  const handleFiltersChange = (newFilters: DealSourceFilters) => {
+  const handleFiltersChange = (newFilters: ContactFilters) => {
     setFilters(newFilters);
     setSelectedIds([]);
   };
@@ -72,7 +87,7 @@ export default function DealSources() {
   };
 
   const handleSelectAll = (selected: boolean) => {
-    setSelectedIds(selected ? dealSources.map((s) => s.id) : []);
+    setSelectedIds(selected ? contacts.map((s) => s.id) : []);
   };
 
   const handleLogContact = (id: string) => {
@@ -81,7 +96,7 @@ export default function DealSources() {
 
   const handleDeleteConfirm = () => {
     if (deleteId) {
-      deleteDealSource.mutate(deleteId);
+      deleteContact.mutate(deleteId);
       setDeleteId(null);
       setSelectedIds((prev) => prev.filter((id) => id !== deleteId));
     }
@@ -93,18 +108,18 @@ export default function DealSources() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-h1 font-semibold text-content">Deal Sources</h1>
+            <h1 className="text-h1 font-semibold text-content">Contacts</h1>
             <p className="text-body text-content-secondary mt-1">
-              Manage your network of agents, wholesalers, and lenders
+              Manage your network of agents, buyers, sellers, lenders, and vendors
             </p>
           </div>
           <Button variant="primary" icon={<Plus />} onClick={() => setShowAddModal(true)}>
-            Add Deal Source
+            Add Contact
           </Button>
         </div>
 
-        {/* Stats */}
-        <DealSourceStats stats={stats || null} isLoading={statsLoading} />
+        {/* Stats - type-specific */}
+        <ContactStatsCard stats={stats || null} isLoading={statsLoading} activeType={activeTab} />
 
         {/* Tabs */}
         <div className="flex items-center justify-between gap-4 flex-wrap">
@@ -112,12 +127,19 @@ export default function DealSources() {
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="agent">Agents</TabsTrigger>
-              <TabsTrigger value="wholesaler">Wholesalers</TabsTrigger>
+              <TabsTrigger value="seller">Sellers</TabsTrigger>
+              <TabsTrigger value="buyer">Buyers</TabsTrigger>
               <TabsTrigger value="lender">Lenders</TabsTrigger>
+              <TabsTrigger value="wholesaler">Wholesalers</TabsTrigger>
+              <TabsTrigger value="contractor">Contractors</TabsTrigger>
+              <TabsTrigger value="title_company">Title</TabsTrigger>
+              <TabsTrigger value="attorney">Attorney</TabsTrigger>
+              <TabsTrigger value="property_manager">PM</TabsTrigger>
+              <TabsTrigger value="inspector">Inspector</TabsTrigger>
             </TabsList>
           </Tabs>
 
-          <DealSourceFiltersBar filters={filters} onFiltersChange={handleFiltersChange} />
+          <ContactFiltersBar filters={filters} onFiltersChange={handleFiltersChange} />
         </div>
 
         {/* Bulk Actions */}
@@ -133,7 +155,6 @@ export default function DealSources() {
               variant="danger"
               size="sm"
               onClick={() => {
-                // For now, just delete the first selected
                 if (selectedIds.length > 0) {
                   setDeleteId(selectedIds[0]);
                 }
@@ -145,8 +166,8 @@ export default function DealSources() {
         )}
 
         {/* Table */}
-        <DealSourcesTable
-          data={dealSources}
+        <ContactsTable
+          data={contacts}
           isLoading={isLoading}
           selectedIds={selectedIds}
           onSelect={handleSelect}
@@ -157,24 +178,31 @@ export default function DealSources() {
         />
 
         {/* Pagination placeholder */}
-        {dealSources.length > 0 && (
+        {contacts.length > 0 && (
           <div className="flex items-center justify-between text-small text-content-secondary">
-            <span>Showing {dealSources.length} results</span>
+            <span>Showing {contacts.length} results</span>
             <span className="text-content-tertiary">Page 1 of 1</span>
           </div>
         )}
       </div>
 
       {/* Add Modal */}
-      <AddDealSourceModal open={showAddModal} onOpenChange={setShowAddModal} />
+      <AddContactModal 
+        open={showAddModal} 
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) setDefaultAddType(undefined);
+        }} 
+        defaultType={defaultAddType || (activeTab !== "all" ? activeTab : undefined)}
+      />
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Deal Source?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Contact?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the deal source and all associated data.
+              This action cannot be undone. This will permanently delete the contact and all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

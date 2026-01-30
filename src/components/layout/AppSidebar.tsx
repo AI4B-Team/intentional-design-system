@@ -75,9 +75,7 @@ const contactsGroup: NavGroup = {
   label: "Contacts",
   icon: Users,
   items: [
-    { label: "Deal Sources", href: "/deal-sources", icon: Users },
-    { label: "Buyers", href: "/buyers", icon: UserCheck },
-    { label: "Contractors", href: "/contractors", icon: Hammer },
+    { label: "All Contacts", href: "/deal-sources", icon: Users },
   ],
 };
 
