@@ -7,7 +7,7 @@ import { AIVAChat } from "@/components/aiva/AIVAChat";
 export default function AIVA() {
   return (
     <AppLayout>
-      <div className="flex-1 flex flex-col lg:flex-row gap-6 h-[calc(100vh-8rem)]">
+      <div className="flex-1 flex flex-col lg:flex-row gap-6 h-[calc(var(--app-viewport-height)-8rem)]">
         {/* Chat Panel - Main Focus */}
         <div className="flex-1 flex flex-col min-h-0">
           {/* Header */}
