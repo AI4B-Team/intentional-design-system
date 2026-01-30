@@ -24,6 +24,7 @@ import {
   Hammer,
   CheckSquare,
   Send,
+  Target,
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
@@ -46,6 +47,9 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
+
+  // Show marketplace-specific buttons only on /marketplace routes
+  const isMarketplacePage = location.pathname.startsWith("/marketplace");
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6 gap-2">
@@ -127,16 +131,29 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Post Deal Button */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => navigate("/submit-deal")}
-        className="hidden sm:flex gap-2 border-primary"
-      >
-        <Send className="h-4 w-4" />
-        <span>Post Deal</span>
-      </Button>
+      {/* Post Deal & Buy Box Buttons – Marketplace only */}
+      {isMarketplacePage && (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/submit-deal")}
+            className="hidden sm:flex gap-2 border-primary"
+          >
+            <Send className="h-4 w-4" />
+            <span>Post Deal</span>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/marketplace/buy-box")}
+            className="hidden sm:flex gap-2"
+          >
+            <Target className="h-4 w-4" />
+            <span>Buy Box</span>
+          </Button>
+        </>
+      )}
 
       {/* Mobile Add Button */}
       <DropdownMenu>
