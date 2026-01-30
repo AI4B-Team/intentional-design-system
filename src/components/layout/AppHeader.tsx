@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
+import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
 
 interface Breadcrumb {
   label: string;
@@ -161,6 +162,9 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Dialer Quick Access */}
+      <DialerQuickAccess />
 
       {/* Help */}
       <HelpButton variant="icon" />
