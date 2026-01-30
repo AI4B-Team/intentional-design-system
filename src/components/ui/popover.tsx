@@ -10,13 +10,15 @@ const PopoverTrigger = PopoverPrimitive.Trigger;
 const PopoverContent = React.forwardRef<
   React.ElementRef<typeof PopoverPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "start", sideOffset = 2, side = "bottom", ...props }, ref) => (
+>(({ className, align = "center", sideOffset = 4, side = "bottom", ...props }, ref) => (
   <PopoverPrimitive.Portal>
     <PopoverPrimitive.Content
       ref={ref}
       align={align}
       side={side}
       sideOffset={sideOffset}
+      avoidCollisions={true}
+      collisionPadding={8}
       className={cn(
         // Force high z-index and solid background - always open below trigger
         "z-[100] w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
