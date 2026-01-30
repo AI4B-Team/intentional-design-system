@@ -107,7 +107,7 @@ export default function DealSources() {
         <DealSourceStats stats={stats || null} isLoading={statsLoading} />
 
         {/* Tabs */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
