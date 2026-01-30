@@ -54,11 +54,11 @@ interface NavGroup {
 
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Properties", href: "/properties", icon: Building2 },
 ];
 
 const afterLeadsItems: NavItem[] = [
-  { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Financing", href: "/financing", icon: DollarSign },
 ];
 
