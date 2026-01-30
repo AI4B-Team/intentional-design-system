@@ -5,7 +5,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { AppLayout } from "@/components/layout";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -145,16 +144,14 @@ export default function DialerQueues() {
   ];
 
   return (
-    <AppLayout>
-      <PageLayout
-        title="Call Queues"
-        headerActions={
-          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
-            <Plus className="h-4 w-4 mr-1" />
-            Create Queue
-          </Button>
-        }
-      >
+    <PageLayout>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-h1 font-semibold text-foreground">Call Queues</h1>
+        <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+          <Plus className="h-4 w-4 mr-1" />
+          Create Queue
+        </Button>
+      </div>
         {/* Filter Tabs */}
         <div className="flex items-center gap-1 bg-muted rounded-medium p-1 w-fit mb-6">
           {statusFilters.map((filter) => (
@@ -344,7 +341,6 @@ export default function DialerQueues() {
           onOpenChange={setShowCreateModal}
           onSuccess={(queueId) => navigate(`/dialer/queues/${queueId}`)}
         />
-      </PageLayout>
-    </AppLayout>
+    </PageLayout>
   );
 }
