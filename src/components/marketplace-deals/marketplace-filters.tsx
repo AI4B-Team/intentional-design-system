@@ -114,7 +114,7 @@ export function MarketplaceFilters({
       return "Home Type";
     }
     if (filters.homeTypes.length === homeTypeOptions.length) {
-      return "All Types";
+      return "Home Type";
     }
     if (filters.homeTypes.length === 1) {
       return homeTypeOptions.find(t => t.id === filters.homeTypes[0])?.label || "Home Type";
@@ -122,8 +122,26 @@ export function MarketplaceFilters({
     return `${filters.homeTypes.length} Types`;
   };
 
-  // Standardized button size for filter bar consistency
-  const filterButtonClass = "h-9 min-w-[110px] bg-background text-sm flex-shrink-0";
+  const getLeadTypeLabel = () => {
+    if (!filters.leadType || filters.leadType === "all") {
+      return "Lead Type";
+    }
+    const found = leadTypeOptions.find(
+      (t) => t.toLowerCase().replace(/ /g, "-") === filters.leadType
+    );
+    return found || "Lead Type";
+  };
+
+  const getPriceLabel = () => {
+    if (!filters.priceRange || filters.priceRange === "any") {
+      return "Price";
+    }
+    const found = priceRangeOptions.find((o) => o.value === filters.priceRange);
+    return found?.label || "Price";
+  };
+
+  // Standardized button size for filter bar consistency – uniform h-10 and whitespace-nowrap
+  const filterButtonClass = "h-10 px-4 bg-background text-sm flex-shrink-0 whitespace-nowrap";
 
   return (
     <>
@@ -163,7 +181,7 @@ export function MarketplaceFilters({
             onValueChange={(v) => handleChange("leadType", v)}
           >
             <SelectTrigger className={filterButtonClass}>
-              <SelectValue placeholder="Lead Type" />
+              <span className="truncate">{getLeadTypeLabel()}</span>
             </SelectTrigger>
             <SelectContent className="bg-background">
               {leadTypeOptions.map((type) => (
@@ -181,7 +199,7 @@ export function MarketplaceFilters({
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
               <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal")}>
-                {getHomeTypeLabel()}
+                <span className="truncate">{getHomeTypeLabel()}</span>
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </PopoverTrigger>
@@ -226,7 +244,7 @@ export function MarketplaceFilters({
             onValueChange={(v) => handleChange("priceRange", v)}
           >
             <SelectTrigger className={filterButtonClass}>
-              <SelectValue placeholder="Price" />
+              <span className="truncate">{getPriceLabel()}</span>
             </SelectTrigger>
             <SelectContent className="bg-background">
               {priceRangeOptions.map((option) => (
@@ -240,7 +258,7 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal min-w-[120px]")}>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal")}>
                 Beds & Baths
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
@@ -318,7 +336,7 @@ export function MarketplaceFilters({
           {/* More Filters */}
           <Button 
             variant="outline" 
-            className={cn(filterButtonClass, "gap-2 font-normal px-4")}
+            className={cn(filterButtonClass, "gap-2 font-normal")}
             onClick={() => setMoreFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
@@ -328,7 +346,7 @@ export function MarketplaceFilters({
           {/* Save Search */}
           <Button 
             variant="default" 
-            className="h-9 gap-2 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0"
+            className="h-10 gap-2 px-4 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0 whitespace-nowrap"
           >
             <Bookmark className="h-4 w-4" />
             Save Search
