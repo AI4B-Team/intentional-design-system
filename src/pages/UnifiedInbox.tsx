@@ -316,7 +316,7 @@ export default function UnifiedInbox() {
         }
       />
 
-      <div className="flex gap-6 h-[calc(100vh-200px)]">
+      <div className="flex gap-6 h-[calc(var(--app-viewport-height)-200px)]">
         {/* Sidebar */}
         <Card variant="default" padding="none" className="w-64 flex-shrink-0">
           <div className="p-4 space-y-1">

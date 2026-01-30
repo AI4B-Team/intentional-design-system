@@ -84,7 +84,7 @@ export function DashboardLayout({
 
         {/* Page Content */}
         <main className={cn(
-          "min-h-[calc(100vh-64px)]",
+          "min-h-[calc(var(--app-viewport-height)-64px)]",
           fullWidth ? "p-0 pb-20 lg:pb-0" : "p-md pb-24 lg:p-lg lg:pb-lg"
         )}>
           <div className={cn(!fullWidth && "mx-auto max-w-[1400px]")}>{children}</div>

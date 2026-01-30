@@ -13,7 +13,9 @@
 
 @layer base {
   html {
-    --app-zoom: 0.9;
+    /* Default: no zoom compensation needed */
+    --app-zoom: 1;
+    --app-viewport-height: 100vh;
   }
 
   /* The app is intentionally scaled down globally.
@@ -21,6 +23,9 @@
      (prevents bottom/right blank space caused by scaling). */
   @supports (zoom: 1) {
     html {
+      /* Enable global zoom + expose a zoom-aware viewport height token */
+      --app-zoom: 0.9;
+      --app-viewport-height: calc(100vh / var(--app-zoom));
       zoom: var(--app-zoom);
       height: calc(100vh / var(--app-zoom));
       min-height: calc(100vh / var(--app-zoom));
@@ -220,6 +225,25 @@
     --chart-3: 38 92% 55%;
     --chart-4: 262 83% 65%;
     --chart-5: 0 84% 65%;
+  }
+}
+
+@layer utilities {
+  /*
+   * Zoom-safe viewport utilities:
+   * Tailwind's h-screen/min-h-screen use raw 100vh, which becomes too short when html is zoomed.
+   * We override them globally to use a zoom-aware viewport height token.
+   */
+  .h-screen {
+    height: var(--app-viewport-height);
+  }
+
+  .min-h-screen {
+    min-height: var(--app-viewport-height);
+  }
+
+  .max-h-screen {
+    max-height: var(--app-viewport-height);
   }
 }
 
