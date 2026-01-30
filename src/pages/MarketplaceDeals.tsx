@@ -86,38 +86,34 @@ export default function MarketplaceDeals() {
 
         {/* Main Content - Split view - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Map Section - 50% or 100% width based on fullscreen */}
-          <div className={cn(
-            "hidden lg:block h-full transition-all duration-300",
-            isMapFullscreen ? "w-full" : "w-1/2"
-          )}>
-            <MarketplaceMap deals={deals} />
-          </div>
+          {/* Map Section - Only visible when Map view is selected (fullscreen) */}
+          {isMapFullscreen && (
+            <div className="w-full h-full">
+              <MarketplaceMap deals={deals} />
+            </div>
+          )}
 
-          {/* Listings Section - 50% width, hidden when map is fullscreen */}
-          <div className={cn(
-            "h-full overflow-y-auto transition-all duration-300",
-            isMapFullscreen 
-              ? "hidden" 
-              : "flex-1 lg:flex-none lg:w-1/2"
-          )}>
-            <MarketplaceListings
-              deals={deals}
-              totalCount={totalCount}
-              isLoading={isLoading}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              selectedDeals={selectedDeals}
-              onSelectAll={handleSelectAll}
-              onSelectDeal={handleSelectDeal}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              resultsPerPage={resultsPerPage}
-              onResultsPerPageChange={setResultsPerPage}
-              currentPage={currentPage}
-              onPageChange={setCurrentPage}
-            />
-          </div>
+          {/* Listings Section - Full width when List/Grid selected */}
+          {!isMapFullscreen && (
+            <div className="w-full h-full overflow-y-auto">
+              <MarketplaceListings
+                deals={deals}
+                totalCount={totalCount}
+                isLoading={isLoading}
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+                selectedDeals={selectedDeals}
+                onSelectAll={handleSelectAll}
+                onSelectDeal={handleSelectDeal}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+                resultsPerPage={resultsPerPage}
+                onResultsPerPageChange={setResultsPerPage}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+              />
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>
