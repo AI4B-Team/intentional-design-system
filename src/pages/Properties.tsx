@@ -14,6 +14,7 @@ import { BulkAIOutreachModal } from "@/components/properties/bulk-ai-outreach-mo
 import { ColumnSettingsModal, DEFAULT_COLUMNS, type ColumnConfig } from "@/components/properties/column-settings-modal";
 import { ColorLabelPicker, ColorLabelDot } from "@/components/properties/color-label-picker";
 import { BulkSkipTraceModal } from "@/components/skip-trace";
+import { BulkImportModal } from "@/components/properties/bulk-import-modal";
 import {
   Select,
   SelectContent,
@@ -425,6 +426,7 @@ export default function Properties() {
   const [isBulkOfferOpen, setIsBulkOfferOpen] = React.useState(false);
   const [isBulkAIOpen, setIsBulkAIOpen] = React.useState(false);
   const [isBulkSkipTraceOpen, setIsBulkSkipTraceOpen] = React.useState(false);
+  const [isBulkImportOpen, setIsBulkImportOpen] = React.useState(false);
   const [isColumnSettingsOpen, setIsColumnSettingsOpen] = React.useState(false);
   const [columns, setColumns] = React.useState<ColumnConfig[]>(() => {
     const saved = localStorage.getItem("propertyTableColumns");
@@ -580,7 +582,12 @@ export default function Properties() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" icon={<Upload />}>
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            icon={<Upload />}
+            onClick={() => setIsBulkImportOpen(true)}
+          >
             Import
           </Button>
           <Button
@@ -1126,6 +1133,13 @@ export default function Properties() {
         onOpenChange={setIsColumnSettingsOpen}
         columns={columns}
         onColumnsChange={handleColumnsChange}
+      />
+
+      {/* Bulk Import Modal */}
+      <BulkImportModal
+        open={isBulkImportOpen}
+        onOpenChange={setIsBulkImportOpen}
+        onSuccess={() => refetch()}
       />
     </AppLayout>
   );
