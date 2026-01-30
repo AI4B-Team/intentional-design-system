@@ -66,6 +66,7 @@ import MailTemplates from "./pages/MailTemplates";
 import MailTemplateEditor from "./pages/MailTemplateEditor";
 import MailSuppression from "./pages/MailSuppression";
 import AIVA from "./pages/AIVA";
+import UnifiedInbox from "./pages/UnifiedInbox";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import DealAnalyzer from "./pages/DealAnalyzer";
@@ -197,6 +198,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/inbox"
+              element={
+                <ProtectedRoute>
+                  <UnifiedInbox />
                 </ProtectedRoute>
               }
             />
