@@ -71,7 +71,7 @@ const leadsGroup: NavGroup = {
   ],
 };
 
-// Contacts as direct nav item (not a group)
+// Contacts - direct nav item (not a collapsible group)
 const contactsNavItem: NavItem = {
   label: "Contacts",
   href: "/contacts",
