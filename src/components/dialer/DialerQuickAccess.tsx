@@ -11,6 +11,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Phone,
   PhoneCall,
   PhoneOff,
@@ -30,8 +37,16 @@ import {
   PhoneMissed,
   PhoneIncoming,
   Volume2,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+interface CallerID {
+  id: string;
+  number: string;
+  label: string;
+  type: "local" | "tollfree" | "mobile";
+}
 
 interface RecentCall {
   id: string;
@@ -68,6 +83,13 @@ const mockContacts: Contact[] = [
   { id: "6", name: "David Lee", phone: "+1 (555) 678-9012", type: "agent" },
 ];
 
+const mockCallerIDs: CallerID[] = [
+  { id: "1", number: "+1 (555) 100-0001", label: "Main Office", type: "local" },
+  { id: "2", number: "+1 (555) 100-0002", label: "Sales Line", type: "local" },
+  { id: "3", number: "+1 (800) 555-0100", label: "Toll-Free", type: "tollfree" },
+  { id: "4", number: "+1 (555) 100-0004", label: "Mobile", type: "mobile" },
+];
+
 const keypadButtons = [
   { digit: "1", letters: "" },
   { digit: "2", letters: "ABC" },
@@ -93,6 +115,7 @@ export function DialerQuickAccess() {
   const [isOnHold, setIsOnHold] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
   const [activeTab, setActiveTab] = useState("keypad");
+  const [selectedCallerId, setSelectedCallerId] = useState(mockCallerIDs[0].id);
 
   // Call timer
   useEffect(() => {
@@ -143,6 +166,19 @@ export function DialerQuickAccess() {
       contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       contact.phone.includes(searchQuery)
   );
+
+  const selectedCallerIdData = mockCallerIDs.find((c) => c.id === selectedCallerId) || mockCallerIDs[0];
+
+  const getCallerIdTypeLabel = (type: CallerID["type"]) => {
+    switch (type) {
+      case "local":
+        return "Local";
+      case "tollfree":
+        return "Toll-Free";
+      case "mobile":
+        return "Mobile";
+    }
+  };
 
   const getCallTypeIcon = (type: RecentCall["type"]) => {
     switch (type) {
@@ -270,6 +306,42 @@ export function DialerQuickAccess() {
 
           {/* Keypad Tab */}
           <TabsContent value="keypad" className="m-0 p-4">
+            {/* Caller ID Selector */}
+            <div className="mb-3">
+              <label className="text-xs text-muted-foreground mb-1.5 block">Call from</label>
+              <Select value={selectedCallerId} onValueChange={setSelectedCallerId}>
+                <SelectTrigger className="h-9 text-sm">
+                  <SelectValue>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                      <span>{selectedCallerIdData.label}</span>
+                      <span className="text-muted-foreground text-xs">
+                        {selectedCallerIdData.number}
+                      </span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="bg-background">
+                  {mockCallerIDs.map((callerId) => (
+                    <SelectItem key={callerId.id} value={callerId.id}>
+                      <div className="flex items-center justify-between w-full gap-3">
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="font-medium">{callerId.label}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">{callerId.number}</span>
+                          <span className="text-[10px] uppercase font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                            {getCallerIdTypeLabel(callerId.type)}
+                          </span>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Phone Number Display */}
             <div className="relative mb-4">
               <Input
@@ -294,11 +366,11 @@ export function DialerQuickAccess() {
                 <button
                   key={btn.digit}
                   onClick={() => handleDigitPress(btn.digit)}
-                  className="h-14 rounded-lg bg-surface-secondary hover:bg-muted transition-colors flex flex-col items-center justify-center"
+                  className="h-12 rounded-lg bg-surface-secondary hover:bg-muted transition-colors flex flex-col items-center justify-center"
                 >
-                  <span className="text-xl font-semibold">{btn.digit}</span>
+                  <span className="text-lg font-semibold">{btn.digit}</span>
                   {btn.letters && (
-                    <span className="text-[10px] text-muted-foreground tracking-widest">
+                    <span className="text-[9px] text-muted-foreground tracking-widest">
                       {btn.letters}
                     </span>
                   )}
