@@ -153,6 +153,7 @@ export default function DealSources() {
           onSelectAll={handleSelectAll}
           onLogContact={handleLogContact}
           onDelete={setDeleteId}
+          onAddContact={() => setShowAddModal(true)}
         />
 
         {/* Pagination placeholder */}
