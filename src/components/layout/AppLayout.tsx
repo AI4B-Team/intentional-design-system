@@ -72,7 +72,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   };
 
   return (
-    <div className="h-full flex bg-surface-secondary">
+    <div className="h-full min-h-screen flex bg-surface-secondary">
       {/* Sidebar */}
       <AppSidebar
         collapsed={sidebarCollapsed}
@@ -82,14 +82,14 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Header */}
         <AppHeader
           onMenuClick={() => setMobileMenuOpen(true)}
           breadcrumbs={breadcrumbs}
         />
 
-        {/* Page Content */}
+        {/* Page Content - fills remaining space, never blank */}
         <main
           ref={mainRef}
           className={cn(

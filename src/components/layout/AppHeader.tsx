@@ -107,7 +107,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" sideOffset={8} className="w-40 bg-background z-50">
+        <DropdownMenuContent className="w-40 bg-background">
           <DropdownMenuItem onClick={() => navigate("/properties/new")}>
             <UserPlus className="h-4 w-4 mr-2" />
             Lead
@@ -148,7 +148,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <Plus className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" className="w-40 bg-background z-50">
+        <DropdownMenuContent align="end" className="w-40 bg-background">
           <DropdownMenuItem onClick={() => navigate("/properties/new")}>
             <UserPlus className="h-4 w-4 mr-2" />
             Lead
@@ -179,7 +179,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-destructive rounded-full" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side="bottom" align="end" className="w-80 bg-background z-50">
+        <DropdownMenuContent align="end" className="w-80 bg-background">
           <DropdownMenuLabel>Notifications</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <div className="max-h-80 overflow-y-auto">
