@@ -7,13 +7,15 @@ import { useMockDeals } from "@/hooks/useMockDeals";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
 import { cn } from "@/lib/utils";
 
+export type LayoutMode = "cards" | "split" | "map";
+
 export default function MarketplaceDeals() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("cards");
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [resultsPerPage, setResultsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
-  const [isMapFullscreen, setIsMapFullscreen] = useState(false);
   
   // Filters state
   // All home types selected by default
@@ -80,22 +82,28 @@ export default function MarketplaceDeals() {
           onAdvancedFiltersChange={setAdvancedFilters}
           viewMode={viewMode}
           onViewModeChange={setViewMode}
-          isMapFullscreen={isMapFullscreen}
-          onMapFullscreenChange={setIsMapFullscreen}
+          layoutMode={layoutMode}
+          onLayoutModeChange={setLayoutMode}
         />
 
-        {/* Main Content - Split view - fills remaining height */}
+        {/* Main Content - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Map Section - Only visible when Map view is selected (fullscreen) */}
-          {isMapFullscreen && (
-            <div className="w-full h-full">
+          {/* Map Section */}
+          {(layoutMode === "map" || layoutMode === "split") && (
+            <div className={cn(
+              "h-full",
+              layoutMode === "map" ? "w-full" : "w-1/2 hidden lg:block"
+            )}>
               <MarketplaceMap deals={deals} />
             </div>
           )}
 
-          {/* Listings Section - Full width when List/Grid selected */}
-          {!isMapFullscreen && (
-            <div className="w-full h-full overflow-y-auto">
+          {/* Listings Section */}
+          {(layoutMode === "cards" || layoutMode === "split") && (
+            <div className={cn(
+              "h-full overflow-y-auto",
+              layoutMode === "cards" ? "w-full" : "w-full lg:w-1/2"
+            )}>
               <MarketplaceListings
                 deals={deals}
                 totalCount={totalCount}
@@ -111,6 +119,7 @@ export default function MarketplaceDeals() {
                 onResultsPerPageChange={setResultsPerPage}
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
+                isSplitView={layoutMode === "split"}
               />
             </div>
           )}
