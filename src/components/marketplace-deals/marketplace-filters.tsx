@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,6 +20,8 @@ import {
   SlidersHorizontal,
   Bookmark,
   ChevronDown,
+  Send,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
@@ -83,6 +86,7 @@ export function MarketplaceFilters({
   advancedFilters = defaultFilters,
   onAdvancedFiltersChange,
 }: MarketplaceFiltersProps) {
+  const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [bedsPopoverOpen, setBedsPopoverOpen] = useState(false);
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
@@ -145,7 +149,7 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="relative z-50 flex items-center gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
+      <div className="relative z-50 flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters - uniform gap-3 for equal spacing */}
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Address Search */}
@@ -155,7 +159,7 @@ export function MarketplaceFilters({
               placeholder="Address, City, County, State, or Zip"
               value={filters.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              className="h-9 w-[280px] bg-background text-sm pr-10 rounded-full border-border"
+              className="h-10 w-[280px] bg-background text-sm pr-10 rounded-full border-border"
             />
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
@@ -350,6 +354,26 @@ export function MarketplaceFilters({
           >
             <Bookmark className="h-4 w-4" />
             Save Search
+          </Button>
+        </div>
+
+        {/* Right aligned actions – Post Deal & Buy Box */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <Button
+            variant="outline"
+            className="h-10 gap-2 px-4 text-sm whitespace-nowrap border-primary"
+            onClick={() => navigate("/submit-deal")}
+          >
+            <Send className="h-4 w-4" />
+            Post Deal
+          </Button>
+          <Button
+            variant="outline"
+            className="h-10 gap-2 px-4 text-sm whitespace-nowrap"
+            onClick={() => navigate("/marketplace/buy-box")}
+          >
+            <Target className="h-4 w-4" />
+            Buy Box
           </Button>
         </div>
       </div>
