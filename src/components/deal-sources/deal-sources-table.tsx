@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -18,6 +19,7 @@ import {
   Trash2,
   Mail,
   Users,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, parseISO } from "date-fns";
@@ -31,6 +33,7 @@ interface DealSourcesTableProps {
   onSelectAll: (selected: boolean) => void;
   onLogContact: (id: string) => void;
   onDelete: (id: string) => void;
+  onAddContact?: () => void;
 }
 
 // Monday.com style status colors with left border accent
@@ -113,6 +116,7 @@ export function DealSourcesTable({
   onSelectAll,
   onLogContact,
   onDelete,
+  onAddContact,
 }: DealSourcesTableProps) {
   const navigate = useNavigate();
   const allSelected = data.length > 0 && selectedIds.length === data.length;
@@ -137,10 +141,15 @@ export function DealSourcesTable({
           <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
             <Users className="h-8 w-8 text-slate-400" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">No contacts found</h3>
-          <p className="text-sm text-slate-500">
+          <h3 className="text-lg font-semibold text-slate-900 mb-1">No Contacts Found</h3>
+          <p className="text-sm text-slate-500 mb-6">
             Add your first contact to get started
           </p>
+          {onAddContact && (
+            <Button variant="primary" icon={<Plus />} onClick={onAddContact}>
+              Add Contact
+            </Button>
+          )}
         </div>
       </div>
     );
