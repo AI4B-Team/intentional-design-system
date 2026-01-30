@@ -315,7 +315,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
       {/* Leaflet Map Container */}
       <div ref={mapContainerRef} className="h-full w-full" />
 
-      {/* Custom CSS for price markers */}
+      {/* Custom CSS for price markers and zoom controls */}
       <style>{`
         .leaflet-container {
           z-index: 0 !important;
@@ -343,6 +343,14 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         }
         .leaflet-control {
           z-index: 10 !important;
+        }
+        /* Move zoom controls below the Map/Satellite toggle */
+        .leaflet-top.leaflet-left {
+          top: 56px !important;
+        }
+        .leaflet-control-zoom {
+          margin-top: 0 !important;
+          margin-left: 12px !important;
         }
         .price-marker {
           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
