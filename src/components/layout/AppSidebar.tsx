@@ -71,12 +71,11 @@ const leadsGroup: NavGroup = {
   ],
 };
 
-const contactsGroup: NavGroup = {
+// Contacts as direct nav item (not a group)
+const contactsNavItem: NavItem = {
   label: "Contacts",
+  href: "/contacts",
   icon: Users,
-  items: [
-    { label: "All Contacts", href: "/deal-sources", icon: Users },
-  ],
 };
 
 const marketingGroup: NavGroup = {
@@ -152,9 +151,7 @@ export function AppSidebar({
     return leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
-  const [contactsOpen, setContactsOpen] = React.useState(() => {
-    return contactsGroup.items.some(item => location.pathname.startsWith(item.href));
-  });
+  // Contacts is now a direct link, no open state needed
 
   const [marketingOpen, setMarketingOpen] = React.useState(() => {
     return marketingGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -178,7 +175,7 @@ export function AppSidebar({
   };
 
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
-  const isContactsActive = contactsGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -364,53 +361,21 @@ export function AppSidebar({
             )}
           </li>
 
-          {/* Contacts Group */}
+          {/* Contacts - Direct Link */}
           <li>
-            <button
-              onClick={() => !collapsed && setContactsOpen(!contactsOpen)}
+            <NavLink
+              to={contactsNavItem.href}
+              onClick={onMobileClose}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
                 "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isContactsActive && "text-white",
+                isContactsActive && "bg-brand-accent text-white font-medium",
                 collapsed && "justify-center"
               )}
             >
-              <contactsGroup.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-brand-accent")} />
-              {!collapsed && (
-                <>
-                  <span>{contactsGroup.label}</span>
-                  <ChevronDown className={cn(
-                    "h-4 w-4 ml-auto transition-transform",
-                    contactsOpen && "rotate-180"
-                  )} />
-                </>
-              )}
-            </button>
-            {!collapsed && contactsOpen && (
-              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
-                {contactsGroup.items.map((item) => {
-                  const isActive = location.pathname === item.href;
-                  const Icon = item.icon;
-
-                  return (
-                    <li key={item.href}>
-                      <NavLink
-                        to={item.href}
-                        onClick={onMobileClose}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
-                          isActive && "bg-brand-accent/20 text-white font-medium"
-                        )}
-                      >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+              <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-white")} />
+              {!collapsed && <span>{contactsNavItem.label}</span>}
+            </NavLink>
           </li>
 
           {/* Marketing Group */}

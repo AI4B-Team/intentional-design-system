@@ -317,7 +317,7 @@ export default function Contacts() {
                   <TableRow
                     key={contact.id}
                     className="cursor-pointer hover:bg-muted/50 transition-colors"
-                    onClick={() => navigate(`/deal-sources/${contact.id}`)}
+                    onClick={() => navigate(`/contacts/${contact.id}`)}
                   >
                     <TableCell>
                       <div>
@@ -374,7 +374,7 @@ export default function Contacts() {
                         <DropdownMenuContent align="end" className="bg-background">
                           <DropdownMenuItem onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/deal-sources/${contact.id}`);
+                            navigate(`/contacts/${contact.id}`);
                           }}>
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
