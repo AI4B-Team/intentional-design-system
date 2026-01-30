@@ -195,7 +195,7 @@ export function DialerControls({
       {/* Phone Number Display */}
       <div className="bg-muted rounded-lg p-4 text-center">
         <p className="text-2xl font-mono font-semibold text-foreground">
-          {formatPhone(displayNumber) || "Enter number..."}
+          {formatPhone(displayNumber) || "Enter Number..."}
         </p>
       </div>
 
