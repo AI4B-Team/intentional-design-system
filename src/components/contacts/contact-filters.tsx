@@ -21,9 +21,9 @@ export function ContactFiltersBar({ filters, onFiltersChange }: ContactFiltersBa
   };
 
   return (
-    <div className="flex items-center gap-3 flex-nowrap">
+    <div className="flex items-center gap-3 flex-wrap">
       {/* Search */}
-      <div className="relative w-[280px] flex-shrink-0">
+      <div className="relative flex-1 min-w-[200px] max-w-[320px]">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
         <Input
           placeholder="Search name, company, email..."
