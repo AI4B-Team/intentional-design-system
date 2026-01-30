@@ -122,11 +122,14 @@ export function MarketplaceFilters({
     return `${filters.homeTypes.length} Types`;
   };
 
+  // Standardized button size for filter bar consistency
+  const filterButtonClass = "h-9 min-w-[110px] bg-background text-sm flex-shrink-0";
+
   return (
     <>
-      <div className="relative z-50 flex items-center gap-2 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
-        {/* Left aligned filters */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+      <div className="relative z-50 flex items-center gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
+        {/* Left aligned filters - uniform gap-3 for equal spacing */}
+        <div className="flex items-center gap-3 flex-shrink-0">
           {/* Address Search */}
           <div className="relative flex-shrink-0">
             <Input
@@ -134,7 +137,7 @@ export function MarketplaceFilters({
               placeholder="Address, City, County, State, or Zip"
               value={filters.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
+              className="h-9 w-[280px] bg-background text-sm pr-10 rounded-full border-border"
             />
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           </div>
@@ -144,10 +147,10 @@ export function MarketplaceFilters({
             value={filters.listingStatus || "all"} 
             onValueChange={(v) => handleChange("listingStatus", v)}
           >
-            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className={filterButtonClass}>
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]" align="start">
+            <SelectContent className="bg-background">
               <SelectItem value="all">All Listings</SelectItem>
               <SelectItem value="on-market">On-Market</SelectItem>
               <SelectItem value="off-market">Off-Market</SelectItem>
@@ -159,10 +162,10 @@ export function MarketplaceFilters({
             value={filters.leadType || "all"} 
             onValueChange={(v) => handleChange("leadType", v)}
           >
-            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className={filterButtonClass}>
               <SelectValue placeholder="Lead Type" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]" align="start">
+            <SelectContent className="bg-background">
               {leadTypeOptions.map((type) => (
                 <SelectItem 
                   key={type} 
@@ -177,12 +180,12 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[110px] justify-between font-normal">
+              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal")}>
                 {getHomeTypeLabel()}
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 bg-background z-[100]" align="start">
+            <PopoverContent className="w-56 bg-background">
               <div className="space-y-3">
                 <div className="font-semibold">Home Type</div>
                 <button
@@ -222,10 +225,10 @@ export function MarketplaceFilters({
             value={filters.priceRange || "any"} 
             onValueChange={(v) => handleChange("priceRange", v)}
           >
-            <SelectTrigger className="w-auto min-w-[110px] h-9 bg-background text-sm flex-shrink-0">
+            <SelectTrigger className={filterButtonClass}>
               <SelectValue placeholder="Price" />
             </SelectTrigger>
-            <SelectContent className="bg-background z-[100]" align="start">
+            <SelectContent className="bg-background">
               {priceRangeOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
@@ -237,12 +240,12 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="h-9 gap-1 bg-background text-sm flex-shrink-0 min-w-[120px] justify-between font-normal">
+              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal min-w-[120px]")}>
                 Beds & Baths
                 <ChevronDown className="h-4 w-4 ml-1" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-72 bg-background z-[100]" align="start">
+            <PopoverContent className="w-72 bg-background">
               <div className="space-y-4">
                 {/* Bedrooms */}
                 <div className="space-y-2">
@@ -315,7 +318,7 @@ export function MarketplaceFilters({
           {/* More Filters */}
           <Button 
             variant="outline" 
-            className="h-9 gap-2 bg-background text-sm flex-shrink-0 font-normal px-4"
+            className={cn(filterButtonClass, "gap-2 font-normal px-4")}
             onClick={() => setMoreFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
