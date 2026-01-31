@@ -56,6 +56,7 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Marketplace", href: "/marketplace", icon: Store },
+  { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
   { label: "Inbox", href: "/inbox", icon: Inbox },
 ];
@@ -64,18 +65,7 @@ const afterLeadsItems: NavItem[] = [
   { label: "Financing", href: "/financing", icon: DollarSign },
 ];
 
-// Pipeline Group - Central hub for deal flow management
-const pipelineGroup: NavGroup = {
-  label: "Pipeline",
-  icon: Kanban,
-  items: [
-    { label: "Deal Board", href: "/pipeline", icon: Kanban },
-    { label: "Properties", href: "/properties", icon: Building2 },
-    { label: "Submissions", href: "/submissions", icon: Inbox, badgeKey: "submissions" },
-    { label: "Offers", href: "/offers", icon: Send },
-    { label: "Appointments", href: "/appointments", icon: Users },
-  ],
-};
+// Pipeline is now a direct top nav item, not a group
 
 const leadsGroup: NavGroup = {
   label: "Leads",
@@ -153,9 +143,7 @@ export function AppSidebar({
   const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
-  const [pipelineOpen, setPipelineOpen] = React.useState(() => {
-    return pipelineGroup.items.some(item => location.pathname.startsWith(item.href));
-  });
+  // Pipeline is now a direct top nav item, no dropdown state needed
 
   const [leadsOpen, setLeadsOpen] = React.useState(() => {
     return leadsGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -181,7 +169,7 @@ export function AppSidebar({
     return 0;
   };
 
-  const isPipelineActive = pipelineGroup.items.some(item => location.pathname.startsWith(item.href));
+  // Pipeline active state is handled by topNavItems now
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   const isTemplatesActive = location.pathname.startsWith('/dispo/campaigns') && location.search.includes('tab=templates');
@@ -307,72 +295,7 @@ export function AppSidebar({
             );
           })}
 
-          {/* Pipeline Group - Central Hub */}
-          <li>
-            <button
-              onClick={() => !collapsed && setPipelineOpen(!pipelineOpen)}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isPipelineActive && "text-white",
-                collapsed && "justify-center"
-              )}
-            >
-              <div className="relative">
-                <pipelineGroup.icon className={cn("h-5 w-5 flex-shrink-0", isPipelineActive && "text-brand-accent")} />
-                {collapsed && getBadgeCount("submissions") > 0 && (
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold text-white flex items-center justify-center">
-                    {getBadgeCount("submissions") > 9 ? "9+" : getBadgeCount("submissions")}
-                  </span>
-                )}
-              </div>
-              {!collapsed && (
-                <>
-                  <span>{pipelineGroup.label}</span>
-                  {getBadgeCount("submissions") > 0 && (
-                    <span className="bg-warning text-white text-xs font-medium px-2 py-0.5 rounded-full">
-                      {getBadgeCount("submissions")}
-                    </span>
-                  )}
-                  <ChevronDown className={cn(
-                    "h-4 w-4 ml-auto transition-transform",
-                    pipelineOpen && "rotate-180"
-                  )} />
-                </>
-              )}
-            </button>
-            {!collapsed && pipelineOpen && (
-              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
-                {pipelineGroup.items.map((item) => {
-                  const isActive = location.pathname === item.href;
-                  const Icon = item.icon;
-                  const badgeCount = getBadgeCount(item.badgeKey);
-
-                  return (
-                    <li key={item.href}>
-                      <NavLink
-                        to={item.href}
-                        onClick={onMobileClose}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
-                          isActive && "bg-brand-accent/20 text-white font-medium"
-                        )}
-                      >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{item.label}</span>
-                        {badgeCount > 0 && (
-                          <span className="ml-auto bg-warning text-white text-xs font-medium px-1.5 py-0.5 rounded-full">
-                            {badgeCount}
-                          </span>
-                        )}
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </li>
+          {/* Pipeline is now in topNavItems */}
 
           {/* Leads Group */}
           <li>
