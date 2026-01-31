@@ -31,6 +31,12 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Kanban,
   Plus,
   Search,
@@ -54,12 +60,15 @@ import {
   Eye,
   FileText,
   AlertCircle,
+  AlertTriangle,
   CheckCircle2,
   XCircle,
   Timer,
   Target,
   Sparkles,
   RefreshCw,
+  MessageSquare,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
@@ -352,7 +361,70 @@ function getLeadScoreBg(score: number) {
   return "bg-destructive/10";
 }
 
-function DealCard({ 
+// Profit band calculation
+function getProfitBand(equityPct: number, arv: number, askingPrice: number) {
+  const spread = arv - askingPrice;
+  const spreadK = Math.round(spread / 1000);
+  
+  if (equityPct >= 25) {
+    return { label: "Strong", color: "text-success", bg: "bg-success/10", spread: spreadK };
+  }
+  if (equityPct >= 15) {
+    return { label: "Thin", color: "text-warning", bg: "bg-warning/10", spread: spreadK };
+  }
+  return { label: "Risky", color: "text-destructive", bg: "bg-destructive/10", spread: spreadK };
+}
+
+// Next action determination
+function getNextAction(deal: PipelineDeal, stageConfig: typeof PIPELINE_STAGES[0]) {
+  const daysSinceActivity = differenceInDays(new Date(), new Date(deal.last_activity));
+  const isOverdue = deal.days_in_stage > stageConfig.targetDays && stageConfig.targetDays > 0;
+  
+  // Priority order of nags
+  if (daysSinceActivity >= 5) {
+    return { text: `No contact in ${daysSinceActivity}d`, urgent: true, icon: MessageSquare };
+  }
+  if (isOverdue) {
+    const overdueDays = deal.days_in_stage - stageConfig.targetDays;
+    return { text: `${overdueDays}d overdue`, urgent: true, icon: AlertTriangle };
+  }
+  if (deal.stage === "offer_made" && deal.days_in_stage >= 5) {
+    return { text: "Follow up on offer", urgent: true, icon: Phone };
+  }
+  if (deal.stage === "lead" && deal.days_in_stage >= 1) {
+    return { text: "Make first contact", urgent: false, icon: Phone };
+  }
+  if (deal.stage === "analyzing" && deal.days_in_stage >= 2) {
+    return { text: "Complete analysis", urgent: false, icon: FileText };
+  }
+  if (deal.stage === "contacted" && deal.days_in_stage >= 3) {
+    return { text: "Follow up due", urgent: false, icon: Phone };
+  }
+  if (deal.stage === "negotiating") {
+    return { text: "Counter or close", urgent: false, icon: DollarSign };
+  }
+  return null;
+}
+
+// Lead score explanation
+function getLeadScoreReason(deal: PipelineDeal) {
+  const reasons: string[] = [];
+  
+  if (deal.equity_percentage >= 25) reasons.push("High equity (25%+)");
+  else if (deal.equity_percentage >= 15) reasons.push("Moderate equity");
+  else reasons.push("Low equity");
+  
+  if (deal.contact_type === "Seller") reasons.push("Direct to seller");
+  if (deal.source === "Referral") reasons.push("Referral lead");
+  if (deal.source === "Driving for Dollars") reasons.push("D4D lead");
+  
+  if (deal.lead_score >= 80) reasons.push("High motivation signals");
+  else if (deal.lead_score < 60) reasons.push("Low engagement");
+  
+  return reasons.join(" • ");
+}
+
+function DealCard({
   deal, 
   onView, 
   onMove,
@@ -367,16 +439,33 @@ function DealCard({
   const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
   const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
   const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
+  const profitBand = getProfitBand(deal.equity_percentage, deal.arv, deal.asking_price);
+  const nextAction = getNextAction(deal, stageConfig);
+  const isLowScore = deal.lead_score < 60;
 
   return (
     <Card 
       className={cn(
         "cursor-pointer hover:shadow-md transition-all duration-200",
-        isOverdue && "border-warning/50"
+        isOverdue && "border-warning/50",
+        isLowScore && "opacity-70"
       )}
       onClick={onView}
     >
       <CardContent className="p-3 space-y-2">
+        {/* Next Action Nag */}
+        {nextAction && (
+          <div className={cn(
+            "flex items-center gap-1.5 text-tiny font-medium px-2 py-1 rounded -mx-1 -mt-1",
+            nextAction.urgent 
+              ? "bg-warning/15 text-warning" 
+              : "bg-brand/10 text-brand"
+          )}>
+            <nextAction.icon className="h-3 w-3" />
+            {nextAction.text}
+          </div>
+        )}
+
         {/* Address & Menu */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -423,7 +512,7 @@ function DealCard({
           </DropdownMenu>
         </div>
 
-        {/* Price Row */}
+        {/* Price & Profit Band */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-small font-semibold">
             ${(deal.asking_price / 1000).toFixed(0)}k
@@ -433,27 +522,43 @@ function DealCard({
               Offer ${(deal.offer_amount / 1000).toFixed(0)}k
             </Badge>
           )}
-          <Badge 
-            variant="secondary" 
-            size="sm" 
-            className={cn(
-              "text-tiny",
-              deal.equity_percentage >= 20 && "bg-success/10 text-success border-success/20"
-            )}
-          >
-            {deal.equity_percentage}% equity
-          </Badge>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge 
+                  variant="secondary" 
+                  size="sm" 
+                  className={cn("text-tiny cursor-help", profitBand.bg, profitBand.color)}
+                >
+                  {profitBand.label} • +${profitBand.spread}k
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-tiny">{deal.equity_percentage}% equity • ARV ${(deal.arv / 1000).toFixed(0)}k</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Footer: Score & Time */}
         <div className="flex items-center justify-between text-tiny text-muted-foreground pt-1 border-t border-border/50">
-          <div className={cn(
-            "flex items-center gap-1 font-medium",
-            getLeadScoreColor(deal.lead_score)
-          )}>
-            <Target className="h-3 w-3" />
-            {deal.lead_score}
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className={cn(
+                  "flex items-center gap-1 font-medium cursor-help",
+                  getLeadScoreColor(deal.lead_score)
+                )}>
+                  <Target className="h-3 w-3" />
+                  {deal.lead_score}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[200px]">
+                <p className="text-tiny font-medium mb-1">Why this score?</p>
+                <p className="text-tiny text-muted-foreground">{getLeadScoreReason(deal)}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <div className={cn(
             "flex items-center gap-1",
             isOverdue && "text-warning"
@@ -496,9 +601,22 @@ function StageColumn({
               <span className="text-small font-semibold">{stage.label}</span>
               <Badge variant="secondary" size="sm">{deals.length}</Badge>
             </div>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <Plus className="h-4 w-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-brand hover:bg-brand/10 transition-colors"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-tiny">Add deal to {stage.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           
           {/* Stage Stats */}
@@ -555,7 +673,14 @@ function PipelineStats({ deals }: { deals: PipelineDeal[] }) {
   const avgLeadScore = totalDeals > 0 
     ? Math.round(deals.reduce((sum, d) => sum + d.lead_score, 0) / totalDeals)
     : 0;
-  const hotLeads = deals.filter(d => d.lead_score >= 80).length;
+  
+  // Stuck deals: no activity in 5+ days OR overdue in stage
+  const stuckDeals = deals.filter(d => {
+    const daysSinceActivity = differenceInDays(new Date(), new Date(d.last_activity));
+    const stageConfig = PIPELINE_STAGES.find(s => s.id === d.stage);
+    const isOverdue = stageConfig && stageConfig.targetDays > 0 && d.days_in_stage > stageConfig.targetDays;
+    return daysSinceActivity >= 5 || isOverdue;
+  }).length;
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -607,20 +732,36 @@ function PipelineStats({ deals }: { deals: PipelineDeal[] }) {
         </div>
       </Card>
       
-      <Card className="p-4">
+      {/* Stuck Deals Alert */}
+      <Card className={cn(
+        "p-4",
+        stuckDeals > 0 && "border-warning/50 bg-warning/5"
+      )}>
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-destructive" />
+          <div className={cn(
+            "h-10 w-10 rounded-lg flex items-center justify-center",
+            stuckDeals > 0 ? "bg-warning/20" : "bg-muted"
+          )}>
+            <AlertTriangle className={cn(
+              "h-5 w-5",
+              stuckDeals > 0 ? "text-warning" : "text-muted-foreground"
+            )} />
           </div>
           <div>
-            <p className="text-tiny text-content-tertiary">Hot Leads (80+)</p>
-            <p className="text-xl font-bold">{hotLeads}</p>
+            <p className="text-tiny text-content-tertiary">Stalling</p>
+            <p className={cn(
+              "text-xl font-bold",
+              stuckDeals > 0 && "text-warning"
+            )}>
+              {stuckDeals} {stuckDeals === 1 ? "deal" : "deals"}
+            </p>
           </div>
         </div>
       </Card>
     </div>
   );
 }
+
 
 export default function Pipeline() {
   const navigate = useNavigate();
