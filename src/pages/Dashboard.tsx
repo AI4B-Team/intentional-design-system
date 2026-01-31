@@ -1073,7 +1073,7 @@ export default function Dashboard() {
             ) : (
               <div className="p-2">
                 {/* Use demo data if no real opportunities, otherwise use enhanced from insights */}
-                {displayHotOpportunities?.slice(0, 5).map((opp) => {
+                {displayHotOpportunities?.slice(0, 8).map((opp) => {
                   // Check if it's an enhanced opportunity with urgency_reason
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
