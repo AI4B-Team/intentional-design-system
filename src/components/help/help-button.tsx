@@ -68,10 +68,10 @@ export function HelpButton({ variant = "icon", className }: HelpButtonProps) {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href="mailto:support@dealflow.app">
+            <Link to="/feedback">
               <MessageSquare className="h-4 w-4 mr-2" />
               Feedback
-            </a>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
