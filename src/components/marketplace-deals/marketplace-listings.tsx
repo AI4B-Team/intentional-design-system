@@ -183,7 +183,7 @@ function DealListItem({
     if (hoursListed < 24) {
       return { text: "New", className: "bg-amber-400 text-slate-900" };
     } else if (daysListed <= 5) {
-      return { text: `${daysListed} day${daysListed > 1 ? 's' : ''} ago`, className: "bg-amber-400 text-slate-900" };
+      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
     } else {
       return { text: "For Sale", className: "bg-emerald-500 text-white" };
     }
@@ -425,7 +425,7 @@ function DealCard({
     if (hoursListed < 24) {
       return { text: "New", className: "bg-amber-400 text-slate-900" };
     } else if (daysListed <= 5) {
-      return { text: `${daysListed} day${daysListed > 1 ? 's' : ''} ago`, className: "bg-amber-400 text-slate-900" };
+      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
     } else {
       return { text: "For Sale", className: "bg-emerald-500 text-white" };
     }
