@@ -546,6 +546,39 @@ interface PipelineStageProps {
   bottleneckReason?: string;
 }
 
+// Icon mapping for pipeline stages - matches top 4 stat boxes
+const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
+  new: Users,           // Leads - matches Leads card
+  contacted: Phone,     // Contacted
+  appointment: Calendar, // Appointments
+  offer_made: FileText, // Offers Made - matches Offers card
+  negotiating: FileText, // Negotiating (same as offers)
+  under_contract: Handshake, // Under Contract - matches Contracts card
+  closed: BadgeDollarSign,   // Closed - matches Sold card
+};
+
+// Icon background colors for pipeline stages
+const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
+  new: "bg-red-100",
+  contacted: "bg-red-50",
+  appointment: "bg-red-50",
+  offer_made: "bg-amber-100",
+  negotiating: "bg-amber-50",
+  under_contract: "bg-blue-100",
+  closed: "bg-emerald-100",
+};
+
+// Icon text colors for pipeline stages
+const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
+  new: "text-red-500",
+  contacted: "text-red-400",
+  appointment: "text-red-400",
+  offer_made: "text-amber-500",
+  negotiating: "text-amber-400",
+  under_contract: "text-blue-600",
+  closed: "text-emerald-500",
+};
+
 function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {
   const conversionRate = previousCount > 0 ? Math.round((stage.count / previousCount) * 100) : 0;
   const percentage = total > 0 ? Math.round((stage.count / total) * 100) : 0;
@@ -556,6 +589,11 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
 
   // Generate "NO X" message for empty stages (uppercase for urgency)
   const emptyMessage = isEmpty ? `NO ${stage.label.replace(/s$/i, '').toUpperCase()}` : null;
+
+  // Get the icon for this stage
+  const StageIcon = PIPELINE_STAGE_ICONS[stage.status] || Users;
+  const iconBg = PIPELINE_STAGE_ICON_BG[stage.status] || "bg-muted";
+  const iconColor = PIPELINE_STAGE_ICON_COLOR[stage.status] || "text-muted-foreground";
 
   return (
     <div 
@@ -568,9 +606,14 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
       onClick={onClick}
     >
       <div className={cn(
-        "w-3 h-3 rounded-full shadow-sm transition-transform duration-150 group-hover:scale-125", 
-        stage.color
-      )} />
+        "flex items-center justify-center w-7 h-7 rounded-full transition-transform duration-150 group-hover:scale-110", 
+        showPressure ? "bg-warning/20" : iconBg
+      )}>
+        <StageIcon className={cn(
+          "h-3.5 w-3.5",
+          showPressure ? "text-warning" : iconColor
+        )} />
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className={cn(
