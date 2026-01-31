@@ -3682,6 +3682,129 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          attachments: Json | null
+          comment_count: number | null
+          created_at: string
+          description: string
+          id: string
+          organization_id: string | null
+          severity: Database["public"]["Enums"]["bug_severity"] | null
+          similarity_group: string | null
+          status: Database["public"]["Enums"]["feedback_status"]
+          title: string
+          type: Database["public"]["Enums"]["feedback_type"]
+          updated_at: string
+          user_id: string
+          vote_count: number | null
+        }
+        Insert: {
+          attachments?: Json | null
+          comment_count?: number | null
+          created_at?: string
+          description: string
+          id?: string
+          organization_id?: string | null
+          severity?: Database["public"]["Enums"]["bug_severity"] | null
+          similarity_group?: string | null
+          status?: Database["public"]["Enums"]["feedback_status"]
+          title: string
+          type: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+          user_id: string
+          vote_count?: number | null
+        }
+        Update: {
+          attachments?: Json | null
+          comment_count?: number | null
+          created_at?: string
+          description?: string
+          id?: string
+          organization_id?: string | null
+          severity?: Database["public"]["Enums"]["bug_severity"] | null
+          similarity_group?: string | null
+          status?: Database["public"]["Enums"]["feedback_status"]
+          title?: string
+          type?: Database["public"]["Enums"]["feedback_type"]
+          updated_at?: string
+          user_id?: string
+          vote_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_comments: {
+        Row: {
+          content: string
+          created_at: string
+          feedback_id: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          feedback_id: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          feedback_id?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_comments_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "feedback"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_votes: {
+        Row: {
+          created_at: string
+          feedback_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feedback_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_votes_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "feedback"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       funding_requests: {
         Row: {
           arv: number | null
@@ -7949,6 +8072,15 @@ export type Database = {
       user_has_role: { Args: { required_role: string }; Returns: boolean }
     }
     Enums: {
+      bug_severity: "low" | "medium" | "high"
+      feedback_status:
+        | "open"
+        | "in_progress"
+        | "resolved"
+        | "closed"
+        | "planned"
+        | "completed"
+      feedback_type: "general" | "bug" | "feature"
       jv_experience_level:
         | "beginner"
         | "intermediate"
@@ -8096,6 +8228,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      bug_severity: ["low", "medium", "high"],
+      feedback_status: [
+        "open",
+        "in_progress",
+        "resolved",
+        "closed",
+        "planned",
+        "completed",
+      ],
+      feedback_type: ["general", "bug", "feature"],
       jv_experience_level: [
         "beginner",
         "intermediate",

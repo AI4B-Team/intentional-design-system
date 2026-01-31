@@ -76,6 +76,7 @@ import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
 import OfferBlaster from "./pages/OfferBlaster";
 import Activity from "./pages/Activity";
+import Feedback from "./pages/Feedback";
 import Renovations from "./pages/Renovations";
 import RenovationDetail from "./pages/RenovationDetail";
 import ImageEditor from "./pages/ImageEditor";
@@ -951,6 +952,16 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Pipeline />
+                </ProtectedRoute>
+              }
+            />
+            
+            {/* Feedback */}
+            <Route
+              path="/feedback"
+              element={
+                <ProtectedRoute>
+                  <Feedback />
                 </ProtectedRoute>
               }
             />
