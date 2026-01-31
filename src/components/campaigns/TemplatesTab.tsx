@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +58,14 @@ import {
   UserPlus,
   Mail,
   MessageSquare,
+  ArrowLeft,
+  Zap,
+  Home,
+  Settings,
+  FileCheck,
+  Check,
+  AlertTriangle,
+  ChevronRight,
 } from "lucide-react";
 import {
   useOfferTemplates,
@@ -68,15 +76,95 @@ import {
 } from "@/hooks/useOfferBlaster";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
-const OFFER_TYPE_OPTIONS = [
-  { value: "cash", label: "Cash Offer", icon: DollarSign, color: "text-success" },
-  { value: "subject_to", label: "Subject-To", icon: Key, color: "text-purple-500" },
-  { value: "seller_financing", label: "Seller Financing", icon: Wallet, color: "text-info" },
-  { value: "hybrid", label: "Hybrid Offer", icon: Layers, color: "text-warning" },
-  { value: "novation", label: "Novation Agreement", icon: Handshake, color: "text-accent" },
-  { value: "listing", label: "Listing Agreement", icon: Building, color: "text-emerald-500" },
-  { value: "referral", label: "Agent Referral", icon: UserPlus, color: "text-rose-500" },
+// Offer type configurations
+const OFFER_TYPE_CONFIGS = [
+  {
+    id: "cash",
+    label: "Cash Offer",
+    description: "Simple, fast closing with no financing contingencies. Most attractive to motivated sellers.",
+    icon: DollarSign,
+    color: "text-success",
+    bgColor: "bg-success/10",
+    features: ["Fast closing (7-14 days)", "No financing contingency", "Simple terms", "High acceptance rate"],
+    requiresPOF: false,
+    isLicenseRequired: false,
+  },
+  {
+    id: "subject_to",
+    label: "Subject-To",
+    description: "Take over existing mortgage payments. Great for properties with favorable loan terms.",
+    icon: Key,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    features: ["No new financing needed", "Lower cash requirement", "Keep existing rate", "Flexible terms"],
+    requiresPOF: false,
+    isLicenseRequired: false,
+  },
+  {
+    id: "seller_financing",
+    label: "Seller Financing",
+    description: "Seller acts as the bank. Good for sellers wanting monthly income stream.",
+    icon: Wallet,
+    color: "text-info",
+    bgColor: "bg-info/10",
+    features: ["No bank qualification", "Flexible terms", "Win-win structure", "Monthly income for seller"],
+    requiresPOF: false,
+    isLicenseRequired: false,
+  },
+  {
+    id: "hybrid",
+    label: "Hybrid Offer",
+    description: "Cash down payment with seller financing for the balance. Best of both worlds.",
+    icon: Layers,
+    color: "text-warning",
+    bgColor: "bg-warning/10",
+    features: ["Cash + financing combo", "Lower cash required", "Competitive offer", "Flexible structure"],
+    requiresPOF: false,
+    isLicenseRequired: false,
+  },
+  {
+    id: "novation",
+    label: "Novation Agreement",
+    description: "Control property, market it, and split profits. No purchase until buyer found.",
+    icon: Handshake,
+    color: "text-accent",
+    bgColor: "bg-accent/10",
+    features: ["No upfront capital", "Profit sharing", "Marketing control", "Low risk strategy"],
+    requiresPOF: false,
+    isLicenseRequired: false,
+  },
+  {
+    id: "listing",
+    label: "Listing Agreement",
+    description: "Offer to list the seller's property on MLS. Requires real estate license.",
+    icon: Building,
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+    features: ["MLS exposure", "Professional marketing", "Full service", "Commission based"],
+    requiresPOF: false,
+    isLicenseRequired: true,
+    disclosures: [
+      "Agent/Broker must hold valid real estate license in property state",
+      "Agency disclosure required before any property discussions",
+    ],
+  },
+  {
+    id: "referral",
+    label: "Agent Referral",
+    description: "Refer the lead to another licensed agent for a referral fee. Requires license.",
+    icon: UserPlus,
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
+    features: ["Passive income", "No transaction work", "Referral fee (25-35%)", "License required"],
+    requiresPOF: false,
+    isLicenseRequired: true,
+    disclosures: [
+      "Referral fee must be disclosed and agreed upon in writing",
+      "Referring agent must hold valid license",
+    ],
+  },
 ];
 
 const MARKET_TYPE_OPTIONS = [
@@ -106,18 +194,20 @@ interface TemplateFormData {
   terms: Record<string, any>;
 }
 
-const DEFAULT_FORM_DATA: TemplateFormData = {
-  name: "",
-  description: "",
-  offer_type: "cash",
-  market_type: "off_market",
-  document_type: "loi",
-  email_subject: "Cash Offer for {{property_address}}",
-  email_body: `Dear {{seller_name}},
+const getDefaultFormData = (offerType: string = "cash"): TemplateFormData => {
+  const config = OFFER_TYPE_CONFIGS.find((c) => c.id === offerType);
+  return {
+    name: "",
+    description: "",
+    offer_type: offerType,
+    market_type: "off_market",
+    document_type: "loi",
+    email_subject: `${config?.label || "Cash Offer"} for {{property_address}}`,
+    email_body: `Dear {{seller_name}},
 
 I hope this message finds you well. My name is {{buyer_name}}, and I am a local real estate investor interested in purchasing your property at {{property_address}}.
 
-I am prepared to make you a cash offer with the following terms:
+I am prepared to make you a ${config?.label?.toLowerCase() || "cash offer"} with the following terms:
 
 • Earnest Money Deposit: {{deposit_amount}}
 • Closing Timeline: {{closing_days}} days
@@ -130,9 +220,9 @@ Best regards,
 {{buyer_name}}
 {{buyer_phone}}
 {{buyer_email}}`,
-  email_signature: "",
-  sms_body: "Hi {{seller_name}}! This is {{buyer_name}}. I'm interested in making a cash offer on your property at {{property_address}}. Would you be open to a quick call? Reply YES and I'll give you a ring.",
-  loi_content: `LETTER OF INTENT TO PURCHASE REAL ESTATE
+    email_signature: "",
+    sms_body: "Hi {{seller_name}}! This is {{buyer_name}}. I'm interested in making a cash offer on your property at {{property_address}}. Would you be open to a quick call? Reply YES and I'll give you a ring.",
+    loi_content: `LETTER OF INTENT TO PURCHASE REAL ESTATE
 
 Date: {{date}}
 
@@ -152,15 +242,18 @@ This LOI is non-binding and subject to the execution of a mutually acceptable Pu
 
 Sincerely,
 {{buyer_name}}`,
-  include_pof: false,
-  is_default: false,
-  terms: {
-    depositAmount: 1000,
-    depositType: "flat",
-    inspectionPeriod: 10,
-    closingTimeline: 14,
-  },
+    include_pof: false,
+    is_default: false,
+    terms: {
+      depositAmount: 1000,
+      depositType: "flat",
+      inspectionPeriod: 10,
+      closingTimeline: 14,
+    },
+  };
 };
+
+type ViewMode = "grid" | "builder";
 
 export function TemplatesTab() {
   const { data: templates, isLoading } = useOfferTemplates();
@@ -168,13 +261,13 @@ export function TemplatesTab() {
   const updateTemplate = useUpdateOfferTemplate();
   const deleteTemplate = useDeleteOfferTemplate();
 
+  const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<OfferTemplate | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
-  const [formData, setFormData] = useState<TemplateFormData>(DEFAULT_FORM_DATA);
-  const [activeTab, setActiveTab] = useState("general");
+  const [formData, setFormData] = useState<TemplateFormData>(getDefaultFormData());
+  const [activeBuilderTab, setActiveBuilderTab] = useState("general");
 
   const filteredTemplates = templates?.filter((template) => {
     const matchesSearch =
@@ -184,40 +277,45 @@ export function TemplatesTab() {
     return matchesSearch && matchesType;
   });
 
-  const handleOpenDialog = (template?: OfferTemplate) => {
-    if (template) {
-      setEditingTemplate(template);
-      setFormData({
-        name: template.name,
-        description: template.description || "",
-        offer_type: template.offer_type,
-        market_type: template.market_type,
-        document_type: template.document_type,
-        email_subject: template.email_subject || "",
-        email_body: template.email_body || "",
-        email_signature: template.email_signature || "",
-        sms_body: template.sms_body || "",
-        loi_content: template.loi_content || "",
-        include_pof: template.include_pof,
-        is_default: template.is_default,
-        terms: template.terms || {},
-      });
-    } else {
-      setEditingTemplate(null);
-      setFormData(DEFAULT_FORM_DATA);
-    }
-    setActiveTab("general");
-    setIsDialogOpen(true);
+  const handleSelectOfferType = (type: string) => {
+    setFormData(getDefaultFormData(type));
+    setEditingTemplate(null);
+    setActiveBuilderTab("general");
+    setViewMode("builder");
   };
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const handleEditTemplate = (template: OfferTemplate) => {
+    setEditingTemplate(template);
+    setFormData({
+      name: template.name,
+      description: template.description || "",
+      offer_type: template.offer_type,
+      market_type: template.market_type,
+      document_type: template.document_type,
+      email_subject: template.email_subject || "",
+      email_body: template.email_body || "",
+      email_signature: template.email_signature || "",
+      sms_body: template.sms_body || "",
+      loi_content: template.loi_content || "",
+      include_pof: template.include_pof,
+      is_default: template.is_default,
+      terms: template.terms || {},
+    });
+    setActiveBuilderTab("general");
+    setViewMode("builder");
+  };
+
+  const handleBackToGrid = () => {
+    setViewMode("grid");
     setEditingTemplate(null);
-    setFormData(DEFAULT_FORM_DATA);
+    setFormData(getDefaultFormData());
   };
 
   const handleSave = async () => {
-    if (!formData.name.trim()) return;
+    if (!formData.name.trim()) {
+      toast.error("Please enter a template name");
+      return;
+    }
 
     try {
       if (editingTemplate) {
@@ -239,6 +337,7 @@ export function TemplatesTab() {
             terms: formData.terms,
           },
         });
+        toast.success("Template updated successfully");
       } else {
         await createTemplate.mutateAsync({
           name: formData.name,
@@ -256,8 +355,9 @@ export function TemplatesTab() {
           is_active: true,
           terms: formData.terms,
         });
+        toast.success("Template created successfully");
       }
-      handleCloseDialog();
+      handleBackToGrid();
     } catch (error) {
       // Error handled by mutation
     }
@@ -289,8 +389,8 @@ export function TemplatesTab() {
       is_default: false,
       terms: template.terms || {},
     });
-    setActiveTab("general");
-    setIsDialogOpen(true);
+    setActiveBuilderTab("general");
+    setViewMode("builder");
   };
 
   const handleSetDefault = async (template: OfferTemplate) => {
@@ -308,355 +408,40 @@ export function TemplatesTab() {
   };
 
   const getOfferTypeConfig = (type: string) => {
-    return OFFER_TYPE_OPTIONS.find((opt) => opt.value === type);
+    return OFFER_TYPE_CONFIGS.find((opt) => opt.id === type);
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <Card variant="default" padding="md">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search templates..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              {OFFER_TYPE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button variant="primary" onClick={() => handleOpenDialog()}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Template
-          </Button>
-        </div>
-      </Card>
+  const currentOfferConfig = getOfferTypeConfig(formData.offer_type);
+  const isPOFRequired = formData.market_type === "on_market" && (formData.offer_type === "cash" || formData.offer_type === "hybrid");
 
-      {/* Templates Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-48" />
-          ))}
-        </div>
-      ) : filteredTemplates?.length === 0 ? (
-        <Card variant="default" padding="lg" className="text-center">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No Templates Found</h3>
-          <p className="text-muted-foreground mb-4">
-            {searchQuery || filterType !== "all"
-              ? "Try adjusting your search or filter"
-              : "Create your first offer template to get started"}
-          </p>
-          {!searchQuery && filterType === "all" && (
-            <Button variant="primary" onClick={() => handleOpenDialog()}>
-              <Plus className="h-4 w-4 mr-2" />
-              Create Template
+  // Split offer types into investor and licensed
+  const investorOffers = OFFER_TYPE_CONFIGS.filter((c) => !c.isLicenseRequired);
+  const licensedOffers = OFFER_TYPE_CONFIGS.filter((c) => c.isLicenseRequired);
+
+  // Builder View
+  if (viewMode === "builder") {
+    return (
+      <div className="space-y-6">
+        {/* Builder Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={handleBackToGrid}>
+              <ArrowLeft className="h-4 w-4" />
             </Button>
-          )}
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTemplates?.map((template) => {
-            const typeConfig = getOfferTypeConfig(template.offer_type);
-            const Icon = typeConfig?.icon || FileText;
-
-            return (
-              <Card
-                key={template.id}
-                variant="default"
-                padding="md"
-                className="hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={cn(
-                        "h-10 w-10 rounded-lg flex items-center justify-center",
-                        typeConfig?.color?.replace("text-", "bg-") + "/10"
-                      )}
-                    >
-                      <Icon className={cn("h-5 w-5", typeConfig?.color)} />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold">{template.name}</h3>
-                        {template.is_default && (
-                          <Star className="h-4 w-4 text-warning fill-warning" />
-                        )}
-                      </div>
-                      <p className="text-small text-muted-foreground">
-                        {typeConfig?.label}
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => handleOpenDialog(template)}>
-                        <Pencil className="h-4 w-4 mr-2" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDuplicate(template)}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleSetDefault(template)}>
-                        <Star className="h-4 w-4 mr-2" />
-                        {template.is_default ? "Remove Default" : "Set as Default"}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive focus:text-destructive"
-                        onClick={() => setDeleteConfirmId(template.id)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                {template.description && (
-                  <p className="text-small text-muted-foreground mb-3 line-clamp-2">
-                    {template.description}
-                  </p>
-                )}
-
-                <div className="flex flex-wrap gap-2 mb-3">
-                  <Badge variant="secondary" className="text-tiny">
-                    {template.market_type === "on_market" ? "MLS" : "Off-Market"}
-                  </Badge>
-                  <Badge variant="secondary" className="text-tiny">
-                    {template.document_type === "loi"
-                      ? "LOI"
-                      : template.document_type === "purchase_agreement"
-                      ? "PA"
-                      : "LOI + PA"}
-                  </Badge>
-                  {template.include_pof && (
-                    <Badge variant="secondary" className="text-tiny">
-                      POF
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4 text-tiny text-muted-foreground">
-                  {template.email_body && (
-                    <div className="flex items-center gap-1">
-                      <Mail className="h-3 w-3" />
-                      Email
-                    </div>
-                  )}
-                  {template.sms_body && (
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-3 w-3" />
-                      SMS
-                    </div>
-                  )}
-                  {template.loi_content && (
-                    <div className="flex items-center gap-1">
-                      <FileText className="h-3 w-3" />
-                      LOI
-                    </div>
-                  )}
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Template Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle>
-              {editingTemplate ? "Edit Template" : "Create Template"}
-            </DialogTitle>
-            <DialogDescription>
-              Configure your offer template with email, SMS, and LOI content
-            </DialogDescription>
-          </DialogHeader>
-
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="sms">SMS</TabsTrigger>
-              <TabsTrigger value="loi">LOI</TabsTrigger>
-            </TabsList>
-
-            <ScrollArea className="flex-1 mt-4">
-              <TabsContent value="general" className="mt-0 space-y-4">
-                <div className="space-y-2">
-                  <Label>Template Name</Label>
-                  <Input
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g., Standard Cash Offer"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Brief description of when to use this template"
-                    rows={2}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Offer Type</Label>
-                    <Select
-                      value={formData.offer_type}
-                      onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {OFFER_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Market Type</Label>
-                    <Select
-                      value={formData.market_type}
-                      onValueChange={(v) => setFormData({ ...formData, market_type: v })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {MARKET_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Document Type</Label>
-                    <Select
-                      value={formData.document_type}
-                      onValueChange={(v) => setFormData({ ...formData, document_type: v })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DOCUMENT_TYPE_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center gap-4 pt-6">
-                    <Switch
-                      id="include-pof"
-                      checked={formData.include_pof}
-                      onCheckedChange={(v) => setFormData({ ...formData, include_pof: v })}
-                    />
-                    <Label htmlFor="include-pof">Include POF</Label>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 pt-2">
-                  <Switch
-                    id="is-default"
-                    checked={formData.is_default}
-                    onCheckedChange={(v) => setFormData({ ...formData, is_default: v })}
-                  />
-                  <Label htmlFor="is-default">Set as default for this offer type</Label>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="email" className="mt-0 space-y-4">
-                <div className="space-y-2">
-                  <Label>Subject Line</Label>
-                  <Input
-                    value={formData.email_subject}
-                    onChange={(e) => setFormData({ ...formData, email_subject: e.target.value })}
-                    placeholder="Cash Offer for {{property_address}}"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Email Body</Label>
-                  <Textarea
-                    value={formData.email_body}
-                    onChange={(e) => setFormData({ ...formData, email_body: e.target.value })}
-                    placeholder="Write your email content..."
-                    rows={12}
-                    className="font-mono text-sm"
-                  />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="sms" className="mt-0 space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>SMS Message</Label>
-                    <span className="text-tiny text-muted-foreground">
-                      {formData.sms_body.length}/160 characters
-                    </span>
-                  </div>
-                  <Textarea
-                    value={formData.sms_body}
-                    onChange={(e) => setFormData({ ...formData, sms_body: e.target.value })}
-                    placeholder="Write your SMS message..."
-                    rows={4}
-                  />
-                  <p className="text-tiny text-muted-foreground">
-                    Use variables like {"{{seller_name}}"}, {"{{property_address}}"}, {"{{buyer_name}}"}
-                  </p>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="loi" className="mt-0 space-y-4">
-                <div className="space-y-2">
-                  <Label>Letter of Intent</Label>
-                  <Textarea
-                    value={formData.loi_content}
-                    onChange={(e) => setFormData({ ...formData, loi_content: e.target.value })}
-                    placeholder="Write your LOI content..."
-                    rows={16}
-                    className="font-mono text-sm"
-                  />
-                </div>
-              </TabsContent>
-            </ScrollArea>
-          </Tabs>
-
-          <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={handleCloseDialog}>
+            <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center", currentOfferConfig?.bgColor)}>
+              {currentOfferConfig?.icon && <currentOfferConfig.icon className={cn("h-6 w-6", currentOfferConfig.color)} />}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">
+                {editingTemplate ? "Edit Template" : "Create Template"}
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                {currentOfferConfig?.label} Template
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={handleBackToGrid}>
               Cancel
             </Button>
             <Button
@@ -666,9 +451,659 @@ export function TemplatesTab() {
             >
               {editingTemplate ? "Save Changes" : "Create Template"}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+
+        {/* Builder Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Panel - Form */}
+          <div className="lg:col-span-2">
+            <Card variant="default" padding="lg">
+              <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
+                <TabsList className="grid w-full grid-cols-5">
+                  <TabsTrigger value="general">General</TabsTrigger>
+                  <TabsTrigger value="terms">Terms</TabsTrigger>
+                  <TabsTrigger value="email">Email</TabsTrigger>
+                  <TabsTrigger value="sms">SMS</TabsTrigger>
+                  <TabsTrigger value="loi">LOI</TabsTrigger>
+                </TabsList>
+
+                <div className="mt-6">
+                  <TabsContent value="general" className="space-y-4 mt-0">
+                    <div className="space-y-2">
+                      <Label>Template Name *</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g., Standard Cash Offer - Dallas"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Description</Label>
+                      <Textarea
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        placeholder="Brief description of when to use this template"
+                        rows={2}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Offer Type</Label>
+                        <Select
+                          value={formData.offer_type}
+                          onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {OFFER_TYPE_CONFIGS.map((opt) => (
+                              <SelectItem key={opt.id} value={opt.id}>
+                                <div className="flex items-center gap-2">
+                                  <opt.icon className={cn("h-4 w-4", opt.color)} />
+                                  {opt.label}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Market Type</Label>
+                        <Select
+                          value={formData.market_type}
+                          onValueChange={(v) => setFormData({ ...formData, market_type: v })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="off_market">
+                              <div className="flex items-center gap-2">
+                                <Home className="h-4 w-4" />
+                                Off-Market
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="on_market">
+                              <div className="flex items-center gap-2">
+                                <Building className="h-4 w-4" />
+                                On-Market (MLS)
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Document Type</Label>
+                        <Select
+                          value={formData.document_type}
+                          onValueChange={(v) => setFormData({ ...formData, document_type: v })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {DOCUMENT_TYPE_OPTIONS.map((opt) => (
+                              <SelectItem key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex items-center gap-4 pt-6">
+                        <Switch
+                          id="include-pof"
+                          checked={formData.include_pof}
+                          onCheckedChange={(v) => setFormData({ ...formData, include_pof: v })}
+                        />
+                        <Label htmlFor="include-pof">
+                          Include POF
+                          {isPOFRequired && <span className="text-destructive ml-1">*</span>}
+                        </Label>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 pt-2">
+                      <Switch
+                        id="is-default"
+                        checked={formData.is_default}
+                        onCheckedChange={(v) => setFormData({ ...formData, is_default: v })}
+                      />
+                      <Label htmlFor="is-default">Set as default for this offer type</Label>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="terms" className="space-y-4 mt-0">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Earnest Money Deposit ($)</Label>
+                        <Input
+                          type="number"
+                          value={formData.terms.depositAmount || 1000}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms: { ...formData.terms, depositAmount: parseInt(e.target.value) || 0 }
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Closing Timeline (days)</Label>
+                        <Input
+                          type="number"
+                          value={formData.terms.closingTimeline || 14}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms: { ...formData.terms, closingTimeline: parseInt(e.target.value) || 0 }
+                          })}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Inspection Period (days)</Label>
+                        <Input
+                          type="number"
+                          value={formData.terms.inspectionPeriod || 10}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms: { ...formData.terms, inspectionPeriod: parseInt(e.target.value) || 0 }
+                          })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Offer Expiration (hours)</Label>
+                        <Input
+                          type="number"
+                          value={formData.terms.offerExpiration || 72}
+                          onChange={(e) => setFormData({
+                            ...formData,
+                            terms: { ...formData.terms, offerExpiration: parseInt(e.target.value) || 0 }
+                          })}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Creative terms for specific offer types */}
+                    {(formData.offer_type === "seller_financing" || formData.offer_type === "hybrid") && (
+                      <>
+                        <div className="border-t pt-4 mt-4">
+                          <h4 className="font-medium mb-4">Financing Terms</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label>Down Payment (%)</Label>
+                              <Input
+                                type="number"
+                                value={formData.terms.downPayment || 10}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  terms: { ...formData.terms, downPayment: parseInt(e.target.value) || 0 }
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Interest Rate (%)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                value={formData.terms.interestRate || 6}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  terms: { ...formData.terms, interestRate: parseFloat(e.target.value) || 0 }
+                                })}
+                              />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-4 mt-4">
+                            <div className="space-y-2">
+                              <Label>Term (months)</Label>
+                              <Input
+                                type="number"
+                                value={formData.terms.termMonths || 360}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  terms: { ...formData.terms, termMonths: parseInt(e.target.value) || 0 }
+                                })}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Balloon (months)</Label>
+                              <Input
+                                type="number"
+                                value={formData.terms.balloonMonths || 60}
+                                onChange={(e) => setFormData({
+                                  ...formData,
+                                  terms: { ...formData.terms, balloonMonths: parseInt(e.target.value) || 0 }
+                                })}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {formData.offer_type === "novation" && (
+                      <div className="border-t pt-4 mt-4">
+                        <h4 className="font-medium mb-4">Novation Terms</h4>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label>Marketing Period (days)</Label>
+                            <Input
+                              type="number"
+                              value={formData.terms.marketingPeriod || 90}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                terms: { ...formData.terms, marketingPeriod: parseInt(e.target.value) || 0 }
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Profit Split (%)</Label>
+                            <Input
+                              type="number"
+                              value={formData.terms.profitSplit || 50}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                terms: { ...formData.terms, profitSplit: parseInt(e.target.value) || 0 }
+                              })}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="email" className="space-y-4 mt-0">
+                    <div className="space-y-2">
+                      <Label>Subject Line</Label>
+                      <Input
+                        value={formData.email_subject}
+                        onChange={(e) => setFormData({ ...formData, email_subject: e.target.value })}
+                        placeholder="Cash Offer for {{property_address}}"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Email Body</Label>
+                      <Textarea
+                        value={formData.email_body}
+                        onChange={(e) => setFormData({ ...formData, email_body: e.target.value })}
+                        placeholder="Write your email content..."
+                        rows={14}
+                        className="font-mono text-sm"
+                      />
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-tiny text-muted-foreground">
+                        <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{closing_days}}"}
+                      </p>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="sms" className="space-y-4 mt-0">
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label>SMS Message</Label>
+                        <span className={cn(
+                          "text-tiny",
+                          formData.sms_body.length > 160 ? "text-warning" : "text-muted-foreground"
+                        )}>
+                          {formData.sms_body.length}/160 characters
+                        </span>
+                      </div>
+                      <Textarea
+                        value={formData.sms_body}
+                        onChange={(e) => setFormData({ ...formData, sms_body: e.target.value })}
+                        placeholder="Write your SMS message..."
+                        rows={4}
+                      />
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-tiny text-muted-foreground">
+                        <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}
+                      </p>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="loi" className="space-y-4 mt-0">
+                    <div className="space-y-2">
+                      <Label>Letter of Intent / Purchase Agreement</Label>
+                      <Textarea
+                        value={formData.loi_content}
+                        onChange={(e) => setFormData({ ...formData, loi_content: e.target.value })}
+                        placeholder="Write your LOI content..."
+                        rows={18}
+                        className="font-mono text-sm"
+                      />
+                    </div>
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <p className="text-tiny text-muted-foreground">
+                        <strong>Available variables:</strong> {"{{date}}"}, {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{property_city}}"}, {"{{property_state}}"}, {"{{property_zip}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{inspection_period}}"}, {"{{closing_days}}"}
+                      </p>
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
+            </Card>
+          </div>
+
+          {/* Right Panel - Preview */}
+          <div className="lg:col-span-1">
+            <Card variant="default" padding="md" className="sticky top-4">
+              <h3 className="font-semibold mb-4">Template Preview</h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
+                    {currentOfferConfig?.icon && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
+                  </div>
+                  <div>
+                    <p className="font-medium">{formData.name || "Untitled Template"}</p>
+                    <p className="text-tiny text-muted-foreground">{currentOfferConfig?.label}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="text-tiny">
+                    {formData.market_type === "on_market" ? "MLS" : "Off-Market"}
+                  </Badge>
+                  <Badge variant="secondary" className="text-tiny">
+                    {formData.document_type === "loi" ? "LOI" : formData.document_type === "purchase_agreement" ? "PA" : "LOI + PA"}
+                  </Badge>
+                  {formData.include_pof && (
+                    <Badge variant="secondary" className="text-tiny">POF</Badge>
+                  )}
+                </div>
+                <div className="border-t pt-3 mt-3 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Deposit:</span>
+                    <span>${(formData.terms.depositAmount || 0).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Closing:</span>
+                    <span>{formData.terms.closingTimeline || 14} days</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Inspection:</span>
+                    <span>{formData.terms.inspectionPeriod || 10} days</span>
+                  </div>
+                </div>
+                <div className="border-t pt-3 mt-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span className={formData.email_body ? "text-success" : "text-muted-foreground"}>
+                      {formData.email_body ? "Email configured" : "No email"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                    <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
+                      {formData.sms_body ? "SMS configured" : "No SMS"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                    <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
+                      {formData.loi_content ? "LOI configured" : "No LOI"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grid View (default)
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+            <Zap className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Offer Templates</h2>
+            <p className="text-muted-foreground text-sm">
+              Select an offer type to create a new template
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Offer Type Selection Grid */}
+      <div className="space-y-8">
+        {/* Investor Offers */}
+        <div>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Investor Offers</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {investorOffers.map((config) => (
+              <Card
+                key={config.id}
+                variant="default"
+                padding="lg"
+                className="cursor-pointer transition-all hover:shadow-lg hover:border-accent/50 group"
+                onClick={() => handleSelectOfferType(config.id)}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={cn("p-3 rounded-lg shrink-0", config.bgColor)}>
+                    <config.icon className={cn("h-6 w-6", config.color)} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h4 className="font-semibold text-foreground">{config.label}</h4>
+                    </div>
+                    <p className="text-small text-muted-foreground mb-3">{config.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {config.features.slice(0, 3).map((feature, idx) => (
+                        <span key={idx} className="text-tiny px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Licensed Offers */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Agent Options</h3>
+            <Badge variant="warning" size="sm">License Required</Badge>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {licensedOffers.map((config) => (
+              <Card
+                key={config.id}
+                variant="default"
+                padding="lg"
+                className="cursor-pointer transition-all hover:shadow-lg hover:border-accent/50 group"
+                onClick={() => handleSelectOfferType(config.id)}
+              >
+                <div className="flex items-start gap-4">
+                  <div className={cn("p-3 rounded-lg shrink-0", config.bgColor)}>
+                    <config.icon className={cn("h-6 w-6", config.color)} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h4 className="font-semibold text-foreground">{config.label}</h4>
+                      <Badge variant="warning" size="sm">License Required</Badge>
+                    </div>
+                    <p className="text-small text-muted-foreground mb-3">{config.description}</p>
+                    {config.disclosures && (
+                      <div className="p-2 bg-warning/10 border border-warning/20 rounded-md mb-3">
+                        <div className="flex items-center gap-1.5 text-warning text-tiny">
+                          <AlertTriangle className="h-3 w-3" />
+                          <span>Disclosures required</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {config.features.slice(0, 2).map((feature, idx) => (
+                        <span key={idx} className="text-tiny px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Existing Templates */}
+      <div className="border-t pt-8">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">Saved Templates</h3>
+          <div className="flex items-center gap-3">
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search templates..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={filterType} onValueChange={setFilterType}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {OFFER_TYPE_CONFIGS.map((opt) => (
+                  <SelectItem key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-48" />
+            ))}
+          </div>
+        ) : filteredTemplates?.length === 0 ? (
+          <Card variant="default" padding="lg" className="text-center">
+            <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No Templates Found</h3>
+            <p className="text-muted-foreground">
+              {searchQuery || filterType !== "all"
+                ? "Try adjusting your search or filter"
+                : "Select an offer type above to create your first template"}
+            </p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredTemplates?.map((template) => {
+              const typeConfig = getOfferTypeConfig(template.offer_type);
+              const Icon = typeConfig?.icon || FileText;
+
+              return (
+                <Card key={template.id} variant="default" padding="md" className="hover:shadow-md transition-shadow">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", typeConfig?.bgColor)}>
+                        <Icon className={cn("h-5 w-5", typeConfig?.color)} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold">{template.name}</h4>
+                          {template.is_default && (
+                            <Star className="h-4 w-4 text-warning fill-warning" />
+                          )}
+                        </div>
+                        <p className="text-small text-muted-foreground">{typeConfig?.label}</p>
+                      </div>
+                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEditTemplate(template)}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDuplicate(template)}>
+                          <Copy className="h-4 w-4 mr-2" />
+                          Duplicate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleSetDefault(template)}>
+                          <Star className="h-4 w-4 mr-2" />
+                          {template.is_default ? "Remove Default" : "Set as Default"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive focus:text-destructive"
+                          onClick={() => setDeleteConfirmId(template.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+
+                  {template.description && (
+                    <p className="text-small text-muted-foreground mb-3 line-clamp-2">
+                      {template.description}
+                    </p>
+                  )}
+
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    <Badge variant="secondary" className="text-tiny">
+                      {template.market_type === "on_market" ? "MLS" : "Off-Market"}
+                    </Badge>
+                    <Badge variant="secondary" className="text-tiny">
+                      {template.document_type === "loi" ? "LOI" : template.document_type === "purchase_agreement" ? "PA" : "LOI + PA"}
+                    </Badge>
+                    {template.include_pof && (
+                      <Badge variant="secondary" className="text-tiny">POF</Badge>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-4 text-tiny text-muted-foreground">
+                    {template.email_body && (
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        Email
+                      </div>
+                    )}
+                    {template.sms_body && (
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="h-3 w-3" />
+                        SMS
+                      </div>
+                    )}
+                    {template.loi_content && (
+                      <div className="flex items-center gap-1">
+                        <FileText className="h-3 w-3" />
+                        LOI
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
