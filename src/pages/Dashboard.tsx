@@ -511,7 +511,7 @@ export default function Dashboard() {
           count={pipelineValueStats?.offers.count || 0}
           totalValue={pipelineValueStats?.offers.totalValue || 0}
           profitPotential={pipelineValueStats?.offers.profitPotential || 0}
-          icon={Target}
+          icon={FileText}
           iconBg="bg-warning"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
