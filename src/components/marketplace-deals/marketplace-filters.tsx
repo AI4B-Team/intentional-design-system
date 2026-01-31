@@ -175,7 +175,7 @@ export function MarketplaceFilters({
               onChange={(e) => handleChange("address", e.target.value)}
               className="h-10 w-[280px] bg-background text-sm pr-10 rounded-full border-border"
             />
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
           </div>
 
           {/* All Listings */}
@@ -216,9 +216,9 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-2 justify-between font-normal")}>
                 <span className="truncate">{getHomeTypeLabel()}</span>
-                <ChevronDown className="h-4 w-4 ml-1" />
+                <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-56 bg-background">
@@ -276,9 +276,9 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-1 justify-between font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-2 justify-between font-normal")}>
                 Beds & Baths
-                <ChevronDown className="h-4 w-4 ml-1" />
+                <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-72 bg-background">
