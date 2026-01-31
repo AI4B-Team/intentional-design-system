@@ -227,14 +227,13 @@ export default function OfferBlaster() {
 
           {step === "build" && (
             <div className="flex items-center gap-3">
-              <Button variant="secondary" onClick={handleSaveTemplate}>
+              <Button variant="outline" onClick={handleSaveTemplate}>
                 <Save className="h-4 w-4 mr-2" />
                 Save Template
               </Button>
               <Button
                 variant="primary"
                 disabled={!canProceed}
-                className="bg-gradient-to-r from-orange-500 to-red-600"
               >
                 <Send className="h-4 w-4 mr-2" />
                 Continue to Properties
