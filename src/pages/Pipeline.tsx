@@ -371,29 +371,25 @@ function DealCard({
   return (
     <Card 
       className={cn(
-        "cursor-pointer hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5",
-        isOverdue && "border-warning/50 bg-warning/5"
+        "cursor-pointer hover:shadow-md transition-all duration-200",
+        isOverdue && "border-warning/50"
       )}
       onClick={onView}
     >
-      <CardContent className="p-3">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <Building2 className="h-4 w-4 text-brand flex-shrink-0" />
-              <span className="text-small font-semibold truncate">{deal.address}</span>
-            </div>
-            <div className="flex items-center gap-1 text-tiny text-content-tertiary mt-0.5">
-              <MapPin className="h-3 w-3" />
-              <span>{deal.city}, {deal.state}</span>
-            </div>
+      <CardContent className="p-3 space-y-2">
+        {/* Address & Menu */}
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-small font-medium truncate">{deal.address}</p>
+            <p className="text-tiny text-muted-foreground">
+              {deal.city}, {deal.state}
+            </p>
           </div>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                <MoreVertical className="h-4 w-4" />
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
+                <MoreVertical className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="z-[100]">
@@ -404,10 +400,6 @@ function DealCard({
               <DropdownMenuItem>
                 <Phone className="h-4 w-4 mr-2" />
                 Call Contact
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Mail className="h-4 w-4 mr-2" />
-                Send Email
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {nextStage && (
@@ -425,67 +417,51 @@ function DealCard({
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive">
                 <Trash2 className="h-4 w-4 mr-2" />
-                Remove from Pipeline
+                Remove
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-        {/* Price & Equity */}
-        <div className="flex items-center gap-2 mb-2">
-          <Badge variant="secondary" size="sm" className="text-tiny">
+        {/* Price Row */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <span className="text-small font-semibold">
             ${(deal.asking_price / 1000).toFixed(0)}k
-          </Badge>
+          </span>
           {deal.offer_amount && (
             <Badge variant="success" size="sm" className="text-tiny">
-              Offer: ${(deal.offer_amount / 1000).toFixed(0)}k
+              Offer ${(deal.offer_amount / 1000).toFixed(0)}k
             </Badge>
           )}
           <Badge 
             variant="secondary" 
             size="sm" 
-            className={cn("text-tiny", deal.equity_percentage >= 20 ? "bg-success/10 text-success" : "")}
+            className={cn(
+              "text-tiny",
+              deal.equity_percentage >= 20 && "bg-success/10 text-success border-success/20"
+            )}
           >
             {deal.equity_percentage}% equity
           </Badge>
         </div>
 
-        {/* Lead Score */}
-        <div className="flex items-center justify-between mb-2">
+        {/* Footer: Score & Time */}
+        <div className="flex items-center justify-between text-tiny text-muted-foreground pt-1 border-t border-border/50">
           <div className={cn(
-            "flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium",
-            getLeadScoreBg(deal.lead_score),
+            "flex items-center gap-1 font-medium",
             getLeadScoreColor(deal.lead_score)
           )}>
             <Target className="h-3 w-3" />
-            <span>Score: {deal.lead_score}</span>
+            {deal.lead_score}
           </div>
-          <Badge variant="secondary" size="sm" className="text-tiny">
-            {deal.source}
-          </Badge>
-        </div>
-
-        {/* Contact */}
-        <div className="flex items-center gap-2 text-tiny text-content-secondary">
-          <User className="h-3 w-3" />
-          <span className="truncate">{deal.contact_name}</span>
-          <Badge variant="secondary" size="sm" className="text-tiny">
-            {deal.contact_type}
-          </Badge>
-        </div>
-
-        {/* Time in Stage */}
-        <div className={cn(
-          "flex items-center gap-1 mt-2 text-tiny",
-          isOverdue ? "text-warning" : "text-content-tertiary"
-        )}>
-          <Timer className="h-3 w-3" />
-          <span>
-            {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}d in stage`}
-          </span>
-          {isOverdue && (
-            <AlertCircle className="h-3 w-3 ml-auto" />
-          )}
+          <div className={cn(
+            "flex items-center gap-1",
+            isOverdue && "text-warning"
+          )}>
+            <Timer className="h-3 w-3" />
+            {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}d`}
+            {isOverdue && <AlertCircle className="h-3 w-3" />}
+          </div>
         </div>
       </CardContent>
     </Card>
