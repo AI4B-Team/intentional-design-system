@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.ai-deal-suggestions]
 verify_jwt = false
+
+[functions.ai-inbox-analysis]
+verify_jwt = false
