@@ -203,7 +203,7 @@ function PipelineValueCard({
           {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
             <div className={cn(
-              "inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium",
+              "inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap",
               contextSeverity === "blocking" 
                 ? "bg-destructive/10 text-destructive" 
                 : contextSeverity === "attention"
@@ -217,7 +217,7 @@ function PipelineValueCard({
 
           {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide">
+            <div className="inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide whitespace-nowrap">
               <Clock className="h-3 w-3 shrink-0" />
               <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
             </div>
@@ -225,7 +225,7 @@ function PipelineValueCard({
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground">
+            <div className="inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
               <BarChart3 className="h-3 w-3 shrink-0" />
               <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
             </div>
@@ -234,17 +234,17 @@ function PipelineValueCard({
           {/* Action Insight - Severity Ladder: Blue=reminder, Amber=attention, Red=blocking */}
           {actionInsight && variant === "default" && (
             <div className={cn(
-              "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
+              "inline-flex items-center gap-1.5 text-[10px] px-2 py-1 rounded-md font-medium whitespace-nowrap",
               actionInsight.severity === "high" 
                 ? "bg-warning/10 text-warning" // Amber = attention
                 : actionInsight.severity === "medium"
                 ? "bg-warning/10 text-warning" // Amber = attention
                 : "bg-info/10 text-info" // Blue = reminder
             )}>
-              {actionInsight.severity === "high" && <AlertTriangle className="h-3 w-3" />}
-              {actionInsight.severity === "medium" && <Clock className="h-3 w-3" />}
-              {actionInsight.severity === "low" && <Clock className="h-3 w-3" />}
-              <span className="truncate">{actionInsight.label}</span>
+              {actionInsight.severity === "high" && <AlertTriangle className="h-3 w-3 shrink-0" />}
+              {actionInsight.severity === "medium" && <Clock className="h-3 w-3 shrink-0" />}
+              {actionInsight.severity === "low" && <Clock className="h-3 w-3 shrink-0" />}
+              <span>{actionInsight.label}</span>
             </div>
           )}
         </div>
