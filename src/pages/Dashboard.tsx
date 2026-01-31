@@ -488,12 +488,12 @@ export default function Dashboard() {
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
 
-  // Demo data for visualization when no real data exists
+  // Demo data for visualization when no real data exists (shows user far from goals)
   const demoData = {
-    leads: { count: 47, totalValue: 8250000, profitPotential: 412500 },
-    offers: { count: 18, totalValue: 3150000, profitPotential: 157500 },
-    contracted: { count: 8, totalValue: 1400000, profitPotential: 84000 },
-    sold: { count: 5, totalValue: 875000, profitPotential: 52500 },
+    leads: { count: 12, totalValue: 2100000, profitPotential: 105000 },
+    offers: { count: 4, totalValue: 700000, profitPotential: 35000 },
+    contracted: { count: 2, totalValue: 350000, profitPotential: 21000 },
+    sold: { count: 1, totalValue: 175000, profitPotential: 10500 },
   };
 
   // Use demo data if no real data exists
