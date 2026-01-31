@@ -8,54 +8,64 @@ interface AIVAPanelProps {
 }
 
 export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
-  // Get sidebar width from the DOM. IMPORTANT: many elements use `data-sidebar`,
-  // so we specifically target the sidebar container.
+  // Get the left menu width from the DOM.
+  // NOTE: This app uses `AppSidebar` which renders as `<aside data-sidebar>...`.
   const [sidebarRight, setSidebarRight] = React.useState(0);
 
   React.useEffect(() => {
-    const getSidebarEl = () => {
-      // Choose the widest visible sidebar container (desktop vs mobile sheet).
-      const candidates = Array.from(
-        document.querySelectorAll<HTMLElement>('[data-sidebar="sidebar"]')
-      );
+    const getSidebarEl = (): HTMLElement | null => {
+      // Prefer the actual layout sidebar.
+      const candidates = Array.from(document.querySelectorAll<HTMLElement>("aside[data-sidebar]"));
       const visible = candidates.filter((el) => el.offsetParent !== null);
       const pool = visible.length ? visible : candidates;
 
       let best: HTMLElement | null = null;
-      let bestWidth = -1;
+      let bestRight = -Infinity;
       for (const el of pool) {
         const rect = el.getBoundingClientRect();
-        if (rect.width > bestWidth) {
-          bestWidth = rect.width;
+        // Ignore offscreen (mobile closed) sidebars
+        if (rect.right <= 0 || rect.width <= 0) continue;
+        if (rect.right > bestRight) {
+          bestRight = rect.right;
           best = el;
         }
       }
+
       return best;
     };
 
-    const updateSidebarRight = () => {
+    const computeSidebarRight = () => {
       const sidebar = getSidebarEl();
-      if (!sidebar) {
-        setSidebarRight(0);
-        return;
-      }
+      if (!sidebar) return 0;
       const rect = sidebar.getBoundingClientRect();
-      // Use `right` to handle any left offset/positioning.
-      setSidebarRight(rect.right);
+      return rect.right;
+    };
+
+    const updateSidebarRight = () => {
+      setSidebarRight(computeSidebarRight());
     };
 
     updateSidebarRight();
 
+    // Watch both size changes and class/transform changes.
     const sidebar = getSidebarEl();
-    const resizeObserver = new ResizeObserver(() => updateSidebarRight());
-    if (sidebar) resizeObserver.observe(sidebar);
+    const resizeObserver = new ResizeObserver(updateSidebarRight);
+    const mutationObserver = new MutationObserver(updateSidebarRight);
+    if (sidebar) {
+      resizeObserver.observe(sidebar);
+      mutationObserver.observe(sidebar, { attributes: true, attributeFilter: ["class", "style"] });
+    }
 
     window.addEventListener("resize", updateSidebarRight);
-    const raf = requestAnimationFrame(updateSidebarRight);
+    // Extra ticks to catch initial layout + transition frames.
+    const raf1 = requestAnimationFrame(updateSidebarRight);
+    const raf2 = requestAnimationFrame(updateSidebarRight);
 
     return () => {
-      cancelAnimationFrame(raf);
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
       window.removeEventListener("resize", updateSidebarRight);
+      mutationObserver.disconnect();
       resizeObserver.disconnect();
     };
   }, []);
