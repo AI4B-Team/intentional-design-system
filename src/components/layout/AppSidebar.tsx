@@ -92,11 +92,11 @@ const contactsNavItem: NavItem = {
   icon: Users,
 };
 
-// OfferBlaster - direct nav item for quick access
-const offerBlasterNavItem: NavItem = {
-  label: "OfferBlaster",
-  href: "/tools/offer-blaster",
-  icon: Send,
+// Templates - direct nav item for quick access (formerly OfferBlaster)
+const templatesNavItem: NavItem = {
+  label: "Templates",
+  href: "/dispo/campaigns?tab=templates",
+  icon: FileText,
 };
 
 const marketingGroup: NavGroup = {
@@ -184,7 +184,7 @@ export function AppSidebar({
   const isPipelineActive = pipelineGroup.items.some(item => location.pathname.startsWith(item.href));
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
-  const isOfferBlasterActive = location.pathname.startsWith(offerBlasterNavItem.href);
+  const isTemplatesActive = location.pathname.startsWith('/dispo/campaigns') && location.search.includes('tab=templates');
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -458,20 +458,20 @@ export function AppSidebar({
             </NavLink>
           </li>
 
-          {/* OfferBlaster - Direct Link */}
+          {/* Templates - Direct Link */}
           <li>
             <NavLink
-              to={offerBlasterNavItem.href}
+              to={templatesNavItem.href}
               onClick={onMobileClose}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
                 "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isOfferBlasterActive && "bg-brand-accent text-white font-medium",
+                isTemplatesActive && "bg-brand-accent text-white font-medium",
                 collapsed && "justify-center"
               )}
             >
-              <offerBlasterNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isOfferBlasterActive && "text-white")} />
-              {!collapsed && <span>{offerBlasterNavItem.label}</span>}
+              <templatesNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isTemplatesActive && "text-white")} />
+              {!collapsed && <span>{templatesNavItem.label}</span>}
             </NavLink>
           </li>
 

@@ -76,6 +76,7 @@ import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
 import OfferBlaster from "./pages/OfferBlaster";
 import OfferTemplates from "./pages/OfferTemplates";
+import CampaignsHub from "./pages/CampaignsHub";
 import Activity from "./pages/Activity";
 import Feedback from "./pages/Feedback";
 import Renovations from "./pages/Renovations";
@@ -845,7 +846,7 @@ const App = () => (
               path="/dispo/campaigns"
               element={
                 <ProtectedRoute>
-                  <DispoCampaigns />
+                  <CampaignsHub />
                 </ProtectedRoute>
               }
             />
