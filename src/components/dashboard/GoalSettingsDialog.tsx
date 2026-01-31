@@ -69,7 +69,7 @@ export function GoalSettingsDialog({ children }: GoalSettingsDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
@@ -80,106 +80,108 @@ export function GoalSettingsDialog({ children }: GoalSettingsDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-6 py-4">
-          {/* Pipeline Goals */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Pipeline Goals</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="leadsGoal" className="flex items-center gap-2 text-muted-foreground">
-                  <Users className="h-4 w-4 text-info" />
-                  Leads Target
-                </Label>
-                <Input
-                  id="leadsGoal"
-                  type="text"
-                  value={formatNumber(goals.leadsGoal)}
-                  onChange={(e) => handleChange("leadsGoal", e.target.value)}
-                  className="tabular-nums"
-                />
+        <div className="px-6 pb-6">
+          <div className="grid gap-6 py-4">
+            {/* Pipeline Goals */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground">Pipeline Goals</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="leadsGoal" className="flex items-center gap-2 text-muted-foreground">
+                    <Users className="h-4 w-4 text-info" />
+                    Leads Target
+                  </Label>
+                  <Input
+                    id="leadsGoal"
+                    type="text"
+                    value={formatNumber(goals.leadsGoal)}
+                    onChange={(e) => handleChange("leadsGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="offersGoal" className="flex items-center gap-2 text-muted-foreground">
+                    <FileText className="h-4 w-4 text-warning" />
+                    Offers Target
+                  </Label>
+                  <Input
+                    id="offersGoal"
+                    type="text"
+                    value={formatNumber(goals.offersGoal)}
+                    onChange={(e) => handleChange("offersGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="contractsGoal" className="flex items-center gap-2 text-muted-foreground">
+                    <Handshake className="h-4 w-4 text-accent" />
+                    Contracts Target
+                  </Label>
+                  <Input
+                    id="contractsGoal"
+                    type="text"
+                    value={formatNumber(goals.contractsGoal)}
+                    onChange={(e) => handleChange("contractsGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="soldGoal" className="flex items-center gap-2 text-muted-foreground">
+                    <BadgeDollarSign className="h-4 w-4 text-success" />
+                    Sold Target
+                  </Label>
+                  <Input
+                    id="soldGoal"
+                    type="text"
+                    value={formatNumber(goals.soldGoal)}
+                    onChange={(e) => handleChange("soldGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="offersGoal" className="flex items-center gap-2 text-muted-foreground">
-                  <FileText className="h-4 w-4 text-warning" />
-                  Offers Target
-                </Label>
-                <Input
-                  id="offersGoal"
-                  type="text"
-                  value={formatNumber(goals.offersGoal)}
-                  onChange={(e) => handleChange("offersGoal", e.target.value)}
-                  className="tabular-nums"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="contractsGoal" className="flex items-center gap-2 text-muted-foreground">
-                  <Handshake className="h-4 w-4 text-accent" />
-                  Contracts Target
-                </Label>
-                <Input
-                  id="contractsGoal"
-                  type="text"
-                  value={formatNumber(goals.contractsGoal)}
-                  onChange={(e) => handleChange("contractsGoal", e.target.value)}
-                  className="tabular-nums"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="soldGoal" className="flex items-center gap-2 text-muted-foreground">
-                  <BadgeDollarSign className="h-4 w-4 text-success" />
-                  Sold Target
-                </Label>
-                <Input
-                  id="soldGoal"
-                  type="text"
-                  value={formatNumber(goals.soldGoal)}
-                  onChange={(e) => handleChange("soldGoal", e.target.value)}
-                  className="tabular-nums"
-                />
+            </div>
+
+            {/* Financial Goals */}
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-foreground">Financial Goals</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="revenueGoal" className="text-muted-foreground">
+                    Revenue Target ($)
+                  </Label>
+                  <Input
+                    id="revenueGoal"
+                    type="text"
+                    value={formatNumber(goals.revenueGoal)}
+                    onChange={(e) => handleChange("revenueGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="profitGoal" className="text-muted-foreground">
+                    Profit Target ($)
+                  </Label>
+                  <Input
+                    id="profitGoal"
+                    type="text"
+                    value={formatNumber(goals.profitGoal)}
+                    onChange={(e) => handleChange("profitGoal", e.target.value)}
+                    className="tabular-nums"
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Financial Goals */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Financial Goals</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="revenueGoal" className="text-muted-foreground">
-                  Revenue Target ($)
-                </Label>
-                <Input
-                  id="revenueGoal"
-                  type="text"
-                  value={formatNumber(goals.revenueGoal)}
-                  onChange={(e) => handleChange("revenueGoal", e.target.value)}
-                  className="tabular-nums"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="profitGoal" className="text-muted-foreground">
-                  Profit Target ($)
-                </Label>
-                <Input
-                  id="profitGoal"
-                  type="text"
-                  value={formatNumber(goals.profitGoal)}
-                  onChange={(e) => handleChange("profitGoal", e.target.value)}
-                  className="tabular-nums"
-                />
-              </div>
-            </div>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="outline" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} className="gap-2">
+              <Save className="h-4 w-4" />
+              Save Goals
+            </Button>
           </div>
-        </div>
-
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} className="gap-2">
-            <Save className="h-4 w-4" />
-            Save Goals
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
