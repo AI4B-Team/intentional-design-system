@@ -11,7 +11,7 @@ import { usePipelineStats } from "@/hooks/usePipelineStats";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
-import { DispoWidget } from "@/components/dashboard/DispoWidget";
+
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import {
   Building2,
@@ -706,10 +706,6 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* Dispo Widget */}
-      <div className="mb-8">
-        <DispoWidget />
-      </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
