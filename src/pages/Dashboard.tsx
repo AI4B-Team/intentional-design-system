@@ -539,8 +539,7 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
     >
       <div className={cn(
         "w-3 h-3 rounded-full shadow-sm transition-transform duration-150 group-hover:scale-125", 
-        stage.color,
-        showPressure && "animate-pulse"
+        stage.color
       )} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
