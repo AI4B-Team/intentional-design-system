@@ -355,21 +355,11 @@ function DealListItem({
             </div>
           </div>
 
-          {/* Bottom row: ARV % + Profit */}
-          <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-border">
-            <Badge 
-              variant="outline" 
-              className={cn(
-                "text-xs font-semibold px-2 py-0",
-                deal.arvPercent <= 70 
-                  ? "bg-emerald-100 text-emerald-700 border-emerald-300"
-                  : deal.arvPercent <= 85 
-                    ? "bg-amber-100 text-amber-700 border-amber-300"
-                    : "bg-red-100 text-red-700 border-red-300"
-              )}
-            >
-              {deal.arvPercent}% ARV
-            </Badge>
+          {/* ARV Progress Bar */}
+          <DealRiskMeter arvPercent={deal.arvPercent} />
+
+          {/* Bottom row: Profit */}
+          <div className="flex items-center justify-end gap-3 mt-2">
             <div className={cn(
               "text-sm font-bold",
               profitPotential >= 0 ? "text-success" : "text-destructive"
