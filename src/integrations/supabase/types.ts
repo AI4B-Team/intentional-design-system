@@ -5906,6 +5906,83 @@ export type Database = {
           },
         ]
       }
+      offer_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          document_type: string | null
+          email_body: string | null
+          email_signature: string | null
+          email_subject: string | null
+          id: string
+          include_pof: boolean | null
+          is_active: boolean | null
+          is_default: boolean | null
+          loi_content: string | null
+          market_type: string | null
+          name: string
+          offer_type: string
+          organization_id: string | null
+          sms_body: string | null
+          terms: Json
+          updated_at: string
+          use_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          document_type?: string | null
+          email_body?: string | null
+          email_signature?: string | null
+          email_subject?: string | null
+          id?: string
+          include_pof?: boolean | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          loi_content?: string | null
+          market_type?: string | null
+          name: string
+          offer_type: string
+          organization_id?: string | null
+          sms_body?: string | null
+          terms?: Json
+          updated_at?: string
+          use_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          document_type?: string | null
+          email_body?: string | null
+          email_signature?: string | null
+          email_subject?: string | null
+          id?: string
+          include_pof?: boolean | null
+          is_active?: boolean | null
+          is_default?: boolean | null
+          loi_content?: string | null
+          market_type?: string | null
+          name?: string
+          offer_type?: string
+          organization_id?: string | null
+          sms_body?: string | null
+          terms?: Json
+          updated_at?: string
+          use_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offer_templates_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offers: {
         Row: {
           counter_amount: number | null
@@ -6235,6 +6312,65 @@ export type Database = {
           zip?: string | null
         }
         Relationships: []
+      }
+      proof_of_funds: {
+        Row: {
+          amount: number
+          created_at: string
+          expiration_date: string
+          file_name: string
+          file_size: number | null
+          file_url: string
+          id: string
+          is_active: boolean | null
+          lender_contact: string | null
+          lender_name: string | null
+          notes: string | null
+          organization_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          expiration_date: string
+          file_name: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_active?: boolean | null
+          lender_contact?: string | null
+          lender_name?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          expiration_date?: string
+          file_name?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_active?: boolean | null
+          lender_contact?: string | null
+          lender_name?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proof_of_funds_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       properties: {
         Row: {
@@ -8047,6 +8183,19 @@ export type Database = {
       generate_deal_slug: {
         Args: { deal_address: string; deal_city: string; deal_user_id: string }
         Returns: string
+      }
+      get_expiring_pofs: {
+        Args: { days_ahead?: number }
+        Returns: {
+          amount: number
+          days_until_expiry: number
+          expiration_date: string
+          file_name: string
+          id: string
+          lender_name: string
+          organization_id: string
+          user_id: string
+        }[]
       }
       get_next_queue_contact: {
         Args: { p_queue_id: string; p_user_id: string }
