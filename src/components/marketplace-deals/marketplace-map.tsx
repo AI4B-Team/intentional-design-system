@@ -344,13 +344,15 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         .leaflet-control {
           z-index: 10 !important;
         }
-        /* Move zoom controls below the Map/Satellite toggle */
+        /* Move zoom controls to bottom right */
         .leaflet-top.leaflet-left {
-          top: 56px !important;
+          top: auto !important;
+          bottom: 30px !important;
+          left: auto !important;
+          right: 10px !important;
         }
         .leaflet-control-zoom {
-          margin-top: 0 !important;
-          margin-left: 12px !important;
+          margin: 0 !important;
         }
         .price-marker {
           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
