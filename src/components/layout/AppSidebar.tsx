@@ -98,30 +98,11 @@ const marketingGroup: NavGroup = {
     { label: "Website", href: "/websites", icon: Globe },
   ],
 };
-const appsGroup: NavGroup = {
+// Apps - direct nav item (not a collapsible group)
+const appsNavItem: NavItem = {
   label: "Apps",
+  href: "/apps",
   icon: AppWindow,
-  items: [
-    { label: "D4D", href: "/d4d", icon: Car },
-    { label: "Renovations", href: "/renovations", icon: Wrench },
-    { label: "Documents", href: "/documents", icon: FolderOpen },
-    { label: "Signatures", href: "/apps/signatures", icon: PenTool },
-    { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
-    { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
-    { label: "Calculators", href: "/calculators", icon: Calculator },
-    { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  ],
-};
-
-const moreGroup: NavGroup = {
-  label: "More",
-  icon: FileText,
-  items: [
-    { label: "JV Partners", href: "/jv", icon: Handshake },
-    { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
-    { label: "Achievements", href: "/achievements", icon: Award },
-    { label: "Daily Report", href: "/reports/daily", icon: FileText },
-  ],
 };
 
 interface AppSidebarProps {
@@ -152,13 +133,6 @@ export function AppSidebar({
     return marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
-  const [appsOpen, setAppsOpen] = React.useState(() => {
-    return appsGroup.items.some(item => location.pathname.startsWith(item.href));
-  });
-
-  const [moreOpen, setMoreOpen] = React.useState(() => {
-    return moreGroup.items.some(item => location.pathname.startsWith(item.href));
-  });
 
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
@@ -170,8 +144,7 @@ export function AppSidebar({
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
-  const isAppsActive = appsGroup.items.some(item => location.pathname.startsWith(item.href));
-  const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isAppsActive = location.pathname.startsWith(appsNavItem.href);
 
   const handleSignOut = async () => {
     await signOut();
@@ -404,100 +377,21 @@ export function AppSidebar({
             );
           })}
 
-          {/* Apps Group */}
+          {/* Apps - Direct Link */}
           <li>
-            <button
-              onClick={() => !collapsed && setAppsOpen(!appsOpen)}
+            <NavLink
+              to={appsNavItem.href}
+              onClick={onMobileClose}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
                 "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isAppsActive && "text-white",
+                isAppsActive && "bg-brand-accent text-white font-medium",
                 collapsed && "justify-center"
               )}
             >
-              <appsGroup.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-brand-accent")} />
-              {!collapsed && (
-                <>
-                  <span>{appsGroup.label}</span>
-                  <ChevronDown className={cn(
-                    "h-4 w-4 ml-auto transition-transform",
-                    appsOpen && "rotate-180"
-                  )} />
-                </>
-              )}
-            </button>
-            {!collapsed && appsOpen && (
-              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
-                {appsGroup.items.map((item) => {
-                  const isActive = location.pathname === item.href;
-                  const Icon = item.icon;
-
-                  return (
-                    <li key={item.href}>
-                      <NavLink
-                        to={item.href}
-                        onClick={onMobileClose}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
-                          isActive && "bg-brand-accent/20 text-white font-medium"
-                        )}
-                      >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </li>
-          <li>
-            <button
-              onClick={() => !collapsed && setMoreOpen(!moreOpen)}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isMoreActive && "text-white",
-                collapsed && "justify-center"
-              )}
-            >
-              <moreGroup.icon className={cn("h-5 w-5 flex-shrink-0", isMoreActive && "text-brand-accent")} />
-              {!collapsed && (
-                <>
-                  <span>{moreGroup.label}</span>
-                  <ChevronDown className={cn(
-                    "h-4 w-4 ml-auto transition-transform",
-                    moreOpen && "rotate-180"
-                  )} />
-                </>
-              )}
-            </button>
-            {!collapsed && moreOpen && (
-              <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
-                {moreGroup.items.map((item) => {
-                  const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
-                  const Icon = item.icon;
-
-                  return (
-                    <li key={item.href}>
-                      <NavLink
-                        to={item.href}
-                        onClick={onMobileClose}
-                        className={cn(
-                          "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                          "text-slate-400 hover:text-white hover:bg-slate-700/50 text-sm",
-                          isActive && "bg-brand-accent/20 text-white font-medium"
-                        )}
-                      >
-                        <Icon className="h-4 w-4 flex-shrink-0" />
-                        <span>{item.label}</span>
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+              <appsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-white")} />
+              {!collapsed && <span>{appsNavItem.label}</span>}
+            </NavLink>
           </li>
         </ul>
       </nav>
