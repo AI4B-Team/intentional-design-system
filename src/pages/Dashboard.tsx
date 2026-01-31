@@ -56,6 +56,7 @@ function formatCurrency(value: number): string {
 // Pipeline Value Card Component
 interface PipelineValueCardProps {
   title: string;
+  subtitle?: string; // e.g. "Locked Deals", "In Escrow"
   count: number;
   totalValue: number;
   profitPotential: number;
@@ -63,14 +64,18 @@ interface PipelineValueCardProps {
   iconBg: string;
   iconColor: string;
   profitLabel?: string;
+  valueLabel?: string; // e.g. "Revenue Secured"
   isLoading?: boolean;
   onClick?: () => void;
   goal?: number;
   actionInsight?: ActionInsight | null;
+  variant?: "default" | "calm"; // calm = green/relief styling
+  avgDaysToClose?: number;
 }
 
 function PipelineValueCard({ 
   title, 
+  subtitle,
   count, 
   totalValue, 
   profitPotential, 
@@ -78,10 +83,13 @@ function PipelineValueCard({
   iconBg, 
   iconColor,
   profitLabel = "Profit Potential",
+  valueLabel = "Total Value",
   isLoading,
   onClick,
   goal = 0,
   actionInsight,
+  variant = "default",
+  avgDaysToClose,
 }: PipelineValueCardProps) {
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
@@ -104,23 +112,40 @@ function PipelineValueCard({
     );
   }
 
+  // Calm variant uses green/success styling for "relief" tiles like Contracts
+  const isCalmVariant = variant === "calm";
+
   return (
     <Card 
       variant="default" 
       padding="md" 
       className={cn(
         "group relative overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200",
-        onClick && "cursor-pointer"
+        onClick && "cursor-pointer",
+        isCalmVariant && "border-success/20"
       )}
       onClick={onClick}
     >
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      {/* Gradient overlay - calmer green for contracts */}
+      <div className={cn(
+        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+        isCalmVariant 
+          ? "bg-gradient-to-br from-transparent via-transparent to-success/5" 
+          : "bg-gradient-to-br from-transparent via-transparent to-primary/5"
+      )} />
       
       <div className="relative space-y-4">
-        {/* Header */}
+        {/* Header with optional subtitle */}
         <div className="flex items-center justify-between">
-          <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+          <div>
+            <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+            {subtitle && (
+              <p className={cn(
+                "text-tiny mt-0.5",
+                isCalmVariant ? "text-success/70" : "text-muted-foreground/70"
+              )}>{subtitle}</p>
+            )}
+          </div>
           <div className={cn(
             "h-10 w-10 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-105",
             iconBg
@@ -149,7 +174,10 @@ function PipelineValueCard({
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
-                    goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
+                    // Calm variant always uses success color for progress
+                    isCalmVariant 
+                      ? "bg-success" 
+                      : goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
                   )}
                   style={{ width: `${goalProgress}%` }}
                 />
@@ -158,8 +186,16 @@ function PipelineValueCard({
           )}
         </div>
 
-        {/* Action Insight - "What to do next" */}
-        {actionInsight && (
+        {/* Avg days to close for contracts */}
+        {avgDaysToClose !== undefined && avgDaysToClose > 0 && (
+          <div className="flex items-center gap-2 text-tiny text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>Avg {avgDaysToClose} days to close</span>
+          </div>
+        )}
+
+        {/* Action Insight - "What to do next" (not shown for calm variant) */}
+        {actionInsight && !isCalmVariant && (
           <div className={cn(
             "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
             actionInsight.severity === "high" 
@@ -177,7 +213,7 @@ function PipelineValueCard({
         {/* Value and Profit */}
         <div className="space-y-2 pt-2 border-t border-border-subtle">
           <div className="flex items-center justify-between">
-            <span className="text-tiny text-muted-foreground">Total Value</span>
+            <span className="text-tiny text-muted-foreground">{valueLabel}</span>
             <span className="text-small font-semibold text-foreground tabular-nums">
               {formatCurrency(totalValue)}
             </span>
@@ -753,15 +789,19 @@ export default function Dashboard() {
         />
         <PipelineValueCard
           title="Contracts"
+          subtitle="Locked Deals"
           count={pipelineValueStats?.contracted.count || 0}
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
           icon={Handshake}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-500"
+          iconBg="bg-emerald-100"
+          iconColor="text-emerald-600"
+          valueLabel="Revenue Secured"
           isLoading={pipelineValueLoading}
-          onClick={() => navigate("/properties?status=under_contract")}
+          onClick={() => navigate("/pipeline?filter=under_contract")}
           goal={goals.contractsGoal}
+          variant="calm"
+          avgDaysToClose={28}
         />
         <PipelineValueCard
           title="Sold"
