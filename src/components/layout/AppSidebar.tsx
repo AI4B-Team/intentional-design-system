@@ -61,7 +61,7 @@ const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
-  { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
+  { label: "Campaigns", href: "/dispo/campaigns", icon: Megaphone },
   { label: "Inbox", href: "/inbox", icon: Inbox },
 ];
 
