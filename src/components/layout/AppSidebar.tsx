@@ -105,18 +105,13 @@ const appsGroup: NavGroup = {
   items: [
     { label: "D4D", href: "/d4d", icon: Car },
     { label: "Renovations", href: "/renovations", icon: Wrench },
+    { label: "Documents", href: "/documents", icon: FolderOpen },
     { label: "Signatures", href: "/apps/signatures", icon: PenTool },
     { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
     { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
     { label: "Calculators", href: "/calculators", icon: Calculator },
     { label: "Analytics", href: "/analytics", icon: BarChart3 },
   ],
-};
-
-const documentsNavItem: NavItem = {
-  label: "Documents",
-  href: "/documents",
-  icon: FolderOpen,
 };
 
 const moreGroup: NavGroup = {
@@ -179,7 +174,6 @@ export function AppSidebar({
   
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isAppsActive = appsGroup.items.some(item => location.pathname.startsWith(item.href));
-  const isDocumentsActive = location.pathname.startsWith(documentsNavItem.href);
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
 
   const handleSignOut = async () => {
@@ -462,23 +456,6 @@ export function AppSidebar({
               </li>
             );
           })}
-
-          {/* Documents - Direct Link */}
-          <li>
-            <NavLink
-              to={documentsNavItem.href}
-              onClick={onMobileClose}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isDocumentsActive && "bg-brand-accent text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <documentsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isDocumentsActive && "text-white")} />
-              {!collapsed && <span>{documentsNavItem.label}</span>}
-            </NavLink>
-          </li>
 
           {/* Apps Group */}
           <li>
