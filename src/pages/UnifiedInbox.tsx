@@ -646,22 +646,22 @@ export default function UnifiedInbox() {
               {/* Toolbar with Tabs */}
               <div className="flex items-center gap-4 px-4 py-3 border-b border-border-subtle">
                 <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v as FilterTab); setActiveMessageId(null); }}>
-                  <TabsList>
-                    <TabsTrigger value="inbox" className="gap-2">
+                  <TabsList className="bg-transparent gap-2 p-0">
+                    <TabsTrigger value="inbox" className="gap-2 bg-muted data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg px-4">
                       <Inbox className="h-4 w-4" />
                       Inbox
                       {displayStats.unread > 0 && (
                         <Badge variant="default" size="sm">{displayStats.unread}</Badge>
                       )}
                     </TabsTrigger>
-                    <TabsTrigger value="starred" className="gap-2">
+                    <TabsTrigger value="starred" className="gap-2 bg-muted data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg px-4">
                       <Star className="h-4 w-4" />
                       Starred
                       {displayStats.starred > 0 && (
                         <Badge variant="secondary" size="sm">{displayStats.starred}</Badge>
                       )}
                     </TabsTrigger>
-                    <TabsTrigger value="archived" className="gap-2">
+                    <TabsTrigger value="archived" className="gap-2 bg-muted data-[state=active]:bg-background data-[state=active]:shadow-sm rounded-lg px-4">
                       <Archive className="h-4 w-4" />
                       Archived
                     </TabsTrigger>
