@@ -6,6 +6,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ArrowLeft,
   Heart,
   EyeOff,
@@ -26,9 +32,83 @@ import {
   Phone,
   Mail,
   Zap,
+  Sparkles,
+  User,
+  Briefcase,
+  BadgeCheck,
+  Send,
+  Copy,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
+
+type UserType = "investor" | "agent" | "investor-agent";
+
+interface MessageTemplate {
+  id: string;
+  label: string;
+  message: string;
+}
+
+const MESSAGE_TEMPLATES: Record<UserType, MessageTemplate[]> = {
+  investor: [
+    {
+      id: "cash-offer",
+      label: "💰 Cash Offer",
+      message: `Hi {agentName},\n\nI'm interested in making a cash offer on {address}. I can close quickly (within 14-21 days) with no financing contingencies.\n\nWould you be open to discussing a purchase price of ${"{price}"}? I'm flexible on timing and can work around the seller's needs.\n\nLooking forward to your response.`,
+    },
+    {
+      id: "as-is",
+      label: "🔧 As-Is Offer",
+      message: `Hi {agentName},\n\nI'm an investor looking to purchase {address} in as-is condition. I understand the property may need work and I'm prepared to take it as-is with no inspection contingencies.\n\nPlease let me know if the seller would entertain an offer in the ${"{priceRange}"} range.\n\nThank you!`,
+    },
+    {
+      id: "creative",
+      label: "🎯 Creative Terms",
+      message: `Hi {agentName},\n\nI'm interested in {address} and wanted to explore some creative options that might work for the seller:\n\n• Subject-to existing financing\n• Seller financing with competitive terms\n• Lease-option arrangement\n\nWould any of these be of interest? Happy to discuss further.\n\nBest regards`,
+    },
+    {
+      id: "info-request",
+      label: "📋 Request Info",
+      message: `Hi {agentName},\n\nI'm interested in {address} and would like to learn more before making an offer:\n\n• Current mortgage balance (if any)\n• Seller's timeline/motivation\n• Any known issues or repairs needed\n• Recent updates or renovations\n\nThank you for your time!`,
+    },
+  ],
+  agent: [
+    {
+      id: "client-cash",
+      label: "💰 Client Cash Offer",
+      message: `Hi {agentName},\n\nI have a client who is very interested in {address}. They are a cash buyer looking to close within 21 days.\n\nMy client would like to submit an offer in the ${"{priceRange}"} range. Would the seller entertain offers at that level?\n\nPlease let me know if we can schedule a showing or if you need any pre-qualification documentation.\n\nBest regards`,
+    },
+    {
+      id: "client-financed",
+      label: "🏦 Client Financed",
+      message: `Hi {agentName},\n\nI'm reaching out on behalf of a pre-approved buyer who is interested in {address}. My client has been pre-approved for ${"{loanAmount}"} and is looking for a 30-day close.\n\nWould the seller consider an offer near asking price with conventional financing?\n\nHappy to provide proof of funds and pre-approval letter.\n\nThank you!`,
+    },
+    {
+      id: "showing-request",
+      label: "🏠 Schedule Showing",
+      message: `Hi {agentName},\n\nI have a qualified buyer interested in viewing {address}. Could we schedule a showing at your earliest convenience?\n\nMy client is flexible on timing. Please let me know your availability.\n\nThank you!`,
+    },
+  ],
+  "investor-agent": [
+    {
+      id: "licensed-cash",
+      label: "💰 Licensed Investor Cash",
+      message: `Hi {agentName},\n\n**Disclosure: I am a licensed real estate agent purchasing for my own investment portfolio.**\n\nI'm interested in making a cash offer on {address}. I can close within 14-21 days with no financing contingencies.\n\nWould the seller consider an offer around ${"{price}"}? I'm flexible on terms and timing.\n\nLicense #: [Your License Number]\n\nBest regards`,
+    },
+    {
+      id: "licensed-creative",
+      label: "🎯 Licensed Creative Terms",
+      message: `Hi {agentName},\n\n**Disclosure: I am a licensed agent acting as a principal buyer for my own investment.**\n\nI'm exploring creative acquisition options for {address}:\n\n• Subject-to existing financing\n• Seller financing\n• Lease-option\n\nWould any of these work for the seller?\n\nLicense #: [Your License Number]\n\nThank you!`,
+    },
+    {
+      id: "licensed-info",
+      label: "📋 Licensed Info Request",
+      message: `Hi {agentName},\n\n**Disclosure: I am a licensed real estate professional inquiring for my own investment purposes.**\n\nI'd like to gather more information on {address} before submitting an offer:\n\n• Seller's motivation and timeline\n• Current mortgage status\n• Known repairs needed\n\nLicense #: [Your License Number]\n\nThank you for your time!`,
+    },
+  ],
+};
 
 const tabs = [
   { id: "overview", label: "Overview" },
@@ -94,8 +174,10 @@ export default function MarketplaceDealDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [message, setMessage] = useState("Hi Carolina, I would like to know more about this listing.");
+  const [message, setMessage] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
+  const [userType, setUserType] = useState<UserType>("investor");
+  const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
 
   // Get deal data from mock
   const { deals } = useMockDeals({
@@ -425,13 +507,14 @@ export default function MarketplaceDealDetail() {
             </div>
           </div>
 
-          {/* Sidebar - Agent Card */}
-          <div>
-            <Card className="p-6 sticky top-6">
+          {/* Sidebar - Agent Card with AI Templates */}
+          <div className="space-y-4">
+            <Card className="p-5 sticky top-6">
+              {/* Agent Info */}
               <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
-              <h3 className="text-lg font-semibold mb-4">{mockAgent.name}</h3>
+              <h3 className="text-lg font-semibold mb-3">{mockAgent.name}</h3>
 
-              <div className="space-y-3 mb-6">
+              <div className="space-y-2 mb-4">
                 <a
                   href={`tel:${mockAgent.phone}`}
                   className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -448,16 +531,122 @@ export default function MarketplaceDealDetail() {
                 </a>
               </div>
 
+              {/* User Type Toggle */}
+              <div className="mb-4">
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  I am a...
+                </p>
+                <div className="flex rounded-lg border border-border overflow-hidden">
+                  <button
+                    onClick={() => setUserType("investor")}
+                    className={cn(
+                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                      userType === "investor" 
+                        ? "bg-brand text-white" 
+                        : "bg-background hover:bg-muted text-muted-foreground"
+                    )}
+                  >
+                    <DollarSign className="h-3 w-3" />
+                    Investor
+                  </button>
+                  <button
+                    onClick={() => setUserType("agent")}
+                    className={cn(
+                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border-x border-border",
+                      userType === "agent" 
+                        ? "bg-brand text-white" 
+                        : "bg-background hover:bg-muted text-muted-foreground"
+                    )}
+                  >
+                    <Briefcase className="h-3 w-3" />
+                    Agent
+                  </button>
+                  <button
+                    onClick={() => setUserType("investor-agent")}
+                    className={cn(
+                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                      userType === "investor-agent" 
+                        ? "bg-brand text-white" 
+                        : "bg-background hover:bg-muted text-muted-foreground"
+                    )}
+                  >
+                    <BadgeCheck className="h-3 w-3" />
+                    Licensed
+                  </button>
+                </div>
+              </div>
+
+              {/* AI Message Templates */}
+              <div className="mb-4">
+                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                  <Sparkles className="h-3 w-3 text-brand" />
+                  AI Message Templates
+                </p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {MESSAGE_TEMPLATES[userType].map((template) => (
+                    <TooltipProvider key={template.id}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => {
+                              const filledMessage = template.message
+                                .replace("{agentName}", mockAgent.name.split(" ")[0])
+                                .replace("{address}", deal.address)
+                                .replace("{price}", `$${Math.round(deal.price * 0.9).toLocaleString()}`)
+                                .replace("{priceRange}", `$${Math.round(deal.price * 0.85).toLocaleString()} - $${Math.round(deal.price * 0.92).toLocaleString()}`)
+                                .replace("{loanAmount}", `$${Math.round(deal.price * 0.97).toLocaleString()}`);
+                              setMessage(filledMessage);
+                            }}
+                            className="px-2.5 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors text-left truncate"
+                          >
+                            {template.label}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left" className="max-w-[250px]">
+                          <p className="text-tiny">{template.label.replace(/[^\w\s]/g, '').trim()}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ))}
+                </div>
+              </div>
+
+              {/* Message Input */}
               <Textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Write your message..."
-                className="min-h-[100px] mb-4"
+                placeholder={
+                  userType === "investor" 
+                    ? "Write your offer message..." 
+                    : userType === "agent"
+                    ? "Write on behalf of your client..."
+                    : "Write your message (include license disclosure)..."
+                }
+                className="min-h-[120px] mb-3 text-sm"
               />
 
-              <Button variant="primary" className="w-full">
-                Send Message
-              </Button>
+              {/* Send Actions */}
+              <div className="space-y-2">
+                <Button variant="primary" className="w-full gap-2" disabled={!message.trim()}>
+                  <Send className="h-4 w-4" />
+                  Send Message
+                </Button>
+                
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="secondary" className="w-full gap-2 text-xs" size="sm">
+                        <Mail className="h-3.5 w-3.5" />
+                        Launch Campaign to Similar Listings
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom" className="max-w-[220px]">
+                      <p className="text-tiny">Send this message to multiple agents with similar listings in one click</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
 
               <p className="text-xs text-center text-muted-foreground mt-4">
                 Only <span className="font-medium">HomesDaily</span> connects you to the Listing Agent.
