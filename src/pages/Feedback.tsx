@@ -630,7 +630,7 @@ const Feedback: React.FC = () => {
 
       {/* Submit Dialog */}
       <Dialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-xl sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {submitType === "general" && <MessageSquare className="h-5 w-5 text-blue-600" />}
