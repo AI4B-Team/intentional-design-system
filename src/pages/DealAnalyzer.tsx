@@ -3,7 +3,18 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, BarChart3, TrendingUp, Users, Home } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Sparkles,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Home,
+  Zap,
+  History,
+  BookmarkPlus,
+  FileText,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -12,13 +23,20 @@ import {
   DealInputForm,
   AnalysisReportComponent,
   AnalyzingState,
+  StrategyComparison,
+  ScoreBreakdown,
+  QuickRulesCheck,
+  RecentComps,
+  ScenarioSliders,
   CalculatorType,
   DealInput,
   AnalysisReport,
   CALCULATOR_OPTIONS,
+  ScenarioAdjustments,
 } from "@/components/deal-analyzer";
 
 type ViewState = "input" | "analyzing" | "report";
+type InputTab = "details" | "scenarios" | "rules";
 
 const DEFAULT_INPUT: DealInput = {
   address: "",
@@ -31,6 +49,8 @@ export default function DealAnalyzer() {
   const [calculatorType, setCalculatorType] = useState<CalculatorType>("flip");
   const [dealInput, setDealInput] = useState<DealInput>(DEFAULT_INPUT);
   const [report, setReport] = useState<AnalysisReport | null>(null);
+  const [inputTab, setInputTab] = useState<InputTab>("details");
+  const [scenarioAdjustments, setScenarioAdjustments] = useState<ScenarioAdjustments | null>(null);
 
   const handleInputChange = (data: Partial<DealInput>) => {
     setDealInput((prev) => ({ ...prev, ...data }));
@@ -65,7 +85,6 @@ export default function DealAnalyzer() {
 
       if (response.error) throw response.error;
 
-      // Map the AI response to our report format
       const aiResult = response.data;
       const mappedReport: AnalysisReport = {
         calculator: calculatorType,
@@ -80,7 +99,6 @@ export default function DealAnalyzer() {
         cons: aiResult.cons || [],
         recommendation: aiResult.recommendation || "",
         riskLevel: aiResult.riskLevel || "Medium",
-        // Calculator-specific metrics
         assignmentFee: calculatorType === "wholesale" ? 10000 : undefined,
         monthlyCashFlow: ["rental", "brrrr", "str"].includes(calculatorType)
           ? calculateCashFlow(dealInput)
@@ -116,10 +134,11 @@ export default function DealAnalyzer() {
   };
 
   const calculatorInfo = CALCULATOR_OPTIONS.find((c) => c.id === calculatorType);
+  const hasInputData = dealInput.askingPrice > 0 || (dealInput.arv && dealInput.arv > 0);
 
   return (
     <AppLayout>
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -134,15 +153,20 @@ export default function DealAnalyzer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-small text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-primary" />
-              <span><strong className="text-foreground">247</strong> analyzed today</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 text-small text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 text-primary" />
+                <span><strong className="text-foreground">247</strong> analyzed today</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span><strong className="text-foreground">2,000+</strong> investors</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-primary" />
-              <span><strong className="text-foreground">2,000+</strong> investors</span>
-            </div>
+            <Button variant="outline" size="sm" icon={<History className="h-4 w-4" />}>
+              History
+            </Button>
           </div>
         </div>
 
@@ -150,9 +174,15 @@ export default function DealAnalyzer() {
           <>
             {/* Calculator Selection */}
             <div>
-              <h2 className="text-lg font-semibold text-foreground mb-3">
-                Select Analysis Type
-              </h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Select Analysis Type
+                </h2>
+                <Badge variant="secondary" size="sm" className="gap-1">
+                  <Zap className="h-3 w-3" />
+                  AI-Powered
+                </Badge>
+              </div>
               <CalculatorSelector
                 selected={calculatorType}
                 onSelect={setCalculatorType}
@@ -181,31 +211,107 @@ export default function DealAnalyzer() {
               />
             </Card>
 
-            {/* Deal Input Form */}
-            <div className="grid lg:grid-cols-2 gap-6">
-              <DealInputForm
-                data={dealInput}
-                onChange={handleInputChange}
-                calculatorType={calculatorType}
-              />
+            {/* Main Content Grid */}
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Left Column - Input & Options */}
+              <div className="lg:col-span-2 space-y-6">
+                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as InputTab)}>
+                  <TabsList className="mb-4">
+                    <TabsTrigger value="details" className="gap-2">
+                      <FileText className="h-4 w-4" />
+                      Deal Details
+                    </TabsTrigger>
+                    <TabsTrigger value="scenarios" className="gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Scenarios
+                    </TabsTrigger>
+                    <TabsTrigger value="rules" className="gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Rules Check
+                    </TabsTrigger>
+                  </TabsList>
 
-              {/* Quick Tips */}
-              <Card className="p-5 bg-surface-secondary/50">
-                <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary" />
-                  {calculatorInfo?.name} Quick Tips
-                </h3>
-                <div className="space-y-3">
-                  {getTipsForCalculator(calculatorType).map((tip, i) => (
-                    <div key={i} className="flex items-start gap-2 text-small">
-                      <Badge variant="secondary" size="sm" className="mt-0.5">
-                        {i + 1}
-                      </Badge>
-                      <span className="text-muted-foreground">{tip}</span>
+                  <TabsContent value="details" className="mt-0 space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <DealInputForm
+                        data={dealInput}
+                        onChange={handleInputChange}
+                        calculatorType={calculatorType}
+                      />
+                      
+                      {/* Quick Tips */}
+                      <Card className="p-5 bg-surface-secondary/50">
+                        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                          <Sparkles className="h-4 w-4 text-primary" />
+                          {calculatorInfo?.name} Quick Tips
+                        </h3>
+                        <div className="space-y-3">
+                          {getTipsForCalculator(calculatorType).map((tip, i) => (
+                            <div key={i} className="flex items-start gap-2 text-small">
+                              <Badge variant="secondary" size="sm" className="mt-0.5 flex-shrink-0">
+                                {i + 1}
+                              </Badge>
+                              <span className="text-muted-foreground">{tip}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </Card>
                     </div>
-                  ))}
-                </div>
-              </Card>
+                  </TabsContent>
+
+                  <TabsContent value="scenarios" className="mt-0">
+                    <ScenarioSliders
+                      dealInput={dealInput}
+                      calculatorType={calculatorType}
+                      onChange={setScenarioAdjustments}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="rules" className="mt-0">
+                    <QuickRulesCheck
+                      dealInput={dealInput}
+                      calculatorType={calculatorType}
+                    />
+                  </TabsContent>
+                </Tabs>
+
+                {/* Strategy Comparison */}
+                {hasInputData && (
+                  <StrategyComparison
+                    dealInput={dealInput}
+                    onSelectStrategy={setCalculatorType}
+                  />
+                )}
+              </div>
+
+              {/* Right Column - Comps & Analysis Preview */}
+              <div className="space-y-6">
+                <RecentComps subjectAddress={dealInput.address} />
+
+                {/* Analyze CTA */}
+                <Card className="p-5 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+                  <div className="text-center">
+                    <Sparkles className="h-8 w-8 text-primary mx-auto mb-3" />
+                    <h3 className="font-semibold text-foreground mb-2">Ready to Analyze?</h3>
+                    <p className="text-small text-muted-foreground mb-4">
+                      Get AI-powered insights with ARV estimates, profit projections, and risk assessment.
+                    </p>
+                    <Button
+                      onClick={handleAnalyze}
+                      disabled={!dealInput.address.trim()}
+                      className="w-full"
+                      icon={<Sparkles className="h-4 w-4" />}
+                    >
+                      Analyze Deal
+                    </Button>
+                  </div>
+                </Card>
+
+                {/* Save Template */}
+                <Button variant="outline" className="w-full" icon={<BookmarkPlus className="h-4 w-4" />}>
+                  Save as Template
+                </Button>
+              </div>
             </div>
           </>
         )}
@@ -215,11 +321,19 @@ export default function DealAnalyzer() {
         )}
 
         {viewState === "report" && report && (
-          <AnalysisReportComponent
-            report={report}
-            address={dealInput.address}
-            onNewAnalysis={handleNewAnalysis}
-          />
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <AnalysisReportComponent
+                report={report}
+                address={dealInput.address}
+                onNewAnalysis={handleNewAnalysis}
+              />
+            </div>
+            <div className="space-y-6">
+              <ScoreBreakdown totalScore={report.score} />
+              <RecentComps subjectAddress={dealInput.address} />
+            </div>
+          </div>
         )}
       </div>
     </AppLayout>
@@ -252,14 +366,14 @@ function calculateMaxOffer(input: DealInput, type: CalculatorType): number {
 
 function calculateCashFlow(input: DealInput): number {
   const rent = input.monthlyRent || (input.askingPrice ? input.askingPrice * 0.008 : 1500);
-  const expenses = rent * 0.45; // 45% expense ratio
-  const mortgage = input.askingPrice ? input.askingPrice * 0.005 : 1000; // Rough mortgage estimate
+  const expenses = rent * 0.45;
+  const mortgage = input.askingPrice ? input.askingPrice * 0.005 : 1000;
   return Math.round(rent - expenses - mortgage);
 }
 
 function calculateCapRate(input: DealInput): number {
   const rent = input.monthlyRent || (input.askingPrice ? input.askingPrice * 0.008 : 1500);
-  const annualNOI = rent * 12 * 0.55; // 55% NOI ratio
+  const annualNOI = rent * 12 * 0.55;
   const price = input.askingPrice || 200000;
   return Number(((annualNOI / price) * 100).toFixed(1));
 }
