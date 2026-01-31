@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,7 @@ const MOCK_POF_DOCUMENTS: POFDocument[] = [
 type SectionId = "offer_type" | "offer_terms" | "loi" | "pof" | "email" | "text";
 
 export default function OfferBlaster() {
+  const navigate = useNavigate();
   const [step, setStep] = useState<BuilderStep>("select");
   const [selectedOfferType, setSelectedOfferType] = useState<OfferType | null>(null);
   const [marketType, setMarketType] = useState<MarketType>("off_market");
@@ -227,6 +229,10 @@ export default function OfferBlaster() {
 
           {step === "build" && (
             <div className="flex items-center gap-3">
+              <Button variant="ghost" onClick={() => navigate("/tools/offer-templates")}>
+                <FileText className="h-4 w-4 mr-2" />
+                Manage Templates
+              </Button>
               <Button variant="outline" onClick={handleSaveTemplate}>
                 <Save className="h-4 w-4 mr-2" />
                 Save Template
