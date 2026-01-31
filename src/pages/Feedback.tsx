@@ -583,21 +583,21 @@ const Feedback: React.FC = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-4 gap-2">
-          <TabsTrigger value="general" className="gap-2">
+        <TabsList className="mb-4 gap-3 bg-transparent p-0">
+          <TabsTrigger value="general" className="gap-2 border border-border-subtle bg-surface data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary rounded-md px-4">
             <MessageSquare className="h-4 w-4" />
             General
           </TabsTrigger>
-          <TabsTrigger value="bugs" className="gap-2">
+          <TabsTrigger value="bugs" className="gap-2 border border-border-subtle bg-surface data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary rounded-md px-4">
             <Bug className="h-4 w-4" />
             Bug Reports
           </TabsTrigger>
-          <TabsTrigger value="features" className="gap-2">
+          <TabsTrigger value="features" className="gap-2 border border-border-subtle bg-surface data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary rounded-md px-4">
             <Lightbulb className="h-4 w-4" />
             Feature Requests
           </TabsTrigger>
           {archivedFeedback.length > 0 && (
-            <TabsTrigger value="archived" className="gap-2">
+            <TabsTrigger value="archived" className="gap-2 border border-border-subtle bg-surface data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:border-primary rounded-md px-4">
               <Archive className="h-4 w-4" />
               Archived ({archivedFeedback.length})
             </TabsTrigger>
