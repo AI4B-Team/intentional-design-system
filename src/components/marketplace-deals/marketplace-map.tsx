@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -27,7 +27,8 @@ interface MarketplaceMapProps {
 // Grouped heat map options with section headers
 const heatMapGroups = [
   {
-    label: "📊 Market Signals",
+    label: "Market Signals",
+    icon: BarChart3,
     options: [
       "Property Value By County",
       "Property Value By Zip",
@@ -42,7 +43,8 @@ const heatMapGroups = [
 // Grouped parcel map options with section headers
 const parcelMapGroups = [
   {
-    label: "🧠 AI Scores",
+    label: "AI Scores",
+    icon: Brain,
     options: [
       "All Parcels",
       "AI Retail Score",
@@ -51,7 +53,8 @@ const parcelMapGroups = [
     ],
   },
   {
-    label: "🏠 Property Traits",
+    label: "Property Traits",
+    icon: Home,
     options: [
       "Cash Buyer",
       "Vacant",
@@ -406,7 +409,10 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 </div>
                 {heatMapGroups.map((group, groupIdx) => (
                   <div key={group.label} className={cn(groupIdx > 0 && "mt-3 pt-3 border-t border-border/50")}>
-                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 block">{group.label}</span>
+                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 flex items-center gap-1.5">
+                      <group.icon className="h-3.5 w-3.5" />
+                      {group.label}
+                    </span>
                     <div className="space-y-1.5 pl-2">
                       {group.options.map((option) => (
                         <div key={option} className="flex items-center justify-between">
@@ -439,7 +445,10 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 </div>
                 {parcelMapGroups.map((group, groupIdx) => (
                   <div key={group.label} className={cn(groupIdx > 0 && "mt-3 pt-3 border-t border-border/50")}>
-                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 block">{group.label}</span>
+                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 flex items-center gap-1.5">
+                      <group.icon className="h-3.5 w-3.5" />
+                      {group.label}
+                    </span>
                     <div className="space-y-1.5 pl-2">
                       {group.options.map((option) => (
                         <div key={option} className="flex items-center justify-between">
