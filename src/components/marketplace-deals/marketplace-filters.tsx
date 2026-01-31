@@ -173,7 +173,7 @@ export function MarketplaceFilters({
               placeholder="Address, City, County, State, or Zip"
               value={filters.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              className="h-10 w-[280px] bg-background text-sm pr-10 rounded-full border-border"
+              className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
             />
             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
           </div>
