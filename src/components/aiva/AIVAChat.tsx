@@ -305,11 +305,11 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         <ScrollArea ref={scrollAreaRef} className="flex-1">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full py-6 px-4">
-              {/* Three Dots */}
-              <div className="flex gap-1.5 mb-4">
-                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+              {/* Three Dots - Animated */}
+              <div className="flex gap-2 mb-4">
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "1s" }} />
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms", animationDuration: "1s" }} />
+                <div className="h-2.5 w-2.5 rounded-full bg-emerald-600 animate-bounce" style={{ animationDelay: "300ms", animationDuration: "1s" }} />
               </div>
               
               {/* Heading */}
