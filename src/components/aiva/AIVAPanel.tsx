@@ -39,6 +39,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     };
   }, []);
 
+  // Add a small gap to prevent overlap with sidebar
+  const panelLeft = sidebarWidth + 4;
+
   return (
     <>
       {/* Backdrop - dims the page but not the sidebar */}
@@ -59,7 +62,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         style={{ 
-          left: open ? sidebarWidth : sidebarWidth - 420,
+          left: open ? panelLeft : panelLeft - 420,
           transition: 'left 0.3s ease-in-out, opacity 0.3s ease-in-out'
         }}
       >
