@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useHotOpportunities } from "@/hooks/useHotOpportunities";
 import { usePipelineStats } from "@/hooks/usePipelineStats";
+import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { DispoWidget } from "@/components/dashboard/DispoWidget";
@@ -27,9 +28,116 @@ import {
   Send,
   UserCheck,
   CalendarCheck,
+  Users,
+  Handshake,
+  BadgeDollarSign,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+
+// Format currency helper
+function formatCurrency(value: number): string {
+  if (value >= 1000000) {
+    return `$${(value / 1000000).toFixed(1)}M`;
+  }
+  if (value >= 1000) {
+    return `$${(value / 1000).toFixed(0)}K`;
+  }
+  return `$${value.toLocaleString()}`;
+}
+
+// Pipeline Value Card Component
+interface PipelineValueCardProps {
+  title: string;
+  count: number;
+  totalValue: number;
+  profitPotential: number;
+  icon: React.ElementType;
+  iconBg: string;
+  profitLabel?: string;
+  isLoading?: boolean;
+  onClick?: () => void;
+}
+
+function PipelineValueCard({ 
+  title, 
+  count, 
+  totalValue, 
+  profitPotential, 
+  icon: Icon, 
+  iconBg, 
+  profitLabel = "Profit Potential",
+  isLoading,
+  onClick 
+}: PipelineValueCardProps) {
+  if (isLoading) {
+    return (
+      <Card variant="default" padding="md" className="animate-pulse">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-10 w-10 rounded-xl" />
+          </div>
+          <Skeleton className="h-8 w-16" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Card 
+      variant="default" 
+      padding="md" 
+      className={cn(
+        "group relative overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200",
+        onClick && "cursor-pointer"
+      )}
+      onClick={onClick}
+    >
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      <div className="relative space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+          <div className={cn(
+            "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-105",
+            iconBg
+          )}>
+            <Icon className="h-5 w-5 text-white" />
+          </div>
+        </div>
+
+        {/* Count */}
+        <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
+          {count}
+        </p>
+
+        {/* Value and Profit */}
+        <div className="space-y-2 pt-2 border-t border-border-subtle">
+          <div className="flex items-center justify-between">
+            <span className="text-tiny text-muted-foreground">Total Value</span>
+            <span className="text-small font-semibold text-foreground tabular-nums">
+              {formatCurrency(totalValue)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-tiny text-muted-foreground">{profitLabel}</span>
+            <span className="text-small font-bold text-success tabular-nums">
+              {formatCurrency(profitPotential)}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
 
 // Stat Card Component
 interface StatCardProps {
@@ -340,6 +448,7 @@ export default function Dashboard() {
   const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
+  const { data: pipelineValueStats, isLoading: pipelineValueLoading } = usePipelineValueStats();
   const { data: hotOpportunities, isLoading: hotLoading } = useHotOpportunities(10);
   const { data: pipelineStats, isLoading: pipelineLoading } = usePipelineStats();
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
@@ -385,40 +494,48 @@ export default function Dashboard() {
         </h1>
       </div>
 
-      {/* Top Row - Stat Cards */}
+      {/* Pipeline Value Cards - Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          title="Active Leads"
-          value={stats?.activeLeads.count || 0}
-          trend={stats?.activeLeads.trend || 0}
-          icon={Building2}
-          iconBg="bg-accent"
-          isLoading={statsLoading}
-        />
-        <StatCard
-          title="Appointments This Week"
-          value={stats?.appointmentsThisWeek.count || 0}
-          trend={stats?.appointmentsThisWeek.trend || 0}
-          icon={Calendar}
-          iconBg="bg-warning"
-          isLoading={statsLoading}
-        />
-        <StatCard
-          title="Offers Pending"
-          value={stats?.offersPending.count || 0}
-          trend={stats?.offersPending.trend || 0}
-          icon={FileText}
+        <PipelineValueCard
+          title="Leads"
+          count={pipelineValueStats?.leads.count || 0}
+          totalValue={pipelineValueStats?.leads.totalValue || 0}
+          profitPotential={pipelineValueStats?.leads.profitPotential || 0}
+          icon={Users}
           iconBg="bg-info"
-          isLoading={statsLoading}
-          invertTrend
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=new,contacted,appointment")}
         />
-        <StatCard
-          title="Closed This Month"
-          value={stats?.closedThisMonth.count || 0}
-          trend={stats?.closedThisMonth.trend || 0}
-          icon={CheckCircle}
+        <PipelineValueCard
+          title="Offers"
+          count={pipelineValueStats?.offers.count || 0}
+          totalValue={pipelineValueStats?.offers.totalValue || 0}
+          profitPotential={pipelineValueStats?.offers.profitPotential || 0}
+          icon={Target}
+          iconBg="bg-warning"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=offer_made,negotiating")}
+        />
+        <PipelineValueCard
+          title="Contracted"
+          count={pipelineValueStats?.contracted.count || 0}
+          totalValue={pipelineValueStats?.contracted.totalValue || 0}
+          profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
+          icon={Handshake}
+          iconBg="bg-accent"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=under_contract")}
+        />
+        <PipelineValueCard
+          title="Sold"
+          count={pipelineValueStats?.sold.count || 0}
+          totalValue={pipelineValueStats?.sold.totalValue || 0}
+          profitPotential={pipelineValueStats?.sold.profitPotential || 0}
+          icon={BadgeDollarSign}
           iconBg="bg-success"
-          isLoading={statsLoading}
+          profitLabel="Realized Profit"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=closed")}
         />
       </div>
 
