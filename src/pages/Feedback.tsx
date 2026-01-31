@@ -608,7 +608,7 @@ const Feedback: React.FC = () => {
           {generalFeedback.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No general feedback yet</p>
+              <p>No Feedback Yet</p>
             </div>
           ) : (
             generalFeedback.map(item => renderFeedbackCard(item))
