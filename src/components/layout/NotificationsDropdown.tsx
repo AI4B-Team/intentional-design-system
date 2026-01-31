@@ -15,7 +15,6 @@ import {
   Home,
   DollarSign,
   Phone,
-  Mail,
   FileText,
   Users,
   AlertTriangle,
