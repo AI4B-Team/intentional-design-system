@@ -162,23 +162,25 @@ function DealListItem({
   // Year built (mock - random between 1970-2020)
   const yearBuilt = 1970 + Math.floor(Math.random() * 50);
   
-  // Get days since listing
-  const getDaysListed = () => {
+  // Get hours and days since listing
+  const getTimeSinceListing = () => {
     const createdDate = new Date(deal.createdAt);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - createdDate.getTime());
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return { hours: diffHours, days: diffDays };
   };
   
-  const daysListed = getDaysListed();
+  const { hours: hoursListed, days: daysListed } = getTimeSinceListing();
   
   const getListingBadge = () => {
-    if (daysListed < 1) {
+    if (hoursListed < 24) {
       return { text: "New", className: "bg-amber-400 text-slate-900" };
     } else if (daysListed <= 5) {
-      return { text: `New ${daysListed}d`, className: "bg-amber-400 text-slate-900" };
+      return { text: `${daysListed} day${daysListed > 1 ? 's' : ''} ago`, className: "bg-amber-400 text-slate-900" };
     } else {
-      return { text: "For Sale", className: "bg-primary text-primary-foreground" };
+      return { text: "For Sale", className: "bg-emerald-500 text-white" };
     }
   };
   
@@ -236,6 +238,32 @@ function DealListItem({
                 {tag}
               </Badge>
             ))}
+            {deal.tags.length > 2 && (
+              <Popover>
+                <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
+                    +{deal.tags.length - 2}
+                  </Badge>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-auto p-2 z-[100]" 
+                  side="bottom" 
+                  align="center"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                    {deal.tags.slice(2).map((tag, i) => (
+                      <Badge
+                        key={i}
+                        className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
           </div>
         </div>
 
@@ -382,25 +410,26 @@ function DealCard({
   // Year built (mock - random between 1970-2020)
   const yearBuilt = 1970 + Math.floor(Math.random() * 50);
   
-  // Calculate days since listing
-  const getDaysListed = () => {
+  // Get hours and days since listing
+  const getTimeSinceListing = () => {
     const createdDate = new Date(deal.createdAt);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
+    return { hours: diffHours, days: diffDays };
   };
   
-  const daysListed = getDaysListed();
+  const { hours: hoursListed, days: daysListed } = getTimeSinceListing();
   
-  // Get badge text and style based on days listed
+  // Get badge text and style based on time listed
   const getListingBadge = () => {
-    if (daysListed < 1) {
+    if (hoursListed < 24) {
       return { text: "New", className: "bg-amber-400 text-slate-900" };
     } else if (daysListed <= 5) {
-      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
+      return { text: `${daysListed} day${daysListed > 1 ? 's' : ''} ago`, className: "bg-amber-400 text-slate-900" };
     } else {
-      return { text: "For Sale", className: "bg-primary text-primary-foreground" };
+      return { text: "For Sale", className: "bg-emerald-500 text-white" };
     }
   };
   
@@ -499,7 +528,7 @@ function DealCard({
 
         {/* Tags at bottom of image */}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
-          {deal.tags.slice(0, 3).map((tag, i) => (
+          {deal.tags.slice(0, 2).map((tag, i) => (
             <Badge
               key={i}
               className={cn(
@@ -510,10 +539,31 @@ function DealCard({
               {tag}
             </Badge>
           ))}
-          {deal.tags.length > 3 && (
-            <Badge className="bg-slate-700/90 text-white text-xs px-2.5 py-1 rounded-md">
-              +{deal.tags.length - 3}
-            </Badge>
+          {deal.tags.length > 2 && (
+            <Popover>
+              <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                <Badge className="bg-slate-700/90 text-white text-xs px-2.5 py-1 rounded-md cursor-pointer hover:bg-slate-600/90">
+                  +{deal.tags.length - 2}
+                </Badge>
+              </PopoverTrigger>
+              <PopoverContent 
+                className="w-auto p-2 z-[100]" 
+                side="bottom" 
+                align="center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                  {deal.tags.slice(2).map((tag, i) => (
+                    <Badge
+                      key={i}
+                      className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
         </div>
       </div>
