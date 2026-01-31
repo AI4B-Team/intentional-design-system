@@ -198,35 +198,35 @@ function PipelineValueCard({
           )}
         </div>
 
-        {/* Middle content - flex-1 to push bottom metrics down */}
-        <div className="flex-1 mt-3 space-y-2">
+        {/* Middle content - flex-1 to push bottom metrics down, centered */}
+        <div className="flex-1 mt-3 flex items-center justify-center">
           {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
             <div className={cn(
-              "inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
+              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
               contextSeverity === "blocking" 
                 ? "bg-destructive/10 text-destructive" 
                 : contextSeverity === "attention"
                 ? "bg-warning/10 text-warning"
                 : "bg-info/10 text-info" // reminder = blue
             )}>
-              {ContextIcon && <ContextIcon className="h-3 w-3 shrink-0" />}
+              {ContextIcon && <ContextIcon className="h-3.5 w-3.5 shrink-0" />}
               <span>{contextLine}</span>
             </div>
           )}
 
           {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide whitespace-nowrap">
-              <Clock className="h-3 w-3 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide whitespace-nowrap">
+              <Clock className="h-3.5 w-3.5 shrink-0" />
               <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
             </div>
           )}
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap uppercase tracking-wide">
-              <BarChart3 className="h-3 w-3 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap uppercase tracking-wide">
+              <BarChart3 className="h-3.5 w-3.5 shrink-0" />
               <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
             </div>
           )}
@@ -234,16 +234,16 @@ function PipelineValueCard({
           {/* Action Insight - Severity Ladder: Blue=reminder, Amber=attention, Red=blocking */}
           {actionInsight && variant === "default" && (
             <div className={cn(
-              "inline-flex items-center gap-1.5 text-[11px] px-2 py-1 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
+              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
               actionInsight.severity === "high" 
                 ? "bg-warning/10 text-warning" // Amber = attention
                 : actionInsight.severity === "medium"
                 ? "bg-warning/10 text-warning" // Amber = attention
                 : "bg-info/10 text-info" // Blue = reminder
             )}>
-              {actionInsight.severity === "high" && <AlertTriangle className="h-3 w-3 shrink-0" />}
-              {actionInsight.severity === "medium" && <Clock className="h-3 w-3 shrink-0" />}
-              {actionInsight.severity === "low" && <Clock className="h-3 w-3 shrink-0" />}
+              {actionInsight.severity === "high" && <AlertTriangle className="h-3.5 w-3.5 shrink-0" />}
+              {actionInsight.severity === "medium" && <Clock className="h-3.5 w-3.5 shrink-0" />}
+              {actionInsight.severity === "low" && <Clock className="h-3.5 w-3.5 shrink-0" />}
               <span>{actionInsight.label}</span>
             </div>
           )}
