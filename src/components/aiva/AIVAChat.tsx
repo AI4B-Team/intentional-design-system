@@ -31,6 +31,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useAIVAChat } from "@/hooks/useAIVAChat";
 import ReactMarkdown from "react-markdown";
@@ -77,6 +85,13 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const [panelView, setPanelView] = useState<PanelView>("chat");
   const [historySearch, setHistorySearch] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Settings state
+  const [autoSaveConversations, setAutoSaveConversations] = useState(true);
+  const [showTimestamps, setShowTimestamps] = useState(false);
+  const [streamResponses, setStreamResponses] = useState(true);
+  const [soundEffects, setSoundEffects] = useState(false);
+  const [defaultVoice, setDefaultVoice] = useState("rachel");
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -393,38 +408,88 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
             {/* Settings Content */}
             <ScrollArea className="flex-1">
               <div className="p-4 space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg border">
+                {/* Auto-save Conversations */}
+                <div className="flex items-center justify-between p-4 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Auto-save Conversations</p>
+                    <p className="text-xs text-muted-foreground">Automatically save chat history</p>
+                  </div>
+                  <Switch
+                    checked={autoSaveConversations}
+                    onCheckedChange={setAutoSaveConversations}
+                  />
+                </div>
+                
+                {/* Show Timestamps */}
+                <div className="flex items-center justify-between p-4 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Show Timestamps</p>
+                    <p className="text-xs text-muted-foreground">Display time on messages</p>
+                  </div>
+                  <Switch
+                    checked={showTimestamps}
+                    onCheckedChange={setShowTimestamps}
+                  />
+                </div>
+                
+                {/* Stream Responses */}
+                <div className="flex items-center justify-between p-4 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Stream Responses</p>
+                    <p className="text-xs text-muted-foreground">Show responses as they generate</p>
+                  </div>
+                  <Switch
+                    checked={streamResponses}
+                    onCheckedChange={setStreamResponses}
+                  />
+                </div>
+                
+                {/* Sound Effects */}
+                <div className="flex items-center justify-between p-4 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Sound Effects</p>
+                    <p className="text-xs text-muted-foreground">Play sounds for notifications</p>
+                  </div>
+                  <Switch
+                    checked={soundEffects}
+                    onCheckedChange={setSoundEffects}
+                  />
+                </div>
+                
+                {/* Default Voice */}
+                <div className="p-4 rounded-lg border space-y-3">
+                  <div>
+                    <p className="font-medium text-sm">Default Voice</p>
+                  </div>
+                  <Select value={defaultVoice} onValueChange={setDefaultVoice}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select a voice" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="rachel">Rachel (Female)</SelectItem>
+                      <SelectItem value="james">James (Male)</SelectItem>
+                      <SelectItem value="sophia">Sophia (Female)</SelectItem>
+                      <SelectItem value="michael">Michael (Male)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Default Search Mode */}
+                <div className="p-4 rounded-lg border space-y-3">
                   <div>
                     <p className="font-medium text-sm">Default Search Mode</p>
                     <p className="text-xs text-muted-foreground">Choose what AIVA searches by default</p>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="capitalize">
-                        {searchType}
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setSearchType("database")}>
-                        Database
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSearchType("online")}>
-                        Online
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => setSearchType("both")}>
-                        Both
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg border">
-                  <div>
-                    <p className="font-medium text-sm">Voice Input</p>
-                    <p className="text-xs text-muted-foreground">Enable microphone for voice commands</p>
-                  </div>
-                  <Button variant="outline" size="sm" disabled>
-                    Enabled
-                  </Button>
+                  <Select value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="database">Database Only</SelectItem>
+                      <SelectItem value="online">Online Only</SelectItem>
+                      <SelectItem value="both">Both (Default)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </ScrollArea>
