@@ -955,7 +955,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-1",
       type: "property_added" as const,
-      description: "New property added: 1842 Sunset Boulevard",
+      description: "New Property Added: 1842 Sunset Boulevard",
       timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
       relativeTime: "30 minutes ago",
       propertyId: "demo-1",
@@ -963,7 +963,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-2",
       type: "offer_sent" as const,
-      description: "Offer sent: $285,000 on 3921 Maple Street",
+      description: "Offer Sent: $285,000 on 3921 Maple Street",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
       relativeTime: "2 hours ago",
       propertyId: "demo-2",
@@ -971,7 +971,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-3",
       type: "appointment_scheduled" as const,
-      description: "Property Walkthrough scheduled for 7845 Oak Avenue",
+      description: "Property Walkthrough Scheduled: 7845 Oak Avenue",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
       relativeTime: "5 hours ago",
       propertyId: "demo-3",
@@ -979,7 +979,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-4",
       type: "response_received" as const,
-      description: "Counter-offer received: $310,000 on 2156 Cherry Lane",
+      description: "Counter-Offer Received: $310,000 on 2156 Cherry Lane",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
       relativeTime: "1 day ago",
       propertyId: "demo-4",
@@ -987,7 +987,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-5",
       type: "status_changed" as const,
-      description: "Status updated to Under Contract: 9023 Birch Court",
+      description: "Status Updated to Under Contract: 9023 Birch Court",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
       relativeTime: "2 days ago",
       propertyId: "demo-5",
@@ -995,7 +995,7 @@ export default function Dashboard() {
     {
       id: "demo-activity-6",
       type: "property_added" as const,
-      description: "New property added: 4512 Willow Creek Drive",
+      description: "New Property Added: 4512 Willow Creek Drive",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
       relativeTime: "3 days ago",
       propertyId: "demo-6",
