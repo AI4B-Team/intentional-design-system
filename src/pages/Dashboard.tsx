@@ -75,6 +75,7 @@ interface PipelineValueCardProps {
   nextExpectedClose?: number; // days until next expected close
   lastClosedDaysAgo?: number; // days since last deal closed
   contextLine?: string; // optional context line with emoji
+  contextSeverity?: "reminder" | "attention" | "blocking"; // Severity ladder: blue, amber, red
 }
 
 function PipelineValueCard({ 
@@ -97,6 +98,7 @@ function PipelineValueCard({
   nextExpectedClose,
   lastClosedDaysAgo,
   contextLine,
+  contextSeverity = "reminder",
 }: PipelineValueCardProps) {
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
@@ -196,9 +198,16 @@ function PipelineValueCard({
 
         {/* Middle content - flex-1 to push bottom metrics down */}
         <div className="flex-1 mt-3 space-y-2">
-          {/* Context line - subtle informational text */}
+          {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
-            <p className="text-tiny text-muted-foreground">{contextLine}</p>
+            <p className={cn(
+              "text-tiny",
+              contextSeverity === "blocking" 
+                ? "text-destructive" 
+                : contextSeverity === "attention"
+                ? "text-warning"
+                : "text-info" // reminder = blue
+            )}>{contextLine}</p>
           )}
 
           {/* Avg days to close for contracts */}
@@ -234,18 +243,19 @@ function PipelineValueCard({
             </p>
           )}
 
-          {/* Action Insight - "What to do next" (not shown for calm/celebration variant) */}
+          {/* Action Insight - Severity Ladder: Blue=reminder, Amber=attention, Red=blocking */}
           {actionInsight && variant === "default" && (
             <div className={cn(
               "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
               actionInsight.severity === "high" 
-                ? "bg-destructive/10 text-destructive" 
+                ? "bg-warning/10 text-warning" // Amber = attention
                 : actionInsight.severity === "medium"
-                ? "bg-warning/10 text-warning"
-                : "bg-accent/10 text-accent"
+                ? "bg-warning/10 text-warning" // Amber = attention
+                : "bg-info/10 text-info" // Blue = reminder
             )}>
-              {actionInsight.type === "warning" && <AlertTriangle className="h-3 w-3" />}
-              {actionInsight.type === "action" && <Clock className="h-3 w-3" />}
+              {actionInsight.severity === "high" && <AlertTriangle className="h-3 w-3" />}
+              {actionInsight.severity === "medium" && <Clock className="h-3 w-3" />}
+              {actionInsight.severity === "low" && <Clock className="h-3 w-3" />}
               <span className="truncate">{actionInsight.label}</span>
             </div>
           )}
@@ -569,7 +579,7 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
       className={cn(
         "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 group",
         showPressure 
-          ? "bg-destructive/5 hover:bg-destructive/10 border border-destructive/20" 
+          ? "bg-warning/5 hover:bg-warning/10 border border-warning/20" // Amber = attention (gap needs attention, not blocking)
           : "hover:bg-background-secondary"
       )}
       onClick={onClick}
@@ -582,19 +592,19 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         <div className="flex items-center gap-2">
           <p className={cn(
             "text-small font-medium group-hover:text-primary transition-colors truncate",
-            showPressure ? "text-destructive" : "text-foreground"
+            showPressure ? "text-warning" : "text-foreground"
           )}>
             {stage.label}
           </p>
           {showPressure && (
-            <span className="text-tiny bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
+            <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
               <AlertTriangle className="h-2.5 w-2.5" />
               Gap
             </span>
           )}
           {isBottleneck && !showPressure && (
-            <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
-              <AlertTriangle className="h-2.5 w-2.5" />
+            <span className="text-tiny bg-info/10 text-info px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
+              <Clock className="h-2.5 w-2.5" />
               Slow
             </span>
           )}
@@ -849,6 +859,7 @@ export default function Dashboard() {
           contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
             ? `⏳ ${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
             : undefined}
+          contextSeverity="attention"
         />
         <PipelineValueCard
           title="Contracts"
