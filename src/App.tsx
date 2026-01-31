@@ -121,6 +121,8 @@ import DispoCampaignDetail from "./pages/DispoCampaignDetail";
 import DispoSettings from "./pages/DispoSettings";
 import Appointments from "./pages/Appointments";
 import LeadSources from "./pages/LeadSources";
+import Documents from "./pages/Documents";
+import Signatures from "./pages/apps/Signatures";
 import { BuyerRegister, BuyerLogin, BuyerAuthCallback, BuyerDashboard, BuyerProfile } from "./pages/buyer";
 import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
 
@@ -916,7 +918,26 @@ const App = () => (
               }
             />
 
-            {/* Dialer */}
+            {/* Documents */}
+            <Route
+              path="/documents"
+              element={
+                <ProtectedRoute>
+                  <Documents />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Apps */}
+            <Route
+              path="/apps/signatures"
+              element={
+                <ProtectedRoute>
+                  <Signatures />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/dialer"
               element={

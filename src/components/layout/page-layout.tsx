@@ -60,6 +60,7 @@ interface PageHeaderProps {
   description?: string;
   action?: React.ReactNode;
   actions?: React.ReactNode; // Alias for backwards compatibility
+  children?: React.ReactNode; // Allow children as action content
   className?: string;
 }
 
@@ -68,9 +69,10 @@ export function PageHeader({
   description,
   action,
   actions,
+  children,
   className,
 }: PageHeaderProps) {
-  const actionContent = action || actions;
+  const actionContent = action || actions || children;
   
   return (
     <div
