@@ -674,9 +674,13 @@ const Feedback: React.FC = () => {
           
           <div className="space-y-4">
             <div>
-              <Label htmlFor="title">Title *</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="title">Title *</Label>
+                <span className="text-xs text-muted-foreground">{formTitle.length}/100</span>
+              </div>
               <Input
                 id="title"
+                maxLength={100}
                 placeholder={
                   submitType === "bug" 
                     ? "Brief description of the issue" 
