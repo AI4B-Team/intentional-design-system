@@ -387,7 +387,7 @@ export default function MailCampaigns() {
           <div className="h-24 w-24 rounded-full bg-brand/10 flex items-center justify-center mb-6">
             <Mail className="h-12 w-12 text-brand" />
           </div>
-          <h3 className="text-h2 font-semibold mb-2">No campaigns yet</h3>
+          <h3 className="text-h2 font-semibold mb-2">No Campaigns Yet</h3>
           <p className="text-content-secondary mb-6 max-w-sm">
             Send your first direct mail campaign to property owners.
           </p>
