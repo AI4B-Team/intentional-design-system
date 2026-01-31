@@ -16,11 +16,11 @@ import { WebsiteTab } from '@/components/campaigns/WebsiteTab';
 
 const tabs = [
   { value: 'leads', label: 'Leads', icon: Home },
+  { value: 'mls', label: 'MLS', icon: Megaphone },
   { value: 'lists', label: 'Lists', icon: ListFilter },
   { value: 'email', label: 'Email', icon: AtSign },
   { value: 'dialer', label: 'Dialer', icon: Phone },
   { value: 'mail', label: 'Direct Mail', icon: Mail },
-  { value: 'mls', label: 'MLS', icon: Megaphone },
   { value: 'website', label: 'Website', icon: Globe },
 ];
 
@@ -59,7 +59,7 @@ export default function CampaignsHub() {
     <PageLayout title="Campaigns">
       <div className="space-y-6">
         <div className="-mt-4">
-          <h1 className="text-3xl font-bold text-foreground">Marketing Hub</h1>
+          <h1 className="text-3xl font-bold text-foreground">Campaigns</h1>
           <p className="text-muted-foreground">
             All your marketing channels in one place — track leads, run campaigns, and grow your pipeline
           </p>
