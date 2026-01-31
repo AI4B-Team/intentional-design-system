@@ -163,13 +163,12 @@ export function AppSidebar({
     return moreGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
-
   const getBadgeCount = (badgeKey?: string) => {
     if (badgeKey === "submissions") return pendingSubmissions || 0;
     return 0;
   };
 
-  // Pipeline active state is handled by topNavItems now
+  // Active state checks for navigation items
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   const isTemplatesActive = location.pathname.startsWith('/dispo/campaigns') && location.search.includes('tab=templates');
