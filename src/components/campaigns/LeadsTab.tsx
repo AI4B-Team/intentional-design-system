@@ -182,13 +182,13 @@ export function LeadsTab() {
           return (
             <Card key={source.id} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2.5 rounded-lg ${typeColors[source.type]}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`p-2.5 rounded-lg flex-shrink-0 ${typeColors[source.type]}`}>
                       <Icon className="h-5 w-5" />
                     </div>
-                    <div>
-                      <CardTitle className="text-base">{source.name}</CardTitle>
+                    <div className="min-w-0">
+                      <CardTitle className="text-base whitespace-nowrap">{source.name}</CardTitle>
                       <CardDescription className="text-xs">
                         Last lead: {source.lastLead}
                       </CardDescription>
