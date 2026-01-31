@@ -24,11 +24,10 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       {/* Panel - positioned to the right of the sidebar using CSS */}
       <div
         className={cn(
-          "fixed top-0 h-full bg-background border-r shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col",
-          "w-[90vw] sm:w-[420px] lg:w-[440px]",
-          // Position: left of sidebar (w-64 = 256px on lg, w-16 = 64px when collapsed)
-          // On mobile, full width from left edge
-          "left-0 lg:left-64",
+          "fixed top-0 h-full bg-background border-r shadow-2xl z-50 transition-all duration-300 ease-in-out flex flex-col",
+          "w-[90vw] sm:w-[400px]",
+          // Position: starts at left edge, sidebar is positioned separately
+          "left-0 lg:left-16",
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
