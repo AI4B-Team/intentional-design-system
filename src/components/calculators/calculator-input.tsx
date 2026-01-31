@@ -89,7 +89,7 @@ export function CalculatorInput({
             <TooltipTrigger asChild>
               <Info className="h-3.5 w-3.5 text-content-tertiary cursor-help" />
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs bg-brand text-white">
+            <TooltipContent className="max-w-xs">
               <p className="text-small">{tooltip}</p>
             </TooltipContent>
           </Tooltip>
@@ -163,7 +163,7 @@ export function CalculatorSlider({
               <TooltipTrigger asChild>
                 <Info className="h-3.5 w-3.5 text-content-tertiary cursor-help" />
               </TooltipTrigger>
-              <TooltipContent className="max-w-xs bg-brand text-white">
+              <TooltipContent className="max-w-xs">
                 <p className="text-small">{tooltip}</p>
               </TooltipContent>
             </Tooltip>
