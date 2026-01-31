@@ -1,22 +1,35 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Trash2, Sparkles, User, Database, Globe, Layers } from "lucide-react";
+import { 
+  Send, 
+  Trash2, 
+  Sparkles, 
+  User, 
+  MessageSquare, 
+  PenSquare, 
+  History, 
+  Settings, 
+  Maximize2, 
+  Mic,
+  SlidersHorizontal
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useAIVAChat } from "@/hooks/useAIVAChat";
 import ReactMarkdown from "react-markdown";
 import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AIVAChatProps {
   className?: string;
@@ -27,7 +40,7 @@ export function AIVAChat({ className }: AIVAChatProps) {
   const [input, setInput] = useState("");
   const [searchType, setSearchType] = useState<"database" | "online" | "both">("both");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -60,41 +73,127 @@ export function AIVAChat({ className }: AIVAChatProps) {
     "Analyze my top leads by motivation score",
   ];
 
+  const searchTypeLabels = {
+    database: "Database",
+    online: "Online",
+    both: "Both",
+  };
+
   return (
-    <Card className={cn("flex flex-col h-full", className)}>
+    <Card className={cn("flex flex-col h-full overflow-hidden", className)}>
+      {/* Header Toolbar */}
+      <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg bg-muted">
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Chat</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                  <PenSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>New Chat</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 rounded-lg"
+                  onClick={clearMessages}
+                  disabled={messages.length === 0}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Clear Chat</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                  <History className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>History</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Settings</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg">
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Expand</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+      </div>
+
       {/* Chat Messages */}
-      <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
+      <ScrollArea ref={scrollAreaRef} className="flex-1">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full py-12 space-y-6">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <Sparkles className="h-8 w-8 text-white" />
+          <div className="flex flex-col items-center justify-center h-full py-16 px-4">
+            {/* Three Dots */}
+            <div className="flex gap-1.5 mb-6">
+              <div className="h-3 w-3 rounded-full bg-primary" />
+              <div className="h-3 w-3 rounded-full bg-primary" />
+              <div className="h-3 w-3 rounded-full bg-primary" />
             </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold">Welcome to AIVA</h3>
-              <p className="text-muted-foreground text-sm max-w-md">
-                Your AI-powered assistant for property search, deal analysis, and market research.
-                Ask me anything about real estate!
-              </p>
+            
+            {/* Heading */}
+            <h2 className="text-2xl font-bold text-foreground mb-2">How Can I Help?</h2>
+            <p className="text-muted-foreground text-sm text-center max-w-xs mb-8">
+              Your AI-powered assistant for property search, deal analysis, and market research. Ask me anything about real estate!
+            </p>
+            
+            {/* Suggestions Label */}
+            <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider mb-4">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Suggestions</span>
             </div>
-            <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+            
+            {/* Suggestion Pills */}
+            <div className="flex flex-col gap-2 w-full max-w-sm">
               {suggestedQuestions.map((question, index) => (
-                <Button
+                <button
                   key={index}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
                   onClick={() => {
                     setInput(question);
                     inputRef.current?.focus();
                   }}
+                  className={cn(
+                    "w-full text-left px-4 py-3 rounded-xl border text-sm transition-all",
+                    "hover:border-primary hover:bg-primary/5",
+                    index === 1 
+                      ? "border-primary bg-primary/10 text-primary" 
+                      : "border-border bg-background text-foreground"
+                  )}
                 >
                   {question}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 p-4">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -110,7 +209,7 @@ export function AIVAChat({ className }: AIVAChatProps) {
                 )}
                 <div
                   className={cn(
-                    "max-w-[80%] rounded-lg px-4 py-3",
+                    "max-w-[80%] rounded-xl px-4 py-3",
                     message.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted"
@@ -136,7 +235,7 @@ export function AIVAChat({ className }: AIVAChatProps) {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
                   <Sparkles className="h-4 w-4 text-white animate-pulse" />
                 </div>
-                <div className="bg-muted rounded-lg px-4 py-3">
+                <div className="bg-muted rounded-xl px-4 py-3">
                   <div className="flex gap-1">
                     <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                     <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
@@ -150,78 +249,71 @@ export function AIVAChat({ className }: AIVAChatProps) {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t p-4 space-y-3">
-        {/* Search Type Toggle */}
-        <div className="flex items-center justify-between">
-          <TooltipProvider>
-            <ToggleGroup
-              type="single"
-              value={searchType}
-              onValueChange={(value) => value && setSearchType(value as typeof searchType)}
-              className="justify-start"
-            >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ToggleGroupItem value="database" aria-label="Search database only" size="sm">
-                    <Database className="h-4 w-4 mr-1" />
-                    <span className="hidden sm:inline">Database</span>
-                  </ToggleGroupItem>
-                </TooltipTrigger>
-                <TooltipContent>Search your property database only</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ToggleGroupItem value="online" aria-label="Search online only" size="sm">
-                    <Globe className="h-4 w-4 mr-1" />
-                    <span className="hidden sm:inline">Online</span>
-                  </ToggleGroupItem>
-                </TooltipTrigger>
-                <TooltipContent>Search for market data online</TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <ToggleGroupItem value="both" aria-label="Search both" size="sm">
-                    <Layers className="h-4 w-4 mr-1" />
-                    <span className="hidden sm:inline">Both</span>
-                  </ToggleGroupItem>
-                </TooltipTrigger>
-                <TooltipContent>Search database and online</TooltipContent>
-              </Tooltip>
-            </ToggleGroup>
-          </TooltipProvider>
-          
-          {messages.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearMessages}
-              className="text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4 mr-1" />
-              Clear
-            </Button>
-          )}
-        </div>
-
-        {/* Message Input */}
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask AIVA about properties, deals, or market data..."
-            className="min-h-[44px] max-h-32 resize-none"
-            rows={1}
-          />
-          <Button
-            type="submit"
-            size="icon"
-            disabled={!input.trim() || isLoading}
-            className="h-11 w-11 flex-shrink-0"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+      <div className="border-t p-4">
+        <form onSubmit={handleSubmit} className="relative">
+          <div className="flex flex-col gap-2 rounded-xl border bg-background p-3">
+            {/* Input Field */}
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask AIVA Anything"
+              className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm"
+            />
+            
+            {/* Bottom Row */}
+            <div className="flex items-center justify-between">
+              {/* Tools Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 rounded-full gap-2">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    <span className="text-xs">Tools</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem onClick={() => setSearchType("database")}>
+                    <span className={cn(searchType === "database" && "font-semibold")}>
+                      Database Search
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchType("online")}>
+                    <span className={cn(searchType === "online" && "font-semibold")}>
+                      Online Research
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSearchType("both")}>
+                    <span className={cn(searchType === "both" && "font-semibold")}>
+                      Both (Default)
+                    </span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Right Icons */}
+              <div className="flex items-center gap-2">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-muted-foreground"
+                >
+                  <Mic className="h-4 w-4" />
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="ghost" 
+                  size="icon" 
+                  disabled={!input.trim() || isLoading}
+                  className="h-8 w-8 text-primary hover:text-primary"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </Card>
