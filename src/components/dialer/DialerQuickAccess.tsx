@@ -225,7 +225,7 @@ export function DialerQuickAccess() {
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-96 p-0 bg-background">
+      <PopoverContent side="bottom" align="end" sideOffset={8} className="w-96 p-0 bg-background z-[100]">
         {/* Active Call Banner */}
         {isInCall && (
           <div className="bg-success/10 border-b border-success/20 p-3">
