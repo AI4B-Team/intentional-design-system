@@ -4,6 +4,7 @@ import { MarketplaceFilters } from "@/components/marketplace-deals/marketplace-f
 import { MarketplaceMap } from "@/components/marketplace-deals/marketplace-map";
 import { MarketplaceListings } from "@/components/marketplace-deals/marketplace-listings";
 import { useMockDeals } from "@/hooks/useMockDeals";
+import { useSavedDeals } from "@/hooks/useSavedDeals";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +18,8 @@ export default function MarketplaceDeals() {
   const [resultsPerPage, setResultsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Saved/favorited deals state
-  const [savedDealIds, setSavedDealIds] = useState<string[]>([]);
+  // Saved/favorited deals state - shared across pages via localStorage
+  const { savedDealIds, toggleSave, savedCount } = useSavedDeals();
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   
   // Filters state
@@ -67,14 +68,6 @@ export default function MarketplaceDeals() {
 
   const totalCount = showSavedOnly ? deals.length : allTotalCount;
 
-  // Handle save/unsave deal
-  const handleToggleSave = (dealId: string) => {
-    setSavedDealIds(prev => 
-      prev.includes(dealId) 
-        ? prev.filter(id => id !== dealId)
-        : [...prev, dealId]
-    );
-  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -107,7 +100,7 @@ export default function MarketplaceDeals() {
           onLayoutModeChange={setLayoutMode}
           showSavedOnly={showSavedOnly}
           onShowSavedOnlyChange={setShowSavedOnly}
-          savedCount={savedDealIds.length}
+          savedCount={savedCount}
         />
 
         {/* Main Content - fills remaining height */}
@@ -145,7 +138,7 @@ export default function MarketplaceDeals() {
                 onPageChange={setCurrentPage}
                 isSplitView={layoutMode === "split"}
                 savedDealIds={savedDealIds}
-                onToggleSave={handleToggleSave}
+                onToggleSave={toggleSave}
               />
             </div>
           )}

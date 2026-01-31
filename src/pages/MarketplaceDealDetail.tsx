@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSavedDeals } from "@/hooks/useSavedDeals";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -175,9 +176,11 @@ export default function MarketplaceDealDetail() {
   const [activeTab, setActiveTab] = useState("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [message, setMessage] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false);
   const [userType, setUserType] = useState<UserType>("investor");
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
+  
+  // Use shared saved deals hook
+  const { isSaved, toggleSave } = useSavedDeals();
 
   // Get deal data from mock
   const { deals } = useMockDeals({
@@ -260,10 +263,10 @@ export default function MarketplaceDealDetail() {
             <Button
               variant="ghost"
               className="gap-2"
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={() => toggleSave(deal.id)}
             >
-              <Heart className={cn("h-4 w-4", isFavorite && "fill-destructive text-destructive")} />
-              Favorite
+              <Heart className={cn("h-4 w-4", isSaved(deal.id) && "fill-destructive text-destructive")} />
+              {isSaved(deal.id) ? "Saved" : "Save"}
             </Button>
             <Button variant="ghost" className="gap-2">
               <EyeOff className="h-4 w-4" />
