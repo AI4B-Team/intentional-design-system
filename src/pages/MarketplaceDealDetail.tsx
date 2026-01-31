@@ -178,6 +178,7 @@ export default function MarketplaceDealDetail() {
   const [message, setMessage] = useState("");
   const [userType, setUserType] = useState<UserType>("investor");
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
+  const [showShareCopied, setShowShareCopied] = useState(false);
   
   // Use shared saved deals hook
   const { isSaved, toggleSave } = useSavedDeals();
@@ -272,9 +273,41 @@ export default function MarketplaceDealDetail() {
               <EyeOff className="h-4 w-4" />
               Hide
             </Button>
-            <Button variant="ghost" className="gap-2">
-              <Share2 className="h-4 w-4" />
-              Share
+            <Button 
+              variant="ghost" 
+              className="gap-2"
+              onClick={async () => {
+                const shareData = {
+                  title: `${deal.address} - $${deal.price.toLocaleString()}`,
+                  text: `Check out this property: ${deal.address}, ${deal.city}, ${deal.state} - ${deal.beds} bed, ${deal.baths} bath, ${deal.sqft.toLocaleString()} sqft for $${deal.price.toLocaleString()}`,
+                  url: window.location.href,
+                };
+                
+                if (navigator.share && navigator.canShare?.(shareData)) {
+                  try {
+                    await navigator.share(shareData);
+                  } catch (err) {
+                    // User cancelled or error
+                  }
+                } else {
+                  // Fallback: copy link to clipboard
+                  await navigator.clipboard.writeText(window.location.href);
+                  setShowShareCopied(true);
+                  setTimeout(() => setShowShareCopied(false), 2000);
+                }
+              }}
+            >
+              {showShareCopied ? (
+                <>
+                  <Check className="h-4 w-4 text-green-600" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </>
+              )}
             </Button>
           </div>
         </div>
