@@ -915,10 +915,11 @@ export default function Dashboard() {
   
   const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoData;
   
-  // Use demo hot opportunities if no real data
-  const hasRealHotOpportunities = hotOpportunities && hotOpportunities.length > 0;
-  const displayHotOpportunities = hasRealHotOpportunities 
-    ? (insights?.hotOpportunities || hotOpportunities) 
+  // Use demo hot opportunities if not enough real data (less than 5)
+  const realOpportunities = insights?.hotOpportunities || hotOpportunities || [];
+  const hasEnoughRealOpportunities = realOpportunities.length >= 5;
+  const displayHotOpportunities = hasEnoughRealOpportunities 
+    ? realOpportunities 
     : demoHotOpportunities;
 
   const handleTaskToggle = (taskId: string) => {
