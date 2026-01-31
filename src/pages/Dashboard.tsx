@@ -818,8 +818,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
           icon={Handshake}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-600"
+          iconBg="bg-blue-100"
+          iconColor="text-blue-600"
           valueLabel="Revenue Secured"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/pipeline?filter=under_contract")}
