@@ -39,6 +39,8 @@ import {
   AlertTriangle,
   Zap,
   DollarSign,
+  Hourglass,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -71,10 +73,10 @@ interface PipelineValueCardProps {
   goal?: number;
   actionInsight?: ActionInsight | null;
   variant?: "default" | "calm" | "celebration"; // calm = contracts, celebration = sold
-  avgDaysToClose?: number;
   nextExpectedClose?: number; // days until next expected close
   lastClosedDaysAgo?: number; // days since last deal closed
-  contextLine?: string; // optional context line with emoji
+  contextLine?: string; // optional context line text (no emoji)
+  contextIcon?: React.ElementType; // optional icon for context line
   contextSeverity?: "reminder" | "attention" | "blocking"; // Severity ladder: blue, amber, red
 }
 
@@ -94,10 +96,10 @@ function PipelineValueCard({
   goal = 0,
   actionInsight,
   variant = "default",
-  avgDaysToClose,
   nextExpectedClose,
   lastClosedDaysAgo,
   contextLine,
+  contextIcon: ContextIcon,
   contextSeverity = "reminder",
 }: PipelineValueCardProps) {
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
@@ -200,36 +202,32 @@ function PipelineValueCard({
         <div className="flex-1 mt-3 space-y-2">
           {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
-            <p className={cn(
-              "text-tiny",
+            <div className={cn(
+              "flex items-center gap-1.5 text-tiny",
               contextSeverity === "blocking" 
                 ? "text-destructive" 
                 : contextSeverity === "attention"
                 ? "text-warning"
                 : "text-info" // reminder = blue
-            )}>{contextLine}</p>
-          )}
-
-          {/* Avg days to close for contracts */}
-          {avgDaysToClose !== undefined && avgDaysToClose > 0 && (
-            <div className="flex items-center gap-2 text-tiny text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              <span>Avg {avgDaysToClose} Days To Close</span>
+            )}>
+              {ContextIcon && <ContextIcon className="h-3 w-3 shrink-0" />}
+              <span>{contextLine}</span>
             </div>
           )}
 
-          {/* Next expected close for contracts */}
+          {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <p className="text-tiny text-muted-foreground">
-              Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}
-            </p>
+            <div className="flex items-center gap-1.5 text-tiny text-muted-foreground uppercase tracking-wide">
+              <Clock className="h-3 w-3 shrink-0" />
+              <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
+            </div>
           )}
 
           {/* Last closed for sold tile */}
           {lastClosedDaysAgo !== undefined && (
-            <p className="text-tiny text-muted-foreground">
+            <p className="text-tiny text-muted-foreground uppercase tracking-wide">
               {lastClosedDaysAgo === 0 
-                ? "🎉 Closed Today!" 
+                ? "Closed Today!" 
                 : lastClosedDaysAgo === 1 
                 ? "Last Closed: Yesterday" 
                 : `Last Closed: ${lastClosedDaysAgo} Days Ago`}
@@ -238,9 +236,10 @@ function PipelineValueCard({
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <p className="text-tiny text-muted-foreground">
-              📉 {goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal
-            </p>
+            <div className="flex items-center gap-1.5 text-tiny text-muted-foreground">
+              <BarChart3 className="h-3 w-3 shrink-0" />
+              <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
+            </div>
           )}
 
           {/* Action Insight - Severity Ladder: Blue=reminder, Amber=attention, Red=blocking */}
@@ -960,8 +959,9 @@ export default function Dashboard() {
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
           goal={goals.offersGoal}
           contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
-            ? `⏳ ${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
+            ? `${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
             : undefined}
+          contextIcon={Hourglass}
           contextSeverity="attention"
         />
         <PipelineValueCard
@@ -978,7 +978,6 @@ export default function Dashboard() {
           onClick={() => navigate("/pipeline?filter=under_contract")}
           goal={goals.contractsGoal}
           variant="calm"
-          avgDaysToClose={28}
           nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
         />
         <PipelineValueCard
