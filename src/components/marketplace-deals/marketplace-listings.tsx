@@ -628,25 +628,28 @@ function DealCard({
 
 
         {/* Property Specs */}
-        <div className="mt-4 flex items-center justify-between border-t border-border pt-4 px-4">
-          <div className="flex items-center gap-1.5">
-            <Bed className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{deal.beds} Beds</span>
+        <div className="mt-4 flex flex-nowrap items-center border-t border-border pt-4 px-6">
+          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+            <Bed className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">{deal.beds} Beds</span>
           </div>
           <div className="w-px h-5 bg-border flex-shrink-0" />
-          <div className="flex items-center gap-1.5">
-            <Bath className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{deal.baths} Baths</span>
+
+          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+            <Bath className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">{deal.baths} Baths</span>
           </div>
           <div className="w-px h-5 bg-border flex-shrink-0" />
-          <div className="flex items-center gap-1.5">
-            <Tag className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
+
+          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+            <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">{deal.sqft.toLocaleString()} SqFt</span>
           </div>
           <div className="w-px h-5 bg-border flex-shrink-0" />
-          <div className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Built {yearBuilt}</span>
+
+          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="text-sm font-medium whitespace-nowrap">Built {yearBuilt}</span>
           </div>
         </div>
       </div>
