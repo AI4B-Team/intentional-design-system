@@ -616,7 +616,7 @@ export default function MarketplaceDealDetail() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b">
                     <Wrench className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold">Fix & Flip Analysis</h3>
+                    <h3 className="font-semibold">Fix & Flip</h3>
                   </div>
 
                   <div className="space-y-3">
@@ -679,7 +679,7 @@ export default function MarketplaceDealDetail() {
                 <div className="space-y-4 lg:pl-6 lg:border-l">
                   <div className="flex items-center gap-2 pb-2 border-b">
                     <Home className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold">Rental Analysis</h3>
+                    <h3 className="font-semibold">Rental Cashflow</h3>
                   </div>
 
                   <div className="space-y-3">
@@ -915,7 +915,7 @@ export default function MarketplaceDealDetail() {
                     <TooltipTrigger asChild>
                       <Button variant="secondary" className="w-full gap-2 text-xs" size="sm">
                         <Mail className="h-3.5 w-3.5" />
-                        Launch Campaign to Similar Listings
+                        Launch Campaign To Similar Listings
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[220px]">
@@ -926,7 +926,7 @@ export default function MarketplaceDealDetail() {
               </div>
 
               <p className="text-xs text-center text-muted-foreground mt-4">
-                Only <span className="font-medium">HomesDaily</span> connects you to the Listing Agent.
+                Only HomesDaily Connects You To The Listing Agent.
               </p>
             </Card>
           </div>
