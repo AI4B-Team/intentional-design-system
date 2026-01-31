@@ -359,26 +359,41 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
     : score > 500 ? "bg-warning text-warning-foreground" 
     : "bg-muted text-muted-foreground";
 
-  // Single "why it's hot" reason - pick the most compelling one
+  // Single "why it's hot" reason - specific labels based on WHY it's hot
   const getHotReason = (): { label: string; color: string } | null => {
-    if (opportunity.deal_score_rank === "🏆 Top Deal") {
-      return { label: "Top Deal", color: "bg-amber-100 text-amber-700" };
-    }
-    if (opportunity.urgency_reason?.includes("🔥")) {
-      return { label: "High Motivation", color: "bg-destructive/10 text-destructive" };
-    }
+    // Priority order: Most specific reason first
+    
+    // High profit potential = "Top Profit"
     if (opportunity.profit_potential && opportunity.profit_potential > 50000) {
-      return { label: "High Spread", color: "bg-success/10 text-success" };
+      return { label: "Top Profit", color: "bg-success/10 text-success" };
     }
+    
+    // Urgency signals = "Most Urgent"
+    if (opportunity.urgency_reason?.includes("🔥") || 
+        (opportunity.motivation_score && opportunity.motivation_score > 800)) {
+      return { label: "Most Urgent", color: "bg-destructive/10 text-destructive" };
+    }
+    
+    // Top deal by score = "Best Score"
+    if (opportunity.deal_score_rank === "🏆 Top Deal" || score > 700) {
+      return { label: "Best Score", color: "bg-amber-100 text-amber-700" };
+    }
+    
+    // High equity = show percentage
     if (opportunity.equity_percent && opportunity.equity_percent > 40) {
       return { label: `${Math.round(opportunity.equity_percent)}% Equity`, color: "bg-info/10 text-info" };
     }
+    
+    // Fresh lead
     if (opportunity.days_since_added <= 1) {
       return { label: "Fresh Lead", color: "bg-accent/10 text-accent" };
     }
+    
+    // Above average score
     if (score > 500) {
-      return { label: "Above Avg Score", color: "bg-muted text-muted-foreground" };
+      return { label: "High Score", color: "bg-muted text-muted-foreground" };
     }
+    
     return null;
   };
 
