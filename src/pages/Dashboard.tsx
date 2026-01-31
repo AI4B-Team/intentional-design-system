@@ -203,12 +203,12 @@ function PipelineValueCard({
           {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
             <div className={cn(
-              "flex items-center gap-1.5 text-tiny",
+              "inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium",
               contextSeverity === "blocking" 
-                ? "text-destructive" 
+                ? "bg-destructive/10 text-destructive" 
                 : contextSeverity === "attention"
-                ? "text-warning"
-                : "text-info" // reminder = blue
+                ? "bg-warning/10 text-warning"
+                : "bg-info/10 text-info" // reminder = blue
             )}>
               {ContextIcon && <ContextIcon className="h-3 w-3 shrink-0" />}
               <span>{contextLine}</span>
@@ -217,17 +217,15 @@ function PipelineValueCard({
 
           {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <div className="flex items-center gap-1.5 text-tiny text-muted-foreground uppercase tracking-wide">
+            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide">
               <Clock className="h-3 w-3 shrink-0" />
               <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
             </div>
           )}
 
-
-
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <div className="flex items-center gap-1.5 text-tiny text-muted-foreground">
+            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground">
               <BarChart3 className="h-3 w-3 shrink-0" />
               <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
             </div>
