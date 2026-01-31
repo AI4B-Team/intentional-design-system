@@ -36,6 +36,7 @@ import {
   Bath,
   Tag,
   Calendar,
+  Circle,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -221,8 +222,24 @@ function DealCard({
           className="w-full h-full object-cover"
         />
         
-        {/* Top Badge */}
-        <div className="absolute top-3 left-3">
+        {/* Top Left: Radio button + Badge */}
+        <div className="absolute top-3 left-3 flex items-center gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(!isSelected);
+            }}
+            className={cn(
+              "flex items-center justify-center h-6 w-6 rounded-full border-2 transition-colors",
+              isSelected 
+                ? "bg-primary border-primary" 
+                : "bg-white/90 border-white/80 hover:border-primary/50"
+            )}
+          >
+            {isSelected && (
+              <Circle className="h-2.5 w-2.5 fill-white text-white" />
+            )}
+          </button>
           <Badge className={cn("text-xs font-medium px-2 py-0.5 rounded", listingBadge.className)}>
             {listingBadge.text}
           </Badge>
