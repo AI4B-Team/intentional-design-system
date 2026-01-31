@@ -335,7 +335,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     }}
                     className={cn(
                       "w-full text-left px-3 py-2 rounded-lg border text-xs transition-all",
-                      "hover:border-primary hover:bg-primary/5",
+                      "hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
                       "border-border bg-background text-foreground"
                     )}
                   >
