@@ -572,8 +572,8 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   const isEmpty = stage.count === 0;
   const showPressure = isEmpty && previousCount > 0;
 
-  // Generate "No X" message for empty stages
-  const emptyMessage = isEmpty ? `No ${stage.label.toLowerCase()}` : null;
+  // Generate "NO X" message for empty stages (uppercase for urgency)
+  const emptyMessage = isEmpty ? `NO ${stage.label.replace(/s$/i, '').toUpperCase()}` : null;
 
   return (
     <div 
@@ -611,7 +611,7 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
           )}
         </div>
         {showPressure && emptyMessage && (
-          <p className="text-tiny text-destructive/70 mt-0.5">{emptyMessage} — needs attention</p>
+          <p className="text-tiny text-destructive/70 mt-0.5 uppercase tracking-wide">{emptyMessage} — NEEDS ATTENTION</p>
         )}
         {bottleneckReason && !showPressure && (
           <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
