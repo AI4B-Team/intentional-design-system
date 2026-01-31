@@ -87,7 +87,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <MessageSquare className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Chat</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">Chat</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -95,7 +95,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <PenSquare className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>New Chat</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">New Chat</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -109,7 +109,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Clear Chat</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">Clear Chat</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -117,7 +117,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <History className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>History</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">History</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -125,7 +125,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <Settings className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Settings</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">Settings</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -137,7 +137,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <Maximize2 className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Expand</TooltipContent>
+              <TooltipContent className="bg-white text-gray-900 border shadow-md">Expand</TooltipContent>
             </Tooltip>
             {onClose && (
               <Tooltip>
@@ -146,7 +146,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <X className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Close</TooltipContent>
+                <TooltipContent className="bg-white text-gray-900 border shadow-md">Close</TooltipContent>
               </Tooltip>
             )}
           </TooltipProvider>
