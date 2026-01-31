@@ -20,7 +20,6 @@ import {
   SlidersHorizontal,
   Bookmark,
   ChevronDown,
-  Send,
   Target,
   List,
   LayoutGrid,
@@ -371,16 +370,8 @@ export function MarketplaceFilters({
           </Button>
         </div>
 
-        {/* Right aligned actions – Post Deal, Buy Box, View Toggles */}
+        {/* Right aligned actions – Buy Box, View Toggles */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <Button
-            variant="outline"
-            className="h-10 gap-2 px-4 text-sm whitespace-nowrap border-primary"
-            onClick={() => navigate("/submit-deal")}
-          >
-            <Send className="h-4 w-4" />
-            Post Deal
-          </Button>
           <Button
             variant="outline"
             className="h-10 gap-2 px-4 text-sm whitespace-nowrap"
