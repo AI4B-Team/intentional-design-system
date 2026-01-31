@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import {
   Popover,
   PopoverContent,
@@ -10,6 +11,14 @@ import {
 } from "@/components/ui/popover";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
+
+interface AnalysisResult {
+  propertyCount: number;
+  avgArv: number;
+  avgDiscount: number;
+  aiDealDensity: number;
+  flipCount: number;
+}
 
 interface MarketplaceMapProps {
   deals: MarketplaceDeal[];
@@ -61,6 +70,12 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [hasError, setHasError] = useState(false);
   const [overlaysOpen, setOverlaysOpen] = useState(false);
   
+  // Draw to Analyze states
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const drawnLayerRef = useRef<any>(null);
+  const drawingPointsRef = useRef<[number, number][]>([]);
+  
   // Overlay states
   const [heatMapsEnabled, setHeatMapsEnabled] = useState(false);
   const [selectedHeatMap, setSelectedHeatMap] = useState<string | null>(null);
@@ -73,6 +88,82 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const loadedRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+
+  // Check if a point is inside a polygon using ray casting algorithm
+  const isPointInPolygon = useCallback((point: [number, number], polygon: [number, number][]) => {
+    const [x, y] = point;
+    let inside = false;
+    
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const [xi, yi] = polygon[i];
+      const [xj, yj] = polygon[j];
+      
+      if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+        inside = !inside;
+      }
+    }
+    
+    return inside;
+  }, []);
+
+  // Analyze deals within the drawn area
+  const analyzeArea = useCallback((polygon: [number, number][]) => {
+    const dealsInArea = deals.filter(deal => 
+      isPointInPolygon([deal.lat, deal.lng], polygon)
+    );
+    
+    if (dealsInArea.length === 0) {
+      setAnalysisResult({
+        propertyCount: 0,
+        avgArv: 0,
+        avgDiscount: 0,
+        aiDealDensity: 0,
+        flipCount: 0,
+      });
+      return;
+    }
+    
+    const avgArv = dealsInArea.reduce((sum, d) => sum + d.arv, 0) / dealsInArea.length;
+    const avgDiscount = dealsInArea.reduce((sum, d) => sum + (100 - d.arvPercent), 0) / dealsInArea.length;
+    
+    // Mock AI deal density (properties per sq mile estimate)
+    const aiDealDensity = Math.min(10, dealsInArea.length * 0.8 + Math.random() * 2);
+    
+    // Mock flip count based on tags
+    const flipCount = dealsInArea.filter(d => 
+      d.tags.some(t => t.toLowerCase().includes('flip') || t.toLowerCase().includes('fixer'))
+    ).length || Math.floor(dealsInArea.length * 0.3);
+    
+    setAnalysisResult({
+      propertyCount: dealsInArea.length,
+      avgArv: Math.round(avgArv),
+      avgDiscount: Math.round(avgDiscount * 10) / 10,
+      aiDealDensity: Math.round(aiDealDensity * 10) / 10,
+      flipCount,
+    });
+  }, [deals, isPointInPolygon]);
+
+  // Clear drawn area
+  const clearDrawing = useCallback(() => {
+    if (drawnLayerRef.current && mapInstanceRef.current?.map) {
+      mapInstanceRef.current.map.removeLayer(drawnLayerRef.current);
+      drawnLayerRef.current = null;
+    }
+    drawingPointsRef.current = [];
+    setAnalysisResult(null);
+    setIsDrawing(false);
+  }, []);
+
+  // Handle draw mode toggle
+  const toggleDrawMode = useCallback(() => {
+    if (isDrawing) {
+      setIsDrawing(false);
+    } else {
+      clearDrawing();
+      setIsDrawing(true);
+      drawingPointsRef.current = [];
+    }
+  }, [isDrawing, clearDrawing]);
 
   const defaultCenter: [number, number] = [27.9944, -81.7603];
 
@@ -173,6 +264,70 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
     }).addTo(map);
   }, [mapType]);
 
+  // Handle drawing mode
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+    
+    const { map, L } = mapInstanceRef.current;
+    
+    if (isDrawing) {
+      map.getContainer().style.cursor = 'crosshair';
+      
+      const handleClick = (e: any) => {
+        const { lat, lng } = e.latlng;
+        drawingPointsRef.current.push([lat, lng]);
+        
+        // Update the visual polygon
+        if (drawnLayerRef.current) {
+          map.removeLayer(drawnLayerRef.current);
+        }
+        
+        if (drawingPointsRef.current.length >= 2) {
+          drawnLayerRef.current = L.polygon(drawingPointsRef.current, {
+            color: '#3b82f6',
+            weight: 2,
+            fillColor: '#3b82f6',
+            fillOpacity: 0.15,
+            dashArray: '5, 5',
+          }).addTo(map);
+        }
+      };
+      
+      const handleDoubleClick = (e: any) => {
+        e.originalEvent.preventDefault();
+        if (drawingPointsRef.current.length >= 3) {
+          // Finalize the polygon
+          if (drawnLayerRef.current) {
+            map.removeLayer(drawnLayerRef.current);
+          }
+          drawnLayerRef.current = L.polygon(drawingPointsRef.current, {
+            color: '#3b82f6',
+            weight: 2,
+            fillColor: '#3b82f6',
+            fillOpacity: 0.2,
+          }).addTo(map);
+          
+          setIsDrawing(false);
+          analyzeArea(drawingPointsRef.current);
+        }
+      };
+      
+      map.on('click', handleClick);
+      map.on('dblclick', handleDoubleClick);
+      map.doubleClickZoom.disable();
+      
+      return () => {
+        map.off('click', handleClick);
+        map.off('dblclick', handleDoubleClick);
+        map.doubleClickZoom.enable();
+        map.getContainer().style.cursor = '';
+      };
+    } else {
+      map.getContainer().style.cursor = '';
+      map.doubleClickZoom.enable();
+    }
+  }, [isDrawing, analyzeArea]);
+
   if (hasError) {
     return (
       <div className="h-full w-full flex items-center justify-center bg-muted/30">
@@ -210,10 +365,23 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
             Satellite
           </button>
         </div>
+        
+        {/* Draw to Analyze Button */}
+        <Button
+          variant={isDrawing ? "default" : "outline"}
+          className={cn(
+            "mt-2 shadow-md gap-2",
+            isDrawing ? "bg-primary text-primary-foreground" : "bg-white"
+          )}
+          onClick={toggleDrawMode}
+        >
+          <PenTool className="h-4 w-4" />
+          {isDrawing ? "Drawing..." : "Draw to Analyze"}
+        </Button>
       </div>
 
       {/* Intel Dropdown */}
-      <div className="absolute top-3 right-3 z-10">
+      <div className="absolute top-3 right-3 z-10 flex gap-2">
         <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="bg-white shadow-md gap-2">
@@ -341,6 +509,102 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* Leaflet Map Container */}
       <div ref={mapContainerRef} className="h-full w-full" />
+
+      {/* Draw to Analyze Results Panel */}
+      {analysisResult && (
+        <Card className="absolute bottom-20 left-3 z-10 w-72 p-0 shadow-lg overflow-hidden">
+          <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-3 py-2 border-b flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <PenTool className="h-4 w-4 text-primary" />
+              <span className="font-semibold text-sm">Area Analysis</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={clearDrawing}
+                title="Clear and redraw"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={() => setAnalysisResult(null)}
+                title="Close"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+          
+          {analysisResult.propertyCount === 0 ? (
+            <div className="p-4 text-center text-sm text-muted-foreground">
+              No properties found in this area
+            </div>
+          ) : (
+            <div className="p-3 space-y-3">
+              <div className="text-center pb-2 border-b">
+                <span className="text-2xl font-bold text-primary">{analysisResult.propertyCount}</span>
+                <span className="text-sm text-muted-foreground ml-1">
+                  {analysisResult.propertyCount === 1 ? 'Property' : 'Properties'}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-muted/50 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    <span className="text-xs">Avg ARV</span>
+                  </div>
+                  <span className="text-sm font-semibold">
+                    ${(analysisResult.avgArv / 1000).toFixed(0)}K
+                  </span>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                    <Percent className="h-3.5 w-3.5" />
+                    <span className="text-xs">Avg Discount</span>
+                  </div>
+                  <span className="text-sm font-semibold text-success">
+                    {analysisResult.avgDiscount}%
+                  </span>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                    <Zap className="h-3.5 w-3.5" />
+                    <span className="text-xs">AI Deal Density</span>
+                  </div>
+                  <span className="text-sm font-semibold">
+                    {analysisResult.aiDealDensity}/mi²
+                  </span>
+                </div>
+                
+                <div className="bg-muted/50 rounded-lg p-2.5">
+                  <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    <span className="text-xs">Flip Count</span>
+                  </div>
+                  <span className="text-sm font-semibold">
+                    {analysisResult.flipCount}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {/* Drawing Instructions */}
+      {isDrawing && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 bg-slate-800 text-white px-4 py-2 rounded-lg shadow-lg text-sm">
+          Click to add points • Double-click to complete
+        </div>
+      )}
 
       {/* Custom CSS for price markers and zoom controls */}
       <style>{`
