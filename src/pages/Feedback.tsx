@@ -563,16 +563,22 @@ const Feedback: React.FC = () => {
             
             {/* Add comment - only show if not archived */}
             {!itemIsArchived ? (
-              <div className="flex gap-2 pt-2">
-                <Input
-                  placeholder="Add a comment..."
-                  value={newComment[item.id] || ""}
-                  onChange={(e) => setNewComment(prev => ({ ...prev, [item.id]: e.target.value }))}
-                  onKeyDown={(e) => e.key === "Enter" && handleAddComment(item.id)}
-                />
-                <Button size="icon" onClick={() => handleAddComment(item.id)}>
-                  <Send className="h-4 w-4" />
-                </Button>
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <MessageCircle className="h-3 w-3" />
+                  <span>Reply to share updates, ask questions, or add context</span>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Write a reply... (Press Enter to send)"
+                    value={newComment[item.id] || ""}
+                    onChange={(e) => setNewComment(prev => ({ ...prev, [item.id]: e.target.value }))}
+                    onKeyDown={(e) => e.key === "Enter" && handleAddComment(item.id)}
+                  />
+                  <Button size="icon" onClick={() => handleAddComment(item.id)} title="Send reply">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="text-xs text-muted-foreground pt-2 text-center">
@@ -762,12 +768,41 @@ const Feedback: React.FC = () => {
                 id="description"
                 placeholder={
                   submitType === "bug"
-                    ? "Steps to reproduce, expected behavior, actual behavior..."
-                    : "Provide more details..."
+                    ? `Example:
+Steps to Reproduce:
+1. Navigate to the Properties page
+2. Click on "Add Property" button
+3. Fill in the form and click Submit
+
+Expected: Property should be saved and appear in the list
+Actual: Error message appears and property is not saved
+
+Browser: Chrome 120, Windows 11`
+                    : submitType === "feature"
+                    ? `Example:
+I would love to see a bulk import feature for properties.
+
+Use Case: When onboarding new clients, I often have 50+ properties to add. Currently I have to enter each one manually.
+
+Suggested Solution: Allow CSV/Excel upload with column mapping to quickly import multiple properties at once.
+
+This would save hours of data entry time each week!`
+                    : `Example:
+I've been using the dashboard for a few weeks now and wanted to share some thoughts.
+
+What's Working Well:
+- The property search is fast and intuitive
+- Love the map view integration
+
+Areas for Improvement:
+- Would be helpful to have keyboard shortcuts
+- The notification sound could be less intrusive
+
+Overall, great product! Keep up the good work.`
                 }
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
-                rows={4}
+                rows={6}
               />
             </div>
             
