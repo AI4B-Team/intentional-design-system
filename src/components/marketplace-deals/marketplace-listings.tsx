@@ -485,13 +485,13 @@ export function MarketplaceListings({
           {/* Right side: Per page, pagination info, sort */}
           <div className="flex items-center gap-3">
             {/* Results per page */}
-            <div className="flex items-center gap-1.5 text-sm">
-              <span className="text-muted-foreground">Results Per Page:</span>
+            <div className="flex items-center gap-1.5 text-sm flex-shrink-0">
+              <span className="text-muted-foreground whitespace-nowrap">Results Per Page:</span>
               <Select
                 value={resultsPerPage.toString()}
                 onValueChange={(v) => onResultsPerPageChange(parseInt(v))}
               >
-                <SelectTrigger className="w-[60px] h-8 bg-background">
+                <SelectTrigger className="w-auto min-w-[65px] h-8 bg-background px-3">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-background z-[100]" align="end">
