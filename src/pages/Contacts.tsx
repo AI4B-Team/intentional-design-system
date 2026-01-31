@@ -303,7 +303,7 @@ export default function Contacts() {
                   <TableCell colSpan={10} className="h-32 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                       <Users className="h-10 w-10 mb-2 opacity-50" />
-                      <p className="font-medium">No contacts found</p>
+                      <p className="font-medium">No Contacts Found</p>
                       <p className="text-sm">
                         {hasActiveFilters 
                           ? "Try adjusting your filters" 
