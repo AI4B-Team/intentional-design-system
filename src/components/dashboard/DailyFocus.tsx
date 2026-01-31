@@ -38,31 +38,33 @@ export function DailyFocus() {
 
     // Leads needing first contact
     if (insights.leadsInsight && insights.leadsInsight.count && insights.leadsInsight.count > 0) {
+      const count = insights.leadsInsight.count;
       items.push({
         id: "leads-contact",
         icon: Phone,
         iconColor: "text-destructive",
         iconBg: "bg-destructive/10",
-        label: "deals need first contact",
-        count: insights.leadsInsight.count,
-        action: "Call now",
+        label: count === 1 ? "Lead Needs First Contact" : "Leads Need First Contact",
+        count,
+        action: "Call Now",
         onClick: () => navigate("/properties?status=new&sort=created_at"),
-        priority: insights.leadsInsight.count > 5 ? "critical" : "high",
+        priority: count > 5 ? "critical" : "high",
       });
     }
 
     // Offers awaiting response
     if (insights.offersInsight && insights.offersInsight.count && insights.offersInsight.count > 0) {
+      const count = insights.offersInsight.count;
       items.push({
         id: "offers-pending",
         icon: Clock,
         iconColor: "text-warning",
         iconBg: "bg-warning/10",
-        label: "offers awaiting response",
-        count: insights.offersInsight.count,
-        action: "Follow up",
+        label: count === 1 ? "Offer Awaiting Response" : "Offers Awaiting Response",
+        count,
+        action: "Follow Up",
         onClick: () => navigate("/properties?status=offer_made"),
-        priority: insights.offersInsight.count > 3 ? "critical" : "high",
+        priority: count > 3 ? "critical" : "high",
       });
     }
 
@@ -71,14 +73,15 @@ export function DailyFocus() {
       (opp) => opp.urgency_reason?.includes("🔥") || opp.deal_score_rank === "🏆 Top Deal"
     );
     if (hotDeals && hotDeals.length > 0) {
+      const count = hotDeals.length;
       items.push({
         id: "hot-deals",
         icon: Flame,
         iconColor: "text-orange-500",
         iconBg: "bg-orange-100",
-        label: "hot deals need action",
-        count: hotDeals.length,
-        action: "View deals",
+        label: count === 1 ? "Hot Deal Needs Action" : "Hot Deals Need Action",
+        count,
+        action: "View Deals",
         onClick: () => navigate("/pipeline"),
         priority: "high",
       });
@@ -86,14 +89,15 @@ export function DailyFocus() {
 
     // Stalling deals
     if (insights.stallingCount > 0) {
+      const count = insights.stallingCount;
       items.push({
         id: "stalling",
         icon: Clock,
         iconColor: "text-muted-foreground",
         iconBg: "bg-muted",
-        label: "deals stalling",
-        count: insights.stallingCount,
-        action: "Re-engage",
+        label: count === 1 ? "Deal Stalling" : "Deals Stalling",
+        count,
+        action: "Re-Engage",
         onClick: () => navigate("/properties?status=contacted&sort=updated_at"),
         priority: "medium",
       });

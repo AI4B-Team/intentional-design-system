@@ -113,7 +113,7 @@ export function useDashboardInsights() {
       const leadsInsight: ActionInsight | null = leadsNeedingContact > 0 
         ? { 
             type: "warning", 
-            label: `${leadsNeedingContact} leads need first contact`,
+            label: `${leadsNeedingContact} ${leadsNeedingContact === 1 ? "Lead Needs" : "Leads Need"} First Contact`,
             count: leadsNeedingContact,
             severity: leadsNeedingContact > 10 ? "high" : leadsNeedingContact > 5 ? "medium" : "low"
           }
@@ -122,7 +122,7 @@ export function useDashboardInsights() {
       const offersInsight: ActionInsight | null = pendingOffersCount > 0
         ? {
             type: "action",
-            label: `${pendingOffersCount} offers awaiting response`,
+            label: `${pendingOffersCount} ${pendingOffersCount === 1 ? "Offer" : "Offers"} Awaiting Response`,
             count: pendingOffersCount,
             severity: pendingOffersCount > 5 ? "high" : pendingOffersCount > 2 ? "medium" : "low"
           }
