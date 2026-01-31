@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AIVAChat } from "./AIVAChat";
 
@@ -8,11 +9,13 @@ interface AIVAPanelProps {
 }
 
 export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
+  const location = useLocation();
+
   // Get the left menu width from the DOM.
   // NOTE: This app uses `AppSidebar` which renders as `<aside data-sidebar>...`.
   const [sidebarRight, setSidebarRight] = React.useState(0);
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const getSidebarEl = (): HTMLElement | null => {
       // Prefer the actual layout sidebar.
       const candidates = Array.from(document.querySelectorAll<HTMLElement>("aside[data-sidebar]"));
@@ -68,7 +71,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       mutationObserver.disconnect();
       resizeObserver.disconnect();
     };
-  }, []);
+  }, [location.pathname]);
 
   // Add a small gap to prevent overlap with sidebar
   const panelLeft = sidebarRight + 6;
