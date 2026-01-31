@@ -85,12 +85,6 @@ const contactsNavItem: NavItem = {
   icon: Users,
 };
 
-// Templates - direct nav item for quick access (formerly Offer Blaster)
-const templatesNavItem: NavItem = {
-  label: "Templates",
-  href: "/dispo/campaigns?tab=templates",
-  icon: FileText,
-};
 
 const marketingGroup: NavGroup = {
   label: "Marketing",
@@ -181,7 +175,7 @@ export function AppSidebar({
   // Active state checks for navigation items
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
-  const isTemplatesActive = location.pathname.startsWith('/dispo/campaigns') && location.search.includes('tab=templates');
+  
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isAppsActive = appsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isDocumentsActive = location.pathname.startsWith(documentsNavItem.href);
@@ -391,22 +385,6 @@ export function AppSidebar({
             </NavLink>
           </li>
 
-          {/* Templates - Direct Link */}
-          <li>
-            <NavLink
-              to={templatesNavItem.href}
-              onClick={onMobileClose}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isTemplatesActive && "bg-brand-accent text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <templatesNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isTemplatesActive && "text-white")} />
-              {!collapsed && <span>{templatesNavItem.label}</span>}
-            </NavLink>
-          </li>
 
           {/* Marketing Group */}
           <li>
