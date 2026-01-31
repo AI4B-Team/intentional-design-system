@@ -118,6 +118,13 @@ const PIPELINE_STAGES = [
     description: "Deal completed",
     targetDays: 0
   },
+  { 
+    id: "sold", 
+    label: "Sold", 
+    color: "bg-chart-4", 
+    description: "Property sold and funds received",
+    targetDays: 0
+  },
 ];
 
 // Mock pipeline deals for demonstration
