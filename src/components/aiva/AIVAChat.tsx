@@ -304,7 +304,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         {/* Chat Messages */}
         <ScrollArea ref={scrollAreaRef} className="flex-1">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full py-6 px-4">
+            <div className="flex flex-col items-center justify-center min-h-full px-4 pt-24 pb-6">
               {/* Three Dots - Animated */}
               <div className="flex gap-2 mb-4">
                 <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "1s" }} />
