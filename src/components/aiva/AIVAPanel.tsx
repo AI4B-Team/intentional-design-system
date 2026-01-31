@@ -98,7 +98,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
   // Round to avoid sub-pixel overlap.
   // Add a small gap so the panel never visually covers the sidebar (even by 1–2px due to rounding/layout).
   const sidebarRightPx = Math.ceil(sidebarRight);
-  const EDGE_GAP_PX = 8;
+  // NOTE: Keep this intentionally generous to avoid any overlap with the sidebar
+  // across transforms/rounding on different devices.
+  const EDGE_GAP_PX = 24;
   const panelLeft = sidebarRightPx + EDGE_GAP_PX;
 
   return (
@@ -117,11 +119,12 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       {/* Panel - slides in from left, positioned next to sidebar */}
       <div
         className={cn(
-          "fixed top-0 h-full bg-background border-l z-[70] transition-all duration-300 ease-in-out flex flex-col",
-          // No shadow (prevents any visual spill onto the sidebar). Divider is handled by border-l.
+          "fixed top-0 h-full bg-background z-[70] duration-300 ease-in-out flex flex-col",
+          // No shadow/border (prevents any visual spill onto the sidebar).
           "shadow-none",
           "w-[90vw] sm:w-[420px]",
           open ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none -translate-x-full",
+          // Only animate transform + opacity; never animate `left` (can cause temporary overlap while measuring).
           "transition-[transform,opacity]"
         )}
         style={{ left: panelLeft }}
