@@ -11,6 +11,7 @@ import { usePipelineStats } from "@/hooks/usePipelineStats";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
+import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import {
@@ -34,6 +35,9 @@ import {
   BadgeDollarSign,
   Target,
   Settings2,
+  AlertTriangle,
+  Zap,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -62,6 +66,7 @@ interface PipelineValueCardProps {
   isLoading?: boolean;
   onClick?: () => void;
   goal?: number;
+  actionInsight?: ActionInsight | null;
 }
 
 function PipelineValueCard({ 
@@ -76,6 +81,7 @@ function PipelineValueCard({
   isLoading,
   onClick,
   goal = 0,
+  actionInsight,
 }: PipelineValueCardProps) {
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
@@ -151,6 +157,22 @@ function PipelineValueCard({
             </div>
           )}
         </div>
+
+        {/* Action Insight - "What to do next" */}
+        {actionInsight && (
+          <div className={cn(
+            "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
+            actionInsight.severity === "high" 
+              ? "bg-destructive/10 text-destructive" 
+              : actionInsight.severity === "medium"
+              ? "bg-warning/10 text-warning"
+              : "bg-accent/10 text-accent"
+          )}>
+            {actionInsight.type === "warning" && <AlertTriangle className="h-3 w-3" />}
+            {actionInsight.type === "action" && <Clock className="h-3 w-3" />}
+            <span className="truncate">{actionInsight.label}</span>
+          </div>
+        )}
 
         {/* Value and Profit */}
         <div className="space-y-2 pt-2 border-t border-border-subtle">
@@ -236,7 +258,117 @@ function StatCard({ title, value, trend, icon: Icon, iconBg, isLoading, invertTr
   );
 }
 
-// Hot Opportunity Item
+// Enhanced Hot Opportunity Item with "why it's hot" context
+interface EnhancedHotOpportunityItemProps {
+  opportunity: HotOpportunityEnhanced;
+  onClick: () => void;
+  onCall: (e: React.MouseEvent) => void;
+  onEmail: (e: React.MouseEvent) => void;
+}
+
+function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: EnhancedHotOpportunityItemProps) {
+  const score = opportunity.motivation_score || 0;
+  const scoreColor = score > 800 ? "bg-destructive text-destructive-foreground" 
+    : score > 500 ? "bg-warning text-warning-foreground" 
+    : "bg-muted text-muted-foreground";
+
+  const statusColor = {
+    new: "bg-muted text-muted-foreground",
+    contacted: "bg-info/10 text-info",
+    appointment: "bg-warning/10 text-warning",
+    offer_made: "bg-accent/10 text-accent",
+    under_contract: "bg-chart-4/10 text-chart-4",
+    closed: "bg-success/10 text-success",
+    dead: "bg-destructive/10 text-destructive",
+  }[opportunity.status || "new"] || "bg-muted text-muted-foreground";
+
+  return (
+    <div 
+      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group hover:shadow-sm"
+      onClick={onClick}
+    >
+      {/* Score Badge */}
+      <div className={cn(
+        "flex items-center gap-1 px-2.5 py-1 rounded-full text-tiny font-bold min-w-[56px] justify-center shadow-sm transition-transform duration-150 group-hover:scale-105",
+        scoreColor
+      )}>
+        {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
+        {score}
+      </div>
+
+      {/* Address and WHY it's hot */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-small font-medium text-foreground truncate group-hover:text-primary transition-colors">
+            {opportunity.address}
+          </p>
+          {opportunity.deal_score_rank === "🏆 Top Deal" && (
+            <span className="text-tiny bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
+              {opportunity.deal_score_rank}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 text-tiny text-muted-foreground">
+          <span>{[opportunity.city, opportunity.state].filter(Boolean).join(", ")}</span>
+          {opportunity.urgency_reason && (
+            <>
+              <span>•</span>
+              <span className={cn(
+                "font-medium",
+                opportunity.urgency_reason.includes("🔥") ? "text-destructive" :
+                opportunity.urgency_reason.includes("💰") ? "text-success" :
+                opportunity.urgency_reason.includes("📈") ? "text-info" :
+                "text-muted-foreground"
+              )}>
+                {opportunity.urgency_reason}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Profit Potential if available */}
+      {opportunity.profit_potential && opportunity.profit_potential > 0 && (
+        <div className="flex items-center gap-1 text-tiny text-success font-medium bg-success/10 px-2 py-0.5 rounded-full">
+          <DollarSign className="h-3 w-3" />
+          {formatCurrencyCompact(opportunity.profit_potential)}
+        </div>
+      )}
+
+      {/* Status */}
+      <span className={cn("px-2 py-0.5 rounded-full text-tiny font-medium capitalize transition-all duration-150 hidden sm:inline", statusColor)}>
+        {(opportunity.status || "new").replace("_", " ")}
+      </span>
+
+      {/* Quick Actions */}
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0">
+        <button 
+          onClick={onCall}
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
+          title="Call"
+        >
+          <Phone className="h-4 w-4" />
+        </button>
+        <button 
+          onClick={onEmail}
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
+          title="Email"
+        >
+          <Mail className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Helper for compact currency
+function formatCurrencyCompact(value: number): string {
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${Math.round(value / 1000)}K`;
+  return value.toLocaleString();
+}
+
+// Legacy Hot Opportunity Item (fallback)
 interface HotOpportunityItemProps {
   opportunity: {
     id: string;
@@ -331,7 +463,7 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
   );
 }
 
-// Pipeline Stage
+// Pipeline Stage with bottleneck visual pressure
 interface PipelineStageProps {
   stage: {
     status: string;
@@ -342,20 +474,51 @@ interface PipelineStageProps {
   total: number;
   previousCount: number;
   onClick: () => void;
+  isBottleneck?: boolean;
+  bottleneckReason?: string;
 }
 
-function PipelineStage({ stage, total, previousCount, onClick }: PipelineStageProps) {
+function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {
   const conversionRate = previousCount > 0 ? Math.round((stage.count / previousCount) * 100) : 0;
   const percentage = total > 0 ? Math.round((stage.count / total) * 100) : 0;
+  
+  // Visual pressure: empty stage after populated stage feels uncomfortable
+  const isEmpty = stage.count === 0;
+  const showPressure = isEmpty && previousCount > 0;
 
   return (
     <div 
-      className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group"
+      className={cn(
+        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 group",
+        showPressure 
+          ? "bg-destructive/5 hover:bg-destructive/10 border border-destructive/20" 
+          : "hover:bg-background-secondary"
+      )}
       onClick={onClick}
     >
-      <div className={cn("w-3 h-3 rounded-full shadow-sm transition-transform duration-150 group-hover:scale-125", stage.color)} />
+      <div className={cn(
+        "w-3 h-3 rounded-full shadow-sm transition-transform duration-150 group-hover:scale-125", 
+        stage.color,
+        showPressure && "animate-pulse"
+      )} />
       <div className="flex-1">
-        <p className="text-small font-medium text-foreground group-hover:text-primary transition-colors">{stage.label}</p>
+        <div className="flex items-center gap-2">
+          <p className={cn(
+            "text-small font-medium group-hover:text-primary transition-colors",
+            showPressure ? "text-destructive" : "text-foreground"
+          )}>
+            {stage.label}
+          </p>
+          {isBottleneck && (
+            <span className="text-tiny bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              Bottleneck
+            </span>
+          )}
+        </div>
+        {bottleneckReason && (
+          <p className="text-tiny text-destructive/80 mt-0.5">{bottleneckReason}</p>
+        )}
       </div>
       <div className="text-right flex items-center gap-3">
         <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
@@ -364,7 +527,12 @@ function PipelineStage({ stage, total, previousCount, onClick }: PipelineStagePr
             style={{ width: `${percentage}%` }}
           />
         </div>
-        <p className="text-body font-bold text-foreground tabular-nums w-8 text-right">{stage.count}</p>
+        <p className={cn(
+          "text-body font-bold tabular-nums w-8 text-right",
+          showPressure ? "text-destructive" : "text-foreground"
+        )}>
+          {stage.count}
+        </p>
         {previousCount > 0 && conversionRate > 0 && (
           <p className="text-tiny text-muted-foreground w-12 text-right">{conversionRate}%</p>
         )}
@@ -487,6 +655,7 @@ export default function Dashboard() {
   const { data: pipelineStats, isLoading: pipelineLoading } = usePipelineStats();
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
+  const { data: insights } = useDashboardInsights();
 
   // Demo data for visualization when no real data exists
   const demoData = {
@@ -567,6 +736,7 @@ export default function Dashboard() {
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=new,contacted,appointment")}
           goal={goals.leadsGoal}
+          actionInsight={insights?.leadsInsight}
         />
         <PipelineValueCard
           title="Offers"
@@ -579,6 +749,7 @@ export default function Dashboard() {
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
           goal={goals.offersGoal}
+          actionInsight={insights?.offersInsight}
         />
         <PipelineValueCard
           title="Contracts"
