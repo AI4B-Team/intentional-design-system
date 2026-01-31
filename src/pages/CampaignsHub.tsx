@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Mail, FileText, User, Megaphone } from 'lucide-react';
+import { Mail, Megaphone } from 'lucide-react';
 
 // Import tab content components
 import { CampaignsTab } from '@/components/campaigns/CampaignsTab';
-import { TemplatesTab } from '@/components/campaigns/TemplatesTab';
-import { BuyerProfilesTab } from '@/components/campaigns/BuyerProfilesTab';
 import { MLSTab } from '@/components/campaigns/MLSTab';
 
 export default function CampaignsHub() {
@@ -28,7 +26,7 @@ export default function CampaignsHub() {
         </p>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
+          <TabsList className="grid w-full max-w-xs grid-cols-2">
             <TabsTrigger value="campaigns" className="gap-2">
               <Mail className="h-4 w-4" />
               <span className="hidden sm:inline">Campaigns</span>
@@ -36,14 +34,6 @@ export default function CampaignsHub() {
             <TabsTrigger value="mls" className="gap-2">
               <Megaphone className="h-4 w-4" />
               <span className="hidden sm:inline">MLS</span>
-            </TabsTrigger>
-            <TabsTrigger value="templates" className="gap-2">
-              <FileText className="h-4 w-4" />
-              <span className="hidden sm:inline">Templates</span>
-            </TabsTrigger>
-            <TabsTrigger value="profiles" className="gap-2">
-              <User className="h-4 w-4" />
-              <span className="hidden sm:inline">Buyer Profiles</span>
             </TabsTrigger>
           </TabsList>
 
@@ -53,14 +43,6 @@ export default function CampaignsHub() {
 
           <TabsContent value="mls" className="mt-6">
             <MLSTab />
-          </TabsContent>
-
-          <TabsContent value="templates" className="mt-6">
-            <TemplatesTab />
-          </TabsContent>
-
-          <TabsContent value="profiles" className="mt-6">
-            <BuyerProfilesTab />
           </TabsContent>
         </Tabs>
       </div>
