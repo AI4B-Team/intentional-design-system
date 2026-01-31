@@ -411,17 +411,7 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         </p>
       </div>
 
-      {/* Single "Why It's Hot" Badge - One reason only */}
-      {hotReason && (
-        <span className={cn(
-          "px-2 py-0.5 rounded-full text-tiny font-medium whitespace-nowrap shrink-0",
-          hotReason.color
-        )}>
-          {hotReason.label}
-        </span>
-      )}
-
-      {/* Quick Actions - Always visible, before the pill */}
+      {/* Quick Actions - Before the pill */}
       <div className="flex items-center gap-1 shrink-0">
         <button 
           onClick={onCall}
@@ -438,6 +428,16 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
           <Mail className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Single "Why It's Hot" Badge - One reason only */}
+      {hotReason && (
+        <span className={cn(
+          "px-2 py-0.5 rounded-full text-tiny font-medium whitespace-nowrap shrink-0",
+          hotReason.color
+        )}>
+          {hotReason.label}
+        </span>
+      )}
     </div>
   );
 }
@@ -849,6 +849,57 @@ export default function Dashboard() {
       urgency_reason: null,
       deal_score_rank: "",
       arv: 198000,
+    },
+    {
+      id: "demo-6",
+      address: "4512 Willow Creek Drive",
+      city: "Austin",
+      state: "TX",
+      motivation_score: 620,
+      status: "contacted",
+      updated_at: new Date(Date.now() - 432000000).toISOString(),
+      owner_phone: "(555) 678-9012",
+      owner_email: "owner6@example.com",
+      profit_potential: 38000,
+      equity_percent: 42,
+      days_since_added: 5,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 275000,
+    },
+    {
+      id: "demo-7",
+      address: "8734 Pinewood Lane",
+      city: "Seattle",
+      state: "WA",
+      motivation_score: 590,
+      status: "new",
+      updated_at: new Date(Date.now() - 518400000).toISOString(),
+      owner_phone: "(555) 789-0123",
+      owner_email: "owner7@example.com",
+      profit_potential: 51000,
+      equity_percent: 33,
+      days_since_added: 6,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 320000,
+    },
+    {
+      id: "demo-8",
+      address: "1298 Riverside Boulevard",
+      city: "Miami",
+      state: "FL",
+      motivation_score: 540,
+      status: "appointment",
+      updated_at: new Date(Date.now() - 604800000).toISOString(),
+      owner_phone: "(555) 890-1234",
+      owner_email: "owner8@example.com",
+      profit_potential: 45000,
+      equity_percent: 31,
+      days_since_added: 7,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 245000,
     },
   ];
 
