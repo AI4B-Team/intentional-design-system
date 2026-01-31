@@ -134,7 +134,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         <Button
           size="sm"
           variant="outline"
-          className="hidden sm:flex gap-1.5"
+          className="hidden sm:flex gap-1.5 border-2 border-primary"
           onClick={() => navigate("/marketplace/buy-box")}
         >
           <Home className="h-4 w-4" />
