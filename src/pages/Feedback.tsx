@@ -228,6 +228,10 @@ const Feedback: React.FC = () => {
   const [newComment, setNewComment] = useState<{ [key: string]: string }>({});
   const [expandedComments, setExpandedComments] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  
+  // Lightbox state
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -361,17 +365,30 @@ const Feedback: React.FC = () => {
 
   const captureScreenshot = async () => {
     try {
-      // Close dialog temporarily to capture the page behind it
-      setShowSubmitDialog(false);
+      // Hide the dialog visually without unmounting it
+      const dialogOverlay = document.querySelector('[data-radix-dialog-overlay]') as HTMLElement;
+      const dialogContent = document.querySelector('[data-radix-dialog-content]') as HTMLElement;
       
-      // Wait for dialog to close
-      await new Promise(resolve => setTimeout(resolve, 300));
+      if (dialogOverlay) dialogOverlay.style.visibility = 'hidden';
+      if (dialogContent) dialogContent.style.visibility = 'hidden';
+      
+      // Small delay to ensure CSS is applied
+      await new Promise(resolve => setTimeout(resolve, 50));
       
       const canvas = await html2canvas(document.body, {
         useCORS: true,
         allowTaint: true,
         scale: 1,
+        ignoreElements: (element) => {
+          // Ignore the dialog elements during capture
+          return element.hasAttribute('data-radix-dialog-overlay') || 
+                 element.hasAttribute('data-radix-dialog-content');
+        }
       });
+      
+      // Restore dialog visibility
+      if (dialogOverlay) dialogOverlay.style.visibility = 'visible';
+      if (dialogContent) dialogContent.style.visibility = 'visible';
       
       canvas.toBlob((blob) => {
         if (blob) {
@@ -379,12 +396,15 @@ const Feedback: React.FC = () => {
           setFormAttachments(prev => [...prev, file]);
           toast.success("Screenshot captured");
         }
-        // Reopen dialog
-        setShowSubmitDialog(true);
       }, "image/png");
     } catch (err) {
+      console.error('Screenshot error:', err);
       toast.error("Could not capture screenshot");
-      setShowSubmitDialog(true);
+      // Restore dialog visibility on error
+      const dialogOverlay = document.querySelector('[data-radix-dialog-overlay]') as HTMLElement;
+      const dialogContent = document.querySelector('[data-radix-dialog-content]') as HTMLElement;
+      if (dialogOverlay) dialogOverlay.style.visibility = 'visible';
+      if (dialogContent) dialogContent.style.visibility = 'visible';
     }
   };
 
@@ -836,7 +856,8 @@ const Feedback: React.FC = () => {
                           <img
                             src={URL.createObjectURL(file)}
                             alt={file.name}
-                            className="h-full w-full object-cover rounded-md"
+                            className="h-full w-full object-cover rounded-md cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => setLightboxImage(URL.createObjectURL(file))}
                           />
                         ) : (
                           <Video className="h-6 w-6 text-muted-foreground" />
@@ -863,6 +884,19 @@ const Feedback: React.FC = () => {
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Lightbox for viewing images */}
+      <Dialog open={!!lightboxImage} onOpenChange={() => setLightboxImage(null)}>
+        <DialogContent className="!max-w-4xl !max-h-[90vh] p-2 bg-black/90 border-none">
+          {lightboxImage && (
+            <img
+              src={lightboxImage}
+              alt="Full size preview"
+              className="max-w-full max-h-[85vh] object-contain mx-auto rounded-md"
+            />
+          )}
         </DialogContent>
       </Dialog>
     </PageLayout>
