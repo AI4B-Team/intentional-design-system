@@ -253,9 +253,8 @@ function DealCard({
       <div className="p-4">
         {/* Location */}
         <p className="text-sm text-muted-foreground">{deal.county}</p>
-        <p className="font-semibold text-primary text-base">
-          {deal.address}, {deal.city}, {deal.state} {deal.zip}
-        </p>
+        <p className="font-semibold text-primary text-base">{deal.address}</p>
+        <p className="text-sm text-muted-foreground">{deal.city}, {deal.state} {deal.zip}</p>
 
         {/* Deal Risk Meter */}
         <DealRiskMeter arvPercent={deal.arvPercent} />
