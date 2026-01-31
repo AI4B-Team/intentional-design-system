@@ -621,6 +621,7 @@ export function AppSidebar({
 
       {/* Sidebar */}
       <aside
+        data-sidebar
         className={cn(
           "fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200",
           collapsed ? "lg:w-16" : "lg:w-64",
