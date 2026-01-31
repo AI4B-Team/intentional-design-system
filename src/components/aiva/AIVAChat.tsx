@@ -304,7 +304,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         {/* Chat Messages */}
         <ScrollArea ref={scrollAreaRef} className="flex-1">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full py-6 px-4">
+            <div className="flex flex-col items-center justify-end h-full py-6 px-4 pb-2">
               {/* Three Dots - Animated */}
               <div className="flex gap-2 mb-4">
                 <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "1s" }} />
@@ -401,7 +401,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="border-t p-3 pb-6 mt-auto">
+        <div className="border-t p-3 pb-4 mt-auto shrink-0">
           <form onSubmit={handleSubmit} className="relative">
             <div className="flex flex-col gap-3 rounded-xl border-2 border-slate-300 bg-background p-3">
               {/* Input Field - taller */}
