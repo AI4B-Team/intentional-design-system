@@ -38,6 +38,14 @@ interface UseMockDealsOptions {
   perPage: number;
 }
 
+// Get today's date and various past dates for realistic listing ages
+const today = new Date();
+const getDateString = (daysAgo: number) => {
+  const date = new Date(today);
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString().split('T')[0];
+};
+
 const mockDeals: MarketplaceDeal[] = [
   {
     id: "1",
@@ -53,13 +61,13 @@ const mockDeals: MarketplaceDeal[] = [
     beds: 3,
     baths: 2,
     sqft: 1850,
-    tags: ["Single Family", "High Equity", "Cash Buyer"],
+    tags: ["Single Family", "High Equity", "Cash Buyer", "Motivated Seller"],
     isNew: true,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80",
     lat: 27.9506,
     lng: -82.4572,
-    createdAt: "2026-01-27",
+    createdAt: getDateString(0), // Today - shows "New"
   },
   {
     id: "2",
@@ -75,13 +83,13 @@ const mockDeals: MarketplaceDeal[] = [
     beds: 4,
     baths: 3,
     sqft: 2200,
-    tags: ["Single Family", "Divorce", "Motivated Seller"],
+    tags: ["Single Family", "Divorce", "Motivated Seller", "High Equity", "Quick Close"],
     isNew: true,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
     lat: 26.1224,
     lng: -80.1373,
-    createdAt: "2026-01-27",
+    createdAt: getDateString(0), // Today - shows "New"
   },
   {
     id: "3",
@@ -103,7 +111,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
     lat: 26.7153,
     lng: -80.0534,
-    createdAt: "2026-01-25",
+    createdAt: getDateString(3), // 3 days ago
   },
   {
     id: "4",
@@ -125,7 +133,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80",
     lat: 25.7907,
     lng: -80.1300,
-    createdAt: "2026-01-24",
+    createdAt: getDateString(7), // 7 days ago - shows "For Sale"
   },
   {
     id: "5",
@@ -147,7 +155,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80",
     lat: 28.5383,
     lng: -81.3792,
-    createdAt: "2026-01-26",
+    createdAt: getDateString(2), // 2 days ago
   },
   {
     id: "6",
@@ -169,7 +177,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=800&q=80",
     lat: 27.7676,
     lng: -82.6403,
-    createdAt: "2026-01-23",
+    createdAt: getDateString(10), // 10 days ago - shows "For Sale"
   },
   {
     id: "7",
@@ -191,7 +199,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80",
     lat: 27.9659,
     lng: -82.8001,
-    createdAt: "2026-01-22",
+    createdAt: getDateString(8), // 8 days ago - shows "For Sale"
   },
   {
     id: "8",
@@ -213,7 +221,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=800&q=80",
     lat: 27.3364,
     lng: -82.5307,
-    createdAt: "2026-01-27",
+    createdAt: getDateString(0), // Today - shows "New"
   },
   {
     id: "9",
@@ -235,7 +243,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
     lat: 30.3322,
     lng: -81.6557,
-    createdAt: "2026-01-21",
+    createdAt: getDateString(12), // 12 days ago - shows "For Sale"
   },
   {
     id: "10",
@@ -257,7 +265,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
     lat: 26.1420,
     lng: -81.7948,
-    createdAt: "2026-01-20",
+    createdAt: getDateString(6), // 6 days ago - shows "For Sale"
   },
   {
     id: "11",
@@ -279,7 +287,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80",
     lat: 29.6516,
     lng: -82.3248,
-    createdAt: "2026-01-26",
+    createdAt: getDateString(1), // 1 day ago
   },
   {
     id: "12",
@@ -301,7 +309,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
     lat: 30.4383,
     lng: -84.2807,
-    createdAt: "2026-01-19",
+    createdAt: getDateString(15), // 15 days ago - shows "For Sale"
   },
   {
     id: "13",
@@ -323,7 +331,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600047509358-9dc75507daeb?w=800&q=80",
     lat: 30.4213,
     lng: -87.2169,
-    createdAt: "2026-01-18",
+    createdAt: getDateString(4), // 4 days ago
   },
   {
     id: "14",
@@ -345,7 +353,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=800&q=80",
     lat: 29.1872,
     lng: -82.1401,
-    createdAt: "2026-01-27",
+    createdAt: getDateString(0), // Today - shows "New"
   },
 ];
 
