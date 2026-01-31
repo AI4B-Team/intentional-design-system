@@ -8,27 +8,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Menu,
   Search,
   Plus,
-  Bell,
   User,
   ChevronRight,
   ChevronDown,
   UserPlus,
   Hammer,
   CheckSquare,
-  Send,
-  Target,
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
 import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 
 interface Breadcrumb {
   label: string;
@@ -170,45 +166,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       <HelpButton variant="icon" />
 
       {/* Notifications */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button className="relative p-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-destructive rounded-full" />
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80 bg-background">
-          <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <div className="max-h-80 overflow-y-auto">
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-              <span className="font-medium">New lead assigned</span>
-              <span className="text-small text-muted-foreground">
-                123 Oak Street has been assigned to you
-              </span>
-              <span className="text-tiny text-muted-foreground/70">2 min ago</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-              <span className="font-medium">Deal updated</span>
-              <span className="text-small text-muted-foreground">
-                456 Pine Ave moved to Due Diligence
-              </span>
-              <span className="text-tiny text-muted-foreground/70">1 hour ago</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex flex-col items-start gap-1 py-3 cursor-pointer">
-              <span className="font-medium">Document signed</span>
-              <span className="text-small text-muted-foreground">
-                Purchase agreement for 789 Elm St
-              </span>
-              <span className="text-tiny text-muted-foreground/70">3 hours ago</span>
-            </DropdownMenuItem>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="justify-center text-primary font-medium cursor-pointer">
-            View all notifications
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <NotificationsDropdown />
 
       {/* User Dropdown */}
       <ProfileDropdown />
