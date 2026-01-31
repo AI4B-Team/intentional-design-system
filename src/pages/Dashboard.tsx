@@ -1322,7 +1322,7 @@ export default function Dashboard() {
               {displayTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} Remaining
             </span>
           </div>
-          <div className="max-h-[320px] overflow-y-auto">
+          <div className="max-h-[320px] overflow-y-auto scrollbar-hide">
             {tasksLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
