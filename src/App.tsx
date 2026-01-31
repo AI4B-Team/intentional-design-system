@@ -67,6 +67,7 @@ import MailTemplateEditor from "./pages/MailTemplateEditor";
 import MailSuppression from "./pages/MailSuppression";
 import AIVA from "./pages/AIVA";
 import UnifiedInbox from "./pages/UnifiedInbox";
+import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import DealAnalyzer from "./pages/DealAnalyzer";
@@ -935,11 +936,20 @@ const App = () => (
               }
             />
             
+            {/* Pipeline */}
+            <Route
+              path="/pipeline"
+              element={
+                <ProtectedRoute>
+                  <Pipeline />
+                </ProtectedRoute>
+              }
+            />
+            
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
             <Route path="/deal-sources" element={<Navigate to="/contacts" replace />} />
-            <Route path="/pipeline" element={<Navigate to="/properties" replace />} />
             <Route path="/documents" element={<Navigate to="/properties" replace />} />
             
             {/* Catch-all */}
