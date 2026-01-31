@@ -38,6 +38,7 @@ import {
   Calendar,
   Circle,
   Heart,
+  Share2,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -232,11 +233,12 @@ function DealCard({
               onSelect(!isSelected);
             }}
             className={cn(
-              "flex items-center justify-center h-6 w-6 rounded-full border-2 transition-colors",
+              "flex items-center justify-center h-6 w-6 rounded-full border-2 transition-all",
               isSelected 
                 ? "bg-primary border-primary" 
-                : "bg-white/90 border-white/80 hover:border-primary/50"
+                : "border-white/70 hover:border-white hover:scale-105"
             )}
+            style={{ backgroundColor: isSelected ? undefined : 'transparent' }}
           >
             {isSelected && (
               <Circle className="h-2.5 w-2.5 fill-white text-white" />
@@ -247,21 +249,34 @@ function DealCard({
           </Badge>
         </div>
 
-        {/* Top Right: Heart/Favorite button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsFavorited(!isFavorited);
-          }}
-          className={cn(
-            "absolute top-3 right-3 flex items-center justify-center h-8 w-8 rounded-full transition-colors",
-            isFavorited 
-              ? "bg-red-500 text-white" 
-              : "bg-white/90 text-muted-foreground hover:text-red-500 hover:bg-white"
-          )}
-        >
-          <Heart className={cn("h-4 w-4", isFavorited && "fill-current")} />
-        </button>
+        {/* Top Right: Share + Heart buttons */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              // Share functionality
+            }}
+            className="flex items-center justify-center h-7 w-7 rounded-full text-white/90 hover:text-white hover:scale-105 transition-all"
+            style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          >
+            <Share2 className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsFavorited(!isFavorited);
+            }}
+            className={cn(
+              "flex items-center justify-center h-7 w-7 rounded-full transition-all hover:scale-105",
+              isFavorited 
+                ? "bg-red-500 text-white" 
+                : "text-white/90 hover:text-white"
+            )}
+            style={{ backgroundColor: isFavorited ? undefined : 'rgba(0,0,0,0.3)' }}
+          >
+            <Heart className={cn("h-3.5 w-3.5", isFavorited && "fill-current")} />
+          </button>
+        </div>
 
         {/* Tags at bottom of image */}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
