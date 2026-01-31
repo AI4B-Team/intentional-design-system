@@ -1063,7 +1063,7 @@ export default function Dashboard() {
               <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
-          <div className="max-h-[400px] overflow-y-auto">
+          <div className="overflow-hidden">
             {hotLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -1078,9 +1078,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-2">
-                {/* Use demo data if no real opportunities, otherwise use enhanced from insights */}
-                {displayHotOpportunities?.slice(0, 8).map((opp) => {
-                  // Check if it's an enhanced opportunity with urgency_reason
+                {/* Top 5 - Always visible */}
+                {displayHotOpportunities?.slice(0, 5).map((opp) => {
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
                   if (enhanced) {
@@ -1105,6 +1104,17 @@ export default function Dashboard() {
                     />
                   );
                 })}
+
+                {/* Show remaining count if more than 5 */}
+                {displayHotOpportunities && displayHotOpportunities.length > 5 && (
+                  <div 
+                    className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+                    onClick={() => navigate("/properties?sort=motivation_score")}
+                  >
+                    <span>+{displayHotOpportunities.length - 5} more opportunities</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
+                )}
               </div>
             )}
           </div>
