@@ -523,6 +523,9 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   const isEmpty = stage.count === 0;
   const showPressure = isEmpty && previousCount > 0;
 
+  // Generate "No X" message for empty stages
+  const emptyMessage = isEmpty ? `No ${stage.label.toLowerCase()}` : null;
+
   return (
     <div 
       className={cn(
@@ -538,30 +541,42 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         stage.color,
         showPressure && "animate-pulse"
       )} />
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <p className={cn(
-            "text-small font-medium group-hover:text-primary transition-colors",
+            "text-small font-medium group-hover:text-primary transition-colors truncate",
             showPressure ? "text-destructive" : "text-foreground"
           )}>
             {stage.label}
           </p>
-          {isBottleneck && (
-            <span className="text-tiny bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-medium flex items-center gap-1">
+          {showPressure && (
+            <span className="text-tiny bg-destructive/10 text-destructive px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
               <AlertTriangle className="h-2.5 w-2.5" />
-              Bottleneck
+              Gap
+            </span>
+          )}
+          {isBottleneck && !showPressure && (
+            <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              Slow
             </span>
           )}
         </div>
-        {bottleneckReason && (
-          <p className="text-tiny text-destructive/80 mt-0.5">{bottleneckReason}</p>
+        {showPressure && emptyMessage && (
+          <p className="text-tiny text-destructive/70 mt-0.5">{emptyMessage} — needs attention</p>
+        )}
+        {bottleneckReason && !showPressure && (
+          <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
         )}
       </div>
       <div className="text-right flex items-center gap-3">
         <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
           <div 
-            className={cn("h-full rounded-full transition-all duration-300", stage.color)} 
-            style={{ width: `${percentage}%` }}
+            className={cn(
+              "h-full rounded-full transition-all duration-300", 
+              showPressure ? "bg-destructive/30" : stage.color
+            )} 
+            style={{ width: showPressure ? "100%" : `${percentage}%` }}
           />
         </div>
         <p className={cn(
@@ -570,8 +585,11 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         )}>
           {stage.count}
         </p>
-        {previousCount > 0 && conversionRate > 0 && (
+        {previousCount > 0 && conversionRate > 0 && !showPressure && (
           <p className="text-tiny text-muted-foreground w-12 text-right">{conversionRate}%</p>
+        )}
+        {showPressure && (
+          <p className="text-tiny text-destructive w-12 text-right">0%</p>
         )}
       </div>
     </div>
@@ -899,7 +917,7 @@ export default function Dashboard() {
                   stage={stage}
                   total={totalPipeline}
                   previousCount={index > 0 ? pipelineStats[index - 1].count : stage.count}
-                  onClick={() => navigate(`/properties?status=${stage.status}`)}
+                  onClick={() => navigate(`/pipeline?filter=${stage.status}`)}
                 />
               ))}
             </div>
