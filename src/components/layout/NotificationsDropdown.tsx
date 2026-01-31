@@ -366,8 +366,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
   return (
     <div
       className={cn(
-        "relative p-3 hover:bg-muted/50 transition-colors cursor-pointer group",
-        !notification.read && "bg-primary/5",
+        "relative p-3 bg-background hover:bg-muted/50 transition-colors cursor-pointer group",
         getTypeBorderStyles(notification.type)
       )}
       onClick={() => {
@@ -578,7 +577,7 @@ export function NotificationsDropdown() {
             <h3 className="font-semibold text-base">Notifications</h3>
             {unreadCount > 0 && (
               <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-                {unreadCount} new
+                {unreadCount} New
               </Badge>
             )}
           </div>
@@ -587,7 +586,10 @@ export function NotificationsDropdown() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={() => setIsMuted(!isMuted)}
+              onClick={() => {
+                setIsMuted(!isMuted);
+                toast.success(isMuted ? "Notifications unmuted" : "Notifications muted");
+              }}
               title={isMuted ? "Unmute notifications" : "Mute notifications"}
             >
               {isMuted ? (
@@ -600,7 +602,10 @@ export function NotificationsDropdown() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={() => navigate("/settings/notifications")}
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/settings/notifications");
+              }}
               title="Notification settings"
             >
               <Settings className="h-4 w-4 text-muted-foreground" />
@@ -611,7 +616,7 @@ export function NotificationsDropdown() {
         {/* AI Feature Banner */}
         <div className="px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 border-b flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-primary" />
-          <span className="text-xs text-primary font-medium">AI-powered suggestions to help you win deals</span>
+          <span className="text-xs text-primary font-medium">AI-Powered Suggestions To Help You Win Deals</span>
         </div>
 
         {/* Category Tabs */}
