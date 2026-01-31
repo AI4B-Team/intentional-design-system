@@ -450,7 +450,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
             <div className="mt-2 p-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
               <div className="flex items-center gap-1.5 mb-2">
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
-                <span className="text-xs font-medium text-primary">AI Suggestions to Win</span>
+                <span className="text-xs font-medium text-primary">AI Suggestions To Win</span>
               </div>
               {isLoadingSuggestions ? (
                 <div className="flex items-center justify-center py-3">
@@ -495,7 +495,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
                 </p>
               )}
               <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
-                Click a suggestion to copy
+                Click A Suggestion To Copy
               </p>
             </div>
           )}
