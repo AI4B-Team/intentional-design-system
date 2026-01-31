@@ -94,7 +94,6 @@ const marketingGroup: NavGroup = {
     { label: "Email", href: "/marketing/email", icon: AtSign },
     { label: "Dialer", href: "/dialer", icon: Phone },
     { label: "Direct Mail", href: "/mail", icon: Mail },
-    { label: "MLS", href: "/campaigns", icon: Megaphone },
     { label: "Website", href: "/websites", icon: Globe },
   ],
 };
