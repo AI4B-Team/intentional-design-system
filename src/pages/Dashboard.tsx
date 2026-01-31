@@ -963,6 +963,59 @@ export default function Dashboard() {
   const hasEnoughRealActivity = (recentActivity?.length || 0) >= 4;
   const displayActivity = hasEnoughRealActivity ? recentActivity : demoRecentActivity;
 
+  // Demo tasks data for visualization
+  const demoTodaysTasks = [
+    {
+      id: "demo-task-1",
+      type: "appointment" as const,
+      title: "Property Walkthrough - 1842 Sunset Boulevard",
+      time: "10:00 AM",
+      propertyId: "demo-1",
+      propertyAddress: "1842 Sunset Boulevard",
+      completed: false,
+    },
+    {
+      id: "demo-task-2",
+      type: "followup" as const,
+      title: "Follow up on 3921 Maple Street",
+      time: "11:30 AM",
+      propertyId: "demo-2",
+      propertyAddress: "3921 Maple Street",
+      completed: false,
+    },
+    {
+      id: "demo-task-3",
+      type: "appointment" as const,
+      title: "Seller Meeting - 7845 Oak Avenue",
+      time: "2:00 PM",
+      propertyId: "demo-3",
+      propertyAddress: "7845 Oak Avenue",
+      completed: false,
+    },
+    {
+      id: "demo-task-4",
+      type: "followup" as const,
+      title: "Send offer to 2156 Cherry Lane",
+      time: "3:30 PM",
+      propertyId: "demo-4",
+      propertyAddress: "2156 Cherry Lane",
+      completed: false,
+    },
+    {
+      id: "demo-task-5",
+      type: "appointment" as const,
+      title: "Inspection - 9023 Birch Court",
+      time: "5:00 PM",
+      propertyId: "demo-5",
+      propertyAddress: "9023 Birch Court",
+      completed: false,
+    },
+  ];
+
+  // Use demo tasks if not enough real data
+  const hasEnoughRealTasks = (todaysTasks?.length || 0) >= 3;
+  const displayTasks = hasEnoughRealTasks ? todaysTasks : demoTodaysTasks;
+
   const handleTaskToggle = (taskId: string) => {
     setCompletedTasks(prev => {
       const next = new Set(prev);
@@ -1223,7 +1276,7 @@ export default function Dashboard() {
               <h2 className="text-body font-semibold text-foreground">Today's Tasks</h2>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {todaysTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} Remaining
+              {displayTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} Remaining
             </span>
           </div>
           <div className="max-h-[320px] overflow-y-auto">
@@ -1240,15 +1293,9 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            ) : todaysTasks?.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">You're All Caught Up</p>
-                <p className="text-tiny mt-1 uppercase tracking-wide">No Tasks For Today</p>
-              </div>
             ) : (
               <div className="p-2">
-                {todaysTasks?.map((task) => (
+                {displayTasks?.map((task) => (
                   <TaskItem
                     key={task.id}
                     task={{
