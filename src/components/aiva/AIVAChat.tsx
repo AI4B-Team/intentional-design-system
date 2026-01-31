@@ -13,6 +13,15 @@ import {
   SlidersHorizontal,
   X,
   MessageSquare,
+  Home,
+  DollarSign,
+  TrendingUp,
+  BarChart3,
+  Paperclip,
+  Database,
+  Globe,
+  Layers,
+  ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -32,6 +41,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import {
   Dialog,
@@ -145,6 +161,25 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const suggestedQuestions = [
     "Show me properties in Cleveland, OH under $150K",
   ];
+
+  // Quick actions for the tools menu
+  const quickActions = [
+    { label: "Analyze Property", icon: Home, prompt: "Analyze this property for investment potential including ARV, repairs estimate, and recommended offer price" },
+    { label: "Generate Offer", icon: DollarSign, prompt: "Generate a competitive offer based on the property details and comparable sales" },
+    { label: "Find Comps", icon: TrendingUp, prompt: "Find comparable properties sold in the last 6 months within a 1-mile radius" },
+    { label: "Market Analysis", icon: BarChart3, prompt: "Run a comprehensive market analysis for this area including trends and forecasts" },
+  ];
+
+  const handleQuickAction = (prompt: string) => {
+    setInput(prompt);
+    inputRef.current?.focus();
+  };
+
+  const handleAttachContext = () => {
+    toast.info("Context attachments coming soon!", {
+      description: "You'll be able to attach property data, lists, or files."
+    });
+  };
 
   // Placeholder chat history
   const chatHistory = [
@@ -382,21 +417,52 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       <span className="text-xs">Tools</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={() => setSearchType("database")}>
-                      <span className={cn(searchType === "database" && "font-semibold")}>
-                        Database Search
-                      </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSearchType("online")}>
-                      <span className={cn(searchType === "online" && "font-semibold")}>
-                        Online Research
-                      </span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSearchType("both")}>
-                      <span className={cn(searchType === "both" && "font-semibold")}>
-                        Both (Default)
-                      </span>
+                  <DropdownMenuContent align="start" className="w-56">
+                    {/* Quick Actions */}
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
+                    {quickActions.map((action) => (
+                      <DropdownMenuItem 
+                        key={action.label}
+                        onClick={() => handleQuickAction(action.prompt)}
+                        className="gap-2"
+                      >
+                        <action.icon className="h-4 w-4" />
+                        <span>{action.label}</span>
+                      </DropdownMenuItem>
+                    ))}
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Search Mode */}
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger className="gap-2">
+                        <Layers className="h-4 w-4" />
+                        <span>Search Mode</span>
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
+                          <DropdownMenuRadioItem value="database" className="gap-2">
+                            <Database className="h-4 w-4" />
+                            Database Only
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="online" className="gap-2">
+                            <Globe className="h-4 w-4" />
+                            Online Only
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="both" className="gap-2">
+                            <Layers className="h-4 w-4" />
+                            Both (Default)
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+                    
+                    <DropdownMenuSeparator />
+                    
+                    {/* Attach Context */}
+                    <DropdownMenuItem onClick={handleAttachContext} className="gap-2">
+                      <Paperclip className="h-4 w-4" />
+                      <span>Attach Context</span>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
