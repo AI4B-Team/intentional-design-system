@@ -20,6 +20,7 @@ import {
   UserPlus,
   Hammer,
   CheckSquare,
+  Home,
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
@@ -127,6 +128,19 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {/* Buy Box Button - Marketplace pages */}
+      {isMarketplacePage && (
+        <Button
+          size="sm"
+          variant="outline"
+          className="hidden sm:flex gap-1.5"
+          onClick={() => navigate("/marketplace/buy-box")}
+        >
+          <Home className="h-4 w-4" />
+          <span>Buy Box</span>
+        </Button>
+      )}
 
 
       {/* Mobile Add Button */}
