@@ -37,6 +37,7 @@ import {
   Tag,
   Calendar,
   Circle,
+  Heart,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -146,6 +147,7 @@ function DealCard({
   viewMode: "list" | "grid";
 }) {
   const navigate = useNavigate();
+  const [isFavorited, setIsFavorited] = React.useState(false);
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -244,6 +246,22 @@ function DealCard({
             {listingBadge.text}
           </Badge>
         </div>
+
+        {/* Top Right: Heart/Favorite button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFavorited(!isFavorited);
+          }}
+          className={cn(
+            "absolute top-3 right-3 flex items-center justify-center h-8 w-8 rounded-full transition-colors",
+            isFavorited 
+              ? "bg-red-500 text-white" 
+              : "bg-white/90 text-muted-foreground hover:text-red-500 hover:bg-white"
+          )}
+        >
+          <Heart className={cn("h-4 w-4", isFavorited && "fill-current")} />
+        </button>
 
         {/* Tags at bottom of image */}
         <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
