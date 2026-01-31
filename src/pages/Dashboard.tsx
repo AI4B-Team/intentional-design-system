@@ -309,15 +309,30 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
     : score > 500 ? "bg-warning text-warning-foreground" 
     : "bg-muted text-muted-foreground";
 
-  const statusColor = {
-    new: "bg-muted text-muted-foreground",
-    contacted: "bg-info/10 text-info",
-    appointment: "bg-warning/10 text-warning",
-    offer_made: "bg-accent/10 text-accent",
-    under_contract: "bg-chart-4/10 text-chart-4",
-    closed: "bg-success/10 text-success",
-    dead: "bg-destructive/10 text-destructive",
-  }[opportunity.status || "new"] || "bg-muted text-muted-foreground";
+  // Single "why it's hot" reason - pick the most compelling one
+  const getHotReason = (): { label: string; color: string } | null => {
+    if (opportunity.deal_score_rank === "🏆 Top Deal") {
+      return { label: "Top Deal", color: "bg-amber-100 text-amber-700" };
+    }
+    if (opportunity.urgency_reason?.includes("🔥")) {
+      return { label: "High Motivation", color: "bg-destructive/10 text-destructive" };
+    }
+    if (opportunity.profit_potential && opportunity.profit_potential > 50000) {
+      return { label: "High Spread", color: "bg-success/10 text-success" };
+    }
+    if (opportunity.equity_percent && opportunity.equity_percent > 40) {
+      return { label: `${Math.round(opportunity.equity_percent)}% Equity`, color: "bg-info/10 text-info" };
+    }
+    if (opportunity.days_since_added <= 1) {
+      return { label: "Fresh Lead", color: "bg-accent/10 text-accent" };
+    }
+    if (score > 500) {
+      return { label: "Above Avg Score", color: "bg-muted text-muted-foreground" };
+    }
+    return null;
+  };
+
+  const hotReason = getHotReason();
 
   return (
     <div 
@@ -333,49 +348,32 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         {score}
       </div>
 
-      {/* Address and WHY it's hot */}
+      {/* Address */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <p className="text-small font-medium text-foreground truncate group-hover:text-primary transition-colors">
-            {opportunity.address}
-          </p>
-          {opportunity.deal_score_rank === "🏆 Top Deal" && (
-            <span className="text-tiny bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-medium">
-              {opportunity.deal_score_rank}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-2 text-tiny text-muted-foreground">
-          <span>{[opportunity.city, opportunity.state].filter(Boolean).join(", ")}</span>
-          {opportunity.urgency_reason && (
-            <>
-              <span>•</span>
-              <span className={cn(
-                "font-medium",
-                opportunity.urgency_reason.includes("🔥") ? "text-destructive" :
-                opportunity.urgency_reason.includes("💰") ? "text-success" :
-                opportunity.urgency_reason.includes("📈") ? "text-info" :
-                "text-muted-foreground"
-              )}>
-                {opportunity.urgency_reason}
-              </span>
-            </>
-          )}
-        </div>
+        <p className="text-small font-medium text-foreground truncate group-hover:text-primary transition-colors">
+          {opportunity.address}
+        </p>
+        <p className="text-tiny text-muted-foreground truncate">
+          {[opportunity.city, opportunity.state].filter(Boolean).join(", ")}
+        </p>
       </div>
 
-      {/* Profit Potential if available */}
-      {opportunity.profit_potential && opportunity.profit_potential > 0 && (
-        <div className="flex items-center gap-1 text-tiny text-success font-medium bg-success/10 px-2 py-0.5 rounded-full">
-          <DollarSign className="h-3 w-3" />
-          {formatCurrencyCompact(opportunity.profit_potential)}
-        </div>
+      {/* Single "Why It's Hot" Badge - One reason only */}
+      {hotReason && (
+        <span className={cn(
+          "px-2 py-0.5 rounded-full text-tiny font-medium whitespace-nowrap shrink-0",
+          hotReason.color
+        )}>
+          {hotReason.label}
+        </span>
       )}
 
-      {/* Status */}
-      <span className={cn("px-2 py-0.5 rounded-full text-tiny font-medium capitalize transition-all duration-150 hidden sm:inline", statusColor)}>
-        {(opportunity.status || "new").replace("_", " ")}
-      </span>
+      {/* Profit if significant */}
+      {opportunity.profit_potential && opportunity.profit_potential > 30000 && (
+        <span className="text-tiny text-success font-semibold tabular-nums hidden sm:inline">
+          +{formatCurrencyCompact(opportunity.profit_potential)}
+        </span>
+      )}
 
       {/* Quick Actions */}
       <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0">
@@ -849,7 +847,10 @@ export default function Dashboard() {
               <div className="p-1.5 rounded-lg bg-destructive/10">
                 <Flame className="h-4 w-4 text-destructive" />
               </div>
-              <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+              <div>
+                <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+                <p className="text-tiny text-muted-foreground">Top 10% by profit, urgency, or score</p>
+              </div>
             </div>
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => navigate("/properties")}>
               View All
@@ -876,15 +877,33 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-2">
-                {hotOpportunities?.map((opp) => (
-                  <HotOpportunityItem
-                    key={opp.id}
-                    opportunity={opp}
-                    onClick={() => navigate(`/properties/${opp.id}`)}
-                    onCall={(e) => handleCall(e, opp.owner_phone)}
-                    onEmail={(e) => handleEmail(e, opp.owner_email)}
-                  />
-                ))}
+                {/* Use enhanced opportunities from insights if available, fallback to regular */}
+                {(insights?.hotOpportunities || hotOpportunities)?.slice(0, 5).map((opp) => {
+                  // Check if it's an enhanced opportunity with urgency_reason
+                  const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
+                  
+                  if (enhanced) {
+                    return (
+                      <EnhancedHotOpportunityItem
+                        key={enhanced.id}
+                        opportunity={enhanced}
+                        onClick={() => navigate(`/properties/${enhanced.id}`)}
+                        onCall={(e) => handleCall(e, enhanced.owner_phone)}
+                        onEmail={(e) => handleEmail(e, enhanced.owner_email)}
+                      />
+                    );
+                  }
+                  
+                  return (
+                    <HotOpportunityItem
+                      key={opp.id}
+                      opportunity={opp}
+                      onClick={() => navigate(`/properties/${opp.id}`)}
+                      onCall={(e) => handleCall(e, opp.owner_phone)}
+                      onEmail={(e) => handleEmail(e, opp.owner_email)}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>
