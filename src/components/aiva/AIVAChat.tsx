@@ -23,6 +23,9 @@ import {
   Layers,
   ChevronRight,
   Check,
+  Search,
+  FileText,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -422,7 +425,24 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       <span className="text-xs">Tools</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuContent align="start" className="w-64">
+                    {/* Capabilities */}
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">What I Can Do</DropdownMenuLabel>
+                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                      <Search className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">Property Search</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                      <FileText className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">Deal Analysis</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <span className="text-muted-foreground">Market Research</span>
+                    </DropdownMenuItem>
+                    
+                    <DropdownMenuSeparator />
+                    
                     {/* Quick Actions */}
                     <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
                     {quickActions.map((action) => (
