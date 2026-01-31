@@ -12,6 +12,7 @@ import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { DispoWidget } from "@/components/dashboard/DispoWidget";
+import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import {
   Building2,
   Calendar,
@@ -32,6 +33,7 @@ import {
   Handshake,
   BadgeDollarSign,
   Target,
+  Settings2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -58,6 +60,7 @@ interface PipelineValueCardProps {
   profitLabel?: string;
   isLoading?: boolean;
   onClick?: () => void;
+  goal?: number;
 }
 
 function PipelineValueCard({ 
@@ -69,8 +72,12 @@ function PipelineValueCard({
   iconBg, 
   profitLabel = "Profit Potential",
   isLoading,
-  onClick 
+  onClick,
+  goal = 0,
 }: PipelineValueCardProps) {
+  const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
+  const hasGoal = goal > 0;
+
   if (isLoading) {
     return (
       <Card variant="default" padding="md" className="animate-pulse">
@@ -114,10 +121,34 @@ function PipelineValueCard({
           </div>
         </div>
 
-        {/* Count */}
-        <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
-          {count}
-        </p>
+        {/* Count with Goal */}
+        <div>
+          <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
+            {count}
+          </p>
+          {hasGoal && (
+            <div className="mt-2">
+              <div className="flex items-center justify-between text-tiny mb-1">
+                <span className="text-muted-foreground">Goal: {goal}</span>
+                <span className={cn(
+                  "font-medium",
+                  goalProgress >= 100 ? "text-success" : goalProgress >= 50 ? "text-warning" : "text-muted-foreground"
+                )}>
+                  {goalProgress}%
+                </span>
+              </div>
+              <div className="w-full h-1.5 bg-background-tertiary rounded-full overflow-hidden">
+                <div 
+                  className={cn(
+                    "h-full rounded-full transition-all duration-500",
+                    goalProgress >= 100 ? "bg-success" : goalProgress >= 50 ? "bg-warning" : iconBg
+                  )}
+                  style={{ width: `${goalProgress}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Value and Profit */}
         <div className="space-y-2 pt-2 border-t border-border-subtle">
@@ -446,6 +477,7 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
+  const goals = useGoals();
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: pipelineValueStats, isLoading: pipelineValueLoading } = usePipelineValueStats();
@@ -485,13 +517,21 @@ export default function Dashboard() {
   return (
     <AppLayout>
       {/* Greeting Header */}
-      <div className="mb-8">
-        <p className="text-small text-muted-foreground font-medium">
-          {format(new Date(), "EEEE, MMMM d, yyyy")}
-        </p>
-        <h1 className="text-h1 font-bold text-foreground mt-1">
-          Welcome Back 👋
-        </h1>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <p className="text-small text-muted-foreground font-medium">
+            {format(new Date(), "EEEE, MMMM d, yyyy")}
+          </p>
+          <h1 className="text-h1 font-bold text-foreground mt-1">
+            Welcome Back 👋
+          </h1>
+        </div>
+        <GoalSettingsDialog>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Target className="h-4 w-4" />
+            Goal Settings
+          </Button>
+        </GoalSettingsDialog>
       </div>
 
       {/* Pipeline Value Cards - Key Metrics */}
@@ -505,6 +545,7 @@ export default function Dashboard() {
           iconBg="bg-info"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=new,contacted,appointment")}
+          goal={goals.leadsGoal}
         />
         <PipelineValueCard
           title="Offers"
@@ -515,6 +556,7 @@ export default function Dashboard() {
           iconBg="bg-warning"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
+          goal={goals.offersGoal}
         />
         <PipelineValueCard
           title="Contracts"
@@ -525,6 +567,7 @@ export default function Dashboard() {
           iconBg="bg-accent"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=under_contract")}
+          goal={goals.contractsGoal}
         />
         <PipelineValueCard
           title="Sold"
@@ -536,6 +579,7 @@ export default function Dashboard() {
           profitLabel="Realized Profit"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=closed")}
+          goal={goals.soldGoal}
         />
       </div>
 
