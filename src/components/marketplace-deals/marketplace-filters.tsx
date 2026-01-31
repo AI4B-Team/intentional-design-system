@@ -216,7 +216,7 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-2 justify-between font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
                 <span className="truncate">{getHomeTypeLabel()}</span>
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
@@ -276,7 +276,7 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-2 justify-between font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
                 Beds & Baths
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
