@@ -420,9 +420,9 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                 {/* Tools Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 rounded-full gap-2">
+                    <Button variant="outline" size="sm" className="h-8 rounded-full gap-2 border-muted-foreground/20 text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 bg-transparent">
                       <SlidersHorizontal className="h-3.5 w-3.5" />
-                      <span className="text-xs">Tools</span>
+                      <span className="text-xs font-normal">Tools</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start" className="w-64">
@@ -544,7 +544,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     </div>
                   ) : (
                     /* Default State - Attach + Mic + Send */
-                    <>
+                    <div className="flex items-center gap-2">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -552,10 +552,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                               type="button" 
                               variant="ghost" 
                               size="icon" 
-                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                              className="h-9 w-9 text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
                               onClick={handleAttachContext}
                             >
-                              <Paperclip className="h-4 w-4" />
+                              <Paperclip className="h-5 w-5" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
@@ -568,24 +568,31 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                               type="button" 
                               variant="ghost" 
                               size="icon" 
-                              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              className="h-9 w-9 text-muted-foreground/60 hover:text-destructive hover:bg-transparent transition-colors"
                               onClick={startRecording}
                             >
-                              <Mic className="h-4 w-4" />
+                              <Mic className="h-5 w-5" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="bg-white text-gray-900 border shadow-md">Voice Input</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <Button 
-                        type="submit" 
-                        size="icon" 
-                        disabled={!input.trim() || isLoading}
-                        className="h-8 w-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="submit" 
+                              size="icon" 
+                              disabled={!input.trim() || isLoading}
+                              className="h-10 w-10 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-500 border border-emerald-200 shadow-sm transition-all disabled:opacity-40"
+                            >
+                              <Send className="h-5 w-5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Send</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   )}
                 </div>
               </div>
