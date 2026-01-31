@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import html2canvas from "html2canvas";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -312,6 +313,35 @@ const Feedback: React.FC = () => {
       }, 300000);
     } catch (err) {
       toast.error("Could not start screen recording");
+    }
+  };
+
+  const captureScreenshot = async () => {
+    try {
+      // Close dialog temporarily to capture the page behind it
+      setShowSubmitDialog(false);
+      
+      // Wait for dialog to close
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const canvas = await html2canvas(document.body, {
+        useCORS: true,
+        allowTaint: true,
+        scale: 1,
+      });
+      
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], `screenshot-${Date.now()}.png`, { type: "image/png" });
+          setFormAttachments(prev => [...prev, file]);
+          toast.success("Screenshot captured");
+        }
+        // Reopen dialog
+        setShowSubmitDialog(true);
+      }, "image/png");
+    } catch (err) {
+      toast.error("Could not capture screenshot");
+      setShowSubmitDialog(true);
     }
   };
 
@@ -718,6 +748,16 @@ const Feedback: React.FC = () => {
                 >
                   <Image className="h-4 w-4" />
                   Upload Image
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={captureScreenshot}
+                  className="gap-2"
+                >
+                  <Camera className="h-4 w-4" />
+                  Screenshot Page
                 </Button>
                 <Button
                   type="button"
