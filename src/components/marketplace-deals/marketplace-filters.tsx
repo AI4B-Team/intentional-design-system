@@ -367,7 +367,7 @@ export function MarketplaceFilters({
             className="h-10 gap-2 px-4 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0 whitespace-nowrap"
           >
             <Bookmark className="h-4 w-4" />
-            Save
+            Save Search
           </Button>
         </div>
 
