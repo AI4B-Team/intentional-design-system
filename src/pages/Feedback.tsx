@@ -26,7 +26,8 @@ import {
   Info,
   Clock,
   CheckCircle2,
-  Link2
+  Link2,
+  Archive
 } from "lucide-react";
 import {
   Select,
@@ -341,19 +342,31 @@ const Feedback: React.FC = () => {
     );
   };
 
-  // Group bugs by similarity
-  const groupedBugs = feedback.filter(f => f.type === "bug").reduce((acc, bug) => {
+  // Helper to check if feedback is archived (closed or resolved)
+  const isArchived = (status: string) => status === "closed" || status === "resolved" || status === "completed";
+
+  // Group bugs by similarity (exclude archived)
+  const activeBugs = feedback.filter(f => f.type === "bug" && !isArchived(f.status));
+  const groupedBugs = activeBugs.reduce((acc, bug) => {
     const group = bug.similarityGroup || bug.id;
     if (!acc[group]) acc[group] = [];
     acc[group].push(bug);
     return acc;
   }, {} as { [key: string]: FeedbackItem[] });
 
-  const featureRequests = feedback.filter(f => f.type === "feature").sort((a, b) => b.voteCount - a.voteCount);
-  const generalFeedback = feedback.filter(f => f.type === "general");
+  const featureRequests = feedback.filter(f => f.type === "feature" && !isArchived(f.status)).sort((a, b) => b.voteCount - a.voteCount);
+  const generalFeedback = feedback.filter(f => f.type === "general" && !isArchived(f.status));
+  
+  // Archived items
+  const archivedFeedback = feedback.filter(f => isArchived(f.status)).sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 
-  const renderFeedbackCard = (item: FeedbackItem, showSimilar?: FeedbackItem[]) => (
-    <Card key={item.id} className="mb-4">
+  const renderFeedbackCard = (item: FeedbackItem, showSimilar?: FeedbackItem[]) => {
+    const itemIsArchived = isArchived(item.status);
+    
+    return (
+    <Card key={item.id} className={cn("mb-4", itemIsArchived && "opacity-70 bg-muted/30")}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -392,8 +405,10 @@ const Feedback: React.FC = () => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleVote(item.id)}
-            className={cn("gap-2", item.hasVoted && "text-primary")}
+            onClick={() => !itemIsArchived && handleVote(item.id)}
+            disabled={itemIsArchived}
+            className={cn("gap-2", item.hasVoted && "text-primary", itemIsArchived && "cursor-not-allowed")}
+            title={itemIsArchived ? "Voting is closed" : undefined}
           >
             <ThumbsUp className={cn("h-4 w-4", item.hasVoted && "fill-current")} />
             {item.voteCount}
@@ -407,6 +422,9 @@ const Feedback: React.FC = () => {
             <MessageCircle className="h-4 w-4" />
             {item.comments.length}
           </Button>
+          {itemIsArchived && (
+            <span className="text-xs text-muted-foreground ml-auto">Archived</span>
+          )}
         </div>
         
         {/* Similar bugs */}
@@ -450,23 +468,30 @@ const Feedback: React.FC = () => {
               </div>
             ))}
             
-            {/* Add comment */}
-            <div className="flex gap-2 pt-2">
-              <Input
-                placeholder="Add a comment..."
-                value={newComment[item.id] || ""}
-                onChange={(e) => setNewComment(prev => ({ ...prev, [item.id]: e.target.value }))}
-                onKeyDown={(e) => e.key === "Enter" && handleAddComment(item.id)}
-              />
-              <Button size="icon" onClick={() => handleAddComment(item.id)}>
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
+            {/* Add comment - only show if not archived */}
+            {!itemIsArchived ? (
+              <div className="flex gap-2 pt-2">
+                <Input
+                  placeholder="Add a comment..."
+                  value={newComment[item.id] || ""}
+                  onChange={(e) => setNewComment(prev => ({ ...prev, [item.id]: e.target.value }))}
+                  onKeyDown={(e) => e.key === "Enter" && handleAddComment(item.id)}
+                />
+                <Button size="icon" onClick={() => handleAddComment(item.id)}>
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground pt-2 text-center">
+                Comments are closed for archived items
+              </div>
+            )}
           </CollapsibleContent>
         </Collapsible>
       </CardContent>
     </Card>
   );
+  };
 
   return (
     <PageLayout title="Feedback">
@@ -541,6 +566,12 @@ const Feedback: React.FC = () => {
             <Lightbulb className="h-4 w-4" />
             Feature Requests
           </TabsTrigger>
+          {archivedFeedback.length > 0 && (
+            <TabsTrigger value="archived" className="gap-2">
+              <Archive className="h-4 w-4" />
+              Archived ({archivedFeedback.length})
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="general">
@@ -577,6 +608,22 @@ const Feedback: React.FC = () => {
             </div>
           ) : (
             featureRequests.map(item => renderFeedbackCard(item))
+          )}
+        </TabsContent>
+
+        <TabsContent value="archived">
+          {archivedFeedback.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              <Archive className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No archived feedback yet</p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-4 p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                Archived items are closed for voting and new comments.
+              </div>
+              {archivedFeedback.map(item => renderFeedbackCard(item))}
+            </>
           )}
         </TabsContent>
       </Tabs>
