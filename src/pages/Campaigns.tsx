@@ -154,7 +154,7 @@ export default function Campaigns() {
       ) : !campaigns || campaigns.length === 0 ? (
         <Card variant="default" padding="lg" className="text-center">
           <Megaphone className="h-12 w-12 text-content-tertiary/50 mx-auto mb-4" />
-          <h3 className="text-h3 font-medium text-content mb-2">No campaigns yet</h3>
+          <h3 className="text-h3 font-medium text-content mb-2">No Campaigns Yet</h3>
           <p className="text-small text-content-secondary mb-4">
             Create your first campaign to send bulk offers to agent-listed properties.
           </p>

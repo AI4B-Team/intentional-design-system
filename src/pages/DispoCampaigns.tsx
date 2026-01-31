@@ -171,7 +171,7 @@ export default function DispoCampaigns() {
             ) : !campaigns?.length ? (
               <div className="text-center py-12">
                 <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No campaigns yet</h3>
+                <h3 className="text-lg font-semibold mb-2">No Campaigns Yet</h3>
                 <p className="text-muted-foreground mb-4">
                   Create your first email campaign to announce deals to buyers
                 </p>
