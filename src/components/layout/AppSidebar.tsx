@@ -75,7 +75,7 @@ const afterLeadsItems: NavItem[] = [
 const leadsNavItem: NavItem = {
   label: "Leads",
   href: "/lead-sources",
-  icon: UserPlus,
+  icon: Home,
 };
 
 // Contacts - direct nav item (not a collapsible group)
