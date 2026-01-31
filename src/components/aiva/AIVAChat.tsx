@@ -579,13 +579,14 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                           <TooltipTrigger asChild>
                             <Button 
                               type="submit" 
+                              variant="ghost"
                               size="icon" 
                               disabled={!input.trim() || isLoading}
                               className={cn(
-                                "h-11 w-11 rounded-full border-0 shadow-none transition-all",
+                                "h-11 w-11 rounded-full border-0 shadow-none transition-colors disabled:opacity-100",
                                 input.trim() && !isLoading
-                                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                                  : "bg-emerald-50 text-emerald-300"
+                                  ? "bg-primary/10 text-primary hover:bg-primary/15 active:bg-primary/20"
+                                  : "bg-muted/40 text-muted-foreground/40"
                               )}
                             >
                               <Send className="h-5 w-5" strokeWidth={1.5} />
