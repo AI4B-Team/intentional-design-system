@@ -17,6 +17,12 @@ import {
   Calculator,
   Banknote,
   LucideIcon,
+  ChevronsUpDown,
+  Plus,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Check,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +34,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+
+interface Workspace {
+  id: string;
+  name: string;
+  icon?: string;
+}
+
+const mockWorkspaces: Workspace[] = [
+  { id: "1", name: "Personal Investments", icon: "🏠" },
+  { id: "2", name: "ABC Realty Group", icon: "🏢" },
+  { id: "3", name: "Joint Ventures", icon: "🤝" },
+];
 
 interface NavItem {
   label: string;
@@ -104,6 +122,8 @@ export function AppSidebar({
       .slice(0, 2);
   };
 
+  const [currentWorkspace, setCurrentWorkspace] = React.useState<Workspace>(mockWorkspaces[0]);
+
   return (
     <aside
       className={cn(
@@ -124,6 +144,98 @@ export function AppSidebar({
             </span>
           )}
         </div>
+      </div>
+
+      {/* Workspace Switcher */}
+      <div className={cn("border-b border-border-subtle", collapsed ? "p-2" : "p-3")}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className={cn(
+                "flex w-full items-center gap-2 rounded-small p-2 transition-colors hover:bg-white group",
+                collapsed && "justify-center"
+              )}
+            >
+              <div className="flex h-8 w-8 items-center justify-center rounded-small bg-brand/10 text-lg shrink-0">
+                {currentWorkspace.icon || "📁"}
+              </div>
+              {!collapsed && (
+                <>
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="text-small font-medium text-content truncate">
+                      {currentWorkspace.name}
+                    </div>
+                    <div className="text-tiny text-content-tertiary">
+                      Workspace
+                    </div>
+                  </div>
+                  <ChevronsUpDown className="h-4 w-4 text-content-tertiary group-hover:text-content shrink-0" />
+                </>
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            side="bottom"
+            sideOffset={4}
+            className="w-64 bg-white z-[100]"
+          >
+            <div className="px-2 py-1.5 text-tiny font-medium text-content-tertiary uppercase tracking-wide">
+              Workspaces
+            </div>
+            {mockWorkspaces.map((workspace) => (
+              <DropdownMenuItem
+                key={workspace.id}
+                className="flex items-center gap-2 py-2 cursor-pointer"
+                onClick={() => setCurrentWorkspace(workspace)}
+              >
+                <div className="flex h-7 w-7 items-center justify-center rounded-small bg-brand/10 text-sm shrink-0">
+                  {workspace.icon || "📁"}
+                </div>
+                <span className="flex-1 truncate">{workspace.name}</span>
+                {currentWorkspace.id === workspace.id && (
+                  <Check className="h-4 w-4 text-brand shrink-0" />
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    asChild
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      className="p-1 rounded hover:bg-muted shrink-0"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <MoreHorizontal className="h-4 w-4 text-content-tertiary" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    side="right"
+                    sideOffset={4}
+                    className="w-40 bg-white z-[110]"
+                  >
+                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                      <Pencil className="h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="flex items-center gap-2 py-2 cursor-pointer">
+              <div className="flex h-7 w-7 items-center justify-center rounded-small border border-dashed border-border">
+                <Plus className="h-4 w-4 text-content-tertiary" />
+              </div>
+              <span className="text-content-secondary">Add Workspace</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Navigation Section */}
