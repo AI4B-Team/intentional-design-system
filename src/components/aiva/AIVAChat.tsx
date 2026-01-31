@@ -557,7 +557,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     </div>
                   ) : (
                     /* Default State - Mic + Send */
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -565,10 +565,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                               type="button" 
                               variant="ghost" 
                               size="icon" 
-                              className="h-9 w-9 text-muted-foreground/60 hover:text-destructive hover:bg-transparent transition-colors"
+                              className="h-10 w-10 text-slate-300 hover:text-destructive hover:bg-transparent transition-colors"
                               onClick={startRecording}
                             >
-                              <Mic className="h-5 w-5" />
+                              <Mic className="h-6 w-6" strokeWidth={1.5} />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="bg-white text-gray-900 border shadow-md">Voice Input</TooltipContent>
@@ -581,9 +581,9 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                               type="submit" 
                               size="icon" 
                               disabled={!input.trim() || isLoading}
-                              className="h-10 w-10 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-500 border border-emerald-200 shadow-sm transition-all disabled:opacity-40"
+                              className="h-11 w-11 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-400 border-0 shadow-none transition-all disabled:opacity-30"
                             >
-                              <Send className="h-5 w-5" />
+                              <Send className="h-5 w-5" strokeWidth={1.5} />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent className="bg-white text-gray-900 border shadow-md">Send</TooltipContent>
