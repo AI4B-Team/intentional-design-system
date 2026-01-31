@@ -403,7 +403,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         {/* Input Area */}
         <div className="border-t p-3 pb-6 mt-auto">
           <form onSubmit={handleSubmit} className="relative">
-            <div className="flex flex-col gap-3 rounded-xl border bg-background p-3">
+            <div className="flex flex-col gap-3 rounded-xl border-2 border-slate-300 bg-background p-3">
               {/* Input Field - taller */}
               <input
                 ref={inputRef}
