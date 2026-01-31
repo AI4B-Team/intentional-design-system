@@ -82,7 +82,7 @@ const contactsNavItem: NavItem = {
   icon: Users,
 };
 
-// Templates - direct nav item for quick access (formerly OfferBlaster)
+// Templates - direct nav item for quick access (formerly Offer Blaster)
 const templatesNavItem: NavItem = {
   label: "Templates",
   href: "/dispo/campaigns?tab=templates",
