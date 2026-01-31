@@ -17,7 +17,7 @@ import {
   DollarSign,
   TrendingUp,
   BarChart3,
-  Plus,
+  Paperclip,
   Database,
   Globe,
   Layers,
@@ -486,7 +486,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   
-                  {/* Attach Button - Modern Plus Icon */}
+                  {/* Attach Button - Modern Paperclip */}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -494,10 +494,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                           type="button" 
                           variant="ghost" 
                           size="icon" 
-                          className="h-8 w-8 rounded-full border border-muted-foreground/20 text-muted-foreground/60 hover:text-primary hover:border-primary/40 hover:bg-transparent transition-colors"
+                          className="h-8 w-8 rounded-full text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
                           onClick={handleAttachContext}
                         >
-                          <Plus className="h-4 w-4" />
+                          <Paperclip className="h-4 w-4" strokeWidth={1.5} />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
