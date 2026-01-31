@@ -115,7 +115,8 @@ export default function OfferBlaster() {
     (c) => c.id === selectedOfferType
   );
 
-  const isPOFRequired = marketType === "on_market" && selectedOfferConfig?.requiresPOF;
+  // POF is required only for on-market (MLS) properties with cash offers
+  const isPOFRequired = marketType === "on_market" && (selectedOfferType === "cash" || selectedOfferType === "hybrid");
 
   const handleOfferTypeSelect = (type: string) => {
     setSelectedOfferType(type as OfferType);
