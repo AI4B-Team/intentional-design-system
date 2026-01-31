@@ -519,8 +519,24 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       </TooltipProvider>
                     </div>
                   ) : (
-                    /* Default State - Mic + Send */
+                    /* Default State - Attach + Mic + Send */
                     <>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                              onClick={handleAttachContext}
+                            >
+                              <Paperclip className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
