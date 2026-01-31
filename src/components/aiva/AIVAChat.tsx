@@ -78,6 +78,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   
   // Dialog states
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [historySearch, setHistorySearch] = useState("");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -605,7 +606,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
       </Card>
 
       {/* History Dialog */}
-      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+      <Dialog open={historyOpen} onOpenChange={(open) => {
+        setHistoryOpen(open);
+        if (!open) setHistorySearch("");
+      }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -613,22 +617,40 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
               Chat History
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-2 mt-4">
-            {chatHistory.map((chat) => (
-              <button
-                key={chat.id}
-                className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
-                onClick={() => {
-                  toast.info("Chat history will be restored in a future update");
-                  setHistoryOpen(false);
-                }}
-              >
-                <p className="font-medium text-sm">{chat.title}</p>
-                <p className="text-xs text-muted-foreground">{chat.date}</p>
-              </button>
-            ))}
-            {chatHistory.length === 0 && (
-              <p className="text-center text-muted-foreground py-8">No chat history yet</p>
+          <div className="relative mt-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              value={historySearch}
+              onChange={(e) => setHistorySearch(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+          </div>
+          <div className="space-y-2 mt-3 max-h-[300px] overflow-y-auto">
+            {chatHistory
+              .filter((chat) => 
+                chat.title.toLowerCase().includes(historySearch.toLowerCase())
+              )
+              .map((chat) => (
+                <button
+                  key={chat.id}
+                  className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
+                  onClick={() => {
+                    toast.info("Chat history will be restored in a future update");
+                    setHistoryOpen(false);
+                  }}
+                >
+                  <p className="font-medium text-sm">{chat.title}</p>
+                  <p className="text-xs text-muted-foreground">{chat.date}</p>
+                </button>
+              ))}
+            {chatHistory.filter((chat) => 
+              chat.title.toLowerCase().includes(historySearch.toLowerCase())
+            ).length === 0 && (
+              <p className="text-center text-muted-foreground py-8">
+                {historySearch ? "No matching conversations" : "No chat history yet"}
+              </p>
             )}
           </div>
         </DialogContent>
