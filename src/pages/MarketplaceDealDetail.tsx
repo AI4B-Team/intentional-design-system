@@ -195,14 +195,16 @@ export default function MarketplaceDealDetail() {
         </div>
 
         {/* Image Gallery */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-6">
+        <div className="flex gap-3 mb-6">
           {/* Main Image */}
-          <div className="lg:col-span-2 relative rounded-xl overflow-hidden aspect-[16/10]">
-            <img
-              src={images[currentImageIndex]}
-              alt={deal.address}
-              className="w-full h-full object-cover"
-            />
+          <div className="flex-[2] relative rounded-xl overflow-hidden">
+            <div className="aspect-[4/3]">
+              <img
+                src={images[currentImageIndex]}
+                alt={deal.address}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
             {/* Navigation Arrows */}
             <Button
@@ -245,26 +247,36 @@ export default function MarketplaceDealDetail() {
             </div>
           </div>
 
-          {/* Side Images Grid */}
-          <div className="hidden lg:grid grid-cols-2 gap-3">
-            {images.slice(1, 5).map((img, idx) => (
-              <div
-                key={idx}
-                className={cn(
-                  "relative rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90",
-                  idx < 2 ? "aspect-[4/3]" : "aspect-[4/3]"
-                )}
-                onClick={() => setCurrentImageIndex(idx + 1)}
-              >
-                <img src={img} alt="" className="w-full h-full object-cover" />
-                {idx === 3 && images.length > 5 && (
-                  <div className="absolute bottom-3 right-3 bg-white/90 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-sm font-medium">
-                    <Camera className="h-4 w-4" />
-                    {images.length} photos
-                  </div>
-                )}
-              </div>
-            ))}
+          {/* Side Images Grid - 2x2 grid that matches main image height */}
+          <div className="hidden lg:flex flex-col flex-1 gap-3">
+            <div className="flex gap-3 flex-1">
+              {images.slice(1, 3).map((img, idx) => (
+                <div
+                  key={idx}
+                  className="relative flex-1 rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
+                  onClick={() => setCurrentImageIndex(idx + 1)}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-3 flex-1">
+              {images.slice(3, 5).map((img, idx) => (
+                <div
+                  key={idx}
+                  className="relative flex-1 rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
+                  onClick={() => setCurrentImageIndex(idx + 3)}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  {idx === 1 && images.length > 5 && (
+                    <div className="absolute bottom-3 right-3 bg-white/90 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-sm font-medium">
+                      <Camera className="h-4 w-4" />
+                      {images.length} photos
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
