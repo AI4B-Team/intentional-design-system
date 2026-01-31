@@ -48,15 +48,36 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       setSidebarRight(computeSidebarRight());
     };
 
-    updateSidebarRight();
-
-    // Watch both size changes and class/transform changes.
-    const sidebar = getSidebarEl();
     const resizeObserver = new ResizeObserver(updateSidebarRight);
     const mutationObserver = new MutationObserver(updateSidebarRight);
-    if (sidebar) {
-      resizeObserver.observe(sidebar);
-      mutationObserver.observe(sidebar, { attributes: true, attributeFilter: ["class", "style"] });
+
+    let attachedSidebar: HTMLElement | null = null;
+    const attachToSidebar = (el: HTMLElement | null) => {
+      if (!el || el === attachedSidebar) return;
+
+      try {
+        if (attachedSidebar) resizeObserver.unobserve(attachedSidebar);
+      } catch {
+        // no-op
+      }
+
+      attachedSidebar = el;
+      resizeObserver.observe(el);
+      mutationObserver.disconnect();
+      mutationObserver.observe(el, { attributes: true, attributeFilter: ["class", "style"] });
+    };
+
+    // Initial attach + measure
+    attachToSidebar(getSidebarEl());
+    updateSidebarRight();
+
+    // If the sidebar isn't in the DOM yet (auth/app-shell loading), watch until it appears.
+    const domObserver = new MutationObserver(() => {
+      attachToSidebar(getSidebarEl());
+      updateSidebarRight();
+    });
+    if (document.body) {
+      domObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     window.addEventListener("resize", updateSidebarRight);
@@ -68,6 +89,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       cancelAnimationFrame(raf1);
       cancelAnimationFrame(raf2);
       window.removeEventListener("resize", updateSidebarRight);
+      domObserver.disconnect();
       mutationObserver.disconnect();
       resizeObserver.disconnect();
     };
