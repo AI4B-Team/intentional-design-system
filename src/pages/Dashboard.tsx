@@ -143,7 +143,7 @@ function PipelineValueCard({
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
-                    goalProgress >= 100 ? "bg-success" : goalProgress >= 50 ? "bg-warning" : iconBg
+                    goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
                   )}
                   style={{ width: `${goalProgress}%` }}
                 />
@@ -488,11 +488,11 @@ export default function Dashboard() {
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
 
-  // Demo data for visualization when no real data exists (shows user far from goals)
+  // Demo data for visualization when no real data exists
   const demoData = {
-    leads: { count: 12, totalValue: 2100000, profitPotential: 105000 },
-    offers: { count: 4, totalValue: 700000, profitPotential: 35000 },
-    contracted: { count: 2, totalValue: 350000, profitPotential: 21000 },
+    leads: { count: 42, totalValue: 7350000, profitPotential: 367500 },
+    offers: { count: 12, totalValue: 2100000, profitPotential: 105000 },
+    contracted: { count: 8, totalValue: 1400000, profitPotential: 84000 },
     sold: { count: 1, totalValue: 175000, profitPotential: 10500 },
   };
 
