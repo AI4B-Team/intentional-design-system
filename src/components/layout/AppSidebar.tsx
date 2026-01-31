@@ -200,7 +200,7 @@ export function AppSidebar({
               </div>
               {!collapsed && <span>AIVA</span>}
               {!collapsed && (
-                <span className="ml-auto text-[10px] text-slate-400 bg-slate-700 px-1.5 py-0.5 rounded">AI</span>
+                <span className="ml-auto text-[10px] text-slate-900 bg-amber-400 px-1.5 py-0.5 rounded font-medium">AI</span>
               )}
             </button>
           </li>
