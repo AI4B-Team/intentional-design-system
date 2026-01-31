@@ -92,6 +92,13 @@ const contactsNavItem: NavItem = {
   icon: Users,
 };
 
+// OfferBlaster - direct nav item for quick access
+const offerBlasterNavItem: NavItem = {
+  label: "OfferBlaster",
+  href: "/tools/offer-blaster",
+  icon: Send,
+};
+
 const marketingGroup: NavGroup = {
   label: "Marketing",
   icon: Megaphone,
@@ -123,7 +130,6 @@ const toolsGroup: NavGroup = {
     { label: "Renovations", href: "/renovations", icon: Wrench },
     { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
     { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
-    { label: "OfferBlaster", href: "/tools/offer-blaster", icon: Send },
     { label: "Calculators", href: "/calculators", icon: Calculator },
     { label: "Analytics", href: "/analytics", icon: BarChart3 },
   ],
@@ -193,6 +199,7 @@ export function AppSidebar({
   const isPipelineActive = pipelineGroup.items.some(item => location.pathname.startsWith(item.href));
   const isLeadsActive = leadsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
+  const isOfferBlasterActive = location.pathname.startsWith(offerBlasterNavItem.href);
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -464,6 +471,23 @@ export function AppSidebar({
             >
               <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-white")} />
               {!collapsed && <span>{contactsNavItem.label}</span>}
+            </NavLink>
+          </li>
+
+          {/* OfferBlaster - Direct Link */}
+          <li>
+            <NavLink
+              to={offerBlasterNavItem.href}
+              onClick={onMobileClose}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                isOfferBlasterActive && "bg-brand-accent text-white font-medium",
+                collapsed && "justify-center"
+              )}
+            >
+              <offerBlasterNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isOfferBlasterActive && "text-white")} />
+              {!collapsed && <span>{offerBlasterNavItem.label}</span>}
             </NavLink>
           </li>
 
