@@ -482,11 +482,29 @@ export default function Dashboard() {
   const goals = useGoals();
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
-  const { data: pipelineValueStats, isLoading: pipelineValueLoading } = usePipelineValueStats();
+  const { data: pipelineValueStatsRaw, isLoading: pipelineValueLoading } = usePipelineValueStats();
   const { data: hotOpportunities, isLoading: hotLoading } = useHotOpportunities(10);
   const { data: pipelineStats, isLoading: pipelineLoading } = usePipelineStats();
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
+
+  // Demo data for visualization when no real data exists
+  const demoData = {
+    leads: { count: 47, totalValue: 8250000, profitPotential: 412500 },
+    offers: { count: 18, totalValue: 3150000, profitPotential: 157500 },
+    contracted: { count: 8, totalValue: 1400000, profitPotential: 84000 },
+    sold: { count: 5, totalValue: 875000, profitPotential: 52500 },
+  };
+
+  // Use demo data if no real data exists
+  const hasRealData = pipelineValueStatsRaw && (
+    pipelineValueStatsRaw.leads.count > 0 ||
+    pipelineValueStatsRaw.offers.count > 0 ||
+    pipelineValueStatsRaw.contracted.count > 0 ||
+    pipelineValueStatsRaw.sold.count > 0
+  );
+  
+  const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoData;
 
   const handleTaskToggle = (taskId: string) => {
     setCompletedTasks(prev => {
