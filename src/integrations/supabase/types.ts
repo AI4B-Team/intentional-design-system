@@ -525,6 +525,84 @@ export type Database = {
           },
         ]
       }
+      buyer_profiles: {
+        Row: {
+          address: string | null
+          buyer_name: string
+          city: string | null
+          company_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          notes: string | null
+          organization_id: string | null
+          phone: string | null
+          pof_id: string | null
+          profile_name: string
+          state: string | null
+          updated_at: string
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          buyer_name: string
+          city?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          notes?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          pof_id?: string | null
+          profile_name: string
+          state?: string | null
+          updated_at?: string
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          buyer_name?: string
+          city?: string | null
+          company_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          notes?: string | null
+          organization_id?: string | null
+          phone?: string | null
+          pof_id?: string | null
+          profile_name?: string
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "buyer_profiles_pof_id_fkey"
+            columns: ["pof_id"]
+            isOneToOne: false
+            referencedRelation: "proof_of_funds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       buyers: {
         Row: {
           avg_close_days: number | null
