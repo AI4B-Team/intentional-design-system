@@ -3,6 +3,7 @@ import { AISettingsSection } from "@/components/ai";
 import { PortfolioPropertiesSection } from "@/components/settings/portfolio-properties-section";
 import { TeamManagementSection } from "@/components/settings/team-management-section";
 import { OrganizationSettingsSection } from "@/components/settings/organization-settings-section";
+import { BuyerProfilesSection } from "@/components/settings/buyer-profiles-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +26,7 @@ import {
   Zap,
   ChevronRight,
   Users,
+  Briefcase,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -84,6 +86,10 @@ export default function Settings() {
             <TabsTrigger value="portfolio" className="gap-2">
               <Home className="h-4 w-4" />
               Portfolio
+            </TabsTrigger>
+            <TabsTrigger value="buyer-profiles" className="gap-2">
+              <Briefcase className="h-4 w-4" />
+              Buyer Profiles
             </TabsTrigger>
             <TabsTrigger value="integrations" className="gap-2">
               <Zap className="h-4 w-4" />
@@ -244,6 +250,11 @@ export default function Settings() {
           {/* Portfolio Tab */}
           <TabsContent value="portfolio">
             <PortfolioPropertiesSection />
+          </TabsContent>
+
+          {/* Buyer Profiles Tab */}
+          <TabsContent value="buyer-profiles">
+            <BuyerProfilesSection />
           </TabsContent>
 
           {/* Integrations Tab */}
