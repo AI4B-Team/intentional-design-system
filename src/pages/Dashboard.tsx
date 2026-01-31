@@ -70,8 +70,11 @@ interface PipelineValueCardProps {
   onClick?: () => void;
   goal?: number;
   actionInsight?: ActionInsight | null;
-  variant?: "default" | "calm"; // calm = green/relief styling
+  variant?: "default" | "calm" | "celebration"; // calm = contracts, celebration = sold
   avgDaysToClose?: number;
+  nextExpectedClose?: number; // days until next expected close
+  lastClosedDaysAgo?: number; // days since last deal closed
+  contextLine?: string; // optional context line with emoji
 }
 
 function PipelineValueCard({ 
@@ -91,9 +94,13 @@ function PipelineValueCard({
   actionInsight,
   variant = "default",
   avgDaysToClose,
+  nextExpectedClose,
+  lastClosedDaysAgo,
+  contextLine,
 }: PipelineValueCardProps) {
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
+  const goalGap = goal > 0 && count < goal ? goal - count : 0;
 
   if (isLoading) {
     return (
@@ -188,7 +195,12 @@ function PipelineValueCard({
         </div>
 
         {/* Middle content - flex-1 to push bottom metrics down */}
-        <div className="flex-1 mt-3">
+        <div className="flex-1 mt-3 space-y-2">
+          {/* Context line - subtle informational text */}
+          {contextLine && (
+            <p className="text-tiny text-muted-foreground">{contextLine}</p>
+          )}
+
           {/* Avg days to close for contracts */}
           {avgDaysToClose !== undefined && avgDaysToClose > 0 && (
             <div className="flex items-center gap-2 text-tiny text-muted-foreground">
@@ -197,8 +209,33 @@ function PipelineValueCard({
             </div>
           )}
 
-          {/* Action Insight - "What to do next" (not shown for calm variant) */}
-          {actionInsight && !isCalmVariant && (
+          {/* Next expected close for contracts */}
+          {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
+            <p className="text-tiny text-muted-foreground">
+              Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}
+            </p>
+          )}
+
+          {/* Last closed for sold tile */}
+          {lastClosedDaysAgo !== undefined && (
+            <p className="text-tiny text-muted-foreground">
+              {lastClosedDaysAgo === 0 
+                ? "🎉 Closed Today!" 
+                : lastClosedDaysAgo === 1 
+                ? "Last Closed: Yesterday" 
+                : `Last Closed: ${lastClosedDaysAgo} Days Ago`}
+            </p>
+          )}
+
+          {/* Goal gap context for celebration variant */}
+          {variant === "celebration" && goalGap > 0 && (
+            <p className="text-tiny text-muted-foreground">
+              📉 {goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal
+            </p>
+          )}
+
+          {/* Action Insight - "What to do next" (not shown for calm/celebration variant) */}
+          {actionInsight && variant === "default" && (
             <div className={cn(
               "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
               actionInsight.severity === "high" 
@@ -809,7 +846,9 @@ export default function Dashboard() {
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
           goal={goals.offersGoal}
-          actionInsight={insights?.offersInsight}
+          contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
+            ? `⏳ ${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
+            : undefined}
         />
         <PipelineValueCard
           title="Contracts"
@@ -826,6 +865,7 @@ export default function Dashboard() {
           goal={goals.contractsGoal}
           variant="calm"
           avgDaysToClose={28}
+          nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
         />
         <PipelineValueCard
           title="Sold"
@@ -840,6 +880,8 @@ export default function Dashboard() {
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=closed")}
           goal={goals.soldGoal}
+          variant="celebration"
+          lastClosedDaysAgo={pipelineValueStats?.sold.count && pipelineValueStats.sold.count > 0 ? 3 : undefined}
         />
       </div>
 
