@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Mail, FileText, User } from 'lucide-react';
+import { Mail, FileText, User, Megaphone } from 'lucide-react';
 
 // Import tab content components
 import { CampaignsTab } from '@/components/campaigns/CampaignsTab';
 import { TemplatesTab } from '@/components/campaigns/TemplatesTab';
 import { BuyerProfilesTab } from '@/components/campaigns/BuyerProfilesTab';
+import { MLSTab } from '@/components/campaigns/MLSTab';
 
 export default function CampaignsHub() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,10 +28,14 @@ export default function CampaignsHub() {
         </p>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
+          <TabsList className="grid w-full max-w-lg grid-cols-4">
             <TabsTrigger value="campaigns" className="gap-2">
               <Mail className="h-4 w-4" />
               <span className="hidden sm:inline">Campaigns</span>
+            </TabsTrigger>
+            <TabsTrigger value="mls" className="gap-2">
+              <Megaphone className="h-4 w-4" />
+              <span className="hidden sm:inline">MLS</span>
             </TabsTrigger>
             <TabsTrigger value="templates" className="gap-2">
               <FileText className="h-4 w-4" />
@@ -44,6 +49,10 @@ export default function CampaignsHub() {
 
           <TabsContent value="campaigns" className="mt-6">
             <CampaignsTab />
+          </TabsContent>
+
+          <TabsContent value="mls" className="mt-6">
+            <MLSTab />
           </TabsContent>
 
           <TabsContent value="templates" className="mt-6">
