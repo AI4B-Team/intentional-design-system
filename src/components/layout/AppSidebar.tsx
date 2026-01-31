@@ -299,7 +299,10 @@ export function AppSidebar({
             );
           })}
 
-          {/* Pipeline is now in topNavItems */}
+          {/* Divider after top nav items */}
+          <li className="py-2">
+            <div className="border-t border-slate-700" />
+          </li>
 
           {/* Leads Group */}
           <li>
