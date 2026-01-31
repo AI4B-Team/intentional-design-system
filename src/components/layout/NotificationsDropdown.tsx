@@ -260,14 +260,30 @@ const getNotificationIcon = (type: NotificationType) => {
   return iconMap[type] || <Bell className="h-4 w-4" />;
 };
 
-const getPriorityStyles = (priority: NotificationPriority) => {
-  const styles: Record<NotificationPriority, string> = {
-    urgent: "border-l-4 border-l-destructive bg-destructive/5",
-    high: "border-l-4 border-l-orange-500 bg-orange-50/30",
-    medium: "border-l-4 border-l-primary",
-    low: "border-l-4 border-l-muted-foreground/30",
-  };
-  return styles[priority];
+// Get left border color by notification type category
+const getTypeBorderStyles = (type: NotificationType) => {
+  // 🔥 Red = Hot Lead / Lead types
+  if (type === "lead_hot" || type === "lead_new" || type === "lead_response") {
+    return "border-l-4 border-l-red-500";
+  }
+  // 💰 Green = Offer types
+  if (type.startsWith("offer_") || type === "deal_closed" || type === "price_drop") {
+    return "border-l-4 border-l-green-500";
+  }
+  // 📞 Blue = Call / Message types
+  if (type.startsWith("call_") || type === "sms_received" || type === "email_opened") {
+    return "border-l-4 border-l-blue-500";
+  }
+  // 📅 Purple = Appointments / Tasks
+  if (type === "appointment" || type === "task_due" || type === "inspection_scheduled" || type === "closing_reminder") {
+    return "border-l-4 border-l-purple-500";
+  }
+  // 📄 Amber = Documents / Contracts
+  if (type.startsWith("document_") || type === "contract_expiring") {
+    return "border-l-4 border-l-amber-500";
+  }
+  // Default - subtle border
+  return "border-l-4 border-l-muted-foreground/30";
 };
 
 const getSuggestionIcon = (type: string) => {
@@ -346,7 +362,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
       className={cn(
         "relative p-3 hover:bg-muted/50 transition-colors cursor-pointer group",
         !notification.read && "bg-primary/5",
-        getPriorityStyles(notification.priority)
+        getTypeBorderStyles(notification.type)
       )}
       onClick={() => {
         onMarkRead(notification.id);
