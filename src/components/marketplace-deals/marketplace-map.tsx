@@ -368,23 +368,23 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
             Satellite
           </button>
         </div>
-        
-        {/* Draw to Analyze Button */}
+      </div>
+
+      {/* Right side controls: Draw + Intel */}
+      <div className="absolute top-3 right-3 z-10 flex gap-2">
+        {/* Draw Button */}
         <Button
           variant={isDrawing ? "default" : "outline"}
           className={cn(
-            "mt-2 shadow-md gap-2",
+            "shadow-md gap-2",
             isDrawing ? "bg-primary text-primary-foreground" : "bg-white"
           )}
           onClick={toggleDrawMode}
         >
           <PenTool className="h-4 w-4" />
-          {isDrawing ? "Drawing..." : "Draw to Analyze"}
+          {isDrawing ? "Drawing..." : "Draw"}
         </Button>
-      </div>
-
-      {/* Intel Dropdown */}
-      <div className="absolute top-3 right-3 z-10 flex gap-2">
+        
         <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="bg-white shadow-md gap-2">
