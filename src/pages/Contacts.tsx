@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,14 +56,28 @@ import { cn } from "@/lib/utils";
 
 export default function Contacts() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [defaultAddType, setDefaultAddType] = useState<DealSourceType | undefined>(undefined);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   
   // Filter states
   const [typeFilter, setTypeFilter] = useState<DealSourceType | "all">("all");
   const [statusFilter, setStatusFilter] = useState<DealSourceStatus | "all">("all");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "type">("newest");
+
+  // Handle ?add=buyer or ?add=contractor query param
+  useEffect(() => {
+    const addType = searchParams.get("add");
+    if (addType && ["buyer", "contractor", "agent", "seller", "lender", "wholesaler", "title_company", "attorney", "property_manager", "inspector"].includes(addType)) {
+      setDefaultAddType(addType as DealSourceType);
+      setShowAddModal(true);
+      // Clear the query param
+      searchParams.delete("add");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const { data: contacts = [], isLoading } = useDealSources({ 
     type: typeFilter,
@@ -408,7 +422,14 @@ export default function Contacts() {
       </div>
 
       {/* Add Modal */}
-      <AddDealSourceModal open={showAddModal} onOpenChange={setShowAddModal} />
+      <AddDealSourceModal 
+        open={showAddModal} 
+        onOpenChange={(open) => {
+          setShowAddModal(open);
+          if (!open) setDefaultAddType(undefined);
+        }}
+        defaultType={defaultAddType}
+      />
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>

@@ -110,7 +110,6 @@ const dispoGroup: NavGroup = {
   icon: Package,
   items: [
     { label: "Deals", href: "/dispo/deals", icon: Home },
-    { label: "Cash Buyers", href: "/dispo/buyers", icon: UserCheck },
     { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
     { label: "Settings", href: "/dispo/settings", icon: Settings },
   ],

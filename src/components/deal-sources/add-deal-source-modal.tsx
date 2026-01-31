@@ -26,10 +26,11 @@ import { z } from "zod";
 interface AddDealSourceModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultType?: DealSourceType;
 }
 
 const dealSourceSchema = z.object({
-  type: z.enum(["agent", "wholesaler", "lender"], { required_error: "Type is required" }),
+  type: z.enum(["agent", "seller", "lender", "buyer", "wholesaler", "contractor", "title_company", "attorney", "property_manager", "inspector"], { required_error: "Type is required" }),
   name: z.string().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   company: z.string().max(100).optional(),
   phone: z.string().regex(/^(\+?1)?[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/, "Invalid phone format").optional().or(z.literal("")),
@@ -68,10 +69,20 @@ const sourceOptions = [
   "Other",
 ];
 
-export function AddDealSourceModal({ open, onOpenChange }: AddDealSourceModalProps) {
-  const [formData, setFormData] = useState<Partial<FormData>>(initialFormData);
+export function AddDealSourceModal({ open, onOpenChange, defaultType }: AddDealSourceModalProps) {
+  const [formData, setFormData] = useState<Partial<FormData>>(() => ({
+    ...initialFormData,
+    type: defaultType,
+  }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saveAndAddAnother, setSaveAndAddAnother] = useState(false);
+  
+  // Update form when defaultType changes
+  React.useEffect(() => {
+    if (defaultType && open) {
+      setFormData((prev) => ({ ...prev, type: defaultType }));
+    }
+  }, [defaultType, open]);
   
   const createDealSource = useCreateDealSource();
 
@@ -141,9 +152,9 @@ export function AddDealSourceModal({ open, onOpenChange }: AddDealSourceModalPro
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent size="lg" className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Deal Source</DialogTitle>
+          <DialogTitle>Add Contact</DialogTitle>
           <DialogDescription>
-            Add a new agent, wholesaler, or lender to your network
+            Add a new contact to your network
           </DialogDescription>
         </DialogHeader>
 
@@ -160,9 +171,16 @@ export function AddDealSourceModal({ open, onOpenChange }: AddDealSourceModalPro
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="buyer">Buyer</SelectItem>
+                  <SelectItem value="seller">Seller</SelectItem>
                   <SelectItem value="agent">Agent</SelectItem>
                   <SelectItem value="wholesaler">Wholesaler</SelectItem>
                   <SelectItem value="lender">Lender</SelectItem>
+                  <SelectItem value="contractor">Contractor</SelectItem>
+                  <SelectItem value="title_company">Title Company</SelectItem>
+                  <SelectItem value="attorney">Attorney</SelectItem>
+                  <SelectItem value="property_manager">Property Manager</SelectItem>
+                  <SelectItem value="inspector">Inspector</SelectItem>
                 </SelectContent>
               </Select>
               {errors.type && <p className="text-tiny text-destructive">{errors.type}</p>}
