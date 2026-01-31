@@ -784,7 +784,7 @@ export function MarketplaceListings({
         ) : deals.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
             <Home className="h-12 w-12 mb-3 opacity-50" />
-            <p className="font-medium">No deals found</p>
+            <p className="font-medium">No Deals Found</p>
             <p className="text-sm">Try adjusting your filters</p>
           </div>
         ) : (
