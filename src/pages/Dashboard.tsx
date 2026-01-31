@@ -482,14 +482,15 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
     : null;
 
   const statusColor = {
-    new: "bg-muted text-muted-foreground",
-    contacted: "bg-info/10 text-info",
-    appointment: "bg-warning/10 text-warning",
-    offer_made: "bg-accent/10 text-accent",
-    under_contract: "bg-chart-4/10 text-chart-4",
-    closed: "bg-success/10 text-success",
+    new: "bg-red-100 text-red-600",
+    contacted: "bg-red-50 text-red-500",
+    appointment: "bg-red-50 text-red-400",
+    offer_made: "bg-amber-100 text-amber-600",
+    negotiating: "bg-amber-50 text-amber-500",
+    under_contract: "bg-blue-100 text-blue-600",
+    closed: "bg-emerald-100 text-emerald-600",
     dead: "bg-destructive/10 text-destructive",
-  }[opportunity.status || "new"] || "bg-muted text-muted-foreground";
+  }[opportunity.status || "new"] || "bg-red-100 text-red-600";
 
   return (
     <div 

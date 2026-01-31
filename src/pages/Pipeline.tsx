@@ -76,61 +76,61 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Pipeline stages configuration
+// Pipeline stages configuration - colors match dashboard tiles
 const PIPELINE_STAGES = [
   { 
     id: "lead", 
     label: "New Leads", 
-    color: "bg-info", 
+    color: "bg-red-500", 
     description: "Fresh leads requiring qualification",
     targetDays: 2
   },
   { 
     id: "contacted", 
     label: "Contacted", 
-    color: "bg-warning", 
+    color: "bg-red-400", 
     description: "Initial contact made",
     targetDays: 5
   },
   { 
     id: "analyzing", 
     label: "Analyzing", 
-    color: "bg-brand", 
+    color: "bg-red-300", 
     description: "Running comps & deal analysis",
     targetDays: 3
   },
   { 
     id: "offer_made", 
     label: "Offer Made", 
-    color: "bg-purple-500", 
+    color: "bg-amber-500", 
     description: "Offer submitted, awaiting response",
     targetDays: 7
   },
   { 
     id: "negotiating", 
     label: "Negotiating", 
-    color: "bg-orange-500", 
+    color: "bg-amber-400", 
     description: "Active negotiation in progress",
     targetDays: 14
   },
   { 
     id: "under_contract", 
     label: "Under Contract", 
-    color: "bg-success", 
+    color: "bg-blue-500", 
     description: "Contract signed, heading to close",
     targetDays: 30
   },
   { 
     id: "closed", 
     label: "Closed", 
-    color: "bg-emerald-600", 
+    color: "bg-emerald-500", 
     description: "Deal completed",
     targetDays: 0
   },
   { 
     id: "sold", 
     label: "Sold", 
-    color: "bg-chart-4", 
+    color: "bg-emerald-600", 
     description: "Property sold and funds received",
     targetDays: 0
   },
