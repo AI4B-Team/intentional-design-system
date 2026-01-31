@@ -628,28 +628,25 @@ function DealCard({
 
 
         {/* Property Specs */}
-        <div className="mt-4 flex flex-nowrap items-center border-t border-border pt-4 px-6">
-          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+        <div className="mt-4 flex flex-nowrap items-center justify-between gap-8 border-t border-border pt-4 px-6">
+          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
             <Bed className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium whitespace-nowrap">{deal.beds} Beds</span>
+            <span className="text-sm font-medium">{deal.beds} Bd</span>
           </div>
-          <div className="w-px h-5 bg-border flex-shrink-0" />
 
-          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
             <Bath className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium whitespace-nowrap">{deal.baths} Baths</span>
+            <span className="text-sm font-medium">{deal.baths} Ba</span>
           </div>
-          <div className="w-px h-5 bg-border flex-shrink-0" />
 
-          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
             <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium whitespace-nowrap">{deal.sqft.toLocaleString()} SqFt</span>
+            <span className="text-sm font-medium">{deal.sqft.toLocaleString()} Sqft</span>
           </div>
-          <div className="w-px h-5 bg-border flex-shrink-0" />
 
-          <div className="flex flex-1 items-center justify-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
             <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium whitespace-nowrap">Built {yearBuilt}</span>
+            <span className="text-sm font-medium">Built {yearBuilt}</span>
           </div>
         </div>
       </div>
