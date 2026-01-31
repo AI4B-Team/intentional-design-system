@@ -373,15 +373,6 @@ export function MarketplaceFilters({
 
         {/* Right aligned actions – Buy Box, View Toggles */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <Button
-            variant="outline"
-            className="h-10 gap-2 px-4 text-sm whitespace-nowrap"
-            onClick={() => navigate("/marketplace/buy-box")}
-          >
-            <Target className="h-4 w-4" />
-            Buy Box
-          </Button>
-          
           {/* Saved Button */}
           <Button
             variant="outline"
