@@ -161,6 +161,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
 
   const suggestedQuestions = [
     "Show me properties in Cleveland, OH under $150K",
+    "Analyze my pipeline and suggest next steps",
+    "Find distressed properties in my target areas",
+    "Calculate ARV for 123 Main Street",
+    "What are the best exit strategies for a wholesale deal?",
   ];
 
   // Quick actions for the tools menu
