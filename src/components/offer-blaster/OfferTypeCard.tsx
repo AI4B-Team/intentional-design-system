@@ -163,7 +163,7 @@ export function OfferTypeGrid({
         <div>
           <div className="flex items-center gap-3 mb-4">
             <h3 className="text-h4 font-semibold text-foreground">
-              Licensed Agent Options
+              Agent Options
             </h3>
             <Badge variant="warning" size="sm">
               License Required
