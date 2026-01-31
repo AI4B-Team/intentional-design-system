@@ -75,6 +75,7 @@ import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
 import OfferBlaster from "./pages/OfferBlaster";
+import OfferTemplates from "./pages/OfferTemplates";
 import Activity from "./pages/Activity";
 import Feedback from "./pages/Feedback";
 import Renovations from "./pages/Renovations";
@@ -699,6 +700,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <OfferBlaster />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/tools/offer-templates"
+              element={
+                <ProtectedRoute>
+                  <OfferTemplates />
                 </ProtectedRoute>
               }
             />
