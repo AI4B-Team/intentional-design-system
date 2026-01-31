@@ -785,6 +785,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <PipelineValueCard
           title="Leads"
+          subtitle="New Opportunities"
           count={pipelineValueStats?.leads.count || 0}
           totalValue={pipelineValueStats?.leads.totalValue || 0}
           profitPotential={pipelineValueStats?.leads.profitPotential || 0}
@@ -798,6 +799,7 @@ export default function Dashboard() {
         />
         <PipelineValueCard
           title="Offers"
+          subtitle="Active Proposals"
           count={pipelineValueStats?.offers.count || 0}
           totalValue={pipelineValueStats?.offers.totalValue || 0}
           profitPotential={pipelineValueStats?.offers.profitPotential || 0}
@@ -827,6 +829,7 @@ export default function Dashboard() {
         />
         <PipelineValueCard
           title="Sold"
+          subtitle="Closed Deals"
           count={pipelineValueStats?.sold.count || 0}
           totalValue={pipelineValueStats?.sold.totalValue || 0}
           profitPotential={pipelineValueStats?.sold.profitPotential || 0}
