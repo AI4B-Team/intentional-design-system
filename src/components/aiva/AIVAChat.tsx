@@ -54,7 +54,7 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-// Panel views are now inline instead of dialogs
+// Panel views are now inline instead of dialogs (no modal components used)
 type PanelView = "chat" | "history" | "settings";
 
 interface AIVAChatProps {
