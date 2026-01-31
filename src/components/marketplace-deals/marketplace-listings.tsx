@@ -628,23 +628,23 @@ function DealCard({
 
 
         {/* Property Specs */}
-        <div className="mt-4 flex items-center justify-around border-t border-border pt-4 px-2">
-          <div className="flex flex-col items-center text-center min-w-[60px]">
+        <div className="mt-4 flex items-center justify-between border-t border-border pt-4 px-4">
+          <div className="flex flex-col items-center text-center flex-1">
             <Bed className="h-5 w-5 text-muted-foreground mb-1.5" />
             <span className="text-sm font-medium">{deal.beds} Beds</span>
           </div>
           <div className="w-px h-10 bg-border flex-shrink-0" />
-          <div className="flex flex-col items-center text-center min-w-[60px]">
+          <div className="flex flex-col items-center text-center flex-1">
             <Bath className="h-5 w-5 text-muted-foreground mb-1.5" />
             <span className="text-sm font-medium">{deal.baths} Baths</span>
           </div>
           <div className="w-px h-10 bg-border flex-shrink-0" />
-          <div className="flex flex-col items-center text-center min-w-[70px]">
+          <div className="flex flex-col items-center text-center flex-1">
             <Tag className="h-5 w-5 text-muted-foreground mb-1.5" />
             <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
           </div>
           <div className="w-px h-10 bg-border flex-shrink-0" />
-          <div className="flex flex-col items-center text-center min-w-[70px]">
+          <div className="flex flex-col items-center text-center flex-1">
             <Calendar className="h-5 w-5 text-muted-foreground mb-1.5" />
             <span className="text-sm font-medium">Built {yearBuilt}</span>
           </div>
