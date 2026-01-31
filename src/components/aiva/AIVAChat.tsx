@@ -401,7 +401,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         </ScrollArea>
 
         {/* Input Area */}
-        <div className="border-t p-3 pb-4 mt-auto shrink-0">
+        <div className="border-t p-3 pb-2 mt-auto shrink-0">
           <form onSubmit={handleSubmit} className="relative">
             <div className="flex flex-col gap-3 rounded-xl border-2 border-slate-300 bg-background p-3">
               {/* Input Field - taller */}
