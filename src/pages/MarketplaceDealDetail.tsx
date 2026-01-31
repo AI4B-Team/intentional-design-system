@@ -194,89 +194,80 @@ export default function MarketplaceDealDetail() {
           </div>
         </div>
 
-        {/* Image Gallery */}
-        <div className="flex gap-3 mb-6">
-          {/* Main Image */}
-          <div className="flex-[2] relative rounded-xl overflow-hidden">
-            <div className="aspect-[4/3]">
-              <img
-                src={images[currentImageIndex]}
-                alt={deal.address}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Image Gallery - Compact Layout */}
+        <div className="flex gap-2 mb-6 h-[320px]">
+          {/* Main Image - Takes ~60% width */}
+          <div className="relative flex-[3] rounded-xl overflow-hidden">
+            <img
+              src={images[currentImageIndex]}
+              alt={deal.address}
+              className="w-full h-full object-cover"
+            />
+
+            {/* For Sale Badge */}
+            <Badge className="absolute top-3 left-3 bg-white text-foreground gap-1.5 shadow-md">
+              <span className="w-2 h-2 rounded-full bg-destructive" />
+              For sale
+            </Badge>
 
             {/* Navigation Arrows */}
             <Button
               variant="secondary"
               size="icon"
-              className="absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 hover:bg-white shadow-lg"
               onClick={handlePrevImage}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4" />
             </Button>
             <Button
               variant="secondary"
               size="icon"
-              className="absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-white/90 hover:bg-white shadow-lg"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 hover:bg-white shadow-lg"
               onClick={handleNextImage}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4" />
             </Button>
 
             {/* Bottom Controls */}
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Button variant="secondary" className="bg-white/90 hover:bg-white gap-2">
-                  <Rotate3d className="h-4 w-4" />
-                  3D Tour
-                </Button>
-                <Button variant="secondary" className="bg-white/90 hover:bg-white gap-2">
-                  <Video className="h-4 w-4" />
-                  Videos
-                </Button>
-                <Button variant="secondary" className="bg-white/90 hover:bg-white gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Street View
-                </Button>
-              </div>
-              <div className="bg-white/90 px-3 py-2 rounded-md flex items-center gap-2 text-sm font-medium">
-                <Camera className="h-4 w-4" />
-                {currentImageIndex + 1}/{images.length}
-              </div>
+            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+              <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white gap-1.5 h-8 text-xs">
+                <Rotate3d className="h-3.5 w-3.5" />
+                3D Tour
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white gap-1.5 h-8 text-xs">
+                <Video className="h-3.5 w-3.5" />
+                Videos
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white gap-1.5 h-8 text-xs">
+                <MapPin className="h-3.5 w-3.5" />
+                Street View
+              </Button>
             </div>
           </div>
 
-          {/* Side Images Grid - 2x2 grid that matches main image height */}
-          <div className="hidden lg:flex flex-col flex-1 gap-3">
-            <div className="flex gap-3 flex-1">
-              {images.slice(1, 3).map((img, idx) => (
-                <div
-                  key={idx}
-                  className="relative flex-1 rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
-                  onClick={() => setCurrentImageIndex(idx + 1)}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-3 flex-1">
-              {images.slice(3, 5).map((img, idx) => (
-                <div
-                  key={idx}
-                  className="relative flex-1 rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
-                  onClick={() => setCurrentImageIndex(idx + 3)}
-                >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
-                  {idx === 1 && images.length > 5 && (
-                    <div className="absolute bottom-3 right-3 bg-white/90 px-3 py-1.5 rounded-md flex items-center gap-1.5 text-sm font-medium">
-                      <Camera className="h-4 w-4" />
-                      {images.length} photos
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+          {/* Side Images Grid - 2x2 compact grid */}
+          <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-2 flex-[2]">
+            {images.slice(1, 5).map((img, idx) => (
+              <div
+                key={idx}
+                className="relative rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
+                onClick={() => setCurrentImageIndex(idx + 1)}
+              >
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                {idx === 3 && images.length > 5 && (
+                  <button 
+                    className="absolute bottom-2 right-2 bg-white px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-md hover:bg-gray-50 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Could open full gallery modal here
+                    }}
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                    See all {images.length} photos
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
