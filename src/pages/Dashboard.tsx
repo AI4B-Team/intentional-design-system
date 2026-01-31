@@ -415,24 +415,6 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         </p>
       </div>
 
-      {/* Quick Actions - Before the pill */}
-      <div className="flex items-center gap-1 shrink-0">
-        <button 
-          onClick={onCall}
-          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors text-muted-foreground"
-          title="Call"
-        >
-          <Phone className="h-4 w-4" />
-        </button>
-        <button 
-          onClick={onEmail}
-          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors text-muted-foreground"
-          title="Email"
-        >
-          <Mail className="h-4 w-4" />
-        </button>
-      </div>
-
       {/* Single "Why It's Hot" Badge - One reason only */}
       {hotReason && (
         <span className={cn(
@@ -1111,7 +1093,7 @@ export default function Dashboard() {
                     className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
                     onClick={() => navigate("/properties?sort=motivation_score")}
                   >
-                    <span>+{displayHotOpportunities.length - 5} more opportunities</span>
+                    <span>+{displayHotOpportunities.length - 5} More Opportunities</span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </div>
                 )}
