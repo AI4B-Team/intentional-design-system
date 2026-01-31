@@ -433,25 +433,18 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         </span>
       )}
 
-      {/* Profit if significant */}
-      {opportunity.profit_potential && opportunity.profit_potential > 30000 && (
-        <span className="text-tiny text-success font-semibold tabular-nums hidden sm:inline">
-          +{formatCurrencyCompact(opportunity.profit_potential)}
-        </span>
-      )}
-
-      {/* Quick Actions */}
-      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0">
+      {/* Quick Actions - Always visible, before the pill */}
+      <div className="flex items-center gap-1 shrink-0">
         <button 
           onClick={onCall}
-          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors text-muted-foreground"
           title="Call"
         >
           <Phone className="h-4 w-4" />
         </button>
         <button 
           onClick={onEmail}
-          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors"
+          className="p-1.5 hover:bg-primary/10 hover:text-primary rounded-md transition-colors text-muted-foreground"
           title="Email"
         >
           <Mail className="h-4 w-4" />
