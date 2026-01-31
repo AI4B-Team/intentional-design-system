@@ -417,80 +417,93 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
               
               {/* Bottom Row */}
               <div className="flex items-center justify-between">
-                {/* Tools Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 rounded-full gap-2 border-muted-foreground/20 text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 bg-transparent">
-                      <SlidersHorizontal className="h-3.5 w-3.5" />
-                      <span className="text-xs font-normal">Tools</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-64">
-                    {/* Capabilities */}
-                    <DropdownMenuLabel className="text-xs text-muted-foreground">What I Can Do</DropdownMenuLabel>
-                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                      <Search className="h-4 w-4 text-primary" />
-                      <span className="text-muted-foreground">Property Search</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                      <FileText className="h-4 w-4 text-primary" />
-                      <span className="text-muted-foreground">Deal Analysis</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                      <MapPin className="h-4 w-4 text-primary" />
-                      <span className="text-muted-foreground">Market Research</span>
-                    </DropdownMenuItem>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    {/* Quick Actions */}
-                    <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
-                    {quickActions.map((action) => (
-                      <DropdownMenuItem 
-                        key={action.label}
-                        onClick={() => handleQuickAction(action.prompt)}
-                        className="gap-2"
-                      >
-                        <action.icon className="h-4 w-4" />
-                        <span>{action.label}</span>
+                {/* Left Side - Tools + Attach */}
+                <div className="flex items-center gap-1">
+                  {/* Tools Dropdown */}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="h-8 rounded-full gap-2 border-muted-foreground/20 text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 bg-transparent">
+                        <SlidersHorizontal className="h-3.5 w-3.5" />
+                        <span className="text-xs font-normal">Tools</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-64">
+                      {/* Capabilities */}
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">What I Can Do</DropdownMenuLabel>
+                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                        <Search className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">Property Search</span>
                       </DropdownMenuItem>
-                    ))}
-                    
-                    <DropdownMenuSeparator />
-                    
-                    {/* Search Mode */}
-                    <DropdownMenuSub>
-                      <DropdownMenuSubTrigger className="gap-2">
-                        <Layers className="h-4 w-4" />
-                        <span>Search Mode</span>
-                      </DropdownMenuSubTrigger>
-                      <DropdownMenuSubContent>
-                        <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
-                          <DropdownMenuRadioItem value="database" className="gap-2">
-                            <Database className="h-4 w-4" />
-                            Database Only
-                          </DropdownMenuRadioItem>
-                          <DropdownMenuRadioItem value="online" className="gap-2">
-                            <Globe className="h-4 w-4" />
-                            Online Only
-                          </DropdownMenuRadioItem>
-                          <DropdownMenuRadioItem value="both" className="gap-2">
-                            <Layers className="h-4 w-4" />
-                            Both (Default)
-                          </DropdownMenuRadioItem>
-                        </DropdownMenuRadioGroup>
-                      </DropdownMenuSubContent>
-                    </DropdownMenuSub>
-                    
-                    <DropdownMenuSeparator />
-                    
-                    {/* Attach Context */}
-                    <DropdownMenuItem onClick={handleAttachContext} className="gap-2">
-                      <Paperclip className="h-4 w-4" />
-                      <span>Attach Context</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                        <FileText className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">Deal Analysis</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">Market Research</span>
+                      </DropdownMenuItem>
+                      
+                      <DropdownMenuSeparator />
+                      
+                      {/* Quick Actions */}
+                      <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
+                      {quickActions.map((action) => (
+                        <DropdownMenuItem 
+                          key={action.label}
+                          onClick={() => handleQuickAction(action.prompt)}
+                          className="gap-2"
+                        >
+                          <action.icon className="h-4 w-4" />
+                          <span>{action.label}</span>
+                        </DropdownMenuItem>
+                      ))}
+                      
+                      <DropdownMenuSeparator />
+                      
+                      {/* Search Mode */}
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger className="gap-2">
+                          <Layers className="h-4 w-4" />
+                          <span>Search Mode</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
+                            <DropdownMenuRadioItem value="database" className="gap-2">
+                              <Database className="h-4 w-4" />
+                              Database Only
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="online" className="gap-2">
+                              <Globe className="h-4 w-4" />
+                              Online Only
+                            </DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="both" className="gap-2">
+                              <Layers className="h-4 w-4" />
+                              Both (Default)
+                            </DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
+                  {/* Attach Button */}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
+                          onClick={handleAttachContext}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 
                 {/* Right Icons */}
                 <div className="flex items-center gap-1">
@@ -543,24 +556,8 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       </TooltipProvider>
                     </div>
                   ) : (
-                    /* Default State - Attach + Mic + Send */
+                    /* Default State - Mic + Send */
                     <div className="flex items-center gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="button" 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-9 w-9 text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
-                              onClick={handleAttachContext}
-                            >
-                              <Paperclip className="h-5 w-5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
