@@ -22,6 +22,7 @@ import {
   Globe,
   Layers,
   ChevronRight,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -467,34 +468,85 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                {/* Right Icons - closer together */}
+                {/* Right Icons */}
                 <div className="flex items-center gap-1">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    size="icon" 
-                    className={cn(
-                      "h-8 w-8",
-                      isRecording 
-                        ? "text-destructive bg-destructive/10 animate-pulse" 
-                        : "text-muted-foreground"
-                    )}
-                    onClick={handleMicClick}
-                  >
-                    {isRecording ? (
-                      <MicOff className="h-4 w-4" />
-                    ) : (
-                      <Mic className="h-4 w-4" />
-                    )}
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    size="icon" 
-                    disabled={!input.trim() || isLoading}
-                    className="h-8 w-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
+                  {isRecording ? (
+                    /* Recording State - Show waves + cancel/confirm */
+                    <div className="flex items-center gap-2">
+                      {/* Audio Waves Animation */}
+                      <div className="flex items-center gap-0.5 h-8 px-2">
+                        <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "0ms" }} />
+                        <span className="w-1 h-5 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "100ms" }} />
+                        <span className="w-1 h-4 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "200ms" }} />
+                        <span className="w-1 h-6 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "300ms" }} />
+                        <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "400ms" }} />
+                      </div>
+                      
+                      {/* Cancel Recording */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                              onClick={stopRecording}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Cancel</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      {/* Confirm Recording */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-emerald-600 hover:bg-emerald-100"
+                              onClick={stopRecording}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Done</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  ) : (
+                    /* Default State - Mic + Send */
+                    <>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              onClick={startRecording}
+                            >
+                              <Mic className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Voice Input</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Button 
+                        type="submit" 
+                        size="icon" 
+                        disabled={!input.trim() || isLoading}
+                        className="h-8 w-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600"
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
