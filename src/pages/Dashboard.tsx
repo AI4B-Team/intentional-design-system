@@ -37,6 +37,7 @@ import {
   Target,
   Settings2,
   AlertTriangle,
+  Star,
   Zap,
   DollarSign,
   Hourglass,
@@ -400,6 +401,7 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         scoreColor
       )}>
         {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
+        {score > 500 && score <= 800 && <Star className="h-3 w-3" />}
         {score}
       </div>
 
