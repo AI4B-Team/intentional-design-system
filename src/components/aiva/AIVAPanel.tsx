@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Sparkles, Brain, MessageSquare, TrendingUp } from "lucide-react";
+import { X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AIVAChat } from "./AIVAChat";
@@ -45,27 +45,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           </Button>
         </div>
 
-        {/* Chat Area */}
+        {/* Chat Area - takes full remaining height */}
         <div className="flex-1 flex flex-col min-h-0">
           <AIVAChat className="flex-1 border-0 rounded-none shadow-none" />
-        </div>
-
-        {/* Quick Capabilities Footer */}
-        <div className="border-t p-3 bg-muted/30">
-          <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Brain className="h-3 w-3" />
-              <span>Lead Scoring</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" />
-              <span>Outreach</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <TrendingUp className="h-3 w-3" />
-              <span>Market Intel</span>
-            </div>
-          </div>
         </div>
       </div>
     </>
