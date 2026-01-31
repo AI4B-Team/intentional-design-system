@@ -907,6 +907,62 @@ export default function Dashboard() {
     ? realOpportunities 
     : demoHotOpportunities;
 
+  // Demo activity data for visualization
+  const demoRecentActivity = [
+    {
+      id: "demo-activity-1",
+      type: "property_added" as const,
+      description: "New property added: 1842 Sunset Boulevard",
+      timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+      relativeTime: "30 minutes ago",
+      propertyId: "demo-1",
+    },
+    {
+      id: "demo-activity-2",
+      type: "offer_sent" as const,
+      description: "Offer sent: $285,000 on 3921 Maple Street",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+      relativeTime: "2 hours ago",
+      propertyId: "demo-2",
+    },
+    {
+      id: "demo-activity-3",
+      type: "appointment_scheduled" as const,
+      description: "Property Walkthrough scheduled for 7845 Oak Avenue",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
+      relativeTime: "5 hours ago",
+      propertyId: "demo-3",
+    },
+    {
+      id: "demo-activity-4",
+      type: "response_received" as const,
+      description: "Counter-offer received: $310,000 on 2156 Cherry Lane",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+      relativeTime: "1 day ago",
+      propertyId: "demo-4",
+    },
+    {
+      id: "demo-activity-5",
+      type: "status_changed" as const,
+      description: "Status updated to Under Contract: 9023 Birch Court",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+      relativeTime: "2 days ago",
+      propertyId: "demo-5",
+    },
+    {
+      id: "demo-activity-6",
+      type: "property_added" as const,
+      description: "New property added: 4512 Willow Creek Drive",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 72).toISOString(),
+      relativeTime: "3 days ago",
+      propertyId: "demo-6",
+    },
+  ];
+
+  // Use demo activity if not enough real data
+  const hasEnoughRealActivity = (recentActivity?.length || 0) >= 4;
+  const displayActivity = hasEnoughRealActivity ? recentActivity : demoRecentActivity;
+
   const handleTaskToggle = (taskId: string) => {
     setCompletedTasks(prev => {
       const next = new Set(prev);
@@ -1231,16 +1287,10 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            ) : recentActivity?.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">No Activity Yet</p>
-                <p className="text-tiny mt-1 uppercase tracking-wide">Start Adding Properties To See Activity</p>
-              </div>
             ) : (
               <div className="p-2">
                 {/* Cap to 4 visible items */}
-                {recentActivity?.slice(0, 4).map((activity) => (
+                {displayActivity?.slice(0, 4).map((activity) => (
                   <ActivityItem
                     key={activity.id}
                     activity={activity}
@@ -1249,7 +1299,7 @@ export default function Dashboard() {
                 ))}
 
                 {/* View All link when more than 4 items */}
-                {recentActivity && recentActivity.length > 4 && (
+                {displayActivity && displayActivity.length > 4 && (
                   <div 
                     className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
                     onClick={() => navigate("/activity")}
