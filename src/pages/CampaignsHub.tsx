@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { Home, Megaphone, ListFilter, AtSign, Phone, Mail, Globe } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 // Import tab content components
 import { LeadsTab } from '@/components/campaigns/LeadsTab';
@@ -12,6 +13,16 @@ import { EmailTab } from '@/components/campaigns/EmailTab';
 import { DialerTab } from '@/components/campaigns/DialerTab';
 import { DirectMailTab } from '@/components/campaigns/DirectMailTab';
 import { WebsiteTab } from '@/components/campaigns/WebsiteTab';
+
+const tabs = [
+  { value: 'leads', label: 'Leads', icon: Home },
+  { value: 'lists', label: 'Lists', icon: ListFilter },
+  { value: 'email', label: 'Email', icon: AtSign },
+  { value: 'dialer', label: 'Dialer', icon: Phone },
+  { value: 'mail', label: 'Direct Mail', icon: Mail },
+  { value: 'mls', label: 'MLS', icon: Megaphone },
+  { value: 'website', label: 'Website', icon: Globe },
+];
 
 export default function CampaignsHub() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +34,27 @@ export default function CampaignsHub() {
     setSearchParams({ tab: value });
   };
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'leads':
+        return <LeadsTab />;
+      case 'lists':
+        return <ListsTab />;
+      case 'email':
+        return <EmailTab />;
+      case 'dialer':
+        return <DialerTab />;
+      case 'mail':
+        return <DirectMailTab />;
+      case 'mls':
+        return <MLSTab />;
+      case 'website':
+        return <WebsiteTab />;
+      default:
+        return <LeadsTab />;
+    }
+  };
+
   return (
     <PageLayout title="Campaigns">
       <div className="space-y-6">
@@ -30,66 +62,33 @@ export default function CampaignsHub() {
           Manage your lead sources and marketing campaigns
         </p>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="flex w-full max-w-3xl overflow-x-auto">
-            <TabsTrigger value="leads" className="gap-2">
-              <Home className="h-4 w-4" />
-              <span className="hidden sm:inline">Leads</span>
-            </TabsTrigger>
-            <TabsTrigger value="lists" className="gap-2">
-              <ListFilter className="h-4 w-4" />
-              <span className="hidden sm:inline">Lists</span>
-            </TabsTrigger>
-            <TabsTrigger value="email" className="gap-2">
-              <AtSign className="h-4 w-4" />
-              <span className="hidden sm:inline">Email</span>
-            </TabsTrigger>
-            <TabsTrigger value="dialer" className="gap-2">
-              <Phone className="h-4 w-4" />
-              <span className="hidden sm:inline">Dialer</span>
-            </TabsTrigger>
-            <TabsTrigger value="mail" className="gap-2">
-              <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Direct Mail</span>
-            </TabsTrigger>
-            <TabsTrigger value="mls" className="gap-2">
-              <Megaphone className="h-4 w-4" />
-              <span className="hidden sm:inline">MLS</span>
-            </TabsTrigger>
-            <TabsTrigger value="website" className="gap-2">
-              <Globe className="h-4 w-4" />
-              <span className="hidden sm:inline">Website</span>
-            </TabsTrigger>
-          </TabsList>
+        {/* Individual Tab Buttons */}
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.value;
+            return (
+              <Button
+                key={tab.value}
+                variant={isActive ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => handleTabChange(tab.value)}
+                className={cn(
+                  'gap-2',
+                  isActive && 'bg-primary text-primary-foreground'
+                )}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </Button>
+            );
+          })}
+        </div>
 
-          <TabsContent value="leads" className="mt-6">
-            <LeadsTab />
-          </TabsContent>
-
-          <TabsContent value="lists" className="mt-6">
-            <ListsTab />
-          </TabsContent>
-
-          <TabsContent value="email" className="mt-6">
-            <EmailTab />
-          </TabsContent>
-
-          <TabsContent value="dialer" className="mt-6">
-            <DialerTab />
-          </TabsContent>
-
-          <TabsContent value="mail" className="mt-6">
-            <DirectMailTab />
-          </TabsContent>
-
-          <TabsContent value="mls" className="mt-6">
-            <MLSTab />
-          </TabsContent>
-
-          <TabsContent value="website" className="mt-6">
-            <WebsiteTab />
-          </TabsContent>
-        </Tabs>
+        {/* Tab Content */}
+        <div className="mt-6">
+          {renderContent()}
+        </div>
       </div>
     </PageLayout>
   );
