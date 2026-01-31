@@ -6,6 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
@@ -663,23 +669,41 @@ export function NotificationsDropdown() {
         {/* Footer Actions */}
         {filteredNotifications.length > 0 && (
           <div className="flex items-center justify-between px-4 py-2 border-t bg-muted/30">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-7"
-              onClick={handleMarkAllRead}
-            >
-              <Check className="h-3 w-3 mr-1" />
-              Mark All Read
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-7 text-muted-foreground hover:text-destructive"
-              onClick={handleClearAll}
-            >
-              Clear Messages
-            </Button>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={handleMarkAllRead}
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    Mark All Read
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-background text-foreground border shadow-md">
+                  <p className="text-xs">Marks all as read but keeps history</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs h-7 text-muted-foreground hover:text-destructive"
+                    onClick={handleClearAll}
+                  >
+                    Clear Messages
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-background text-foreground border shadow-md">
+                  <p className="text-xs">Removes notifications from this view</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         )}
       </DropdownMenuContent>
