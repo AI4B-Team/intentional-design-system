@@ -654,7 +654,7 @@ export function NotificationsDropdown() {
               onClick={handleMarkAllRead}
             >
               <Check className="h-3 w-3 mr-1" />
-              Mark all read
+              Mark All Read
             </Button>
             <Button
               variant="ghost"
@@ -662,7 +662,7 @@ export function NotificationsDropdown() {
               className="text-xs h-7 text-muted-foreground hover:text-destructive"
               onClick={handleClearAll}
             >
-              Clear {activeTab === "all" ? "all" : activeTab}
+              Clear Messages
             </Button>
           </div>
         )}
