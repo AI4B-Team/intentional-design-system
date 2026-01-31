@@ -606,7 +606,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
 
       {/* History Dialog */}
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent className="sm:max-w-md z-[80]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <History className="h-5 w-5" />
@@ -636,7 +636,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
 
       {/* Settings Dialog */}
       <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent className="sm:max-w-md z-[80]">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
@@ -655,7 +655,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     {searchType}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="z-[120]">
                   <DropdownMenuItem onClick={() => setSearchType("database")}>
                     Database
                   </DropdownMenuItem>
