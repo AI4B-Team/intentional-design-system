@@ -1167,7 +1167,7 @@ export default function Dashboard() {
               <h2 className="text-body font-semibold text-foreground">Today's Tasks</h2>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {todaysTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} remaining
+              {todaysTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} Remaining
             </span>
           </div>
           <div className="max-h-[320px] overflow-y-auto">
@@ -1187,8 +1187,8 @@ export default function Dashboard() {
             ) : todaysTasks?.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
                 <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">All caught up!</p>
-                <p className="text-tiny mt-1">No tasks for today</p>
+                <p className="font-medium">You're All Caught Up</p>
+                <p className="text-tiny mt-1 uppercase tracking-wide">No Tasks For Today</p>
               </div>
             ) : (
               <div className="p-2">
@@ -1218,10 +1218,10 @@ export default function Dashboard() {
               <h2 className="text-body font-semibold text-foreground">Recent Activity</h2>
             </div>
           </div>
-          <div className="max-h-[320px] overflow-y-auto">
+          <div className="overflow-hidden">
             {activityLoading ? (
               <div className="p-4 space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
+                {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="flex items-start gap-3 animate-pulse">
                     <Skeleton className="h-8 w-8 rounded-lg" />
                     <div className="flex-1 space-y-2">
@@ -1234,18 +1234,30 @@ export default function Dashboard() {
             ) : recentActivity?.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
                 <Clock className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                <p className="font-medium">No activity yet</p>
-                <p className="text-tiny mt-1">Start adding properties to see activity</p>
+                <p className="font-medium">No Activity Yet</p>
+                <p className="text-tiny mt-1 uppercase tracking-wide">Start Adding Properties To See Activity</p>
               </div>
             ) : (
               <div className="p-2">
-                {recentActivity?.map((activity) => (
+                {/* Cap to 4 visible items */}
+                {recentActivity?.slice(0, 4).map((activity) => (
                   <ActivityItem
                     key={activity.id}
                     activity={activity}
                     onClick={() => activity.propertyId && navigate(`/properties/${activity.propertyId}`)}
                   />
                 ))}
+
+                {/* View All link when more than 4 items */}
+                {recentActivity && recentActivity.length > 4 && (
+                  <div 
+                    className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+                    onClick={() => navigate("/activity")}
+                  >
+                    <span>View All Activity</span>
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </div>
+                )}
               </div>
             )}
           </div>
