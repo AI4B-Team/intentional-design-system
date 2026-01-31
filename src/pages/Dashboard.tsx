@@ -121,7 +121,7 @@ function PipelineValueCard({
       variant="default" 
       padding="md" 
       className={cn(
-        "group relative overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200",
+        "group relative overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 h-full",
         onClick && "cursor-pointer",
         isCalmVariant && "border-success/20"
       )}
@@ -135,7 +135,7 @@ function PipelineValueCard({
           : "bg-gradient-to-br from-transparent via-transparent to-primary/5"
       )} />
       
-      <div className="relative space-y-4">
+      <div className="relative flex flex-col h-full">
         {/* Header with optional subtitle */}
         <div className="flex items-center justify-between">
           <div>
@@ -156,7 +156,7 @@ function PipelineValueCard({
         </div>
 
         {/* Count with Goal */}
-        <div>
+        <div className="mt-4">
           <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
             {count}
           </p>
@@ -187,40 +187,43 @@ function PipelineValueCard({
           )}
         </div>
 
-        {/* Avg days to close for contracts */}
-        {avgDaysToClose !== undefined && avgDaysToClose > 0 && (
-          <div className="flex items-center gap-2 text-tiny text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>Avg {avgDaysToClose} days to close</span>
-          </div>
-        )}
+        {/* Middle content - flex-1 to push bottom metrics down */}
+        <div className="flex-1 mt-3">
+          {/* Avg days to close for contracts */}
+          {avgDaysToClose !== undefined && avgDaysToClose > 0 && (
+            <div className="flex items-center gap-2 text-tiny text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              <span>Avg {avgDaysToClose} Days To Close</span>
+            </div>
+          )}
 
-        {/* Action Insight - "What to do next" (not shown for calm variant) */}
-        {actionInsight && !isCalmVariant && (
-          <div className={cn(
-            "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
-            actionInsight.severity === "high" 
-              ? "bg-destructive/10 text-destructive" 
-              : actionInsight.severity === "medium"
-              ? "bg-warning/10 text-warning"
-              : "bg-accent/10 text-accent"
-          )}>
-            {actionInsight.type === "warning" && <AlertTriangle className="h-3 w-3" />}
-            {actionInsight.type === "action" && <Clock className="h-3 w-3" />}
-            <span className="truncate">{actionInsight.label}</span>
-          </div>
-        )}
+          {/* Action Insight - "What to do next" (not shown for calm variant) */}
+          {actionInsight && !isCalmVariant && (
+            <div className={cn(
+              "flex items-center gap-2 px-2.5 py-1.5 rounded-md text-tiny font-medium",
+              actionInsight.severity === "high" 
+                ? "bg-destructive/10 text-destructive" 
+                : actionInsight.severity === "medium"
+                ? "bg-warning/10 text-warning"
+                : "bg-accent/10 text-accent"
+            )}>
+              {actionInsight.type === "warning" && <AlertTriangle className="h-3 w-3" />}
+              {actionInsight.type === "action" && <Clock className="h-3 w-3" />}
+              <span className="truncate">{actionInsight.label}</span>
+            </div>
+          )}
+        </div>
 
-        {/* Value and Profit */}
-        <div className="space-y-2 pt-2 border-t border-border-subtle">
+        {/* Value and Profit - Always at bottom with mt-auto */}
+        <div className="space-y-2 pt-2 border-t border-border-subtle mt-auto">
           <div className="flex items-center justify-between">
-            <span className="text-tiny text-muted-foreground">{valueLabel}</span>
+            <span className="text-tiny text-muted-foreground uppercase">{valueLabel}</span>
             <span className="text-small font-semibold text-foreground tabular-nums">
               {formatCurrency(totalValue)}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-tiny text-muted-foreground">{profitLabel}</span>
+            <span className="text-tiny text-muted-foreground uppercase">{profitLabel}</span>
             <span className="text-small font-bold text-success tabular-nums">
               {formatCurrency(profitPotential)}
             </span>
