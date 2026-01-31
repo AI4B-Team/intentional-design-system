@@ -37,6 +37,7 @@ import {
   FileText,
   Home,
   Package,
+  Kanban,
 } from "lucide-react";
 
 interface NavItem {
@@ -56,6 +57,7 @@ const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Inbox", href: "/inbox", icon: Inbox },
+  { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Properties", href: "/properties", icon: Building2 },
 ];
 
