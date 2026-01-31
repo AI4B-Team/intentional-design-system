@@ -160,6 +160,13 @@ function DealCard({
   const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
   const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
   
+  // Calculate cashflow and cap rate
+  const annualRent = monthlyRent * 12;
+  const annualExpenses = piti * 12; // Using PITI as proxy for annual expenses
+  const monthlyCashflow = monthlyRent - piti;
+  const annualNOI = annualRent - (annualExpenses * 0.4); // Assume 40% expense ratio
+  const capRate = askingPrice > 0 ? (annualNOI / askingPrice) * 100 : 0;
+  
   // Year built (mock - random between 1970-2020)
   const yearBuilt = 1970 + Math.floor(Math.random() * 50);
   
@@ -356,6 +363,29 @@ function DealCard({
           <div className="flex-1 flex items-center justify-end gap-2">
             <span className="text-sm text-muted-foreground">PITI</span>
             <span className="font-semibold text-foreground">{formatCurrency(piti)}/mo</span>
+          </div>
+        </div>
+
+        {/* Cashflow & Cap Rate Row */}
+        <div className="mt-3 flex items-center">
+          <div className="flex-1 flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Cashflow</span>
+            <span className={cn(
+              "font-semibold",
+              monthlyCashflow >= 0 ? "text-success" : "text-destructive"
+            )}>
+              {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
+            </span>
+          </div>
+          <div className="w-px h-6 bg-border mx-4" />
+          <div className="flex-1 flex items-center justify-end gap-2">
+            <span className="text-sm text-muted-foreground">Cap Rate</span>
+            <span className={cn(
+              "font-semibold",
+              capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
+            )}>
+              {capRate.toFixed(1)}%
+            </span>
           </div>
         </div>
 
