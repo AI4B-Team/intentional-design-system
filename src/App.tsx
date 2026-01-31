@@ -23,6 +23,7 @@ import PropertyDetail from "./pages/PropertyDetail";
 import Calculators from "./pages/Calculators";
 import Analytics from "./pages/Analytics";
 import Marketplace from "./pages/Marketplace";
+import BuyBox from "./pages/BuyBox";
 import LenderBrowser from "./pages/LenderBrowser";
 import FundingRequest from "./pages/FundingRequest";
 import Capital from "./pages/Capital";
@@ -319,6 +320,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MarketplaceDealDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketplace/buy-box"
+              element={
+                <ProtectedRoute>
+                  <BuyBox />
                 </ProtectedRoute>
               }
             />
