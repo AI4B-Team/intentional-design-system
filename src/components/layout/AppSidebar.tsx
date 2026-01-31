@@ -143,7 +143,6 @@ const moreGroup: NavGroup = {
     { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
     { label: "Achievements", href: "/achievements", icon: Award },
     { label: "Daily Report", href: "/reports/daily", icon: FileText },
-    { label: "Settings", href: "/settings", icon: Settings },
   ],
 };
 
