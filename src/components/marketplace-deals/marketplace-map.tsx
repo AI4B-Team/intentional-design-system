@@ -212,13 +212,13 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </div>
       </div>
 
-      {/* Overlays Dropdown */}
+      {/* Intel Dropdown */}
       <div className="absolute top-3 right-3 z-10">
         <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" className="bg-white shadow-md gap-2">
               <Layers className="h-4 w-4" />
-              Overlays
+              Intel
               {overlaysOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </PopoverTrigger>
