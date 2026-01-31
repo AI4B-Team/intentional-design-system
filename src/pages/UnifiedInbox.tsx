@@ -597,7 +597,7 @@ export default function UnifiedInbox() {
     <TooltipProvider>
       <PageLayout>
         <PageHeader
-          title="Unified Inbox"
+          title="Inbox"
           description="AI-powered communication hub for winning deals"
           actions={
             <div className="flex items-center gap-2">
