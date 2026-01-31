@@ -775,6 +775,95 @@ export default function Dashboard() {
     sold: { count: 1, totalValue: 175000, profitPotential: 10500 },
   };
 
+  // Demo hot opportunities for visualization
+  const demoHotOpportunities: HotOpportunityEnhanced[] = [
+    {
+      id: "demo-1",
+      address: "1842 Sunset Boulevard",
+      city: "Los Angeles",
+      state: "CA",
+      motivation_score: 920,
+      status: "new",
+      updated_at: new Date().toISOString(),
+      owner_phone: "(555) 123-4567",
+      owner_email: "owner1@example.com",
+      profit_potential: 78000,
+      equity_percent: 45,
+      days_since_added: 0,
+      urgency_reason: "🔥 Motivated seller",
+      deal_score_rank: "🏆 Top Deal",
+      arv: 385000,
+    },
+    {
+      id: "demo-2",
+      address: "3921 Maple Street",
+      city: "Phoenix",
+      state: "AZ",
+      motivation_score: 850,
+      status: "contacted",
+      updated_at: new Date(Date.now() - 86400000).toISOString(),
+      owner_phone: "(555) 234-5678",
+      owner_email: "owner2@example.com",
+      profit_potential: 62000,
+      equity_percent: 38,
+      days_since_added: 1,
+      urgency_reason: "Pre-foreclosure",
+      deal_score_rank: "",
+      arv: 295000,
+    },
+    {
+      id: "demo-3",
+      address: "7845 Oak Avenue",
+      city: "Dallas",
+      state: "TX",
+      motivation_score: 780,
+      status: "new",
+      updated_at: new Date(Date.now() - 172800000).toISOString(),
+      owner_phone: "(555) 345-6789",
+      owner_email: "owner3@example.com",
+      profit_potential: 55000,
+      equity_percent: 52,
+      days_since_added: 2,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 265000,
+    },
+    {
+      id: "demo-4",
+      address: "2156 Cherry Lane",
+      city: "Atlanta",
+      state: "GA",
+      motivation_score: 720,
+      status: "appointment",
+      updated_at: new Date(Date.now() - 259200000).toISOString(),
+      owner_phone: "(555) 456-7890",
+      owner_email: "owner4@example.com",
+      profit_potential: 48000,
+      equity_percent: 35,
+      days_since_added: 3,
+      urgency_reason: "🔥 Divorce situation",
+      deal_score_rank: "",
+      arv: 225000,
+    },
+    {
+      id: "demo-5",
+      address: "9023 Birch Court",
+      city: "Denver",
+      state: "CO",
+      motivation_score: 680,
+      status: "new",
+      updated_at: new Date(Date.now() - 345600000).toISOString(),
+      owner_phone: "(555) 567-8901",
+      owner_email: "owner5@example.com",
+      profit_potential: 42000,
+      equity_percent: 28,
+      days_since_added: 4,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 198000,
+    },
+  ];
+
   // Use demo data if no real data exists
   const hasRealData = pipelineValueStatsRaw && (
     pipelineValueStatsRaw.leads.count > 0 ||
@@ -784,6 +873,12 @@ export default function Dashboard() {
   );
   
   const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoData;
+  
+  // Use demo hot opportunities if no real data
+  const hasRealHotOpportunities = hotOpportunities && hotOpportunities.length > 0;
+  const displayHotOpportunities = hasRealHotOpportunities 
+    ? (insights?.hotOpportunities || hotOpportunities) 
+    : demoHotOpportunities;
 
   const handleTaskToggle = (taskId: string) => {
     setCompletedTasks(prev => {
@@ -936,15 +1031,10 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            ) : hotOpportunities?.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <Building2 className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p>No properties yet</p>
-              </div>
             ) : (
               <div className="p-2">
-                {/* Use enhanced opportunities from insights if available, fallback to regular */}
-                {(insights?.hotOpportunities || hotOpportunities)?.slice(0, 5).map((opp) => {
+                {/* Use demo data if no real opportunities, otherwise use enhanced from insights */}
+                {displayHotOpportunities?.slice(0, 5).map((opp) => {
                   // Check if it's an enhanced opportunity with urgency_reason
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
