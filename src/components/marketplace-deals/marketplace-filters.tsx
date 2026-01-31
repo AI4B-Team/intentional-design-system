@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
+import { SaveSearchDialog } from "./save-search-dialog";
 
 export type LayoutMode = "cards" | "split" | "map";
 
@@ -54,6 +55,7 @@ interface MarketplaceFiltersProps {
   showSavedOnly?: boolean;
   onShowSavedOnlyChange?: (show: boolean) => void;
   savedCount?: number;
+  totalCount?: number;
 }
 
 const leadTypeOptions = [
@@ -106,11 +108,13 @@ export function MarketplaceFilters({
   showSavedOnly = false,
   onShowSavedOnlyChange,
   savedCount = 0,
+  totalCount = 0,
 }: MarketplaceFiltersProps) {
   const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [bedsPopoverOpen, setBedsPopoverOpen] = useState(false);
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
+  const [saveSearchOpen, setSaveSearchOpen] = useState(false);
 
   const handleChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value });
@@ -372,6 +376,7 @@ export function MarketplaceFilters({
           <Button 
             variant="default" 
             className="h-10 gap-2 px-4 bg-primary text-primary-foreground hover:bg-primary/90 text-sm flex-shrink-0 whitespace-nowrap"
+            onClick={() => setSaveSearchOpen(true)}
           >
             <Bookmark className="h-4 w-4" />
             Save Search
@@ -470,6 +475,14 @@ export function MarketplaceFilters({
         onOpenChange={setMoreFiltersOpen}
         filters={advancedFilters}
         onFiltersChange={onAdvancedFiltersChange || (() => {})}
+      />
+
+      {/* Save Search Dialog */}
+      <SaveSearchDialog
+        open={saveSearchOpen}
+        onOpenChange={setSaveSearchOpen}
+        filters={filters}
+        resultCount={totalCount}
       />
     </>
   );

@@ -101,6 +101,7 @@ export default function MarketplaceDeals() {
           showSavedOnly={showSavedOnly}
           onShowSavedOnlyChange={setShowSavedOnly}
           savedCount={savedCount}
+          totalCount={totalCount}
         />
 
         {/* Main Content - fills remaining height */}
