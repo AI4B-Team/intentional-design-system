@@ -701,7 +701,7 @@ export default function Pipeline() {
   return (
     <PageLayout>
       <PageHeader
-        title="Deal Pipeline"
+        title="Pipeline"
         description="Track and manage deals through your acquisition process"
         actions={
           <div className="flex items-center gap-2">
