@@ -39,8 +39,8 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     };
   }, []);
 
-  // Add a small gap to prevent overlap with sidebar
-  const panelLeft = sidebarWidth + 4;
+  // Add gap to prevent overlap with sidebar
+  const panelLeft = sidebarWidth + 8;
 
   return (
     <>
