@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
+import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
   LayoutDashboard,
@@ -227,6 +228,11 @@ export function AppSidebar({
             <X className="h-5 w-5" />
           </button>
         </div>
+      </div>
+
+      {/* Workspace Switcher */}
+      <div className="py-2 border-b border-slate-700">
+        <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 
       {/* Navigation */}
