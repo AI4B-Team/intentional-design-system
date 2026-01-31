@@ -26,6 +26,7 @@ import {
   Search,
   FileText,
   MapPin,
+  ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -53,12 +54,8 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+// Panel views are now inline instead of dialogs
+type PanelView = "chat" | "history" | "settings";
 
 interface AIVAChatProps {
   className?: string;
@@ -76,10 +73,9 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   
-  // Dialog states
-  const [historyOpen, setHistoryOpen] = useState(false);
+  // Panel view state (replaces dialog states)
+  const [panelView, setPanelView] = useState<PanelView>("chat");
   const [historySearch, setHistorySearch] = useState("");
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Auto-scroll to bottom when new messages arrive
@@ -248,8 +244,11 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-9 w-9 rounded-lg"
-                    onClick={() => setHistoryOpen(true)}
+                    className={cn(
+                      "h-9 w-9 rounded-lg",
+                      panelView === "history" && "bg-muted"
+                    )}
+                    onClick={() => setPanelView(panelView === "history" ? "chat" : "history")}
                   >
                     <History className="h-4 w-4" />
                   </Button>
@@ -261,8 +260,11 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-9 w-9 rounded-lg"
-                    onClick={() => setSettingsOpen(true)}
+                    className={cn(
+                      "h-9 w-9 rounded-lg",
+                      panelView === "settings" && "bg-muted"
+                    )}
+                    onClick={() => setPanelView(panelView === "settings" ? "chat" : "settings")}
                   >
                     <Settings className="h-4 w-4" />
                   </Button>
@@ -302,406 +304,438 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
           </div>
         </div>
 
-        {/* Chat Messages */}
-        <ScrollArea ref={scrollAreaRef} className="flex-1">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center min-h-full px-4 pt-24 pb-6">
-              {/* Three Dots - Animated */}
-              <div className="flex gap-2 mb-4">
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "1s" }} />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms", animationDuration: "1s" }} />
-                <div className="h-2.5 w-2.5 rounded-full bg-emerald-600 animate-bounce" style={{ animationDelay: "300ms", animationDuration: "1s" }} />
-              </div>
-              
-              {/* Heading */}
-              <h2 className="text-xl font-bold text-foreground mb-1">How Can I Help?</h2>
-              <p className="text-muted-foreground text-xs text-center max-w-xs mb-5">
-                Your AI-powered assistant for property search, deal analysis, and market research.
-              </p>
-              
-              {/* Suggestions Label */}
-              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider mb-3">
-                <Sparkles className="h-3 w-3" />
-                <span>Suggestions</span>
-              </div>
-              
-              {/* Suggestion Pills - Compact */}
-              <div className="flex flex-col gap-1.5 w-full max-w-sm">
-                {suggestedQuestions.map((question, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setInput(question);
-                      inputRef.current?.focus();
-                    }}
-                    className={cn(
-                      "w-full text-left px-3 py-2 rounded-lg border text-xs transition-all",
-                      "hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
-                      "border-border bg-background text-foreground"
-                    )}
-                  >
-                    {question}
-                  </button>
-                ))}
+        {/* Panel Content - conditionally rendered based on panelView */}
+        {panelView === "history" ? (
+          /* History Panel */
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* History Header with Back Button */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 rounded-lg"
+                onClick={() => {
+                  setPanelView("chat");
+                  setHistorySearch("");
+                }}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h2 className="text-lg font-semibold">Chat History</h2>
+            </div>
+            
+            {/* Search Input */}
+            <div className="px-4 py-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Search conversations..."
+                  value={historySearch}
+                  onChange={(e) => setHistorySearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/20 border-0"
+                />
               </div>
             </div>
-          ) : (
-            <div className="space-y-4 p-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn(
-                    "flex gap-3",
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  )}
-                >
-                  {message.role === "assistant" && (
-                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  <div
-                    className={cn(
-                      "max-w-[80%] rounded-xl px-4 py-3",
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    )}
-                  >
-                    {message.role === "assistant" ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none">
-                        <ReactMarkdown>{message.content}</ReactMarkdown>
-                      </div>
-                    ) : (
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                    )}
+            
+            {/* History List */}
+            <ScrollArea className="flex-1">
+              <div className="px-4 pb-4 space-y-2">
+                {chatHistory
+                  .filter((chat) => 
+                    chat.title.toLowerCase().includes(historySearch.toLowerCase())
+                  )
+                  .map((chat) => (
+                    <button
+                      key={chat.id}
+                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
+                      onClick={() => {
+                        toast.info("Chat history will be restored in a future update");
+                        setPanelView("chat");
+                      }}
+                    >
+                      <p className="font-medium text-sm">{chat.title}</p>
+                      <p className="text-xs text-muted-foreground">{chat.date}</p>
+                    </button>
+                  ))}
+                {chatHistory.filter((chat) => 
+                  chat.title.toLowerCase().includes(historySearch.toLowerCase())
+                ).length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-20">
+                    <History className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                    <p className="text-lg font-medium text-muted-foreground">
+                      {historySearch ? "No Matching Conversations" : "No Chat History Yet"}
+                    </p>
+                    <p className="text-sm text-muted-foreground/60">
+                      {historySearch ? "Try a different search term" : "Your conversations will appear here"}
+                    </p>
                   </div>
-                  {message.role === "user" && (
-                    <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-              ))}
-              {isLoading && messages[messages.length - 1]?.role === "user" && (
-                <div className="flex gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-4 w-4 text-white animate-pulse" />
-                  </div>
-                  <div className="bg-muted rounded-xl px-4 py-3">
-                    <div className="flex gap-1">
-                      <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                      <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                      <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
-                    </div>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
+            </ScrollArea>
+          </div>
+        ) : panelView === "settings" ? (
+          /* Settings Panel */
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* Settings Header with Back Button */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 rounded-lg"
+                onClick={() => setPanelView("chat")}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h2 className="text-lg font-semibold">Settings</h2>
             </div>
-          )}
-        </ScrollArea>
-
-        {/* Input Area */}
-        <div className="border-t px-2 pt-3 mt-auto shrink-0">
-          <form onSubmit={handleSubmit} className="relative">
-            <div className="flex flex-col gap-3 rounded-xl border-2 border-slate-300 bg-background p-3">
-              {/* Input Field - taller */}
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask AIVA Anything"
-                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm py-2"
-              />
-              
-              {/* Bottom Row */}
-              <div className="flex items-center justify-between">
-                {/* Left Side - Tools + Attach */}
-                <div className="flex items-center gap-1">
-                  {/* Tools Dropdown */}
+            
+            {/* Settings Content */}
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-3">
+                <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Default Search Mode</p>
+                    <p className="text-xs text-muted-foreground">Choose what AIVA searches by default</p>
+                  </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 rounded-full gap-2 border-muted-foreground/20 text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 bg-transparent">
-                        <SlidersHorizontal className="h-3.5 w-3.5" />
-                        <span className="text-xs font-normal">Tools</span>
+                      <Button variant="outline" size="sm" className="capitalize">
+                        {searchType}
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-64">
-                      {/* Capabilities */}
-                      <DropdownMenuLabel className="text-xs text-muted-foreground">What I Can Do</DropdownMenuLabel>
-                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                        <Search className="h-4 w-4 text-primary" />
-                        <span className="text-muted-foreground">Property Search</span>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setSearchType("database")}>
+                        Database
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                        <FileText className="h-4 w-4 text-primary" />
-                        <span className="text-muted-foreground">Deal Analysis</span>
+                      <DropdownMenuItem onClick={() => setSearchType("online")}>
+                        Online
                       </DropdownMenuItem>
-                      <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
-                        <MapPin className="h-4 w-4 text-primary" />
-                        <span className="text-muted-foreground">Market Research</span>
+                      <DropdownMenuItem onClick={() => setSearchType("both")}>
+                        Both
                       </DropdownMenuItem>
-                      
-                      <DropdownMenuSeparator />
-                      
-                      {/* Quick Actions */}
-                      <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
-                      {quickActions.map((action) => (
-                        <DropdownMenuItem 
-                          key={action.label}
-                          onClick={() => handleQuickAction(action.prompt)}
-                          className="gap-2"
-                        >
-                          <action.icon className={cn("h-4 w-4", action.color)} />
-                          <span>{action.label}</span>
-                        </DropdownMenuItem>
-                      ))}
-                      
-                      <DropdownMenuSeparator />
-                      
-                      {/* Search Mode */}
-                      <DropdownMenuSub>
-                        <DropdownMenuSubTrigger className="gap-2">
-                          <Layers className="h-4 w-4 text-indigo-500" />
-                          <span>Search Mode</span>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuSubContent>
-                          <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
-                            <DropdownMenuRadioItem value="database" className="gap-2">
-                              <Database className="h-4 w-4 text-cyan-500" />
-                              Database Only
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="online" className="gap-2">
-                              <Globe className="h-4 w-4 text-teal-500" />
-                              Online Only
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem value="both" className="gap-2">
-                              <Layers className="h-4 w-4 text-indigo-500" />
-                              Both (Default)
-                            </DropdownMenuRadioItem>
-                          </DropdownMenuRadioGroup>
-                        </DropdownMenuSubContent>
-                      </DropdownMenuSub>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  
-                  {/* Attach Button - Chain Link Icon */}
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          type="button" 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-8 w-8 rounded-full text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
-                          onClick={handleAttachContext}
-                        >
-                          <Link2 className="h-4 w-4" strokeWidth={2} />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
                 </div>
-                
-                {/* Right Icons */}
-                <div className="flex items-center gap-1">
-                  {isRecording ? (
-                    /* Recording State - Show waves + cancel/confirm */
-                    <div className="flex items-center gap-2">
-                      {/* Audio Waves Animation */}
-                      <div className="flex items-center gap-0.5 h-8 px-2">
-                        <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "0ms" }} />
-                        <span className="w-1 h-5 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "100ms" }} />
-                        <span className="w-1 h-4 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "200ms" }} />
-                        <span className="w-1 h-6 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "300ms" }} />
-                        <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "400ms" }} />
+                <div className="flex items-center justify-between p-3 rounded-lg border">
+                  <div>
+                    <p className="font-medium text-sm">Voice Input</p>
+                    <p className="text-xs text-muted-foreground">Enable microphone for voice commands</p>
+                  </div>
+                  <Button variant="outline" size="sm" disabled>
+                    Enabled
+                  </Button>
+                </div>
+              </div>
+            </ScrollArea>
+          </div>
+        ) : (
+          /* Chat Panel (default) */
+          <>
+            {/* Chat Messages */}
+            <ScrollArea ref={scrollAreaRef} className="flex-1">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center min-h-full px-4 pt-24 pb-6">
+                  {/* Three Dots - Animated */}
+                  <div className="flex gap-2 mb-4">
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-bounce" style={{ animationDelay: "0ms", animationDuration: "1s" }} />
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: "150ms", animationDuration: "1s" }} />
+                    <div className="h-2.5 w-2.5 rounded-full bg-emerald-600 animate-bounce" style={{ animationDelay: "300ms", animationDuration: "1s" }} />
+                  </div>
+                  
+                  {/* Heading */}
+                  <h2 className="text-xl font-bold text-foreground mb-1">How Can I Help?</h2>
+                  <p className="text-muted-foreground text-xs text-center max-w-xs mb-5">
+                    Your AI-powered assistant for property search, deal analysis, and market research.
+                  </p>
+                  
+                  {/* Suggestions Label */}
+                  <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider mb-3">
+                    <Sparkles className="h-3 w-3" />
+                    <span>Suggestions</span>
+                  </div>
+                  
+                  {/* Suggestion Pills - Compact */}
+                  <div className="flex flex-col gap-1.5 w-full max-w-sm">
+                    {suggestedQuestions.map((question, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setInput(question);
+                          inputRef.current?.focus();
+                        }}
+                        className={cn(
+                          "w-full text-left px-3 py-2 rounded-lg border text-xs transition-all",
+                          "hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700",
+                          "border-border bg-background text-foreground"
+                        )}
+                      >
+                        {question}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 p-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={cn(
+                        "flex gap-3",
+                        message.role === "user" ? "justify-end" : "justify-start"
+                      )}
+                    >
+                      {message.role === "assistant" && (
+                        <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="h-4 w-4 text-white" />
+                        </div>
+                      )}
+                      <div
+                        className={cn(
+                          "max-w-[80%] rounded-xl px-4 py-3",
+                          message.role === "user"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        )}
+                      >
+                        {message.role === "assistant" ? (
+                          <div className="prose prose-sm dark:prose-invert max-w-none">
+                            <ReactMarkdown>{message.content}</ReactMarkdown>
+                          </div>
+                        ) : (
+                          <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                        )}
                       </div>
-                      
-                      {/* Cancel Recording */}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="button" 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                              onClick={stopRecording}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Cancel</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      {/* Confirm Recording */}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="button" 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-emerald-600 hover:bg-emerald-100"
-                              onClick={stopRecording}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Done</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      {message.role === "user" && (
+                        <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                          <User className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    /* Default State - Mic + Send */
-                    <div className="flex items-center gap-3">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="button" 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-10 w-10 text-slate-300 hover:text-destructive hover:bg-transparent transition-colors"
-                              onClick={startRecording}
-                            >
-                              <Mic className="h-6 w-6" strokeWidth={1.5} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Voice Input</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="submit" 
-                              variant="ghost"
-                              size="icon" 
-                              disabled={!input.trim() || isLoading}
-                              className={cn(
-                                "h-11 w-11 rounded-full border-0 shadow-none transition-colors disabled:opacity-100",
-                                input.trim() && !isLoading
-                                  ? "bg-primary/10 text-primary hover:bg-primary/15 active:bg-primary/20"
-                                  : "bg-muted/40 text-muted-foreground/40"
-                              )}
-                            >
-                              <Send className="h-5 w-5" strokeWidth={1.5} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Send</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                  ))}
+                  {isLoading && messages[messages.length - 1]?.role === "user" && (
+                    <div className="flex gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center flex-shrink-0">
+                        <Sparkles className="h-4 w-4 text-white animate-pulse" />
+                      </div>
+                      <div className="bg-muted rounded-xl px-4 py-3">
+                        <div className="flex gap-1">
+                          <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <span className="h-2 w-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
-              </div>
+              )}
+            </ScrollArea>
+
+            {/* Input Area */}
+            <div className="border-t px-2 pt-3 mt-auto shrink-0">
+              <form onSubmit={handleSubmit} className="relative">
+                <div className="flex flex-col gap-3 rounded-xl border-2 border-slate-300 bg-background p-3">
+                  {/* Input Field - taller */}
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask AIVA Anything"
+                    className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm py-2"
+                  />
+                  
+                  {/* Bottom Row */}
+                  <div className="flex items-center justify-between">
+                    {/* Left Side - Tools + Attach */}
+                    <div className="flex items-center gap-1">
+                      {/* Tools Dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="h-8 rounded-full gap-2 border-muted-foreground/20 text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 bg-transparent">
+                            <SlidersHorizontal className="h-3.5 w-3.5" />
+                            <span className="text-xs font-normal">Tools</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-64">
+                          {/* Capabilities */}
+                          <DropdownMenuLabel className="text-xs text-muted-foreground">What I Can Do</DropdownMenuLabel>
+                          <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                            <Search className="h-4 w-4 text-primary" />
+                            <span className="text-muted-foreground">Property Search</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                            <FileText className="h-4 w-4 text-primary" />
+                            <span className="text-muted-foreground">Deal Analysis</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2 cursor-default" onSelect={(e) => e.preventDefault()}>
+                            <MapPin className="h-4 w-4 text-primary" />
+                            <span className="text-muted-foreground">Market Research</span>
+                          </DropdownMenuItem>
+                          
+                          <DropdownMenuSeparator />
+                          
+                          {/* Quick Actions */}
+                          <DropdownMenuLabel className="text-xs text-muted-foreground">Quick Actions</DropdownMenuLabel>
+                          {quickActions.map((action) => (
+                            <DropdownMenuItem 
+                              key={action.label}
+                              onClick={() => handleQuickAction(action.prompt)}
+                              className="gap-2"
+                            >
+                              <action.icon className={cn("h-4 w-4", action.color)} />
+                              <span>{action.label}</span>
+                            </DropdownMenuItem>
+                          ))}
+                          
+                          <DropdownMenuSeparator />
+                          
+                          {/* Search Mode */}
+                          <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="gap-2">
+                              <Layers className="h-4 w-4 text-indigo-500" />
+                              <span>Search Mode</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent>
+                              <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
+                                <DropdownMenuRadioItem value="database" className="gap-2">
+                                  <Database className="h-4 w-4 text-cyan-500" />
+                                  Database Only
+                                </DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="online" className="gap-2">
+                                  <Globe className="h-4 w-4 text-teal-500" />
+                                  Online Only
+                                </DropdownMenuRadioItem>
+                                <DropdownMenuRadioItem value="both" className="gap-2">
+                                  <Layers className="h-4 w-4 text-indigo-500" />
+                                  Both (Default)
+                                </DropdownMenuRadioItem>
+                              </DropdownMenuRadioGroup>
+                            </DropdownMenuSubContent>
+                          </DropdownMenuSub>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      
+                      {/* Attach Button - Chain Link Icon */}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 rounded-full text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
+                              onClick={handleAttachContext}
+                            >
+                              <Link2 className="h-4 w-4" strokeWidth={2} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    
+                    {/* Right Icons */}
+                    <div className="flex items-center gap-1">
+                      {isRecording ? (
+                        /* Recording State - Show waves + cancel/confirm */
+                        <div className="flex items-center gap-2">
+                          {/* Audio Waves Animation */}
+                          <div className="flex items-center gap-0.5 h-8 px-2">
+                            <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "0ms" }} />
+                            <span className="w-1 h-5 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "100ms" }} />
+                            <span className="w-1 h-4 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "200ms" }} />
+                            <span className="w-1 h-6 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "300ms" }} />
+                            <span className="w-1 h-3 bg-destructive rounded-full animate-[soundwave_0.5s_ease-in-out_infinite]" style={{ animationDelay: "400ms" }} />
+                          </div>
+                          
+                          {/* Cancel Recording */}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  type="button" 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                  onClick={stopRecording}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white text-gray-900 border shadow-md">Cancel</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
+                          {/* Confirm Recording */}
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  type="button" 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-8 w-8 text-emerald-600 hover:bg-emerald-100"
+                                  onClick={stopRecording}
+                                >
+                                  <Check className="h-4 w-4" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white text-gray-900 border shadow-md">Done</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      ) : (
+                        /* Default State - Mic + Send */
+                        <div className="flex items-center gap-3">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  type="button" 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="h-10 w-10 text-slate-300 hover:text-destructive hover:bg-transparent transition-colors"
+                                  onClick={startRecording}
+                                >
+                                  <Mic className="h-6 w-6" strokeWidth={1.5} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white text-gray-900 border shadow-md">Voice Input</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  type="submit" 
+                                  variant="ghost"
+                                  size="icon" 
+                                  disabled={!input.trim() || isLoading}
+                                  className={cn(
+                                    "h-11 w-11 rounded-full border-0 shadow-none transition-colors disabled:opacity-100",
+                                    input.trim() && !isLoading
+                                      ? "bg-primary/10 text-primary hover:bg-primary/15 active:bg-primary/20"
+                                      : "bg-muted/40 text-muted-foreground/40"
+                                  )}
+                                >
+                                  <Send className="h-5 w-5" strokeWidth={1.5} />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white text-gray-900 border shadow-md">Send</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
-          </form>
-        </div>
+          </>
+        )}
       </Card>
-
-      {/* History Dialog */}
-      <Dialog open={historyOpen} onOpenChange={(open) => {
-        setHistoryOpen(open);
-        if (!open) setHistorySearch("");
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <History className="h-5 w-5" />
-              Chat History
-            </DialogTitle>
-          </DialogHeader>
-          <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search conversations..."
-              value={historySearch}
-              onChange={(e) => setHistorySearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-          </div>
-          <div className="space-y-2 mt-3 max-h-[300px] overflow-y-auto">
-            {chatHistory
-              .filter((chat) => 
-                chat.title.toLowerCase().includes(historySearch.toLowerCase())
-              )
-              .map((chat) => (
-                <button
-                  key={chat.id}
-                  className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
-                  onClick={() => {
-                    toast.info("Chat history will be restored in a future update");
-                    setHistoryOpen(false);
-                  }}
-                >
-                  <p className="font-medium text-sm">{chat.title}</p>
-                  <p className="text-xs text-muted-foreground">{chat.date}</p>
-                </button>
-              ))}
-            {chatHistory.filter((chat) => 
-              chat.title.toLowerCase().includes(historySearch.toLowerCase())
-            ).length === 0 && (
-              <p className="text-center text-muted-foreground py-8">
-                {historySearch ? "No matching conversations" : "No chat history yet"}
-              </p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Settings Dialog */}
-      <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              AIVA Settings
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
-            <div className="flex items-center justify-between p-3 rounded-lg border">
-              <div>
-                <p className="font-medium text-sm">Default Search Mode</p>
-                <p className="text-xs text-muted-foreground">Choose what AIVA searches by default</p>
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="capitalize">
-                    {searchType}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="z-[120]">
-                  <DropdownMenuItem onClick={() => setSearchType("database")}>
-                    Database
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSearchType("online")}>
-                    Online
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSearchType("both")}>
-                    Both
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            <div className="flex items-center justify-between p-3 rounded-lg border">
-              <div>
-                <p className="font-medium text-sm">Voice Input</p>
-                <p className="text-xs text-muted-foreground">Enable microphone for voice commands</p>
-              </div>
-              <Button variant="outline" size="sm" disabled>
-                Enabled
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Expanded overlay backdrop */}
       {isExpanded && (
