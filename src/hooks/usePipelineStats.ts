@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PIPELINE_COLORS, PIPELINE_LABELS, type PipelineStageId } from "@/lib/pipeline-colors";
 
 export interface PipelineStage {
   status: string;
@@ -12,13 +13,14 @@ export function usePipelineStats() {
   return useQuery({
     queryKey: ["pipeline-stats"],
     queryFn: async (): Promise<PipelineStage[]> => {
-      const statuses = [
-        { status: "new", label: "New Leads", color: "bg-muted" },
-        { status: "contacted", label: "Contacted", color: "bg-info" },
-        { status: "appointment", label: "Appointments", color: "bg-warning" },
-        { status: "offer_made", label: "Offers Made", color: "bg-accent" },
-        { status: "under_contract", label: "Under Contract", color: "bg-chart-4" },
-        { status: "closed", label: "Closed", color: "bg-success" },
+      // Use centralized color config for consistency with dashboard tiles
+      const statuses: { status: PipelineStageId; label: string; color: string }[] = [
+        { status: "new", label: PIPELINE_LABELS.new, color: PIPELINE_COLORS.new.bg },
+        { status: "contacted", label: PIPELINE_LABELS.contacted, color: PIPELINE_COLORS.contacted.bg },
+        { status: "appointment", label: PIPELINE_LABELS.appointment, color: PIPELINE_COLORS.appointment.bg },
+        { status: "offer_made", label: PIPELINE_LABELS.offer_made, color: PIPELINE_COLORS.offer_made.bg },
+        { status: "under_contract", label: PIPELINE_LABELS.under_contract, color: PIPELINE_COLORS.under_contract.bg },
+        { status: "closed", label: PIPELINE_LABELS.closed, color: PIPELINE_COLORS.closed.bg },
       ];
 
       const results = await Promise.all(
