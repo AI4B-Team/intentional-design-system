@@ -41,7 +41,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       const sidebar = getSidebarEl();
       if (!sidebar) return 0;
       const rect = sidebar.getBoundingClientRect();
-      return rect.right;
+      // Use scrollWidth to account for any sidebar content that visually extends beyond
+      // the sidebar's own box (prevents the panel from clipping icons/buttons).
+      return Math.max(rect.right, rect.left + sidebar.scrollWidth);
     };
 
     const updateSidebarRight = () => {
@@ -98,9 +100,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
   // Round to avoid sub-pixel overlap.
   // Add a small gap so the panel never visually covers the sidebar (even by 1–2px due to rounding/layout).
   const sidebarRightPx = Math.ceil(sidebarRight);
-  // NOTE: Keep this intentionally generous to avoid any overlap with the sidebar
-  // across transforms/rounding on different devices.
-  const EDGE_GAP_PX = 24;
+  const EDGE_GAP_PX = 0;
   const panelLeft = sidebarRightPx + EDGE_GAP_PX;
 
   return (
