@@ -38,8 +38,8 @@ const statsData = [
     value: "47",
     trend: { value: 12, isPositive: true },
     icon: <Users />,
-    iconBgClass: "bg-red-50",
-    iconColorClass: "text-red-400",
+    iconBgClass: "bg-red-100",
+    iconColorClass: "text-red-500",
   },
   {
     id: "appointments",
@@ -47,8 +47,8 @@ const statsData = [
     value: "12",
     trend: { value: 8, isPositive: true },
     icon: <Calendar />,
-    iconBgClass: "bg-green-50",
-    iconColorClass: "text-green-400",
+    iconBgClass: "bg-teal-100",
+    iconColorClass: "text-teal-500",
   },
   {
     id: "offers",
@@ -56,8 +56,8 @@ const statsData = [
     value: "8",
     trend: { value: -5, isPositive: false },
     icon: <FileText />,
-    iconBgClass: "bg-amber-50",
-    iconColorClass: "text-amber-400",
+    iconBgClass: "bg-amber-100",
+    iconColorClass: "text-amber-500",
   },
   {
     id: "closed",
@@ -65,8 +65,8 @@ const statsData = [
     value: "3",
     trend: { value: 50, isPositive: true },
     icon: <DollarSign />,
-    iconBgClass: "bg-emerald-50",
-    iconColorClass: "text-emerald-400",
+    iconBgClass: "bg-violet-100",
+    iconColorClass: "text-violet-500",
   },
 ];
 
