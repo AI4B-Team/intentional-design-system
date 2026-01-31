@@ -71,12 +71,6 @@ const afterLeadsItems: NavItem[] = [
 
 // Pipeline is now a direct top nav item, not a group
 
-// Leads - direct nav item (not a collapsible group)
-const leadsNavItem: NavItem = {
-  label: "Leads",
-  href: "/lead-sources",
-  icon: Home,
-};
 
 // Contacts - direct nav item (not a collapsible group)
 const contactsNavItem: NavItem = {
@@ -139,7 +133,6 @@ export function AppSidebar({
   };
 
   // Active state checks for navigation items
-  const isLeadsActive = location.pathname.startsWith(leadsNavItem.href);
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
@@ -268,22 +261,6 @@ export function AppSidebar({
             <div className="border-t border-slate-700" />
           </li>
 
-          {/* Leads - Direct Link */}
-          <li>
-            <NavLink
-              to={leadsNavItem.href}
-              onClick={onMobileClose}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isLeadsActive && "bg-brand-accent text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <leadsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isLeadsActive && "text-white")} />
-              {!collapsed && <span>{leadsNavItem.label}</span>}
-            </NavLink>
-          </li>
 
           {/* Contacts - Direct Link */}
           <li>
