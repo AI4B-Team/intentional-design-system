@@ -15,27 +15,44 @@ interface MarketplaceMapProps {
   deals: MarketplaceDeal[];
 }
 
-const heatMapOptions = [
-  "Property Value By County",
-  "Property Value By Zip",
-  "Flips By County",
-  "Flips By Zip",
-  "Signal AI By County",
-  "Signal AI By Zip",
+// Grouped heat map options with section headers
+const heatMapGroups = [
+  {
+    label: "📊 Market Signals",
+    options: [
+      "Property Value By County",
+      "Property Value By Zip",
+      "Flips By County",
+      "Flips By Zip",
+      "Signal AI By County",
+      "Signal AI By Zip",
+    ],
+  },
 ];
 
-const parcelMapOptions = [
-  "All Parcels",
-  "AI Retail Score",
-  "AI Rental Score",
-  "AI Wholesale Score",
-  "Cash Buyer",
-  "Vacant",
-  "Loan to Value",
-  "Square Footage",
-  "Lot Size",
-  "Last Sale Date",
-  "Last Sale Price",
+// Grouped parcel map options with section headers
+const parcelMapGroups = [
+  {
+    label: "🧠 AI Scores",
+    options: [
+      "All Parcels",
+      "AI Retail Score",
+      "AI Rental Score",
+      "AI Wholesale Score",
+    ],
+  },
+  {
+    label: "🏠 Property Traits",
+    options: [
+      "Cash Buyer",
+      "Vacant",
+      "Loan to Value",
+      "Square Footage",
+      "Lot Size",
+      "Last Sale Date",
+      "Last Sale Price",
+    ],
+  },
 ];
 
 export function MarketplaceMap({ deals }: MarketplaceMapProps) {
@@ -219,23 +236,28 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                     }}
                   />
                 </div>
-                <div className="space-y-1.5 pl-2">
-                  {heatMapOptions.map((option) => (
-                    <div key={option} className="flex items-center justify-between">
-                      <Label className="text-sm text-muted-foreground cursor-pointer">{option}</Label>
-                      <input
-                        type="radio"
-                        name="heatMap"
-                        checked={selectedHeatMap === option}
-                        onChange={() => {
-                          setSelectedHeatMap(option);
-                          setHeatMapsEnabled(true);
-                        }}
-                        className="h-4 w-4 text-primary border-muted-foreground"
-                      />
+                {heatMapGroups.map((group, groupIdx) => (
+                  <div key={group.label} className={cn(groupIdx > 0 && "mt-3 pt-3 border-t border-border/50")}>
+                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 block">{group.label}</span>
+                    <div className="space-y-1.5 pl-2">
+                      {group.options.map((option) => (
+                        <div key={option} className="flex items-center justify-between">
+                          <Label className="text-sm text-muted-foreground cursor-pointer">{option}</Label>
+                          <input
+                            type="radio"
+                            name="heatMap"
+                            checked={selectedHeatMap === option}
+                            onChange={() => {
+                              setSelectedHeatMap(option);
+                              setHeatMapsEnabled(true);
+                            }}
+                            className="h-4 w-4 text-primary border-muted-foreground"
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
 
               {/* Parcel Maps Section */}
@@ -247,30 +269,35 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                     onCheckedChange={(checked) => setParcelMapsEnabled(!!checked)}
                   />
                 </div>
-                <div className="space-y-1.5 pl-2">
-                  {parcelMapOptions.map((option) => (
-                    <div key={option} className="flex items-center justify-between">
-                      <Label 
-                        className={cn(
-                          "text-sm cursor-pointer",
-                          selectedParcelMap === option ? "text-primary font-medium" : "text-muted-foreground"
-                        )}
-                      >
-                        {option}
-                      </Label>
-                      <input
-                        type="radio"
-                        name="parcelMap"
-                        checked={selectedParcelMap === option}
-                        onChange={() => {
-                          setSelectedParcelMap(option);
-                          setParcelMapsEnabled(true);
-                        }}
-                        className="h-4 w-4 text-primary border-muted-foreground accent-primary"
-                      />
+                {parcelMapGroups.map((group, groupIdx) => (
+                  <div key={group.label} className={cn(groupIdx > 0 && "mt-3 pt-3 border-t border-border/50")}>
+                    <span className="text-xs font-medium text-muted-foreground/80 mb-1.5 block">{group.label}</span>
+                    <div className="space-y-1.5 pl-2">
+                      {group.options.map((option) => (
+                        <div key={option} className="flex items-center justify-between">
+                          <Label 
+                            className={cn(
+                              "text-sm cursor-pointer",
+                              selectedParcelMap === option ? "text-primary font-medium" : "text-muted-foreground"
+                            )}
+                          >
+                            {option}
+                          </Label>
+                          <input
+                            type="radio"
+                            name="parcelMap"
+                            checked={selectedParcelMap === option}
+                            onChange={() => {
+                              setSelectedParcelMap(option);
+                              setParcelMapsEnabled(true);
+                            }}
+                            className="h-4 w-4 text-primary border-muted-foreground accent-primary"
+                          />
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
 
               {/* Bottom Options */}
