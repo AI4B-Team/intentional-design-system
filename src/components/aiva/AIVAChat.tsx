@@ -304,28 +304,28 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         {/* Chat Messages */}
         <ScrollArea ref={scrollAreaRef} className="flex-1">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full py-16 px-4">
+            <div className="flex flex-col items-center justify-center h-full py-6 px-4">
               {/* Three Dots */}
-              <div className="flex gap-1.5 mb-6">
-                <div className="h-3 w-3 rounded-full bg-primary" />
-                <div className="h-3 w-3 rounded-full bg-primary" />
-                <div className="h-3 w-3 rounded-full bg-primary" />
+              <div className="flex gap-1.5 mb-4">
+                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                <div className="h-2.5 w-2.5 rounded-full bg-primary" />
               </div>
               
               {/* Heading */}
-              <h2 className="text-2xl font-bold text-foreground mb-2">How Can I Help?</h2>
-              <p className="text-muted-foreground text-sm text-center max-w-xs mb-8">
-                Your AI-powered assistant for property search, deal analysis, and market research. Ask me anything about real estate!
+              <h2 className="text-xl font-bold text-foreground mb-1">How Can I Help?</h2>
+              <p className="text-muted-foreground text-xs text-center max-w-xs mb-5">
+                Your AI-powered assistant for property search, deal analysis, and market research.
               </p>
               
               {/* Suggestions Label */}
-              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider mb-4">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wider mb-3">
+                <Sparkles className="h-3 w-3" />
                 <span>Suggestions</span>
               </div>
               
-              {/* Suggestion Pills */}
-              <div className="flex flex-col gap-2 w-full max-w-sm">
+              {/* Suggestion Pills - Compact */}
+              <div className="flex flex-col gap-1.5 w-full max-w-sm">
                 {suggestedQuestions.map((question, index) => (
                   <button
                     key={index}
@@ -334,7 +334,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       inputRef.current?.focus();
                     }}
                     className={cn(
-                      "w-full text-left px-4 py-3 rounded-xl border text-sm transition-all",
+                      "w-full text-left px-3 py-2 rounded-lg border text-xs transition-all",
                       "hover:border-primary hover:bg-primary/5",
                       "border-border bg-background text-foreground"
                     )}
