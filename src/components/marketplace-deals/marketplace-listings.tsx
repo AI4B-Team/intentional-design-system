@@ -341,12 +341,12 @@ function DealCard({
           </div>
           <div className="flex items-center justify-between border-t border-border pt-2.5">
             <div className="flex items-center gap-2 text-sm">
-              <CircleDollarSign className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-foreground">Profit Potential:</span>
+              <CircleDollarSign className={cn("h-4 w-4", profitPotential >= 0 ? "text-success" : "text-destructive")} />
+              <span className={cn("font-semibold", profitPotential >= 0 ? "text-success" : "text-destructive")}>Profit Potential:</span>
             </div>
             <span className={cn(
               "font-bold",
-              profitPotential >= 0 ? "text-primary" : "text-destructive"
+              profitPotential >= 0 ? "text-success" : "text-destructive"
             )}>
               {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
             </span>
