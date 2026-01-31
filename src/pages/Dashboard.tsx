@@ -177,7 +177,9 @@ function PipelineValueCard({
                 <span className="text-muted-foreground">Goal: {goal}</span>
                 <span className={cn(
                   "font-medium",
-                  goalProgress >= 100 ? "text-success" : goalProgress >= 50 ? "text-warning" : "text-muted-foreground"
+                  isCalmVariant 
+                    ? "text-success" 
+                    : goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
                 )}>
                   {goalProgress}%
                 </span>
