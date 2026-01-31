@@ -1110,7 +1110,7 @@ export default function Dashboard() {
               <span className="text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">This Week</span>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {totalPipeline} total
+              {totalPipeline} Total
             </span>
           </div>
           {pipelineLoading ? (
