@@ -223,16 +223,7 @@ function PipelineValueCard({
             </div>
           )}
 
-          {/* Last closed for sold tile */}
-          {lastClosedDaysAgo !== undefined && (
-            <p className="text-tiny text-muted-foreground uppercase tracking-wide">
-              {lastClosedDaysAgo === 0 
-                ? "Closed Today!" 
-                : lastClosedDaysAgo === 1 
-                ? "Last Closed: Yesterday" 
-                : `Last Closed: ${lastClosedDaysAgo} Days Ago`}
-            </p>
-          )}
+
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
