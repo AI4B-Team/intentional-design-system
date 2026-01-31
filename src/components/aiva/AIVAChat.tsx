@@ -172,10 +172,10 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
 
   // Quick actions for the tools menu
   const quickActions = [
-    { label: "Analyze Property", icon: Home, prompt: "Analyze this property for investment potential including ARV, repairs estimate, and recommended offer price" },
-    { label: "Generate Offer", icon: DollarSign, prompt: "Generate a competitive offer based on the property details and comparable sales" },
-    { label: "Find Comps", icon: TrendingUp, prompt: "Find comparable properties sold in the last 6 months within a 1-mile radius" },
-    { label: "Market Analysis", icon: BarChart3, prompt: "Run a comprehensive market analysis for this area including trends and forecasts" },
+    { label: "Analyze Property", icon: Home, color: "text-blue-500", prompt: "Analyze this property for investment potential including ARV, repairs estimate, and recommended offer price" },
+    { label: "Generate Offer", icon: DollarSign, color: "text-emerald-500", prompt: "Generate a competitive offer based on the property details and comparable sales" },
+    { label: "Find Comps", icon: TrendingUp, color: "text-orange-500", prompt: "Find comparable properties sold in the last 6 months within a 1-mile radius" },
+    { label: "Market Analysis", icon: BarChart3, color: "text-purple-500", prompt: "Run a comprehensive market analysis for this area including trends and forecasts" },
   ];
 
   const handleQuickAction = (prompt: string) => {
@@ -453,7 +453,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                           onClick={() => handleQuickAction(action.prompt)}
                           className="gap-2"
                         >
-                          <action.icon className="h-4 w-4" />
+                          <action.icon className={cn("h-4 w-4", action.color)} />
                           <span>{action.label}</span>
                         </DropdownMenuItem>
                       ))}
@@ -463,21 +463,21 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       {/* Search Mode */}
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger className="gap-2">
-                          <Layers className="h-4 w-4" />
+                          <Layers className="h-4 w-4 text-indigo-500" />
                           <span>Search Mode</span>
                         </DropdownMenuSubTrigger>
                         <DropdownMenuSubContent>
                           <DropdownMenuRadioGroup value={searchType} onValueChange={(v) => setSearchType(v as "database" | "online" | "both")}>
                             <DropdownMenuRadioItem value="database" className="gap-2">
-                              <Database className="h-4 w-4" />
+                              <Database className="h-4 w-4 text-cyan-500" />
                               Database Only
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="online" className="gap-2">
-                              <Globe className="h-4 w-4" />
+                              <Globe className="h-4 w-4 text-teal-500" />
                               Online Only
                             </DropdownMenuRadioItem>
                             <DropdownMenuRadioItem value="both" className="gap-2">
-                              <Layers className="h-4 w-4" />
+                              <Layers className="h-4 w-4 text-indigo-500" />
                               Both (Default)
                             </DropdownMenuRadioItem>
                           </DropdownMenuRadioGroup>
