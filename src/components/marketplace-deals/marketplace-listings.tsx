@@ -154,6 +154,14 @@ function DealListItem({
   const estRepairs = Math.round(arvValue * 0.1);
   const profitPotential = arvValue - askingPrice - estRepairs;
   
+  // Estimated rent and PITI (mock calculations)
+  const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
+  const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
+  const monthlyCashflow = monthlyRent - piti;
+  
+  // Year built (mock - random between 1970-2020)
+  const yearBuilt = 1970 + Math.floor(Math.random() * 50);
+  
   // Get days since listing
   const getDaysListed = () => {
     const createdDate = new Date(deal.createdAt);
@@ -186,8 +194,8 @@ function DealListItem({
       onClick={handleClick}
     >
       <div className="flex">
-        {/* Thumbnail */}
-        <div className="relative w-32 h-24 sm:w-40 sm:h-28 flex-shrink-0">
+        {/* Thumbnail - larger for more details */}
+        <div className="relative w-48 h-auto min-h-[160px] flex-shrink-0">
           <img
             src={deal.imageUrl}
             alt={deal.address}
@@ -211,21 +219,34 @@ function DealListItem({
               <Circle className="h-2 w-2 fill-white text-white" />
             )}
           </button>
+          {/* Badge on image */}
+          <Badge className={cn("absolute top-2 right-2 text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
+            {listingBadge.text}
+          </Badge>
+          {/* Tags at bottom */}
+          <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
+            {deal.tags.slice(0, 2).map((tag, i) => (
+              <Badge
+                key={i}
+                className={cn(
+                  "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                  i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
+                )}
+              >
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
-          {/* Top row: Price + Badge */}
-          <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 p-3 flex flex-col min-w-0">
+          {/* Top row: Price + Actions */}
+          <div className="flex items-start justify-between gap-2 mb-1">
             <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-lg font-bold text-success">
-                  {formatCurrency(askingPrice)}
-                </span>
-                <Badge className={cn("text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
-                  {listingBadge.text}
-                </Badge>
-              </div>
+              <span className="text-xl font-bold text-success">
+                {formatCurrency(askingPrice)}
+              </span>
               <p className="text-sm font-medium text-foreground truncate">{deal.address}</p>
               <p className="text-xs text-muted-foreground truncate">
                 {deal.city}, {deal.state} {deal.zip}
@@ -259,27 +280,68 @@ function DealListItem({
             </div>
           </div>
 
-          {/* Bottom row: Specs + Profit */}
-          <div className="flex items-center justify-between gap-3 mt-2">
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1">
-                <Bed className="h-3.5 w-3.5" />
-                {deal.beds}
-              </span>
-              <span className="flex items-center gap-1">
-                <Bath className="h-3.5 w-3.5" />
-                {deal.baths}
-              </span>
-              <span className="flex items-center gap-1">
-                <Tag className="h-3.5 w-3.5" />
-                {deal.sqft.toLocaleString()}
+          {/* Property Specs Row */}
+          <div className="flex items-center gap-4 text-xs text-muted-foreground py-2 border-b border-border">
+            <span className="flex items-center gap-1">
+              <Bed className="h-3.5 w-3.5" />
+              {deal.beds} Beds
+            </span>
+            <span className="flex items-center gap-1">
+              <Bath className="h-3.5 w-3.5" />
+              {deal.baths} Baths
+            </span>
+            <span className="flex items-center gap-1">
+              <Tag className="h-3.5 w-3.5" />
+              {deal.sqft.toLocaleString()} sqft
+            </span>
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5" />
+              {yearBuilt}
+            </span>
+          </div>
+
+          {/* Financial metrics */}
+          <div className="grid grid-cols-4 gap-2 py-2 text-xs">
+            <div>
+              <span className="text-muted-foreground block">ARV</span>
+              <span className="font-semibold">{formatCurrency(arvValue)}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Est. Repairs</span>
+              <span className="font-semibold">{formatCurrency(estRepairs)}</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Rent</span>
+              <span className="font-semibold">{formatCurrency(monthlyRent)}/mo</span>
+            </div>
+            <div>
+              <span className="text-muted-foreground block">Cashflow</span>
+              <span className={cn("font-semibold", monthlyCashflow >= 0 ? "text-success" : "text-destructive")}>
+                {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
               </span>
             </div>
+          </div>
+
+          {/* Bottom row: ARV % + Profit */}
+          <div className="flex items-center justify-between gap-3 mt-auto pt-2 border-t border-border">
+            <Badge 
+              variant="outline" 
+              className={cn(
+                "text-xs font-semibold px-2 py-0",
+                deal.arvPercent <= 70 
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                  : deal.arvPercent <= 85 
+                    ? "bg-amber-100 text-amber-700 border-amber-300"
+                    : "bg-red-100 text-red-700 border-red-300"
+              )}
+            >
+              {deal.arvPercent}% ARV
+            </Badge>
             <div className={cn(
-              "text-xs font-semibold",
+              "text-sm font-bold",
               profitPotential >= 0 ? "text-success" : "text-destructive"
             )}>
-              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} potential
+              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
             </div>
           </div>
         </div>

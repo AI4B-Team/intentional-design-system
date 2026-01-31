@@ -391,13 +391,13 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  viewMode === "list" && layoutMode === "cards" ? "bg-primary text-white" : "bg-background"
+                  viewMode === "list" && layoutMode === "split" ? "bg-primary text-white" : "bg-background"
                 )}
                 onClick={() => {
                   onViewModeChange("list");
-                  onLayoutModeChange("cards");
+                  onLayoutModeChange("split");
                 }}
-                title="List view"
+                title="List view with map"
               >
                 <List className="h-4 w-4" />
               </Button>
@@ -412,7 +412,7 @@ export function MarketplaceFilters({
                   onViewModeChange("grid");
                   onLayoutModeChange("cards");
                 }}
-                title="Grid view"
+                title="Grid view (full width)"
               >
                 <LayoutGrid className="h-4 w-4" />
               </Button>
@@ -421,9 +421,12 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  layoutMode === "split" ? "bg-primary text-white" : "bg-background"
+                  viewMode === "grid" && layoutMode === "split" ? "bg-primary text-white" : "bg-background"
                 )}
-                onClick={() => onLayoutModeChange("split")}
+                onClick={() => {
+                  onViewModeChange("grid");
+                  onLayoutModeChange("split");
+                }}
                 title="Split view (Grid + Map)"
               >
                 <Columns className="h-4 w-4" />
