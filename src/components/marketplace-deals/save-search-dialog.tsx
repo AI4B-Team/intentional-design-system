@@ -244,7 +244,7 @@ export function SaveSearchDialog({
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={cn(
-        "transition-all duration-200",
+        "transition-all duration-200 overflow-visible",
         step === "campaign-setup" ? "max-w-2xl" : "max-w-md"
       )}>
         {step === "save" && (
@@ -259,7 +259,7 @@ export function SaveSearchDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 px-6 py-4">
               <div className="space-y-2">
                 <Label htmlFor="search-name">Search Name</Label>
                 <Input
@@ -280,7 +280,7 @@ export function SaveSearchDialog({
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 px-6 py-4 border-t border-border-subtle">
               <Button variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
