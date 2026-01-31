@@ -1,6 +1,4 @@
 import React from "react";
-import { X, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AIVAChat } from "./AIVAChat";
 
@@ -29,26 +27,8 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           open ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        {/* Panel Header */}
-        <div className="flex items-center justify-between h-16 px-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="font-bold text-foreground">AIVA</h2>
-              <p className="text-xs text-muted-foreground">AI Virtual Assistant</p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-5 w-5" />
-          </Button>
-        </div>
-
-        {/* Chat Area - takes full remaining height */}
-        <div className="flex-1 flex flex-col min-h-0">
-          <AIVAChat className="flex-1 border-0 rounded-none shadow-none" />
-        </div>
+        {/* Chat Area - takes full height */}
+        <AIVAChat className="flex-1 border-0 rounded-none shadow-none" onClose={onClose} />
       </div>
     </>
   );

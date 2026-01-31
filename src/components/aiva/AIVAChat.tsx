@@ -4,13 +4,14 @@ import {
   Trash2, 
   Sparkles, 
   User, 
-  MessageSquare, 
   PenSquare, 
   History, 
   Settings, 
   Maximize2, 
   Mic,
-  SlidersHorizontal
+  SlidersHorizontal,
+  X,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,9 +34,10 @@ import {
 
 interface AIVAChatProps {
   className?: string;
+  onClose?: () => void;
 }
 
-export function AIVAChat({ className }: AIVAChatProps) {
+export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const { messages, isLoading, sendMessage, clearMessages } = useAIVAChat();
   const [input, setInput] = useState("");
   const [searchType, setSearchType] = useState<"database" | "online" | "both">("both");
@@ -72,12 +74,6 @@ export function AIVAChat({ className }: AIVAChatProps) {
     "What's the market like in Phoenix, AZ?",
     "Analyze my top leads by motivation score",
   ];
-
-  const searchTypeLabels = {
-    database: "Database",
-    online: "Online",
-    both: "Both",
-  };
 
   return (
     <Card className={cn("flex flex-col h-full overflow-hidden", className)}>
@@ -143,6 +139,16 @@ export function AIVAChat({ className }: AIVAChatProps) {
               </TooltipTrigger>
               <TooltipContent>Expand</TooltipContent>
             </Tooltip>
+            {onClose && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg" onClick={onClose}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Close</TooltipContent>
+              </Tooltip>
+            )}
           </TooltipProvider>
         </div>
       </div>
