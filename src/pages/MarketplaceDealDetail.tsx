@@ -214,10 +214,98 @@ export default function MarketplaceDealDetail() {
   const lotSize = 0.06;
   const pricePerSqft = Math.round(deal.price / deal.sqft);
   const hoaFee = 0;
+  
+  // Fix & Flip calculations
   const estRepairs = 20000;
-  const profit = deal.arv - deal.price - estRepairs;
+  const holdingCosts = 8000;
+  const closingCosts = Math.round(deal.arv * 0.06);
+  const agentCommission = Math.round(deal.arv * 0.05);
+  const totalCosts = deal.price + estRepairs + holdingCosts + closingCosts + agentCommission;
+  const profit = deal.arv - totalCosts;
+  const roi = Math.round((profit / (deal.price + estRepairs)) * 100);
+  
+  // Rental calculations
   const estRent = 1650;
-  const estPiti = 980;
+  const propertyTax = Math.round((deal.price * 0.012) / 12);
+  const insurance = Math.round((deal.price * 0.005) / 12);
+  const mortgage = Math.round((deal.price * 0.8) * (0.07 / 12) / (1 - Math.pow(1 + 0.07 / 12, -360)));
+  const estPiti = mortgage + propertyTax + insurance;
+  const vacancy = Math.round(estRent * 0.05);
+  const maintenance = Math.round(estRent * 0.08);
+  const propertyMgmt = Math.round(estRent * 0.10);
+  const netCashflow = estRent - estPiti - vacancy - maintenance - propertyMgmt;
+  const noi = (estRent - vacancy - maintenance - propertyMgmt) * 12;
+  const capRate = (noi / deal.price) * 100;
+  const cashOnCash = ((netCashflow * 12) / (deal.price * 0.25)) * 100;
+  const grm = deal.price / (estRent * 12);
+
+  // Mock comps data
+  const mockComps = [
+    {
+      id: "1",
+      address: "14234 Maple Lane",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft + 120,
+      salePrice: deal.arv + 5000,
+      saleDate: "2025-12-15",
+      distanceMiles: 0.3,
+      pricePerSqft: Math.round((deal.arv + 5000) / (deal.sqft + 120)),
+      similarity: 95,
+      isSelected: true,
+      quality: "excellent" as const,
+    },
+    {
+      id: "2",
+      address: "7892 Oak Street",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft - 80,
+      salePrice: deal.arv - 8000,
+      saleDate: "2025-11-28",
+      distanceMiles: 0.5,
+      pricePerSqft: Math.round((deal.arv - 8000) / (deal.sqft - 80)),
+      similarity: 92,
+      isSelected: true,
+      quality: "excellent" as const,
+    },
+    {
+      id: "3",
+      address: "2456 Pine Drive",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds + 1,
+      baths: deal.baths,
+      sqft: deal.sqft + 350,
+      salePrice: deal.arv + 35000,
+      saleDate: "2025-10-10",
+      distanceMiles: 0.8,
+      pricePerSqft: Math.round((deal.arv + 35000) / (deal.sqft + 350)),
+      similarity: 78,
+      isSelected: true,
+      quality: "good" as const,
+    },
+    {
+      id: "4",
+      address: "9821 Cedar Way",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds - 1,
+      baths: deal.baths - 0.5,
+      sqft: deal.sqft - 300,
+      salePrice: deal.arv - 25000,
+      saleDate: "2025-09-22",
+      distanceMiles: 1.1,
+      pricePerSqft: Math.round((deal.arv - 25000) / (deal.sqft - 300)),
+      similarity: 72,
+      isSelected: true,
+      quality: "good" as const,
+    },
+  ];
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -446,72 +534,225 @@ export default function MarketplaceDealDetail() {
               </Card>
             </div>
 
-            {/* Investment Analysis */}
+            {/* Comparable Sales Section */}
             <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  <h2 className="text-lg font-semibold">Comparable Sales</h2>
+                </div>
+                <Badge variant="secondary">{mockComps.length} Selected Comps</Badge>
+              </div>
+
+              <div className="space-y-3">
+                {mockComps.map((comp) => (
+                  <div
+                    key={comp.id}
+                    className={cn(
+                      "flex items-center justify-between p-3 rounded-lg border-2 transition-colors",
+                      comp.quality === "excellent" 
+                        ? "border-emerald-200 bg-emerald-50/50" 
+                        : "border-amber-200 bg-amber-50/50"
+                    )}
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-sm">{comp.address}</p>
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-xs",
+                            comp.quality === "excellent" 
+                              ? "border-emerald-500 text-emerald-700 bg-emerald-100" 
+                              : "border-amber-500 text-amber-700 bg-amber-100"
+                          )}
+                        >
+                          {comp.similarity}% Match
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span>{comp.beds} bd • {comp.baths} ba • {comp.sqft.toLocaleString()} sqft</span>
+                        <span>{comp.distanceMiles} mi away</span>
+                        <span>Sold {new Date(comp.saleDate).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-lg">${comp.salePrice.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">${comp.pricePerSqft}/sqft</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                    <span className="text-xs text-muted-foreground">Excellent Match (90%+)</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-amber-500" />
+                    <span className="text-xs text-muted-foreground">Good Match (70-89%)</span>
+                  </div>
+                </div>
+                <p className="text-sm">
+                  <span className="text-muted-foreground">Avg Comp Price:</span>{" "}
+                  <span className="font-semibold">
+                    ${Math.round(mockComps.reduce((sum, c) => sum + c.salePrice, 0) / mockComps.length).toLocaleString()}
+                  </span>
+                </p>
+              </div>
+            </Card>
+
+            {/* Investment Analysis - Two Column Layout */}
+            <Card className="p-6 relative">
               <div className="flex items-center gap-2 mb-6">
                 <Zap className="h-5 w-5 text-primary" />
                 <h2 className="text-lg font-semibold">Investment Analysis</h2>
               </div>
 
-              <div className="grid grid-cols-4 gap-6 mb-4">
-                <div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <DollarSign className="h-4 w-4" />
-                    Asking Price
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
+                {/* Fix & Flip Column */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 pb-2 border-b">
+                    <Wrench className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold">Fix & Flip Analysis</h3>
                   </div>
-                  <p className="text-xl font-bold">${deal.price.toLocaleString()}</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <TrendingUp className="h-4 w-4" />
-                    ARV
-                  </div>
-                  <p className="text-xl font-bold">${deal.arv.toLocaleString()}</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <Wrench className="h-4 w-4" />
-                    Est. Repairs
-                  </div>
-                  <p className="text-xl font-bold">${estRepairs.toLocaleString()}</p>
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <Target className="h-4 w-4" />
-                    Profit
-                  </div>
-                  <p className={cn("text-xl font-bold", profit > 0 ? "text-success" : "text-destructive")}>
-                    ${profit.toLocaleString()}
-                  </p>
-                </div>
-              </div>
 
-              <DealRiskMeter arvPercent={deal.arvPercent} />
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Purchase Price</span>
+                      <span className="font-medium">${deal.price.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">After Repair Value (ARV)</span>
+                      <span className="font-medium text-primary">${deal.arv.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Est. Repairs</span>
+                      <span className="font-medium text-destructive">-${estRepairs.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Holding Costs</span>
+                      <span className="font-medium text-destructive">-${holdingCosts.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Closing Costs (6%)</span>
+                      <span className="font-medium text-destructive">-${closingCosts.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Agent Commission (5%)</span>
+                      <span className="font-medium text-destructive">-${agentCommission.toLocaleString()}</span>
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-4 gap-6 mt-6 pt-6 border-t">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Est. Rent</p>
-                  <p className="text-xl font-bold">${estRent.toLocaleString()}/mo</p>
+                  <div className="pt-3 border-t space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Potential Profit</span>
+                      <span className={cn(
+                        "text-xl font-bold",
+                        profit > 0 ? "text-success" : "text-destructive"
+                      )}>
+                        ${profit.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">ROI</span>
+                      <span className={cn(
+                        "font-semibold",
+                        roi >= 20 ? "text-success" : roi >= 10 ? "text-warning" : "text-destructive"
+                      )}>
+                        {roi}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">ARV Ratio</span>
+                      <span className="font-semibold">{deal.arvPercent}%</span>
+                    </div>
+                  </div>
+
+                  <DealRiskMeter arvPercent={deal.arvPercent} />
                 </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Est. PITI</p>
-                  <p className="text-xl font-bold">${estPiti.toLocaleString()}/mo</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Cashflow</p>
-                  <p className={cn("text-xl font-bold", (estRent - estPiti) >= 0 ? "text-success" : "text-destructive")}>
-                    {(estRent - estPiti) >= 0 ? "+" : ""}${(estRent - estPiti).toLocaleString()}/mo
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1">Cap Rate</p>
-                  <p className={cn(
-                    "text-xl font-bold",
-                    ((estRent * 12 * 0.6) / deal.price * 100) >= 8 ? "text-success" : 
-                    ((estRent * 12 * 0.6) / deal.price * 100) >= 5 ? "text-warning" : "text-muted-foreground"
-                  )}>
-                    {((estRent * 12 * 0.6) / deal.price * 100).toFixed(1)}%
-                  </p>
+
+
+                {/* Rental/Cashflow Column */}
+                <div className="space-y-4 lg:pl-6 lg:border-l">
+                  <div className="flex items-center gap-2 pb-2 border-b">
+                    <Home className="h-4 w-4 text-primary" />
+                    <h3 className="font-semibold">Rental Analysis</h3>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Est. Monthly Rent</span>
+                      <span className="font-medium text-success">${estRent.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Mortgage (P&I)</span>
+                      <span className="font-medium">-${mortgage.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Property Tax</span>
+                      <span className="font-medium">-${propertyTax.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Insurance</span>
+                      <span className="font-medium">-${insurance.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">PITI Total</span>
+                      <span className="font-medium text-destructive">-${estPiti.toLocaleString()}/mo</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t space-y-2">
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <span>Vacancy (5%)</span>
+                      <span>-${vacancy}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <span>Maintenance (8%)</span>
+                      <span>-${maintenance}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground">
+                      <span>Property Mgmt (10%)</span>
+                      <span>-${propertyMgmt}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Net Cashflow</span>
+                      <span className={cn(
+                        "text-xl font-bold",
+                        netCashflow >= 0 ? "text-success" : "text-destructive"
+                      )}>
+                        {netCashflow >= 0 ? "+" : ""}${netCashflow.toLocaleString()}/mo
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Cap Rate</span>
+                      <span className={cn(
+                        "font-semibold",
+                        capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
+                      )}>
+                        {capRate.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Cash-on-Cash</span>
+                      <span className={cn(
+                        "font-semibold",
+                        cashOnCash >= 10 ? "text-success" : cashOnCash >= 6 ? "text-warning" : "text-muted-foreground"
+                      )}>
+                        {cashOnCash.toFixed(1)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">GRM</span>
+                      <span className="font-semibold">{grm.toFixed(1)}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </Card>
