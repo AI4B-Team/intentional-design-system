@@ -38,6 +38,9 @@ import {
   FileText,
   Home,
   Kanban,
+  FolderOpen,
+  PenTool,
+  AppWindow,
 } from "lucide-react";
 
 interface NavItem {
@@ -101,17 +104,24 @@ const marketingGroup: NavGroup = {
     { label: "Website", href: "/websites", icon: Globe },
   ],
 };
-const toolsGroup: NavGroup = {
-  label: "Tools",
-  icon: Calculator,
+const appsGroup: NavGroup = {
+  label: "Apps",
+  icon: AppWindow,
   items: [
     { label: "D4D", href: "/d4d", icon: Car },
     { label: "Renovations", href: "/renovations", icon: Wrench },
+    { label: "Signatures", href: "/apps/signatures", icon: PenTool },
     { label: "Deal Analyzer", href: "/tools/deal-analyzer", icon: Sparkles },
     { label: "Market Analyzer", href: "/tools/market-analyzer", icon: BarChart3 },
     { label: "Calculators", href: "/calculators", icon: Calculator },
     { label: "Analytics", href: "/analytics", icon: BarChart3 },
   ],
+};
+
+const documentsNavItem: NavItem = {
+  label: "Documents",
+  href: "/documents",
+  icon: FolderOpen,
 };
 
 const moreGroup: NavGroup = {
@@ -155,8 +165,8 @@ export function AppSidebar({
     return marketingGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
-  const [toolsOpen, setToolsOpen] = React.useState(() => {
-    return toolsGroup.items.some(item => location.pathname.startsWith(item.href));
+  const [appsOpen, setAppsOpen] = React.useState(() => {
+    return appsGroup.items.some(item => location.pathname.startsWith(item.href));
   });
 
   const [moreOpen, setMoreOpen] = React.useState(() => {
@@ -173,7 +183,8 @@ export function AppSidebar({
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   const isTemplatesActive = location.pathname.startsWith('/dispo/campaigns') && location.search.includes('tab=templates');
   const isMarketingActive = marketingGroup.items.some(item => location.pathname.startsWith(item.href));
-  const isToolsActive = toolsGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isAppsActive = appsGroup.items.some(item => location.pathname.startsWith(item.href));
+  const isDocumentsActive = location.pathname.startsWith(documentsNavItem.href);
   const isMoreActive = moreGroup.items.some(item => location.pathname.startsWith(item.href));
 
   const handleSignOut = async () => {
@@ -470,31 +481,48 @@ export function AppSidebar({
             );
           })}
 
-          {/* Tools Group */}
+          {/* Documents - Direct Link */}
           <li>
-            <button
-              onClick={() => !collapsed && setToolsOpen(!toolsOpen)}
+            <NavLink
+              to={documentsNavItem.href}
+              onClick={onMobileClose}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
                 "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isToolsActive && "text-white",
+                isDocumentsActive && "bg-brand-accent text-white font-medium",
                 collapsed && "justify-center"
               )}
             >
-              <toolsGroup.icon className={cn("h-5 w-5 flex-shrink-0", isToolsActive && "text-brand-accent")} />
+              <documentsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isDocumentsActive && "text-white")} />
+              {!collapsed && <span>{documentsNavItem.label}</span>}
+            </NavLink>
+          </li>
+
+          {/* Apps Group */}
+          <li>
+            <button
+              onClick={() => !collapsed && setAppsOpen(!appsOpen)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                isAppsActive && "text-white",
+                collapsed && "justify-center"
+              )}
+            >
+              <appsGroup.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-brand-accent")} />
               {!collapsed && (
                 <>
-                  <span>{toolsGroup.label}</span>
+                  <span>{appsGroup.label}</span>
                   <ChevronDown className={cn(
                     "h-4 w-4 ml-auto transition-transform",
-                    toolsOpen && "rotate-180"
+                    appsOpen && "rotate-180"
                   )} />
                 </>
               )}
             </button>
-            {!collapsed && toolsOpen && (
+            {!collapsed && appsOpen && (
               <ul className="mt-1 ml-4 space-y-1 border-l border-slate-700 pl-3">
-                {toolsGroup.items.map((item) => {
+                {appsGroup.items.map((item) => {
                   const isActive = location.pathname === item.href;
                   const Icon = item.icon;
 
