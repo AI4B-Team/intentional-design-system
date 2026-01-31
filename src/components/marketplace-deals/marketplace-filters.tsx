@@ -25,6 +25,7 @@ import {
   LayoutGrid,
   Map,
   Columns,
+  Heart,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
@@ -381,6 +382,16 @@ export function MarketplaceFilters({
             Buy Box
           </Button>
           
+          {/* Saved Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-10 gap-1.5"
+          >
+            <Heart className="h-4 w-4" />
+            Saved
+          </Button>
+
           {/* View Mode Toggle */}
           {onViewModeChange && onLayoutModeChange && (
             <div className="flex border border-border rounded-md overflow-hidden">
