@@ -57,6 +57,7 @@ interface PipelineValueCardProps {
   profitPotential: number;
   icon: React.ElementType;
   iconBg: string;
+  iconColor: string;
   profitLabel?: string;
   isLoading?: boolean;
   onClick?: () => void;
@@ -70,6 +71,7 @@ function PipelineValueCard({
   profitPotential, 
   icon: Icon, 
   iconBg, 
+  iconColor,
   profitLabel = "Profit Potential",
   isLoading,
   onClick,
@@ -114,10 +116,10 @@ function PipelineValueCard({
         <div className="flex items-center justify-between">
           <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
           <div className={cn(
-            "h-10 w-10 rounded-xl flex items-center justify-center shadow-sm transition-transform duration-200 group-hover:scale-105",
+            "h-10 w-10 rounded-xl flex items-center justify-center transition-transform duration-200 group-hover:scale-105",
             iconBg
           )}>
-            <Icon className="h-5 w-5 text-white" />
+            <Icon className={cn("h-5 w-5", iconColor)} />
           </div>
         </div>
 
@@ -542,7 +544,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.leads.totalValue || 0}
           profitPotential={pipelineValueStats?.leads.profitPotential || 0}
           icon={Users}
-          iconBg="bg-info"
+          iconBg="bg-red-100"
+          iconColor="text-red-500"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=new,contacted,appointment")}
           goal={goals.leadsGoal}
@@ -553,7 +556,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.offers.totalValue || 0}
           profitPotential={pipelineValueStats?.offers.profitPotential || 0}
           icon={FileText}
-          iconBg="bg-warning"
+          iconBg="bg-amber-100"
+          iconColor="text-amber-500"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
           goal={goals.offersGoal}
@@ -564,7 +568,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
           icon={Handshake}
-          iconBg="bg-accent"
+          iconBg="bg-purple-100"
+          iconColor="text-purple-500"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=under_contract")}
           goal={goals.contractsGoal}
@@ -575,7 +580,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.sold.totalValue || 0}
           profitPotential={pipelineValueStats?.sold.profitPotential || 0}
           icon={BadgeDollarSign}
-          iconBg="bg-success"
+          iconBg="bg-emerald-100"
+          iconColor="text-emerald-500"
           profitLabel="Realized Profit"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=closed")}
