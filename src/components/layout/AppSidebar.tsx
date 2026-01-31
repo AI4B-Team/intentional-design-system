@@ -57,6 +57,7 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Marketplace", href: "/marketplace", icon: Store },
+  { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
   { label: "Inbox", href: "/inbox", icon: Inbox },
 ];
 
@@ -117,7 +118,6 @@ const dispoGroup: NavGroup = {
   icon: Package,
   items: [
     { label: "Deals", href: "/dispo/deals", icon: Home },
-    { label: "Campaigns", href: "/dispo/campaigns", icon: Mail },
     { label: "Settings", href: "/dispo/settings", icon: Settings },
   ],
 };
