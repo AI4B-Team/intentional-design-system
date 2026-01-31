@@ -568,8 +568,8 @@ export default function Dashboard() {
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
           icon={Handshake}
-          iconBg="bg-purple-100"
-          iconColor="text-purple-500"
+          iconBg="bg-blue-100"
+          iconColor="text-blue-500"
           isLoading={pipelineValueLoading}
           onClick={() => navigate("/properties?status=under_contract")}
           goal={goals.contractsGoal}
