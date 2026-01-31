@@ -59,6 +59,8 @@ interface MarketplaceListingsProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isSplitView?: boolean;
+  savedDealIds?: string[];
+  onToggleSave?: (dealId: string) => void;
 }
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
@@ -140,13 +142,16 @@ function DealListItem({
   deal,
   isSelected,
   onSelect,
+  isSaved = false,
+  onToggleSave,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
+  isSaved?: boolean;
+  onToggleSave?: (dealId: string) => void;
 }) {
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = React.useState(false);
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -286,16 +291,16 @@ function DealListItem({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setIsFavorited(!isFavorited);
+                  onToggleSave?.(deal.id);
                 }}
                 className={cn(
                   "flex items-center justify-center h-7 w-7 rounded-full transition-all",
-                  isFavorited 
+                  isSaved 
                     ? "bg-red-100 text-red-500" 
                     : "hover:bg-slate-100 text-muted-foreground"
                 )}
               >
-                <Heart className={cn("h-4 w-4", isFavorited && "fill-current")} />
+                <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
               </button>
               <button
                 onClick={(e) => {
@@ -382,13 +387,16 @@ function DealCard({
   deal,
   isSelected,
   onSelect,
+  isSaved = false,
+  onToggleSave,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
+  isSaved?: boolean;
+  onToggleSave?: (dealId: string) => void;
 }) {
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = React.useState(false);
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -512,17 +520,17 @@ function DealCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setIsFavorited(!isFavorited);
+              onToggleSave?.(deal.id);
             }}
             className={cn(
               "flex items-center justify-center h-7 w-7 rounded-full transition-all hover:scale-105",
-              isFavorited 
+              isSaved 
                 ? "bg-red-500 text-white" 
                 : "text-white/90 hover:text-white"
             )}
-            style={{ backgroundColor: isFavorited ? undefined : 'rgba(0,0,0,0.3)' }}
+            style={{ backgroundColor: isSaved ? undefined : 'rgba(0,0,0,0.3)' }}
           >
-            <Heart className={cn("h-3.5 w-3.5", isFavorited && "fill-current")} />
+            <Heart className={cn("h-3.5 w-3.5", isSaved && "fill-current")} />
           </button>
         </div>
 
@@ -672,6 +680,8 @@ export function MarketplaceListings({
   currentPage,
   onPageChange,
   isSplitView = false,
+  savedDealIds = [],
+  onToggleSave,
 }: MarketplaceListingsProps) {
   const totalPages = Math.ceil(totalCount / resultsPerPage);
   const startIndex = (currentPage - 1) * resultsPerPage + 1;
@@ -803,6 +813,8 @@ export function MarketplaceListings({
                   deal={deal}
                   isSelected={selectedDeals.includes(deal.id)}
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
+                  isSaved={savedDealIds.includes(deal.id)}
+                  onToggleSave={onToggleSave}
                 />
               ) : (
                 <DealCard
@@ -810,6 +822,8 @@ export function MarketplaceListings({
                   deal={deal}
                   isSelected={selectedDeals.includes(deal.id)}
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
+                  isSaved={savedDealIds.includes(deal.id)}
+                  onToggleSave={onToggleSave}
                 />
               )
             ))}

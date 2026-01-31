@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -50,6 +51,9 @@ interface MarketplaceFiltersProps {
   onViewModeChange?: (mode: "list" | "grid") => void;
   layoutMode?: LayoutMode;
   onLayoutModeChange?: (mode: LayoutMode) => void;
+  showSavedOnly?: boolean;
+  onShowSavedOnlyChange?: (show: boolean) => void;
+  savedCount?: number;
 }
 
 const leadTypeOptions = [
@@ -99,6 +103,9 @@ export function MarketplaceFilters({
   onViewModeChange,
   layoutMode = "cards",
   onLayoutModeChange,
+  showSavedOnly = false,
+  onShowSavedOnlyChange,
+  savedCount = 0,
 }: MarketplaceFiltersProps) {
   const navigate = useNavigate();
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
@@ -375,12 +382,21 @@ export function MarketplaceFilters({
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Saved Button */}
           <Button
-            variant="outline"
+            variant={showSavedOnly ? "default" : "outline"}
             size="sm"
-            className="h-10 gap-1.5"
+            className={cn(
+              "h-10 gap-1.5",
+              showSavedOnly && "bg-brand hover:bg-brand/90"
+            )}
+            onClick={() => onShowSavedOnlyChange?.(!showSavedOnly)}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className={cn("h-4 w-4", showSavedOnly && "fill-current")} />
             Saved
+            {savedCount > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+                {savedCount}
+              </Badge>
+            )}
           </Button>
 
           {/* View Mode Toggle */}

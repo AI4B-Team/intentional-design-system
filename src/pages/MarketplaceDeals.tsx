@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MarketplaceFilters } from "@/components/marketplace-deals/marketplace-filters";
 import { MarketplaceMap } from "@/components/marketplace-deals/marketplace-map";
@@ -16,6 +16,10 @@ export default function MarketplaceDeals() {
   const [sortBy, setSortBy] = useState("newest");
   const [resultsPerPage, setResultsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Saved/favorited deals state
+  const [savedDealIds, setSavedDealIds] = useState<string[]>([]);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
   
   // Filters state
   // All home types selected by default
@@ -48,12 +52,29 @@ export default function MarketplaceDeals() {
     bathsMin: filters.bathsMin,
   };
 
-  const { deals, totalCount, isLoading } = useMockDeals({
+  const { deals: allDeals, totalCount: allTotalCount, isLoading } = useMockDeals({
     filters: mockDealFilters,
     sortBy,
     page: currentPage,
     perPage: resultsPerPage,
   });
+
+  // Filter to saved only if toggle is active
+  const deals = useMemo(() => {
+    if (!showSavedOnly) return allDeals;
+    return allDeals.filter(deal => savedDealIds.includes(deal.id));
+  }, [allDeals, showSavedOnly, savedDealIds]);
+
+  const totalCount = showSavedOnly ? deals.length : allTotalCount;
+
+  // Handle save/unsave deal
+  const handleToggleSave = (dealId: string) => {
+    setSavedDealIds(prev => 
+      prev.includes(dealId) 
+        ? prev.filter(id => id !== dealId)
+        : [...prev, dealId]
+    );
+  };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -84,6 +105,9 @@ export default function MarketplaceDeals() {
           onViewModeChange={setViewMode}
           layoutMode={layoutMode}
           onLayoutModeChange={setLayoutMode}
+          showSavedOnly={showSavedOnly}
+          onShowSavedOnlyChange={setShowSavedOnly}
+          savedCount={savedDealIds.length}
         />
 
         {/* Main Content - fills remaining height */}
@@ -120,6 +144,8 @@ export default function MarketplaceDeals() {
                 currentPage={currentPage}
                 onPageChange={setCurrentPage}
                 isSplitView={layoutMode === "split"}
+                savedDealIds={savedDealIds}
+                onToggleSave={handleToggleSave}
               />
             </div>
           )}
