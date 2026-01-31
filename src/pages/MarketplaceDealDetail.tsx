@@ -379,7 +379,7 @@ export default function MarketplaceDealDetail() {
 
               <DealRiskMeter arvPercent={deal.arvPercent} />
 
-              <div className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t">
+              <div className="grid grid-cols-4 gap-6 mt-6 pt-6 border-t">
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Est. Rent</p>
                   <p className="text-xl font-bold">${estRent.toLocaleString()}/mo</p>
@@ -387,6 +387,22 @@ export default function MarketplaceDealDetail() {
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Est. PITI</p>
                   <p className="text-xl font-bold">${estPiti.toLocaleString()}/mo</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Cashflow</p>
+                  <p className={cn("text-xl font-bold", (estRent - estPiti) >= 0 ? "text-success" : "text-destructive")}>
+                    {(estRent - estPiti) >= 0 ? "+" : ""}${(estRent - estPiti).toLocaleString()}/mo
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground mb-1">Cap Rate</p>
+                  <p className={cn(
+                    "text-xl font-bold",
+                    ((estRent * 12 * 0.6) / deal.price * 100) >= 8 ? "text-success" : 
+                    ((estRent * 12 * 0.6) / deal.price * 100) >= 5 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {((estRent * 12 * 0.6) / deal.price * 100).toFixed(1)}%
+                  </p>
                 </div>
               </div>
             </Card>

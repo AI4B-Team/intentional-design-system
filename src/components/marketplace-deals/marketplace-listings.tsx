@@ -366,28 +366,6 @@ function DealCard({
           </div>
         </div>
 
-        {/* Cashflow & Cap Rate Row */}
-        <div className="mt-3 flex items-center">
-          <div className="flex-1 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Cashflow</span>
-            <span className={cn(
-              "font-semibold",
-              monthlyCashflow >= 0 ? "text-success" : "text-destructive"
-            )}>
-              {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
-            </span>
-          </div>
-          <div className="w-px h-6 bg-border mx-4" />
-          <div className="flex-1 flex items-center justify-end gap-2">
-            <span className="text-sm text-muted-foreground">Cap Rate</span>
-            <span className={cn(
-              "font-semibold",
-              capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
-            )}>
-              {capRate.toFixed(1)}%
-            </span>
-          </div>
-        </div>
 
         {/* Property Specs */}
         <div className="mt-4 flex items-center justify-around border-t border-border pt-4 px-2">
