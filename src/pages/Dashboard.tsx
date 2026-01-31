@@ -1349,6 +1349,15 @@ export default function Dashboard() {
                     onClick={() => navigate(`/properties/${task.propertyId}`)}
                   />
                 ))}
+
+                {/* View All Tasks link */}
+                <div 
+                  className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+                  onClick={() => navigate("/tasks")}
+                >
+                  <span>View All Tasks</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </div>
               </div>
             )}
           </div>
