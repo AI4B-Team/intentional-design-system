@@ -249,10 +249,10 @@ export function AIVAChat({ className }: AIVAChatProps) {
       </ScrollArea>
 
       {/* Input Area */}
-      <div className="border-t p-4">
+      <div className="border-t p-3 pb-4">
         <form onSubmit={handleSubmit} className="relative">
-          <div className="flex flex-col gap-2 rounded-xl border bg-background p-3">
-            {/* Input Field */}
+          <div className="flex flex-col gap-3 rounded-xl border bg-background p-3">
+            {/* Input Field - taller */}
             <input
               ref={inputRef}
               type="text"
@@ -260,7 +260,7 @@ export function AIVAChat({ className }: AIVAChatProps) {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask AIVA Anything"
-              className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm"
+              className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm py-2"
             />
             
             {/* Bottom Row */}
@@ -292,8 +292,8 @@ export function AIVAChat({ className }: AIVAChatProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              {/* Right Icons */}
-              <div className="flex items-center gap-2">
+              {/* Right Icons - closer together */}
+              <div className="flex items-center gap-1">
                 <Button 
                   type="button" 
                   variant="ghost" 
