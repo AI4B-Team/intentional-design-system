@@ -9,43 +9,10 @@ interface AIVAPanelProps {
   onClose: () => void;
 }
 
-// Sidebar width constants (must match AppSidebar)
-const SIDEBAR_WIDTH_EXPANDED = 240; // w-60 = 15rem = 240px
-const SIDEBAR_WIDTH_COLLAPSED = 64; // w-16 = 4rem = 64px
-
 export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
-  // Get sidebar collapsed state from CSS variable or default to expanded
-  const [sidebarWidth, setSidebarWidth] = React.useState(SIDEBAR_WIDTH_EXPANDED);
-
-  React.useEffect(() => {
-    // Check if sidebar is collapsed by looking at the sidebar element
-    const checkSidebarWidth = () => {
-      const sidebar = document.querySelector('[data-sidebar]');
-      if (sidebar) {
-        const width = sidebar.getBoundingClientRect().width;
-        setSidebarWidth(width > 100 ? SIDEBAR_WIDTH_EXPANDED : SIDEBAR_WIDTH_COLLAPSED);
-      }
-    };
-
-    checkSidebarWidth();
-    // Re-check on window resize
-    window.addEventListener('resize', checkSidebarWidth);
-    // Also observe DOM changes for sidebar toggle
-    const observer = new MutationObserver(checkSidebarWidth);
-    const sidebar = document.querySelector('[data-sidebar]');
-    if (sidebar) {
-      observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
-    }
-
-    return () => {
-      window.removeEventListener('resize', checkSidebarWidth);
-      observer.disconnect();
-    };
-  }, [open]);
-
   return (
     <>
-      {/* Backdrop - dims the entire page */}
+      {/* Backdrop - dims the entire page (positioned to cover everything except sidebar) */}
       <div
         className={cn(
           "fixed inset-0 bg-black/60 z-40 transition-opacity duration-300",
@@ -54,16 +21,16 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
         onClick={onClose}
       />
 
-      {/* Panel - slides out from the right edge of the sidebar */}
+      {/* Panel - positioned to the right of the sidebar using CSS */}
       <div
         className={cn(
-          "fixed top-0 h-full bg-background border-r shadow-2xl z-50 transition-all duration-300 ease-in-out flex flex-col",
-          "w-full sm:w-[420px] lg:w-[440px]"
+          "fixed top-0 h-full bg-background border-r shadow-2xl z-50 transition-transform duration-300 ease-in-out flex flex-col",
+          "w-[90vw] sm:w-[420px] lg:w-[440px]",
+          // Position: left of sidebar (w-64 = 256px on lg, w-16 = 64px when collapsed)
+          // On mobile, full width from left edge
+          "left-0 lg:left-64",
+          open ? "translate-x-0" : "-translate-x-full"
         )}
-        style={{
-          left: open ? `${sidebarWidth}px` : `${sidebarWidth - 440}px`,
-          opacity: open ? 1 : 0,
-        }}
       >
         {/* Panel Header */}
         <div className="flex items-center justify-between h-16 px-4 border-b bg-gradient-to-r from-primary/5 to-primary/10">
