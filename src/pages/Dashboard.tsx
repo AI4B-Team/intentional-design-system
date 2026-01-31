@@ -517,7 +517,7 @@ export default function Dashboard() {
           onClick={() => navigate("/properties?status=offer_made,negotiating")}
         />
         <PipelineValueCard
-          title="Contracted"
+          title="Contracts"
           count={pipelineValueStats?.contracted.count || 0}
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
