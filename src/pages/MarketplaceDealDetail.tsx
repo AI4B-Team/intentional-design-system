@@ -206,7 +206,7 @@ export default function MarketplaceDealDetail() {
 
             {/* For Sale Badge */}
             <Badge className="absolute top-3 left-3 bg-white text-foreground gap-1.5 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-destructive" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
               For sale
             </Badge>
 
@@ -254,16 +254,16 @@ export default function MarketplaceDealDetail() {
                 onClick={() => setCurrentImageIndex(idx + 1)}
               >
                 <img src={img} alt="" className="w-full h-full object-cover" />
-                {idx === 3 && images.length > 5 && (
+                {idx === 3 && (
                   <button 
-                    className="absolute bottom-2 right-2 bg-white px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-md hover:bg-gray-50 transition-colors"
+                    className="absolute bottom-2 right-2 bg-white px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-md hover:bg-muted transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       // Could open full gallery modal here
                     }}
                   >
                     <Camera className="h-3.5 w-3.5" />
-                    See all {images.length} photos
+                    See all 10 photos
                   </button>
                 )}
               </div>
