@@ -31,8 +31,17 @@ import {
   Settings,
   Volume2,
   VolumeX,
+  Sparkles,
+  Loader2,
+  Zap,
+  Target,
+  MessageCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Notification types specific to real estate
 type NotificationType =
@@ -80,6 +89,12 @@ interface Notification {
     amount?: number;
     stage?: string;
   };
+}
+
+interface AISuggestion {
+  text: string;
+  type: "response" | "offer" | "action" | "tactic";
+  priority: "high" | "medium" | "low";
 }
 
 // Mock notifications for demonstration
@@ -247,12 +262,22 @@ const getNotificationIcon = (type: NotificationType) => {
 
 const getPriorityStyles = (priority: NotificationPriority) => {
   const styles: Record<NotificationPriority, string> = {
-    urgent: "border-l-4 border-l-red-500 bg-red-50/50",
+    urgent: "border-l-4 border-l-destructive bg-destructive/5",
     high: "border-l-4 border-l-orange-500 bg-orange-50/30",
-    medium: "border-l-4 border-l-blue-500",
-    low: "border-l-4 border-l-gray-300",
+    medium: "border-l-4 border-l-primary",
+    low: "border-l-4 border-l-muted-foreground/30",
   };
   return styles[priority];
+};
+
+const getSuggestionIcon = (type: string) => {
+  switch (type) {
+    case "response": return <MessageCircle className="h-3 w-3" />;
+    case "offer": return <DollarSign className="h-3 w-3" />;
+    case "action": return <Zap className="h-3 w-3" />;
+    case "tactic": return <Target className="h-3 w-3" />;
+    default: return <Sparkles className="h-3 w-3" />;
+  }
 };
 
 interface NotificationItemProps {
@@ -263,11 +288,64 @@ interface NotificationItemProps {
 }
 
 function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: NotificationItemProps) {
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState<AISuggestion[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false);
+  const [hasLoadedSuggestions, setHasLoadedSuggestions] = React.useState(false);
+
+  const loadSuggestions = async () => {
+    if (hasLoadedSuggestions || isLoadingSuggestions) return;
+    
+    setIsLoadingSuggestions(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-deal-suggestions', {
+        body: { 
+          notification: {
+            type: notification.type,
+            title: notification.title,
+            message: notification.message,
+            metadata: notification.metadata
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching suggestions:', error);
+        toast.error('Failed to load AI suggestions');
+        return;
+      }
+
+      if (data?.suggestions) {
+        setSuggestions(data.suggestions);
+        setHasLoadedSuggestions(true);
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setIsLoadingSuggestions(false);
+    }
+  };
+
+  const handleToggleSuggestions = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!showSuggestions && !hasLoadedSuggestions) {
+      loadSuggestions();
+    }
+    setShowSuggestions(!showSuggestions);
+  };
+
+  const handleSuggestionClick = (suggestion: AISuggestion, e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Copy suggestion to clipboard
+    navigator.clipboard.writeText(suggestion.text);
+    toast.success('Suggestion copied to clipboard!');
+  };
+
   return (
     <div
       className={cn(
         "relative p-3 hover:bg-muted/50 transition-colors cursor-pointer group",
-        !notification.read && "bg-blue-50/30",
+        !notification.read && "bg-primary/5",
         getPriorityStyles(notification.priority)
       )}
       onClick={() => {
@@ -299,10 +377,35 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
           <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">
             {notification.message}
           </p>
+          
+          {/* AI Suggestions Toggle */}
           <div className="flex items-center justify-between mt-2">
-            <span className="text-xs text-muted-foreground/70">
-              {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground/70">
+                {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
+              </span>
+              <button
+                onClick={handleToggleSuggestions}
+                className={cn(
+                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors",
+                  showSuggestions 
+                    ? "bg-primary text-primary-foreground" 
+                    : "bg-primary/10 text-primary hover:bg-primary/20"
+                )}
+              >
+                {isLoadingSuggestions ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3 w-3" />
+                )}
+                <span>AI Tips</span>
+                {showSuggestions ? (
+                  <ChevronUp className="h-3 w-3" />
+                ) : (
+                  <ChevronDown className="h-3 w-3" />
+                )}
+              </button>
+            </div>
             {notification.actionLabel && (
               <Button
                 variant="ghost"
@@ -320,6 +423,61 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
               </Button>
             )}
           </div>
+
+          {/* AI Suggestions Panel */}
+          {showSuggestions && (
+            <div className="mt-2 p-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
+                <span className="text-xs font-medium text-primary">AI Suggestions to Win</span>
+              </div>
+              {isLoadingSuggestions ? (
+                <div className="flex items-center justify-center py-3">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  <span className="ml-2 text-xs text-muted-foreground">Analyzing opportunity...</span>
+                </div>
+              ) : suggestions.length > 0 ? (
+                <div className="space-y-1.5">
+                  {suggestions.map((suggestion, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => handleSuggestionClick(suggestion, e)}
+                      className={cn(
+                        "w-full flex items-start gap-2 p-2 rounded-md text-left text-xs transition-colors",
+                        "hover:bg-background/80 group/suggestion",
+                        suggestion.priority === "high" && "bg-background/60"
+                      )}
+                    >
+                      <span className={cn(
+                        "flex-shrink-0 p-1 rounded",
+                        suggestion.type === "response" && "bg-blue-100 text-blue-600",
+                        suggestion.type === "offer" && "bg-green-100 text-green-600",
+                        suggestion.type === "action" && "bg-orange-100 text-orange-600",
+                        suggestion.type === "tactic" && "bg-purple-100 text-purple-600"
+                      )}>
+                        {getSuggestionIcon(suggestion.type)}
+                      </span>
+                      <span className="flex-1 text-foreground leading-snug">
+                        {suggestion.text}
+                      </span>
+                      {suggestion.priority === "high" && (
+                        <Badge variant="secondary" className="text-[10px] px-1 py-0 bg-destructive/10 text-destructive">
+                          Priority
+                        </Badge>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground py-2 text-center">
+                  No suggestions available
+                </p>
+              )}
+              <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
+                Click a suggestion to copy
+              </p>
+            </div>
+          )}
         </div>
         {!notification.read && (
           <div className="absolute top-3 right-10 h-2 w-2 bg-primary rounded-full" />
@@ -389,7 +547,7 @@ export function NotificationsDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-[400px] p-0 bg-background shadow-xl border"
+        className="w-[420px] p-0 bg-background shadow-xl border"
         sideOffset={8}
       >
         {/* Header */}
@@ -428,6 +586,12 @@ export function NotificationsDropdown() {
           </div>
         </div>
 
+        {/* AI Feature Banner */}
+        <div className="px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 border-b flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <span className="text-xs text-primary font-medium">AI-powered suggestions to help you win deals</span>
+        </div>
+
         {/* Category Tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as NotificationCategory)}>
           <div className="border-b px-2">
@@ -453,7 +617,7 @@ export function NotificationsDropdown() {
           {/* Notification List */}
           <TabsContent value={activeTab} className="m-0">
             {filteredNotifications.length > 0 ? (
-              <ScrollArea className="h-[360px]">
+              <ScrollArea className="h-[400px]">
                 <div className="divide-y">
                   {filteredNotifications.map((notification) => (
                     <NotificationItem
