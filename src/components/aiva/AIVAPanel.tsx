@@ -95,9 +95,11 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     };
   }, [location.pathname]);
 
-  // Round to avoid sub-pixel overlap and keep the panel flush to the sidebar edge.
+  // Round to avoid sub-pixel overlap.
+  // Add a small gap so the panel never visually covers the sidebar (even by 1–2px due to rounding/layout).
   const sidebarRightPx = Math.ceil(sidebarRight);
-  const panelLeft = sidebarRightPx;
+  const EDGE_GAP_PX = 8;
+  const panelLeft = sidebarRightPx + EDGE_GAP_PX;
 
   return (
     <>
@@ -107,7 +109,8 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           "fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        style={{ left: panelLeft }}
+        // Backdrop should start at the sidebar edge (not after the gap)
+        style={{ left: sidebarRightPx }}
         onClick={onClose}
       />
 
