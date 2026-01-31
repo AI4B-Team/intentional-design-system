@@ -14,6 +14,7 @@ import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
+import { DailyFocus } from "@/components/dashboard/DailyFocus";
 import {
   Building2,
   Calendar,
@@ -758,6 +759,9 @@ export default function Dashboard() {
           </Button>
         </GoalSettingsDialog>
       </div>
+
+      {/* Daily Focus - Decision Engine */}
+      <DailyFocus />
 
       {/* Pipeline Value Cards - Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
