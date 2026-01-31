@@ -628,7 +628,7 @@ const Feedback: React.FC = () => {
               <Bug className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <h3 className="font-semibold">Report A Bug</h3>
+              <h3 className="font-semibold">Bug Report</h3>
               <p className="text-sm text-muted-foreground">Something not working?</p>
             </div>
           </CardContent>
@@ -736,7 +736,7 @@ const Feedback: React.FC = () => {
               {submitType === "bug" && <Bug className="h-5 w-5 text-red-600" />}
               {submitType === "feature" && <Lightbulb className="h-5 w-5 text-amber-600" />}
               {submitType === "general" && "Submit Feedback"}
-              {submitType === "bug" && "Report A Bug"}
+              {submitType === "bug" && "Bug Report"}
               {submitType === "feature" && "Request a Feature"}
             </DialogTitle>
           </DialogHeader>
