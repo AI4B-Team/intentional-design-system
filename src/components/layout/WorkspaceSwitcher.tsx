@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Check, ChevronDown, Plus, Search } from "lucide-react";
+import { Check, ChevronDown, Plus, Search, LayoutGrid } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -48,10 +48,11 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
           <button
             className={cn(
               "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
-              "bg-brand-accent hover:bg-brand-accent/80 text-white"
+              "hover:bg-slate-700/50 text-slate-400 hover:text-white"
             )}
+            title="Workspace"
           >
-            <span className="text-sm font-semibold">{activeWorkspace.initial}</span>
+            <LayoutGrid className="h-5 w-5" />
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -74,9 +75,12 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
 
   return (
     <div className="px-2">
-      <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider px-1 mb-1 block">
-        Workspace
-      </span>
+      <div className="flex items-center gap-1.5 px-1 mb-1">
+        <LayoutGrid className="h-3.5 w-3.5 text-slate-500" />
+        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+          Workspace
+        </span>
+      </div>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <button
