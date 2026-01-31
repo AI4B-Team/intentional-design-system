@@ -58,9 +58,12 @@ export default function CampaignsHub() {
   return (
     <PageLayout title="Campaigns">
       <div className="space-y-6">
-        <p className="text-muted-foreground -mt-4">
-          Manage your lead sources and marketing campaigns
-        </p>
+        <div className="-mt-4">
+          <h1 className="text-2xl font-bold text-foreground">Campaigns</h1>
+          <p className="text-muted-foreground">
+            Manage your lead sources and marketing campaigns
+          </p>
+        </div>
 
         {/* Individual Tab Buttons */}
         <div className="flex flex-wrap gap-2">
