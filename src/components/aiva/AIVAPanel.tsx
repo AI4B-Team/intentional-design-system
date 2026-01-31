@@ -95,9 +95,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     };
   }, [location.pathname]);
 
-  // Round to avoid sub-pixel overlap and add a clear gap from the sidebar edge.
+  // Round to avoid sub-pixel overlap and keep the panel flush to the sidebar edge.
   const sidebarRightPx = Math.ceil(sidebarRight);
-  const panelLeft = sidebarRightPx + 16;
+  const panelLeft = sidebarRightPx;
 
   return (
     <>
@@ -107,7 +107,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           "fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        style={{ left: sidebarRightPx }}
+        style={{ left: panelLeft }}
         onClick={onClose}
       />
 
@@ -115,8 +115,8 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
       <div
         className={cn(
           "fixed top-0 h-full bg-background border-l z-[70] transition-all duration-300 ease-in-out flex flex-col",
-          // Right-only shadow to avoid visually darkening/covering the sidebar edge
-          "shadow-[12px_0_40px_-12px_hsl(var(--foreground)_/_0.14)]",
+          // No shadow (prevents any visual spill onto the sidebar). Divider is handled by border-l.
+          "shadow-none",
           "w-[90vw] sm:w-[420px]",
           open ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none -translate-x-full",
           "transition-[transform,opacity]"
