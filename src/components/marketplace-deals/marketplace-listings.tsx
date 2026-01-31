@@ -136,16 +136,166 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
-function DealCard({
+function DealListItem({
   deal,
   isSelected,
   onSelect,
-  viewMode,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
-  viewMode: "list" | "grid";
+}) {
+  const navigate = useNavigate();
+  const [isFavorited, setIsFavorited] = React.useState(false);
+  
+  // Calculate financial details
+  const askingPrice = deal.price;
+  const arvValue = deal.arv;
+  const estRepairs = Math.round(arvValue * 0.1);
+  const profitPotential = arvValue - askingPrice - estRepairs;
+  
+  // Get days since listing
+  const getDaysListed = () => {
+    const createdDate = new Date(deal.createdAt);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - createdDate.getTime());
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  };
+  
+  const daysListed = getDaysListed();
+  
+  const getListingBadge = () => {
+    if (daysListed < 1) {
+      return { text: "New", className: "bg-amber-400 text-slate-900" };
+    } else if (daysListed <= 5) {
+      return { text: `New ${daysListed}d`, className: "bg-amber-400 text-slate-900" };
+    } else {
+      return { text: "For Sale", className: "bg-primary text-primary-foreground" };
+    }
+  };
+  
+  const listingBadge = getListingBadge();
+
+  const handleClick = () => {
+    navigate(`/marketplace/deal/${deal.id}`);
+  };
+
+  return (
+    <Card 
+      className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white"
+      onClick={handleClick}
+    >
+      <div className="flex">
+        {/* Thumbnail */}
+        <div className="relative w-32 h-24 sm:w-40 sm:h-28 flex-shrink-0">
+          <img
+            src={deal.imageUrl}
+            alt={deal.address}
+            className="w-full h-full object-cover"
+          />
+          {/* Selection button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(!isSelected);
+            }}
+            className={cn(
+              "absolute top-2 left-2 flex items-center justify-center h-5 w-5 rounded-full border-2 transition-all",
+              isSelected 
+                ? "bg-primary border-primary" 
+                : "border-white/70 hover:border-white"
+            )}
+            style={{ backgroundColor: isSelected ? undefined : 'transparent' }}
+          >
+            {isSelected && (
+              <Circle className="h-2 w-2 fill-white text-white" />
+            )}
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 p-3 flex flex-col justify-between min-w-0">
+          {/* Top row: Price + Badge */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-lg font-bold text-success">
+                  {formatCurrency(askingPrice)}
+                </span>
+                <Badge className={cn("text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
+                  {listingBadge.text}
+                </Badge>
+              </div>
+              <p className="text-sm font-medium text-foreground truncate">{deal.address}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {deal.city}, {deal.state} {deal.zip}
+              </p>
+            </div>
+            
+            {/* Action buttons */}
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFavorited(!isFavorited);
+                }}
+                className={cn(
+                  "flex items-center justify-center h-7 w-7 rounded-full transition-all",
+                  isFavorited 
+                    ? "bg-red-100 text-red-500" 
+                    : "hover:bg-slate-100 text-muted-foreground"
+                )}
+              >
+                <Heart className={cn("h-4 w-4", isFavorited && "fill-current")} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+                className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-100 text-muted-foreground"
+              >
+                <Share2 className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom row: Specs + Profit */}
+          <div className="flex items-center justify-between gap-3 mt-2">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1">
+                <Bed className="h-3.5 w-3.5" />
+                {deal.beds}
+              </span>
+              <span className="flex items-center gap-1">
+                <Bath className="h-3.5 w-3.5" />
+                {deal.baths}
+              </span>
+              <span className="flex items-center gap-1">
+                <Tag className="h-3.5 w-3.5" />
+                {deal.sqft.toLocaleString()}
+              </span>
+            </div>
+            <div className={cn(
+              "text-xs font-semibold",
+              profitPotential >= 0 ? "text-success" : "text-destructive"
+            )}>
+              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} potential
+            </div>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function DealCard({
+  deal,
+  isSelected,
+  onSelect,
+}: {
+  deal: MarketplaceDeal;
+  isSelected: boolean;
+  onSelect: (checked: boolean) => void;
 }) {
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = React.useState(false);
@@ -535,13 +685,21 @@ export function MarketplaceListings({
               : "grid-cols-1"
           )}>
             {deals.map((deal) => (
-              <DealCard
-                key={deal.id}
-                deal={deal}
-                isSelected={selectedDeals.includes(deal.id)}
-                onSelect={(checked) => onSelectDeal(deal.id, checked)}
-                viewMode={viewMode}
-              />
+              viewMode === "list" ? (
+                <DealListItem
+                  key={deal.id}
+                  deal={deal}
+                  isSelected={selectedDeals.includes(deal.id)}
+                  onSelect={(checked) => onSelectDeal(deal.id, checked)}
+                />
+              ) : (
+                <DealCard
+                  key={deal.id}
+                  deal={deal}
+                  isSelected={selectedDeals.includes(deal.id)}
+                  onSelect={(checked) => onSelectDeal(deal.id, checked)}
+                />
+              )
             ))}
           </div>
         )}
