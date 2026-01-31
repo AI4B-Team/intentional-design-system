@@ -8,39 +8,60 @@ interface AIVAPanelProps {
 }
 
 export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
-  // Get sidebar width from the DOM - check if sidebar is collapsed
-  const [sidebarWidth, setSidebarWidth] = React.useState(64); // Default to collapsed (16 * 4 = 64px)
+  // Get sidebar width from the DOM. IMPORTANT: many elements use `data-sidebar`,
+  // so we specifically target the sidebar container.
+  const [sidebarRight, setSidebarRight] = React.useState(0);
 
   React.useEffect(() => {
-    const updateSidebarWidth = () => {
-      const sidebar = document.querySelector('[data-sidebar]');
-      if (sidebar) {
-        const width = sidebar.getBoundingClientRect().width;
-        setSidebarWidth(width);
+    const getSidebarEl = () => {
+      // Choose the widest visible sidebar container (desktop vs mobile sheet).
+      const candidates = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-sidebar="sidebar"]')
+      );
+      const visible = candidates.filter((el) => el.offsetParent !== null);
+      const pool = visible.length ? visible : candidates;
+
+      let best: HTMLElement | null = null;
+      let bestWidth = -1;
+      for (const el of pool) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > bestWidth) {
+          bestWidth = rect.width;
+          best = el;
+        }
       }
+      return best;
     };
 
-    // Initial check
-    updateSidebarWidth();
+    const updateSidebarRight = () => {
+      const sidebar = getSidebarEl();
+      if (!sidebar) {
+        setSidebarRight(0);
+        return;
+      }
+      const rect = sidebar.getBoundingClientRect();
+      // Use `right` to handle any left offset/positioning.
+      setSidebarRight(rect.right);
+    };
 
-    // Set up observer for sidebar changes
-    const observer = new MutationObserver(updateSidebarWidth);
-    const sidebar = document.querySelector('[data-sidebar]');
-    if (sidebar) {
-      observer.observe(sidebar, { attributes: true, attributeFilter: ['class'] });
-    }
+    updateSidebarRight();
 
-    // Also listen for window resize
-    window.addEventListener('resize', updateSidebarWidth);
+    const sidebar = getSidebarEl();
+    const resizeObserver = new ResizeObserver(() => updateSidebarRight());
+    if (sidebar) resizeObserver.observe(sidebar);
+
+    window.addEventListener("resize", updateSidebarRight);
+    const raf = requestAnimationFrame(updateSidebarRight);
 
     return () => {
-      observer.disconnect();
-      window.removeEventListener('resize', updateSidebarWidth);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", updateSidebarRight);
+      resizeObserver.disconnect();
     };
   }, []);
 
-  // Add gap to prevent overlap with sidebar
-  const panelLeft = sidebarWidth + 8;
+  // Add a small gap to prevent overlap with sidebar
+  const panelLeft = sidebarRight + 6;
 
   return (
     <>
@@ -50,21 +71,21 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
           "fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
-        style={{ left: sidebarWidth }}
+        style={{ left: sidebarRight }}
         onClick={onClose}
       />
 
       {/* Panel - slides in from left, positioned next to sidebar */}
       <div
         className={cn(
-          "fixed top-0 h-full bg-background border-r shadow-2xl z-[70] transition-all duration-300 ease-in-out flex flex-col",
+          "fixed top-0 h-full bg-background border-l z-[70] transition-all duration-300 ease-in-out flex flex-col",
+          // Right-only shadow to avoid visually darkening/covering the sidebar edge
+          "shadow-[12px_0_40px_-12px_hsl(var(--foreground)_/_0.14)]",
           "w-[90vw] sm:w-[420px]",
-          open ? "opacity-100" : "opacity-0 pointer-events-none"
+          open ? "opacity-100 translate-x-0" : "opacity-0 pointer-events-none -translate-x-full",
+          "transition-[transform,opacity]"
         )}
-        style={{ 
-          left: open ? panelLeft : panelLeft - 420,
-          transition: 'left 0.3s ease-in-out, opacity 0.3s ease-in-out'
-        }}
+        style={{ left: panelLeft }}
       >
         {/* Chat Area - takes full height */}
         <AIVAChat className="flex-1 border-0 rounded-none shadow-none" onClose={onClose} />
