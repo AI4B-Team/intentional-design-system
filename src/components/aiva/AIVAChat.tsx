@@ -581,7 +581,12 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                               type="submit" 
                               size="icon" 
                               disabled={!input.trim() || isLoading}
-                              className="h-11 w-11 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-400 border-0 shadow-none transition-all disabled:opacity-30"
+                              className={cn(
+                                "h-11 w-11 rounded-full border-0 shadow-none transition-all",
+                                input.trim() && !isLoading
+                                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
+                                  : "bg-emerald-50 text-emerald-300"
+                              )}
                             >
                               <Send className="h-5 w-5" strokeWidth={1.5} />
                             </Button>
