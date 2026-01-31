@@ -107,7 +107,7 @@ export const OFFER_TYPE_CONFIGS: OfferTypeConfig[] = [
     color: "text-success",
     bgColor: "bg-success/10",
     features: ["Fast closing (7-14 days)", "No financing contingency", "Simple terms", "High acceptance rate"],
-    requiresPOF: true,
+    requiresPOF: false, // POF only required for on-market (MLS) properties
   },
   {
     id: "subject_to",
@@ -137,7 +137,7 @@ export const OFFER_TYPE_CONFIGS: OfferTypeConfig[] = [
     color: "text-warning",
     bgColor: "bg-warning/10",
     features: ["Cash + financing combo", "Lower cash required", "Competitive offer", "Flexible structure"],
-    requiresPOF: true,
+    requiresPOF: false, // POF only required for on-market (MLS) properties
   },
   {
     id: "novation",
