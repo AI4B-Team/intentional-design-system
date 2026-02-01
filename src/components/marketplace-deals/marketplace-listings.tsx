@@ -759,14 +759,14 @@ function DealCard({
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-3">
         {/* Location */}
         <p className="text-sm text-muted-foreground">{deal.county}</p>
         <p className="font-semibold text-primary text-base">{deal.address}</p>
         <p className="text-sm text-muted-foreground">{deal.city}, {deal.state} {deal.zip}</p>
 
         {/* View Mode Toggle with helper text */}
-        <div className="mt-3 flex flex-col items-center">
+        <div className="mt-2 flex flex-col items-center">
           <span className="text-[10px] text-muted-foreground mb-1">View Property As:</span>
           <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
             <button
@@ -809,7 +809,7 @@ function DealCard({
         {cardViewMode === "overview" ? (
           <>
             {/* Overview Mode - Just price prominent */}
-            <div className="mt-3 border-t border-border pt-3">
+            <div className="mt-2 border-t border-border pt-2">
               <div className="text-center">
                 <span className="text-2xl font-bold text-foreground">{formatCurrency(askingPrice)}</span>
               </div>
@@ -920,26 +920,26 @@ function DealCard({
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
         <div className={cn(
           "border-t border-border",
-          cardViewMode === "overview" ? "mt-3 pt-2" : "mt-4 pt-3"
+          cardViewMode === "overview" ? "mt-2 pt-1" : "mt-3 pt-2"
         )}>
           <div className="grid grid-cols-3 divide-x-2 divide-border text-sm text-muted-foreground">
             <div className={cn(
               "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-1" : "py-2"
+              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
             )}>
               <Bed className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.beds} Beds</span>
             </div>
             <div className={cn(
               "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-1" : "py-2"
+              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
             )}>
               <Bath className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.baths} Baths</span>
             </div>
             <div className={cn(
               "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-1" : "py-2"
+              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
             )}>
               <Ruler className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SF</span>
