@@ -1457,7 +1457,7 @@ export default function Dashboard() {
           {/* Pipeline Composition Bar - Shows distribution across 4 categories */}
           {!pipelineLoading && totalPipeline > 0 && (
             <div className="px-4 pb-4">
-              <p className="text-tiny text-muted-foreground mb-2 uppercase tracking-wide">Pipeline Legend</p>
+              <p className="text-tiny text-muted-foreground mb-2 uppercase tracking-wide text-center">Pipeline Legend</p>
               <div className="flex h-3 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
                 {/* Discovery (Red) - Leads + Contacted + Appointments */}
                 {(() => {
