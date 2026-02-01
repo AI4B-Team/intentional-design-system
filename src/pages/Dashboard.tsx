@@ -402,9 +402,9 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
       className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group hover:shadow-sm"
       onClick={onClick}
     >
-      {/* Score Badge */}
+      {/* Score Badge - matches Focus pill height */}
       <span className={cn(
-        "text-tiny font-medium px-2 py-0.5 rounded-full shrink-0",
+        "text-[11px] font-medium px-1.5 py-px rounded-full shrink-0 leading-tight",
         scoreColor
       )}>
         {score}
@@ -420,10 +420,10 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
         </p>
       </div>
 
-      {/* Single "Why It's Hot" Badge - One reason only */}
+      {/* Single "Why It's Hot" Badge - matches Focus pill height */}
       {hotReason && (
         <span className={cn(
-          "px-2 py-0.5 rounded-full text-tiny font-medium whitespace-nowrap shrink-0",
+          "text-[11px] font-medium px-1.5 py-px rounded-full whitespace-nowrap shrink-0 leading-tight",
           hotReason.color
         )}>
           {hotReason.label}
@@ -484,9 +484,9 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
       className="flex items-center gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group hover:shadow-sm"
       onClick={onClick}
     >
-      {/* Score Badge */}
+      {/* Score Badge - matches Focus pill height */}
       <span className={cn(
-        "text-tiny font-medium px-2 py-0.5 rounded-full shrink-0",
+        "text-[11px] font-medium px-1.5 py-px rounded-full shrink-0 leading-tight",
         scoreColor
       )}>
         {score}
@@ -509,8 +509,8 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
         </div>
       )}
 
-      {/* Status */}
-      <span className={cn("px-2 py-0.5 rounded-full text-tiny font-medium capitalize transition-all duration-150", statusColor)}>
+      {/* Status - matches Focus pill height */}
+      <span className={cn("text-[11px] font-medium px-1.5 py-px rounded-full capitalize leading-tight transition-all duration-150", statusColor)}>
         {(opportunity.status || "new").replace("_", " ")}
       </span>
 
