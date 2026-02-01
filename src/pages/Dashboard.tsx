@@ -1517,22 +1517,22 @@ export default function Dashboard() {
                 })()}
               </div>
               {/* Legend */}
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-2 text-tiny text-muted-foreground">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                  <span className="whitespace-nowrap">Discovery (Leads)</span>
+              <div className="flex items-start justify-center gap-6 mt-2 text-tiny text-muted-foreground">
+                <div className="flex items-start gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1" />
+                  <span className="text-center leading-tight">Discovery<br/>(Leads)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
-                  <span className="whitespace-nowrap">Intent (Offers)</span>
+                <div className="flex items-start gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0 mt-1" />
+                  <span className="text-center leading-tight">Intent<br/>(Offers)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
-                  <span className="whitespace-nowrap">Commitment (Contracts)</span>
+                <div className="flex items-start gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1" />
+                  <span className="text-center leading-tight">Commitment<br/>(Contracts)</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                  <span className="whitespace-nowrap">Outcome (Sold)</span>
+                <div className="flex items-start gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1" />
+                  <span className="text-center leading-tight">Outcome<br/>(Sold)</span>
                 </div>
               </div>
             </div>
