@@ -42,6 +42,7 @@ import {
   DollarSign,
   Hourglass,
   BarChart3,
+  Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -561,7 +562,9 @@ const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
   offer_made: FileText, // Offers Made - matches Offers card
   negotiating: FileText, // Negotiating (same as offers)
   under_contract: Handshake, // Under Contract - matches Contracts card
-  closed: BadgeDollarSign,   // Closed - matches Sold card
+  marketing: Megaphone,  // Marketing
+  closed: BadgeDollarSign,   // Purchased - matches Sold card
+  sold: BadgeDollarSign, // Sold
 };
 
 // Icon background colors for pipeline stages
@@ -572,7 +575,9 @@ const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
   offer_made: "bg-amber-100",
   negotiating: "bg-amber-50",
   under_contract: "bg-blue-100",
+  marketing: "bg-purple-100",
   closed: "bg-emerald-100",
+  sold: "bg-emerald-100",
 };
 
 // Icon text colors for pipeline stages
@@ -583,7 +588,9 @@ const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
   offer_made: "text-amber-500",
   negotiating: "text-amber-400",
   under_contract: "text-blue-600",
+  marketing: "text-purple-500",
   closed: "text-emerald-500",
+  sold: "text-emerald-500",
 };
 
 function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {

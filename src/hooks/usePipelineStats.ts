@@ -16,9 +16,12 @@ export function usePipelineStats() {
       // Use centralized color config for consistency with dashboard tiles
       const statuses: { status: PipelineStageId; label: string; color: string }[] = [
         { status: "new", label: PIPELINE_LABELS.new, color: PIPELINE_COLORS.new.bg },
+        { status: "contacted", label: PIPELINE_LABELS.contacted, color: PIPELINE_COLORS.contacted.bg },
         { status: "appointment", label: PIPELINE_LABELS.appointment, color: PIPELINE_COLORS.appointment.bg },
         { status: "offer_made", label: PIPELINE_LABELS.offer_made, color: PIPELINE_COLORS.offer_made.bg },
+        { status: "negotiating", label: PIPELINE_LABELS.negotiating, color: PIPELINE_COLORS.negotiating.bg },
         { status: "under_contract", label: PIPELINE_LABELS.under_contract, color: PIPELINE_COLORS.under_contract.bg },
+        { status: "marketing", label: PIPELINE_LABELS.marketing, color: PIPELINE_COLORS.marketing.bg },
         { status: "closed", label: PIPELINE_LABELS.closed, color: PIPELINE_COLORS.closed.bg },
         { status: "sold", label: PIPELINE_LABELS.sold, color: PIPELINE_COLORS.sold.bg },
       ];
