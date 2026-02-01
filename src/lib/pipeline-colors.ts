@@ -100,7 +100,7 @@ export const PIPELINE_LABELS: Record<PipelineStageId, string> = {
   offer_made: "Offers Made",
   negotiating: "Negotiating",
   under_contract: "Under Contract",
-  closed: "Closed",
+  closed: "Purchased",
 };
 
 /**
