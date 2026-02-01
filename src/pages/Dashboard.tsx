@@ -587,7 +587,7 @@ const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
 };
 
 function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {
-  const conversionRate = previousCount > 0 ? Math.round((stage.count / previousCount) * 100) : 0;
+  // Use percentage of total pipeline for each stage (not conversion rate)
   const percentage = total > 0 ? Math.round((stage.count / total) * 100) : 0;
   
   // Visual pressure: empty stage after populated stage feels uncomfortable
@@ -665,8 +665,9 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         )}>
           {stage.count}
         </p>
-        {previousCount > 0 && conversionRate > 0 && !showPressure && (
-          <p className="text-tiny text-muted-foreground w-12 text-right">{conversionRate}%</p>
+        {/* Show percentage of total pipeline */}
+        {!showPressure && (
+          <p className="text-tiny text-muted-foreground w-12 text-right">{percentage}%</p>
         )}
         {showPressure && (
           <p className="text-tiny text-destructive w-12 text-right">0%</p>
