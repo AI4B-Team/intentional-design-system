@@ -29,30 +29,29 @@ export function usePipelineValueStats() {
     queryKey: ["pipeline-value-stats"],
     queryFn: async (): Promise<PipelineValueStats> => {
       // Fetch properties with financial data for each stage
-      // Using correct column names: estimated_value, arv, repair_estimate, equity_percent
       const [leadsResult, offersResult, contractedResult, soldResult] = await Promise.all([
         // Leads: new, contacted, appointment statuses
         supabase
           .from("properties")
-          .select("id, estimated_value, arv, repair_estimate, equity_percent")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["new", "contacted", "appointment"]),
         
         // Offers: offer_made, negotiating statuses
         supabase
           .from("properties")
-          .select("id, estimated_value, arv, repair_estimate, equity_percent")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["offer_made", "negotiating"]),
         
         // Contracted: under_contract status
         supabase
           .from("properties")
-          .select("id, estimated_value, arv, repair_estimate, equity_percent")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .eq("status", "under_contract"),
         
         // Sold: closed status
         supabase
           .from("properties")
-          .select("id, estimated_value, arv, repair_estimate, equity_percent")
+          .select("id, asking_price, arv, repair_estimate, equity_amount, sale_price")
           .eq("status", "closed"),
       ]);
 
@@ -62,52 +61,39 @@ export function usePipelineValueStats() {
         }
 
         const count = properties.length;
-        const totalValue = properties.reduce((sum, p) => sum + (p.estimated_value || p.arv || 0), 0);
+        const totalValue = properties.reduce((sum, p) => sum + (p.asking_price || 0), 0);
         
-        // Profit potential = estimated based on ARV - estimated_value - repairs
-        // Or calculate from equity_percent if available
+        // Profit potential = sum of equity amounts, or estimate based on ARV - asking - repairs
         const profitPotential = properties.reduce((sum, p) => {
+          if (p.equity_amount) {
+            return sum + p.equity_amount;
+          }
+          // Fallback calculation
           const arv = p.arv || 0;
-          const value = p.estimated_value || 0;
+          const asking = p.asking_price || 0;
           const repairs = p.repair_estimate || 0;
-          
-          // If we have equity_percent, use that to estimate profit
-          if (p.equity_percent && value > 0) {
-            return sum + Math.max(0, value * (p.equity_percent / 100));
-          }
-          
-          // Fallback calculation: ARV - current value - repairs
-          if (arv > 0) {
-            const estimatedProfit = arv - value - repairs;
-            return sum + Math.max(0, estimatedProfit);
-          }
-          
-          return sum;
+          const estimatedProfit = arv - asking - repairs;
+          return sum + Math.max(0, estimatedProfit);
         }, 0);
 
         return { count, totalValue, profitPotential };
       };
 
-      // For sold properties, profit is realized
+      // For sold properties, use actual sale_price - asking_price as realized profit
       const calculateSoldStats = (properties: any[] | null) => {
         if (!properties || properties.length === 0) {
           return { count: 0, totalValue: 0, profitPotential: 0 };
         }
 
         const count = properties.length;
-        const totalValue = properties.reduce((sum, p) => sum + (p.arv || p.estimated_value || 0), 0);
+        const totalValue = properties.reduce((sum, p) => sum + (p.sale_price || p.asking_price || 0), 0);
         
-        // For sold, calculate realized profit
+        // For sold, this is realized profit
         const profitPotential = properties.reduce((sum, p) => {
-          const arv = p.arv || 0;
-          const value = p.estimated_value || 0;
+          const salePrice = p.sale_price || p.arv || 0;
+          const costBasis = p.asking_price || 0;
           const repairs = p.repair_estimate || 0;
-          
-          if (p.equity_percent && value > 0) {
-            return sum + Math.max(0, value * (p.equity_percent / 100));
-          }
-          
-          return sum + Math.max(0, arv - value - repairs);
+          return sum + Math.max(0, salePrice - costBasis - repairs);
         }, 0);
 
         return { count, totalValue, profitPotential };

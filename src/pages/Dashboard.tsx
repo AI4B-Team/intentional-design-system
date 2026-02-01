@@ -5,13 +5,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useHotOpportunities } from "@/hooks/useHotOpportunities";
 import { usePipelineStats } from "@/hooks/usePipelineStats";
@@ -185,7 +178,9 @@ function PipelineValueCard({
                 <span className="text-muted-foreground">Goal: {goal}</span>
                 <span className={cn(
                   "font-medium",
-                  goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
+                  isCalmVariant 
+                    ? "text-success" 
+                    : goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
                 )}>
                   {goalProgress}%
                 </span>
@@ -194,7 +189,10 @@ function PipelineValueCard({
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
-                    goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
+                    // Calm variant always uses success color for progress
+                    isCalmVariant 
+                      ? "bg-success" 
+                      : goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
                   )}
                   style={{ width: `${goalProgress}%` }}
                 />
@@ -556,8 +554,7 @@ const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
   offer_made: FileText, // Offers Made - matches Offers card
   negotiating: FileText, // Negotiating (same as offers)
   under_contract: Handshake, // Under Contract - matches Contracts card
-  closed: BadgeDollarSign,   // Purchased - matches Sold card
-  sold: DollarSign,          // Sold (flipped deals)
+  closed: BadgeDollarSign,   // Closed - matches Sold card
 };
 
 // Icon background colors for pipeline stages
@@ -569,7 +566,6 @@ const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
   negotiating: "bg-amber-50",
   under_contract: "bg-blue-100",
   closed: "bg-emerald-100",
-  sold: "bg-green-100",
 };
 
 // Icon text colors for pipeline stages
@@ -581,7 +577,6 @@ const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
   negotiating: "text-amber-400",
   under_contract: "text-blue-600",
   closed: "text-emerald-500",
-  sold: "text-green-600",
 };
 
 function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {
@@ -780,7 +775,6 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
-  const [timePeriod, setTimePeriod] = React.useState<"week" | "month" | "all">("all");
   const goals = useGoals();
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
@@ -1262,19 +1256,10 @@ export default function Dashboard() {
 
         {/* Pipeline Overview */}
         <Card variant="default" padding="none" className="overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
               <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
-              <Select value={timePeriod} onValueChange={(v) => setTimePeriod(v as "week" | "month" | "all")}>
-                <SelectTrigger className="h-7 w-[120px] text-tiny font-medium bg-muted border-0">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="z-[100] bg-white">
-                  <SelectItem value="week">This Week</SelectItem>
-                  <SelectItem value="month">This Month</SelectItem>
-                  <SelectItem value="all">All Time</SelectItem>
-                </SelectContent>
-              </Select>
+              <span className="text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">This Week</span>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
               {totalPipeline} Total
