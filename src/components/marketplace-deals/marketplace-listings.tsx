@@ -322,7 +322,7 @@ function DealListItem({
             </span>
             <span className="flex items-center gap-1">
               <Tag className="h-3.5 w-3.5" />
-              {deal.sqft.toLocaleString()} sqft
+              {deal.sqft.toLocaleString()} SqFt
             </span>
           </div>
 
@@ -632,7 +632,7 @@ function DealCard({
             <span aria-hidden className="w-px h-4 bg-border" />
             <span className="flex items-center gap-1">
               <Ruler className="h-3.5 w-3.5 shrink-0" />
-              <span>{deal.sqft.toLocaleString()} SF</span>
+              <span>{deal.sqft.toLocaleString()} SqFt</span>
             </span>
           </div>
         </div>
