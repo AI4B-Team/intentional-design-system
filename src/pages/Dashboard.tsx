@@ -1436,8 +1436,8 @@ export default function Dashboard() {
         <TodaysTasks />
 
         {/* Recent Activity */}
-        <Card variant="default" padding="none" className="overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
+        <Card variant="default" padding="none" className="overflow-hidden flex flex-col h-[420px]">
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle shrink-0">
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-muted">
                 <Clock className="h-4 w-4 text-muted-foreground" />
@@ -1445,7 +1445,7 @@ export default function Dashboard() {
               <h2 className="text-body font-semibold text-foreground">Recent Activity</h2>
             </div>
           </div>
-          <div className="overflow-hidden">
+          <div className="flex-1 overflow-y-auto">
             {activityLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 4 }).map((_, i) => (
@@ -1468,19 +1468,16 @@ export default function Dashboard() {
                     onClick={() => activity.propertyId && navigate(`/properties/${activity.propertyId}`)}
                   />
                 ))}
-
-                {/* View All link when more than 4 items */}
-                {displayActivity && displayActivity.length > 4 && (
-                  <div 
-                    className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
-                    onClick={() => navigate("/activity")}
-                  >
-                    <span>View All Activity</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </div>
-                )}
               </div>
             )}
+          </div>
+          {/* View All link - anchored at bottom */}
+          <div 
+            className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors shrink-0"
+            onClick={() => navigate("/activity")}
+          >
+            <span>View All Activity</span>
+            <ArrowRight className="h-3.5 w-3.5" />
           </div>
         </Card>
       </div>
