@@ -1095,6 +1095,43 @@ export default function Dashboard() {
 
   const totalPipeline = pipelineStats?.reduce((sum, s) => sum + s.count, 0) || 0;
 
+  // Compute grouped pipeline stats for "All Time" to match the top 4 boxes
+  const groupedPipelineStats = React.useMemo(() => {
+    if (!pipelineValueStats) return null;
+    return [
+      {
+        status: "leads",
+        label: "Leads",
+        count: pipelineValueStats.leads.count,
+        color: "bg-red-500",
+      },
+      {
+        status: "offers",
+        label: "Offers",
+        count: pipelineValueStats.offers.count,
+        color: "bg-amber-500",
+      },
+      {
+        status: "contracted",
+        label: "Contracts",
+        count: pipelineValueStats.contracted.count,
+        color: "bg-blue-500",
+      },
+      {
+        status: "sold",
+        label: "Sold",
+        count: pipelineValueStats.sold.count,
+        color: "bg-emerald-500",
+      },
+    ];
+  }, [pipelineValueStats]);
+
+  // Use grouped stats for "all time", individual stats otherwise
+  const displayPipelineStats = timePeriod === "all" ? groupedPipelineStats : pipelineStats;
+  const displayPipelineTotal = timePeriod === "all" 
+    ? (groupedPipelineStats?.reduce((sum, s) => sum + s.count, 0) || 0)
+    : totalPipeline;
+
   return (
     <AppLayout>
       {/* Greeting Header */}
@@ -1279,12 +1316,12 @@ export default function Dashboard() {
               </Select>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {totalPipeline} Total
+              {displayPipelineTotal} Total
             </span>
           </div>
-          {pipelineLoading ? (
+          {pipelineLoading || pipelineValueLoading ? (
             <div className="p-4 space-y-3">
-              {Array.from({ length: 6 }).map((_, i) => (
+              {Array.from({ length: timePeriod === "all" ? 4 : 6 }).map((_, i) => (
                 <div key={i} className="flex items-center gap-3 animate-pulse">
                   <Skeleton className="h-3 w-3 rounded-full" />
                   <Skeleton className="h-4 w-24" />
@@ -1295,26 +1332,39 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="p-2">
-              {pipelineStats?.map((stage, index) => (
+              {displayPipelineStats?.map((stage, index) => (
                 <PipelineStage
                   key={stage.status}
                   stage={stage}
-                  total={totalPipeline}
-                  previousCount={index > 0 ? pipelineStats[index - 1].count : stage.count}
-                  onClick={() => navigate(`/pipeline?filter=${stage.status}`)}
+                  total={displayPipelineTotal}
+                  previousCount={index > 0 ? displayPipelineStats[index - 1].count : stage.count}
+                  onClick={() => {
+                    if (timePeriod === "all") {
+                      // Navigate to grouped statuses
+                      const statusMap: Record<string, string> = {
+                        leads: "new,contacted,appointment",
+                        offers: "offer_made,negotiating",
+                        contracted: "under_contract",
+                        sold: "closed",
+                      };
+                      navigate(`/properties?status=${statusMap[stage.status] || stage.status}`);
+                    } else {
+                      navigate(`/pipeline?filter=${stage.status}`);
+                    }
+                  }}
                 />
               ))}
             </div>
           )}
           {/* Visual Bar */}
-          {!pipelineLoading && totalPipeline > 0 && (
+          {!(pipelineLoading || pipelineValueLoading) && displayPipelineTotal > 0 && (
             <div className="px-4 pb-4">
               <div className="flex h-2.5 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
-                {pipelineStats?.map((stage) => (
+                {displayPipelineStats?.map((stage) => (
                   <div
                     key={stage.status}
                     className={cn("transition-all duration-500", stage.color)}
-                    style={{ width: `${(stage.count / totalPipeline) * 100}%` }}
+                    style={{ width: `${(stage.count / displayPipelineTotal) * 100}%` }}
                   />
                 ))}
               </div>
