@@ -7,6 +7,12 @@ import { useAIVA } from "@/contexts/AIVAContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   LayoutDashboard,
   Building2,
   Users,
@@ -177,137 +183,184 @@ export function AppSidebar({
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 scrollbar-none [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <ul className="space-y-1">
-          {/* AIVA Button - Opens Panel */}
-          <li>
-            <button
-              onClick={() => {
-                openAIVA();
-                onMobileClose();
-              }}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                aivaOpen && "bg-gradient-to-r from-primary to-primary/60 text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <div className="relative">
-                <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-white")} />
-                {!aivaOpen && (
-                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                )}
-              </div>
-              {!collapsed && <span>AIVA</span>}
-              {!collapsed && (
-                <span className="ml-auto text-[10px] text-slate-900 bg-amber-400 px-1.5 py-0.5 rounded font-medium">AI</span>
-              )}
-            </button>
-          </li>
-
-          {/* Top Nav Items */}
-          {topNavItems.map((item) => {
-            const isActive = location.pathname === item.href;
-            const Icon = item.icon;
-            const badgeCount = getBadgeCount(item.badgeKey);
-
-            return (
-              <li key={item.href}>
-                <NavLink
-                  to={item.href}
-                  onClick={onMobileClose}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                    "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                    isActive && "bg-brand-accent text-white font-medium",
-                    collapsed && "justify-center"
-                  )}
-                >
-                  <div className="relative">
-                    <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
-                    {collapsed && badgeCount > 0 && (
-                      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold text-white flex items-center justify-center">
-                        {badgeCount > 9 ? "9+" : badgeCount}
-                      </span>
+        <TooltipProvider delayDuration={0}>
+          <ul className="space-y-1">
+            {/* AIVA Button - Opens Panel */}
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      openAIVA();
+                      onMobileClose();
+                    }}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                      aivaOpen && "bg-gradient-to-r from-primary to-primary/60 text-white font-medium",
+                      collapsed && "justify-center"
                     )}
-                  </div>
-                  {!collapsed && <span>{item.label}</span>}
-                  {!collapsed && badgeCount > 0 && (
-                    <span className="ml-auto bg-warning text-white text-xs font-medium px-2 py-0.5 rounded-full">
-                      {badgeCount}
-                    </span>
-                  )}
-                </NavLink>
-              </li>
-            );
-          })}
+                  >
+                    <div className="relative">
+                      <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-white")} />
+                      {!aivaOpen && (
+                        <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                      )}
+                    </div>
+                    {!collapsed && <span>AIVA</span>}
+                    {!collapsed && (
+                      <span className="ml-auto text-[10px] text-slate-900 bg-amber-400 px-1.5 py-0.5 rounded font-medium">AI</span>
+                    )}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                    AIVA
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </li>
 
-          {/* Divider after top nav items */}
-          <li className="py-2">
-            <div className="border-t border-slate-700" />
-          </li>
+            {/* Top Nav Items */}
+            {topNavItems.map((item) => {
+              const isActive = location.pathname === item.href;
+              const Icon = item.icon;
+              const badgeCount = getBadgeCount(item.badgeKey);
+
+              return (
+                <li key={item.href}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        to={item.href}
+                        onClick={onMobileClose}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                          "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                          isActive && "bg-brand-accent text-white font-medium",
+                          collapsed && "justify-center"
+                        )}
+                      >
+                        <div className="relative">
+                          <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                          {collapsed && badgeCount > 0 && (
+                            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold text-white flex items-center justify-center">
+                              {badgeCount > 9 ? "9+" : badgeCount}
+                            </span>
+                          )}
+                        </div>
+                        {!collapsed && <span>{item.label}</span>}
+                        {!collapsed && badgeCount > 0 && (
+                          <span className="ml-auto bg-warning text-white text-xs font-medium px-2 py-0.5 rounded-full">
+                            {badgeCount}
+                          </span>
+                        )}
+                      </NavLink>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                        {item.label}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </li>
+              );
+            })}
+
+            {/* Divider after top nav items */}
+            <li className="py-2">
+              <div className="border-t border-slate-700" />
+            </li>
 
 
-          {/* Contacts - Direct Link */}
-          <li>
-            <NavLink
-              to={contactsNavItem.href}
-              onClick={onMobileClose}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isContactsActive && "bg-brand-accent text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-white")} />
-              {!collapsed && <span>{contactsNavItem.label}</span>}
-            </NavLink>
-          </li>
+            {/* Contacts - Direct Link */}
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to={contactsNavItem.href}
+                    onClick={onMobileClose}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                      isContactsActive && "bg-brand-accent text-white font-medium",
+                      collapsed && "justify-center"
+                    )}
+                  >
+                    <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-white")} />
+                    {!collapsed && <span>{contactsNavItem.label}</span>}
+                  </NavLink>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                    {contactsNavItem.label}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </li>
 
 
 
-          {/* After Leads Items */}
-          {afterLeadsItems.map((item) => {
-            const isActive = location.pathname === item.href;
-            const Icon = item.icon;
+            {/* After Leads Items */}
+            {afterLeadsItems.map((item) => {
+              const isActive = location.pathname === item.href;
+              const Icon = item.icon;
 
-            return (
-              <li key={item.href}>
-                <NavLink
-                  to={item.href}
-                  onClick={onMobileClose}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                    "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                    isActive && "bg-brand-accent text-white font-medium",
-                    collapsed && "justify-center"
-                  )}
-                >
-                  <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
-                  {!collapsed && <span>{item.label}</span>}
-                </NavLink>
-              </li>
-            );
-          })}
+              return (
+                <li key={item.href}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <NavLink
+                        to={item.href}
+                        onClick={onMobileClose}
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                          "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                          isActive && "bg-brand-accent text-white font-medium",
+                          collapsed && "justify-center"
+                        )}
+                      >
+                        <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                        {!collapsed && <span>{item.label}</span>}
+                      </NavLink>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                        {item.label}
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </li>
+              );
+            })}
 
-          {/* Apps - Direct Link */}
-          <li>
-            <NavLink
-              to={appsNavItem.href}
-              onClick={onMobileClose}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
-                "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                isAppsActive && "bg-brand-accent text-white font-medium",
-                collapsed && "justify-center"
-              )}
-            >
-              <appsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-white")} />
-              {!collapsed && <span>{appsNavItem.label}</span>}
-            </NavLink>
-          </li>
-        </ul>
+            {/* Apps - Direct Link */}
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to={appsNavItem.href}
+                    onClick={onMobileClose}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                      isAppsActive && "bg-brand-accent text-white font-medium",
+                      collapsed && "justify-center"
+                    )}
+                  >
+                    <appsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-white")} />
+                    {!collapsed && <span>{appsNavItem.label}</span>}
+                  </NavLink>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                    {appsNavItem.label}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </li>
+          </ul>
+        </TooltipProvider>
       </nav>
     </>
   );
