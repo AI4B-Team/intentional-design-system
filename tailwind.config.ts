@@ -114,7 +114,7 @@ export default {
           hot: "#DC2626",
           warm: "#F97316",
           moderate: "#EAB308",
-          cool: "#3B82F6",
+          cool: "#10B981",
           cold: "#6B7280",
         },
         // Surface colors (direct values for convenience)
@@ -131,9 +131,9 @@ export default {
         },
         // Brand colors (direct values)
         brand: {
-          DEFAULT: "#0F172A",
-          light: "#1E293B",
-          accent: "#3B82F6",
+          DEFAULT: "#10B981",
+          light: "#34D399",
+          accent: "#10B981",
         },
         // Chart colors
         chart: {
