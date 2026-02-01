@@ -5,9 +5,17 @@
  * 
  * UNIFIED PIPELINE CATEGORY SYSTEM:
  * 🔴 RED (Discovery) - Leads, Contacted, Appointments
- * 🟡 YELLOW (Intent) - Offers, Negotiating
- * 🔵 BLUE (Commitment) - Under Contract
+ * 🟡 YELLOW (Intent) - Offers, Negotiating, Follow Up
+ * 🔵 BLUE (Commitment) - Under Contract, Marketing
  * 🟢 GREEN (Outcome) - Purchased, Sold
+ * 
+ * STATUS CREATION RULE:
+ * Any new pipeline status must be assigned:
+ * - A parent category (Red / Yellow / Blue / Green)
+ * - A fixed icon color from that category
+ * - A dashboard rollup target
+ * - A goal metric
+ * This prevents orphan statuses.
  */
 
 export type PipelineStageId = 

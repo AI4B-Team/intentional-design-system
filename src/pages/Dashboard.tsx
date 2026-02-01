@@ -561,7 +561,7 @@ const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
   appointment: Calendar, // Discovery - Red
   offer_made: FileText, // Intent - Yellow
   negotiating: FileText, // Intent - Yellow
-  follow_up: Phone,     // Intent - Yellow
+  follow_up: Clock,     // Intent - Yellow
   under_contract: Handshake, // Commitment - Blue
   marketing: Megaphone,  // Commitment - Blue
   closed: BadgeDollarSign,   // Outcome - Green

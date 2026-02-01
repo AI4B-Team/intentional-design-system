@@ -30,29 +30,29 @@ export function usePipelineValueStats() {
     queryFn: async (): Promise<PipelineValueStats> => {
       // Fetch properties with financial data for each stage
       const [leadsResult, offersResult, contractedResult, soldResult] = await Promise.all([
-        // Leads: new, contacted, appointment statuses
+        // Leads: new, contacted, appointment statuses (Discovery - Red)
         supabase
           .from("properties")
           .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["new", "contacted", "appointment"]),
         
-        // Offers: offer_made, negotiating statuses
+        // Offers: offer_made, negotiating, follow_up statuses (Intent - Yellow)
         supabase
           .from("properties")
           .select("id, asking_price, arv, repair_estimate, equity_amount")
-          .in("status", ["offer_made", "negotiating"]),
+          .in("status", ["offer_made", "negotiating", "follow_up"]),
         
-        // Contracted: under_contract status
+        // Contracted: under_contract, marketing statuses (Commitment - Blue)
         supabase
           .from("properties")
           .select("id, asking_price, arv, repair_estimate, equity_amount")
-          .eq("status", "under_contract"),
+          .in("status", ["under_contract", "marketing"]),
         
-        // Sold: closed status
+        // Sold: closed, sold statuses (Outcome - Green)
         supabase
           .from("properties")
           .select("id, asking_price, arv, repair_estimate, equity_amount, sale_price")
-          .eq("status", "closed"),
+          .in("status", ["closed", "sold"]),
       ]);
 
       const calculateStats = (properties: any[] | null) => {
