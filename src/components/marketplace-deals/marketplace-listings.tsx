@@ -277,9 +277,9 @@ function DealListItem({
       className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white"
       onClick={handleClick}
     >
-      <div className="flex">
-        {/* Thumbnail - more square aspect ratio */}
-        <div className="relative w-40 aspect-square flex-shrink-0">
+      <div className="flex min-h-[180px]">
+        {/* Thumbnail - fixed size for consistency across view modes */}
+        <div className="relative w-48 h-[180px] flex-shrink-0">
           <img
             src={deal.imageUrl}
             alt={deal.address}
@@ -352,9 +352,9 @@ function DealListItem({
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-3 flex flex-col min-w-0">
+        <div className="flex-1 p-4 flex flex-col min-w-0 justify-between">
           {/* Top row: Price + Actions */}
-          <div className="flex items-start justify-between gap-2 mb-1">
+          <div className="flex items-start justify-between gap-3 mb-2">
             <div className="min-w-0">
               <span className="text-xl font-bold text-success">
                 {formatCurrency(askingPrice)}
@@ -458,7 +458,7 @@ function DealListItem({
           </div>
 
           {/* Property Specs Row */}
-          <div className="flex items-center gap-4 text-xs text-muted-foreground py-2 border-b border-border">
+          <div className="flex items-center gap-5 text-xs text-muted-foreground py-2.5 border-b border-border">
             <span className="flex items-center gap-1">
               <Bed className="h-3.5 w-3.5" />
               {deal.beds} Beds
@@ -477,7 +477,7 @@ function DealListItem({
           {cardViewMode === "overview" ? (
             null /* Overview mode - no additional financial metrics */
           ) : cardViewMode === "flip" ? (
-            <div className="flex justify-between py-2 text-xs">
+            <div className="flex justify-between py-3 text-xs">
               <div>
                 <span className="text-muted-foreground block">ARV</span>
                 <span className="font-semibold">{formatCurrency(arvValue)}</span>
@@ -494,7 +494,7 @@ function DealListItem({
               </div>
             </div>
           ) : (
-            <div className="flex justify-between py-2 text-xs">
+            <div className="flex justify-between py-3 text-xs">
               <div>
                 <span className="text-muted-foreground block">Rent</span>
                 <span className="font-semibold text-primary">{formatCurrency(monthlyRent)}/mo</span>
