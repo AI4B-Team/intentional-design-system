@@ -300,27 +300,24 @@ function DealListItem({
           <Badge className={cn("absolute top-2 right-2 text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
             {listingBadge.text}
           </Badge>
-          {/* Tags at bottom - filtered by view mode */}
+          {/* Tags at bottom - filtered by view mode, show only 1 tag in list view */}
           {(() => {
             const filteredTags = getFilteredTags(deal.tags, cardViewMode);
             return (
               <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
-                {filteredTags.slice(0, 2).map((tag, i) => (
+                {filteredTags.slice(0, 1).map((tag, i) => (
                   <Badge
                     key={i}
-                    className={cn(
-                      "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                      i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
-                    )}
+                    className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary text-primary-foreground"
                   >
                     {tag}
                   </Badge>
                 ))}
-                {filteredTags.length > 2 && (
+                {filteredTags.length > 1 && (
                   <Popover>
                     <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
                       <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
-                        +{filteredTags.length - 2}
+                        +{filteredTags.length - 1}
                       </Badge>
                     </PopoverTrigger>
                     <PopoverContent 
@@ -330,7 +327,7 @@ function DealListItem({
                       onClick={(e) => e.stopPropagation()}
                     >
                       <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                        {filteredTags.slice(2).map((tag, i) => (
+                        {filteredTags.slice(1).map((tag, i) => (
                           <Badge
                             key={i}
                             className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
