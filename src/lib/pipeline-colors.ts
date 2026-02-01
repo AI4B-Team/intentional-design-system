@@ -175,13 +175,15 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     badge: "bg-blue-100 text-blue-600",
   },
   
-  // === OUTCOME GROUP (Green) - Purchased, Sold ===
+  // === COMMITMENT GROUP (Blue) - Marketing ===
   marketing: {
     bg: "bg-blue-500",
     bgLight: "bg-blue-100",
     text: "text-blue-600",
     badge: "bg-blue-100 text-blue-600",
   },
+
+  // === OUTCOME GROUP (Green) - Purchased, Sold ===
   closed: {
     bg: "bg-emerald-500",
     bgLight: "bg-emerald-100",
