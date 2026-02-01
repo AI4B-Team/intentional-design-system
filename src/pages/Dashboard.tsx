@@ -403,14 +403,12 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
       onClick={onClick}
     >
       {/* Score Badge */}
-      <div className={cn(
-        "flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium min-w-[48px] justify-center transition-transform duration-150 group-hover:scale-105",
+      <span className={cn(
+        "text-tiny font-medium px-2 py-0.5 rounded-full shrink-0",
         scoreColor
       )}>
-        {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
-        {score > 500 && score <= 800 && <Star className="h-3 w-3" />}
         {score}
-      </div>
+      </span>
 
       {/* Address */}
       <div className="flex-1 min-w-0">
@@ -487,13 +485,12 @@ function HotOpportunityItem({ opportunity, onClick, onCall, onEmail }: HotOpport
       onClick={onClick}
     >
       {/* Score Badge */}
-      <div className={cn(
-        "flex items-center gap-1 px-2.5 py-1 rounded-full text-tiny font-bold min-w-[56px] justify-center shadow-sm transition-transform duration-150 group-hover:scale-105",
+      <span className={cn(
+        "text-tiny font-medium px-2 py-0.5 rounded-full shrink-0",
         scoreColor
       )}>
-        {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
         {score}
-      </div>
+      </span>
 
       {/* Address */}
       <div className="flex-1 min-w-0">
