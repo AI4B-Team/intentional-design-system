@@ -90,7 +90,7 @@ export function MomentumScore({ pipelineStats, previousPipelineStats, isLoading 
       <Tooltip>
         <TooltipTrigger asChild>
           <div className={cn(
-            "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all cursor-help",
+            "flex items-center gap-2 px-3 py-1 rounded-lg transition-all cursor-help",
             scoreBg
           )}>
             <Zap className={cn("h-4 w-4", scoreColor)} />
