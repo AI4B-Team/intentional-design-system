@@ -992,9 +992,27 @@ export function MarketplaceListings({
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="p-4 border-b border-border bg-white">
-        {/* Row 1: Title + Global View As toggle */}
+        {/* Row 1: Title + Status Tags + Global View As toggle */}
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
+            
+            {/* Status Filter Tags */}
+            <div className="flex items-center gap-2">
+              <Badge className="bg-amber-400 text-slate-900 text-xs font-medium px-2.5 py-1 rounded cursor-pointer hover:bg-amber-500 transition-colors">
+                New
+              </Badge>
+              <Badge className="bg-amber-400 text-slate-900 text-xs font-medium px-2.5 py-1 rounded cursor-pointer hover:bg-amber-500 transition-colors">
+                New 2 Days
+              </Badge>
+              <Badge className="bg-emerald-500 text-white text-xs font-medium px-2.5 py-1 rounded cursor-pointer hover:bg-emerald-600 transition-colors">
+                For Sale
+              </Badge>
+              <Badge className="bg-red-500 text-white text-xs font-medium px-2.5 py-1 rounded cursor-pointer hover:bg-red-600 transition-colors">
+                Sold
+              </Badge>
+            </div>
+          </div>
           
           {/* Global View As Toggle */}
           <div className="flex items-center gap-2">
