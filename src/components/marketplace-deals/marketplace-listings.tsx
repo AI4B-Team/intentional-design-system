@@ -823,7 +823,7 @@ function DealCard({
               {/* ARV info - same size as Cap Rate */}
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <TrendingDown className="h-4 w-4" />
+                  <TrendingUp className="h-4 w-4" />
                   <span>ARV:</span>
                 </div>
                 <span className="text-sm text-muted-foreground">{formatCurrency(arvValue)}</span>
