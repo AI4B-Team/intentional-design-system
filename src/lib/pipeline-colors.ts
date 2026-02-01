@@ -75,7 +75,7 @@ export const PIPELINE_CATEGORIES: Record<PipelineCategoryId, PipelineCategory> =
   intent: {
     id: "intent",
     label: "Intent",
-    statuses: ["offer_made", "negotiating", "follow_up"],
+    statuses: ["offer_made", "follow_up", "negotiating"],
     colors: {
       bg: "bg-amber-500",
       bgLight: "bg-amber-100",
