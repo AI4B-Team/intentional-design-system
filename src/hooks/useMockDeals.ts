@@ -18,6 +18,7 @@ export interface MarketplaceDeal {
   isNew: boolean;
   isFavorite: boolean;
   imageUrl: string;
+  images?: string[]; // Additional property photos
   lat: number;
   lng: number;
   createdAt: string;
@@ -66,6 +67,15 @@ const mockDeals: MarketplaceDeal[] = [
     isNew: true,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&q=80",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=80",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80",
+    ],
     lat: 27.9506,
     lng: -82.4572,
     createdAt: getDateString(0), // Today - shows "New"
@@ -88,6 +98,12 @@ const mockDeals: MarketplaceDeal[] = [
     isNew: true,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80",
+    ],
     lat: 26.1224,
     lng: -80.1373,
     createdAt: getDateString(2), // 2 days ago - shows "New 2 Days Ago"

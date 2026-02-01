@@ -277,78 +277,116 @@ function DealListItem({
       className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white"
       onClick={handleClick}
     >
-      <div className="flex min-h-[180px]">
-        {/* Thumbnail - fixed size for consistency across view modes */}
-        <div className="relative w-48 h-[180px] flex-shrink-0">
-          <img
-            src={deal.imageUrl}
-            alt={deal.address}
-            className="w-full h-full object-cover"
-          />
-          {/* Selection button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect(!isSelected);
-            }}
-            className={cn(
-              "absolute top-2 left-2 flex items-center justify-center h-5 w-5 rounded-full border-2 transition-all",
-              isSelected 
-                ? "bg-primary border-primary" 
-                : "border-white/70 hover:border-white"
-            )}
-            style={{ backgroundColor: isSelected ? undefined : 'transparent' }}
-          >
-            {isSelected && (
-              <Circle className="h-2 w-2 fill-white text-white" />
-            )}
-          </button>
-          {/* Badge on image */}
-          <Badge className={cn("absolute top-2 right-2 text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
-            {listingBadge.text}
-          </Badge>
-          {/* Tags at bottom - filtered by view mode, show only 1 tag in list view */}
-          {(() => {
-            const filteredTags = getFilteredTags(deal.tags, cardViewMode);
-            return (
-              <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
-                {filteredTags.slice(0, 1).map((tag, i) => (
-                  <Badge
-                    key={i}
-                    className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary text-primary-foreground"
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-                {filteredTags.length > 1 && (
-                  <Popover>
-                    <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-                      <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
-                        +{filteredTags.length - 1}
-                      </Badge>
-                    </PopoverTrigger>
-                    <PopoverContent 
-                      className="w-auto p-2 z-[100]" 
-                      side="bottom" 
-                      align="center"
-                      onClick={(e) => e.stopPropagation()}
+      <div className="flex min-h-[240px]">
+        {/* Image Gallery Section */}
+        <div className="relative w-48 flex-shrink-0 flex flex-col gap-1">
+          {/* Main Image */}
+          <div className="relative h-[160px]">
+            <img
+              src={deal.imageUrl}
+              alt={deal.address}
+              className="w-full h-full object-cover rounded-tl-lg"
+            />
+            {/* Selection button */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelect(!isSelected);
+              }}
+              className={cn(
+                "absolute top-2 left-2 flex items-center justify-center h-5 w-5 rounded-full border-2 transition-all",
+                isSelected 
+                  ? "bg-primary border-primary" 
+                  : "border-white/70 hover:border-white"
+              )}
+              style={{ backgroundColor: isSelected ? undefined : 'transparent' }}
+            >
+              {isSelected && (
+                <Circle className="h-2 w-2 fill-white text-white" />
+              )}
+            </button>
+            {/* Badge on image */}
+            <Badge className={cn("absolute top-2 right-2 text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
+              {listingBadge.text}
+            </Badge>
+            {/* Tags at bottom - filtered by view mode, show only 1 tag in list view */}
+            {(() => {
+              const filteredTags = getFilteredTags(deal.tags, cardViewMode);
+              return (
+                <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
+                  {filteredTags.slice(0, 1).map((tag, i) => (
+                    <Badge
+                      key={i}
+                      className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary text-primary-foreground"
                     >
-                      <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                        {filteredTags.slice(1).map((tag, i) => (
-                          <Badge
-                            key={i}
-                            className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
-                          >
-                            {tag}
-                          </Badge>
-                        ))}
+                      {tag}
+                    </Badge>
+                  ))}
+                  {filteredTags.length > 1 && (
+                    <Popover>
+                      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
+                          +{filteredTags.length - 1}
+                        </Badge>
+                      </PopoverTrigger>
+                      <PopoverContent 
+                        className="w-auto p-2 z-[100]" 
+                        side="bottom" 
+                        align="center"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                          {filteredTags.slice(1).map((tag, i) => (
+                            <Badge
+                              key={i}
+                              className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
+                            >
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+          
+          {/* Thumbnail Grid - 4 small photos */}
+          {deal.images && deal.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-1 px-0">
+              {deal.images.slice(1, 5).map((img, idx) => {
+                const isLastVisible = idx === 3;
+                const remainingCount = (deal.images?.length || 0) - 5;
+                const showMoreOverlay = isLastVisible && remainingCount > 0;
+                
+                return (
+                  <div 
+                    key={idx} 
+                    className={cn(
+                      "relative h-[72px] overflow-hidden",
+                      idx === 0 && "rounded-bl-lg",
+                      idx === 3 && "rounded-br-lg"
+                    )}
+                  >
+                    <img
+                      src={img}
+                      alt={`${deal.address} photo ${idx + 2}`}
+                      className="w-full h-full object-cover"
+                    />
+                    {showMoreOverlay && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          +{remainingCount} More
+                        </span>
                       </div>
-                    </PopoverContent>
-                  </Popover>
-                )}
-              </div>
-            );
-          })()}
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Content */}
