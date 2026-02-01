@@ -6,6 +6,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -44,17 +49,23 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   if (collapsed) {
     return (
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <button
-            className={cn(
-              "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
-              "hover:bg-slate-700/50 text-slate-400 hover:text-white"
-            )}
-            title="Workspace"
-          >
-            <LayoutGrid className="h-5 w-5" />
-          </button>
-        </PopoverTrigger>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <PopoverTrigger asChild>
+              <button
+                className={cn(
+                  "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
+                  "hover:bg-slate-700/50 text-slate-400 hover:text-white"
+                )}
+              >
+                <LayoutGrid className="h-5 w-5" />
+              </button>
+            </PopoverTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="right" sideOffset={8}>
+            Workspace
+          </TooltipContent>
+        </Tooltip>
         <PopoverContent
           side="right"
           align="start"
