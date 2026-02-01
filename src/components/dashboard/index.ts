@@ -7,3 +7,6 @@ export { TeamActivityFeed } from "./team-activity-feed";
 export { TeamWorkloadCard } from "./team-workload-card";
 export { LeaderboardWidget } from "./leaderboard-widget";
 export { RecentAnalysesWidget } from "./RecentAnalysesWidget";
+export { MomentumScore } from "./MomentumScore";
+export { StageActionCTA } from "./StageActionCTA";
+export { AIStuckInsight } from "./AIStuckInsight";
