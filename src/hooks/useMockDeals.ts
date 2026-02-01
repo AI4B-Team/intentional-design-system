@@ -218,12 +218,13 @@ const mockDeals: MarketplaceDeal[] = [
     baths: 1,
     sqft: 900,
     tags: ["Mobile Home", "Bank Owned", "Quick Close"],
-    isNew: true,
+    isNew: false,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=800&q=80",
     lat: 27.3364,
     lng: -82.5307,
-    createdAt: getDateString(0), // Today - shows "New"
+    createdAt: getDateString(5),
+    status: "for_sale",
   },
   {
     id: "9",
