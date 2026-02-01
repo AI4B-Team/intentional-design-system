@@ -346,69 +346,68 @@ function DealListItem({
               </p>
             </div>
             
-            {/* Action buttons */}
-            <div className="flex items-center gap-1 flex-shrink-0">
-            {/* View Mode Toggle with helper text */}
-            <div className="flex flex-col items-end gap-0.5 mr-1">
-              <span className="text-[9px] text-muted-foreground">View As:</span>
-              <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+            {/* Action buttons - all on one row */}
+            <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
+              <span className="text-[9px] text-muted-foreground self-start">View As:</span>
+              <div className="flex items-center gap-1">
+                <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+                  <button
+                    onClick={(e) => handleViewModeChange(e, "overview")}
+                    className={cn(
+                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                      cardViewMode === "overview"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Overview
+                  </button>
+                  <button
+                    onClick={(e) => handleViewModeChange(e, "flip")}
+                    className={cn(
+                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                      cardViewMode === "flip"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Flip
+                  </button>
+                  <button
+                    onClick={(e) => handleViewModeChange(e, "hold")}
+                    className={cn(
+                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                      cardViewMode === "hold"
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    Hold
+                  </button>
+                </div>
                 <button
-                  onClick={(e) => handleViewModeChange(e, "overview")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSave?.(deal.id);
+                  }}
                   className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                    cardViewMode === "overview"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                    "flex items-center justify-center h-7 w-7 rounded-full transition-all",
+                    isSaved 
+                      ? "bg-red-100 text-red-500" 
+                      : "hover:bg-slate-100 text-muted-foreground"
                   )}
                 >
-                  Overview
+                  <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
                 </button>
                 <button
-                  onClick={(e) => handleViewModeChange(e, "flip")}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                    cardViewMode === "flip"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-100 text-muted-foreground"
                 >
-                  Flip
-                </button>
-                <button
-                  onClick={(e) => handleViewModeChange(e, "hold")}
-                  className={cn(
-                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                    cardViewMode === "hold"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Hold
+                  <Share2 className="h-4 w-4" />
                 </button>
               </div>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleSave?.(deal.id);
-                }}
-                className={cn(
-                  "flex items-center justify-center h-7 w-7 rounded-full transition-all",
-                  isSaved 
-                    ? "bg-red-100 text-red-500" 
-                    : "hover:bg-slate-100 text-muted-foreground"
-                )}
-              >
-                <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-                className="flex items-center justify-center h-7 w-7 rounded-full hover:bg-slate-100 text-muted-foreground"
-              >
-                <Share2 className="h-4 w-4" />
-              </button>
             </div>
           </div>
 
