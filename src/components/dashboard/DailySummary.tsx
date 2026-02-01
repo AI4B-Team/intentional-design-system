@@ -248,7 +248,19 @@ export function DailySummary({ variant = "full" }: DailySummaryProps) {
         )}
       </div>
 
-      {/* Footer */}
+      {/* Footer - Stats for compact, full stats for full variant */}
+      {variant === "compact" && (hasHighlights || hasConcerns || hasPriorities) && (
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border-subtle bg-muted/30">
+          <div className="flex items-center gap-4 text-tiny text-muted-foreground">
+            <span>{summary.stats.totalDealsWorked} touched</span>
+            <span>{summary.stats.callsMade} calls</span>
+            {summary.stats.dealsWon > 0 && (
+              <span className="text-success font-medium">{summary.stats.dealsWon} won!</span>
+            )}
+          </div>
+        </div>
+      )}
+
       {variant === "full" && (
         <div className="px-4 pb-4">
           <Separator className="mb-4" />
