@@ -79,7 +79,7 @@ export const PIPELINE_CATEGORIES: Record<PipelineCategoryId, PipelineCategory> =
   commitment: {
     id: "commitment",
     label: "Commitment",
-    statuses: ["under_contract"],
+    statuses: ["under_contract", "marketing"],
     colors: {
       bg: "bg-blue-500",
       bgLight: "bg-blue-100",
@@ -91,7 +91,7 @@ export const PIPELINE_CATEGORIES: Record<PipelineCategoryId, PipelineCategory> =
   outcome: {
     id: "outcome",
     label: "Outcome",
-    statuses: ["closed", "sold", "marketing"],
+    statuses: ["closed", "sold"],
     colors: {
       bg: "bg-emerald-500",
       bgLight: "bg-emerald-100",
@@ -167,12 +167,12 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     badge: "bg-blue-100 text-blue-600",
   },
   
-  // === OUTCOME GROUP (Green) - Purchased, Sold, Marketing ===
+  // === OUTCOME GROUP (Green) - Purchased, Sold ===
   marketing: {
-    bg: "bg-emerald-500",
-    bgLight: "bg-emerald-100",
-    text: "text-emerald-500",
-    badge: "bg-emerald-100 text-emerald-600",
+    bg: "bg-blue-500",
+    bgLight: "bg-blue-100",
+    text: "text-blue-600",
+    badge: "bg-blue-100 text-blue-600",
   },
   closed: {
     bg: "bg-emerald-500",

@@ -1480,10 +1480,10 @@ export default function Dashboard() {
                     />
                   ) : null;
                 })()}
-                {/* Commitment (Blue) - Under Contract */}
+                {/* Commitment (Blue) - Under Contract + Marketing */}
                 {(() => {
                   const commitmentCount = getPipelineStatsForTimePeriod
-                    ?.filter(s => ["under_contract"].includes(s.status))
+                    ?.filter(s => ["under_contract", "marketing"].includes(s.status))
                     .reduce((sum, s) => sum + s.count, 0) || 0;
                   const commitmentPct = (commitmentCount / totalPipeline) * 100;
                   return commitmentPct > 0 ? (
@@ -1494,10 +1494,10 @@ export default function Dashboard() {
                     />
                   ) : null;
                 })()}
-                {/* Outcome (Green) - Purchased + Sold + Marketing */}
+                {/* Outcome (Green) - Purchased + Sold */}
                 {(() => {
                   const outcomeCount = getPipelineStatsForTimePeriod
-                    ?.filter(s => ["closed", "sold", "marketing"].includes(s.status))
+                    ?.filter(s => ["closed", "sold"].includes(s.status))
                     .reduce((sum, s) => sum + s.count, 0) || 0;
                   const outcomePct = (outcomeCount / totalPipeline) * 100;
                   return outcomePct > 0 ? (
