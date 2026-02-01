@@ -611,86 +611,94 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   // Visual pressure: empty stage after populated stage feels uncomfortable
   // Exclude "marketing" from showing gap pressure
   const isEmpty = stage.count === 0;
-  const showPressure = isEmpty && previousCount > 0 && stage.status !== "marketing";
+  const showGap = isEmpty && previousCount > 0 && stage.status !== "marketing";
 
   // Generate "NO X" message for empty stages (uppercase for urgency)
   const emptyMessage = isEmpty ? `NO ${stage.label.replace(/s$/i, '').toUpperCase()}` : null;
 
-  // Get the icon for this stage
+  // CATEGORY COLOR (Static - based on pipeline category, NEVER changes)
+  // Applied to: icon, icon background, label text
   const StageIcon = PIPELINE_STAGE_ICONS[stage.status] || Users;
-  const iconBg = PIPELINE_STAGE_ICON_BG[stage.status] || "bg-muted";
-  const iconColor = PIPELINE_STAGE_ICON_COLOR[stage.status] || "text-muted-foreground";
+  const categoryIconBg = PIPELINE_STAGE_ICON_BG[stage.status] || "bg-muted";
+  const categoryIconColor = PIPELINE_STAGE_ICON_COLOR[stage.status] || "text-muted-foreground";
+
+  // PERFORMANCE COLOR (Dynamic - based on goal progress percentage)
+  // Applied to: progress bar fill, percentage text
+  // Rules: 0-39% → Red, 40-79% → Yellow, 80-100% → Green
+  // Blue is NEVER a performance color
+  const getPerformanceColor = (pct: number) => {
+    if (pct >= 80) return { bar: "bg-emerald-500", text: "text-emerald-500" };
+    if (pct >= 40) return { bar: "bg-amber-500", text: "text-amber-500" };
+    return { bar: "bg-red-500", text: "text-red-500" };
+  };
+  
+  const performanceColor = getPerformanceColor(percentage);
 
   return (
     <div 
       className={cn(
         "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 group",
-        showPressure 
-          ? "bg-warning/5 hover:bg-warning/10 border border-warning/20" // Amber = attention (gap needs attention, not blocking)
-          : "hover:bg-background-secondary"
+        "hover:bg-background-secondary"
       )}
       onClick={onClick}
     >
+      {/* Icon - uses CATEGORY color (static) */}
       <div className={cn(
         "flex items-center justify-center w-7 h-7 rounded-full transition-transform duration-150 group-hover:scale-110", 
-        showPressure ? "bg-warning/20" : iconBg
+        categoryIconBg
       )}>
-        <StageIcon className={cn(
-          "h-3.5 w-3.5",
-          showPressure ? "text-warning" : iconColor
-        )} />
+        <StageIcon className={cn("h-3.5 w-3.5", categoryIconColor)} />
       </div>
+      
+      {/* Label and badges */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
+          {/* Label - uses CATEGORY color (static) */}
           <p className={cn(
             "text-small font-medium group-hover:text-primary transition-colors truncate",
-            showPressure ? "text-warning" : iconColor
+            categoryIconColor
           )}>
             {stage.label}
           </p>
-          {showPressure && (
+          {/* GAP badge - appears when count = 0, does NOT change category color */}
+          {showGap && (
             <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
               <AlertTriangle className="h-2.5 w-2.5" />
               Gap
             </span>
           )}
-          {isBottleneck && !showPressure && (
+          {isBottleneck && !showGap && (
             <span className="text-tiny bg-info/10 text-info px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
               <Clock className="h-2.5 w-2.5" />
               Slow
             </span>
           )}
         </div>
-        {showPressure && emptyMessage && (
+        {showGap && emptyMessage && (
           <p className="text-tiny text-destructive/70 mt-0.5 uppercase tracking-wide">{emptyMessage} — NEEDS ATTENTION</p>
         )}
-        {bottleneckReason && !showPressure && (
+        {bottleneckReason && !showGap && (
           <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
         )}
       </div>
+      
+      {/* Right side: Progress bar, count, percentage */}
       <div className="text-right flex items-center gap-3">
+        {/* Progress bar - uses PERFORMANCE color (dynamic) */}
         <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
           <div 
-            className={cn(
-              "h-full rounded-full transition-all duration-300", 
-              showPressure ? "bg-destructive/30" : stage.color
-            )} 
-            style={{ width: showPressure ? "100%" : `${percentage}%` }}
+            className={cn("h-full rounded-full transition-all duration-300", performanceColor.bar)} 
+            style={{ width: `${Math.max(percentage, isEmpty ? 100 : 0)}%` }}
           />
         </div>
-        <p className={cn(
-          "text-body font-bold tabular-nums w-8 text-right",
-          showPressure ? "text-destructive" : "text-foreground"
-        )}>
+        {/* Count */}
+        <p className="text-body font-bold tabular-nums w-8 text-right text-foreground">
           {stage.count}
         </p>
-        {/* Show percentage of total pipeline */}
-        {!showPressure && (
-          <p className="text-tiny text-muted-foreground w-12 text-right">{percentage}%</p>
-        )}
-        {showPressure && (
-          <p className="text-tiny text-destructive w-12 text-right">0%</p>
-        )}
+        {/* Percentage - uses PERFORMANCE color (dynamic) */}
+        <p className={cn("text-tiny w-12 text-right", performanceColor.text)}>
+          {percentage}%
+        </p>
       </div>
     </div>
   );
