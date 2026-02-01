@@ -199,9 +199,9 @@ export function TodaysTasks() {
   const actualRemaining = displayTasks.filter(t => !t.completed).length;
 
   return (
-    <Card variant="default" padding="none" className="overflow-hidden">
+    <Card variant="default" padding="none" className="overflow-hidden flex flex-col h-[420px]">
       {/* Header - Calm, operational */}
-      <div className="flex items-center justify-between p-4 border-b border-border-subtle">
+      <div className="flex items-center justify-between p-4 border-b border-border-subtle shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="p-1.5 rounded-lg bg-muted">
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -214,7 +214,7 @@ export function TodaysTasks() {
       </div>
 
       {/* Task List */}
-      <div className="max-h-[360px] overflow-y-auto scrollbar-hide">
+      <div className="flex-1 overflow-y-auto scrollbar-hide">
         {allComplete || displayTasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 text-center px-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-success/10 mb-3">
