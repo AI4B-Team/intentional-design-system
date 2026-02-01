@@ -122,6 +122,7 @@ import DispoSettings from "./pages/DispoSettings";
 import Appointments from "./pages/Appointments";
 import LeadSources from "./pages/LeadSources";
 import Documents from "./pages/Documents";
+import Apps from "./pages/Apps";
 import Signatures from "./pages/apps/Signatures";
 import { BuyerRegister, BuyerLogin, BuyerAuthCallback, BuyerDashboard, BuyerProfile } from "./pages/buyer";
 import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
@@ -929,6 +930,14 @@ const App = () => (
             />
 
             {/* Apps */}
+            <Route
+              path="/apps"
+              element={
+                <ProtectedRoute>
+                  <Apps />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/apps/signatures"
               element={
