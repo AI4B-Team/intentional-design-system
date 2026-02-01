@@ -94,17 +94,24 @@ function FocusItemRow({ item, onComplete, isAnimatingOut }: FocusItemRowProps) {
           <p className="text-small font-medium text-foreground truncate">
             {item.title}
           </p>
+        </div>
+        <div className="flex items-center gap-2 mt-0.5">
+          {item.subtitle && (
+            <p className="text-tiny text-muted-foreground truncate">
+              {item.subtitle}
+            </p>
+          )}
           {item.time && (
-            <span className="text-tiny bg-surface-tertiary text-content-secondary rounded-full px-2 py-0.5 shrink-0">
-              {item.time}
+            <span className={cn(
+              "text-tiny font-medium shrink-0",
+              item.time === "Overdue" ? "text-destructive" : 
+              item.time === "Act now" ? "text-warning" : 
+              "text-muted-foreground"
+            )}>
+              · {item.time}
             </span>
           )}
         </div>
-        {item.subtitle && (
-          <p className="text-tiny text-muted-foreground truncate mt-0.5">
-            {item.subtitle}
-          </p>
-        )}
         {item.priority === "critical" && (
           <p className="text-tiny text-destructive font-medium flex items-center gap-1 mt-1">
             <Zap className="h-3 w-3" />
@@ -173,6 +180,7 @@ export function TodaysFocus() {
       type: "lead_contact",
       title: "3 Leads Need First Contact",
       subtitle: "No outreach yet",
+      time: "Added today",
       priority: "critical",
       urgencyScore: 95,
       source: "insight",
@@ -185,6 +193,7 @@ export function TodaysFocus() {
       type: "offer_followup",
       title: "2 Offers Awaiting Response",
       subtitle: "Follow up needed",
+      time: "Waiting 2 days",
       priority: "high",
       urgencyScore: 85,
       source: "insight",
@@ -197,6 +206,7 @@ export function TodaysFocus() {
       type: "hot_deal",
       title: "1 Hot Deal Needs Action",
       subtitle: "High momentum opportunity",
+      time: "Act now",
       priority: "high",
       urgencyScore: 75,
       source: "insight",
