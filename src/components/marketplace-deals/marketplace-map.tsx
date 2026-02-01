@@ -521,8 +521,8 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* Draw to Analyze Results Panel */}
       {analysisResult && (
-        <Card className="absolute bottom-20 left-3 z-10 w-72 p-0 shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-3 py-2 border-b flex items-center justify-between">
+        <Card className="absolute bottom-20 left-3 z-10 w-80 p-0 shadow-lg overflow-hidden">
+          <div className="bg-slate-100 px-3 py-2 border-b flex items-center justify-between">
             <div className="flex items-center gap-2">
               <PenTool className="h-4 w-4 text-primary" />
               <span className="font-semibold text-sm">Area Analysis</span>
@@ -566,7 +566,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 <div className="bg-muted/50 rounded-lg p-2.5">
                   <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                     <TrendingUp className="h-3.5 w-3.5" />
-                    <span className="text-xs">Avg ARV</span>
+                    <span className="text-xs whitespace-nowrap">Avg ARV</span>
                   </div>
                   <span className="text-sm font-semibold">
                     ${(analysisResult.avgArv / 1000).toFixed(0)}K
@@ -576,7 +576,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 <div className="bg-muted/50 rounded-lg p-2.5">
                   <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                     <Percent className="h-3.5 w-3.5" />
-                    <span className="text-xs">Avg Discount</span>
+                    <span className="text-xs whitespace-nowrap">Avg Discount</span>
                   </div>
                   <span className="text-sm font-semibold text-success">
                     {analysisResult.avgDiscount}%
@@ -586,7 +586,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 <div className="bg-muted/50 rounded-lg p-2.5">
                   <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                     <Zap className="h-3.5 w-3.5" />
-                    <span className="text-xs">AI Deal Density</span>
+                    <span className="text-xs whitespace-nowrap">AI Deal Density</span>
                   </div>
                   <span className="text-sm font-semibold">
                     {analysisResult.aiDealDensity}/mi²
@@ -596,7 +596,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 <div className="bg-muted/50 rounded-lg p-2.5">
                   <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
                     <RotateCcw className="h-3.5 w-3.5" />
-                    <span className="text-xs">Flip Count</span>
+                    <span className="text-xs whitespace-nowrap">Flip Count</span>
                   </div>
                   <span className="text-sm font-semibold">
                     {analysisResult.flipCount}
