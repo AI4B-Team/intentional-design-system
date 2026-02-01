@@ -159,6 +159,28 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+// Tags allowed in Overview mode (neutral, lifestyle, non-judgmental)
+const OVERVIEW_SAFE_TAGS = [
+  "Single Family", "Townhouse", "Condo", "Duplex", "Multi-Family", "Mobile Home", "Manufactured",
+  "New", "Waterfront", "Large Lot", "Rental Income", "Pool", "Garage", "Updated",
+  "Pre-Foreclosure", "Tax Lien", "Bank Owned", "Probate", "Estate Sale", "Inherited"
+];
+
+// Tags that are investor-focused (only show in Flip/Hold)
+const INVESTOR_ONLY_TAGS = [
+  "Distressed", "Fixer Upper", "Low Equity", "High Equity", "High Risk", "Needs Work",
+  "Motivated Seller", "Cash Buyer", "Quick Close", "Short Sale", "Divorce"
+];
+
+function getFilteredTags(tags: string[], viewMode: CardViewMode): string[] {
+  if (viewMode === "overview") {
+    // Only show neutral/lifestyle tags in Overview
+    return tags.filter(tag => !INVESTOR_ONLY_TAGS.includes(tag));
+  }
+  // Flip and Hold can show all tags
+  return tags;
+}
+
 function DealListItem({
   deal,
   isSelected,
@@ -261,46 +283,51 @@ function DealListItem({
           <Badge className={cn("absolute top-2 right-2 text-xs font-medium px-1.5 py-0 rounded", listingBadge.className)}>
             {listingBadge.text}
           </Badge>
-          {/* Tags at bottom */}
-          <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
-            {deal.tags.slice(0, 2).map((tag, i) => (
-              <Badge
-                key={i}
-                className={cn(
-                  "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                  i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
-                )}
-              >
-                {tag}
-              </Badge>
-            ))}
-            {deal.tags.length > 2 && (
-              <Popover>
-                <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
-                    +{deal.tags.length - 2}
+          {/* Tags at bottom - filtered by view mode */}
+          {(() => {
+            const filteredTags = getFilteredTags(deal.tags, cardViewMode);
+            return (
+              <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1">
+                {filteredTags.slice(0, 2).map((tag, i) => (
+                  <Badge
+                    key={i}
+                    className={cn(
+                      "text-[10px] font-medium px-1.5 py-0.5 rounded",
+                      i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
+                    )}
+                  >
+                    {tag}
                   </Badge>
-                </PopoverTrigger>
-                <PopoverContent 
-                  className="w-auto p-2 z-[100]" 
-                  side="bottom" 
-                  align="center"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                    {deal.tags.slice(2).map((tag, i) => (
-                      <Badge
-                        key={i}
-                        className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
-                      >
-                        {tag}
+                ))}
+                {filteredTags.length > 2 && (
+                  <Popover>
+                    <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                      <Badge className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-slate-700/90 text-white cursor-pointer hover:bg-slate-600/90">
+                        +{filteredTags.length - 2}
                       </Badge>
-                    ))}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
+                    </PopoverTrigger>
+                    <PopoverContent 
+                      className="w-auto p-2 z-[100]" 
+                      side="bottom" 
+                      align="center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                        {filteredTags.slice(2).map((tag, i) => (
+                          <Badge
+                            key={i}
+                            className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                )}
+              </div>
+            );
+          })()}
         </div>
 
         {/* Content */}
@@ -319,8 +346,10 @@ function DealListItem({
             
             {/* Action buttons */}
             <div className="flex items-center gap-1 flex-shrink-0">
-              {/* View Mode Toggle */}
-              <div className="inline-flex rounded-md border border-border bg-muted p-0.5 mr-1">
+            {/* View Mode Toggle with helper text */}
+            <div className="flex flex-col items-end gap-0.5 mr-1">
+              <span className="text-[9px] text-muted-foreground">View As:</span>
+              <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
                 <button
                   onClick={(e) => handleViewModeChange(e, "overview")}
                   className={cn(
@@ -355,10 +384,11 @@ function DealListItem({
                   Hold
                 </button>
               </div>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSave?.(deal.id);
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave?.(deal.id);
                 }}
                 className={cn(
                   "flex items-center justify-center h-7 w-7 rounded-full transition-all",
@@ -632,46 +662,51 @@ function DealCard({
           </button>
         </div>
 
-        {/* Tags at bottom of image */}
-        <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
-          {deal.tags.slice(0, 2).map((tag, i) => (
-            <Badge
-              key={i}
-              className={cn(
-                "text-xs font-medium px-2.5 py-1 rounded-md",
-                i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
-              )}
-            >
-              {tag}
-            </Badge>
-          ))}
-          {deal.tags.length > 2 && (
-            <Popover>
-              <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-                <Badge className="bg-slate-700/90 text-white text-xs px-2.5 py-1 rounded-md cursor-pointer hover:bg-slate-600/90">
-                  +{deal.tags.length - 2}
+        {/* Tags at bottom of image - filtered by view mode */}
+        {(() => {
+          const filteredTags = getFilteredTags(deal.tags, cardViewMode);
+          return (
+            <div className="absolute bottom-3 left-3 right-3 flex flex-wrap gap-1.5">
+              {filteredTags.slice(0, 2).map((tag, i) => (
+                <Badge
+                  key={i}
+                  className={cn(
+                    "text-xs font-medium px-2.5 py-1 rounded-md",
+                    i === 0 ? "bg-primary text-primary-foreground" : "bg-slate-700/90 text-white"
+                  )}
+                >
+                  {tag}
                 </Badge>
-              </PopoverTrigger>
-              <PopoverContent 
-                className="w-auto p-2 z-[100]" 
-                side="bottom" 
-                align="center"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex flex-wrap gap-1.5 max-w-[200px]">
-                  {deal.tags.slice(2).map((tag, i) => (
-                    <Badge
-                      key={i}
-                      className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
-                    >
-                      {tag}
+              ))}
+              {filteredTags.length > 2 && (
+                <Popover>
+                  <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                    <Badge className="bg-slate-700/90 text-white text-xs px-2.5 py-1 rounded-md cursor-pointer hover:bg-slate-600/90">
+                      +{filteredTags.length - 2}
                     </Badge>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-        </div>
+                  </PopoverTrigger>
+                  <PopoverContent 
+                    className="w-auto p-2 z-[100]" 
+                    side="bottom" 
+                    align="center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                      {filteredTags.slice(2).map((tag, i) => (
+                        <Badge
+                          key={i}
+                          className="text-xs font-medium px-2 py-0.5 bg-slate-100 text-slate-700"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Content */}
@@ -681,8 +716,9 @@ function DealCard({
         <p className="font-semibold text-primary text-base">{deal.address}</p>
         <p className="text-sm text-muted-foreground">{deal.city}, {deal.state} {deal.zip}</p>
 
-        {/* View Mode Toggle */}
-        <div className="mt-3 flex items-center justify-center">
+        {/* View Mode Toggle with helper text */}
+        <div className="mt-3 flex flex-col items-center">
+          <span className="text-[10px] text-muted-foreground mb-1">View Property As:</span>
           <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
             <button
               onClick={(e) => handleViewModeChange(e, "overview")}
