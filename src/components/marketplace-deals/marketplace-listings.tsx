@@ -619,19 +619,19 @@ function DealCard({
 
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
         <div className="mt-4 border-t border-border pt-3 pb-1">
-          <div className="flex items-center justify-start gap-3 text-sm text-muted-foreground whitespace-nowrap">
-            <span className="flex items-center gap-1">
-              <Bed className="h-3.5 w-3.5 shrink-0" />
+          <div className="flex items-center justify-center gap-4 text-base text-muted-foreground whitespace-nowrap">
+            <span className="flex items-center gap-1.5">
+              <Bed className="h-4 w-4 shrink-0" />
               <span>{deal.beds} Beds</span>
             </span>
-            <span aria-hidden className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-1">
-              <Bath className="h-3.5 w-3.5 shrink-0" />
+            <span aria-hidden className="w-px h-5 bg-border" />
+            <span className="flex items-center gap-1.5">
+              <Bath className="h-4 w-4 shrink-0" />
               <span>{deal.baths} Baths</span>
             </span>
-            <span aria-hidden className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-1">
-              <Ruler className="h-3.5 w-3.5 shrink-0" />
+            <span aria-hidden className="w-px h-5 bg-border" />
+            <span className="flex items-center gap-1.5">
+              <Ruler className="h-4 w-4 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SqFt</span>
             </span>
           </div>
