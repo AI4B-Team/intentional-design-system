@@ -1401,30 +1401,33 @@ export default function Dashboard() {
 
         {/* Pipeline Overview */}
         <Card variant="default" padding="none" className="overflow-hidden flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
-            <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-              <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="inline-flex items-center gap-1 text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground hover:bg-muted/80 transition-colors cursor-pointer">
-                  {pipelineTimePeriod}
-                  <ChevronDown className="h-3 w-3" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" side="bottom" sideOffset={4}>
-                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS WEEK")}>
-                    THIS WEEK
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS MONTH")}>
-                    THIS MONTH
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("ALL TIME")}>
-                    ALL TIME
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+          <div className="flex flex-col gap-1 p-4 border-b border-border-subtle">
+            <div className="flex items-center justify-between flex-wrap gap-2 sm:flex-nowrap">
+              <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="inline-flex items-center gap-1 text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground hover:bg-muted/80 transition-colors cursor-pointer">
+                    {pipelineTimePeriod}
+                    <ChevronDown className="h-3 w-3" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" side="bottom" sideOffset={4}>
+                    <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS WEEK")}>
+                      THIS WEEK
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS MONTH")}>
+                      THIS MONTH
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setPipelineTimePeriod("ALL TIME")}>
+                      ALL TIME
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
+                {totalPipeline} Total
+              </span>
             </div>
-            <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {totalPipeline} Total
-            </span>
+            <p className="text-tiny text-muted-foreground">Deals move left to right as momentum increases.</p>
           </div>
           {pipelineLoading ? (
             <div className="p-4 space-y-3">
@@ -1516,19 +1519,19 @@ export default function Dashboard() {
               <div className="flex items-center gap-4 mt-2 text-tiny text-muted-foreground">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-red-500" />
-                  <span>Discovery</span>
+                  <span>Discovery (Leads)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-amber-500" />
-                  <span>Intent</span>
+                  <span>Intent (Offers)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span>Commitment</span>
+                  <span>Commitment (Contracts)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span>Outcome</span>
+                  <span>Outcome (Sold)</span>
                 </div>
               </div>
             </div>
