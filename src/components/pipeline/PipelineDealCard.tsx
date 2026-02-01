@@ -163,7 +163,7 @@ export function PipelineDealCard({
       onClick={onView}
     >
       {/* Header: Address + Menu */}
-      <div className="px-3 pt-2 pb-2">
+      <div className="px-3 pt-1.5 pb-1.5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <h4 className="text-small font-semibold text-foreground truncate group-hover:text-primary transition-colors">
