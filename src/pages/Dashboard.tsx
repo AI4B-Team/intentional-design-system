@@ -1023,6 +1023,23 @@ export default function Dashboard() {
       deal_score_rank: "",
       arv: 172000,
     },
+    {
+      id: "demo-13",
+      address: "445 Lakeview Drive",
+      city: "Tampa",
+      state: "FL",
+      motivation_score: 410,
+      status: "new",
+      updated_at: new Date(Date.now() - 1036800000).toISOString(),
+      owner_phone: "(555) 345-6780",
+      owner_email: "owner13@example.com",
+      profit_potential: 33000,
+      equity_percent: 22,
+      days_since_added: 12,
+      urgency_reason: null,
+      deal_score_rank: "",
+      arv: 165000,
+    },
   ];
 
   // Use demo data if no real data exists
@@ -1326,7 +1343,7 @@ export default function Dashboard() {
           <div className="overflow-hidden flex-1 flex flex-col">
             {hotLoading ? (
               <div className="p-4 space-y-3 flex-1">
-                {Array.from({ length: 10 }).map((_, i) => (
+                {Array.from({ length: 11 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <Skeleton className="h-8 w-14 rounded-full" />
                     <div className="flex-1 space-y-2">
@@ -1338,8 +1355,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-2 flex-1">
-                {/* Top 10 - Always visible */}
-                {displayHotOpportunities?.slice(0, 10).map((opp) => {
+                {/* Top 11 - Always visible */}
+                {displayHotOpportunities?.slice(0, 11).map((opp) => {
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
                   if (enhanced) {
@@ -1367,12 +1384,12 @@ export default function Dashboard() {
               </div>
             )}
             {/* Anchored footer - always at bottom */}
-            {!hotLoading && displayHotOpportunities && displayHotOpportunities.length > 10 && (
+            {!hotLoading && displayHotOpportunities && displayHotOpportunities.length > 11 && (
               <div 
                 className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
                 onClick={() => navigate("/properties?sort=motivation_score")}
               >
-                <span>+{displayHotOpportunities.length - 10} More Opportunities</span>
+                <span>+{displayHotOpportunities.length - 11} More Opportunities</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             )}
