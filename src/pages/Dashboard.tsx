@@ -17,7 +17,7 @@ import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSetting
 import { DailyFocus } from "@/components/dashboard/DailyFocus";
 import { MomentumScore } from "@/components/dashboard/MomentumScore";
 import { StageActionCTA } from "@/components/dashboard/StageActionCTA";
-import { AIStuckInsight } from "@/components/dashboard/AIStuckInsight";
+
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
 import { AutoRulesPanel } from "@/components/dashboard/AutoRulesPanel";
 import { DailySummary } from "@/components/dashboard/DailySummary";
@@ -52,6 +52,7 @@ import {
   Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -668,12 +669,19 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
             )}>
               {stage.label}
             </p>
-            {/* GAP badge - appears when count = 0, does NOT change category color */}
+            {/* GAP badge with tooltip - appears when count = 0 */}
             {showGap && (
-              <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
-                <AlertTriangle className="h-2.5 w-2.5" />
-                Gap
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0 cursor-help">
+                    <AlertTriangle className="h-2.5 w-2.5" />
+                    Gap
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  <p className="font-medium">{emptyMessage} — Needs Attention</p>
+                </TooltipContent>
+              </Tooltip>
             )}
             {isBottleneck && !showGap && (
               <span className="text-tiny bg-info/10 text-info px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
@@ -682,9 +690,6 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
               </span>
             )}
           </div>
-          {showGap && emptyMessage && (
-            <p className="text-tiny text-destructive/70 mt-0.5 uppercase tracking-wide">{emptyMessage} — NEEDS ATTENTION</p>
-          )}
           {bottleneckReason && !showGap && (
             <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
           )}
@@ -719,12 +724,6 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         </div>
       </div>
       
-      {/* AI "Why This Is Stuck" insight - appears below GAP/empty stages */}
-      <AIStuckInsight
-        stageStatus={stage.status}
-        count={stage.count}
-        showGap={showGap}
-      />
     </div>
   );
 }
