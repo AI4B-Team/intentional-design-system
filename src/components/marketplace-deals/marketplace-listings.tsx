@@ -612,12 +612,12 @@ function DealCard({
               <Bed className="h-4 w-4 shrink-0" />
               <span>{deal.beds} Beds</span>
             </span>
-            <span aria-hidden className="w-px h-5 bg-border" />
+            <span aria-hidden className="w-[2px] h-5 bg-muted-foreground/50" />
             <span className="flex items-center gap-1.5">
               <Bath className="h-4 w-4 shrink-0" />
               <span>{deal.baths} Baths</span>
             </span>
-            <span aria-hidden className="w-px h-5 bg-border" />
+            <span aria-hidden className="w-[2px] h-5 bg-muted-foreground/50" />
             <span className="flex items-center gap-1.5">
               <Ruler className="h-4 w-4 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SqFt</span>
