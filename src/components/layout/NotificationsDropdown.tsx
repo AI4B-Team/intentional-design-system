@@ -45,9 +45,10 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 // Notification types specific to real estate
 type NotificationType =
@@ -103,139 +104,181 @@ interface AISuggestion {
   priority: "high" | "medium" | "low";
 }
 
-// Mock notifications for demonstration
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    type: "lead_hot",
-    title: "🔥 Hot Lead Alert",
-    message: "John Smith just submitted a property at 1234 Oak Street. High motivation score detected!",
-    timestamp: new Date(Date.now() - 2 * 60 * 1000),
-    read: false,
-    priority: "urgent",
-    category: "leads",
-    actionUrl: "/properties",
-    actionLabel: "View Lead",
-    metadata: { propertyAddress: "1234 Oak Street", contactName: "John Smith" },
-  },
-  {
-    id: "2",
-    type: "offer_received",
-    title: "New Offer Received",
-    message: "Cash buyer Mike Johnson submitted an offer of $185,000 for 456 Pine Ave",
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    read: false,
-    priority: "high",
-    category: "deals",
-    actionUrl: "/marketplace",
-    actionLabel: "Review Offer",
-    metadata: { propertyAddress: "456 Pine Ave", contactName: "Mike Johnson", amount: 185000 },
-  },
-  {
-    id: "3",
-    type: "call_missed",
-    title: "Missed Call",
-    message: "You missed a call from Sarah Williams (555-123-4567). Callback requested.",
-    timestamp: new Date(Date.now() - 45 * 60 * 1000),
-    read: false,
-    priority: "medium",
-    category: "messages",
-    actionUrl: "/dialer",
-    actionLabel: "Call Back",
-    metadata: { contactName: "Sarah Williams" },
-  },
-  {
-    id: "4",
-    type: "appointment",
-    title: "Appointment in 1 Hour",
-    message: "Property walkthrough scheduled at 789 Elm St with homeowner",
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    read: false,
-    priority: "high",
-    category: "tasks",
-    actionUrl: "/dashboard",
-    actionLabel: "View Details",
-    metadata: { propertyAddress: "789 Elm St" },
-  },
-  {
-    id: "5",
-    type: "document_signed",
-    title: "Contract Signed",
-    message: "Purchase agreement for 321 Maple Dr has been signed by all parties",
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    read: true,
-    priority: "medium",
-    category: "deals",
-    actionUrl: "/properties",
-    actionLabel: "View Contract",
-    metadata: { propertyAddress: "321 Maple Dr" },
-  },
-  {
-    id: "6",
-    type: "buyer_interest",
-    title: "Buyer Showed Interest",
-    message: "3 buyers from your list match the new deal at 555 Cedar Lane",
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000),
-    read: true,
-    priority: "medium",
-    category: "deals",
-    actionUrl: "/deal-sources",
-    actionLabel: "Match Buyers",
-    metadata: { propertyAddress: "555 Cedar Lane" },
-  },
-  {
-    id: "7",
-    type: "task_due",
-    title: "Task Due Today",
-    message: "Follow up with seller at 888 Birch Blvd - negotiation pending",
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    read: true,
-    priority: "medium",
-    category: "tasks",
-    actionUrl: "/dashboard",
-    actionLabel: "Complete Task",
-    metadata: { propertyAddress: "888 Birch Blvd" },
-  },
-  {
-    id: "8",
-    type: "price_drop",
-    title: "Price Reduction Alert",
-    message: "Property at 999 Willow Way dropped $25,000 - now at $150,000",
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-    read: true,
-    priority: "low",
-    category: "leads",
-    actionUrl: "/marketplace",
-    actionLabel: "View Property",
-    metadata: { propertyAddress: "999 Willow Way", amount: 150000 },
-  },
-  {
-    id: "9",
-    type: "deal_closed",
-    title: "🎉 Deal Closed!",
-    message: "Congratulations! 123 Victory Lane closed for $210,000. Assignment fee: $15,000",
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    read: true,
-    priority: "low",
-    category: "deals",
-    actionUrl: "/analytics",
-    actionLabel: "View Stats",
-    metadata: { propertyAddress: "123 Victory Lane", amount: 15000 },
-  },
-  {
-    id: "10",
-    type: "sms_received",
-    title: "New SMS Message",
-    message: "Response from lead: 'Yes, I'm interested in selling. When can we talk?'",
-    timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000),
-    read: false,
-    priority: "high",
-    category: "messages",
-    actionUrl: "/inbox",
-    actionLabel: "Reply",
-    metadata: { contactName: "Unknown Seller" },
-  },
-];
+// Hook to fetch real notifications from database
+function useRealNotifications() {
+  return useQuery({
+    queryKey: ["notifications-real"],
+    queryFn: async (): Promise<Notification[]> => {
+      const notifications: Notification[] = [];
+      const now = new Date();
+
+      // Fetch data in parallel
+      const [
+        hotLeadsResult,
+        tasksResult,
+        offersResult,
+        appointmentsResult,
+        recentPropertiesResult,
+      ] = await Promise.all([
+        // Hot leads (high motivation score)
+        supabase
+          .from("properties")
+          .select("id, address, city, state, motivation_score, status, created_at, owner_name")
+          .gte("motivation_score", 700)
+          .order("created_at", { ascending: false })
+          .limit(5),
+
+        // Today's appointments and follow-ups
+        supabase
+          .from("appointments")
+          .select(`
+            id,
+            scheduled_time,
+            appointment_type,
+            status,
+            property_id,
+            properties!inner(address)
+          `)
+          .gte("scheduled_time", new Date().toISOString())
+          .order("scheduled_time", { ascending: true })
+          .limit(10),
+
+        // Pending offers
+        supabase
+          .from("offers")
+          .select(`
+            id,
+            offer_amount,
+            response,
+            created_at,
+            property_id,
+            properties!inner(address)
+          `)
+          .eq("response", "pending")
+          .order("created_at", { ascending: false })
+          .limit(5),
+
+        // Upcoming appointments
+        supabase
+          .from("appointments")
+          .select(`
+            id,
+            scheduled_time,
+            appointment_type,
+            property_id,
+            properties!inner(address)
+          `)
+          .gte("scheduled_time", now.toISOString())
+          .lte("scheduled_time", new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString())
+          .order("scheduled_time", { ascending: true })
+          .limit(5),
+
+        // Recent new properties (last 24 hours)
+        supabase
+          .from("properties")
+          .select("id, address, city, state, created_at, owner_name")
+          .gte("created_at", new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString())
+          .order("created_at", { ascending: false })
+          .limit(5),
+      ]);
+
+      // Process hot leads
+      hotLeadsResult.data?.forEach((lead) => {
+        notifications.push({
+          id: `lead-hot-${lead.id}`,
+          type: "lead_hot",
+          title: "🔥 Hot Lead Alert",
+          message: `${lead.owner_name || "New seller"} - ${lead.address}. Motivation score: ${lead.motivation_score}`,
+          timestamp: new Date(lead.created_at || now),
+          read: false,
+          priority: "urgent",
+          category: "leads",
+          actionUrl: `/properties/${lead.id}`,
+          actionLabel: "View Lead",
+          metadata: { 
+            propertyAddress: lead.address, 
+            contactName: lead.owner_name || undefined 
+          },
+        });
+      });
+
+      // Process upcoming appointments as tasks
+      appointmentsResult.data?.forEach((apt) => {
+        const property = apt.properties as unknown as { address: string };
+        const scheduledTime = new Date(apt.scheduled_time);
+        const hoursUntil = (scheduledTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+        
+        notifications.push({
+          id: `apt-${apt.id}`,
+          type: "appointment",
+          title: hoursUntil <= 1 ? "Appointment Soon!" : "Upcoming Appointment",
+          message: `${apt.appointment_type || "Appointment"} at ${property.address} - ${format(scheduledTime, "h:mm a")}`,
+          timestamp: new Date(apt.scheduled_time),
+          read: hoursUntil > 2,
+          priority: hoursUntil <= 1 ? "high" : "medium",
+          category: "tasks",
+          actionUrl: `/properties/${apt.property_id}`,
+          actionLabel: "View Details",
+          metadata: { propertyAddress: property.address },
+        });
+      });
+
+      // Process pending offers
+      offersResult.data?.forEach((offer) => {
+        const property = offer.properties as unknown as { address: string };
+        const formattedAmount = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          maximumFractionDigits: 0,
+        }).format(offer.offer_amount);
+
+        notifications.push({
+          id: `offer-pending-${offer.id}`,
+          type: "offer_received",
+          title: "Pending Offer",
+          message: `${formattedAmount} offer on ${property.address} awaiting response`,
+          timestamp: new Date(offer.created_at || now),
+          read: false,
+          priority: "high",
+          category: "deals",
+          actionUrl: `/properties/${offer.property_id}`,
+          actionLabel: "Review Offer",
+          metadata: { 
+            propertyAddress: property.address, 
+            amount: offer.offer_amount 
+          },
+        });
+      });
+
+      // Process new properties
+      recentPropertiesResult.data?.forEach((prop) => {
+        notifications.push({
+          id: `prop-new-${prop.id}`,
+          type: "lead_new",
+          title: "New Property Added",
+          message: `${prop.address}, ${prop.city || ""} ${prop.state || ""}`,
+          timestamp: new Date(prop.created_at || now),
+          read: true,
+          priority: "low",
+          category: "leads",
+          actionUrl: `/properties/${prop.id}`,
+          actionLabel: "View Property",
+          metadata: { 
+            propertyAddress: prop.address,
+            contactName: prop.owner_name || undefined
+          },
+        });
+      });
+
+      // Sort by timestamp, unread first
+      return notifications.sort((a, b) => {
+        if (a.read !== b.read) return a.read ? 1 : -1;
+        return b.timestamp.getTime() - a.timestamp.getTime();
+      });
+    },
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+}
 
 const getNotificationIcon = (type: NotificationType) => {
   const iconMap: Record<NotificationType, React.ReactNode> = {
@@ -510,10 +553,23 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
 
 export function NotificationsDropdown() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = React.useState<Notification[]>(mockNotifications);
+  const { data: realNotifications = [], isLoading } = useRealNotifications();
+  const [localNotifications, setLocalNotifications] = React.useState<Notification[]>([]);
+  const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
+  const [dismissedIds, setDismissedIds] = React.useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = React.useState<NotificationCategory>("all");
   const [isOpen, setIsOpen] = React.useState(false);
   const [isMuted, setIsMuted] = React.useState(false);
+
+  // Merge real notifications with local read/dismissed state
+  const notifications = React.useMemo(() => {
+    return realNotifications
+      .filter((n) => !dismissedIds.has(n.id))
+      .map((n) => ({
+        ...n,
+        read: n.read || readIds.has(n.id),
+      }));
+  }, [realNotifications, readIds, dismissedIds]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -523,24 +579,23 @@ export function NotificationsDropdown() {
   }, [notifications, activeTab]);
 
   const handleMarkRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setReadIds((prev) => new Set([...prev, id]));
   };
 
   const handleMarkAllRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setReadIds((prev) => new Set([...prev, ...notifications.map((n) => n.id)]));
   };
 
   const handleDismiss = (id: string) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+    setDismissedIds((prev) => new Set([...prev, id]));
   };
 
   const handleClearAll = () => {
     if (activeTab === "all") {
-      setNotifications([]);
+      setDismissedIds((prev) => new Set([...prev, ...notifications.map((n) => n.id)]));
     } else {
-      setNotifications((prev) => prev.filter((n) => n.category !== activeTab));
+      const idsToRemove = notifications.filter((n) => n.category === activeTab).map((n) => n.id);
+      setDismissedIds((prev) => new Set([...prev, ...idsToRemove]));
     }
   };
 
