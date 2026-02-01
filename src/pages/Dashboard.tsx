@@ -15,7 +15,7 @@ import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced }
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import { DailyFocus } from "@/components/dashboard/DailyFocus";
-import { MomentumScore } from "@/components/dashboard/MomentumScore";
+
 import { StageActionCTA } from "@/components/dashboard/StageActionCTA";
 
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
@@ -1466,16 +1466,9 @@ export default function Dashboard() {
                 </DropdownMenu>
               </div>
               
-              {/* Momentum Score - top-right of Pipeline Overview header */}
-              <div className="flex items-center gap-3">
-                <MomentumScore 
-                  pipelineStats={getPipelineStatsForTimePeriod || null}
-                  isLoading={pipelineLoading}
-                />
-                <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-                  {totalPipeline} Total
-                </span>
-              </div>
+              <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
+                {totalPipeline} Total
+              </span>
             </div>
             <p className="text-tiny text-muted-foreground">Deals move left to right as momentum increases</p>
           </div>
