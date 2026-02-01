@@ -181,26 +181,30 @@ export function LeadsTab() {
           const Icon = source.icon;
           return (
             <Card key={source.id} className="hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
+              <CardContent className="p-5">
                 {/* Top Row: Icon + Title + Badge on left, Menu on right */}
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-start gap-3">
                     <div className={`p-2.5 rounded-lg flex-shrink-0 ${typeColors[source.type]}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-base">{source.name}</CardTitle>
+                        <h3 className="text-lg font-semibold leading-tight">{source.name}</h3>
                         <Badge 
-                          variant={source.status === "active" ? "default" : "secondary"}
-                          className={source.status === "active" ? "bg-success/10 text-success text-xs px-2 py-0.5" : "text-xs px-2 py-0.5"}
+                          variant="outline"
+                          className={
+                            source.status === "active" 
+                              ? "bg-success/10 text-success border-success/30 text-xs px-2 py-0.5 capitalize" 
+                              : "bg-muted text-muted-foreground border-muted text-xs px-2 py-0.5 capitalize"
+                          }
                         >
                           {source.status}
                         </Badge>
                       </div>
-                      <CardDescription className="text-xs mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Last lead: {source.lastLead}
-                      </CardDescription>
+                      </p>
                     </div>
                   </div>
                   <DropdownMenu>
@@ -219,10 +223,9 @@ export function LeadsTab() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                {/* Stats Row */}
-                <div className="grid grid-cols-3 gap-4 text-center py-3 border-t border-border">
+                
+                {/* Metrics Row */}
+                <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold">{source.leads}</p>
                     <p className="text-xs text-muted-foreground">Leads</p>
@@ -232,13 +235,14 @@ export function LeadsTab() {
                     <p className="text-xs text-muted-foreground">Converted</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-primary">{source.conversionRate}%</p>
+                    <p className="text-2xl font-bold">{source.conversionRate}%</p>
                     <p className="text-xs text-muted-foreground">Rate</p>
                   </div>
                 </div>
+                
                 {/* Cost/ROI Row */}
                 {source.cost > 0 && (
-                  <div className="pt-3 border-t border-border flex items-center justify-between text-sm">
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
                       Spend: ${source.cost.toLocaleString()}
                     </span>
