@@ -687,8 +687,8 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         {/* Progress bar - uses PERFORMANCE color (dynamic) */}
         <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
           <div 
-            className={cn("h-full rounded-full transition-all duration-300", performanceColor.bar)} 
-            style={{ width: `${Math.max(percentage, isEmpty ? 100 : 0)}%` }}
+            className={cn("h-full rounded-full transition-all duration-300", percentage > 0 ? performanceColor.bar : "bg-transparent")} 
+            style={{ width: `${percentage}%` }}
           />
         </div>
         {/* Count */}
