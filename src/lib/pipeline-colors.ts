@@ -147,21 +147,21 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     badge: "bg-red-100 text-red-500",
   },
   
-  // === INTENT GROUP (Yellow/Amber) - Offers, Negotiating ===
+  // === INTENT GROUP (Yellow/Amber) - Offers, Follow Up, Negotiating ===
   offer_made: {
     bg: "bg-amber-500",
     bgLight: "bg-amber-100",
     text: "text-amber-500",
     badge: "bg-amber-100 text-amber-600",
   },
-  negotiating: {
-    bg: "bg-amber-500",
+  follow_up: {
+    bg: "bg-amber-400",
     bgLight: "bg-amber-100",
     text: "text-amber-500",
     badge: "bg-amber-100 text-amber-500",
   },
-  follow_up: {
-    bg: "bg-amber-400",
+  negotiating: {
+    bg: "bg-amber-500",
     bgLight: "bg-amber-100",
     text: "text-amber-500",
     badge: "bg-amber-100 text-amber-500",

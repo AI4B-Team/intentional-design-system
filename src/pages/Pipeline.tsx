@@ -124,19 +124,19 @@ const PIPELINE_STAGES = [
     category: "intent",
   },
   { 
-    id: "negotiating", 
-    label: "Negotiating", 
-    color: "bg-amber-500", 
-    description: "Active negotiation in progress",
-    targetDays: 14,
-    category: "intent",
-  },
-  { 
     id: "follow_up", 
     label: "Follow Up", 
     color: "bg-amber-400", 
     description: "Awaiting response or next contact",
     targetDays: 7,
+    category: "intent",
+  },
+  { 
+    id: "negotiating", 
+    label: "Negotiating", 
+    color: "bg-amber-500", 
+    description: "Active negotiation in progress",
+    targetDays: 14,
     category: "intent",
   },
   // === COMMITMENT GROUP (Blue) ===
