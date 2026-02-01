@@ -44,6 +44,13 @@ import {
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 import { format } from "date-fns";
 
 // Format currency helper
@@ -775,6 +782,7 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
+  const [pipelineTimePeriod, setPipelineTimePeriod] = React.useState<string>("ALL TIME");
   const goals = useGoals();
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
@@ -1259,7 +1267,23 @@ export default function Dashboard() {
           <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
               <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
-              <span className="text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">This Week</span>
+              <DropdownMenu>
+                <DropdownMenuTrigger className="inline-flex items-center gap-1 text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground hover:bg-muted/80 transition-colors cursor-pointer">
+                  {pipelineTimePeriod}
+                  <ChevronDown className="h-3 w-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" side="bottom" sideOffset={4}>
+                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS WEEK")}>
+                    THIS WEEK
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("THIS MONTH")}>
+                    THIS MONTH
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setPipelineTimePeriod("ALL TIME")}>
+                    ALL TIME
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
               {totalPipeline} Total
