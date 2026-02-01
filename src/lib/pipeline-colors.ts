@@ -17,6 +17,7 @@ export type PipelineStageId =
   | "offer_made" 
   | "negotiating"
   | "under_contract" 
+  | "marketing"
   | "closed"
   | "sold";
 
@@ -74,6 +75,14 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     badge: "bg-blue-100 text-blue-600",
   },
   
+  // === MARKETING GROUP (Purple) ===
+  marketing: {
+    bg: "bg-purple-500",
+    bgLight: "bg-purple-100",
+    text: "text-purple-500",
+    badge: "bg-purple-100 text-purple-600",
+  },
+  
   // === PURCHASED/SOLD GROUP (Emerald) ===
   closed: {
     bg: "bg-emerald-400",
@@ -107,6 +116,7 @@ export const PIPELINE_LABELS: Record<PipelineStageId, string> = {
   offer_made: "Offers Made",
   negotiating: "Negotiating",
   under_contract: "Under Contract",
+  marketing: "Marketing",
   closed: "Purchased",
   sold: "Sold",
 };
