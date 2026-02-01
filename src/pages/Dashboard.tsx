@@ -15,13 +15,6 @@ import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced }
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import { DailyFocus } from "@/components/dashboard/DailyFocus";
-
-import { StageActionCTA } from "@/components/dashboard/StageActionCTA";
-
-import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
-import { AutoRulesPanel } from "@/components/dashboard/AutoRulesPanel";
-import { DailySummary } from "@/components/dashboard/DailySummary";
-import { useTodaysFocus } from "@/hooks/useTodaysFocus";
 import {
   Building2,
   Calendar,
@@ -52,7 +45,6 @@ import {
   Megaphone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -643,87 +635,71 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   const performanceColor = getPerformanceColor(percentage);
 
   return (
-    <div className="group">
-      <div 
-        className={cn(
-          "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150",
-          "hover:bg-background-secondary"
-        )}
-        onClick={onClick}
-      >
-        {/* Icon - uses CATEGORY color (static) */}
-        <div className={cn(
-          "flex items-center justify-center w-7 h-7 rounded-full transition-transform duration-150 group-hover:scale-110", 
-          categoryIconBg
-        )}>
-          <StageIcon className={cn("h-3.5 w-3.5", categoryIconColor)} />
-        </div>
-        
-        {/* Label and badges */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            {/* Label - uses CATEGORY color (static) */}
-            <p className={cn(
-              "text-small font-medium group-hover:text-primary transition-colors truncate",
-              categoryIconColor
-            )}>
-              {stage.label}
-            </p>
-            {/* GAP badge with tooltip - appears when count = 0 */}
-            {showGap && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0 cursor-help">
-                    <AlertTriangle className="h-2.5 w-2.5" />
-                    Gap
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs">
-                  <p className="font-medium">{emptyMessage} — Needs Attention</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
-            {isBottleneck && !showGap && (
-              <span className="text-tiny bg-info/10 text-info px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
-                <Clock className="h-2.5 w-2.5" />
-                Slow
-              </span>
-            )}
-          </div>
-          {bottleneckReason && !showGap && (
-            <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
-          )}
-        </div>
-        
-        {/* Right side: CTA + Progress bar, count, percentage */}
-        <div className="text-right flex items-center gap-2">
-          {/* Context-aware "Fix This" CTA */}
-          <StageActionCTA
-            stageStatus={stage.status}
-            stageLabel={stage.label}
-            count={stage.count}
-            percentage={percentage}
-            showGap={showGap}
-          />
-          
-          {/* Progress bar - uses PERFORMANCE color (dynamic) */}
-          <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
-            <div 
-              className={cn("h-full rounded-full transition-all duration-300", percentage > 0 ? performanceColor.bar : "bg-transparent")} 
-              style={{ width: `${percentage}%` }}
-            />
-          </div>
-          {/* Count */}
-          <p className="text-body font-bold tabular-nums w-8 text-right text-foreground">
-            {stage.count}
-          </p>
-          {/* Percentage - uses PERFORMANCE color (dynamic) */}
-          <p className={cn("text-tiny w-12 text-right", performanceColor.text)}>
-            {percentage}%
-          </p>
-        </div>
+    <div 
+      className={cn(
+        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-150 group",
+        "hover:bg-background-secondary"
+      )}
+      onClick={onClick}
+    >
+      {/* Icon - uses CATEGORY color (static) */}
+      <div className={cn(
+        "flex items-center justify-center w-7 h-7 rounded-full transition-transform duration-150 group-hover:scale-110", 
+        categoryIconBg
+      )}>
+        <StageIcon className={cn("h-3.5 w-3.5", categoryIconColor)} />
       </div>
       
+      {/* Label and badges */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          {/* Label - uses CATEGORY color (static) */}
+          <p className={cn(
+            "text-small font-medium group-hover:text-primary transition-colors truncate",
+            categoryIconColor
+          )}>
+            {stage.label}
+          </p>
+          {/* GAP badge - appears when count = 0, does NOT change category color */}
+          {showGap && (
+            <span className="text-tiny bg-warning/10 text-warning px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              Gap
+            </span>
+          )}
+          {isBottleneck && !showGap && (
+            <span className="text-tiny bg-info/10 text-info px-1.5 py-0.5 rounded font-medium flex items-center gap-1 shrink-0">
+              <Clock className="h-2.5 w-2.5" />
+              Slow
+            </span>
+          )}
+        </div>
+        {showGap && emptyMessage && (
+          <p className="text-tiny text-destructive/70 mt-0.5 uppercase tracking-wide">{emptyMessage} — NEEDS ATTENTION</p>
+        )}
+        {bottleneckReason && !showGap && (
+          <p className="text-tiny text-warning/80 mt-0.5">{bottleneckReason}</p>
+        )}
+      </div>
+      
+      {/* Right side: Progress bar, count, percentage */}
+      <div className="text-right flex items-center gap-3">
+        {/* Progress bar - uses PERFORMANCE color (dynamic) */}
+        <div className="w-16 h-1.5 bg-background-tertiary rounded-full overflow-hidden">
+          <div 
+            className={cn("h-full rounded-full transition-all duration-300", percentage > 0 ? performanceColor.bar : "bg-transparent")} 
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+        {/* Count */}
+        <p className="text-body font-bold tabular-nums w-8 text-right text-foreground">
+          {stage.count}
+        </p>
+        {/* Percentage - uses PERFORMANCE color (dynamic) */}
+        <p className={cn("text-tiny w-12 text-right", performanceColor.text)}>
+          {percentage}%
+        </p>
+      </div>
     </div>
   );
 }
@@ -844,7 +820,6 @@ export default function Dashboard() {
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
   const { data: insights } = useDashboardInsights();
-  const { data: focusDeals, isLoading: focusLoading } = useTodaysFocus();
 
   // Demo data for visualization when no real data exists
   const demoData = {
@@ -1358,14 +1333,6 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Today's Focus - AI Priority Stack (Above Hot Opportunities) */}
-      <div className="mb-6">
-        <TodaysFocus 
-          deals={focusDeals || []}
-          isLoading={focusLoading}
-        />
-      </div>
-
       {/* Middle Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Hot Opportunities */}
@@ -1465,7 +1432,6 @@ export default function Dashboard() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              
               <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
                 {totalPipeline} Total
               </span>
@@ -1590,15 +1556,6 @@ export default function Dashboard() {
         </Card>
       </div>
 
-
-      {/* Automation & Summary Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Auto-Rules Panel */}
-        <AutoRulesPanel isCompact />
-
-        {/* Daily Summary */}
-        <DailySummary variant="compact" />
-      </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

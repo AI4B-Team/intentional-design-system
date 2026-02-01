@@ -29,30 +29,29 @@ export function usePipelineValueStats() {
     queryKey: ["pipeline-value-stats"],
     queryFn: async (): Promise<PipelineValueStats> => {
       // Fetch properties with financial data for each stage
-      // Using columns that actually exist: arv, estimated_value, equity_percent, repair_estimate, mao_standard
       const [leadsResult, offersResult, contractedResult, soldResult] = await Promise.all([
         // Leads: new, contacted, appointment statuses (Discovery - Red)
         supabase
           .from("properties")
-          .select("id, arv, estimated_value, equity_percent, repair_estimate, mao_standard")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["new", "contacted", "appointment"]),
         
         // Offers: offer_made, negotiating, follow_up statuses (Intent - Yellow)
         supabase
           .from("properties")
-          .select("id, arv, estimated_value, equity_percent, repair_estimate, mao_standard")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["offer_made", "negotiating", "follow_up"]),
         
         // Contracted: under_contract, marketing statuses (Commitment - Blue)
         supabase
           .from("properties")
-          .select("id, arv, estimated_value, equity_percent, repair_estimate, mao_standard")
+          .select("id, asking_price, arv, repair_estimate, equity_amount")
           .in("status", ["under_contract", "marketing"]),
         
         // Sold: closed, sold statuses (Outcome - Green)
         supabase
           .from("properties")
-          .select("id, arv, estimated_value, equity_percent, repair_estimate, mao_standard, last_sale_price")
+          .select("id, asking_price, arv, repair_estimate, equity_amount, sale_price")
           .in("status", ["closed", "sold"]),
       ]);
 
@@ -62,47 +61,37 @@ export function usePipelineValueStats() {
         }
 
         const count = properties.length;
+        const totalValue = properties.reduce((sum, p) => sum + (p.asking_price || 0), 0);
         
-        // Total value = estimated_value or ARV as fallback
-        const totalValue = properties.reduce((sum, p) => {
-          return sum + (p.estimated_value || p.arv || 0);
-        }, 0);
-        
-        // Profit potential = equity based on equity_percent, or estimate from ARV - estimated_value - repairs
+        // Profit potential = sum of equity amounts, or estimate based on ARV - asking - repairs
         const profitPotential = properties.reduce((sum, p) => {
-          // If we have equity_percent and ARV, calculate equity amount
-          if (p.equity_percent && p.arv) {
-            return sum + (p.arv * p.equity_percent / 100);
+          if (p.equity_amount) {
+            return sum + p.equity_amount;
           }
-          // Fallback: ARV - estimated value - repairs
+          // Fallback calculation
           const arv = p.arv || 0;
-          const currentValue = p.estimated_value || p.mao_standard || 0;
+          const asking = p.asking_price || 0;
           const repairs = p.repair_estimate || 0;
-          const estimatedProfit = arv - currentValue - repairs;
+          const estimatedProfit = arv - asking - repairs;
           return sum + Math.max(0, estimatedProfit);
         }, 0);
 
         return { count, totalValue, profitPotential };
       };
 
-      // For sold properties, use last_sale_price as realized value
+      // For sold properties, use actual sale_price - asking_price as realized profit
       const calculateSoldStats = (properties: any[] | null) => {
         if (!properties || properties.length === 0) {
           return { count: 0, totalValue: 0, profitPotential: 0 };
         }
 
         const count = properties.length;
+        const totalValue = properties.reduce((sum, p) => sum + (p.sale_price || p.asking_price || 0), 0);
         
-        // Total value = sale price or estimated value
-        const totalValue = properties.reduce((sum, p) => {
-          return sum + (p.last_sale_price || p.estimated_value || p.arv || 0);
-        }, 0);
-        
-        // For sold, profit = sale price - cost basis (estimated from mao_standard or calculated)
+        // For sold, this is realized profit
         const profitPotential = properties.reduce((sum, p) => {
-          const salePrice = p.last_sale_price || p.arv || 0;
-          // Estimate cost basis from MAO or a percentage of ARV
-          const costBasis = p.mao_standard || (p.arv ? p.arv * 0.7 : 0);
+          const salePrice = p.sale_price || p.arv || 0;
+          const costBasis = p.asking_price || 0;
           const repairs = p.repair_estimate || 0;
           return sum + Math.max(0, salePrice - costBasis - repairs);
         }, 0);
