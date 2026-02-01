@@ -50,7 +50,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white border-b border-border flex items-center px-4 lg:px-6 gap-2">
+    <header className="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur border-b border-border flex items-center px-4 lg:px-6 gap-2">
       {/* Mobile Menu Button */}
       <button
         onClick={onMenuClick}
