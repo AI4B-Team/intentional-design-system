@@ -49,12 +49,13 @@ import { cn } from "@/lib/utils";
 // Session storage key for view mode preference
 const VIEW_MODE_STORAGE_KEY = "marketplace-card-view-mode";
 
-type CardViewMode = "flip" | "hold";
+type CardViewMode = "overview" | "flip" | "hold";
 
 function getStoredViewMode(): CardViewMode {
-  if (typeof window === "undefined") return "flip";
+  if (typeof window === "undefined") return "overview";
   const stored = sessionStorage.getItem(VIEW_MODE_STORAGE_KEY);
-  return stored === "hold" ? "hold" : "flip";
+  if (stored === "flip" || stored === "hold" || stored === "overview") return stored;
+  return "overview";
 }
 
 function setStoredViewMode(mode: CardViewMode) {
@@ -321,6 +322,17 @@ function DealListItem({
               {/* View Mode Toggle */}
               <div className="inline-flex rounded-md border border-border bg-muted p-0.5 mr-1">
                 <button
+                  onClick={(e) => handleViewModeChange(e, "overview")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "overview"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Overview
+                </button>
+                <button
                   onClick={(e) => handleViewModeChange(e, "flip")}
                   className={cn(
                     "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
@@ -385,7 +397,9 @@ function DealListItem({
           </div>
 
           {/* Financial metrics - Conditional based on view mode */}
-          {cardViewMode === "flip" ? (
+          {cardViewMode === "overview" ? (
+            null /* Overview mode - no additional financial metrics */
+          ) : cardViewMode === "flip" ? (
             <div className="grid grid-cols-3 gap-2 py-2 text-xs">
               <div>
                 <span className="text-muted-foreground block">ARV</span>
@@ -435,24 +449,26 @@ function DealListItem({
             <DealRiskMeter arvPercent={deal.arvPercent} />
           )}
 
-          {/* Bottom row: Summary */}
-          <div className="flex items-center justify-end gap-3 mt-2">
-            {cardViewMode === "flip" ? (
-              <div className={cn(
-                "text-sm font-bold",
-                profitPotential >= 0 ? "text-success" : "text-destructive"
-              )}>
-                {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
-              </div>
-            ) : (
-              <div className={cn(
-                "text-sm font-bold",
-                monthlyCashflow >= 0 ? "text-success" : "text-destructive"
-              )}>
-                {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo cash flow
-              </div>
-            )}
-          </div>
+          {/* Bottom row: Summary - Only show in Flip/Hold modes */}
+          {cardViewMode !== "overview" && (
+            <div className="flex items-center justify-end gap-3 mt-2">
+              {cardViewMode === "flip" ? (
+                <div className={cn(
+                  "text-sm font-bold",
+                  profitPotential >= 0 ? "text-success" : "text-destructive"
+                )}>
+                  {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
+                </div>
+              ) : (
+                <div className={cn(
+                  "text-sm font-bold",
+                  monthlyCashflow >= 0 ? "text-success" : "text-destructive"
+                )}>
+                  {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo cash flow
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Card>
@@ -669,6 +685,17 @@ function DealCard({
         <div className="mt-3 flex items-center justify-center">
           <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
             <button
+              onClick={(e) => handleViewModeChange(e, "overview")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "overview"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Overview
+            </button>
+            <button
               onClick={(e) => handleViewModeChange(e, "flip")}
               className={cn(
                 "px-3 py-1 text-xs font-medium rounded-sm transition-all",
@@ -694,7 +721,16 @@ function DealCard({
         </div>
 
         {/* Conditional Content based on View Mode */}
-        {cardViewMode === "flip" ? (
+        {cardViewMode === "overview" ? (
+          <>
+            {/* Overview Mode - Just price prominent */}
+            <div className="mt-4 border-t border-border pt-4">
+              <div className="text-center">
+                <span className="text-2xl font-bold text-foreground">{formatCurrency(askingPrice)}</span>
+              </div>
+            </div>
+          </>
+        ) : cardViewMode === "flip" ? (
           <>
             {/* Deal Risk Meter - Flip Mode */}
             <DealRiskMeter arvPercent={deal.arvPercent} />
