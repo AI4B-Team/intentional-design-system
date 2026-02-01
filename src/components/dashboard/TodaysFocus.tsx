@@ -206,7 +206,7 @@ export function TodaysFocus() {
       type: "hot_deal",
       title: "1 Hot Deal Needs Action",
       subtitle: "High momentum opportunity",
-      time: "Act Now",
+      time: "Waiting 2 Days",
       priority: "high",
       urgencyScore: 75,
       source: "insight",
