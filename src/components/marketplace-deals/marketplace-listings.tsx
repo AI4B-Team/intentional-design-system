@@ -82,6 +82,8 @@ interface MarketplaceListingsProps {
   isSplitView?: boolean;
   savedDealIds?: string[];
   onToggleSave?: (dealId: string) => void;
+  globalCardViewMode?: CardViewMode;
+  onGlobalCardViewModeChange?: (mode: CardViewMode) => void;
 }
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
@@ -920,9 +922,14 @@ export function MarketplaceListings({
   isSplitView = false,
   savedDealIds = [],
   onToggleSave,
+  globalCardViewMode,
+  onGlobalCardViewModeChange,
 }: MarketplaceListingsProps) {
   // Card view mode state with session persistence
   const [cardViewMode, setCardViewMode] = useState<CardViewMode>(() => getStoredViewMode());
+  
+  // Use global mode if provided, otherwise use local state
+  const effectiveCardViewMode = globalCardViewMode ?? cardViewMode;
   
   const handleCardViewModeChange = (mode: CardViewMode) => {
     setCardViewMode(mode);
@@ -938,9 +945,49 @@ export function MarketplaceListings({
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="p-4 border-b border-border bg-white">
-        {/* Row 1: Title */}
+        {/* Row 1: Title + Global View As toggle */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
+          
+          {/* Global View As Toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">View As:</span>
+            <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+              <button
+                onClick={() => onGlobalCardViewModeChange?.("overview")}
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                  effectiveCardViewMode === "overview"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Overview
+              </button>
+              <button
+                onClick={() => onGlobalCardViewModeChange?.("flip")}
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                  effectiveCardViewMode === "flip"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Flip
+              </button>
+              <button
+                onClick={() => onGlobalCardViewModeChange?.("hold")}
+                className={cn(
+                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                  effectiveCardViewMode === "hold"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Hold
+              </button>
+            </div>
+          </div>
         </div>
         
         {/* Row 2: Toolbar */}
@@ -1061,8 +1108,8 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
-                  cardViewMode={cardViewMode}
-                  onCardViewModeChange={handleCardViewModeChange}
+                  cardViewMode={effectiveCardViewMode}
+                  onCardViewModeChange={onGlobalCardViewModeChange ?? handleCardViewModeChange}
                 />
               ) : (
                 <DealCard
@@ -1072,8 +1119,8 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
-                  cardViewMode={cardViewMode}
-                  onCardViewModeChange={handleCardViewModeChange}
+                  cardViewMode={effectiveCardViewMode}
+                  onCardViewModeChange={onGlobalCardViewModeChange ?? handleCardViewModeChange}
                 />
               )
             ))}

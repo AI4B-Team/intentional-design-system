@@ -9,6 +9,23 @@ import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/
 import { cn } from "@/lib/utils";
 
 export type LayoutMode = "cards" | "split" | "map";
+type CardViewMode = "overview" | "flip" | "hold";
+
+// Session storage key for global view mode
+const GLOBAL_VIEW_MODE_KEY = "marketplace-global-card-view-mode";
+
+function getStoredGlobalViewMode(): CardViewMode {
+  if (typeof window === "undefined") return "overview";
+  const stored = sessionStorage.getItem(GLOBAL_VIEW_MODE_KEY);
+  if (stored === "flip" || stored === "hold" || stored === "overview") return stored;
+  return "overview";
+}
+
+function setStoredGlobalViewMode(mode: CardViewMode) {
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(GLOBAL_VIEW_MODE_KEY, mode);
+  }
+}
 
 export default function MarketplaceDeals() {
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
@@ -17,6 +34,14 @@ export default function MarketplaceDeals() {
   const [sortBy, setSortBy] = useState("newest");
   const [resultsPerPage, setResultsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
+  
+  // Global card view mode state
+  const [globalCardViewMode, setGlobalCardViewMode] = useState<CardViewMode>(() => getStoredGlobalViewMode());
+  
+  const handleGlobalCardViewModeChange = (mode: CardViewMode) => {
+    setGlobalCardViewMode(mode);
+    setStoredGlobalViewMode(mode);
+  };
   
   // Saved/favorited deals state - shared across pages via localStorage
   const { savedDealIds, toggleSave, savedCount } = useSavedDeals();
@@ -140,6 +165,8 @@ export default function MarketplaceDeals() {
                 isSplitView={layoutMode === "split"}
                 savedDealIds={savedDealIds}
                 onToggleSave={toggleSave}
+                globalCardViewMode={globalCardViewMode}
+                onGlobalCardViewModeChange={handleGlobalCardViewModeChange}
               />
             </div>
           )}
