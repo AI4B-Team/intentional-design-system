@@ -3,18 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useHotOpportunities } from "@/hooks/useHotOpportunities";
 import { usePipelineStats } from "@/hooks/usePipelineStats";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
-import { useTodaysTasks } from "@/hooks/useTodaysTasks";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
-import { DailyFocus } from "@/components/dashboard/DailyFocus";
+import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
+import { TodaysTasks } from "@/components/dashboard/TodaysTasks";
 import {
   Building2,
   Calendar,
@@ -704,68 +703,7 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   );
 }
 
-// Task Item
-interface TaskItemProps {
-  task: {
-    id: string;
-    type: "appointment" | "followup";
-    title: string;
-    time: string | null;
-    propertyId: string;
-    completed: boolean;
-  };
-  onToggle: (id: string) => void;
-  onClick: () => void;
-}
-
-function TaskItem({ task, onToggle, onClick }: TaskItemProps) {
-  const Icon = task.type === "appointment" ? CalendarCheck : Phone;
-
-  return (
-    <div className={cn(
-      "flex items-center gap-3 p-3 rounded-lg transition-all duration-150 group",
-      task.completed 
-        ? "bg-background-secondary/50" 
-        : "hover:bg-background-secondary hover:shadow-sm"
-    )}>
-      <Checkbox 
-        checked={task.completed}
-        onCheckedChange={() => onToggle(task.id)}
-        className="h-5 w-5 transition-transform duration-150 hover:scale-110"
-      />
-      <div className={cn(
-        "p-1.5 rounded-md transition-all duration-150",
-        task.completed ? "opacity-50" : "",
-        task.type === "appointment" ? "bg-warning/10" : "bg-info/10"
-      )}>
-        <Icon className={cn(
-          "h-4 w-4",
-          task.type === "appointment" ? "text-warning" : "text-info"
-        )} />
-      </div>
-      <div className="flex-1 min-w-0 cursor-pointer" onClick={onClick}>
-        <p className={cn(
-          "text-small font-medium truncate transition-colors",
-          task.completed 
-            ? "text-muted-foreground line-through" 
-            : "text-foreground group-hover:text-primary"
-        )}>
-          {task.title}
-        </p>
-      </div>
-      {task.time && (
-        <div className={cn(
-          "flex items-center gap-1.5 text-tiny px-2 py-0.5 rounded-full",
-          task.completed ? "text-muted-foreground" : "text-muted-foreground bg-background-secondary"
-        )}>
-          <Clock className="h-3 w-3" />
-          {task.time}
-        </div>
-      )}
-      <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-150 translate-x-2 group-hover:translate-x-0 cursor-pointer" onClick={onClick} />
-    </div>
-  );
-}
+// (TaskItem component removed - now using TodaysTasks component)
 
 // Activity Item
 interface ActivityItemProps {
@@ -809,7 +747,6 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
   const [pipelineTimePeriod, setPipelineTimePeriod] = React.useState<string>("ALL TIME");
   const goals = useGoals();
   
@@ -817,7 +754,6 @@ export default function Dashboard() {
   const { data: pipelineValueStatsRaw, isLoading: pipelineValueLoading } = usePipelineValueStats();
   const { data: hotOpportunities, isLoading: hotLoading } = useHotOpportunities(10);
   const { data: pipelineStats, isLoading: pipelineLoading } = usePipelineStats();
-  const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
   const { data: insights } = useDashboardInsights();
 
@@ -1127,70 +1063,7 @@ export default function Dashboard() {
   const hasEnoughRealActivity = (recentActivity?.length || 0) >= 4;
   const displayActivity = hasEnoughRealActivity ? recentActivity : demoRecentActivity;
 
-  // Demo tasks data for visualization
-  const demoTodaysTasks = [
-    {
-      id: "demo-task-1",
-      type: "appointment" as const,
-      title: "Property Walkthrough - 1842 Sunset Boulevard",
-      time: "10:00 AM",
-      propertyId: "demo-1",
-      propertyAddress: "1842 Sunset Boulevard",
-      completed: false,
-    },
-    {
-      id: "demo-task-2",
-      type: "followup" as const,
-      title: "Follow up on 3921 Maple Street",
-      time: "11:30 AM",
-      propertyId: "demo-2",
-      propertyAddress: "3921 Maple Street",
-      completed: false,
-    },
-    {
-      id: "demo-task-3",
-      type: "appointment" as const,
-      title: "Seller Meeting - 7845 Oak Avenue",
-      time: "2:00 PM",
-      propertyId: "demo-3",
-      propertyAddress: "7845 Oak Avenue",
-      completed: false,
-    },
-    {
-      id: "demo-task-4",
-      type: "followup" as const,
-      title: "Send offer to 2156 Cherry Lane",
-      time: "3:30 PM",
-      propertyId: "demo-4",
-      propertyAddress: "2156 Cherry Lane",
-      completed: false,
-    },
-    {
-      id: "demo-task-5",
-      type: "appointment" as const,
-      title: "Inspection - 9023 Birch Court",
-      time: "5:00 PM",
-      propertyId: "demo-5",
-      propertyAddress: "9023 Birch Court",
-      completed: false,
-    },
-  ];
-
-  // Use demo tasks if not enough real data
-  const hasEnoughRealTasks = (todaysTasks?.length || 0) >= 3;
-  const displayTasks = hasEnoughRealTasks ? todaysTasks : demoTodaysTasks;
-
-  const handleTaskToggle = (taskId: string) => {
-    setCompletedTasks(prev => {
-      const next = new Set(prev);
-      if (next.has(taskId)) {
-        next.delete(taskId);
-      } else {
-        next.add(taskId);
-      }
-      return next;
-    });
-  };
+  // (Demo tasks and task toggle removed - now using TodaysTasks component)
 
   const handleCall = (e: React.MouseEvent, phone: string | null) => {
     e.stopPropagation();
@@ -1262,8 +1135,8 @@ export default function Dashboard() {
         </GoalSettingsDialog>
       </div>
 
-      {/* Daily Focus - Decision Engine */}
-      <DailyFocus />
+      {/* Today's Focus - Decision Engine */}
+      <TodaysFocus />
 
       {/* Pipeline Value Cards - Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -1559,59 +1432,8 @@ export default function Dashboard() {
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Today's Tasks */}
-        <Card variant="default" padding="none" className="overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-gradient-to-r from-accent/5 to-transparent">
-            <div className="flex items-center gap-2.5">
-              <div className="p-1.5 rounded-lg bg-accent/10">
-                <Calendar className="h-4 w-4 text-accent" />
-              </div>
-              <h2 className="text-body font-semibold text-foreground">Today's Tasks</h2>
-            </div>
-            <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
-              {displayTasks?.filter(t => !completedTasks.has(t.id) && !t.completed).length || 0} Remaining
-            </span>
-          </div>
-          <div className="max-h-[320px] overflow-y-auto scrollbar-hide">
-            {tasksLoading ? (
-              <div className="p-4 space-y-3">
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="flex items-center gap-3 animate-pulse">
-                    <Skeleton className="h-5 w-5 rounded" />
-                    <Skeleton className="h-4 w-4" />
-                    <div className="flex-1 space-y-1">
-                      <Skeleton className="h-4 w-3/4" />
-                    </div>
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-2">
-                {displayTasks?.map((task) => (
-                  <TaskItem
-                    key={task.id}
-                    task={{
-                      ...task,
-                      completed: task.completed || completedTasks.has(task.id),
-                    }}
-                    onToggle={handleTaskToggle}
-                    onClick={() => navigate(`/properties/${task.propertyId}`)}
-                  />
-                ))}
-
-                {/* View All Tasks link */}
-                <div 
-                  className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
-                  onClick={() => navigate("/tasks")}
-                >
-                  <span>View All Tasks</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </div>
-              </div>
-            )}
-          </div>
-        </Card>
+        {/* Today's Tasks - Uses new TodaysTasks component */}
+        <TodaysTasks />
 
         {/* Recent Activity */}
         <Card variant="default" padding="none" className="overflow-hidden">

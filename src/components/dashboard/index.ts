@@ -7,3 +7,5 @@ export { TeamActivityFeed } from "./team-activity-feed";
 export { TeamWorkloadCard } from "./team-workload-card";
 export { LeaderboardWidget } from "./leaderboard-widget";
 export { RecentAnalysesWidget } from "./RecentAnalysesWidget";
+export { TodaysFocus } from "./TodaysFocus";
+export { TodaysTasks } from "./TodaysTasks";
