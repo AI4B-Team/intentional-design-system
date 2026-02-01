@@ -64,7 +64,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
                 </button>
               </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={8}>
+            <TooltipContent side="right" sideOffset={8} className="bg-white text-slate-900 border-slate-200">
               Workspace
             </TooltipContent>
           </Tooltip>
