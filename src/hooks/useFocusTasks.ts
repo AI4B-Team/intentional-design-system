@@ -139,7 +139,7 @@ export function useFocusTasks() {
           type: "offer_followup",
           title: `${count} Offer${count > 1 ? "s" : ""} Awaiting Response`,
           subtitle: "Follow up needed",
-          time: count > 2 ? "Waiting 2+ days" : "Waiting 1 day",
+          time: "Waiting 2 Days",
           priority: count > 3 ? "critical" : "high",
           urgencyScore: count > 3 ? 90 : 80,
           source: "insight",
