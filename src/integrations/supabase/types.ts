@@ -7326,6 +7326,48 @@ export type Database = {
           },
         ]
       }
+      saved_searches: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          is_active: boolean | null
+          last_notified_at: string | null
+          name: string
+          notification_frequency: string
+          organization_id: string | null
+          result_count: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_active?: boolean | null
+          last_notified_at?: string | null
+          name: string
+          notification_frequency?: string
+          organization_id?: string | null
+          result_count?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          is_active?: boolean | null
+          last_notified_at?: string | null
+          name?: string
+          notification_frequency?: string
+          organization_id?: string | null
+          result_count?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_leads: {
         Row: {
           asking_price: number | null
