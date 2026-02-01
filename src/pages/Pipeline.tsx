@@ -79,12 +79,12 @@ import {
   FocusStrip,
   getFocusFilteredDeals,
   StagePressureIndicator,
-  QuickMoveButtons,
   StallingStat,
   getStalledDeals,
   PipelineGoalHeader,
   EmptyStageGuide,
 } from "@/components/pipeline";
+import { PipelineDealCard } from "@/components/pipeline/PipelineDealCard";
 
 // Pipeline stages configuration - SYNCHRONIZED with src/lib/pipeline-colors.ts
 // Categories: Discovery (Red), Intent (Yellow), Commitment (Blue), Outcome (Green)
@@ -492,160 +492,8 @@ function getLeadScoreReason(deal: PipelineDeal) {
   return reasons.join(" • ");
 }
 
-function DealCard({
-  deal, 
-  onView, 
-  onMove,
-  stageConfig 
-}: { 
-  deal: PipelineDeal; 
-  onView: () => void;
-  onMove: (newStage: string) => void;
-  stageConfig: typeof PIPELINE_STAGES[0];
-}) {
-  const isOverdue = deal.days_in_stage > stageConfig.targetDays && stageConfig.targetDays > 0;
-  const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
-  const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
-  const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
-  const profitBand = getProfitBand(deal.equity_percentage, deal.arv, deal.asking_price);
-  const nextAction = getNextAction(deal, stageConfig);
-  const isLowScore = deal.lead_score < 60;
+// DealCard component moved to src/components/pipeline/PipelineDealCard.tsx
 
-  return (
-    <Card 
-      className={cn(
-        "cursor-pointer hover:shadow-md transition-all duration-200",
-        isOverdue && "border-warning/50",
-        isLowScore && "opacity-70"
-      )}
-      onClick={onView}
-    >
-      <CardContent className="p-3 space-y-2">
-        {/* Next Action Nag */}
-        {nextAction && (
-          <div className={cn(
-            "flex items-center gap-1.5 text-tiny font-medium px-2 py-1 rounded -mx-1 -mt-1",
-            nextAction.urgent 
-              ? "bg-warning/15 text-warning" 
-              : "bg-brand/10 text-brand"
-          )}>
-            <nextAction.icon className="h-3 w-3" />
-            {nextAction.text}
-          </div>
-        )}
-
-        {/* Address & Menu */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <p className="text-small font-medium truncate">{deal.address}</p>
-            <p className="text-tiny text-muted-foreground">
-              {deal.city}, {deal.state}
-            </p>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0 shrink-0">
-                <MoreVertical className="h-3.5 w-3.5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="z-[100]">
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onView(); }}>
-                <Eye className="h-4 w-4 mr-2" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Phone className="h-4 w-4 mr-2" />
-                Call Contact
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {nextStage && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onMove(nextStage.id); }}>
-                  <ArrowRight className="h-4 w-4 mr-2" />
-                  Move to {nextStage.label}
-                </DropdownMenuItem>
-              )}
-              {prevStage && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onMove(prevStage.id); }}>
-                  <ArrowRight className="h-4 w-4 mr-2 rotate-180" />
-                  Move to {prevStage.label}
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-destructive">
-                <Trash2 className="h-4 w-4 mr-2" />
-                Remove
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
-        {/* Price & Profit Band */}
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-small font-semibold">
-            ${(deal.asking_price / 1000).toFixed(0)}k
-          </span>
-          {deal.offer_amount && (
-            <Badge variant="success" size="sm" className="text-tiny">
-              Offer ${(deal.offer_amount / 1000).toFixed(0)}k
-            </Badge>
-          )}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge 
-                  variant="secondary" 
-                  size="sm" 
-                  className={cn("text-tiny cursor-help", profitBand.bg, profitBand.color)}
-                >
-                  {profitBand.label} • +${profitBand.spread}k
-                </Badge>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-tiny">{deal.equity_percentage}% equity • ARV ${(deal.arv / 1000).toFixed(0)}k</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-
-        {/* Footer: Score & Time */}
-        <div className="flex items-center justify-between text-tiny text-muted-foreground pt-1 border-t border-border/50">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className={cn(
-                  "flex items-center gap-1 font-medium cursor-help",
-                  getLeadScoreColor(deal.lead_score)
-                )}>
-                  <Target className="h-3 w-3" />
-                  {deal.lead_score}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-[200px]">
-                <p className="text-tiny font-medium mb-1">Why this score?</p>
-                <p className="text-tiny text-muted-foreground">{getLeadScoreReason(deal)}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <div className={cn(
-            "flex items-center gap-1",
-            isOverdue && "text-warning"
-          )}>
-            <Timer className="h-3 w-3" />
-            {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}d`}
-            {isOverdue && <AlertCircle className="h-3 w-3" />}
-          </div>
-        </div>
-
-        {/* Quick Move Buttons */}
-        <QuickMoveButtons 
-          currentStage={deal.stage} 
-          onMove={onMove}
-        />
-      </CardContent>
-    </Card>
-  );
-}
 
 function StageColumn({ 
   stage, 
@@ -725,15 +573,22 @@ function StageColumn({
             {deals.length === 0 ? (
               <EmptyStageGuide stageId={stage.id} />
             ) : (
-              deals.map((deal) => (
-                <DealCard 
-                  key={deal.id} 
-                  deal={deal} 
-                  onView={() => onViewDeal(deal)}
-                  onMove={(newStage) => onMoveDeal(deal.id, newStage)}
-                  stageConfig={stage}
-                />
-              ))
+              deals.map((deal) => {
+                const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
+                const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
+                const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
+                return (
+                  <PipelineDealCard 
+                    key={deal.id} 
+                    deal={deal} 
+                    stageConfig={stage}
+                    nextStage={nextStage}
+                    prevStage={prevStage}
+                    onView={() => onViewDeal(deal)}
+                    onMove={(newStage) => onMoveDeal(deal.id, newStage)}
+                  />
+                );
+              })
             )}
           </div>
         </ScrollArea>
