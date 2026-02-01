@@ -166,6 +166,49 @@ export function TodaysFocus() {
     }, 200);
   };
 
+  // Demo focus items if no real data
+  const demoFocusItems: FocusItem[] = [
+    {
+      id: "demo-focus-1",
+      type: "lead_contact",
+      title: "3 Leads Need First Contact",
+      subtitle: "No outreach yet",
+      priority: "critical",
+      urgencyScore: 95,
+      source: "insight",
+      completed: false,
+      actionLabel: "Call Now",
+      actionRoute: "/properties?status=new",
+    },
+    {
+      id: "demo-focus-2",
+      type: "offer_followup",
+      title: "2 Offers Awaiting Response",
+      subtitle: "Follow up needed",
+      priority: "high",
+      urgencyScore: 85,
+      source: "insight",
+      completed: false,
+      actionLabel: "Follow Up",
+      actionRoute: "/properties?status=offer_made",
+    },
+    {
+      id: "demo-focus-3",
+      type: "hot_deal",
+      title: "1 Hot Deal Needs Action",
+      subtitle: "High momentum opportunity",
+      priority: "high",
+      urgencyScore: 75,
+      source: "insight",
+      completed: false,
+      actionLabel: "View Deal",
+      actionRoute: "/pipeline",
+    },
+  ];
+
+  const displayFocusItems = focusItems.length > 0 ? focusItems : demoFocusItems;
+  const isAllComplete = focusItems.length > 0 ? allFocusComplete : false;
+
   if (isLoading) {
     return (
       <Card variant="default" padding="none" className="mb-6 animate-pulse">
@@ -194,21 +237,21 @@ export function TodaysFocus() {
       padding="none" 
       className={cn(
         "mb-6 overflow-hidden",
-        allFocusComplete ? "border-success/30" : "border-primary/20"
+        isAllComplete ? "border-success/30" : "border-primary/20"
       )}
     >
       {/* Header */}
       <div className={cn(
         "flex items-center gap-3 px-4 py-3 border-b",
-        allFocusComplete 
+        isAllComplete 
           ? "bg-gradient-to-r from-success/5 to-transparent border-success/20" 
           : "bg-gradient-to-r from-primary/5 via-primary/3 to-transparent border-border-subtle"
       )}>
         <div className={cn(
           "h-8 w-8 rounded-lg flex items-center justify-center",
-          allFocusComplete ? "bg-success/10" : "bg-primary/10"
+          isAllComplete ? "bg-success/10" : "bg-primary/10"
         )}>
-          {allFocusComplete ? (
+          {isAllComplete ? (
             <CheckCircle2 className="h-4 w-4 text-success" />
           ) : (
             <Target className="h-4 w-4 text-primary" />
@@ -217,23 +260,23 @@ export function TodaysFocus() {
         <div className="flex-1">
           <h3 className="text-small font-semibold text-foreground">Today's Focus</h3>
           <p className="text-tiny text-muted-foreground">
-            {allFocusComplete 
+            {isAllComplete 
               ? "You're all caught up! Great work." 
-              : `${focusItems.length} urgent action${focusItems.length !== 1 ? "s" : ""} need your attention`
+              : `${displayFocusItems.length} urgent action${displayFocusItems.length !== 1 ? "s" : ""} need your attention`
             }
           </p>
         </div>
-        {!allFocusComplete && (
+        {!isAllComplete && (
           <span className="text-tiny font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
-            {focusItems.length}/3 slots
+            {displayFocusItems.length}/3 slots
           </span>
         )}
       </div>
 
       {/* Focus Items */}
-      {!allFocusComplete && (
+      {!isAllComplete && (
         <div className="divide-y divide-border-subtle">
-          {focusItems.map((item) => (
+          {displayFocusItems.map((item) => (
             <FocusItemRow
               key={item.id}
               item={item}
@@ -245,7 +288,7 @@ export function TodaysFocus() {
       )}
 
       {/* All Clear State */}
-      {allFocusComplete && (
+      {isAllComplete && (
         <div className="px-4 py-8 text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10 mx-auto mb-4">
             <CheckCircle2 className="h-8 w-8 text-success" />
@@ -275,7 +318,7 @@ export function TodaysFocus() {
       )}
 
       {/* Footer Link */}
-      {!allFocusComplete && (
+      {!isAllComplete && (
         <div 
           className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
           onClick={() => navigate("/tasks?filter=priority")}
