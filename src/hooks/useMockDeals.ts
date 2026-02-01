@@ -21,6 +21,7 @@ export interface MarketplaceDeal {
   lat: number;
   lng: number;
   createdAt: string;
+  status?: "new" | "for_sale" | "sold"; // Optional status override
 }
 
 interface UseMockDealsOptions {
@@ -134,6 +135,7 @@ const mockDeals: MarketplaceDeal[] = [
     lat: 25.7907,
     lng: -80.1300,
     createdAt: getDateString(7), // 7 days ago - shows "For Sale"
+    status: "sold", // Mark as sold
   },
   {
     id: "5",
