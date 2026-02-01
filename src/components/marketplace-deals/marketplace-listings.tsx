@@ -373,7 +373,7 @@ function DealListItem({
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="bg-white text-foreground border shadow-md">
-                        <p>Basic property details</p>
+                        <p>Basic Property Details</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -393,7 +393,7 @@ function DealListItem({
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="bg-white text-foreground border shadow-md">
-                        <p>ARV, repairs & profit potential</p>
+                        <p>ARV, Repairs & Profit Potential</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -413,7 +413,7 @@ function DealListItem({
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="bg-white text-foreground border shadow-md">
-                        <p>Rent, cash flow & cap rate</p>
+                        <p>Rent, Cash Flow & Cap Rate</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -1001,7 +1001,7 @@ export function MarketplaceListings({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-white text-foreground border shadow-md">
-                    <p>Basic property details</p>
+                    <p>Basic Property Details</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -1021,7 +1021,7 @@ export function MarketplaceListings({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-white text-foreground border shadow-md">
-                    <p>ARV, repairs & profit potential</p>
+                    <p>ARV, Repairs & Profit Potential</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -1041,7 +1041,7 @@ export function MarketplaceListings({
                     </button>
                   </TooltipTrigger>
                   <TooltipContent className="bg-white text-foreground border shadow-md">
-                    <p>Rent, cash flow & cap rate</p>
+                    <p>Rent, Cash Flow & Cap Rate</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
