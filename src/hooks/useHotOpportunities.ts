@@ -13,7 +13,7 @@ export interface HotOpportunity {
   owner_email: string | null;
 }
 
-export function useHotOpportunities(limit = 10) {
+export function useHotOpportunities(limit = 15) {
   return useQuery({
     queryKey: ["hot-opportunities", limit],
     queryFn: async (): Promise<HotOpportunity[]> => {
