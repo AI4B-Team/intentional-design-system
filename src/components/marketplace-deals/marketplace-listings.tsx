@@ -39,6 +39,7 @@ import {
   Circle,
   Heart,
   Share2,
+  Ruler,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
