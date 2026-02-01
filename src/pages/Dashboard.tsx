@@ -609,8 +609,9 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
   const percentage = total > 0 ? Math.round((stage.count / total) * 100) : 0;
   
   // Visual pressure: empty stage after populated stage feels uncomfortable
+  // Exclude "marketing" from showing gap pressure
   const isEmpty = stage.count === 0;
-  const showPressure = isEmpty && previousCount > 0;
+  const showPressure = isEmpty && previousCount > 0 && stage.status !== "marketing";
 
   // Generate "NO X" message for empty stages (uppercase for urgency)
   const emptyMessage = isEmpty ? `NO ${stage.label.replace(/s$/i, '').toUpperCase()}` : null;
