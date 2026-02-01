@@ -608,15 +608,15 @@ function DealCard({
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
         <div className="mt-4 border-t border-border pt-3 pb-1">
           <div className="grid grid-cols-3 divide-x-2 divide-border text-base text-muted-foreground">
-            <div className="flex items-center justify-center gap-1.5 whitespace-nowrap py-2">
+            <div className="flex items-center justify-center gap-2 whitespace-nowrap px-6 py-2">
               <Bed className="h-4 w-4 shrink-0" />
               <span>{deal.beds} Beds</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5 whitespace-nowrap py-2">
+            <div className="flex items-center justify-center gap-2 whitespace-nowrap px-6 py-2">
               <Bath className="h-4 w-4 shrink-0" />
               <span>{deal.baths} Baths</span>
             </div>
-            <div className="flex items-center justify-center gap-1.5 whitespace-nowrap py-2">
+            <div className="flex items-center justify-center gap-2 whitespace-nowrap px-6 py-2">
               <Ruler className="h-4 w-4 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SqFt</span>
             </div>
