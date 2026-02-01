@@ -556,7 +556,8 @@ const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
   offer_made: FileText, // Offers Made - matches Offers card
   negotiating: FileText, // Negotiating (same as offers)
   under_contract: Handshake, // Under Contract - matches Contracts card
-  closed: BadgeDollarSign,   // Closed - matches Sold card
+  closed: BadgeDollarSign,   // Purchased - matches Sold card
+  sold: DollarSign,          // Sold (flipped deals)
 };
 
 // Icon background colors for pipeline stages
@@ -568,6 +569,7 @@ const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
   negotiating: "bg-amber-50",
   under_contract: "bg-blue-100",
   closed: "bg-emerald-100",
+  sold: "bg-green-100",
 };
 
 // Icon text colors for pipeline stages
@@ -579,6 +581,7 @@ const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
   negotiating: "text-amber-400",
   under_contract: "text-blue-600",
   closed: "text-emerald-500",
+  sold: "text-green-600",
 };
 
 function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bottleneckReason }: PipelineStageProps) {
