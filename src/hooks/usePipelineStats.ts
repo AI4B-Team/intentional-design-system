@@ -20,6 +20,7 @@ export function usePipelineStats() {
         { status: "appointment", label: PIPELINE_LABELS.appointment, color: PIPELINE_COLORS.appointment.bg },
         { status: "offer_made", label: PIPELINE_LABELS.offer_made, color: PIPELINE_COLORS.offer_made.bg },
         { status: "negotiating", label: PIPELINE_LABELS.negotiating, color: PIPELINE_COLORS.negotiating.bg },
+        { status: "follow_up", label: PIPELINE_LABELS.follow_up, color: PIPELINE_COLORS.follow_up.bg },
         { status: "under_contract", label: PIPELINE_LABELS.under_contract, color: PIPELINE_COLORS.under_contract.bg },
         { status: "marketing", label: PIPELINE_LABELS.marketing, color: PIPELINE_COLORS.marketing.bg },
         { status: "closed", label: PIPELINE_LABELS.closed, color: PIPELINE_COLORS.closed.bg },
