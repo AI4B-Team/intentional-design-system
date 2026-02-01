@@ -105,7 +105,7 @@ function FocusItemRow({ item, onComplete, isAnimatingOut }: FocusItemRowProps) {
             <span className={cn(
               "text-tiny font-medium shrink-0",
               item.time === "Overdue" ? "text-destructive" : 
-              item.time === "Act now" ? "text-warning" : 
+              item.time === "Act Now" ? "text-warning" : 
               "text-muted-foreground"
             )}>
               · {item.time}
@@ -180,7 +180,7 @@ export function TodaysFocus() {
       type: "lead_contact",
       title: "3 Leads Need First Contact",
       subtitle: "No outreach yet",
-      time: "Added today",
+      time: "Added Today",
       priority: "critical",
       urgencyScore: 95,
       source: "insight",
@@ -206,7 +206,7 @@ export function TodaysFocus() {
       type: "hot_deal",
       title: "1 Hot Deal Needs Action",
       subtitle: "High momentum opportunity",
-      time: "Act now",
+      time: "Act Now",
       priority: "high",
       urgencyScore: 75,
       source: "insight",
