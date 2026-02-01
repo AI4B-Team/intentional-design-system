@@ -86,77 +86,92 @@ import {
   EmptyStageGuide,
 } from "@/components/pipeline";
 
-// Pipeline stages configuration - colors match dashboard tiles
+// Pipeline stages configuration - SYNCHRONIZED with src/lib/pipeline-colors.ts
+// Categories: Discovery (Red), Intent (Yellow), Commitment (Blue), Outcome (Green)
 const PIPELINE_STAGES = [
+  // === DISCOVERY GROUP (Red) ===
   { 
-    id: "lead", 
+    id: "new", 
     label: "New Leads", 
     color: "bg-red-500", 
     description: "Fresh leads requiring qualification",
-    targetDays: 2
+    targetDays: 2,
+    category: "discovery",
   },
   { 
     id: "contacted", 
     label: "Contacted", 
-    color: "bg-red-400", 
+    color: "bg-red-500", 
     description: "Initial contact made",
-    targetDays: 5
+    targetDays: 5,
+    category: "discovery",
   },
   { 
-    id: "analyzing", 
-    label: "Analyzing", 
-    color: "bg-red-300", 
-    description: "Running comps & deal analysis",
-    targetDays: 3
+    id: "appointment", 
+    label: "Appointments", 
+    color: "bg-red-500", 
+    description: "Meeting scheduled with seller",
+    targetDays: 3,
+    category: "discovery",
   },
+  // === INTENT GROUP (Yellow/Amber) ===
   { 
     id: "offer_made", 
     label: "Offer Made", 
     color: "bg-amber-500", 
     description: "Offer submitted, awaiting response",
-    targetDays: 7
+    targetDays: 7,
+    category: "intent",
   },
   { 
     id: "negotiating", 
     label: "Negotiating", 
-    color: "bg-amber-400", 
+    color: "bg-amber-500", 
     description: "Active negotiation in progress",
-    targetDays: 14
+    targetDays: 14,
+    category: "intent",
   },
   { 
     id: "follow_up", 
     label: "Follow Up", 
-    color: "bg-amber-300", 
+    color: "bg-amber-400", 
     description: "Awaiting response or next contact",
-    targetDays: 7
+    targetDays: 7,
+    category: "intent",
   },
+  // === COMMITMENT GROUP (Blue) ===
   { 
     id: "under_contract", 
     label: "Under Contract", 
     color: "bg-blue-500", 
     description: "Contract signed, heading to close",
-    targetDays: 30
+    targetDays: 30,
+    category: "commitment",
   },
   { 
     id: "marketing", 
     label: "Marketing", 
-    color: "bg-blue-400", 
+    color: "bg-blue-500", 
     description: "Property being marketed to buyers",
-    targetDays: 14
+    targetDays: 14,
+    category: "commitment",
   },
+  // === OUTCOME GROUP (Green) ===
   { 
     id: "closed", 
     label: "Purchased", 
     color: "bg-emerald-500", 
     description: "Deal completed",
-    targetDays: 0
+    targetDays: 0,
+    category: "outcome",
   },
   { 
     id: "sold", 
     label: "Sold", 
-    color: "bg-emerald-600", 
+    color: "bg-emerald-500", 
     description: "Property sold and funds received",
-    targetDays: 0
+    targetDays: 0,
+    category: "outcome",
   },
 ];
 
@@ -168,7 +183,7 @@ const MOCK_DEALS = [
     city: "Austin",
     state: "TX",
     zip: "78701",
-    stage: "lead",
+    stage: "new",
     asking_price: 285000,
     offer_amount: null,
     arv: 350000,
@@ -220,7 +235,7 @@ const MOCK_DEALS = [
     city: "Cedar Park",
     state: "TX",
     zip: "78613",
-    stage: "analyzing",
+    stage: "appointment",
     asking_price: 275000,
     offer_amount: null,
     arv: 380000,
@@ -324,7 +339,7 @@ const MOCK_DEALS = [
     city: "Austin",
     state: "TX",
     zip: "78745",
-    stage: "lead",
+    stage: "new",
     asking_price: 225000,
     offer_amount: null,
     arv: 295000,
@@ -343,6 +358,32 @@ const MOCK_DEALS = [
     beds: 2,
     baths: 1,
     sqft: 1100,
+  },
+  {
+    id: "8",
+    address: "777 Marketing Lane",
+    city: "Austin",
+    state: "TX",
+    zip: "78702",
+    stage: "marketing",
+    asking_price: 295000,
+    offer_amount: 250000,
+    arv: 375000,
+    equity_percentage: 27,
+    lead_score: 92,
+    contact_name: "Amanda Garcia",
+    contact_phone: "(512) 555-0777",
+    contact_email: "amanda@gmail.com",
+    contact_type: "Seller",
+    source: "Direct Mail",
+    days_in_stage: 7,
+    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 40).toISOString(),
+    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    notes: "Property acquired, actively marketing to cash buyers",
+    property_type: "Single Family",
+    beds: 4,
+    baths: 2,
+    sqft: 2100,
   },
 ];
 
@@ -415,10 +456,10 @@ function getNextAction(deal: PipelineDeal, stageConfig: typeof PIPELINE_STAGES[0
   if (deal.stage === "offer_made" && deal.days_in_stage >= 5) {
     return { text: "Follow up on offer", urgent: true, icon: Phone };
   }
-  if (deal.stage === "lead" && deal.days_in_stage >= 1) {
+  if (deal.stage === "new" && deal.days_in_stage >= 1) {
     return { text: "Make first contact", urgent: false, icon: Phone };
   }
-  if (deal.stage === "analyzing" && deal.days_in_stage >= 2) {
+  if (deal.stage === "appointment" && deal.days_in_stage >= 2) {
     return { text: "Complete analysis", urgent: false, icon: FileText };
   }
   if (deal.stage === "contacted" && deal.days_in_stage >= 3) {
@@ -426,6 +467,9 @@ function getNextAction(deal: PipelineDeal, stageConfig: typeof PIPELINE_STAGES[0
   }
   if (deal.stage === "negotiating") {
     return { text: "Counter or close", urgent: false, icon: DollarSign };
+  }
+  if (deal.stage === "marketing" && deal.days_in_stage >= 7) {
+    return { text: "Update buyer list", urgent: false, icon: MessageSquare };
   }
   return null;
 }

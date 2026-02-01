@@ -24,24 +24,27 @@ interface QuickAction {
   color: string;
 }
 
+// Quick actions mapped to pipeline stages - SYNCHRONIZED with src/lib/pipeline-colors.ts
+// Categories: Discovery (Red), Intent (Yellow), Commitment (Blue), Outcome (Green)
 const QUICK_ACTIONS: Record<string, QuickAction[]> = {
-  lead: [
+  // Discovery stages (Red)
+  new: [
     {
       targetStage: "contacted",
       label: "Contacted",
       icon: Phone,
-      color: "bg-red-400 hover:bg-red-500",
+      color: "bg-red-500 hover:bg-red-600",
     },
   ],
   contacted: [
     {
-      targetStage: "analyzing",
-      label: "Analyzing",
+      targetStage: "appointment",
+      label: "Appointment",
       icon: FileText,
-      color: "bg-red-300 hover:bg-red-400",
+      color: "bg-red-500 hover:bg-red-600",
     },
   ],
-  analyzing: [
+  appointment: [
     {
       targetStage: "offer_made",
       label: "Offer Made",
@@ -49,12 +52,13 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       color: "bg-amber-500 hover:bg-amber-600",
     },
   ],
+  // Intent stages (Yellow/Amber)
   offer_made: [
     {
       targetStage: "negotiating",
       label: "Negotiating",
       icon: Handshake,
-      color: "bg-amber-400 hover:bg-amber-500",
+      color: "bg-amber-500 hover:bg-amber-600",
     },
     {
       targetStage: "under_contract",
@@ -68,7 +72,7 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       targetStage: "follow_up",
       label: "Follow Up",
       icon: Clock,
-      color: "bg-amber-300 hover:bg-amber-400",
+      color: "bg-amber-400 hover:bg-amber-500",
     },
     {
       targetStage: "under_contract",
@@ -85,12 +89,13 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
       color: "bg-blue-500 hover:bg-blue-600",
     },
   ],
+  // Commitment stages (Blue)
   under_contract: [
     {
       targetStage: "marketing",
       label: "Marketing",
       icon: Megaphone,
-      color: "bg-blue-400 hover:bg-blue-500",
+      color: "bg-blue-500 hover:bg-blue-600",
     },
     {
       targetStage: "closed",
@@ -101,8 +106,17 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
   ],
   marketing: [
     {
-      targetStage: "closed",
-      label: "Purchased",
+      targetStage: "sold",
+      label: "Sold",
+      icon: CheckCircle2,
+      color: "bg-emerald-500 hover:bg-emerald-600",
+    },
+  ],
+  // Outcome stages (Green) - typically no further actions
+  closed: [
+    {
+      targetStage: "sold",
+      label: "Sold",
       icon: CheckCircle2,
       color: "bg-emerald-500 hover:bg-emerald-600",
     },
