@@ -1093,7 +1093,41 @@ export default function Dashboard() {
     }
   };
 
-  const totalPipeline = pipelineStats?.reduce((sum, s) => sum + s.count, 0) || 0;
+  // Calculate pipeline stats based on time period
+  // When "ALL TIME" is selected, sync with top stat boxes
+  const getPipelineStatsForTimePeriod = React.useMemo(() => {
+    if (!pipelineStats) return null;
+    
+    if (pipelineTimePeriod === "ALL TIME") {
+      // Sync counts with the top 4 stat boxes
+      const leadsCount = pipelineValueStats?.leads.count || 0;
+      const offersCount = pipelineValueStats?.offers.count || 0;
+      const contractsCount = pipelineValueStats?.contracted.count || 0;
+      const soldCount = pipelineValueStats?.sold.count || 0;
+      
+      return pipelineStats.map(stage => {
+        if (stage.status === "new") {
+          return { ...stage, count: leadsCount };
+        }
+        if (stage.status === "offer_made") {
+          return { ...stage, count: offersCount };
+        }
+        if (stage.status === "under_contract") {
+          return { ...stage, count: contractsCount };
+        }
+        if (stage.status === "sold") {
+          return { ...stage, count: soldCount };
+        }
+        // For stages not matched to top boxes, use original count
+        return stage;
+      });
+    }
+    
+    // For other time periods, use original data
+    return pipelineStats;
+  }, [pipelineStats, pipelineTimePeriod, pipelineValueStats]);
+
+  const totalPipeline = getPipelineStatsForTimePeriod?.reduce((sum, s) => sum + s.count, 0) || 0;
 
   return (
     <AppLayout>
@@ -1302,12 +1336,12 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="p-2">
-              {pipelineStats?.map((stage, index) => (
+              {getPipelineStatsForTimePeriod?.map((stage, index) => (
                 <PipelineStage
                   key={stage.status}
                   stage={stage}
                   total={totalPipeline}
-                  previousCount={index > 0 ? pipelineStats[index - 1].count : stage.count}
+                  previousCount={index > 0 ? (getPipelineStatsForTimePeriod[index - 1]?.count || stage.count) : stage.count}
                   onClick={() => navigate(`/pipeline?filter=${stage.status}`)}
                 />
               ))}
@@ -1317,7 +1351,7 @@ export default function Dashboard() {
           {!pipelineLoading && totalPipeline > 0 && (
             <div className="px-4 pb-4">
               <div className="flex h-2.5 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
-                {pipelineStats?.map((stage) => (
+                {getPipelineStatsForTimePeriod?.map((stage) => (
                   <div
                     key={stage.status}
                     className={cn("transition-all duration-500", stage.color)}
