@@ -542,29 +542,6 @@ function StageColumn({
               </Tooltip>
             </TooltipProvider>
           </div>
-          
-          {/* Stage Stats */}
-          <div className="flex items-center gap-3 text-tiny text-content-tertiary">
-            <span className="flex items-center gap-1">
-              <DollarSign className="h-3 w-3" />
-              ${(totalValue / 1000).toFixed(0)}k
-            </span>
-            {stage.targetDays > 0 && (
-              <span className="flex items-center gap-1">
-                <Clock className="h-3 w-3" />
-                Avg: {avgDaysInStage}d
-              </span>
-            )}
-            {overdueCount > 0 && (
-              <span className="flex items-center gap-1 text-warning">
-                <AlertCircle className="h-3 w-3" />
-                {overdueCount} overdue
-              </span>
-            )}
-          </div>
-
-          {/* Stage Pressure Indicator */}
-          <StagePressureIndicator stageId={stage.id} deals={allDeals} />
         </div>
 
         {/* Deals */}
