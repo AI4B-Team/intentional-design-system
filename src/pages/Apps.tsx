@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageLayout, PageHeader } from "@/components/layout/page-layout";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -216,8 +215,7 @@ export default function Apps() {
   const featuredApps = apps.filter((app) => app.isFeatured);
 
   return (
-    <AppLayout>
-      <PageLayout>
+    <PageLayout>
         <PageHeader
           title="Apps"
           description="Tools and utilities to supercharge your real estate investing"
@@ -344,7 +342,6 @@ export default function Apps() {
             </div>
           )}
         </div>
-      </PageLayout>
-    </AppLayout>
+    </PageLayout>
   );
 }
