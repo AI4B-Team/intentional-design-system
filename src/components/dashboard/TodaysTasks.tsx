@@ -182,6 +182,18 @@ export function TodaysTasks() {
       urgencyScore: 40,
       isEligibleForFocus: false,
     },
+    {
+      id: "demo-5",
+      type: "appointment" as const,
+      title: "Inspection - 9023 Birch Court",
+      time: "5:00 PM",
+      propertyId: "demo-5",
+      propertyAddress: "9023 Birch Court",
+      completed: false,
+      priority: "medium" as const,
+      urgencyScore: 55,
+      isEligibleForFocus: true,
+    },
   ];
 
   const actualRemaining = displayTasks.filter(t => !t.completed).length;
