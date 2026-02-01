@@ -190,61 +190,68 @@ export default function LeadSources() {
             const Icon = source.icon;
             return (
               <Card key={source.id} className="hover:shadow-md transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-lg ${typeColors[source.type]}`}>
+                <CardContent className="p-5">
+                  {/* Top Row: Icon + Title + Badge on left, Menu on right */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2.5 rounded-lg flex-shrink-0 ${typeColors[source.type]}`}>
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>
-                        <CardTitle className="text-base">{source.name}</CardTitle>
-                        <CardDescription className="text-xs">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold leading-tight">{source.name}</h3>
+                          <Badge 
+                            variant="outline"
+                            className={
+                              source.status === "active" 
+                                ? "bg-success/10 text-success border-success/30 text-xs px-2 py-0.5 capitalize" 
+                                : "bg-muted text-muted-foreground border-muted text-xs px-2 py-0.5 capitalize"
+                            }
+                          >
+                            {source.status}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">
                           Last lead: {source.lastLead}
-                        </CardDescription>
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant={source.status === "active" ? "default" : "secondary"}
-                        className={source.status === "active" ? "bg-success/10 text-success" : ""}
-                      >
-                        {source.status}
-                      </Badge>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Edit Source</DropdownMenuItem>
-                          <DropdownMenuItem>View Leads</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            {source.status === "active" ? "Pause" : "Activate"}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 -mt-1">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Source</DropdownMenuItem>
+                        <DropdownMenuItem>View Leads</DropdownMenuItem>
+                        <DropdownMenuItem className="text-destructive">
+                          {source.status === "active" ? "Pause" : "Activate"}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
-                </CardHeader>
-                <CardContent>
+                  
+                  {/* Metrics Row */}
                   <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                      <p className="text-xl font-bold">{source.leads}</p>
+                      <p className="text-2xl font-bold">{source.leads}</p>
                       <p className="text-xs text-muted-foreground">Leads</p>
                     </div>
                     <div>
-                      <p className="text-xl font-bold">{source.converted}</p>
+                      <p className="text-2xl font-bold">{source.converted}</p>
                       <p className="text-xs text-muted-foreground">Converted</p>
                     </div>
                     <div>
-                      <p className="text-xl font-bold text-primary">{source.conversionRate}%</p>
+                      <p className="text-2xl font-bold">{source.conversionRate}%</p>
                       <p className="text-xs text-muted-foreground">Rate</p>
                     </div>
                   </div>
+                  
+                  {/* Cost/ROI Row */}
                   {source.cost > 0 && (
-                    <div className="mt-4 pt-3 border-t flex items-center justify-between text-sm">
+                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">
                         Spend: ${source.cost.toLocaleString()}
                       </span>
