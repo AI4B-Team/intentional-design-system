@@ -139,7 +139,7 @@ const PIPELINE_STAGES = [
   },
   { 
     id: "closed", 
-    label: "Closed", 
+    label: "Purchased", 
     color: "bg-emerald-500", 
     description: "Deal completed",
     targetDays: 0
