@@ -243,6 +243,10 @@ function DealListItem({
     navigate(`/marketplace/deal/${deal.id}`);
   };
 
+  const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
+    e.stopPropagation();
+    onCardViewModeChange(mode);
+  };
 
   return (
     <Card 
@@ -342,10 +346,49 @@ function DealListItem({
             
             {/* Action buttons */}
             <div className="flex items-center gap-1 flex-shrink-0">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSave?.(deal.id);
+            {/* View Mode Toggle with helper text */}
+            <div className="flex flex-col items-end gap-0.5 mr-1">
+              <span className="text-[9px] text-muted-foreground">View As:</span>
+              <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+                <button
+                  onClick={(e) => handleViewModeChange(e, "overview")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "overview"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Overview
+                </button>
+                <button
+                  onClick={(e) => handleViewModeChange(e, "flip")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "flip"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Flip
+                </button>
+                <button
+                  onClick={(e) => handleViewModeChange(e, "hold")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "hold"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Hold
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave?.(deal.id);
                 }}
                 className={cn(
                   "flex items-center justify-center h-7 w-7 rounded-full transition-all",
@@ -551,6 +594,10 @@ function DealCard({
     navigate(`/marketplace/deal/${deal.id}`);
   };
 
+  const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
+    e.stopPropagation();
+    onCardViewModeChange(mode);
+  };
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-white" onClick={handleCardClick}>
@@ -669,6 +716,45 @@ function DealCard({
         <p className="font-semibold text-primary text-base">{deal.address}</p>
         <p className="text-sm text-muted-foreground">{deal.city}, {deal.state} {deal.zip}</p>
 
+        {/* View Mode Toggle with helper text */}
+        <div className="mt-3 flex flex-col items-center">
+          <span className="text-[10px] text-muted-foreground mb-1">View Property As:</span>
+          <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+            <button
+              onClick={(e) => handleViewModeChange(e, "overview")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "overview"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Overview
+            </button>
+            <button
+              onClick={(e) => handleViewModeChange(e, "flip")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "flip"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Flip
+            </button>
+            <button
+              onClick={(e) => handleViewModeChange(e, "hold")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "hold"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Hold
+            </button>
+          </div>
+        </div>
 
         {/* Conditional Content based on View Mode */}
         {cardViewMode === "overview" ? (
@@ -852,54 +938,9 @@ export function MarketplaceListings({
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
       <div className="p-4 border-b border-border bg-white">
-        {/* Row 1: Title + View As Toggle */}
+        {/* Row 1: Title */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
-          
-          {/* Global View As Toggle */}
-          <div className="flex flex-col items-end">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">View As:</span>
-              <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
-                <button
-                  onClick={() => handleCardViewModeChange("overview")}
-                  className={cn(
-                    "px-3 py-1 text-sm font-medium rounded-sm transition-all",
-                    cardViewMode === "overview"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => handleCardViewModeChange("flip")}
-                  className={cn(
-                    "px-3 py-1 text-sm font-medium rounded-sm transition-all",
-                    cardViewMode === "flip"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Flip
-                </button>
-                <button
-                  onClick={() => handleCardViewModeChange("hold")}
-                  className={cn(
-                    "px-3 py-1 text-sm font-medium rounded-sm transition-all",
-                    cardViewMode === "hold"
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  Hold
-                </button>
-              </div>
-            </div>
-            <span className="text-[10px] text-muted-foreground mt-0.5">
-              Overview shows listing details. Flip and Hold show investment analysis.
-            </span>
-          </div>
         </div>
         
         {/* Row 2: Toolbar */}
