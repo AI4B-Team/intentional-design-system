@@ -784,13 +784,13 @@ function DealCard({
                 </span>
               </div>
 
-              {/* De-emphasized ARV info */}
-              <div className="flex items-center justify-between pt-1 opacity-60">
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <TrendingDown className="h-3.5 w-3.5" />
+              {/* ARV info - same size as Cap Rate */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingDown className="h-4 w-4" />
                   <span>ARV:</span>
                 </div>
-                <span className="text-xs text-muted-foreground">{formatCurrency(arvValue)}</span>
+                <span className="text-sm text-muted-foreground">{formatCurrency(arvValue)}</span>
               </div>
             </div>
           </>
