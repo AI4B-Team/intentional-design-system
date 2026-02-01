@@ -350,12 +350,13 @@ const mockDeals: MarketplaceDeal[] = [
     baths: 1,
     sqft: 1100,
     tags: ["Single Family", "Estate Sale", "Quick Close"],
-    isNew: true,
+    isNew: false,
     isFavorite: false,
     imageUrl: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=800&q=80",
     lat: 29.1872,
     lng: -82.1401,
-    createdAt: getDateString(0), // Today - shows "New"
+    createdAt: getDateString(0),
+    status: "sold",
   },
 ];
 
