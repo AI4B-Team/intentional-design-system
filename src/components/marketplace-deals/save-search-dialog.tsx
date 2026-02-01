@@ -272,7 +272,7 @@ export function SaveSearchDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className={cn(
         "transition-all duration-200 overflow-visible",
-        step === "campaign-setup" ? "max-w-2xl" : "max-w-md"
+        step === "campaign-setup" ? "max-w-2xl" : "max-w-lg"
       )}>
         {step === "save" && (
           <>
