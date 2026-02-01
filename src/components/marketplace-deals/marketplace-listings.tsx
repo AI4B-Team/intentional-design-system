@@ -760,7 +760,7 @@ function DealCard({
         {cardViewMode === "overview" ? (
           <>
             {/* Overview Mode - Just price prominent */}
-            <div className="mt-4 border-t border-border pt-4">
+            <div className="mt-3 border-t border-border pt-3">
               <div className="text-center">
                 <span className="text-2xl font-bold text-foreground">{formatCurrency(askingPrice)}</span>
               </div>
@@ -869,17 +869,29 @@ function DealCard({
         )}
 
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
-        <div className="mt-4 border-t border-border pt-3 pb-1">
+        <div className={cn(
+          "border-t border-border",
+          cardViewMode === "overview" ? "mt-3 pt-2" : "mt-4 pt-3"
+        )}>
           <div className="grid grid-cols-3 divide-x-2 divide-border text-sm text-muted-foreground">
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-2">
+            <div className={cn(
+              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
+              cardViewMode === "overview" ? "py-1" : "py-2"
+            )}>
               <Bed className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.beds} Beds</span>
             </div>
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-2">
+            <div className={cn(
+              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
+              cardViewMode === "overview" ? "py-1" : "py-2"
+            )}>
               <Bath className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.baths} Baths</span>
             </div>
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-2">
+            <div className={cn(
+              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
+              cardViewMode === "overview" ? "py-1" : "py-2"
+            )}>
               <Ruler className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SF</span>
             </div>
