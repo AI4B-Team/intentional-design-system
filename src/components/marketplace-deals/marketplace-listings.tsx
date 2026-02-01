@@ -627,26 +627,16 @@ function DealCard({
         </div>
 
 
-        {/* Property Specs */}
-        <div className="mt-4 flex flex-nowrap items-center justify-between gap-8 border-t border-border pt-4 px-6">
-          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
-            <Bed className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium">{deal.beds} Bd</span>
-          </div>
-
-          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
-            <Bath className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium">{deal.baths} Ba</span>
-          </div>
-
-          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
-            <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium">{deal.sqft.toLocaleString()} Sqft</span>
-          </div>
-
-          <div className="flex items-center gap-2 whitespace-nowrap shrink-0">
-            <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span className="text-sm font-medium">Built {yearBuilt}</span>
+        {/* Property Specs - Single row with all 4 items */}
+        <div className="mt-4 border-t border-border pt-3 pb-1">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">{deal.beds} Beds</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">{deal.baths} Baths</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">{deal.sqft.toLocaleString()} SF</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="text-muted-foreground">{yearBuilt} Built</span>
           </div>
         </div>
       </div>
