@@ -1255,10 +1255,10 @@ export default function Dashboard() {
               <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
-          <div className="overflow-hidden flex-1">
+          <div className="overflow-hidden flex-1 flex flex-col">
             {hotLoading ? (
-              <div className="p-4 space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
+              <div className="p-4 space-y-3 flex-1">
+                {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <Skeleton className="h-8 w-14 rounded-full" />
                     <div className="flex-1 space-y-2">
@@ -1269,9 +1269,9 @@ export default function Dashboard() {
                 ))}
               </div>
             ) : (
-              <div className="p-2">
-                {/* Top 5 - Always visible */}
-                {displayHotOpportunities?.slice(0, 5).map((opp) => {
+              <div className="p-2 flex-1">
+                {/* Top 8 - Always visible */}
+                {displayHotOpportunities?.slice(0, 8).map((opp) => {
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
                   if (enhanced) {
@@ -1296,17 +1296,16 @@ export default function Dashboard() {
                     />
                   );
                 })}
-
-                {/* Show remaining count if more than 5 */}
-                {displayHotOpportunities && displayHotOpportunities.length > 5 && (
-                  <div 
-                    className="flex items-center justify-center gap-2 py-3 mt-2 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
-                    onClick={() => navigate("/properties?sort=motivation_score")}
-                  >
-                    <span>+{displayHotOpportunities.length - 5} More Opportunities</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </div>
-                )}
+              </div>
+            )}
+            {/* Anchored footer - always at bottom */}
+            {!hotLoading && displayHotOpportunities && displayHotOpportunities.length > 8 && (
+              <div 
+                className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
+                onClick={() => navigate("/properties?sort=motivation_score")}
+              >
+                <span>+{displayHotOpportunities.length - 8} More Opportunities</span>
+                <ArrowRight className="h-3.5 w-3.5" />
               </div>
             )}
           </div>
