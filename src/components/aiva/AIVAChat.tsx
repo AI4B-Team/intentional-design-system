@@ -781,7 +781,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                                   className={cn(
                                     "h-11 w-11 rounded-full border-0 shadow-none transition-colors disabled:opacity-100",
                                     input.trim() && !isLoading
-                                      ? "bg-primary/10 text-primary hover:bg-primary/15 active:bg-primary/20"
+                                      ? "bg-emerald-500 text-white hover:bg-emerald-600 active:bg-emerald-700"
                                       : "bg-muted/40 text-muted-foreground/40"
                                   )}
                                 >
