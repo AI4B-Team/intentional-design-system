@@ -15,6 +15,13 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Bookmark,
   Rocket,
   Mail,
@@ -24,17 +31,12 @@ import {
   Sparkles,
   Target,
   Send,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
-interface SavedSearch {
-  id: string;
-  name: string;
-  filters: Record<string, any>;
-  createdAt: string;
-  resultCount: number;
-}
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SaveSearchDialogProps {
   open: boolean;
@@ -139,6 +141,13 @@ Best regards`,
   },
 ];
 
+const NOTIFICATION_OPTIONS = [
+  { value: "never", label: "Never", description: "No notifications" },
+  { value: "instant", label: "Instant", description: "As new deals match" },
+  { value: "daily", label: "Daily Digest", description: "Once per day" },
+  { value: "weekly", label: "Weekly Summary", description: "Once per week" },
+];
+
 export function SaveSearchDialog({
   open,
   onOpenChange,
@@ -146,8 +155,11 @@ export function SaveSearchDialog({
   resultCount,
 }: SaveSearchDialogProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState<Step>("save");
   const [searchName, setSearchName] = useState("");
+  const [notificationFrequency, setNotificationFrequency] = useState("daily");
+  const [isSaving, setIsSaving] = useState(false);
   const [savedSearchId, setSavedSearchId] = useState<string | null>(null);
   
   // Campaign setup state
@@ -160,31 +172,43 @@ export function SaveSearchDialog({
 
   const activeTemplate = CAMPAIGN_TEMPLATES.find(t => t.id === selectedTemplate);
 
-  const handleSaveSearch = () => {
+  const handleSaveSearch = async () => {
     if (!searchName.trim()) {
       toast.error("Please enter a name for your search");
       return;
     }
 
-    // Save to localStorage (in production, this would be saved to database)
-    const savedSearches: SavedSearch[] = JSON.parse(
-      localStorage.getItem("marketplace-saved-searches") || "[]"
-    );
-    
-    const newSearch: SavedSearch = {
-      id: crypto.randomUUID(),
-      name: searchName.trim(),
-      filters,
-      createdAt: new Date().toISOString(),
-      resultCount,
-    };
-    
-    savedSearches.push(newSearch);
-    localStorage.setItem("marketplace-saved-searches", JSON.stringify(savedSearches));
-    setSavedSearchId(newSearch.id);
-    
-    toast.success(`Search "${searchName}" saved successfully!`);
-    setStep("launch-prompt");
+    if (!user) {
+      toast.error("Please sign in to save searches");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const { data, error } = await supabase
+        .from("saved_searches")
+        .insert({
+          user_id: user.id,
+          name: searchName.trim(),
+          filters: filters,
+          notification_frequency: notificationFrequency,
+          result_count: resultCount,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setSavedSearchId(data.id);
+      toast.success(`Search "${searchName}" saved successfully!`);
+      setStep("launch-prompt");
+    } catch (error: any) {
+      console.error("Error saving search:", error);
+      toast.error("Failed to save search. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleLaunchCampaign = () => {
@@ -212,6 +236,7 @@ export function SaveSearchDialog({
   const resetState = () => {
     setStep("save");
     setSearchName("");
+    setNotificationFrequency("daily");
     setSavedSearchId(null);
     setSelectedTemplate("cash-offer");
     setSendEmail(true);
@@ -259,7 +284,7 @@ export function SaveSearchDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 px-6 py-4">
+            <div className="space-y-4 py-4">
               <div className="space-y-2">
                 <Label htmlFor="search-name">Search Name</Label>
                 <Input
@@ -271,6 +296,28 @@ export function SaveSearchDialog({
                 />
               </div>
 
+              <div className="space-y-2">
+                <Label htmlFor="notification-frequency" className="flex items-center gap-2">
+                  <Bell className="h-4 w-4" />
+                  Notification Frequency
+                </Label>
+                <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
+                  <SelectTrigger id="notification-frequency">
+                    <SelectValue placeholder="Select frequency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {NOTIFICATION_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        <div className="flex flex-col">
+                          <span>{option.label}</span>
+                          <span className="text-xs text-muted-foreground">{option.description}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="rounded-lg bg-muted/50 p-3 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Current Filters</span>
@@ -280,13 +327,13 @@ export function SaveSearchDialog({
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 px-6 py-4 border-t border-border-subtle">
+            <div className="flex justify-end gap-2 pt-4 border-t border-border">
               <Button variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button onClick={handleSaveSearch} disabled={!searchName.trim()}>
+              <Button onClick={handleSaveSearch} disabled={!searchName.trim() || isSaving}>
                 <Bookmark className="h-4 w-4 mr-2" />
-                Save Search
+                {isSaving ? "Saving..." : "Save Search"}
               </Button>
             </div>
           </>
