@@ -195,7 +195,7 @@ export function AppSidebar({
               <div className="relative">
                 <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-white")} />
                 {!aivaOpen && (
-                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
                 )}
               </div>
               {!collapsed && <span>AIVA</span>}
