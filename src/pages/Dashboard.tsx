@@ -561,8 +561,9 @@ const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
   appointment: Calendar, // Discovery - Red
   offer_made: FileText, // Intent - Yellow
   negotiating: FileText, // Intent - Yellow
+  follow_up: Phone,     // Intent - Yellow
   under_contract: Handshake, // Commitment - Blue
-  marketing: Megaphone,  // Outcome - Green
+  marketing: Megaphone,  // Commitment - Blue
   closed: BadgeDollarSign,   // Outcome - Green
   sold: BadgeDollarSign, // Outcome - Green
 };
@@ -576,10 +577,11 @@ const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
   // Intent (Yellow/Amber)
   offer_made: "bg-amber-100",
   negotiating: "bg-amber-100",
+  follow_up: "bg-amber-100",
   // Commitment (Blue)
   under_contract: "bg-blue-100",
+  marketing: "bg-blue-100",
   // Outcome (Green)
-  marketing: "bg-emerald-100",
   closed: "bg-emerald-100",
   sold: "bg-emerald-100",
 };
@@ -593,10 +595,11 @@ const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
   // Intent (Yellow/Amber)
   offer_made: "text-amber-500",
   negotiating: "text-amber-500",
+  follow_up: "text-amber-500",
   // Commitment (Blue)
   under_contract: "text-blue-600",
+  marketing: "text-blue-600",
   // Outcome (Green)
-  marketing: "text-emerald-500",
   closed: "text-emerald-500",
   sold: "text-emerald-500",
 };
