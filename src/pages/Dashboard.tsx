@@ -1326,7 +1326,7 @@ export default function Dashboard() {
           <div className="overflow-hidden flex-1 flex flex-col">
             {hotLoading ? (
               <div className="p-4 space-y-3 flex-1">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: 10 }).map((_, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <Skeleton className="h-8 w-14 rounded-full" />
                     <div className="flex-1 space-y-2">
@@ -1338,8 +1338,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-2 flex-1">
-                {/* Top 8 - Always visible */}
-                {displayHotOpportunities?.slice(0, 8).map((opp) => {
+                {/* Top 10 - Always visible */}
+                {displayHotOpportunities?.slice(0, 10).map((opp) => {
                   const enhanced = 'urgency_reason' in opp ? opp as HotOpportunityEnhanced : null;
                   
                   if (enhanced) {
@@ -1367,12 +1367,12 @@ export default function Dashboard() {
               </div>
             )}
             {/* Anchored footer - always at bottom */}
-            {!hotLoading && displayHotOpportunities && displayHotOpportunities.length > 8 && (
+            {!hotLoading && displayHotOpportunities && displayHotOpportunities.length > 10 && (
               <div 
                 className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
                 onClick={() => navigate("/properties?sort=motivation_score")}
               >
-                <span>+{displayHotOpportunities.length - 8} More Opportunities</span>
+                <span>+{displayHotOpportunities.length - 10} More Opportunities</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </div>
             )}
