@@ -72,8 +72,8 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   };
 
   return (
-    <div className="h-full min-h-screen flex bg-surface-secondary">
-      {/* Sidebar */}
+    <div className="min-h-screen flex bg-surface-secondary">
+      {/* Sidebar - sticky for desktop */}
       <AppSidebar
         collapsed={sidebarCollapsed}
         onToggle={handleSidebarToggle}
@@ -81,19 +81,19 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         onMobileClose={() => setMobileMenuOpen(false)}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
-        {/* Header */}
+      {/* Main Content - normal document flow, no nested scroll */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Header - sticky at top */}
         <AppHeader
           onMenuClick={() => setMobileMenuOpen(true)}
           breadcrumbs={breadcrumbs}
         />
 
-        {/* Page Content - fills remaining space, never blank */}
+        {/* Page Content - normal flow, browser handles scrolling */}
         <main
           ref={mainRef}
           className={cn(
-            "flex-1 flex flex-col overflow-y-auto scrollbar-hide",
+            "flex-1 flex flex-col",
             fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >

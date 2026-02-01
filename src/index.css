@@ -27,17 +27,17 @@
       --app-zoom: 0.9;
       --app-viewport-height: calc(100vh / var(--app-zoom));
       zoom: var(--app-zoom);
-      height: calc(100vh / var(--app-zoom));
+      /* Allow native browser scrolling - no fixed height */
       min-height: calc(100vh / var(--app-zoom));
     }
 
     body {
-      height: 100%;
+      /* Allow native browser scrolling */
       min-height: 100%;
     }
 
     #root {
-      height: 100%;
+      /* Allow native browser scrolling */
       min-height: 100%;
       display: flex;
       flex-direction: column;
