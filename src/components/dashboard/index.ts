@@ -10,3 +10,4 @@ export { RecentAnalysesWidget } from "./RecentAnalysesWidget";
 export { MomentumScore } from "./MomentumScore";
 export { StageActionCTA } from "./StageActionCTA";
 export { AIStuckInsight } from "./AIStuckInsight";
+export { TodaysFocus } from "./TodaysFocus";
