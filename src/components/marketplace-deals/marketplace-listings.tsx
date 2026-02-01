@@ -630,14 +630,26 @@ function DealCard({
 
         {/* Property Specs - Single row with all 4 items */}
         <div className="mt-4 border-t border-border pt-3 pb-1">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">{deal.beds} Beds</span>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground">{deal.baths} Baths</span>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground">{deal.sqft.toLocaleString()} SF</span>
-            <span className="text-muted-foreground">•</span>
-            <span className="text-muted-foreground">{yearBuilt} Built</span>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Bed className="h-3.5 w-3.5 shrink-0" />
+              <span>{deal.beds} Beds</span>
+            </span>
+            <span aria-hidden className="w-px h-4 bg-border" />
+            <span className="flex items-center gap-1">
+              <Bath className="h-3.5 w-3.5 shrink-0" />
+              <span>{deal.baths} Baths</span>
+            </span>
+            <span aria-hidden className="w-px h-4 bg-border" />
+            <span className="flex items-center gap-1">
+              <Ruler className="h-3.5 w-3.5 shrink-0" />
+              <span>{deal.sqft.toLocaleString()} SF</span>
+            </span>
+            <span aria-hidden className="w-px h-4 bg-border" />
+            <span className="flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5 shrink-0" />
+              <span>{yearBuilt} Built</span>
+            </span>
           </div>
         </div>
       </div>
