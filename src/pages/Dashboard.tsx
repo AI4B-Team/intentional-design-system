@@ -185,9 +185,7 @@ function PipelineValueCard({
                 <span className="text-muted-foreground">Goal: {goal}</span>
                 <span className={cn(
                   "font-medium",
-                  isCalmVariant 
-                    ? "text-success" 
-                    : goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
+                  goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
                 )}>
                   {goalProgress}%
                 </span>
@@ -196,10 +194,7 @@ function PipelineValueCard({
                 <div 
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
-                    // Calm variant always uses success color for progress
-                    isCalmVariant 
-                      ? "bg-success" 
-                      : goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
+                    goalProgress >= 75 ? "bg-success" : goalProgress >= 40 ? "bg-warning" : "bg-destructive"
                   )}
                   style={{ width: `${goalProgress}%` }}
                 />
