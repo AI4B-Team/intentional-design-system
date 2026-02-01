@@ -18,6 +18,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   ExternalLink,
   Home,
   List,
@@ -351,39 +357,66 @@ function DealListItem({
               <span className="text-[9px] text-muted-foreground self-start">View As:</span>
               <div className="flex items-center gap-1">
                 <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
-                  <button
-                    onClick={(e) => handleViewModeChange(e, "overview")}
-                    className={cn(
-                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                      cardViewMode === "overview"
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Overview
-                  </button>
-                  <button
-                    onClick={(e) => handleViewModeChange(e, "flip")}
-                    className={cn(
-                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                      cardViewMode === "flip"
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Flip
-                  </button>
-                  <button
-                    onClick={(e) => handleViewModeChange(e, "hold")}
-                    className={cn(
-                      "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                      cardViewMode === "hold"
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    Hold
-                  </button>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={(e) => handleViewModeChange(e, "overview")}
+                          className={cn(
+                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                            cardViewMode === "overview"
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          Overview
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white text-foreground border shadow-md">
+                        <p>Basic property details</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={(e) => handleViewModeChange(e, "flip")}
+                          className={cn(
+                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                            cardViewMode === "flip"
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          Flip
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white text-foreground border shadow-md">
+                        <p>ARV, repairs & profit potential</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={(e) => handleViewModeChange(e, "hold")}
+                          className={cn(
+                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                            cardViewMode === "hold"
+                              ? "bg-background text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          Hold
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="bg-white text-foreground border shadow-md">
+                        <p>Rent, cash flow & cap rate</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
                 <button
                   onClick={(e) => {
@@ -952,42 +985,69 @@ export function MarketplaceListings({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground mr-1">View As:</span>
             <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
-              <button
-                onClick={() => onGlobalCardViewModeChange?.("overview")}
-                className={cn(
-                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
-                  effectiveCardViewMode === "overview"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Overview
-              </button>
-              <button
-                onClick={() => onGlobalCardViewModeChange?.("flip")}
-                className={cn(
-                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
-                  effectiveCardViewMode === "flip"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Flip
-              </button>
-              <button
-                onClick={() => onGlobalCardViewModeChange?.("hold")}
-                className={cn(
-                  "px-3 py-1 text-xs font-medium rounded-sm transition-all",
-                  effectiveCardViewMode === "hold"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                Hold
-              </button>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => onGlobalCardViewModeChange?.("overview")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                        effectiveCardViewMode === "overview"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Overview
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white text-foreground border shadow-md">
+                    <p>Basic property details</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => onGlobalCardViewModeChange?.("flip")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                        effectiveCardViewMode === "flip"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Flip
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white text-foreground border shadow-md">
+                    <p>ARV, repairs & profit potential</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => onGlobalCardViewModeChange?.("hold")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                        effectiveCardViewMode === "hold"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Hold
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent className="bg-white text-foreground border shadow-md">
+                    <p>Rent, cash flow & cap rate</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </div>
         </div>
-          </div>
         
         {/* Row 2: Toolbar */}
         <div className="flex items-center justify-between">
