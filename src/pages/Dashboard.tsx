@@ -19,6 +19,8 @@ import { MomentumScore } from "@/components/dashboard/MomentumScore";
 import { StageActionCTA } from "@/components/dashboard/StageActionCTA";
 import { AIStuckInsight } from "@/components/dashboard/AIStuckInsight";
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
+import { AutoRulesPanel } from "@/components/dashboard/AutoRulesPanel";
+import { DailySummary } from "@/components/dashboard/DailySummary";
 import { useTodaysFocus } from "@/hooks/useTodaysFocus";
 import {
   Building2,
@@ -1596,6 +1598,15 @@ export default function Dashboard() {
         </Card>
       </div>
 
+
+      {/* Automation & Summary Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Auto-Rules Panel */}
+        <AutoRulesPanel isCompact />
+
+        {/* Daily Summary */}
+        <DailySummary variant="compact" />
+      </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
