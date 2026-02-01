@@ -1517,22 +1517,22 @@ export default function Dashboard() {
                 })()}
               </div>
               {/* Legend */}
-              <div className="flex items-center justify-center gap-4 mt-2 text-tiny text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-2 text-tiny text-muted-foreground">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-500" />
-                  <span>Discovery (Leads)</span>
+                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
+                  <span className="whitespace-nowrap">Discovery (Leads)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-amber-500" />
-                  <span>Intent (Offers)</span>
+                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+                  <span className="whitespace-nowrap">Intent (Offers)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span>Commitment (Contracts)</span>
+                  <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
+                  <span className="whitespace-nowrap">Commitment (Contracts)</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                  <span>Outcome (Sold)</span>
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span className="whitespace-nowrap">Outcome (Sold)</span>
                 </div>
               </div>
             </div>
