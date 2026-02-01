@@ -35,7 +35,7 @@ export interface TaskItem {
   isEligibleForFocus: boolean; // Whether it can promote to Focus
 }
 
-const MAX_FOCUS_ITEMS = 3;
+const MAX_FOCUS_ITEMS = 2;
 
 /**
  * Calculate urgency score for a task

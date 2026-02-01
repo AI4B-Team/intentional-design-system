@@ -277,8 +277,8 @@ export function TodaysFocus() {
           </p>
         </div>
         {!isAllComplete && (
-          <span className="text-tiny font-medium px-2 py-1 rounded-full bg-primary/10 text-primary">
-            {displayFocusItems.length}/3 slots
+          <span className="text-tiny font-medium px-2 py-1 rounded-full bg-primary/10 text-primary uppercase tracking-wide">
+            {displayFocusItems.length}/6 Priorities
           </span>
         )}
       </div>
