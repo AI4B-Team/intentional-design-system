@@ -195,18 +195,27 @@ function DealListItem({
   onSelect,
   isSaved = false,
   onToggleSave,
-  cardViewMode,
-  onCardViewModeChange,
+  globalCardViewMode,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
   isSaved?: boolean;
   onToggleSave?: (dealId: string) => void;
-  cardViewMode: CardViewMode;
-  onCardViewModeChange: (mode: CardViewMode) => void;
+  globalCardViewMode: CardViewMode;
 }) {
   const navigate = useNavigate();
+  
+  // Local override state - null means use global mode
+  const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
+  
+  // Use local mode if set, otherwise fall back to global
+  const cardViewMode = localViewMode ?? globalCardViewMode;
+  
+  // Reset local override when global mode changes
+  useEffect(() => {
+    setLocalViewMode(null);
+  }, [globalCardViewMode]);
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -253,7 +262,7 @@ function DealListItem({
 
   const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
     e.stopPropagation();
-    onCardViewModeChange(mode);
+    setLocalViewMode(mode);
   };
 
   return (
@@ -545,18 +554,27 @@ function DealCard({
   onSelect,
   isSaved = false,
   onToggleSave,
-  cardViewMode,
-  onCardViewModeChange,
+  globalCardViewMode,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
   isSaved?: boolean;
   onToggleSave?: (dealId: string) => void;
-  cardViewMode: CardViewMode;
-  onCardViewModeChange: (mode: CardViewMode) => void;
+  globalCardViewMode: CardViewMode;
 }) {
   const navigate = useNavigate();
+  
+  // Local override state - null means use global mode
+  const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
+  
+  // Use local mode if set, otherwise fall back to global
+  const cardViewMode = localViewMode ?? globalCardViewMode;
+  
+  // Reset local override when global mode changes
+  useEffect(() => {
+    setLocalViewMode(null);
+  }, [globalCardViewMode]);
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -630,7 +648,7 @@ function DealCard({
 
   const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
     e.stopPropagation();
-    onCardViewModeChange(mode);
+    setLocalViewMode(mode);
   };
 
   return (
@@ -1167,8 +1185,7 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
-                  cardViewMode={effectiveCardViewMode}
-                  onCardViewModeChange={onGlobalCardViewModeChange ?? handleCardViewModeChange}
+                  globalCardViewMode={effectiveCardViewMode}
                 />
               ) : (
                 <DealCard
@@ -1178,8 +1195,7 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
-                  cardViewMode={effectiveCardViewMode}
-                  onCardViewModeChange={onGlobalCardViewModeChange ?? handleCardViewModeChange}
+                  globalCardViewMode={effectiveCardViewMode}
                 />
               )
             ))}
