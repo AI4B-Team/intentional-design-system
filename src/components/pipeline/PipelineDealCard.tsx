@@ -152,7 +152,7 @@ export function PipelineDealCard({
   return (
     <Card
       className={cn(
-        "overflow-hidden transition-all duration-200 hover:shadow-lg group cursor-pointer",
+        "transition-all duration-200 hover:shadow-lg group cursor-pointer",
         "border-l-4",
         urgency === "critical" && "border-l-destructive bg-destructive/5",
         urgency === "overdue" && "border-l-warning bg-warning/5",
