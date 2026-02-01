@@ -128,8 +128,8 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       setOrganization(orgData);
       setMembership(membershipData);
 
-      // Update last_active_at
-      await supabase
+      // Update last_active_at (fire and forget - don't block loading)
+      void supabase
         .from("organization_members")
         .update({ last_active_at: new Date().toISOString() })
         .eq("id", memberData.id);
