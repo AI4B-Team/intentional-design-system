@@ -234,14 +234,57 @@ export function useFocusTasks() {
       .sort((a, b) => b.urgencyScore - a.urgencyScore)
       .slice(0, MAX_FOCUS_ITEMS);
 
-    // 4. Sort task items - uncompleted first, then by urgency
+    // 4. Fill in demo items if we have fewer than 3 focus items
+    const demoFillItems: FocusItem[] = [
+      {
+        id: "demo-offers-pending",
+        type: "offer_followup",
+        title: "2 Offers Awaiting Response",
+        subtitle: "Follow up needed",
+        time: "Waiting 2 Days",
+        priority: "high",
+        urgencyScore: 80,
+        source: "insight",
+        completed: false,
+        actionLabel: "Follow Up",
+        actionRoute: "/properties?status=offer_made",
+      },
+      {
+        id: "demo-stalling",
+        type: "stalling",
+        title: "3 Deals Stalling",
+        subtitle: "No activity recently",
+        time: "Waiting 2 Days",
+        priority: "medium",
+        urgencyScore: 60,
+        source: "insight",
+        completed: false,
+        actionLabel: "Re-Engage",
+        actionRoute: "/properties?status=contacted",
+      },
+    ];
+
+    // Add demo items to fill up to 3 slots
+    const finalFocusItems = [...sortedFocusItems];
+    let demoIndex = 0;
+    while (finalFocusItems.length < MAX_FOCUS_ITEMS && demoIndex < demoFillItems.length) {
+      // Only add demo item if we don't already have that type
+      const demoItem = demoFillItems[demoIndex];
+      const hasType = finalFocusItems.some(item => item.type === demoItem.type);
+      if (!hasType) {
+        finalFocusItems.push(demoItem);
+      }
+      demoIndex++;
+    }
+
+    // 5. Sort task items - uncompleted first, then by urgency
     const sortedTaskItems = allTaskItems.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
       return b.urgencyScore - a.urgencyScore;
     });
 
     return {
-      focusItems: sortedFocusItems,
+      focusItems: finalFocusItems,
       taskItems: sortedTaskItems,
     };
   }, [insights, todaysTasks, completedFocusIds]);
