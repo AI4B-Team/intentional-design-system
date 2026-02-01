@@ -18,6 +18,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Bookmark,
   Rocket,
   Mail,
@@ -139,6 +146,12 @@ Best regards`,
 
 const MAX_RESULTS_FOR_ALERTS = 100000;
 
+const FREQUENCY_OPTIONS = [
+  { value: "instant", label: "Instant", description: "As new deals match" },
+  { value: "daily", label: "Daily Digest", description: "Once per day" },
+  { value: "weekly", label: "Weekly Summary", description: "Once per week" },
+];
+
 export function SaveSearchDialog({
   open,
   onOpenChange,
@@ -150,6 +163,7 @@ export function SaveSearchDialog({
   const [step, setStep] = useState<Step>("save");
   const [searchName, setSearchName] = useState("");
   const [dealAlertsEnabled, setDealAlertsEnabled] = useState(true);
+  const [notificationFrequency, setNotificationFrequency] = useState("daily");
   const [isSaving, setIsSaving] = useState(false);
   const [savedSearchId, setSavedSearchId] = useState<string | null>(null);
   // Campaign setup state
@@ -182,7 +196,7 @@ export function SaveSearchDialog({
           user_id: user.id,
           name: searchName.trim(),
           filters: filters,
-          notification_frequency: dealAlertsEnabled && resultCount <= MAX_RESULTS_FOR_ALERTS ? "daily" : "never",
+          notification_frequency: dealAlertsEnabled && resultCount <= MAX_RESULTS_FOR_ALERTS ? notificationFrequency : "never",
           result_count: resultCount,
         })
         .select()
@@ -227,6 +241,7 @@ export function SaveSearchDialog({
     setStep("save");
     setSearchName("");
     setDealAlertsEnabled(true);
+    setNotificationFrequency("daily");
     setSavedSearchId(null);
     setSelectedTemplate("cash-offer");
     setSendEmail(true);
@@ -311,11 +326,35 @@ export function SaveSearchDialog({
                         Try adding filters to narrow down your search and provide targeted results.
                       </p>
                     </div>
+                  ) : dealAlertsEnabled ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <Label htmlFor="frequency" className="text-sm text-muted-foreground whitespace-nowrap">
+                          Frequency
+                        </Label>
+                        <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
+                          <SelectTrigger id="frequency" className="flex-1">
+                            <SelectValue placeholder="Select frequency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {FREQUENCY_OPTIONS.map((option) => (
+                              <SelectItem key={option.value} value={option.value}>
+                                <div className="flex flex-col">
+                                  <span>{option.label}</span>
+                                  <span className="text-xs text-muted-foreground">{option.description}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Get fresh deals delivered to your email inbox. We monitor millions of properties updated daily.
+                      </p>
+                    </div>
                   ) : (
                     <p className="text-sm text-muted-foreground">
-                      {dealAlertsEnabled 
-                        ? "Get fresh deals delivered to your email inbox daily. We monitor millions of properties updated daily."
-                        : "Enable to receive email notifications when new deals match your search criteria."}
+                      Enable to receive email notifications when new deals match your search criteria.
                     </p>
                   )}
                 </div>
