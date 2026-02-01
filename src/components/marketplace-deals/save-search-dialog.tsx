@@ -16,13 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import {
   Bookmark,
   Rocket,
@@ -143,12 +137,7 @@ Best regards`,
   },
 ];
 
-const NOTIFICATION_OPTIONS = [
-  { value: "never", label: "Never", description: "No notifications" },
-  { value: "instant", label: "Instant", description: "As new deals match" },
-  { value: "daily", label: "Daily Digest", description: "Once per day" },
-  { value: "weekly", label: "Weekly Summary", description: "Once per week" },
-];
+const MAX_RESULTS_FOR_ALERTS = 100000;
 
 export function SaveSearchDialog({
   open,
@@ -160,10 +149,9 @@ export function SaveSearchDialog({
   const { user } = useAuth();
   const [step, setStep] = useState<Step>("save");
   const [searchName, setSearchName] = useState("");
-  const [notificationFrequency, setNotificationFrequency] = useState("daily");
+  const [dealAlertsEnabled, setDealAlertsEnabled] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [savedSearchId, setSavedSearchId] = useState<string | null>(null);
-  
   // Campaign setup state
   const [selectedTemplate, setSelectedTemplate] = useState<string>("cash-offer");
   const [sendEmail, setSendEmail] = useState(true);
@@ -194,7 +182,7 @@ export function SaveSearchDialog({
           user_id: user.id,
           name: searchName.trim(),
           filters: filters,
-          notification_frequency: notificationFrequency,
+          notification_frequency: dealAlertsEnabled && resultCount <= MAX_RESULTS_FOR_ALERTS ? "daily" : "never",
           result_count: resultCount,
         })
         .select()
@@ -238,7 +226,7 @@ export function SaveSearchDialog({
   const resetState = () => {
     setStep("save");
     setSearchName("");
-    setNotificationFrequency("daily");
+    setDealAlertsEnabled(true);
     setSavedSearchId(null);
     setSelectedTemplate("cash-offer");
     setSendEmail(true);
@@ -299,26 +287,37 @@ export function SaveSearchDialog({
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="notification-frequency" className="flex items-center gap-2">
-                    <Bell className="h-4 w-4" />
-                    Notification Frequency
-                  </Label>
-                  <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
-                    <SelectTrigger id="notification-frequency">
-                      <SelectValue placeholder="Select frequency" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {NOTIFICATION_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div className="flex flex-col">
-                            <span>{option.label}</span>
-                            <span className="text-xs text-muted-foreground">{option.description}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                {/* Deal Alerts Toggle */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="deal-alerts" className="flex items-center gap-2 cursor-pointer">
+                      <Bell className="h-4 w-4" />
+                      Deal Alerts
+                    </Label>
+                    <Switch
+                      id="deal-alerts"
+                      checked={dealAlertsEnabled && resultCount <= MAX_RESULTS_FOR_ALERTS}
+                      onCheckedChange={setDealAlertsEnabled}
+                      disabled={resultCount > MAX_RESULTS_FOR_ALERTS}
+                    />
+                  </div>
+                  
+                  {resultCount > MAX_RESULTS_FOR_ALERTS ? (
+                    <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 space-y-1">
+                      <p className="text-sm font-medium text-warning-foreground">
+                        Only searches with {MAX_RESULTS_FOR_ALERTS.toLocaleString()} results or less can enable deal alerts.
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Try adding filters to narrow down your search and provide targeted results.
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {dealAlertsEnabled 
+                        ? "Get fresh deals delivered to your email inbox daily. We monitor millions of properties updated daily."
+                        : "Enable to receive email notifications when new deals match your search criteria."}
+                    </p>
+                  )}
                 </div>
 
                 <div className="rounded-lg bg-muted/50 p-3 space-y-2">
