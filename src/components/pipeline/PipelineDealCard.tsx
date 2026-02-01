@@ -313,9 +313,9 @@ export function PipelineDealCard({
 
       {/* Action Footer */}
       <div className="p-2 pt-0">
-        <div className="flex items-center gap-2">
-          {/* Quick Move Back */}
-          {prevStage && (
+        <div className="flex items-center justify-center gap-2">
+          {/* Quick Move Back - or placeholder for centering */}
+          {prevStage ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -336,6 +336,8 @@ export function PipelineDealCard({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          ) : (
+            <div className="h-8 w-8 shrink-0" />
           )}
 
           {/* Primary CTA */}
@@ -355,8 +357,8 @@ export function PipelineDealCard({
             {nextAction.text}
           </Button>
 
-          {/* Quick Move Forward */}
-          {nextStage && (
+          {/* Quick Move Forward - or placeholder for centering */}
+          {nextStage ? (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -377,6 +379,8 @@ export function PipelineDealCard({
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          ) : (
+            <div className="h-8 w-8 shrink-0" />
           )}
         </div>
       </div>
