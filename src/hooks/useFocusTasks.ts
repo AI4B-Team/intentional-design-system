@@ -115,13 +115,15 @@ export function useFocusTasks() {
     if (insights) {
       // Leads needing first contact (Critical priority)
       if (insights.leadsInsight?.count && insights.leadsInsight.count > 0) {
+        const count = insights.leadsInsight.count;
         allFocusItems.push({
           id: "focus-leads-contact",
           type: "lead_contact",
-          title: `${insights.leadsInsight.count} Lead${insights.leadsInsight.count > 1 ? "s" : ""} Need First Contact`,
+          title: `${count} Lead${count > 1 ? "s" : ""} Need${count === 1 ? "s" : ""} First Contact`,
           subtitle: "No outreach yet",
-          priority: insights.leadsInsight.count > 5 ? "critical" : "high",
-          urgencyScore: insights.leadsInsight.count > 5 ? 95 : 85,
+          time: count > 3 ? "Overdue" : "Added today",
+          priority: count > 5 ? "critical" : "high",
+          urgencyScore: count > 5 ? 95 : 85,
           source: "insight",
           completed: completedFocusIds.has("focus-leads-contact"),
           actionLabel: "Call Now",
@@ -131,13 +133,15 @@ export function useFocusTasks() {
 
       // Offers awaiting response (High priority)
       if (insights.offersInsight?.count && insights.offersInsight.count > 0) {
+        const count = insights.offersInsight.count;
         allFocusItems.push({
           id: "focus-offers-pending",
           type: "offer_followup",
-          title: `${insights.offersInsight.count} Offer${insights.offersInsight.count > 1 ? "s" : ""} Awaiting Response`,
+          title: `${count} Offer${count > 1 ? "s" : ""} Awaiting Response`,
           subtitle: "Follow up needed",
-          priority: insights.offersInsight.count > 3 ? "critical" : "high",
-          urgencyScore: insights.offersInsight.count > 3 ? 90 : 80,
+          time: count > 2 ? "Waiting 2+ days" : "Waiting 1 day",
+          priority: count > 3 ? "critical" : "high",
+          urgencyScore: count > 3 ? 90 : 80,
           source: "insight",
           completed: completedFocusIds.has("focus-offers-pending"),
           actionLabel: "Follow Up",
@@ -150,27 +154,31 @@ export function useFocusTasks() {
         (opp) => opp.urgency_reason?.includes("🔥") || opp.deal_score_rank === "🏆 Top Deal"
       );
       if (hotDeals && hotDeals.length > 0) {
+        const count = hotDeals.length;
         allFocusItems.push({
           id: "focus-hot-deals",
           type: "hot_deal",
-          title: `${hotDeals.length} Hot Deal${hotDeals.length > 1 ? "s" : ""} Need Action`,
+          title: `${count} Hot Deal${count > 1 ? "s" : ""} Need${count === 1 ? "s" : ""} Action`,
           subtitle: "High momentum opportunities",
+          time: "Act now",
           priority: "high",
           urgencyScore: 75,
           source: "insight",
           completed: completedFocusIds.has("focus-hot-deals"),
-          actionLabel: "View Deals",
+          actionLabel: "View Deal",
           actionRoute: "/pipeline",
         });
       }
 
       // Stalling deals (Medium priority)
       if (insights.stallingCount > 0) {
+        const count = insights.stallingCount;
         allFocusItems.push({
           id: "focus-stalling",
           type: "stalling",
-          title: `${insights.stallingCount} Deal${insights.stallingCount > 1 ? "s" : ""} Stalling`,
+          title: `${count} Deal${count > 1 ? "s" : ""} Stalling`,
           subtitle: "No activity recently",
+          time: "Overdue",
           priority: "medium",
           urgencyScore: 60,
           source: "insight",
