@@ -603,18 +603,6 @@ function DealCard({
           </div>
         </div>
 
-        {/* Rent & PITI Row */}
-        <div className="mt-4 flex items-center border-t border-border pt-4">
-          <div className="flex-1 flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Rent</span>
-            <span className="font-semibold text-foreground">{formatCurrency(monthlyRent)}/mo</span>
-          </div>
-          <div className="w-px h-6 bg-border mx-4" />
-          <div className="flex-1 flex items-center justify-end gap-2">
-            <span className="text-sm text-muted-foreground">PITI</span>
-            <span className="font-semibold text-foreground">{formatCurrency(piti)}/mo</span>
-          </div>
-        </div>
 
 
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
