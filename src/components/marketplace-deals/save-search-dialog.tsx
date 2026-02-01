@@ -265,7 +265,7 @@ export function SaveSearchDialog({
     if (filters.bedsMin) parts.push(`${filters.bedsMin}+ beds`);
     if (filters.bathsMin) parts.push(`${filters.bathsMin}+ baths`);
     if (filters.address) parts.push(`"${filters.address}"`);
-    return parts.length > 0 ? parts.join(" • ") : "All properties";
+    return parts.length > 0 ? parts.join(" • ") : "All Properties";
   };
 
   return (
