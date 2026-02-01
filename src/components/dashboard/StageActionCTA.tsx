@@ -115,7 +115,7 @@ export function StageActionCTA({ stageStatus, stageLabel, count, percentage, sho
       variant="ghost"
       size="sm"
       className={cn(
-        "h-5 px-1.5 gap-1 text-tiny font-medium transition-all",
+        "h-4 px-1 gap-0.5 text-[10px] font-medium transition-all leading-none",
         "opacity-0 group-hover:opacity-100",
         "hover:bg-primary/10 hover:text-primary",
         // Show by default on mobile
