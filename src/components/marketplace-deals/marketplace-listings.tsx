@@ -951,7 +951,7 @@ export function MarketplaceListings({
           
           {/* Global View As Toggle */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">View As:</span>
+            <span className="text-xs text-muted-foreground mr-1">View As:</span>
             <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
               <button
                 onClick={() => onGlobalCardViewModeChange?.("overview")}
@@ -986,9 +986,9 @@ export function MarketplaceListings({
               >
                 Hold
               </button>
-            </div>
           </div>
         </div>
+          </div>
         
         {/* Row 2: Toolbar */}
         <div className="flex items-center justify-between">
