@@ -11,8 +11,8 @@ interface PipelineStageData {
 
 interface MomentumScoreProps {
   pipelineStats: PipelineStageData[] | null;
+  previousPipelineStats?: PipelineStageData[] | null; // Last week's data for trend
   isLoading?: boolean;
-  trend?: "gaining" | "flat" | "slipping";
 }
 
 // Category weights for momentum calculation
@@ -34,30 +34,40 @@ const CATEGORY_WEIGHTS: Record<string, number> = {
   sold: 4,
 };
 
-export function MomentumScore({ pipelineStats, isLoading, trend = "flat" }: MomentumScoreProps) {
-  const score = React.useMemo(() => {
-    if (!pipelineStats || pipelineStats.length === 0) return 0;
-    
-    // Calculate weighted score
-    let weightedSum = 0;
-    let maxPossibleWeight = 0;
-    let totalDeals = 0;
-    
-    pipelineStats.forEach((stage) => {
-      const weight = CATEGORY_WEIGHTS[stage.status] || 1;
-      weightedSum += stage.count * weight;
-      totalDeals += stage.count;
-    });
-    
-    // Max possible is if all deals were at highest weight (4x)
-    maxPossibleWeight = totalDeals * 4;
-    
-    if (maxPossibleWeight === 0) return 0;
-    
-    // Score is percentage of weighted progress (0-100)
-    const rawScore = Math.round((weightedSum / maxPossibleWeight) * 100);
-    return Math.min(100, Math.max(0, rawScore));
-  }, [pipelineStats]);
+function calculateMomentumScore(stats: PipelineStageData[] | null): number {
+  if (!stats || stats.length === 0) return 0;
+  
+  let weightedSum = 0;
+  let totalDeals = 0;
+  
+  stats.forEach((stage) => {
+    const weight = CATEGORY_WEIGHTS[stage.status] || 1;
+    weightedSum += stage.count * weight;
+    totalDeals += stage.count;
+  });
+  
+  // Max possible is if all deals were at highest weight (4x)
+  const maxPossibleWeight = totalDeals * 4;
+  
+  if (maxPossibleWeight === 0) return 0;
+  
+  // Score is percentage of weighted progress (0-100)
+  const rawScore = Math.round((weightedSum / maxPossibleWeight) * 100);
+  return Math.min(100, Math.max(0, rawScore));
+}
+
+export function MomentumScore({ pipelineStats, previousPipelineStats, isLoading }: MomentumScoreProps) {
+  const score = calculateMomentumScore(pipelineStats);
+  const previousScore = calculateMomentumScore(previousPipelineStats || null);
+  
+  // Calculate trend from score comparison
+  const trend = React.useMemo(() => {
+    if (!previousPipelineStats) return "flat";
+    const diff = score - previousScore;
+    if (diff >= 5) return "gaining";
+    if (diff <= -5) return "slipping";
+    return "flat";
+  }, [score, previousScore, previousPipelineStats]);
 
   const TrendIcon = trend === "gaining" ? TrendingUp : trend === "slipping" ? TrendingDown : Minus;
   const trendColor = trend === "gaining" ? "text-success" : trend === "slipping" ? "text-destructive" : "text-muted-foreground";
@@ -88,8 +98,15 @@ export function MomentumScore({ pipelineStats, isLoading, trend = "flat" }: Mome
               {score}
             </span>
             <span className="text-tiny text-muted-foreground font-medium">/ 100</span>
-            <div className={cn("flex items-center gap-0.5 ml-1", trendColor)}>
-              <TrendIcon className="h-3.5 w-3.5" />
+            <div className={cn("flex items-center gap-0.5 ml-1 px-1.5 py-0.5 rounded-full", 
+              trend === "gaining" ? "bg-success/10" : 
+              trend === "slipping" ? "bg-destructive/10" : 
+              "bg-muted"
+            )}>
+              <TrendIcon className={cn("h-3.5 w-3.5", trendColor)} />
+              <span className={cn("text-tiny font-medium hidden sm:inline", trendColor)}>
+                {trendLabel}
+              </span>
             </div>
           </div>
         </TooltipTrigger>
@@ -102,6 +119,11 @@ export function MomentumScore({ pipelineStats, isLoading, trend = "flat" }: Mome
             <div className={cn("flex items-center gap-1.5 text-small font-medium", trendColor)}>
               <TrendIcon className="h-3.5 w-3.5" />
               <span>{trendLabel} this week</span>
+              {previousPipelineStats && (
+                <span className="text-muted-foreground">
+                  (was {previousScore})
+                </span>
+              )}
             </div>
           </div>
         </TooltipContent>

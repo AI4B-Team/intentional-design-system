@@ -18,6 +18,8 @@ import { DailyFocus } from "@/components/dashboard/DailyFocus";
 import { MomentumScore } from "@/components/dashboard/MomentumScore";
 import { StageActionCTA } from "@/components/dashboard/StageActionCTA";
 import { AIStuckInsight } from "@/components/dashboard/AIStuckInsight";
+import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
+import { useTodaysFocus } from "@/hooks/useTodaysFocus";
 import {
   Building2,
   Calendar,
@@ -841,6 +843,7 @@ export default function Dashboard() {
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   const { data: recentActivity, isLoading: activityLoading } = useRecentActivity(20);
   const { data: insights } = useDashboardInsights();
+  const { data: focusDeals, isLoading: focusLoading } = useTodaysFocus();
 
   // Demo data for visualization when no real data exists
   const demoData = {
@@ -1354,6 +1357,14 @@ export default function Dashboard() {
         />
       </div>
 
+      {/* Today's Focus - AI Priority Stack (Above Hot Opportunities) */}
+      <div className="mb-6">
+        <TodaysFocus 
+          deals={focusDeals || []}
+          isLoading={focusLoading}
+        />
+      </div>
+
       {/* Middle Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Hot Opportunities */}
@@ -1459,7 +1470,6 @@ export default function Dashboard() {
                 <MomentumScore 
                   pipelineStats={getPipelineStatsForTimePeriod || null}
                   isLoading={pipelineLoading}
-                  trend="flat" // TODO: Calculate trend from historical data
                 />
                 <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
                   {totalPipeline} Total
