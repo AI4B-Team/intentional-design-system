@@ -90,7 +90,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
     lat: 26.1224,
     lng: -80.1373,
-    createdAt: getDateString(0), // Today - shows "New"
+    createdAt: getDateString(2), // 2 days ago - shows "New 2 Days Ago"
   },
   {
     id: "3",
