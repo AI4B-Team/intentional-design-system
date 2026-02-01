@@ -75,6 +75,16 @@ import { format, formatDistanceToNow, differenceInDays } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  FocusStrip,
+  getFocusFilteredDeals,
+  StagePressureIndicator,
+  QuickMoveButtons,
+  StallingStat,
+  getStalledDeals,
+  PipelineGoalHeader,
+  EmptyStageGuide,
+} from "@/components/pipeline";
 
 // Pipeline stages configuration - colors match dashboard tiles
 const PIPELINE_STAGES = [
@@ -285,10 +295,10 @@ const MOCK_DEALS = [
     contact_email: "emily@gmail.com",
     contact_type: "Seller",
     source: "Referral",
-    days_in_stage: 12,
+    days_in_stage: 18,
     created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 35).toISOString(),
     last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    notes: "Contract signed, closing in 18 days",
+    notes: "Contract signed, closing in 12 days",
     property_type: "Single Family",
     beds: 5,
     baths: 3,
@@ -568,6 +578,12 @@ function DealCard({
             {isOverdue && <AlertCircle className="h-3 w-3" />}
           </div>
         </div>
+
+        {/* Quick Move Buttons */}
+        <QuickMoveButtons 
+          currentStage={deal.stage} 
+          onMove={onMove}
+        />
       </CardContent>
     </Card>
   );
@@ -575,12 +591,14 @@ function DealCard({
 
 function StageColumn({ 
   stage, 
-  deals, 
+  deals,
+  allDeals, 
   onViewDeal,
   onMoveDeal,
 }: { 
   stage: typeof PIPELINE_STAGES[0]; 
   deals: PipelineDeal[];
+  allDeals: PipelineDeal[];
   onViewDeal: (deal: PipelineDeal) => void;
   onMoveDeal: (dealId: string, newStage: string) => void;
 }) {
@@ -638,16 +656,16 @@ function StageColumn({
               </span>
             )}
           </div>
+
+          {/* Stage Pressure Indicator */}
+          <StagePressureIndicator stageId={stage.id} deals={allDeals} />
         </div>
 
         {/* Deals */}
-        <ScrollArea className="h-[calc(100vh-320px)]">
+        <ScrollArea className="h-[calc(100vh-380px)]">
           <div className="p-2 space-y-2">
             {deals.length === 0 ? (
-              <div className="text-center py-8 text-content-tertiary">
-                <Kanban className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                <p className="text-tiny">No deals in this stage</p>
-              </div>
+              <EmptyStageGuide stageId={stage.id} />
             ) : (
               deals.map((deal) => (
                 <DealCard 
@@ -666,24 +684,24 @@ function StageColumn({
   );
 }
 
-function PipelineStats({ deals }: { deals: PipelineDeal[] }) {
+function PipelineStats({ 
+  deals, 
+  onFilterStalled, 
+  isStalledFiltered 
+}: { 
+  deals: PipelineDeal[];
+  onFilterStalled: (enabled: boolean) => void;
+  isStalledFiltered: boolean;
+}) {
   const totalDeals = deals.length;
   const totalPipelineValue = deals.reduce((sum, d) => sum + (d.offer_amount || d.asking_price), 0);
   const underContract = deals.filter(d => d.stage === "under_contract").length;
   const avgLeadScore = totalDeals > 0 
     ? Math.round(deals.reduce((sum, d) => sum + d.lead_score, 0) / totalDeals)
     : 0;
-  
-  // Stuck deals: no activity in 5+ days OR overdue in stage
-  const stuckDeals = deals.filter(d => {
-    const daysSinceActivity = differenceInDays(new Date(), new Date(d.last_activity));
-    const stageConfig = PIPELINE_STAGES.find(s => s.id === d.stage);
-    const isOverdue = stageConfig && stageConfig.targetDays > 0 && d.days_in_stage > stageConfig.targetDays;
-    return daysSinceActivity >= 5 || isOverdue;
-  }).length;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
       <Card className="p-4">
         <div className="flex items-center gap-3">
           <div className="h-10 w-10 rounded-lg bg-brand/10 flex items-center justify-center">
@@ -732,32 +750,13 @@ function PipelineStats({ deals }: { deals: PipelineDeal[] }) {
         </div>
       </Card>
       
-      {/* Stuck Deals Alert */}
-      <Card className={cn(
-        "p-4",
-        stuckDeals > 0 && "border-warning/50 bg-warning/5"
-      )}>
-        <div className="flex items-center gap-3">
-          <div className={cn(
-            "h-10 w-10 rounded-lg flex items-center justify-center",
-            stuckDeals > 0 ? "bg-warning/20" : "bg-muted"
-          )}>
-            <AlertTriangle className={cn(
-              "h-5 w-5",
-              stuckDeals > 0 ? "text-warning" : "text-muted-foreground"
-            )} />
-          </div>
-          <div>
-            <p className="text-tiny text-content-tertiary">Stalling</p>
-            <p className={cn(
-              "text-xl font-bold",
-              stuckDeals > 0 && "text-warning"
-            )}>
-              {stuckDeals} {stuckDeals === 1 ? "deal" : "deals"}
-            </p>
-          </div>
-        </div>
-      </Card>
+      {/* Stalling Stat - Now Interactive */}
+      <StallingStat 
+        deals={deals}
+        stages={PIPELINE_STAGES}
+        onFilterStalled={onFilterStalled}
+        isFiltered={isStalledFiltered}
+      />
     </div>
   );
 }
@@ -770,10 +769,16 @@ export default function Pipeline() {
   const [sourceFilter, setSourceFilter] = React.useState<string>("all");
   const [selectedDeal, setSelectedDeal] = React.useState<PipelineDeal | null>(null);
   const [deals, setDeals] = React.useState<PipelineDeal[]>(MOCK_DEALS);
+  const [focusFilter, setFocusFilter] = React.useState<string | null>(null);
+  const [stalledFilter, setStalledFilter] = React.useState(false);
+
+  // Goals (would come from user settings/database)
+  const underContractGoal = 5;
+  const closedGoal = 3;
 
   // Filter deals
   const filteredDeals = React.useMemo(() => {
-    return deals.filter(deal => {
+    let filtered = deals.filter(deal => {
       const matchesSearch = !search || 
         deal.address.toLowerCase().includes(search.toLowerCase()) ||
         deal.contact_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -781,7 +786,19 @@ export default function Pipeline() {
       const matchesSource = sourceFilter === "all" || deal.source === sourceFilter;
       return matchesSearch && matchesSource;
     });
-  }, [deals, search, sourceFilter]);
+
+    // Apply focus filter
+    if (focusFilter) {
+      filtered = getFocusFilteredDeals(filtered, focusFilter);
+    }
+
+    // Apply stalled filter
+    if (stalledFilter) {
+      filtered = getStalledDeals(filtered, PIPELINE_STAGES);
+    }
+
+    return filtered;
+  }, [deals, search, sourceFilter, focusFilter, stalledFilter]);
 
   // Get deals by stage
   const dealsByStage = React.useMemo(() => {
@@ -796,6 +813,10 @@ export default function Pipeline() {
   const sources = React.useMemo(() => {
     return [...new Set(deals.map(d => d.source))];
   }, [deals]);
+
+  // Count for goals
+  const underContractCount = deals.filter(d => d.stage === "under_contract").length;
+  const closedCount = deals.filter(d => d.stage === "closed" || d.stage === "sold").length;
 
   const handleViewDeal = (deal: PipelineDeal) => {
     setSelectedDeal(deal);
@@ -815,25 +836,56 @@ export default function Pipeline() {
     }
   };
 
+  const handleFocusFilterChange = (filter: string | null) => {
+    setFocusFilter(filter);
+    if (filter) setStalledFilter(false);
+  };
+
+  const handleStalledFilterChange = (enabled: boolean) => {
+    setStalledFilter(enabled);
+    if (enabled) setFocusFilter(null);
+  };
+
   return (
     <PageLayout>
       <PageHeader
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" icon={<RefreshCw />}>
-              Sync
-            </Button>
-            <Button variant="primary" size="sm" icon={<Plus />}>
-              Add Deal
-            </Button>
+          <div className="flex items-center gap-4">
+            {/* Goal Context */}
+            <PipelineGoalHeader
+              underContractCount={underContractCount}
+              underContractGoal={underContractGoal}
+              closedCount={closedCount}
+              closedGoal={closedGoal}
+            />
+            <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" icon={<RefreshCw />}>
+                Sync
+              </Button>
+              <Button variant="primary" size="sm" icon={<Plus />}>
+                Add Deal
+              </Button>
+            </div>
           </div>
         }
       />
 
       {/* Stats */}
-      <PipelineStats deals={filteredDeals} />
+      <PipelineStats 
+        deals={deals} 
+        onFilterStalled={handleStalledFilterChange}
+        isStalledFiltered={stalledFilter}
+      />
+
+      {/* Focus Strip */}
+      <FocusStrip 
+        deals={deals}
+        stages={PIPELINE_STAGES}
+        activeFilter={focusFilter}
+        onFilterChange={handleFocusFilterChange}
+      />
 
       {/* Filters */}
       <div className="flex items-center gap-4 mb-4">
@@ -860,6 +912,16 @@ export default function Pipeline() {
         <Button variant="secondary" size="sm" icon={<Filter />}>
           More Filters
         </Button>
+        {(focusFilter || stalledFilter) && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => { setFocusFilter(null); setStalledFilter(false); }}
+            className="text-muted-foreground"
+          >
+            Clear Filters
+          </Button>
+        )}
       </div>
 
       {/* Kanban Board */}
@@ -869,6 +931,7 @@ export default function Pipeline() {
             key={stage.id}
             stage={stage}
             deals={dealsByStage[stage.id] || []}
+            allDeals={deals}
             onViewDeal={handleViewDeal}
             onMoveDeal={handleMoveDeal}
           />
