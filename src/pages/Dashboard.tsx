@@ -1224,7 +1224,7 @@ export default function Dashboard() {
       {/* Middle Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Hot Opportunities */}
-        <Card variant="default" padding="none" className="overflow-hidden">
+        <Card variant="default" padding="none" className="overflow-hidden flex flex-col">
           <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-gradient-to-r from-destructive/5 to-transparent">
             <div className="flex items-center gap-2.5">
               <div className="p-1.5 rounded-lg bg-destructive/10">
@@ -1240,7 +1240,7 @@ export default function Dashboard() {
               <ArrowRight className="h-3.5 w-3.5 ml-1" />
             </Button>
           </div>
-          <div className="overflow-hidden">
+          <div className="overflow-hidden flex-1">
             {hotLoading ? (
               <div className="p-4 space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -1298,7 +1298,7 @@ export default function Dashboard() {
         </Card>
 
         {/* Pipeline Overview */}
-        <Card variant="default" padding="none" className="overflow-hidden">
+        <Card variant="default" padding="none" className="overflow-hidden flex flex-col">
           <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
             <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
               <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
@@ -1336,7 +1336,7 @@ export default function Dashboard() {
               ))}
             </div>
           ) : (
-            <div className="p-2">
+            <div className="p-2 flex-1">
               {getPipelineStatsForTimePeriod?.map((stage, index) => (
                 <PipelineStage
                   key={stage.status}
@@ -1362,6 +1362,14 @@ export default function Dashboard() {
               </div>
             </div>
           )}
+          {/* View Pipeline Link */}
+          <div 
+            className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
+            onClick={() => navigate("/pipeline")}
+          >
+            <span>View Full Pipeline</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
         </Card>
       </div>
 
