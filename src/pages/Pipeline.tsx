@@ -124,6 +124,13 @@ const PIPELINE_STAGES = [
     targetDays: 14
   },
   { 
+    id: "follow_up", 
+    label: "Follow Up", 
+    color: "bg-amber-300", 
+    description: "Awaiting response or next contact",
+    targetDays: 7
+  },
+  { 
     id: "under_contract", 
     label: "Under Contract", 
     color: "bg-blue-500", 

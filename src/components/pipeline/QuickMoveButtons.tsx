@@ -63,6 +63,20 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
   ],
   negotiating: [
     {
+      targetStage: "follow_up",
+      label: "Follow Up",
+      icon: Phone,
+      color: "bg-amber-400 hover:bg-amber-500",
+    },
+    {
+      targetStage: "under_contract",
+      label: "Under Contract",
+      icon: CheckCircle2,
+      color: "bg-blue-500 hover:bg-blue-600",
+    },
+  ],
+  follow_up: [
+    {
       targetStage: "under_contract",
       label: "Under Contract",
       icon: CheckCircle2,

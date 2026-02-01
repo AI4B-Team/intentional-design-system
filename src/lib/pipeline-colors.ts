@@ -16,6 +16,7 @@ export type PipelineStageId =
   | "appointment" 
   | "offer_made" 
   | "negotiating"
+  | "follow_up"
   | "under_contract" 
   | "marketing"
   | "closed"
@@ -66,7 +67,7 @@ export const PIPELINE_CATEGORIES: Record<PipelineCategoryId, PipelineCategory> =
   intent: {
     id: "intent",
     label: "Intent",
-    statuses: ["offer_made", "negotiating"],
+    statuses: ["offer_made", "negotiating", "follow_up"],
     colors: {
       bg: "bg-amber-500",
       bgLight: "bg-amber-100",
@@ -151,6 +152,12 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     text: "text-amber-500",
     badge: "bg-amber-100 text-amber-500",
   },
+  follow_up: {
+    bg: "bg-amber-400",
+    bgLight: "bg-amber-100",
+    text: "text-amber-500",
+    badge: "bg-amber-100 text-amber-500",
+  },
   
   // === COMMITMENT GROUP (Blue) - Under Contract ===
   under_contract: {
@@ -198,6 +205,7 @@ export const PIPELINE_LABELS: Record<PipelineStageId, string> = {
   appointment: "Appointments",
   offer_made: "Offers Made",
   negotiating: "Negotiating",
+  follow_up: "Follow Up",
   under_contract: "Under Contract",
   marketing: "Marketing",
   closed: "Purchased",
