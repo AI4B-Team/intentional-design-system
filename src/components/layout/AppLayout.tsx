@@ -89,20 +89,15 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
           breadcrumbs={breadcrumbs}
         />
 
-        {/* Page Content - fills remaining space, scrollable container */}
+        {/* Page Content - fills remaining space, never blank */}
         <main
           ref={mainRef}
           className={cn(
-            "flex-1 min-h-0 overflow-y-auto scrollbar-hide",
-            fullWidth ? "" : "p-4 lg:p-6"
+            "flex-1 flex flex-col overflow-y-auto scrollbar-hide",
+            fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >
-          <div className={cn(
-            "min-h-full",
-            !fullWidth && "max-w-7xl mx-auto w-full"
-          )}>
-            {children}
-          </div>
+          {children}
         </main>
       </div>
     </div>
