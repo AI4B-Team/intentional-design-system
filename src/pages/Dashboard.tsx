@@ -1466,10 +1466,10 @@ export default function Dashboard() {
                     />
                   ) : null;
                 })()}
-                {/* Intent (Yellow) - Offers + Negotiating */}
+                {/* Intent (Yellow) - Offers + Negotiating + Follow Up */}
                 {(() => {
                   const intentCount = getPipelineStatsForTimePeriod
-                    ?.filter(s => ["offer_made", "negotiating"].includes(s.status))
+                    ?.filter(s => ["offer_made", "negotiating", "follow_up"].includes(s.status))
                     .reduce((sum, s) => sum + s.count, 0) || 0;
                   const intentPct = (intentCount / totalPipeline) * 100;
                   return intentPct > 0 ? (
