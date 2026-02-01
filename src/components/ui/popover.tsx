@@ -20,8 +20,8 @@ const PopoverContent = React.forwardRef<
       avoidCollisions={true}
       collisionPadding={8}
       className={cn(
-        // Force high z-index and solid background - always open below trigger
-        "z-[100] w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
+        // Force high z-index (above dialogs at z-[110]) and solid background - always open below trigger
+        "z-[200] w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
