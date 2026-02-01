@@ -1,7 +1,5 @@
 import * as React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
+import { useDashboardInsights, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
 import { useTodaysTasks, type TodayTask } from "@/hooks/useTodaysTasks";
 
 export type FocusPriority = "critical" | "high" | "medium" | "low";
@@ -100,7 +98,6 @@ function isEligibleForFocus(task: TodayTask, urgencyScore: number): boolean {
 }
 
 export function useFocusTasks() {
-  const queryClient = useQueryClient();
   const { data: insights, isLoading: insightsLoading } = useDashboardInsights();
   const { data: todaysTasks, isLoading: tasksLoading } = useTodaysTasks();
   
