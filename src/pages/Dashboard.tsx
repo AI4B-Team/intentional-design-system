@@ -1256,9 +1256,9 @@ export default function Dashboard() {
 
         {/* Pipeline Overview */}
         <Card variant="default" padding="none" className="overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
-            <div className="flex items-center gap-2">
-              <h2 className="text-body font-semibold text-foreground">Pipeline Overview</h2>
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
+            <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+              <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
               <span className="text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">This Week</span>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
