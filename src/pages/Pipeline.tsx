@@ -830,7 +830,7 @@ export default function Pipeline() {
 
       {/* Deal Detail Modal */}
       <Dialog open={!!selectedDeal} onOpenChange={(open) => !open && setSelectedDeal(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg overflow-visible">
           {selectedDeal && (
             <>
               <DialogHeader>
@@ -843,7 +843,7 @@ export default function Pipeline() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-4 px-6 py-4">
                 {/* Stage & Score */}
                 <div className="flex items-center gap-3">
                   <Badge className={cn(
