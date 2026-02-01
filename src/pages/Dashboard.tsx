@@ -554,41 +554,49 @@ interface PipelineStageProps {
   bottleneckReason?: string;
 }
 
-// Icon mapping for pipeline stages - matches top 4 stat boxes
+// Icon mapping for pipeline stages - matches category colors
 const PIPELINE_STAGE_ICONS: Record<string, React.ElementType> = {
-  new: Users,           // Leads - matches Leads card
-  contacted: Phone,     // Contacted
-  appointment: Calendar, // Appointments
-  offer_made: FileText, // Offers Made - matches Offers card
-  negotiating: FileText, // Negotiating (same as offers)
-  under_contract: Handshake, // Under Contract - matches Contracts card
-  marketing: Megaphone,  // Marketing
-  closed: BadgeDollarSign,   // Purchased - matches Sold card
-  sold: BadgeDollarSign, // Sold
+  new: Users,           // Discovery - Red
+  contacted: Phone,     // Discovery - Red
+  appointment: Calendar, // Discovery - Red
+  offer_made: FileText, // Intent - Yellow
+  negotiating: FileText, // Intent - Yellow
+  under_contract: Handshake, // Commitment - Blue
+  marketing: Megaphone,  // Outcome - Green
+  closed: BadgeDollarSign,   // Outcome - Green
+  sold: BadgeDollarSign, // Outcome - Green
 };
 
-// Icon background colors for pipeline stages
+// Icon background colors for pipeline stages - CATEGORY COLORS
 const PIPELINE_STAGE_ICON_BG: Record<string, string> = {
+  // Discovery (Red)
   new: "bg-red-100",
-  contacted: "bg-red-50",
-  appointment: "bg-red-50",
+  contacted: "bg-red-100",
+  appointment: "bg-red-100",
+  // Intent (Yellow/Amber)
   offer_made: "bg-amber-100",
-  negotiating: "bg-amber-50",
+  negotiating: "bg-amber-100",
+  // Commitment (Blue)
   under_contract: "bg-blue-100",
-  marketing: "bg-purple-100",
+  // Outcome (Green)
+  marketing: "bg-emerald-100",
   closed: "bg-emerald-100",
   sold: "bg-emerald-100",
 };
 
-// Icon text colors for pipeline stages
+// Icon text colors for pipeline stages - CATEGORY COLORS
 const PIPELINE_STAGE_ICON_COLOR: Record<string, string> = {
+  // Discovery (Red)
   new: "text-red-500",
-  contacted: "text-red-400",
-  appointment: "text-red-400",
+  contacted: "text-red-500",
+  appointment: "text-red-500",
+  // Intent (Yellow/Amber)
   offer_made: "text-amber-500",
-  negotiating: "text-amber-400",
+  negotiating: "text-amber-500",
+  // Commitment (Blue)
   under_contract: "text-blue-600",
-  marketing: "text-purple-500",
+  // Outcome (Green)
+  marketing: "text-emerald-500",
   closed: "text-emerald-500",
   sold: "text-emerald-500",
 };
@@ -632,7 +640,7 @@ function PipelineStage({ stage, total, previousCount, onClick, isBottleneck, bot
         <div className="flex items-center gap-2">
           <p className={cn(
             "text-small font-medium group-hover:text-primary transition-colors truncate",
-            showPressure ? "text-warning" : "text-foreground"
+            showPressure ? "text-warning" : iconColor
           )}>
             {stage.label}
           </p>
@@ -1196,7 +1204,7 @@ export default function Dashboard() {
         />
         <PipelineValueCard
           title="Contracts"
-          subtitle="Locked Deals"
+          subtitle="Secured Deals"
           count={pipelineValueStats?.contracted.count || 0}
           totalValue={pipelineValueStats?.contracted.totalValue || 0}
           profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
@@ -1355,17 +1363,86 @@ export default function Dashboard() {
               ))}
             </div>
           )}
-          {/* Visual Bar */}
+          {/* Pipeline Composition Bar - Shows distribution across 4 categories */}
           {!pipelineLoading && totalPipeline > 0 && (
             <div className="px-4 pb-4">
-              <div className="flex h-2.5 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
-                {getPipelineStatsForTimePeriod?.map((stage) => (
-                  <div
-                    key={stage.status}
-                    className={cn("transition-all duration-500", stage.color)}
-                    style={{ width: `${(stage.count / totalPipeline) * 100}%` }}
-                  />
-                ))}
+              <p className="text-tiny text-muted-foreground mb-2 uppercase tracking-wide">Pipeline Composition</p>
+              <div className="flex h-3 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
+                {/* Discovery (Red) - Leads + Contacted + Appointments */}
+                {(() => {
+                  const discoveryCount = getPipelineStatsForTimePeriod
+                    ?.filter(s => ["new", "contacted", "appointment"].includes(s.status))
+                    .reduce((sum, s) => sum + s.count, 0) || 0;
+                  const discoveryPct = (discoveryCount / totalPipeline) * 100;
+                  return discoveryPct > 0 ? (
+                    <div
+                      className="bg-red-500 transition-all duration-500"
+                      style={{ width: `${discoveryPct}%` }}
+                      title={`Discovery: ${discoveryCount} (${Math.round(discoveryPct)}%)`}
+                    />
+                  ) : null;
+                })()}
+                {/* Intent (Yellow) - Offers + Negotiating */}
+                {(() => {
+                  const intentCount = getPipelineStatsForTimePeriod
+                    ?.filter(s => ["offer_made", "negotiating"].includes(s.status))
+                    .reduce((sum, s) => sum + s.count, 0) || 0;
+                  const intentPct = (intentCount / totalPipeline) * 100;
+                  return intentPct > 0 ? (
+                    <div
+                      className="bg-amber-500 transition-all duration-500"
+                      style={{ width: `${intentPct}%` }}
+                      title={`Intent: ${intentCount} (${Math.round(intentPct)}%)`}
+                    />
+                  ) : null;
+                })()}
+                {/* Commitment (Blue) - Under Contract */}
+                {(() => {
+                  const commitmentCount = getPipelineStatsForTimePeriod
+                    ?.filter(s => ["under_contract"].includes(s.status))
+                    .reduce((sum, s) => sum + s.count, 0) || 0;
+                  const commitmentPct = (commitmentCount / totalPipeline) * 100;
+                  return commitmentPct > 0 ? (
+                    <div
+                      className="bg-blue-500 transition-all duration-500"
+                      style={{ width: `${commitmentPct}%` }}
+                      title={`Commitment: ${commitmentCount} (${Math.round(commitmentPct)}%)`}
+                    />
+                  ) : null;
+                })()}
+                {/* Outcome (Green) - Purchased + Sold + Marketing */}
+                {(() => {
+                  const outcomeCount = getPipelineStatsForTimePeriod
+                    ?.filter(s => ["closed", "sold", "marketing"].includes(s.status))
+                    .reduce((sum, s) => sum + s.count, 0) || 0;
+                  const outcomePct = (outcomeCount / totalPipeline) * 100;
+                  return outcomePct > 0 ? (
+                    <div
+                      className="bg-emerald-500 transition-all duration-500"
+                      style={{ width: `${outcomePct}%` }}
+                      title={`Outcome: ${outcomeCount} (${Math.round(outcomePct)}%)`}
+                    />
+                  ) : null;
+                })()}
+              </div>
+              {/* Legend */}
+              <div className="flex items-center gap-4 mt-2 text-tiny text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-red-500" />
+                  <span>Discovery</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-amber-500" />
+                  <span>Intent</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>Commitment</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Outcome</span>
+                </div>
               </div>
             </div>
           )}
