@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,9 +39,29 @@ import {
   Heart,
   Share2,
   Ruler,
+  Building2,
+  Wallet,
+  TrendingDown,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
+
+// Session storage key for view mode preference
+const VIEW_MODE_STORAGE_KEY = "marketplace-card-view-mode";
+
+type CardViewMode = "flip" | "hold";
+
+function getStoredViewMode(): CardViewMode {
+  if (typeof window === "undefined") return "flip";
+  const stored = sessionStorage.getItem(VIEW_MODE_STORAGE_KEY);
+  return stored === "hold" ? "hold" : "flip";
+}
+
+function setStoredViewMode(mode: CardViewMode) {
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+  }
+}
 
 interface MarketplaceListingsProps {
   deals: MarketplaceDeal[];
@@ -144,12 +164,16 @@ function DealListItem({
   onSelect,
   isSaved = false,
   onToggleSave,
+  cardViewMode,
+  onCardViewModeChange,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
   isSaved?: boolean;
   onToggleSave?: (dealId: string) => void;
+  cardViewMode: CardViewMode;
+  onCardViewModeChange: (mode: CardViewMode) => void;
 }) {
   const navigate = useNavigate();
   
@@ -163,6 +187,10 @@ function DealListItem({
   const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
   const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
   const monthlyCashflow = monthlyRent - piti;
+  const annualRent = monthlyRent * 12;
+  const annualExpenses = piti * 12;
+  const annualNOI = annualRent - (annualExpenses * 0.4);
+  const capRate = askingPrice > 0 ? (annualNOI / askingPrice) * 100 : 0;
   
   // Get hours and days since listing
   const getTimeSinceListing = () => {
@@ -190,6 +218,11 @@ function DealListItem({
 
   const handleClick = () => {
     navigate(`/marketplace/deal/${deal.id}`);
+  };
+
+  const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
+    e.stopPropagation();
+    onCardViewModeChange(mode);
   };
 
   return (
@@ -285,6 +318,31 @@ function DealListItem({
             
             {/* Action buttons */}
             <div className="flex items-center gap-1 flex-shrink-0">
+              {/* View Mode Toggle */}
+              <div className="inline-flex rounded-md border border-border bg-muted p-0.5 mr-1">
+                <button
+                  onClick={(e) => handleViewModeChange(e, "flip")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "flip"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Flip
+                </button>
+                <button
+                  onClick={(e) => handleViewModeChange(e, "hold")}
+                  className={cn(
+                    "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                    cardViewMode === "hold"
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Hold
+                </button>
+              </div>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
@@ -326,39 +384,74 @@ function DealListItem({
             </span>
           </div>
 
-          {/* Financial metrics */}
-          <div className="grid grid-cols-4 gap-2 py-2 text-xs">
-            <div>
-              <span className="text-muted-foreground block">ARV</span>
-              <span className="font-semibold">{formatCurrency(arvValue)}</span>
+          {/* Financial metrics - Conditional based on view mode */}
+          {cardViewMode === "flip" ? (
+            <div className="grid grid-cols-3 gap-2 py-2 text-xs">
+              <div>
+                <span className="text-muted-foreground block">ARV</span>
+                <span className="font-semibold">{formatCurrency(arvValue)}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Est. Repairs</span>
+                <span className="font-semibold">{formatCurrency(estRepairs)}</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Profit</span>
+                <span className={cn("font-semibold", profitPotential >= 0 ? "text-success" : "text-destructive")}>
+                  {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="text-muted-foreground block">Est. Repairs</span>
-              <span className="font-semibold">{formatCurrency(estRepairs)}</span>
+          ) : (
+            <div className="grid grid-cols-4 gap-2 py-2 text-xs">
+              <div>
+                <span className="text-muted-foreground block">Rent</span>
+                <span className="font-semibold text-primary">{formatCurrency(monthlyRent)}/mo</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">PITI</span>
+                <span className="font-semibold">{formatCurrency(piti)}/mo</span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Cash Flow</span>
+                <span className={cn("font-semibold", monthlyCashflow >= 0 ? "text-success" : "text-destructive")}>
+                  {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
+                </span>
+              </div>
+              <div>
+                <span className="text-muted-foreground block">Cap Rate</span>
+                <span className={cn(
+                  "font-semibold",
+                  capRate >= 8 ? "text-success" : capRate >= 5 ? "text-amber-600" : "text-muted-foreground"
+                )}>
+                  {capRate.toFixed(1)}%
+                </span>
+              </div>
             </div>
-            <div>
-              <span className="text-muted-foreground block">Rent</span>
-              <span className="font-semibold">{formatCurrency(monthlyRent)}/mo</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground block">Cashflow</span>
-              <span className={cn("font-semibold", monthlyCashflow >= 0 ? "text-success" : "text-destructive")}>
-                {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
-              </span>
-            </div>
-          </div>
+          )}
 
-          {/* ARV Progress Bar */}
-          <DealRiskMeter arvPercent={deal.arvPercent} />
+          {/* ARV Progress Bar - Only show in Flip mode */}
+          {cardViewMode === "flip" && (
+            <DealRiskMeter arvPercent={deal.arvPercent} />
+          )}
 
-          {/* Bottom row: Profit */}
+          {/* Bottom row: Summary */}
           <div className="flex items-center justify-end gap-3 mt-2">
-            <div className={cn(
-              "text-sm font-bold",
-              profitPotential >= 0 ? "text-success" : "text-destructive"
-            )}>
-              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
-            </div>
+            {cardViewMode === "flip" ? (
+              <div className={cn(
+                "text-sm font-bold",
+                profitPotential >= 0 ? "text-success" : "text-destructive"
+              )}>
+                {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
+              </div>
+            ) : (
+              <div className={cn(
+                "text-sm font-bold",
+                monthlyCashflow >= 0 ? "text-success" : "text-destructive"
+              )}>
+                {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo cash flow
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -372,12 +465,16 @@ function DealCard({
   onSelect,
   isSaved = false,
   onToggleSave,
+  cardViewMode,
+  onCardViewModeChange,
 }: {
   deal: MarketplaceDeal;
   isSelected: boolean;
   onSelect: (checked: boolean) => void;
   isSaved?: boolean;
   onToggleSave?: (dealId: string) => void;
+  cardViewMode: CardViewMode;
+  onCardViewModeChange: (mode: CardViewMode) => void;
 }) {
   const navigate = useNavigate();
   
@@ -449,6 +546,11 @@ function DealCard({
 
   const handleCardClick = () => {
     navigate(`/marketplace/deal/${deal.id}`);
+  };
+
+  const handleViewModeChange = (e: React.MouseEvent, mode: CardViewMode) => {
+    e.stopPropagation();
+    onCardViewModeChange(mode);
   };
 
   return (
@@ -563,47 +665,136 @@ function DealCard({
         <p className="font-semibold text-primary text-base">{deal.address}</p>
         <p className="text-sm text-muted-foreground">{deal.city}, {deal.state} {deal.zip}</p>
 
-        {/* Deal Risk Meter */}
-        <DealRiskMeter arvPercent={deal.arvPercent} />
-
-        {/* Financial Breakdown */}
-        <div className="mt-4 space-y-2.5 border-t border-border pt-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <TrendingUp className="h-4 w-4" />
-              <span><span className="font-medium text-foreground">ARV</span> (After Repair Value)</span>
-            </div>
-            <span className="font-semibold text-foreground">{formatCurrency(arvValue)}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <DollarSign className="h-4 w-4" />
-              <span className="font-medium text-foreground">Asking Price:</span>
-            </div>
-            <span className="font-medium text-foreground">- {formatCurrency(askingPrice)}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Wrench className="h-4 w-4" />
-              <span className="font-medium text-foreground">Est. Repairs:</span>
-            </div>
-            <span className="font-medium text-foreground">- {formatCurrency(estRepairs)}</span>
-          </div>
-          <div className="flex items-center justify-between border-t border-border pt-2.5">
-            <div className="flex items-center gap-2 text-sm">
-              <CircleDollarSign className={cn("h-4 w-4", profitPotential >= 0 ? "text-success" : "text-destructive")} />
-              <span className={cn("font-semibold", profitPotential >= 0 ? "text-success" : "text-destructive")}>Profit Potential:</span>
-            </div>
-            <span className={cn(
-              "font-bold",
-              profitPotential >= 0 ? "text-success" : "text-destructive"
-            )}>
-              {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
-            </span>
+        {/* View Mode Toggle */}
+        <div className="mt-3 flex items-center justify-center">
+          <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+            <button
+              onClick={(e) => handleViewModeChange(e, "flip")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "flip"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Flip
+            </button>
+            <button
+              onClick={(e) => handleViewModeChange(e, "hold")}
+              className={cn(
+                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                cardViewMode === "hold"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Hold
+            </button>
           </div>
         </div>
 
+        {/* Conditional Content based on View Mode */}
+        {cardViewMode === "flip" ? (
+          <>
+            {/* Deal Risk Meter - Flip Mode */}
+            <DealRiskMeter arvPercent={deal.arvPercent} />
 
+            {/* Financial Breakdown - Flip Mode */}
+            <div className="mt-4 space-y-2.5 border-t border-border pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUp className="h-4 w-4" />
+                  <span><span className="font-medium text-foreground">ARV</span> (After Repair Value)</span>
+                </div>
+                <span className="font-semibold text-foreground">{formatCurrency(arvValue)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <DollarSign className="h-4 w-4" />
+                  <span className="font-medium text-foreground">Asking Price:</span>
+                </div>
+                <span className="font-medium text-foreground">- {formatCurrency(askingPrice)}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Wrench className="h-4 w-4" />
+                  <span className="font-medium text-foreground">Est. Repairs:</span>
+                </div>
+                <span className="font-medium text-foreground">- {formatCurrency(estRepairs)}</span>
+              </div>
+              <div className="flex items-center justify-between border-t border-border pt-2.5">
+                <div className="flex items-center gap-2 text-sm">
+                  <CircleDollarSign className={cn("h-4 w-4", profitPotential >= 0 ? "text-success" : "text-destructive")} />
+                  <span className={cn("font-semibold", profitPotential >= 0 ? "text-success" : "text-destructive")}>Profit Potential:</span>
+                </div>
+                <span className={cn(
+                  "font-bold",
+                  profitPotential >= 0 ? "text-success" : "text-destructive"
+                )}>
+                  {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Hold Mode - Rental Focus */}
+            <div className="mt-4 space-y-2.5 border-t border-border pt-4">
+              {/* Rent vs PITI Comparison */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Est. Rent:</span>
+                </div>
+                <span className="font-semibold text-primary">{formatCurrency(monthlyRent)}/mo</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Wallet className="h-4 w-4" />
+                  <span className="font-medium text-foreground">PITI:</span>
+                </div>
+                <span className="font-medium text-foreground">- {formatCurrency(piti)}/mo</span>
+              </div>
+              
+              {/* Monthly Cash Flow - Emphasized */}
+              <div className="flex items-center justify-between border-t border-border pt-2.5">
+                <div className="flex items-center gap-2 text-sm">
+                  <CircleDollarSign className={cn("h-4 w-4", monthlyCashflow >= 0 ? "text-success" : "text-destructive")} />
+                  <span className={cn("font-semibold", monthlyCashflow >= 0 ? "text-success" : "text-destructive")}>Monthly Cash Flow:</span>
+                </div>
+                <span className={cn(
+                  "font-bold text-base",
+                  monthlyCashflow >= 0 ? "text-success" : "text-destructive"
+                )}>
+                  {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
+                </span>
+              </div>
+
+              {/* Additional Hold Metrics */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <TrendingUp className="h-4 w-4" />
+                  <span className="font-medium text-foreground">Cap Rate:</span>
+                </div>
+                <span className={cn(
+                  "font-semibold",
+                  capRate >= 8 ? "text-success" : capRate >= 5 ? "text-amber-600" : "text-muted-foreground"
+                )}>
+                  {capRate.toFixed(1)}%
+                </span>
+              </div>
+
+              {/* De-emphasized ARV info */}
+              <div className="flex items-center justify-between pt-1 opacity-60">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <TrendingDown className="h-3.5 w-3.5" />
+                  <span>ARV:</span>
+                </div>
+                <span className="text-xs text-muted-foreground">{formatCurrency(arvValue)}</span>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
         <div className="mt-4 border-t border-border pt-3 pb-1">
@@ -646,6 +837,14 @@ export function MarketplaceListings({
   savedDealIds = [],
   onToggleSave,
 }: MarketplaceListingsProps) {
+  // Card view mode state with session persistence
+  const [cardViewMode, setCardViewMode] = useState<CardViewMode>(() => getStoredViewMode());
+  
+  const handleCardViewModeChange = (mode: CardViewMode) => {
+    setCardViewMode(mode);
+    setStoredViewMode(mode);
+  };
+
   const totalPages = Math.ceil(totalCount / resultsPerPage);
   const startIndex = (currentPage - 1) * resultsPerPage + 1;
   const endIndex = Math.min(currentPage * resultsPerPage, totalCount);
@@ -778,6 +977,8 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
+                  cardViewMode={cardViewMode}
+                  onCardViewModeChange={handleCardViewModeChange}
                 />
               ) : (
                 <DealCard
@@ -787,6 +988,8 @@ export function MarketplaceListings({
                   onSelect={(checked) => onSelectDeal(deal.id, checked)}
                   isSaved={savedDealIds.includes(deal.id)}
                   onToggleSave={onToggleSave}
+                  cardViewMode={cardViewMode}
+                  onCardViewModeChange={handleCardViewModeChange}
                 />
               )
             ))}
