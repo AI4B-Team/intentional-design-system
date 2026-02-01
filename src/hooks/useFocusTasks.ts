@@ -1,6 +1,8 @@
 import * as React from "react";
-import { useDashboardInsights, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
+import { useDashboardInsights } from "@/hooks/useDashboardInsights";
 import { useTodaysTasks, type TodayTask } from "@/hooks/useTodaysTasks";
+
+// Focus/Tasks priority system for dashboard
 
 export type FocusPriority = "critical" | "high" | "medium" | "low";
 
