@@ -193,7 +193,7 @@ export function TodaysFocus() {
       type: "offer_followup",
       title: "2 Offers Awaiting Response",
       subtitle: "Follow up needed",
-      time: "Waiting 2 days",
+      time: "Waiting 2 Days",
       priority: "high",
       urgencyScore: 85,
       source: "insight",
