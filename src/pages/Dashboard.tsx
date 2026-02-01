@@ -1457,7 +1457,7 @@ export default function Dashboard() {
           {/* Pipeline Composition Bar - Shows distribution across 4 categories */}
           {!pipelineLoading && totalPipeline > 0 && (
             <div className="px-4 pb-4">
-              <p className="text-tiny text-muted-foreground mb-2 uppercase tracking-wide text-center">Pipeline Legend</p>
+              <p className="text-tiny text-muted-foreground mb-2 uppercase tracking-wide">Pipeline Legend</p>
               <div className="flex h-3 rounded-full overflow-hidden bg-background-tertiary shadow-inner">
                 {/* Discovery (Red) - Leads + Contacted + Appointments */}
                 {(() => {
@@ -1517,7 +1517,7 @@ export default function Dashboard() {
                 })()}
               </div>
               {/* Legend */}
-              <div className="flex items-start justify-center gap-6 mt-2 text-tiny text-muted-foreground">
+              <div className="flex items-start justify-between w-full mt-2 text-tiny text-muted-foreground">
                 <div className="flex items-start gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1" />
                   <span className="text-center leading-tight">Discovery<br/>(Leads)</span>
