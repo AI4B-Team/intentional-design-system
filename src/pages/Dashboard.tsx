@@ -5,6 +5,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useHotOpportunities } from "@/hooks/useHotOpportunities";
 import { usePipelineStats } from "@/hooks/usePipelineStats";
@@ -775,6 +782,7 @@ function ActivityItem({ activity, onClick }: ActivityItemProps) {
 export default function Dashboard() {
   const navigate = useNavigate();
   const [completedTasks, setCompletedTasks] = React.useState<Set<string>>(new Set());
+  const [timePeriod, setTimePeriod] = React.useState<"week" | "month" | "all">("all");
   const goals = useGoals();
   
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
@@ -1256,10 +1264,19 @@ export default function Dashboard() {
 
         {/* Pipeline Overview */}
         <Card variant="default" padding="none" className="overflow-hidden">
-          <div className="flex items-center justify-between p-4 border-b border-border-subtle flex-wrap gap-2 sm:flex-nowrap">
+          <div className="flex items-center justify-between p-4 border-b border-border-subtle">
             <div className="flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
               <h2 className="text-body font-semibold text-foreground whitespace-nowrap">Pipeline Overview</h2>
-              <span className="text-tiny font-medium px-1.5 py-0.5 rounded bg-muted text-muted-foreground">This Week</span>
+              <Select value={timePeriod} onValueChange={(v) => setTimePeriod(v as "week" | "month" | "all")}>
+                <SelectTrigger className="h-7 w-[120px] text-tiny font-medium bg-muted border-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="z-[100] bg-white">
+                  <SelectItem value="week">This Week</SelectItem>
+                  <SelectItem value="month">This Month</SelectItem>
+                  <SelectItem value="all">All Time</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <span className="text-small font-medium px-2.5 py-1 rounded-full bg-background-secondary text-muted-foreground tabular-nums">
               {totalPipeline} Total
