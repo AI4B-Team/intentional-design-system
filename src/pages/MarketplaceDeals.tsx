@@ -135,7 +135,7 @@ export default function MarketplaceDeals() {
           {(layoutMode === "map" || layoutMode === "split") && (
             <div className={cn(
               "h-full",
-              layoutMode === "map" ? "w-full" : "w-2/3 hidden lg:block"
+              layoutMode === "map" ? "w-full" : "w-1/2 hidden lg:block"
             )}>
               <MarketplaceMap deals={deals} />
             </div>
@@ -145,7 +145,7 @@ export default function MarketplaceDeals() {
           {(layoutMode === "cards" || layoutMode === "split") && (
             <div className={cn(
               "h-full overflow-y-auto",
-              layoutMode === "cards" ? "w-full" : "w-full lg:w-1/3"
+              layoutMode === "cards" ? "w-full" : "w-full lg:w-1/2"
             )}>
               <MarketplaceListings
                 deals={deals}
