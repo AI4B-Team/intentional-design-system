@@ -8,6 +8,8 @@ import {
   DollarSign,
   Handshake,
   CheckCircle2,
+  Clock,
+  Megaphone,
 } from "lucide-react";
 
 interface QuickMoveButtonsProps {
@@ -65,8 +67,8 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
     {
       targetStage: "follow_up",
       label: "Follow Up",
-      icon: Phone,
-      color: "bg-amber-400 hover:bg-amber-500",
+      icon: Clock,
+      color: "bg-amber-300 hover:bg-amber-400",
     },
     {
       targetStage: "under_contract",
@@ -85,8 +87,22 @@ const QUICK_ACTIONS: Record<string, QuickAction[]> = {
   ],
   under_contract: [
     {
+      targetStage: "marketing",
+      label: "Marketing",
+      icon: Megaphone,
+      color: "bg-blue-400 hover:bg-blue-500",
+    },
+    {
       targetStage: "closed",
-      label: "Closed",
+      label: "Purchased",
+      icon: CheckCircle2,
+      color: "bg-emerald-500 hover:bg-emerald-600",
+    },
+  ],
+  marketing: [
+    {
+      targetStage: "closed",
+      label: "Purchased",
       icon: CheckCircle2,
       color: "bg-emerald-500 hover:bg-emerald-600",
     },
