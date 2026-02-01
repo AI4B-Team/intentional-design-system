@@ -131,6 +131,13 @@ const PIPELINE_STAGES = [
     targetDays: 30
   },
   { 
+    id: "marketing", 
+    label: "Marketing", 
+    color: "bg-purple-500", 
+    description: "Property being marketed to buyers",
+    targetDays: 14
+  },
+  { 
     id: "closed", 
     label: "Closed", 
     color: "bg-emerald-500", 
