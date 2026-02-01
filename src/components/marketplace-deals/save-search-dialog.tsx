@@ -35,6 +35,8 @@ import {
   Target,
   Send,
   Bell,
+  Link,
+  Copy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -414,6 +416,26 @@ export function SaveSearchDialog({
                     <span>SMS Alerts</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Copy Link Section */}
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border">
+                <Link className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <code className="text-xs text-muted-foreground truncate flex-1">
+                  {`${window.location.origin}/marketplace?search=${savedSearchId}`}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 flex-shrink-0"
+                  onClick={() => {
+                    const url = `${window.location.origin}/marketplace?search=${savedSearchId}`;
+                    navigator.clipboard.writeText(url);
+                    toast.success("Link copied to clipboard!");
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
               </div>
             </DialogBody>
 
