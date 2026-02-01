@@ -527,13 +527,13 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
               <PenTool className="h-4 w-4 text-primary" />
               <span className="font-semibold text-sm">Area Analysis</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-6 w-6"
                 onClick={clearDrawing}
-                title="Clear and redraw"
+                title="Clear & Redraw"
               >
                 <RotateCcw className="h-3.5 w-3.5" />
               </Button>
