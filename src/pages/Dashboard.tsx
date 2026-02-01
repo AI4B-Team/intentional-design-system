@@ -213,7 +213,7 @@ function PipelineValueCard({
           {/* Context line - styled by severity: blue=reminder, amber=attention, red=blocking */}
           {contextLine && (
             <div className={cn(
-              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
+              "inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap",
               contextSeverity === "blocking" 
                 ? "bg-destructive/10 text-destructive" 
                 : contextSeverity === "attention"
@@ -227,7 +227,7 @@ function PipelineValueCard({
 
           {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground uppercase tracking-wide whitespace-nowrap">
+            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
               <Clock className="h-3.5 w-3.5 shrink-0" />
               <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
             </div>
@@ -235,7 +235,7 @@ function PipelineValueCard({
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap uppercase tracking-wide">
+            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
               <BarChart3 className="h-3.5 w-3.5 shrink-0" />
               <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
             </div>
@@ -244,7 +244,7 @@ function PipelineValueCard({
           {/* Action Insight - Severity Ladder: Blue=reminder, Amber=attention, Red=blocking */}
           {actionInsight && variant === "default" && (
             <div className={cn(
-              "inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap uppercase tracking-wide",
+              "inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium whitespace-nowrap",
               actionInsight.severity === "high" 
                 ? "bg-warning/10 text-warning" // Amber = attention
                 : actionInsight.severity === "medium"
