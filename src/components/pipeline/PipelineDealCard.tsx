@@ -30,6 +30,7 @@ import {
   Bath,
   Maximize,
   ChevronRight,
+  ChevronLeft,
   AlertTriangle,
   Clock,
   Zap,
@@ -313,6 +314,30 @@ export function PipelineDealCard({
       {/* Action Footer */}
       <div className="p-2 pt-0">
         <div className="flex items-center gap-2">
+          {/* Quick Move Back */}
+          {prevStage && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 w-8 p-0 shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMove(prevStage.id);
+                    }}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-tiny">Move to {prevStage.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+
           {/* Primary CTA */}
           <Button
             size="sm"
@@ -330,7 +355,7 @@ export function PipelineDealCard({
             {nextAction.text}
           </Button>
 
-          {/* Quick Move */}
+          {/* Quick Move Forward */}
           {nextStage && (
             <TooltipProvider>
               <Tooltip>
