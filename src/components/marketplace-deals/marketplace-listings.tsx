@@ -262,8 +262,8 @@ function DealListItem({
       onClick={handleClick}
     >
       <div className="flex">
-        {/* Thumbnail - larger for more details */}
-        <div className="relative w-48 h-auto min-h-[160px] flex-shrink-0">
+        {/* Thumbnail - more square aspect ratio */}
+        <div className="relative w-40 aspect-square flex-shrink-0">
           <img
             src={deal.imageUrl}
             alt={deal.address}
@@ -464,7 +464,7 @@ function DealListItem({
           {cardViewMode === "overview" ? (
             null /* Overview mode - no additional financial metrics */
           ) : cardViewMode === "flip" ? (
-            <div className="grid grid-cols-3 gap-2 py-2 text-xs">
+            <div className="flex justify-between py-2 text-xs">
               <div>
                 <span className="text-muted-foreground block">ARV</span>
                 <span className="font-semibold">{formatCurrency(arvValue)}</span>
@@ -473,7 +473,7 @@ function DealListItem({
                 <span className="text-muted-foreground block">Est. Repairs</span>
                 <span className="font-semibold">{formatCurrency(estRepairs)}</span>
               </div>
-              <div>
+              <div className="text-right">
                 <span className="text-muted-foreground block">Profit</span>
                 <span className={cn("font-semibold", profitPotential >= 0 ? "text-success" : "text-destructive")}>
                   {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)}
@@ -481,7 +481,7 @@ function DealListItem({
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-2 py-2 text-xs">
+            <div className="flex justify-between py-2 text-xs">
               <div>
                 <span className="text-muted-foreground block">Rent</span>
                 <span className="font-semibold text-primary">{formatCurrency(monthlyRent)}/mo</span>
@@ -496,7 +496,7 @@ function DealListItem({
                   {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo
                 </span>
               </div>
-              <div>
+              <div className="text-right">
                 <span className="text-muted-foreground block">Cap Rate</span>
                 <span className={cn(
                   "font-semibold",
