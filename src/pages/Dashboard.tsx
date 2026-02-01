@@ -1428,7 +1428,7 @@ export default function Dashboard() {
                 {totalPipeline} Total
               </span>
             </div>
-            <p className="text-tiny text-muted-foreground">Deals move left to right as momentum increases.</p>
+            <p className="text-tiny text-muted-foreground">Deals move left to right as momentum increases</p>
           </div>
           {pipelineLoading ? (
             <div className="p-4 space-y-3">
