@@ -5,6 +5,8 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogBody,
+  DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -284,50 +286,52 @@ export function SaveSearchDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="search-name">Search Name</Label>
-                <Input
-                  id="search-name"
-                  placeholder="e.g., Tampa High Equity Deals"
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="notification-frequency" className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  Notification Frequency
-                </Label>
-                <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
-                  <SelectTrigger id="notification-frequency">
-                    <SelectValue placeholder="Select frequency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NOTIFICATION_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        <div className="flex flex-col">
-                          <span>{option.label}</span>
-                          <span className="text-xs text-muted-foreground">{option.description}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="rounded-lg bg-muted/50 p-3 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Current Filters</span>
-                  <Badge variant="secondary">{resultCount} results</Badge>
+            <DialogBody>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="search-name">Search Name</Label>
+                  <Input
+                    id="search-name"
+                    placeholder="e.g., Tampa High Equity Deals"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
+                  />
                 </div>
-                <p className="text-sm font-medium">{getFilterSummary()}</p>
-              </div>
-            </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t border-border">
+                <div className="space-y-2">
+                  <Label htmlFor="notification-frequency" className="flex items-center gap-2">
+                    <Bell className="h-4 w-4" />
+                    Notification Frequency
+                  </Label>
+                  <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
+                    <SelectTrigger id="notification-frequency">
+                      <SelectValue placeholder="Select frequency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {NOTIFICATION_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          <div className="flex flex-col">
+                            <span>{option.label}</span>
+                            <span className="text-xs text-muted-foreground">{option.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="rounded-lg bg-muted/50 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-muted-foreground">Current Filters</span>
+                    <Badge variant="secondary">{resultCount} results</Badge>
+                  </div>
+                  <p className="text-sm font-medium">{getFilterSummary()}</p>
+                </div>
+              </div>
+            </DialogBody>
+
+            <DialogFooter>
               <Button variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
@@ -335,7 +339,7 @@ export function SaveSearchDialog({
                 <Bookmark className="h-4 w-4 mr-2" />
                 {isSaving ? "Saving..." : "Save Search"}
               </Button>
-            </div>
+            </DialogFooter>
           </>
         )}
 
@@ -351,7 +355,7 @@ export function SaveSearchDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="py-6">
+            <DialogBody>
               <div className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-6 text-center space-y-4">
                 <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
                   <Rocket className="h-6 w-6 text-primary" />
@@ -373,9 +377,9 @@ export function SaveSearchDialog({
                   </div>
                 </div>
               </div>
-            </div>
+            </DialogBody>
 
-            <div className="flex justify-between">
+            <DialogFooter className="justify-between">
               <Button variant="ghost" onClick={handleClose}>
                 Maybe Later
               </Button>
@@ -384,7 +388,7 @@ export function SaveSearchDialog({
                 Start Campaign
                 <ChevronRight className="h-4 w-4" />
               </Button>
-            </div>
+            </DialogFooter>
           </>
         )}
 
@@ -400,112 +404,114 @@ export function SaveSearchDialog({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-6 py-4 max-h-[60vh] overflow-y-auto">
-              {/* Delivery Options */}
-              <div className="space-y-3">
-                <Label>Delivery Methods</Label>
-                <div className="flex gap-4">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={sendEmail}
-                      onCheckedChange={(checked) => setSendEmail(!!checked)}
-                    />
-                    <Mail className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Email</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <Checkbox
-                      checked={sendSms}
-                      onCheckedChange={(checked) => setSendSms(!!checked)}
-                    />
-                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">SMS Alert</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Template Selection */}
-              <div className="space-y-3">
-                <Label>Choose Template</Label>
-                <RadioGroup
-                  value={selectedTemplate}
-                  onValueChange={(value) => {
-                    setSelectedTemplate(value);
-                    const template = CAMPAIGN_TEMPLATES.find(t => t.id === value);
-                    if (template) {
-                      setCustomSubject(template.subject);
-                      setCustomBody(template.body);
-                      setCustomSms(template.smsBody);
-                    }
-                  }}
-                  className="grid grid-cols-2 gap-3"
-                >
-                  {CAMPAIGN_TEMPLATES.map((template) => (
-                    <label
-                      key={template.id}
-                      className={cn(
-                        "flex flex-col p-3 rounded-lg border-2 cursor-pointer transition-all",
-                        selectedTemplate === template.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <div className="flex items-start gap-2">
-                        <RadioGroupItem value={template.id} className="mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm">{template.name}</p>
-                          <p className="text-xs text-muted-foreground line-clamp-2">
-                            {template.description}
-                          </p>
-                        </div>
-                      </div>
+            <DialogBody className="max-h-[60vh] overflow-y-auto">
+              <div className="space-y-6">
+                {/* Delivery Options */}
+                <div className="space-y-3">
+                  <Label>Delivery Methods</Label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={sendEmail}
+                        onCheckedChange={(checked) => setSendEmail(!!checked)}
+                      />
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">Email</span>
                     </label>
-                  ))}
-                </RadioGroup>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Checkbox
+                        checked={sendSms}
+                        onCheckedChange={(checked) => setSendSms(!!checked)}
+                      />
+                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm">SMS Alert</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Template Selection */}
+                <div className="space-y-3">
+                  <Label>Choose Template</Label>
+                  <RadioGroup
+                    value={selectedTemplate}
+                    onValueChange={(value) => {
+                      setSelectedTemplate(value);
+                      const template = CAMPAIGN_TEMPLATES.find(t => t.id === value);
+                      if (template) {
+                        setCustomSubject(template.subject);
+                        setCustomBody(template.body);
+                        setCustomSms(template.smsBody);
+                      }
+                    }}
+                    className="grid grid-cols-2 gap-3"
+                  >
+                    {CAMPAIGN_TEMPLATES.map((template) => (
+                      <label
+                        key={template.id}
+                        className={cn(
+                          "flex flex-col p-3 rounded-lg border-2 cursor-pointer transition-all",
+                          selectedTemplate === template.id
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <div className="flex items-start gap-2">
+                          <RadioGroupItem value={template.id} className="mt-0.5" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm">{template.name}</p>
+                            <p className="text-xs text-muted-foreground line-clamp-2">
+                              {template.description}
+                            </p>
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </RadioGroup>
+                </div>
+
+                {/* Email Customization */}
+                {sendEmail && (
+                  <div className="space-y-3">
+                    <Label>Email Content</Label>
+                    <Input
+                      placeholder="Subject line..."
+                      value={customSubject}
+                      onChange={(e) => setCustomSubject(e.target.value)}
+                    />
+                    <Textarea
+                      placeholder="Email body..."
+                      value={customBody}
+                      onChange={(e) => setCustomBody(e.target.value)}
+                      rows={6}
+                      className="text-sm"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Variables: {"{property_address}"}, {"{agent_name}"}, {"{list_price}"}, {"{offer_amount}"}, {"{days_on_market}"}
+                    </p>
+                  </div>
+                )}
+
+                {/* SMS Customization */}
+                {sendSms && (
+                  <div className="space-y-3">
+                    <Label>SMS Message</Label>
+                    <Textarea
+                      placeholder="SMS message..."
+                      value={customSms}
+                      onChange={(e) => setCustomSms(e.target.value)}
+                      rows={2}
+                      className="text-sm"
+                      maxLength={160}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      {customSms.length}/160 characters
+                    </p>
+                  </div>
+                )}
               </div>
+            </DialogBody>
 
-              {/* Email Customization */}
-              {sendEmail && (
-                <div className="space-y-3">
-                  <Label>Email Content</Label>
-                  <Input
-                    placeholder="Subject line..."
-                    value={customSubject}
-                    onChange={(e) => setCustomSubject(e.target.value)}
-                  />
-                  <Textarea
-                    placeholder="Email body..."
-                    value={customBody}
-                    onChange={(e) => setCustomBody(e.target.value)}
-                    rows={6}
-                    className="text-sm"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Variables: {"{property_address}"}, {"{agent_name}"}, {"{list_price}"}, {"{offer_amount}"}, {"{days_on_market}"}
-                  </p>
-                </div>
-              )}
-
-              {/* SMS Customization */}
-              {sendSms && (
-                <div className="space-y-3">
-                  <Label>SMS Message</Label>
-                  <Textarea
-                    placeholder="SMS message..."
-                    value={customSms}
-                    onChange={(e) => setCustomSms(e.target.value)}
-                    rows={2}
-                    className="text-sm"
-                    maxLength={160}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {customSms.length}/160 characters
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex justify-between pt-4 border-t">
+            <DialogFooter className="justify-between">
               <Button variant="ghost" onClick={() => setStep("launch-prompt")}>
                 Back
               </Button>
@@ -517,7 +523,7 @@ export function SaveSearchDialog({
                 <Send className="h-4 w-4" />
                 Launch Campaign ({resultCount} properties)
               </Button>
-            </div>
+            </DialogFooter>
           </>
         )}
       </DialogContent>
