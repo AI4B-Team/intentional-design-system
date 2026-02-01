@@ -404,7 +404,7 @@ function EnhancedHotOpportunityItem({ opportunity, onClick, onCall, onEmail }: E
     >
       {/* Score Badge */}
       <div className={cn(
-        "flex items-center gap-1 px-2.5 py-1 rounded-full text-tiny font-bold min-w-[56px] justify-center shadow-sm transition-transform duration-150 group-hover:scale-105",
+        "flex items-center gap-1 px-2.5 py-1 rounded-full text-tiny font-medium min-w-[56px] justify-center shadow-sm transition-transform duration-150 group-hover:scale-105",
         scoreColor
       )}>
         {score > 800 && <Flame className="h-3 w-3 animate-pulse" />}
