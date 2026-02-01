@@ -9,6 +9,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
@@ -48,39 +49,41 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
 
   if (collapsed) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <PopoverTrigger asChild>
-              <button
-                className={cn(
-                  "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
-                  "hover:bg-slate-700/50 text-slate-400 hover:text-white"
-                )}
-              >
-                <LayoutGrid className="h-5 w-5" />
-              </button>
-            </PopoverTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="right" sideOffset={8}>
-            Workspace
-          </TooltipContent>
-        </Tooltip>
-        <PopoverContent
-          side="right"
-          align="start"
-          className="w-64 p-0 bg-slate-800 border-slate-700"
-          sideOffset={8}
-        >
-          <WorkspaceDropdownContent
-            workspaces={filteredWorkspaces}
-            activeWorkspace={activeWorkspace}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            onSelectWorkspace={handleSelectWorkspace}
-          />
-        </PopoverContent>
-      </Popover>
+      <TooltipProvider delayDuration={0}>
+        <Popover open={open} onOpenChange={setOpen}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <button
+                  className={cn(
+                    "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
+                    "hover:bg-slate-700/50 text-slate-400 hover:text-white"
+                  )}
+                >
+                  <LayoutGrid className="h-5 w-5" />
+                </button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={8}>
+              Workspace
+            </TooltipContent>
+          </Tooltip>
+          <PopoverContent
+            side="right"
+            align="start"
+            className="w-64 p-0 bg-slate-800 border-slate-700"
+            sideOffset={8}
+          >
+            <WorkspaceDropdownContent
+              workspaces={filteredWorkspaces}
+              activeWorkspace={activeWorkspace}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              onSelectWorkspace={handleSelectWorkspace}
+            />
+          </PopoverContent>
+        </Popover>
+      </TooltipProvider>
     );
   }
 
