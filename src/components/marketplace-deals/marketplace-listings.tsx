@@ -35,7 +35,6 @@ import {
   Bed,
   Bath,
   Tag,
-  Calendar,
   Circle,
   Heart,
   Share2,
@@ -164,9 +163,6 @@ function DealListItem({
   const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
   const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
   const monthlyCashflow = monthlyRent - piti;
-  
-  // Year built (mock - random between 1970-2020)
-  const yearBuilt = 1970 + Math.floor(Math.random() * 50);
   
   // Get hours and days since listing
   const getTimeSinceListing = () => {
@@ -328,10 +324,6 @@ function DealListItem({
               <Tag className="h-3.5 w-3.5" />
               {deal.sqft.toLocaleString()} sqft
             </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              {yearBuilt}
-            </span>
           </div>
 
           {/* Financial metrics */}
@@ -405,9 +397,6 @@ function DealCard({
   const monthlyCashflow = monthlyRent - piti;
   const annualNOI = annualRent - (annualExpenses * 0.4); // Assume 40% expense ratio
   const capRate = askingPrice > 0 ? (annualNOI / askingPrice) * 100 : 0;
-  
-  // Year built (mock - random between 1970-2020)
-  const yearBuilt = 1970 + Math.floor(Math.random() * 50);
   
   // Get hours and days since listing
   const getTimeSinceListing = () => {
@@ -628,9 +617,9 @@ function DealCard({
         </div>
 
 
-        {/* Property Specs - Single row with all 4 items */}
+        {/* Property Specs - Single row (no year built to prevent wrapping) */}
         <div className="mt-4 border-t border-border pt-3 pb-1">
-          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex items-center justify-start gap-3 text-sm text-muted-foreground whitespace-nowrap">
             <span className="flex items-center gap-1">
               <Bed className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.beds} Beds</span>
@@ -644,11 +633,6 @@ function DealCard({
             <span className="flex items-center gap-1">
               <Ruler className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SF</span>
-            </span>
-            <span aria-hidden className="w-px h-4 bg-border" />
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5 shrink-0" />
-              <span>{yearBuilt} Built</span>
             </span>
           </div>
         </div>
