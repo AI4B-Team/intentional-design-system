@@ -17,7 +17,8 @@ export type PipelineStageId =
   | "offer_made" 
   | "negotiating"
   | "under_contract" 
-  | "closed";
+  | "closed"
+  | "sold";
 
 export interface PipelineStageColors {
   /** Background color for badges and dots (e.g., "bg-red-500") */
@@ -73,12 +74,20 @@ export const PIPELINE_COLORS: Record<PipelineStageId, PipelineStageColors> = {
     badge: "bg-blue-100 text-blue-600",
   },
   
-  // === SOLD/CLOSED GROUP (Emerald) ===
+  // === PURCHASED GROUP (Emerald) ===
   closed: {
     bg: "bg-emerald-500",
     bgLight: "bg-emerald-100",
     text: "text-emerald-500",
     badge: "bg-emerald-100 text-emerald-600",
+  },
+  
+  // === SOLD GROUP (Green) ===
+  sold: {
+    bg: "bg-green-600",
+    bgLight: "bg-green-100",
+    text: "text-green-600",
+    badge: "bg-green-100 text-green-700",
   },
 };
 
@@ -101,6 +110,7 @@ export const PIPELINE_LABELS: Record<PipelineStageId, string> = {
   negotiating: "Negotiating",
   under_contract: "Under Contract",
   closed: "Purchased",
+  sold: "Sold",
 };
 
 /**
