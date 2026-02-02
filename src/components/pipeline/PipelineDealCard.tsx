@@ -295,19 +295,19 @@ export function PipelineDealCard({
       </div>
 
       {/* Status Row */}
-      <div className="px-3 py-2">
-        <div className="flex items-center justify-between gap-2">
+      <div className="px-3 py-2 overflow-hidden">
+        <div className="flex items-center justify-between gap-3">
           {/* Lead Score */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={cn(
-                  "flex items-center gap-1.5 px-2 py-1 rounded-full text-tiny font-medium cursor-help shrink-0",
+                  "flex items-center gap-1 px-2 py-1 rounded-full text-tiny font-medium cursor-help shrink-0",
                   deal.lead_score >= 80 && "bg-success/10 text-success",
                   deal.lead_score >= 60 && deal.lead_score < 80 && "bg-warning/10 text-warning",
                   deal.lead_score < 60 && "bg-destructive/10 text-destructive"
                 )}>
-                  <Target className="h-3 w-3" />
+                  <Target className="h-3 w-3 shrink-0" />
                   <span>{deal.lead_score}</span>
                 </div>
               </TooltipTrigger>
@@ -325,24 +325,23 @@ export function PipelineDealCard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={cn(
-                  "flex items-center gap-1.5 text-tiny font-medium cursor-help shrink-0",
+                  "flex items-center gap-1 text-tiny font-medium cursor-help shrink-0 pr-1",
                   isOverdue ? "text-warning" : "text-muted-foreground"
                 )}>
-                  {isOverdue && <AlertTriangle className="h-3 w-3" />}
-                  <Timer className="h-3 w-3" />
+                  {isOverdue && <AlertTriangle className="h-3 w-3 shrink-0" />}
+                  <Timer className="h-3 w-3 shrink-0" />
                   <span className="whitespace-nowrap">
-                    {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage} days`}
+                    {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}d`}
                   </span>
                 </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="text-tiny font-medium">Days in {stageConfig.label}</p>
-                {stageConfig.targetDays > 0 && (
-                  <p className="text-tiny text-muted-foreground">
-                    Target: {stageConfig.targetDays} days
-                    {isOverdue && " (overdue)"}
-                  </p>
-                )}
+                <p className="text-tiny text-muted-foreground">
+                  {deal.days_in_stage} {deal.days_in_stage === 1 ? "day" : "days"} in stage
+                  {stageConfig.targetDays > 0 && ` (target: ${stageConfig.targetDays})`}
+                  {isOverdue && " - Overdue!"}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
