@@ -1031,7 +1031,7 @@ export default function Pipeline() {
 
       {/* Deal Detail Modal */}
       <Dialog open={!!selectedDeal} onOpenChange={(open) => !open && setSelectedDeal(null)}>
-        <DialogContent className="max-w-lg overflow-visible max-h-[85vh] overflow-y-auto top-[5%] translate-y-0">
+        <DialogContent className="max-w-lg overflow-visible top-[8%] translate-y-0">
           {selectedDeal && (
             <>
               <DialogHeader>
@@ -1044,7 +1044,7 @@ export default function Pipeline() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-4 px-6 py-4">
+              <div className="space-y-3 px-6 py-3">
                 {/* Stage & Score */}
                 <div className="flex items-center gap-3">
                   <Badge className={cn(
@@ -1063,10 +1063,9 @@ export default function Pipeline() {
                   </div>
                 </div>
 
-                {/* Financials */}
-                <Card className="p-4">
-                  <h4 className="text-small font-semibold mb-3">Deal Numbers</h4>
-                  <div className="grid grid-cols-2 gap-4">
+                <Card className="p-3">
+                  <h4 className="text-small font-semibold mb-2">Deal Numbers</h4>
+                  <div className="grid grid-cols-2 gap-3">
                     <div>
                       <p className="text-tiny text-content-tertiary">Asking Price</p>
                       <p className="text-lg font-bold">${selectedDeal.asking_price.toLocaleString()}</p>
@@ -1090,9 +1089,8 @@ export default function Pipeline() {
                   </div>
                 </Card>
 
-                {/* Property Details */}
-                <Card className="p-4">
-                  <h4 className="text-small font-semibold mb-3">Property Details</h4>
+                <Card className="p-3">
+                  <h4 className="text-small font-semibold mb-2">Property Details</h4>
                   <div className="flex items-center gap-4 text-small text-muted-foreground">
                     <span className="flex items-center gap-1.5">
                       <Home className="h-4 w-4" />
@@ -1112,9 +1110,9 @@ export default function Pipeline() {
                     </span>
                   </div>
                 </Card>
-                <Card className="p-4">
-                  <h4 className="text-small font-semibold mb-3">Contact</h4>
-                  <div className="space-y-3">
+                <Card className="p-3">
+                  <h4 className="text-small font-semibold mb-2">Contact</h4>
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{selectedDeal.contact_name}</p>
@@ -1143,8 +1141,7 @@ export default function Pipeline() {
                         </Tooltip>
                       </div>
                     </div>
-                    {/* Phone & Email display */}
-                    <div className="space-y-1.5 text-small">
+                    <div className="space-y-1 text-small">
                       <div className="flex items-center gap-2 text-content-secondary">
                         <Phone className="h-3.5 w-3.5" />
                         <span>{selectedDeal.contact_phone || "(512) 555-0147"}</span>
