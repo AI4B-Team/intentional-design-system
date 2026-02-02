@@ -28,7 +28,7 @@ import {
   Ruler,
   Clock,
   Phone,
-  MessageCircle,
+  Smartphone,
   Mail,
   MessageSquare,
   MoreVertical,
@@ -318,7 +318,7 @@ export function PropertyCard({
                     }}
                     aria-label="Text Seller"
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <Smartphone className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
