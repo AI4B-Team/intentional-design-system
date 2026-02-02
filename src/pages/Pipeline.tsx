@@ -936,7 +936,7 @@ export default function Pipeline() {
       )}
 
       {/* Focus Strip - reduce top margin when KPIs are hidden */}
-      <div className={cn(!isKpiExpanded && "-mt-4")}>
+      <div className={cn(!isKpiExpanded && "-mt-8")}>
         <FocusStrip 
           deals={deals}
           stages={PIPELINE_STAGES}
