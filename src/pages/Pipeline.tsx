@@ -906,7 +906,7 @@ export default function Pipeline() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4 min-h-[600px]">
+        <div className="flex gap-4 overflow-x-auto pb-20 lg:pb-4 min-h-[600px]">
           {PIPELINE_STAGES.map(stage => (
             <StageColumn
               key={stage.id}
