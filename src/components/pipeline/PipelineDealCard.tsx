@@ -255,9 +255,11 @@ export function PipelineDealCard({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge variant="success" size="sm" className="font-medium cursor-help shrink-0">
-                      OFFER ${(deal.offer_amount / 1000).toFixed(0)}K
-                    </Badge>
+                    <span className="inline-flex">
+                      <Badge variant="success" size="sm" className="font-medium cursor-help shrink-0">
+                        OFFER ${(deal.offer_amount / 1000).toFixed(0)}K
+                      </Badge>
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-tiny font-medium">Your Offer</p>
@@ -272,14 +274,16 @@ export function PipelineDealCard({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge 
-                  variant={profitBand.variant}
-                  size="sm"
-                  className="cursor-help shrink-0"
-                >
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  +${profitBand.spread}K
-                </Badge>
+                <span className="inline-flex">
+                  <Badge 
+                    variant={profitBand.variant}
+                    size="sm"
+                    className="cursor-help shrink-0"
+                  >
+                    <TrendingUp className="h-3 w-3 mr-1" />
+                    +${profitBand.spread}K
+                  </Badge>
+                </span>
               </TooltipTrigger>
               <TooltipContent side="left">
                 <div className="text-tiny">
@@ -356,17 +360,19 @@ export function PipelineDealCard({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 w-8 p-0 shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMove(prevStage.id);
-                    }}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                  <span className="inline-flex">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMove(prevStage.id);
+                      }}
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-tiny">Move to {prevStage.label}</p>
@@ -381,21 +387,23 @@ export function PipelineDealCard({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  variant={nextAction.primary ? "default" : "outline"}
-                  className={cn(
-                    "flex-1 h-8 text-tiny font-medium",
-                    nextAction.primary && "bg-primary hover:bg-primary/90"
-                  )}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // Action handler
-                  }}
-                >
-                  <nextAction.icon className="h-3.5 w-3.5 mr-1.5" />
-                  {nextAction.text}
-                </Button>
+                <span className="inline-flex flex-1">
+                  <Button
+                    size="sm"
+                    variant={nextAction.primary ? "default" : "outline"}
+                    className={cn(
+                      "w-full h-8 text-tiny font-medium",
+                      nextAction.primary && "bg-primary hover:bg-primary/90"
+                    )}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Action handler
+                    }}
+                  >
+                    <nextAction.icon className="h-3.5 w-3.5 mr-1.5" />
+                    {nextAction.text}
+                  </Button>
+                </span>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="text-tiny">Recommended next action for this deal</p>
@@ -408,17 +416,19 @@ export function PipelineDealCard({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 w-8 p-0 shrink-0"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onMove(nextStage.id);
-                    }}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                  <span className="inline-flex">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0 shrink-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMove(nextStage.id);
+                      }}
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </span>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-tiny">Move to {nextStage.label}</p>
