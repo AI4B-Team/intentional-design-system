@@ -217,18 +217,18 @@ export function PipelineDealCard({
         </div>
 
         {/* Property Specs */}
-        <div className="flex items-center gap-3 mt-2 text-tiny text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Bed className="h-3 w-3" />
-            {deal.beds}
+        <div className="flex items-center gap-4 mt-2 text-small text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Bed className="h-4 w-4" />
+            {deal.beds} Beds
           </span>
-          <span className="flex items-center gap-1">
-            <Bath className="h-3 w-3" />
-            {deal.baths}
+          <span className="flex items-center gap-1.5">
+            <Bath className="h-4 w-4" />
+            {deal.baths} Baths
           </span>
-          <span className="flex items-center gap-1">
-            <Maximize className="h-3 w-3" />
-            {deal.sqft.toLocaleString()}
+          <span className="flex items-center gap-1.5">
+            <Maximize className="h-4 w-4" />
+            {deal.sqft.toLocaleString()} SF
           </span>
         </div>
       </div>
@@ -300,36 +300,13 @@ export function PipelineDealCard({
 
       {/* Status Row */}
       <div className="px-3 py-2 overflow-hidden">
-        <div className="flex items-center justify-between gap-3">
-          {/* Lead Score */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className={cn(
-                  "flex items-center gap-1 px-2 py-1 rounded-full text-tiny font-medium cursor-help shrink-0",
-                  deal.lead_score >= 80 && "bg-success/10 text-success",
-                  deal.lead_score >= 60 && deal.lead_score < 80 && "bg-warning/10 text-warning",
-                  deal.lead_score < 60 && "bg-destructive/10 text-destructive"
-                )}>
-                  <Target className="h-3 w-3 shrink-0" />
-                  <span>{deal.lead_score}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-tiny font-medium">Lead Score</p>
-                <p className="text-tiny text-muted-foreground">
-                  {deal.lead_score >= 80 ? "Hot lead" : deal.lead_score >= 60 ? "Warm lead" : "Cold lead"}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
+        <div className="flex items-center justify-end">
           {/* Days in Stage */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={cn(
-                  "flex items-center gap-1 text-tiny font-medium cursor-help shrink-0 pr-1",
+                  "flex items-center gap-1 text-tiny font-medium cursor-help shrink-0",
                   isOverdue ? "text-warning" : "text-muted-foreground"
                 )}>
                   {isOverdue && <AlertTriangle className="h-3 w-3 shrink-0" />}
