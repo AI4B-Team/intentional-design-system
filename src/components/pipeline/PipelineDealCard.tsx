@@ -109,6 +109,32 @@ function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+// Get time-based urgency styling
+function getTimeUrgencyStyle(daysInStage: number) {
+  if (daysInStage >= 7) {
+    return {
+      badge: "bg-destructive text-destructive-foreground border-destructive",
+      icon: "text-destructive-foreground",
+      text: "text-destructive-foreground",
+      pulse: true,
+    };
+  }
+  if (daysInStage >= 3) {
+    return {
+      badge: "bg-warning text-warning-foreground border-warning",
+      icon: "text-warning-foreground",
+      text: "text-warning-foreground",
+      pulse: false,
+    };
+  }
+  return {
+    badge: "bg-background border-border",
+    icon: "text-muted-foreground",
+    text: "text-muted-foreground",
+    pulse: false,
+  };
+}
+
 export function PipelineDealCard({
   deal,
   stageConfig,
@@ -119,6 +145,7 @@ export function PipelineDealCard({
 }: PipelineDealCardProps) {
   const urgency = getUrgencyLevel(deal.days_in_stage, stageConfig.targetDays);
   const isOverdue = urgency === "overdue" || urgency === "critical";
+  const timeStyle = getTimeUrgencyStyle(deal.days_in_stage);
 
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -134,10 +161,17 @@ export function PipelineDealCard({
           urgency === "overdue" && "border-l-warning bg-warning/5",
           urgency === "warning" && "border-l-amber-400",
           urgency === "normal" && "border-l-border-subtle",
-          urgency === "none" && "border-l-success"
+          urgency === "none" && "border-l-success",
+          // Pulse animation for severely overdue cards
+          timeStyle.pulse && "animate-pulse"
         )}
         onClick={onView}
       >
+        {/* Glowing left border for overdue */}
+        {deal.days_in_stage >= 7 && (
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-destructive shadow-[0_0_8px_2px_rgba(239,68,68,0.4)] rounded-l-lg" />
+        )}
+        
         <div className="px-2 py-1.5 flex flex-col gap-1">
           {/* Top row: Timer badge + Menu */}
           <div className="flex items-center justify-between -mr-1">
@@ -145,22 +179,12 @@ export function PipelineDealCard({
               <TooltipTrigger asChild>
                 <div
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5",
-                    isOverdue && "border-warning/40"
+                    "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 border",
+                    timeStyle.badge
                   )}
                 >
-                  <Timer
-                    className={cn(
-                      "h-3 w-3",
-                      isOverdue ? "text-warning" : "text-muted-foreground"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-xs font-medium tabular-nums",
-                      isOverdue ? "text-warning" : "text-muted-foreground"
-                    )}
-                  >
+                  <Timer className={cn("h-3 w-3", timeStyle.icon)} />
+                  <span className={cn("text-xs font-medium tabular-nums", timeStyle.text)}>
                     {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
                   </span>
                 </div>
