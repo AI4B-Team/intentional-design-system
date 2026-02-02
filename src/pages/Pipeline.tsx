@@ -1114,22 +1114,35 @@ export default function Pipeline() {
                 </Card>
                 <Card className="p-4">
                   <h4 className="text-small font-semibold mb-3">Contact</h4>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{selectedDeal.contact_name}</p>
-                      <Badge variant="secondary" size="sm">{selectedDeal.contact_type}</Badge>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{selectedDeal.contact_name}</p>
+                        <Badge variant="secondary" size="sm">{selectedDeal.contact_type}</Badge>
+                      </div>
+                      <div className="flex gap-2">
+                        {(selectedDeal.contact_phone || true) && (
+                          <Button variant="secondary" size="sm">
+                            <Phone className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {(selectedDeal.contact_email || true) && (
+                          <Button variant="secondary" size="sm">
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      {selectedDeal.contact_phone && (
-                        <Button variant="secondary" size="sm">
-                          <Phone className="h-4 w-4" />
-                        </Button>
-                      )}
-                      {selectedDeal.contact_email && (
-                        <Button variant="secondary" size="sm">
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                      )}
+                    {/* Phone & Email display */}
+                    <div className="space-y-1.5 text-small">
+                      <div className="flex items-center gap-2 text-content-secondary">
+                        <Phone className="h-3.5 w-3.5" />
+                        <span>{selectedDeal.contact_phone || "(512) 555-0147"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-content-secondary">
+                        <Mail className="h-3.5 w-3.5" />
+                        <span>{selectedDeal.contact_email || `${selectedDeal.contact_name.toLowerCase().replace(/\s+/g, '.')}@email.com`}</span>
+                      </div>
                     </div>
                   </div>
                 </Card>
