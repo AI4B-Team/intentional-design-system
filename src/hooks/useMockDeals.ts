@@ -106,7 +106,7 @@ const mockDeals: MarketplaceDeal[] = [
     ],
     lat: 26.1224,
     lng: -80.1373,
-    createdAt: getDateString(2), // 2 days ago - shows "New 2 Days Ago"
+    createdAt: getDateString(10), // 10 days ago - shows "For Sale"
   },
   {
     id: "3",
