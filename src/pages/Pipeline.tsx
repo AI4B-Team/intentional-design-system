@@ -462,43 +462,41 @@ function StageColumn({
         </div>
 
         {/* Deals */}
-        <ScrollArea className="h-[calc(100vh-380px)]">
-          <div 
-            ref={setNodeRef}
-            className={cn(
-              "p-2 pr-4 space-y-2 min-h-[100px] transition-all duration-200",
-              isOver && "bg-primary/5"
+        <div 
+          ref={setNodeRef}
+          className={cn(
+            "p-2 pr-4 space-y-2 min-h-[100px] transition-all duration-200",
+            isOver && "bg-primary/5"
+          )}
+        >
+          <SortableContext items={dealIds} strategy={verticalListSortingStrategy}>
+            {deals.length === 0 ? (
+              <div className={cn(
+                "transition-all duration-200",
+                isOver && "opacity-50"
+              )}>
+                <EmptyStageGuide stageId={stage.id} />
+              </div>
+            ) : (
+              deals.map((deal) => {
+                const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
+                const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
+                const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
+                return (
+                  <SortableDealCard 
+                    key={deal.id} 
+                    deal={deal} 
+                    stageConfig={stage}
+                    nextStage={nextStage}
+                    prevStage={prevStage}
+                    onView={() => onViewDeal(deal)}
+                    onMove={(newStage) => onMoveDeal(deal.id, newStage)}
+                  />
+                );
+              })
             )}
-          >
-            <SortableContext items={dealIds} strategy={verticalListSortingStrategy}>
-              {deals.length === 0 ? (
-                <div className={cn(
-                  "transition-all duration-200",
-                  isOver && "opacity-50"
-                )}>
-                  <EmptyStageGuide stageId={stage.id} />
-                </div>
-              ) : (
-                deals.map((deal) => {
-                  const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
-                  const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
-                  const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
-                  return (
-                    <SortableDealCard 
-                      key={deal.id} 
-                      deal={deal} 
-                      stageConfig={stage}
-                      nextStage={nextStage}
-                      prevStage={prevStage}
-                      onView={() => onViewDeal(deal)}
-                      onMove={(newStage) => onMoveDeal(deal.id, newStage)}
-                    />
-                  );
-                })
-              )}
-            </SortableContext>
-          </div>
-        </ScrollArea>
+          </SortableContext>
+        </div>
       </div>
     </div>
   );
