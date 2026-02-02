@@ -353,9 +353,9 @@ function DealListItem({
             })()}
           </div>
           
-          {/* Thumbnail Grid - 4 small photos */}
+          {/* Thumbnail Grid - 2x2 layout */}
           {deal.images && deal.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-1 px-0">
+            <div className="grid grid-cols-2 gap-1 px-0">
               {deal.images.slice(1, 5).map((img, idx) => {
                 const isLastVisible = idx === 3;
                 const remainingCount = (deal.images?.length || 0) - 5;
@@ -365,8 +365,8 @@ function DealListItem({
                   <div 
                     key={idx} 
                     className={cn(
-                      "relative h-[72px] overflow-hidden",
-                      idx === 0 && "rounded-bl-lg",
+                      "relative h-[60px] overflow-hidden",
+                      idx === 2 && "rounded-bl-lg",
                       idx === 3 && "rounded-br-lg"
                     )}
                   >
