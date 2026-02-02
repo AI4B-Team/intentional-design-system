@@ -401,7 +401,7 @@ function StageColumn({
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
           <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
               <stage.icon className={cn(
                 "h-4 w-4",
                 stage.category === "discovery" && "text-red-500",
