@@ -105,11 +105,11 @@ export function PropertyCard({
               )}
             </div>
 
-            {/* Right: time badge + 3-dot menu */}
-            <div className="flex items-center gap-1">
+            {/* Right: time badge + 3-dot menu - no box, tight spacing */}
+            <div className="flex items-center gap-0">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-muted text-muted-foreground border border-border-subtle">
+                  <div className="inline-flex items-center gap-1 px-1.5 py-0.5 text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span className="text-xs font-medium tabular-nums">
                       {property.daysInStage != null ? `${property.daysInStage}d` : "—"}
@@ -126,7 +126,7 @@ export function PropertyCard({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreVertical className="h-4 w-4" />
@@ -189,43 +189,25 @@ export function PropertyCard({
           </div>
         </div>
 
-        {/* Property thumbnail */}
-        <div className="px-3 pb-2">
-          <button
-            type="button"
-            className="w-full rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
-            onClick={(e) => {
-              e.stopPropagation();
-              setGalleryOpen(true);
-            }}
-            aria-label="Open photos"
-          >
-            <img
-              src={thumb}
-              alt="Property"
-              className="w-full h-24 object-cover"
-            />
-          </button>
-        </div>
-
         <Separator />
 
         {/* Bottom utility row */}
         <div className="p-3 pt-2">
-          <div className="flex items-center justify-end gap-0.5">
-            {/* Photo count button */}
+          <div className="flex items-center justify-between">
+            {/* Left: Photo icon */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                  size="sm"
+                  className="h-7 px-1.5 text-muted-foreground hover:text-foreground gap-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     setGalleryOpen(true);
                   }}
                 >
                   <ImageIcon className="h-4 w-4" />
+                  <span className="text-xs tabular-nums">{imgs.length}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
@@ -233,9 +215,8 @@ export function PropertyCard({
               </TooltipContent>
             </Tooltip>
 
-            <Separator orientation="vertical" className="h-5 mx-1" />
-
-            {/* Contact icons - tightly grouped */}
+            {/* Right: Contact icons - tightly grouped */}
+            <div className="flex items-center gap-0.5">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -308,6 +289,7 @@ export function PropertyCard({
                 <p>View Comments (5)</p>
               </TooltipContent>
             </Tooltip>
+            </div>
           </div>
         </div>
 
