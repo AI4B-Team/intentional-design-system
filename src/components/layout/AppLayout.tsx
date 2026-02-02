@@ -94,8 +94,11 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         onMobileClose={() => setMobileMenuOpen(false)}
       />
 
-      {/* Main Content - normal document flow, no nested scroll */}
-      <div className="flex-1 flex flex-col min-w-0 relative z-10">
+      {/* Main Content - offset for fixed sidebar on desktop */}
+      <div className={cn(
+        "flex-1 flex flex-col min-w-0 relative z-10",
+        sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+      )}>
         {/* Header - sticky at top */}
         <AppHeader
           onMenuClick={() => setMobileMenuOpen(true)}
