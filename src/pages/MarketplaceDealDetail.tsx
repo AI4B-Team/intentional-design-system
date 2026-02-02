@@ -179,6 +179,7 @@ export default function MarketplaceDealDetail() {
   const [userType, setUserType] = useState<UserType>("investor");
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
+  const [compType, setCompType] = useState<"investor" | "retail">("investor");
   
   // Use shared saved deals hook
   const { isSaved, toggleSave } = useSavedDeals();
@@ -239,10 +240,84 @@ export default function MarketplaceDealDetail() {
   const cashOnCash = ((netCashflow * 12) / (deal.price * 0.25)) * 100;
   const grm = deal.price / (estRent * 12);
 
-  // Mock comps data
-  const mockComps = [
+  // Mock investor comps data (distressed/as-is sales)
+
+  // Mock investor comps data (distressed/as-is sales)
+  const investorComps = [
     {
       id: "1",
+      address: "14234 Maple Lane",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft + 120,
+      salePrice: Math.round(deal.arv * 0.68),
+      saleDate: "2025-12-15",
+      distanceMiles: 0.3,
+      pricePerSqft: Math.round((deal.arv * 0.68) / (deal.sqft + 120)),
+      similarity: 95,
+      isSelected: true,
+      quality: "excellent" as const,
+      saleType: "REO",
+    },
+    {
+      id: "2",
+      address: "7892 Oak Street",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft - 80,
+      salePrice: Math.round(deal.arv * 0.62),
+      saleDate: "2025-11-28",
+      distanceMiles: 0.5,
+      pricePerSqft: Math.round((deal.arv * 0.62) / (deal.sqft - 80)),
+      similarity: 92,
+      isSelected: true,
+      quality: "excellent" as const,
+      saleType: "Short Sale",
+    },
+    {
+      id: "3",
+      address: "2456 Pine Drive",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds + 1,
+      baths: deal.baths,
+      sqft: deal.sqft + 350,
+      salePrice: Math.round(deal.arv * 0.72),
+      saleDate: "2025-10-10",
+      distanceMiles: 0.8,
+      pricePerSqft: Math.round((deal.arv * 0.72) / (deal.sqft + 350)),
+      similarity: 78,
+      isSelected: true,
+      quality: "good" as const,
+      saleType: "As-Is",
+    },
+    {
+      id: "4",
+      address: "9821 Cedar Way",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds - 1,
+      baths: deal.baths - 0.5,
+      sqft: deal.sqft - 300,
+      salePrice: Math.round(deal.arv * 0.58),
+      saleDate: "2025-09-22",
+      distanceMiles: 1.1,
+      pricePerSqft: Math.round((deal.arv * 0.58) / (deal.sqft - 300)),
+      similarity: 72,
+      isSelected: true,
+      quality: "good" as const,
+      saleType: "Auction",
+    },
+  ];
+
+  // Mock retail comps data (standard MLS sales)
+  const retailComps = [
+    {
+      id: "r1",
       address: "14234 Maple Lane",
       city: deal.city,
       state: deal.state,
@@ -256,9 +331,10 @@ export default function MarketplaceDealDetail() {
       similarity: 95,
       isSelected: true,
       quality: "excellent" as const,
+      saleType: "Standard",
     },
     {
-      id: "2",
+      id: "r2",
       address: "7892 Oak Street",
       city: deal.city,
       state: deal.state,
@@ -272,9 +348,10 @@ export default function MarketplaceDealDetail() {
       similarity: 92,
       isSelected: true,
       quality: "excellent" as const,
+      saleType: "Standard",
     },
     {
-      id: "3",
+      id: "r3",
       address: "2456 Pine Drive",
       city: deal.city,
       state: deal.state,
@@ -288,9 +365,10 @@ export default function MarketplaceDealDetail() {
       similarity: 78,
       isSelected: true,
       quality: "good" as const,
+      saleType: "Standard",
     },
     {
-      id: "4",
+      id: "r4",
       address: "9821 Cedar Way",
       city: deal.city,
       state: deal.state,
@@ -304,8 +382,12 @@ export default function MarketplaceDealDetail() {
       similarity: 72,
       isSelected: true,
       quality: "good" as const,
+      saleType: "Standard",
     },
   ];
+
+  // Select active comps based on toggle
+  const mockComps = compType === "investor" ? investorComps : retailComps;
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -540,6 +622,31 @@ export default function MarketplaceDealDetail() {
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <h2 className="text-lg font-semibold">Comparable Sales</h2>
+                  {/* Comp Type Toggle */}
+                  <div className="flex items-center gap-1 ml-2 bg-muted rounded-lg p-0.5">
+                    <button
+                      onClick={() => setCompType("investor")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                        compType === "investor"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Investor Comps
+                    </button>
+                    <button
+                      onClick={() => setCompType("retail")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                        compType === "retail"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Retail Comps
+                    </button>
+                  </div>
                 </div>
                 <Badge variant="secondary">{mockComps.length} Selected Comps</Badge>
               </div>
