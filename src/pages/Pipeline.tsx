@@ -793,22 +793,7 @@ export default function Pipeline() {
 
       {/* Pipeline Value Cards - Collapsible Section */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={() => setIsKpiExpanded(!isKpiExpanded)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {isKpiExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
-            <span>{isKpiExpanded ? "Hide Stats" : "Show Stats"}</span>
-          </button>
-        </div>
-        
-        {isKpiExpanded && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
             <PipelineValueCard
               title="Leads"
               subtitle="New Opportunities"
@@ -873,7 +858,6 @@ export default function Pipeline() {
               variant="celebration"
             />
           </div>
-        )}
       </div>
 
       {/* Focus Strip */}
