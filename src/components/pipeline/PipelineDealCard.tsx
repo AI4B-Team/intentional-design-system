@@ -235,16 +235,36 @@ export function PipelineDealCard({
 
       {/* Financial Row */}
       <div className="px-3 py-2 bg-surface-secondary/50 border-y border-border-subtle">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {/* Price Info */}
-          <div className="flex items-center gap-2">
-            <span className="text-body font-bold text-foreground">
-              ${(deal.asking_price / 1000).toFixed(0)}k
-            </span>
+          <div className="flex items-center gap-2 min-w-0">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-body font-bold text-foreground cursor-help shrink-0">
+                    ${(deal.asking_price / 1000).toFixed(0)}k
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-tiny font-medium">Asking Price</p>
+                  <p className="text-tiny text-muted-foreground">${deal.asking_price.toLocaleString()}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {deal.offer_amount && (
-              <Badge variant="success" size="sm" className="font-medium">
-                Offer ${(deal.offer_amount / 1000).toFixed(0)}k
-              </Badge>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="success" size="sm" className="font-medium cursor-help shrink-0">
+                      OFFER ${(deal.offer_amount / 1000).toFixed(0)}K
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="text-tiny font-medium">Your Offer</p>
+                    <p className="text-tiny text-muted-foreground">${deal.offer_amount.toLocaleString()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
           </div>
           
@@ -255,10 +275,10 @@ export function PipelineDealCard({
                 <Badge 
                   variant={profitBand.variant}
                   size="sm"
-                  className="cursor-help"
+                  className="cursor-help shrink-0"
                 >
                   <TrendingUp className="h-3 w-3 mr-1" />
-                  +${profitBand.spread}k
+                  +${profitBand.spread}K
                 </Badge>
               </TooltipTrigger>
               <TooltipContent side="left">
@@ -276,13 +296,13 @@ export function PipelineDealCard({
 
       {/* Status Row */}
       <div className="px-3 py-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {/* Lead Score */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={cn(
-                  "flex items-center gap-1.5 px-2 py-1 rounded-full text-tiny font-medium cursor-help",
+                  "flex items-center gap-1.5 px-2 py-1 rounded-full text-tiny font-medium cursor-help shrink-0",
                   deal.lead_score >= 80 && "bg-success/10 text-success",
                   deal.lead_score >= 60 && deal.lead_score < 80 && "bg-warning/10 text-warning",
                   deal.lead_score < 60 && "bg-destructive/10 text-destructive"
@@ -292,22 +312,40 @@ export function PipelineDealCard({
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p className="text-tiny">Lead Score</p>
+                <p className="text-tiny font-medium">Lead Score</p>
+                <p className="text-tiny text-muted-foreground">
+                  {deal.lead_score >= 80 ? "Hot lead" : deal.lead_score >= 60 ? "Warm lead" : "Cold lead"}
+                </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
           {/* Days in Stage */}
-          <div className={cn(
-            "flex items-center gap-1.5 text-tiny font-medium",
-            isOverdue ? "text-warning" : "text-muted-foreground"
-          )}>
-            {isOverdue && <AlertTriangle className="h-3 w-3" />}
-            <Timer className="h-3 w-3" />
-            <span>
-              {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}d`}
-            </span>
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className={cn(
+                  "flex items-center gap-1.5 text-tiny font-medium cursor-help shrink-0",
+                  isOverdue ? "text-warning" : "text-muted-foreground"
+                )}>
+                  {isOverdue && <AlertTriangle className="h-3 w-3" />}
+                  <Timer className="h-3 w-3" />
+                  <span className="whitespace-nowrap">
+                    {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage} days`}
+                  </span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-tiny font-medium">Days in {stageConfig.label}</p>
+                {stageConfig.targetDays > 0 && (
+                  <p className="text-tiny text-muted-foreground">
+                    Target: {stageConfig.targetDays} days
+                    {isOverdue && " (overdue)"}
+                  </p>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
@@ -341,21 +379,30 @@ export function PipelineDealCard({
           )}
 
           {/* Primary CTA */}
-          <Button
-            size="sm"
-            variant={nextAction.primary ? "default" : "outline"}
-            className={cn(
-              "flex-1 h-8 text-tiny font-medium",
-              nextAction.primary && "bg-primary hover:bg-primary/90"
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-              // Action handler
-            }}
-          >
-            <nextAction.icon className="h-3.5 w-3.5 mr-1.5" />
-            {nextAction.text}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="sm"
+                  variant={nextAction.primary ? "default" : "outline"}
+                  className={cn(
+                    "flex-1 h-8 text-tiny font-medium",
+                    nextAction.primary && "bg-primary hover:bg-primary/90"
+                  )}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Action handler
+                  }}
+                >
+                  <nextAction.icon className="h-3.5 w-3.5 mr-1.5" />
+                  {nextAction.text}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-tiny">Recommended next action for this deal</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Quick Move Forward - or placeholder for centering */}
           {nextStage ? (
