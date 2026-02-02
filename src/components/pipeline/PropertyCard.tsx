@@ -130,7 +130,7 @@ export function PropertyCard({
     <TooltipProvider delayDuration={300}>
       <div
         className={cn(
-          "bg-card rounded-2xl border border-border-subtle shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer overflow-hidden"
+          "bg-card rounded-2xl border border-border-subtle shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer"
         )}
         onClick={() => onOpenDetails?.(property.id)}
       >
