@@ -69,6 +69,14 @@ import {
   RefreshCw,
   MessageSquare,
   Zap,
+  UserPlus,
+  CalendarClock,
+  Send,
+  MessageCircle,
+  FileCheck,
+  Megaphone,
+  CheckCircle,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
@@ -88,12 +96,21 @@ import { PipelineDealCard } from "@/components/pipeline/PipelineDealCard";
 
 // Pipeline stages configuration - SYNCHRONIZED with src/lib/pipeline-colors.ts
 // Categories: Discovery (Red), Intent (Yellow), Commitment (Blue), Outcome (Green)
-const PIPELINE_STAGES = [
+const PIPELINE_STAGES: {
+  id: string;
+  label: string;
+  color: string;
+  icon: LucideIcon;
+  description: string;
+  targetDays: number;
+  category: string;
+}[] = [
   // === DISCOVERY GROUP (Red) ===
   { 
     id: "new", 
     label: "New Leads", 
     color: "bg-red-500", 
+    icon: UserPlus,
     description: "Fresh leads requiring qualification",
     targetDays: 2,
     category: "discovery",
@@ -102,6 +119,7 @@ const PIPELINE_STAGES = [
     id: "contacted", 
     label: "Contacted", 
     color: "bg-red-500", 
+    icon: Phone,
     description: "Initial contact made",
     targetDays: 5,
     category: "discovery",
@@ -110,6 +128,7 @@ const PIPELINE_STAGES = [
     id: "appointment", 
     label: "Appointments", 
     color: "bg-red-500", 
+    icon: CalendarClock,
     description: "Meeting scheduled with seller",
     targetDays: 3,
     category: "discovery",
@@ -119,6 +138,7 @@ const PIPELINE_STAGES = [
     id: "offer_made", 
     label: "Offer Made", 
     color: "bg-amber-500", 
+    icon: Send,
     description: "Offer submitted, awaiting response",
     targetDays: 7,
     category: "intent",
@@ -127,6 +147,7 @@ const PIPELINE_STAGES = [
     id: "follow_up", 
     label: "Follow Up", 
     color: "bg-amber-400", 
+    icon: Clock,
     description: "Awaiting response or next contact",
     targetDays: 7,
     category: "intent",
@@ -135,6 +156,7 @@ const PIPELINE_STAGES = [
     id: "negotiating", 
     label: "Negotiating", 
     color: "bg-amber-500", 
+    icon: MessageCircle,
     description: "Active negotiation in progress",
     targetDays: 14,
     category: "intent",
@@ -144,6 +166,7 @@ const PIPELINE_STAGES = [
     id: "under_contract", 
     label: "Under Contract", 
     color: "bg-blue-500", 
+    icon: FileCheck,
     description: "Contract signed, heading to close",
     targetDays: 30,
     category: "commitment",
@@ -152,6 +175,7 @@ const PIPELINE_STAGES = [
     id: "marketing", 
     label: "Marketing", 
     color: "bg-blue-500", 
+    icon: Megaphone,
     description: "Property being marketed to buyers",
     targetDays: 14,
     category: "commitment",
@@ -161,6 +185,7 @@ const PIPELINE_STAGES = [
     id: "closed", 
     label: "Purchased", 
     color: "bg-emerald-500", 
+    icon: CheckCircle,
     description: "Deal completed",
     targetDays: 0,
     category: "outcome",
@@ -169,6 +194,7 @@ const PIPELINE_STAGES = [
     id: "sold", 
     label: "Sold", 
     color: "bg-emerald-500", 
+    icon: DollarSign,
     description: "Property sold and funds received",
     targetDays: 0,
     category: "outcome",
@@ -521,7 +547,13 @@ function StageColumn({
         <div className="p-3 border-b border-border-subtle">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className={cn("h-3 w-3 rounded-full", stage.color)} />
+              <stage.icon className={cn(
+                "h-4 w-4",
+                stage.category === "discovery" && "text-red-500",
+                stage.category === "intent" && "text-amber-500",
+                stage.category === "commitment" && "text-blue-500",
+                stage.category === "outcome" && "text-emerald-500"
+              )} />
               <span className="text-small font-semibold">{stage.label}</span>
               <Badge variant="secondary" size="sm">{deals.length}</Badge>
             </div>
