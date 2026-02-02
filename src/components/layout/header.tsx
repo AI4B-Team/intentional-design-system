@@ -120,7 +120,7 @@ export function Header({
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-content-tertiary" />
             <input
               type="search"
-              placeholder="Search properties, contacts..."
+              placeholder="Enter an address, city, or ZIP for insights"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex h-9 w-full rounded-small border border-border bg-surface-secondary pl-10 pr-12 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10 focus-visible:bg-white"
