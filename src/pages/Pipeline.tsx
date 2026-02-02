@@ -411,24 +411,48 @@ function StageColumn({
               )} />
               <span className="text-small font-semibold">{stage.label}</span>
               <Badge variant="secondary" size="sm">{deals.length}</Badge>
-            </div>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-brand hover:bg-brand/10 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onAddDeal(stage.id);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-tiny">Add deal to {stage.label}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-brand hover:bg-brand/10 transition-colors"
-                    onClick={() => onAddDeal(stage.id)}
+                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <Plus className="h-4 w-4" />
+                    <MoreVertical className="h-4 w-4" />
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p className="text-tiny">Add deal to {stage.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onAddDeal(stage.id)}>
+                    Add Deal
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    View All in {stage.label}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
 
