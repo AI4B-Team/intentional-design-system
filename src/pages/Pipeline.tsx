@@ -1107,14 +1107,14 @@ export default function Pipeline() {
               closedGoal={closedGoal}
             />
             <div className="flex items-center gap-2">
+              <Button variant="secondary" size="sm" icon={<RefreshCw />}>
+                Sync
+              </Button>
               <GoalSettingsDialog>
                 <Button variant="outline" size="sm" icon={<Target />}>
                   Goals
                 </Button>
               </GoalSettingsDialog>
-              <Button variant="secondary" size="sm" icon={<RefreshCw />}>
-                Sync
-              </Button>
               <Button variant="primary" size="sm" icon={<Plus />}>
                 Add Deal
               </Button>
