@@ -40,7 +40,13 @@ export function TemplatePreview({ type, frontHtml, backHtml, className }: Templa
     <Card className={cn("flex flex-col", className)}>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-body">Preview</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-body">Preview</CardTitle>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-medium uppercase tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              Live
+            </span>
+          </div>
           <span className="text-tiny text-content-tertiary">{dimensions.label}</span>
         </div>
         
