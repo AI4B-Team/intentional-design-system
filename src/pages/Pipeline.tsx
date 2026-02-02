@@ -105,8 +105,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { usePipelineDeals, useUpdatePipelineDealStage, useCreatePipelineDeal } from "@/hooks/usePipelineDeals";
+import type { PipelineDeal } from "@/hooks/usePipelineDeals";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useDashboardInsights } from "@/hooks/useDashboardInsights";
@@ -231,349 +231,8 @@ const PIPELINE_STAGES: {
   },
 ];
 
-// Mock pipeline deals for demonstration
-const MOCK_DEALS = [
-  {
-    id: "1",
-    address: "123 Main Street",
-    city: "Austin",
-    state: "TX",
-    zip: "78701",
-    stage: "new",
-    asking_price: 285000,
-    offer_amount: null,
-    arv: 350000,
-    equity_percentage: 18,
-    lead_score: 85,
-    contact_name: "John Smith",
-    contact_phone: "(512) 555-0123",
-    contact_email: "john@email.com",
-    contact_type: "Seller",
-    source: "Direct Mail",
-    days_in_stage: 1,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    notes: "Motivated seller, relocating for work",
-    property_type: "Single Family",
-    beds: 3,
-    baths: 2,
-    sqft: 1850,
-  },
-  {
-    id: "2",
-    address: "456 Oak Avenue",
-    city: "Round Rock",
-    state: "TX",
-    zip: "78664",
-    stage: "contacted",
-    asking_price: 320000,
-    offer_amount: null,
-    arv: 400000,
-    equity_percentage: 20,
-    lead_score: 72,
-    contact_name: "Sarah Johnson",
-    contact_phone: "(512) 555-0456",
-    contact_email: "sarah@realty.com",
-    contact_type: "Agent",
-    source: "MLS",
-    days_in_stage: 3,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    notes: "Agent representing absentee owner",
-    property_type: "Single Family",
-    beds: 4,
-    baths: 2.5,
-    sqft: 2200,
-  },
-  {
-    id: "3",
-    address: "789 Elm Boulevard",
-    city: "Cedar Park",
-    state: "TX",
-    zip: "78613",
-    stage: "appointment",
-    asking_price: 275000,
-    offer_amount: null,
-    arv: 380000,
-    equity_percentage: 28,
-    lead_score: 91,
-    contact_name: "Mike Williams",
-    contact_phone: "(512) 555-0789",
-    contact_email: "mike@gmail.com",
-    contact_type: "Seller",
-    source: "Driving for Dollars",
-    days_in_stage: 2,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
-    notes: "Inherited property, needs repairs",
-    property_type: "Single Family",
-    beds: 3,
-    baths: 1,
-    sqft: 1400,
-  },
-  {
-    id: "4",
-    address: "321 Pine Drive",
-    city: "Georgetown",
-    state: "TX",
-    zip: "78626",
-    stage: "offer_made",
-    asking_price: 295000,
-    offer_amount: 245000,
-    arv: 365000,
-    equity_percentage: 24,
-    lead_score: 78,
-    contact_name: "Lisa Chen",
-    contact_phone: "(512) 555-0321",
-    contact_email: "lisa@realty.com",
-    contact_type: "Agent",
-    source: "Cold Call",
-    days_in_stage: 5,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-    notes: "Submitted cash offer, waiting for response",
-    property_type: "Single Family",
-    beds: 4,
-    baths: 3,
-    sqft: 2600,
-  },
-  {
-    id: "5",
-    address: "555 Maple Court",
-    city: "Pflugerville",
-    state: "TX",
-    zip: "78660",
-    stage: "negotiating",
-    asking_price: 310000,
-    offer_amount: 265000,
-    arv: 395000,
-    equity_percentage: 22,
-    lead_score: 88,
-    contact_name: "Robert Davis",
-    contact_phone: "(512) 555-0555",
-    contact_email: "robert@email.com",
-    contact_type: "Seller",
-    source: "Website Lead",
-    days_in_stage: 8,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 6).toISOString(),
-    notes: "Counter at $275k, may accept $270k",
-    property_type: "Single Family",
-    beds: 3,
-    baths: 2,
-    sqft: 1750,
-  },
-  {
-    id: "6",
-    address: "888 Birch Lane",
-    city: "Leander",
-    state: "TX",
-    zip: "78641",
-    stage: "under_contract",
-    asking_price: 340000,
-    offer_amount: 290000,
-    arv: 420000,
-    equity_percentage: 31,
-    lead_score: 95,
-    contact_name: "Emily Brown",
-    contact_phone: "(512) 555-0888",
-    contact_email: "emily@gmail.com",
-    contact_type: "Seller",
-    source: "Referral",
-    days_in_stage: 18,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 35).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    notes: "Contract signed, closing in 12 days",
-    property_type: "Single Family",
-    beds: 5,
-    baths: 3,
-    sqft: 3100,
-  },
-  {
-    id: "7",
-    address: "999 Cypress Way",
-    city: "Austin",
-    state: "TX",
-    zip: "78745",
-    stage: "new",
-    asking_price: 225000,
-    offer_amount: null,
-    arv: 295000,
-    equity_percentage: 24,
-    lead_score: 67,
-    contact_name: "James Wilson",
-    contact_phone: "(512) 555-0999",
-    contact_email: null,
-    contact_type: "Seller",
-    source: "Direct Mail",
-    days_in_stage: 0,
-    created_at: new Date().toISOString(),
-    last_activity: new Date().toISOString(),
-    notes: "Just responded to mailer",
-    property_type: "Single Family",
-    beds: 2,
-    baths: 1,
-    sqft: 1100,
-  },
-  {
-    id: "8",
-    address: "777 Marketing Lane",
-    city: "Austin",
-    state: "TX",
-    zip: "78702",
-    stage: "marketing",
-    asking_price: 295000,
-    offer_amount: 250000,
-    arv: 375000,
-    equity_percentage: 27,
-    lead_score: 92,
-    contact_name: "Amanda Garcia",
-    contact_phone: "(512) 555-0777",
-    contact_email: "amanda@gmail.com",
-    contact_type: "Seller",
-    source: "Direct Mail",
-    days_in_stage: 7,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 40).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
-    notes: "Property acquired, actively marketing to cash buyers",
-    property_type: "Single Family",
-    beds: 4,
-    baths: 2,
-    sqft: 2100,
-  },
-  // Additional deals to showcase more focus items
-  {
-    id: "9",
-    address: "222 Offer Street",
-    city: "Austin",
-    state: "TX",
-    zip: "78748",
-    stage: "offer_made",
-    asking_price: 198000,
-    offer_amount: 165000,
-    arv: 255000,
-    equity_percentage: 29,
-    lead_score: 82,
-    contact_name: "Patricia Moore",
-    contact_phone: "(512) 555-0222",
-    contact_email: "pat@email.com",
-    contact_type: "Seller",
-    source: "Cold Call",
-    days_in_stage: 7,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 14).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
-    notes: "Sent offer, no response yet",
-    property_type: "Single Family",
-    beds: 3,
-    baths: 2,
-    sqft: 1550,
-  },
-  {
-    id: "10",
-    address: "444 Stalled Ave",
-    city: "Round Rock",
-    state: "TX",
-    zip: "78681",
-    stage: "negotiating",
-    asking_price: 275000,
-    offer_amount: 235000,
-    arv: 345000,
-    equity_percentage: 25,
-    lead_score: 79,
-    contact_name: "Tom Harris",
-    contact_phone: "(512) 555-0444",
-    contact_email: "tom@gmail.com",
-    contact_type: "Seller",
-    source: "Website Lead",
-    days_in_stage: 12,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
-    notes: "Back and forth on price, seller hesitant",
-    property_type: "Single Family",
-    beds: 4,
-    baths: 2,
-    sqft: 1900,
-  },
-  {
-    id: "11",
-    address: "666 Contract Close",
-    city: "Leander",
-    state: "TX",
-    zip: "78642",
-    stage: "under_contract",
-    asking_price: 265000,
-    offer_amount: 225000,
-    arv: 335000,
-    equity_percentage: 26,
-    lead_score: 94,
-    contact_name: "Nancy White",
-    contact_phone: "(512) 555-0666",
-    contact_email: "nancy@email.com",
-    contact_type: "Seller",
-    source: "Referral",
-    days_in_stage: 22,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-    notes: "Closing scheduled, waiting on title",
-    property_type: "Townhouse",
-    beds: 3,
-    baths: 2.5,
-    sqft: 1650,
-  },
-  {
-    id: "12",
-    address: "111 Cold Lead Rd",
-    city: "Pflugerville",
-    state: "TX",
-    zip: "78660",
-    stage: "contacted",
-    asking_price: 189000,
-    offer_amount: null,
-    arv: 245000,
-    equity_percentage: 23,
-    lead_score: 65,
-    contact_name: "Steve Martinez",
-    contact_phone: "(512) 555-0111",
-    contact_email: "steve@email.com",
-    contact_type: "Seller",
-    source: "Direct Mail",
-    days_in_stage: 8,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 12).toISOString(),
-    last_activity: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
-    notes: "Initial contact made, needs follow up",
-    property_type: "Single Family",
-    beds: 2,
-    baths: 1,
-    sqft: 1050,
-  },
-];
-
-interface PipelineDeal {
-  id: string;
-  address: string;
-  city: string;
-  state: string;
-  zip: string;
-  stage: string;
-  asking_price: number;
-  offer_amount: number | null;
-  arv: number;
-  equity_percentage: number;
-  lead_score: number;
-  contact_name: string;
-  contact_phone: string | null;
-  contact_email: string | null;
-  contact_type: string;
-  source: string;
-  days_in_stage: number;
-  created_at: string;
-  last_activity: string;
-  notes: string | null;
-  property_type: string;
-  beds: number;
-  baths: number;
-  sqft: number;
-}
+// MOCK_DEALS removed - now using usePipelineDeals hook to fetch real data from the database
+// PipelineDeal interface moved to src/hooks/usePipelineDeals.ts
 
 function getLeadScoreColor(score: number) {
   if (score >= 80) return "text-success";
@@ -898,6 +557,11 @@ export default function Pipeline() {
   const goals = useGoals();
   const { data: pipelineValueStatsRaw, isLoading: pipelineValueLoading } = usePipelineValueStats();
   const { data: insights } = useDashboardInsights();
+  
+  // Fetch real deals from database
+  const { data: pipelineDeals = [], isLoading: dealsLoading } = usePipelineDeals();
+  const updateDealStage = useUpdatePipelineDealStage();
+  const createDeal = useCreatePipelineDeal();
 
   // Demo data for visualization when no real data exists - matches Dashboard exactly
   const demoData = {
@@ -919,7 +583,8 @@ export default function Pipeline() {
   const [search, setSearch] = React.useState("");
   const [sourceFilter, setSourceFilter] = React.useState<string>("all");
   const [selectedDeal, setSelectedDeal] = React.useState<PipelineDeal | null>(null);
-  const [deals, setDeals] = React.useState<PipelineDeal[]>(MOCK_DEALS);
+  // Use fetched deals from database instead of local state
+  const deals = pipelineDeals;
   const [focusFilter, setFocusFilter] = React.useState<string | null>(null);
   const [stalledFilter, setStalledFilter] = React.useState(false);
   const [activeDragId, setActiveDragId] = React.useState<string | null>(null);
@@ -1006,39 +671,8 @@ export default function Pipeline() {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    // Find the deal being dragged
-    const activeDeal = deals.find(d => d.id === activeId);
-    if (!activeDeal) return;
-
-    // Check if we're over a stage droppable (for empty columns)
-    if (overId.startsWith('stage-')) {
-      const stageId = overId.replace('stage-', '');
-      if (activeDeal.stage !== stageId) {
-        setDeals(prev => prev.map(d =>
-          d.id === activeId
-            ? { ...d, stage: stageId, days_in_stage: 0, last_activity: new Date().toISOString() }
-            : d
-        ));
-      }
-      return;
-    }
-
-    // Check if we're over a different deal
-    const overDeal = deals.find(d => d.id === overId);
-    if (overDeal && overDeal.stage !== activeDeal.stage) {
-      // Move to the new stage
-      setDeals(prev => prev.map(d =>
-        d.id === activeId
-          ? { ...d, stage: overDeal.stage, days_in_stage: 0, last_activity: new Date().toISOString() }
-          : d
-      ));
-    }
+    // Preview only - actual move happens in handleDragEnd
+    // We don't need to update state here since we're using server data
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -1057,11 +691,7 @@ export default function Pipeline() {
       const stageId = overId.replace('stage-', '');
       const activeDeal = deals.find(d => d.id === activeId);
       if (activeDeal && activeDeal.stage !== stageId) {
-        setDeals(prev => prev.map(d =>
-          d.id === activeId
-            ? { ...d, stage: stageId, days_in_stage: 0, last_activity: new Date().toISOString() }
-            : d
-        ));
+        updateDealStage.mutate({ id: activeId, stage: stageId });
       }
       return;
     }
@@ -1071,11 +701,7 @@ export default function Pipeline() {
     if (overDeal) {
       const activeDeal = deals.find(d => d.id === activeId);
       if (activeDeal && activeDeal.stage !== overDeal.stage) {
-        setDeals(prev => prev.map(d =>
-          d.id === activeId
-            ? { ...d, stage: overDeal.stage, days_in_stage: 0, last_activity: new Date().toISOString() }
-            : d
-        ));
+        updateDealStage.mutate({ id: activeId, stage: overDeal.stage });
       }
     }
   };
@@ -1085,11 +711,7 @@ export default function Pipeline() {
   };
 
   const handleMoveDeal = (dealId: string, newStage: string) => {
-    setDeals(prev => prev.map(d => 
-      d.id === dealId 
-        ? { ...d, stage: newStage, days_in_stage: 0, last_activity: new Date().toISOString() }
-        : d
-    ));
+    updateDealStage.mutate({ id: dealId, stage: newStage });
   };
 
   const handleNavigateToProperty = () => {
@@ -1127,34 +749,20 @@ export default function Pipeline() {
   const handleCreateDeal = () => {
     if (!addDealStage || !newDealForm.address) return;
     
-    const newDeal: PipelineDeal = {
-      id: `new-${Date.now()}`,
+    createDeal.mutate({
       address: newDealForm.address,
       city: newDealForm.city || "Austin",
       state: newDealForm.state || "TX",
       zip: newDealForm.zip || "78701",
-      stage: addDealStage,
-      asking_price: parseInt(newDealForm.asking_price) || 250000,
-      offer_amount: null,
+      status: addDealStage,
+      estimated_value: parseInt(newDealForm.asking_price) || 250000,
       arv: parseInt(newDealForm.arv) || 300000,
-      equity_percentage: 20,
-      lead_score: 75,
-      contact_name: newDealForm.contact_name || "New Contact",
-      contact_phone: null,
-      contact_email: null,
-      contact_type: "Seller",
-      source: "Manual Entry",
-      days_in_stage: 0,
-      created_at: new Date().toISOString(),
-      last_activity: new Date().toISOString(),
-      notes: null,
-      property_type: "Single Family",
+      owner_name: newDealForm.contact_name || "New Contact",
       beds: parseInt(newDealForm.beds) || 3,
       baths: parseInt(newDealForm.baths) || 2,
       sqft: parseInt(newDealForm.sqft) || 1500,
-    };
+    });
     
-    setDeals(prev => [...prev, newDeal]);
     setAddDealStage(null);
   };
 
