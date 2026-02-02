@@ -869,7 +869,7 @@ export default function Pipeline() {
       />
 
       {/* Filters - Sticky on scroll */}
-      <div className="sticky top-0 z-50 bg-background py-3 -mx-4 px-4 lg:-mx-6 lg:px-6 border-b border-border shadow-sm mb-4">
+      <div className="sticky top-0 z-50 bg-background pt-4 pb-3 -mx-4 px-4 lg:-mx-6 lg:px-6 -mt-4 border-b border-border shadow-sm mb-4">
         <div className="flex items-center gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
             <SelectTrigger className="w-40">
