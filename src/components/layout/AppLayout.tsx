@@ -73,6 +73,19 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
 
   return (
     <div className="min-h-screen flex bg-surface-secondary relative">
+      {/*
+        Left-rail background layer (desktop): ensures the sidebar background color
+        always reaches the bottom of the viewport/page visually, even if any
+        scroll/height context changes.
+      */}
+      <div
+        aria-hidden
+        className={cn(
+          "hidden lg:block fixed inset-y-0 left-0 bg-slate-900 z-0",
+          sidebarCollapsed ? "w-16" : "w-64"
+        )}
+      />
+
       {/* Sidebar - sticky for desktop */}
       <AppSidebar
         collapsed={sidebarCollapsed}
@@ -82,7 +95,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
       />
 
       {/* Main Content - normal document flow, no nested scroll */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 relative z-10">
         {/* Header - sticky at top */}
         <AppHeader
           onMenuClick={() => setMobileMenuOpen(true)}
