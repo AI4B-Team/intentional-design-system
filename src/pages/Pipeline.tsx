@@ -41,6 +41,7 @@ import {
   Plus,
   Search,
   Filter,
+  SlidersHorizontal,
   MoreVertical,
   Building2,
   DollarSign,
@@ -831,8 +832,8 @@ export default function Pipeline() {
             ))}
           </SelectContent>
         </Select>
-        <Button variant="secondary" size="sm" icon={<Filter />}>
-          More Filters
+        <Button variant="secondary" size="sm" icon={<SlidersHorizontal />}>
+          Filter
         </Button>
         {(focusFilter || stalledFilter) && (
           <Button 
