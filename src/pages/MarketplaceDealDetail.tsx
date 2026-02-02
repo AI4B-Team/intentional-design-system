@@ -516,8 +516,13 @@ export default function MarketplaceDealDetail() {
               <ChevronRight className="h-4 w-4" />
             </Button>
 
-            {/* Bottom Controls */}
-            <div className="absolute bottom-3 left-3 flex items-center gap-2">
+            {/* Property Type Badge - Bottom Left */}
+            <Badge className="absolute bottom-3 left-3 bg-emerald-600 text-white shadow-md">
+              {deal.propertyType}
+            </Badge>
+
+            {/* Media Controls - Bottom Right */}
+            <div className="absolute bottom-3 right-3 flex items-center gap-2">
               <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white gap-1.5 h-8 text-xs">
                 <Rotate3d className="h-3.5 w-3.5" />
                 3D Tour
@@ -551,7 +556,7 @@ export default function MarketplaceDealDetail() {
                     }}
                   >
                     <Camera className="h-3.5 w-3.5" />
-                    See all 10 photos
+                    See All 10 Photos
                   </button>
                 )}
               </div>
@@ -563,29 +568,36 @@ export default function MarketplaceDealDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Price & Specs */}
+            {/* Price, ARV & Address */}
             <div>
-              <div className="flex items-center gap-6 mb-2">
-                <h1 className="text-3xl font-bold">${deal.price.toLocaleString()}</h1>
-                <div className="flex items-center gap-4 text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <Home className="h-4 w-4" />
-                    <strong className="text-foreground">{deal.beds}</strong> Beds
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Home className="h-4 w-4" />
-                    <strong className="text-foreground">{deal.baths}</strong> Baths
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Tag className="h-4 w-4" />
-                    <strong className="text-foreground">{deal.sqft.toLocaleString()}</strong> Sqft
-                  </span>
+              <div className="flex items-center gap-6 mb-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Price</span>
+                  <h1 className="text-3xl font-bold">${deal.price.toLocaleString()}</h1>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">ARV</span>
+                  <span className="text-2xl font-semibold text-foreground">${deal.arv.toLocaleString()}</span>
                 </div>
               </div>
-              <p className="flex items-center gap-2 text-muted-foreground">
+              <p className="flex items-center gap-2 text-muted-foreground mb-2">
                 <MapPin className="h-4 w-4" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
               </p>
+              <div className="flex items-center gap-4 text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Home className="h-4 w-4" />
+                  <strong className="text-foreground">{deal.beds}</strong> Beds
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Home className="h-4 w-4" />
+                  <strong className="text-foreground">{deal.baths}</strong> Baths
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Tag className="h-4 w-4" />
+                  <strong className="text-foreground">{deal.sqft.toLocaleString()}</strong> Sqft
+                </span>
+              </div>
             </div>
 
             {/* Property Details Grid */}
