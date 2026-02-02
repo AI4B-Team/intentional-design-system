@@ -161,9 +161,7 @@ export function PipelineDealCard({
           urgency === "overdue" && "border-l-warning bg-warning/5",
           urgency === "warning" && "border-l-amber-400",
           urgency === "normal" && "border-l-border-subtle",
-          urgency === "none" && "border-l-success",
-          // Pulse animation for severely overdue cards
-          timeStyle.pulse && "animate-pulse"
+          urgency === "none" && "border-l-success"
         )}
         onClick={onView}
       >
@@ -180,7 +178,8 @@ export function PipelineDealCard({
                 <div
                   className={cn(
                     "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 border",
-                    timeStyle.badge
+                    timeStyle.badge,
+                    timeStyle.pulse && "animate-pulse"
                   )}
                 >
                   <Timer className={cn("h-3 w-3", timeStyle.icon)} />
