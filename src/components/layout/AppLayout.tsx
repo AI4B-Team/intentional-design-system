@@ -93,7 +93,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         <main
           ref={mainRef}
           className={cn(
-            "flex-1 flex flex-col",
+            "flex-1 flex flex-col h-auto min-h-screen overflow-visible",
             fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >
