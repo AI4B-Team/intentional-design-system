@@ -28,10 +28,10 @@ import {
   Ruler,
   Clock,
   Phone,
+  MessageCircle,
   Mail,
   MessageSquare,
   MoreVertical,
-  Image as ImageIcon,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -286,26 +286,6 @@ export function PropertyCard({
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setGalleryOpen(true);
-                    }}
-                  >
-                    <ImageIcon className="h-4 w-4" />
-                    <span className="text-xs tabular-nums">{imgs.length}</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>{imgs.length} Photo{imgs.length !== 1 ? "s" : ""}</p>
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
                     size="icon"
                     className="h-7 w-7 text-foreground hover:text-foreground"
                     onClick={(e) => {
@@ -321,6 +301,28 @@ export function PropertyCard({
                 </TooltipTrigger>
                 <TooltipContent side="top">
                   <p>{canCall ? "Call Seller" : "No Phone On File"}</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-foreground hover:text-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (property.sellerPhone) {
+                        window.open(`sms:${formatPhoneForTel(property.sellerPhone)}`);
+                      }
+                    }}
+                    aria-label="Text Seller"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{canCall ? "Text Seller" : "No Phone On File"}</p>
                 </TooltipContent>
               </Tooltip>
 
