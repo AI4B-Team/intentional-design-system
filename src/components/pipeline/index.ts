@@ -4,4 +4,7 @@ export { QuickMoveButtons } from "./QuickMoveButtons";
 export { StallingStat, getStalledDeals } from "./StallingStat";
 export { GoalContext, PipelineGoalHeader } from "./GoalContext";
 export { EmptyStageGuide } from "./EmptyStageGuide";
+export { PropertyCard } from "./PropertyCard";
+export { PipelineDealCard } from "./PipelineDealCard";
 export type { PipelineDeal, PipelineStageConfig } from "./types";
+export type { PropertyCardData } from "./PropertyCard";
