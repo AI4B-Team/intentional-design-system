@@ -90,7 +90,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useDashboardInsights } from "@/hooks/useDashboardInsights";
-import { useGoals } from "@/components/dashboard/GoalSettingsDialog";
+import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import { PipelineValueCard } from "@/components/pipeline/PipelineValueCard";
 import { Hourglass } from "lucide-react";
 import {
@@ -901,6 +901,11 @@ export default function Pipeline() {
               closedGoal={closedGoal}
             />
             <div className="flex items-center gap-2">
+              <GoalSettingsDialog>
+                <Button variant="outline" size="sm" icon={<Target />}>
+                  Goals
+                </Button>
+              </GoalSettingsDialog>
               <Button variant="secondary" size="sm" icon={<RefreshCw />}>
                 Sync
               </Button>
