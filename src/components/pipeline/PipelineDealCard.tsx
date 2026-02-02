@@ -218,17 +218,17 @@ export function PipelineDealCard({
 
         {/* Property Specs */}
         <div className="flex items-center gap-4 mt-2 text-small text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Bed className="h-4 w-4" />
-            {deal.beds} Beds
+          <span className="flex items-center gap-1">
+            <Bed className="h-3.5 w-3.5" />
+            <span>{deal.beds}</span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <Bath className="h-4 w-4" />
-            {deal.baths} Baths
+          <span className="flex items-center gap-1">
+            <Bath className="h-3.5 w-3.5" />
+            <span>{deal.baths}</span>
           </span>
-          <span className="flex items-center gap-1.5">
-            <Maximize className="h-4 w-4" />
-            {deal.sqft.toLocaleString()} SF
+          <span className="flex items-center gap-1">
+            <Maximize className="h-3.5 w-3.5" />
+            <span>{deal.sqft.toLocaleString()}</span>
           </span>
         </div>
       </div>
@@ -299,14 +299,14 @@ export function PipelineDealCard({
       </div>
 
       {/* Status Row */}
-      <div className="px-3 py-2 overflow-hidden">
+      <div className="px-3 py-2 overflow-visible">
         <div className="flex items-center justify-end">
           {/* Days in Stage */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={cn(
-                  "flex items-center gap-1 text-tiny font-medium cursor-help shrink-0",
+                  "flex items-center gap-1 text-tiny font-medium cursor-help shrink-0 pr-1",
                   isOverdue ? "text-warning" : "text-muted-foreground"
                 )}>
                   {isOverdue && <AlertTriangle className="h-3 w-3 shrink-0" />}
