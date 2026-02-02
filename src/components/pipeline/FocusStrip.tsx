@@ -44,6 +44,40 @@ export function FocusStrip({
   const focusItems = React.useMemo(() => {
     const items: FocusItem[] = [];
 
+    // New leads needing first contact (1+ days in new stage)
+    const newLeadsNeedContact = deals.filter(
+      (d) => d.stage === "new" && d.days_in_stage >= 1
+    );
+    if (newLeadsNeedContact.length > 0) {
+      items.push({
+        id: "new_leads",
+        type: "no_contact",
+        icon: Phone,
+        label: `${newLeadsNeedContact.length} New Lead${newLeadsNeedContact.length > 1 ? "s Need" : " Needs"} First Contact`,
+        count: newLeadsNeedContact.length,
+        deals: newLeadsNeedContact,
+        color: "bg-red-100 text-red-600 border-red-200",
+        filterStage: "new",
+      });
+    }
+
+    // Appointments scheduled (show count)
+    const appointmentsScheduled = deals.filter(
+      (d) => d.stage === "appointment"
+    );
+    if (appointmentsScheduled.length > 0) {
+      items.push({
+        id: "appointments",
+        type: "closing_soon",
+        icon: Calendar,
+        label: `${appointmentsScheduled.length} Appointment${appointmentsScheduled.length > 1 ? "s" : ""} Scheduled`,
+        count: appointmentsScheduled.length,
+        deals: appointmentsScheduled,
+        color: "bg-purple-100 text-purple-600 border-purple-200",
+        filterStage: "appointment",
+      });
+    }
+
     // Offers needing follow-up (5+ days in offer_made stage)
     const offersNeedFollowUp = deals.filter(
       (d) => d.stage === "offer_made" && d.days_in_stage >= 5
@@ -96,6 +130,22 @@ export function FocusStrip({
       });
     }
 
+    // High value deals (asking price > $250k)
+    const highValueDeals = deals.filter(
+      (d) => !["closed", "sold"].includes(d.stage) && d.asking_price >= 250000
+    );
+    if (highValueDeals.length > 0) {
+      items.push({
+        id: "high_value",
+        type: "follow_up",
+        icon: Target,
+        label: `${highValueDeals.length} High-Value Deal${highValueDeals.length > 1 ? "s" : ""} ($250K+)`,
+        count: highValueDeals.length,
+        deals: highValueDeals,
+        color: "bg-emerald-100 text-emerald-600 border-emerald-200",
+      });
+    }
+
     // No contact in 5+ days (any active stage)
     const noContact = deals.filter((d) => {
       if (["closed", "sold"].includes(d.stage)) return false;
@@ -106,7 +156,7 @@ export function FocusStrip({
       items.push({
         id: "no_contact",
         type: "no_contact",
-        icon: Phone,
+        icon: Clock,
         label: `${noContact.length} Deal${noContact.length > 1 ? "s" : ""} With No Contact In 5+ Days`,
         count: noContact.length,
         deals: noContact,
@@ -168,12 +218,18 @@ export function getFocusFilteredDeals(
   if (!focusFilter) return deals;
 
   switch (focusFilter) {
+    case "new_leads":
+      return deals.filter((d) => d.stage === "new" && d.days_in_stage >= 1);
+    case "appointments":
+      return deals.filter((d) => d.stage === "appointment");
     case "follow_up":
       return deals.filter((d) => d.stage === "offer_made" && d.days_in_stage >= 5);
     case "stuck_negotiating":
       return deals.filter((d) => d.stage === "negotiating" && d.days_in_stage >= 8);
     case "closing_soon":
       return deals.filter((d) => d.stage === "under_contract" && d.days_in_stage >= 15);
+    case "high_value":
+      return deals.filter((d) => !["closed", "sold"].includes(d.stage) && d.asking_price >= 250000);
     case "no_contact":
       return deals.filter((d) => {
         if (["closed", "sold"].includes(d.stage)) return false;
