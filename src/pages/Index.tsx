@@ -11,6 +11,8 @@ import {
 } from "@/components/dashboard";
 import { WorkflowShowcase, RenovationDemo } from "@/components/landing";
 import { Users, Calendar, FileText, DollarSign } from "lucide-react";
+import { FloatingActionButton } from "@/components/mobile/floating-action-button";
+import { AddLeadModal } from "@/components/leads/AddLeadModal";
 
 // Get greeting based on time of day
 function getGreeting(): string {
@@ -105,6 +107,7 @@ const recentActivities = [
 
 export default function Index() {
   const [tasks, setTasks] = React.useState(initialTasks);
+  const [showAddLead, setShowAddLead] = React.useState(false);
 
   const handleToggleTask = (id: string | number) => {
     setTasks((prev) =>
@@ -115,6 +118,9 @@ export default function Index() {
   };
 
   return (
+    <>
+      <AddLeadModal open={showAddLead} onOpenChange={setShowAddLead} />
+      <FloatingActionButton onClick={() => setShowAddLead(true)} label="Add new lead" />
     <DashboardLayout
       breadcrumbs={[{ label: "Dashboard" }]}
     >
@@ -192,5 +198,6 @@ export default function Index() {
         <RenovationDemo />
       </div>
     </DashboardLayout>
+    </>
   );
 }
