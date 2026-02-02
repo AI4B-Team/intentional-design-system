@@ -391,7 +391,7 @@ export function PropertyCard({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>Move to Previous Stage</p>
+                  <p>Move To Previous Stage</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -416,7 +416,7 @@ export function PropertyCard({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>Move to Next Stage</p>
+                  <p>Move To Next Stage</p>
                 </TooltipContent>
               </Tooltip>
             </div>
