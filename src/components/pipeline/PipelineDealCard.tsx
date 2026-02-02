@@ -299,13 +299,13 @@ export function PipelineDealCard({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-6 w-6"
+                    className="h-5 w-5"
                     onClick={(e) => {
                       e.stopPropagation();
                       onMove(prevStage.id);
                     }}
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-3 w-3" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -313,7 +313,7 @@ export function PipelineDealCard({
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <div className="w-6" />
+              <div className="w-5" />
             )}
 
             {(() => {
@@ -325,13 +325,13 @@ export function PipelineDealCard({
                     <Button
                       variant="outline"
                       size="sm"
-                      className={cn("h-6 px-3", action.colorClass)}
+                      className={cn("h-5 px-2 text-[11px]", action.colorClass)}
                       onClick={(e) => {
                         e.stopPropagation();
                         onView();
                       }}
                     >
-                      <Icon className="h-3.5 w-3.5 mr-1" />
+                      <Icon className="h-3 w-3 mr-1" />
                       {action.label}
                     </Button>
                   </TooltipTrigger>
@@ -348,13 +348,13 @@ export function PipelineDealCard({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-6 w-6"
+                    className="h-5 w-5"
                     onClick={(e) => {
                       e.stopPropagation();
                       onMove(nextStage.id);
                     }}
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-3 w-3" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -362,7 +362,7 @@ export function PipelineDealCard({
                 </TooltipContent>
               </Tooltip>
             ) : (
-              <div className="w-6" />
+              <div className="w-5" />
             )}
           </div>
         </div>
