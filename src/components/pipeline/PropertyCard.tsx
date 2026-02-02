@@ -146,8 +146,8 @@ export function PropertyCard({
               )}
             </div>
 
-            {/* Right: time badge + 3-dot menu - no box, tight spacing */}
-            <div className="flex items-center gap-0">
+            {/* Right: time badge + 3-dot menu */}
+            <div className="flex items-center gap-1 flex-shrink-0">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className={cn(
@@ -369,7 +369,7 @@ export function PropertyCard({
             </div>
 
             {/* Right: Navigation arrows */}
-            <div className="flex items-center gap-0.5">
+            <div className="flex items-center gap-0.5 flex-shrink-0">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
