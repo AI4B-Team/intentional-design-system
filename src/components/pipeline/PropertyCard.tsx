@@ -169,7 +169,7 @@ export function PropertyCard({
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>{property.daysInStage ?? 0} days in current stage</p>
+                  <p>{property.daysInStage ?? 0} Days In Current Stage</p>
                 </TooltipContent>
               </Tooltip>
 
@@ -248,7 +248,7 @@ export function PropertyCard({
               e.stopPropagation();
               setGalleryOpen(true);
             }}
-            aria-label="Open photos"
+            aria-label="Open Photos"
           >
             {displayThumbnails.map((src, idx) => {
               const isLast = idx === displayThumbnails.length - 1;
@@ -314,7 +314,7 @@ export function PropertyCard({
                         window.open(`tel:${formatPhoneForTel(property.sellerPhone)}`);
                       }
                     }}
-                    aria-label="Call seller"
+                    aria-label="Call Seller"
                   >
                     <Phone className="h-4 w-4" />
                   </Button>
@@ -336,7 +336,7 @@ export function PropertyCard({
                         window.open(`mailto:${property.sellerEmail}`);
                       }
                     }}
-                    aria-label="Email seller"
+                    aria-label="Email Seller"
                   >
                     <Mail className="h-4 w-4" />
                   </Button>
@@ -356,7 +356,7 @@ export function PropertyCard({
                       e.stopPropagation();
                       // TODO: Open comments/notes panel
                     }}
-                    aria-label="View comments"
+                    aria-label="View Comments"
                   >
                     <MessageSquare className="h-4 w-4" />
                     <span className="text-xs tabular-nums">5</span>
@@ -385,7 +385,7 @@ export function PropertyCard({
                       e.stopPropagation();
                       onMoveLeft?.();
                     }}
-                    aria-label="Move to previous stage"
+                    aria-label="Move To Previous Stage"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
@@ -410,7 +410,7 @@ export function PropertyCard({
                       e.stopPropagation();
                       onMoveRight?.();
                     }}
-                    aria-label="Move to next stage"
+                    aria-label="Move To Next Stage"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
