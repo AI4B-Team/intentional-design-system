@@ -937,13 +937,15 @@ export default function Pipeline() {
         </div>
       )}
 
-      {/* Focus Strip */}
-      <FocusStrip 
-        deals={deals}
-        stages={PIPELINE_STAGES}
-        activeFilter={focusFilter}
-        onFilterChange={handleFocusFilterChange}
-      />
+      {/* Focus Strip - reduce top margin when KPIs are hidden */}
+      <div className={cn(!isKpiExpanded && "-mt-4")}>
+        <FocusStrip 
+          deals={deals}
+          stages={PIPELINE_STAGES}
+          activeFilter={focusFilter}
+          onFilterChange={handleFocusFilterChange}
+        />
+      </div>
 
       {/* Kanban Board */}
       <DndContext
