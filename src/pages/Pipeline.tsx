@@ -1219,7 +1219,7 @@ export default function Pipeline() {
             variant="ghost" 
             size="sm" 
             onClick={() => { setFocusFilter(null); setStalledFilter(false); }}
-            className="text-muted-foreground"
+            className="text-muted-foreground h-8"
           >
             Clear Filters
           </Button>
