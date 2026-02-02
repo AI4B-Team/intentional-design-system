@@ -400,9 +400,10 @@ function StageColumn({
       )}>
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
-          <div className="flex items-center justify-between mb-2">
-            {/* Single white box containing all header elements */}
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
+          {/* Full-width white box containing all header elements */}
+          <div className="flex items-center justify-between bg-white px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
+            {/* Left: icon, label, count */}
+            <div className="flex items-center gap-2">
               <stage.icon className={cn(
                 "h-4 w-4",
                 stage.category === "discovery" && "text-red-500",
@@ -412,8 +413,10 @@ function StageColumn({
               )} />
               <span className="text-small font-semibold">{stage.label}</span>
               <Badge variant="secondary" size="sm">{deals.length}</Badge>
-              
-              {/* + and 3-dot icons inside the box, no background */}
+            </div>
+            
+            {/* Right: + and 3-dot icons aligned far right */}
+            <div className="flex items-center gap-1">
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
