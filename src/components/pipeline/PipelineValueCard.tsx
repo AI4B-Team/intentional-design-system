@@ -135,9 +135,12 @@ export function PipelineValueCard({
                 <span className="text-muted-foreground">Goal: {goal}</span>
                 <span className={cn(
                   "font-medium",
-                  isCalmVariant 
-                    ? "text-success" 
-                    : goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
+                  // At 0%, always show red regardless of variant
+                  goalProgress === 0 
+                    ? "text-destructive"
+                    : isCalmVariant 
+                      ? "text-success" 
+                      : goalProgress >= 75 ? "text-success" : goalProgress >= 40 ? "text-warning" : "text-destructive"
                 )}>
                   {goalProgress}%
                 </span>
