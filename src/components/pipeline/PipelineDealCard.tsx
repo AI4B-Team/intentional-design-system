@@ -111,78 +111,77 @@ export function PipelineDealCard({
         onClick={onView}
       >
         <div className="p-3 flex flex-col gap-2">
-          {/* Top row: Address + Timer badge + Menu */}
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-foreground leading-snug break-words">
-                {deal.address}
-              </p>
-              <p className="text-xs text-muted-foreground leading-snug break-words">
-                {deal.city}, {deal.state} {deal.zip}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-1 shrink-0">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div
+          {/* Top row: Timer badge + Menu */}
+          <div className="flex items-center justify-between">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5",
+                    isOverdue && "border-warning/40"
+                  )}
+                >
+                  <Timer
                     className={cn(
-                      "inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5",
-                      isOverdue && "border-warning/40"
+                      "h-3 w-3",
+                      isOverdue ? "text-warning" : "text-muted-foreground"
+                    )}
+                  />
+                  <span
+                    className={cn(
+                      "text-xs font-medium tabular-nums",
+                      isOverdue ? "text-warning" : "text-muted-foreground"
                     )}
                   >
-                    <Timer
-                      className={cn(
-                        "h-3 w-3",
-                        isOverdue ? "text-warning" : "text-muted-foreground"
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "text-xs font-medium tabular-nums",
-                        isOverdue ? "text-warning" : "text-muted-foreground"
-                      )}
-                    >
-                      {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
-                    </span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>
-                    {deal.days_in_stage} Day{deal.days_in_stage !== 1 ? "s" : ""} In {stageConfig.label}
-                    {stageConfig.targetDays > 0 ? ` (Target: ${stageConfig.targetDays})` : ""}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
+                    {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
+                  </span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>
+                  {deal.days_in_stage} Day{deal.days_in_stage !== 1 ? "s" : ""} In {stageConfig.label}
+                  {stageConfig.targetDays > 0 ? ` (Target: ${stageConfig.targetDays})` : ""}
+                </p>
+              </TooltipContent>
+            </Tooltip>
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={handleMenuClick}>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" onClick={handleMenuClick}>
-                  <DropdownMenuItem onClick={() => onView()}>
-                    View Details
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={handleMenuClick}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" onClick={handleMenuClick}>
+                <DropdownMenuItem onClick={() => onView()}>
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {prevStage && (
+                  <DropdownMenuItem onClick={() => onMove(prevStage.id)}>
+                    Move to {prevStage.label}
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {prevStage && (
-                    <DropdownMenuItem onClick={() => onMove(prevStage.id)}>
-                      Move to {prevStage.label}
-                    </DropdownMenuItem>
-                  )}
-                  {nextStage && (
-                    <DropdownMenuItem onClick={() => onMove(nextStage.id)}>
-                      Move to {nextStage.label}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                )}
+                {nextStage && (
+                  <DropdownMenuItem onClick={() => onMove(nextStage.id)}>
+                    Move to {nextStage.label}
+                  </DropdownMenuItem>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Address */}
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-foreground leading-snug break-words">
+              {deal.address}
+            </p>
+            <p className="text-xs text-muted-foreground leading-snug break-words">
+              {deal.city}, {deal.state} {deal.zip}
+            </p>
           </div>
 
           {/* Specs (middle) - single row with tooltips */}
