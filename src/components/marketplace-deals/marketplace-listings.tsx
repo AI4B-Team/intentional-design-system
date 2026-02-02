@@ -251,14 +251,8 @@ function DealListItem({
       return { text: "Sold", className: "bg-red-500 text-white" };
     }
     
-    // Otherwise, determine by listing age
-    if (hoursListed < 24) {
-      return { text: "New", className: "bg-amber-400 text-slate-900" };
-    } else if (daysListed <= 5) {
-      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
-    } else {
-      return { text: "For Sale", className: "bg-emerald-500 text-white" };
-    }
+    // Show "For Sale" for all active listings
+    return { text: "For Sale", className: "bg-emerald-500 text-white" };
   };
   
   const listingBadge = getListingBadge();
@@ -654,14 +648,8 @@ function DealCard({
       return { text: "Sold", className: "bg-red-500 text-white" };
     }
     
-    // Otherwise, determine by listing age
-    if (hoursListed < 24) {
-      return { text: "New", className: "bg-amber-400 text-slate-900" };
-    } else if (daysListed <= 5) {
-      return { text: `New ${daysListed} Day${daysListed > 1 ? 's' : ''} Ago`, className: "bg-amber-400 text-slate-900" };
-    } else {
-      return { text: "For Sale", className: "bg-emerald-500 text-white" };
-    }
+    // Show "For Sale" for all active listings
+    return { text: "For Sale", className: "bg-emerald-500 text-white" };
   };
   
   const listingBadge = getListingBadge();
