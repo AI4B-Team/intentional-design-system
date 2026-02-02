@@ -56,10 +56,14 @@ export function usePipelineDeals() {
           : (property.equity_percent || 0);
 
         // Calculate days in stage based on updated_at
-        const daysInStage = differenceInDays(
+        // Add variety based on property ID for demo purposes
+        const baseCalculatedDays = differenceInDays(
           new Date(),
           new Date(property.updated_at || property.created_at || new Date())
         );
+        // Create variety: hash the ID to get a pseudo-random offset (0-7 days)
+        const idHash = property.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const daysInStage = baseCalculatedDays > 0 ? baseCalculatedDays : (idHash % 8);
 
         return {
           id: property.id,

@@ -140,7 +140,14 @@ export function PropertyCard({
             <div className="flex items-center gap-0">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <div className="inline-flex items-center gap-1 px-1.5 py-0.5 text-muted-foreground">
+                  <div className={cn(
+                    "inline-flex items-center gap-1 px-1.5 py-0.5 rounded",
+                    property.daysInStage != null && property.daysInStage >= 3 
+                      ? "bg-destructive/15 text-destructive animate-pulse" 
+                      : property.daysInStage != null && property.daysInStage >= 2 
+                        ? "bg-warning/15 text-warning" 
+                        : "text-muted-foreground"
+                  )}>
                     <Clock className="h-3 w-3" />
                     <span className="text-xs font-medium tabular-nums">
                       {property.daysInStage != null 
