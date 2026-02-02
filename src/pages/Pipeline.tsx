@@ -7,6 +7,26 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+  type DragOverEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useDroppable } from "@dnd-kit/core";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -635,6 +655,51 @@ function getLeadScoreReason(deal: PipelineDeal) {
 
 // DealCard component moved to src/components/pipeline/PipelineDealCard.tsx
 
+// Sortable wrapper for PipelineDealCard
+function SortableDealCard({
+  deal,
+  stageConfig,
+  nextStage,
+  prevStage,
+  onView,
+  onMove,
+}: {
+  deal: PipelineDeal;
+  stageConfig: typeof PIPELINE_STAGES[0];
+  nextStage?: typeof PIPELINE_STAGES[0];
+  prevStage?: typeof PIPELINE_STAGES[0];
+  onView: () => void;
+  onMove: (newStage: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: deal.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <PipelineDealCard
+        deal={deal}
+        stageConfig={stageConfig}
+        nextStage={nextStage}
+        prevStage={prevStage}
+        onView={onView}
+        onMove={onMove}
+      />
+    </div>
+  );
+}
 
 function StageColumn({ 
   stage, 
@@ -649,15 +714,27 @@ function StageColumn({
   onViewDeal: (deal: PipelineDeal) => void;
   onMoveDeal: (dealId: string, newStage: string) => void;
 }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `stage-${stage.id}`,
+    data: { stageId: stage.id },
+  });
+
   const totalValue = deals.reduce((sum, d) => sum + (d.offer_amount || d.asking_price), 0);
   const avgDaysInStage = deals.length > 0 
     ? Math.round(deals.reduce((sum, d) => sum + d.days_in_stage, 0) / deals.length)
     : 0;
   const overdueCount = deals.filter(d => d.days_in_stage > stage.targetDays && stage.targetDays > 0).length;
 
+  const dealIds = deals.map(d => d.id);
+
   return (
-    <div className="flex-shrink-0 w-72">
-      <div className="bg-surface-secondary rounded-lg border border-border-subtle">
+    <div className="flex-shrink-0 w-72" data-stage-id={stage.id}>
+      <div className={cn(
+        "bg-surface-secondary rounded-lg border transition-all duration-200",
+        isOver 
+          ? "border-primary border-2 bg-primary/5 shadow-lg" 
+          : "border-border-subtle"
+      )}>
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
           <div className="flex items-center justify-between mb-2">
@@ -693,27 +770,40 @@ function StageColumn({
 
         {/* Deals */}
         <ScrollArea className="h-[calc(100vh-380px)]">
-          <div className="p-2 space-y-2">
-            {deals.length === 0 ? (
-              <EmptyStageGuide stageId={stage.id} />
-            ) : (
-              deals.map((deal) => {
-                const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
-                const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
-                const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
-                return (
-                  <PipelineDealCard 
-                    key={deal.id} 
-                    deal={deal} 
-                    stageConfig={stage}
-                    nextStage={nextStage}
-                    prevStage={prevStage}
-                    onView={() => onViewDeal(deal)}
-                    onMove={(newStage) => onMoveDeal(deal.id, newStage)}
-                  />
-                );
-              })
+          <div 
+            ref={setNodeRef}
+            className={cn(
+              "p-2 space-y-2 min-h-[100px] transition-all duration-200",
+              isOver && "bg-primary/5"
             )}
+          >
+            <SortableContext items={dealIds} strategy={verticalListSortingStrategy}>
+              {deals.length === 0 ? (
+                <div className={cn(
+                  "transition-all duration-200",
+                  isOver && "opacity-50"
+                )}>
+                  <EmptyStageGuide stageId={stage.id} />
+                </div>
+              ) : (
+                deals.map((deal) => {
+                  const currentStageIndex = PIPELINE_STAGES.findIndex(s => s.id === deal.stage);
+                  const nextStage = PIPELINE_STAGES[currentStageIndex + 1];
+                  const prevStage = PIPELINE_STAGES[currentStageIndex - 1];
+                  return (
+                    <SortableDealCard 
+                      key={deal.id} 
+                      deal={deal} 
+                      stageConfig={stage}
+                      nextStage={nextStage}
+                      prevStage={prevStage}
+                      onView={() => onViewDeal(deal)}
+                      onMove={(newStage) => onMoveDeal(deal.id, newStage)}
+                    />
+                  );
+                })
+              )}
+            </SortableContext>
           </div>
         </ScrollArea>
       </div>
@@ -811,6 +901,19 @@ export default function Pipeline() {
   const [deals, setDeals] = React.useState<PipelineDeal[]>(MOCK_DEALS);
   const [focusFilter, setFocusFilter] = React.useState<string | null>(null);
   const [stalledFilter, setStalledFilter] = React.useState(false);
+  const [activeDragId, setActiveDragId] = React.useState<string | null>(null);
+
+  // DnD sensors with activation constraints for smooth dragging
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8px of movement required before drag starts
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   // Goals (would come from user settings/database)
   const underContractGoal = 5;
@@ -857,6 +960,91 @@ export default function Pipeline() {
   // Count for goals
   const underContractCount = deals.filter(d => d.stage === "under_contract").length;
   const closedCount = deals.filter(d => d.stage === "closed" || d.stage === "sold").length;
+
+  // Get the dragged deal for overlay
+  const activeDeal = React.useMemo(() => {
+    if (!activeDragId) return null;
+    return deals.find(d => d.id === activeDragId) || null;
+  }, [activeDragId, deals]);
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Find the deal being dragged
+    const activeDeal = deals.find(d => d.id === activeId);
+    if (!activeDeal) return;
+
+    // Check if we're over a stage droppable (for empty columns)
+    if (overId.startsWith('stage-')) {
+      const stageId = overId.replace('stage-', '');
+      if (activeDeal.stage !== stageId) {
+        setDeals(prev => prev.map(d =>
+          d.id === activeId
+            ? { ...d, stage: stageId, days_in_stage: 0, last_activity: new Date().toISOString() }
+            : d
+        ));
+      }
+      return;
+    }
+
+    // Check if we're over a different deal
+    const overDeal = deals.find(d => d.id === overId);
+    if (overDeal && overDeal.stage !== activeDeal.stage) {
+      // Move to the new stage
+      setDeals(prev => prev.map(d =>
+        d.id === activeId
+          ? { ...d, stage: overDeal.stage, days_in_stage: 0, last_activity: new Date().toISOString() }
+          : d
+      ));
+    }
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragId(null);
+
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    if (activeId === overId) return;
+
+    // Check if dropped on a stage (for empty columns)
+    if (overId.startsWith('stage-')) {
+      const stageId = overId.replace('stage-', '');
+      const activeDeal = deals.find(d => d.id === activeId);
+      if (activeDeal && activeDeal.stage !== stageId) {
+        setDeals(prev => prev.map(d =>
+          d.id === activeId
+            ? { ...d, stage: stageId, days_in_stage: 0, last_activity: new Date().toISOString() }
+            : d
+        ));
+      }
+      return;
+    }
+
+    // Find what stage the "over" element belongs to
+    const overDeal = deals.find(d => d.id === overId);
+    if (overDeal) {
+      const activeDeal = deals.find(d => d.id === activeId);
+      if (activeDeal && activeDeal.stage !== overDeal.stage) {
+        setDeals(prev => prev.map(d =>
+          d.id === activeId
+            ? { ...d, stage: overDeal.stage, days_in_stage: 0, last_activity: new Date().toISOString() }
+            : d
+        ));
+      }
+    }
+  };
 
   const handleViewDeal = (deal: PipelineDeal) => {
     setSelectedDeal(deal);
@@ -1021,18 +1209,43 @@ export default function Pipeline() {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {PIPELINE_STAGES.map(stage => (
-          <StageColumn
-            key={stage.id}
-            stage={stage}
-            deals={dealsByStage[stage.id] || []}
-            allDeals={deals}
-            onViewDeal={handleViewDeal}
-            onMoveDeal={handleMoveDeal}
-          />
-        ))}
-      </div>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {PIPELINE_STAGES.map(stage => (
+            <StageColumn
+              key={stage.id}
+              stage={stage}
+              deals={dealsByStage[stage.id] || []}
+              allDeals={deals}
+              onViewDeal={handleViewDeal}
+              onMoveDeal={handleMoveDeal}
+            />
+          ))}
+        </div>
+        
+        {/* Drag Overlay for smooth dragging */}
+        <DragOverlay dropAnimation={{
+          duration: 200,
+          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+        }}>
+          {activeDeal ? (
+            <div className="rotate-3 scale-105 opacity-90">
+              <PipelineDealCard
+                deal={activeDeal}
+                stageConfig={PIPELINE_STAGES.find(s => s.id === activeDeal.stage) || PIPELINE_STAGES[0]}
+                onView={() => {}}
+                onMove={() => {}}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Deal Detail Modal */}
       <Dialog open={!!selectedDeal} onOpenChange={(open) => !open && setSelectedDeal(null)}>
