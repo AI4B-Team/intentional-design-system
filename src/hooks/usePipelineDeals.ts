@@ -86,7 +86,11 @@ export function usePipelineDeals() {
           created_at: property.created_at || new Date().toISOString(),
           last_activity: property.updated_at || property.created_at || new Date().toISOString(),
           notes: property.notes || null,
-          property_type: property.property_type || "Single Family",
+          // Add variety to property types for demo
+          property_type: property.property_type || (() => {
+            const types = ["single_family", "multi_family", "condo", "townhouse", "mobile", "land"];
+            return types[idHash % types.length];
+          })(),
           beds: property.beds || 0,
           baths: Number(property.baths) || 0,
           sqft: property.sqft || 0,
