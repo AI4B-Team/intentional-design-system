@@ -72,7 +72,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   };
 
   return (
-    <div className="min-h-screen flex bg-surface-secondary">
+    <div className="min-h-screen flex bg-surface-secondary relative">
       {/* Sidebar - sticky for desktop */}
       <AppSidebar
         collapsed={sidebarCollapsed}
