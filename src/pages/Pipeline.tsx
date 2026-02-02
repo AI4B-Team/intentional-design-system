@@ -772,14 +772,6 @@ export default function Pipeline() {
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
         actions={
-          <div className="flex items-center gap-4">
-            {/* Goal Context */}
-            <PipelineGoalHeader
-              underContractCount={underContractCount}
-              underContractGoal={underContractGoal}
-              closedCount={closedCount}
-              closedGoal={closedGoal}
-            />
             <div className="flex items-center gap-2">
               <Button variant="secondary" size="sm" icon={<RefreshCw />}>
                 Sync
@@ -793,7 +785,6 @@ export default function Pipeline() {
                 Add Deal
               </Button>
             </div>
-          </div>
         }
       />
 
