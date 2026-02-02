@@ -77,6 +77,10 @@ import {
   Send,
   MessageCircle,
   Megaphone,
+  Home,
+  Bed,
+  Bath,
+  Square,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -984,15 +988,25 @@ export default function Pipeline() {
                 {/* Property Details */}
                 <Card className="p-4">
                   <h4 className="text-small font-semibold mb-3">Property Details</h4>
-                  <div className="flex items-center gap-4 text-small">
-                    <span>{selectedDeal.property_type}</span>
-                    <span>{selectedDeal.beds} bed</span>
-                    <span>{selectedDeal.baths} bath</span>
-                    <span>{selectedDeal.sqft.toLocaleString()} sqft</span>
+                  <div className="flex items-center gap-4 text-small text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Home className="h-4 w-4" />
+                      {selectedDeal.property_type}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Bed className="h-4 w-4" />
+                      {selectedDeal.beds} bed
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Bath className="h-4 w-4" />
+                      {selectedDeal.baths} bath
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <Square className="h-4 w-4" />
+                      {selectedDeal.sqft.toLocaleString()} sqft
+                    </span>
                   </div>
                 </Card>
-
-                {/* Contact */}
                 <Card className="p-4">
                   <h4 className="text-small font-semibold mb-3">Contact</h4>
                   <div className="flex items-center justify-between">
