@@ -893,8 +893,26 @@ export default function Pipeline() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const goals = useGoals();
-  const { data: pipelineValueStats, isLoading: pipelineValueLoading } = usePipelineValueStats();
+  const { data: pipelineValueStatsRaw, isLoading: pipelineValueLoading } = usePipelineValueStats();
   const { data: insights } = useDashboardInsights();
+
+  // Demo data for visualization when no real data exists - matches Dashboard exactly
+  const demoData = {
+    leads: { count: 42, totalValue: 7350000, profitPotential: 367500 },
+    offers: { count: 12, totalValue: 2100000, profitPotential: 105000 },
+    contracted: { count: 8, totalValue: 1400000, profitPotential: 84000 },
+    sold: { count: 1, totalValue: 175000, profitPotential: 10500 },
+  };
+
+  // Determine if we have real data
+  const hasRealData = pipelineValueStatsRaw && (
+    (pipelineValueStatsRaw.leads?.count ?? 0) > 0 ||
+    (pipelineValueStatsRaw.offers?.count ?? 0) > 0 ||
+    (pipelineValueStatsRaw.contracted?.count ?? 0) > 0 ||
+    (pipelineValueStatsRaw.sold?.count ?? 0) > 0
+  );
+  
+  const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoData;
   const [search, setSearch] = React.useState("");
   const [sourceFilter, setSourceFilter] = React.useState<string>("all");
   const [selectedDeal, setSelectedDeal] = React.useState<PipelineDeal | null>(null);
