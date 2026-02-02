@@ -1,7 +1,21 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { Bath, Bed, ChevronLeft, ChevronRight, Eye, MoreVertical, Ruler, Timer } from "lucide-react";
+import { 
+  Bath, 
+  Bed, 
+  ChevronLeft, 
+  ChevronRight, 
+  MoreVertical, 
+  Ruler, 
+  Timer,
+  Phone,
+  CalendarCheck,
+  ClipboardCheck,
+  MessageSquare,
+  FileText,
+  Calendar,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -16,6 +30,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+
+// Stage-specific primary actions
+const STAGE_PRIMARY_ACTIONS: Record<string, { label: string; icon: React.ElementType; tooltip: string }> = {
+  new: { label: "Call", icon: Phone, tooltip: "Call Lead" },
+  contacted: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up" },
+  appointment: { label: "Log Outcome", icon: ClipboardCheck, tooltip: "Log Appointment Outcome" },
+  offer_made: { label: "Follow Up", icon: MessageSquare, tooltip: "Follow Up On Offer" },
+  negotiating: { label: "Respond", icon: MessageSquare, tooltip: "Respond To Counter" },
+  follow_up: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up" },
+  under_contract: { label: "Timeline", icon: Calendar, tooltip: "View Contract Timeline" },
+  marketing: { label: "Manage", icon: FileText, tooltip: "Manage Marketing" },
+  closed: { label: "Details", icon: FileText, tooltip: "View Deal Details" },
+  sold: { label: "Details", icon: FileText, tooltip: "View Deal Details" },
+};
 
 interface PipelineDeal {
   id: string;
@@ -240,7 +268,7 @@ export function PipelineDealCard({
             </Tooltip>
           </div>
 
-          {/* Quick Move Arrows + Action Button */}
+          {/* Quick Move Arrows + Primary Action Button */}
           <div className="flex items-center justify-center gap-1 pt-1">
             {prevStage ? (
               <Tooltip>
@@ -265,25 +293,31 @@ export function PipelineDealCard({
               <div className="w-6" />
             )}
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-6 px-3"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onView();
-                  }}
-                >
-                  <Eye className="h-3.5 w-3.5 mr-1" />
-                  View
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>View Deal Details</p>
-              </TooltipContent>
-            </Tooltip>
+            {(() => {
+              const action = STAGE_PRIMARY_ACTIONS[deal.stage] || STAGE_PRIMARY_ACTIONS.new;
+              const Icon = action.icon;
+              return (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-6 px-3"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onView();
+                      }}
+                    >
+                      <Icon className="h-3.5 w-3.5 mr-1" />
+                      {action.label}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>{action.tooltip}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })()}
 
             {nextStage ? (
               <Tooltip>
