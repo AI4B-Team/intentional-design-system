@@ -299,7 +299,7 @@ export function PipelineDealCard({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-5 w-5"
+                    className="!h-5 !w-5 !min-h-0 !min-w-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       onMove(prevStage.id);
@@ -325,7 +325,7 @@ export function PipelineDealCard({
                     <Button
                       variant="outline"
                       size="sm"
-                      className={cn("h-5 px-2 text-[11px]", action.colorClass)}
+                      className={cn("!h-5 !min-h-0 px-2 text-[11px]", action.colorClass)}
                       onClick={(e) => {
                         e.stopPropagation();
                         onView();
@@ -348,7 +348,7 @@ export function PipelineDealCard({
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-5 w-5"
+                    className="!h-5 !w-5 !min-h-0 !min-w-0"
                     onClick={(e) => {
                       e.stopPropagation();
                       onMove(nextStage.id);
