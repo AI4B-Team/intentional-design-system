@@ -372,6 +372,8 @@ function StageColumn({
   onViewDeal,
   onMoveDeal,
   onAddDeal,
+  isDropTarget,
+  activeDragId,
 }: { 
   stage: typeof PIPELINE_STAGES[0]; 
   deals: PipelineDeal[];
@@ -379,11 +381,16 @@ function StageColumn({
   onViewDeal: (deal: PipelineDeal) => void;
   onMoveDeal: (dealId: string, newStage: string) => void;
   onAddDeal: (stageId: string) => void;
+  isDropTarget: boolean;
+  activeDragId: string | null;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `stage-${stage.id}`,
     data: { stageId: stage.id },
   });
+
+  // Check if we're dragging a card FROM this column (to show where it's leaving)
+  const isDragSource = activeDragId ? deals.some(d => d.id === activeDragId) : false;
 
   const totalValue = deals.reduce((sum, d) => sum + (d.offer_amount || d.asking_price), 0);
   const avgDaysInStage = deals.length > 0 
@@ -393,13 +400,19 @@ function StageColumn({
 
   const dealIds = deals.map(d => d.id);
 
+  // Show enhanced visual when this column is the drop target
+  const showDropIndicator = isDropTarget && !isDragSource;
+
   return (
     <div className="flex-shrink-0 w-72" data-stage-id={stage.id}>
       <div className={cn(
         "bg-surface-secondary rounded-lg border transition-all duration-200",
-        isOver 
-          ? "border-primary border-2 bg-primary/5 shadow-lg" 
-          : "border-border-subtle"
+        showDropIndicator 
+          ? "border-brand border-2 bg-brand/10 shadow-xl ring-2 ring-brand/30" 
+          : isOver 
+            ? "border-primary border-2 bg-primary/5 shadow-lg" 
+            : "border-border-subtle",
+        isDragSource && activeDragId && "opacity-75"
       )}>
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
@@ -466,11 +479,20 @@ function StageColumn({
           ref={setNodeRef}
           className={cn(
             "p-2 pr-4 space-y-2 min-h-[100px] transition-all duration-200",
-            isOver && "bg-primary/5"
+            showDropIndicator && "bg-brand/5",
+            isOver && !showDropIndicator && "bg-primary/5"
           )}
         >
+          {/* Drop indicator at top when dragging to this column */}
+          {showDropIndicator && (
+            <div className="flex items-center gap-2 p-3 border-2 border-dashed border-brand rounded-lg bg-brand/10 mb-2 animate-pulse">
+              <div className="w-2 h-2 rounded-full bg-brand" />
+              <span className="text-sm font-medium text-brand">Drop here</span>
+            </div>
+          )}
+          
           <SortableContext items={dealIds} strategy={verticalListSortingStrategy}>
-            {deals.length === 0 ? (
+            {deals.length === 0 && !showDropIndicator ? (
               <div className={cn(
                 "transition-all duration-200",
                 isOver && "opacity-50"
@@ -617,6 +639,7 @@ export default function Pipeline() {
   const [focusFilter, setFocusFilter] = React.useState<string | null>(null);
   const [stalledFilter, setStalledFilter] = React.useState(false);
   const [activeDragId, setActiveDragId] = React.useState<string | null>(null);
+  const [overStageId, setOverStageId] = React.useState<string | null>(null);
   const [addDealStage, setAddDealStage] = React.useState<string | null>(null);
   const [isKpiExpanded, setIsKpiExpanded] = React.useState(true);
   const [showCompactCards, setShowCompactCards] = React.useState(false);
@@ -703,13 +726,32 @@ export default function Pipeline() {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    // Preview only - actual move happens in handleDragEnd
-    // We don't need to update state here since we're using server data
+    const { over } = event;
+    
+    if (!over) {
+      setOverStageId(null);
+      return;
+    }
+
+    const overId = over.id as string;
+    
+    // If hovering over a stage column directly
+    if (overId.startsWith('stage-')) {
+      setOverStageId(overId.replace('stage-', ''));
+      return;
+    }
+    
+    // If hovering over a card, find its stage
+    const overDeal = deals.find(d => d.id === overId);
+    if (overDeal) {
+      setOverStageId(overDeal.stage);
+    }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveDragId(null);
+    setOverStageId(null);
 
     if (!over) return;
 
@@ -963,6 +1005,8 @@ export default function Pipeline() {
               onViewDeal={handleViewDeal}
               onMoveDeal={handleMoveDeal}
               onAddDeal={handleAddDeal}
+              isDropTarget={overStageId === stage.id && activeDragId !== null}
+              activeDragId={activeDragId}
             />
           ))}
         </div>
