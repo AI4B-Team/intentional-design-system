@@ -84,6 +84,11 @@ import { format, formatDistanceToNow, differenceInDays } from "date-fns";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
+import { useDashboardInsights } from "@/hooks/useDashboardInsights";
+import { useGoals } from "@/components/dashboard/GoalSettingsDialog";
+import { PipelineValueCard } from "@/components/pipeline/PipelineValueCard";
+import { Hourglass } from "lucide-react";
 import {
   FocusStrip,
   getFocusFilteredDeals,
@@ -688,6 +693,9 @@ function PipelineStats({
 export default function Pipeline() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const goals = useGoals();
+  const { data: pipelineValueStats, isLoading: pipelineValueLoading } = usePipelineValueStats();
+  const { data: insights } = useDashboardInsights();
   const [search, setSearch] = React.useState("");
   const [sourceFilter, setSourceFilter] = React.useState<string>("all");
   const [selectedDeal, setSelectedDeal] = React.useState<PipelineDeal | null>(null);
@@ -795,12 +803,72 @@ export default function Pipeline() {
         }
       />
 
-      {/* Stats */}
-      <PipelineStats 
-        deals={deals} 
-        onFilterStalled={handleStalledFilterChange}
-        isStalledFiltered={stalledFilter}
-      />
+      {/* Pipeline Value Cards - matching Dashboard exactly */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <PipelineValueCard
+          title="Leads"
+          subtitle="New Opportunities"
+          count={pipelineValueStats?.leads.count || 0}
+          totalValue={pipelineValueStats?.leads.totalValue || 0}
+          profitPotential={pipelineValueStats?.leads.profitPotential || 0}
+          icon={Users}
+          iconBg="bg-red-100"
+          iconColor="text-red-500"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=new,contacted,appointment")}
+          goal={goals.leadsGoal}
+          actionInsight={insights?.leadsInsight}
+        />
+        <PipelineValueCard
+          title="Offers"
+          subtitle="Active Proposals"
+          count={pipelineValueStats?.offers.count || 0}
+          totalValue={pipelineValueStats?.offers.totalValue || 0}
+          profitPotential={pipelineValueStats?.offers.profitPotential || 0}
+          icon={FileText}
+          iconBg="bg-amber-100"
+          iconColor="text-amber-500"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=offer_made,negotiating")}
+          goal={goals.offersGoal}
+          contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
+            ? `${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
+            : undefined}
+          contextIcon={Hourglass}
+          contextSeverity="attention"
+        />
+        <PipelineValueCard
+          title="Contracts"
+          subtitle="Secured Deals"
+          count={pipelineValueStats?.contracted.count || 0}
+          totalValue={pipelineValueStats?.contracted.totalValue || 0}
+          profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
+          icon={Handshake}
+          iconBg="bg-blue-100"
+          iconColor="text-blue-600"
+          valueLabel="Revenue Secured"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/pipeline?filter=under_contract")}
+          goal={goals.contractsGoal}
+          variant="calm"
+          nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
+        />
+        <PipelineValueCard
+          title="Sold"
+          subtitle="Closed Deals"
+          count={pipelineValueStats?.sold.count || 0}
+          totalValue={pipelineValueStats?.sold.totalValue || 0}
+          profitPotential={pipelineValueStats?.sold.profitPotential || 0}
+          icon={BadgeDollarSign}
+          iconBg="bg-emerald-100"
+          iconColor="text-emerald-500"
+          profitLabel="Realized Profit"
+          isLoading={pipelineValueLoading}
+          onClick={() => navigate("/properties?status=closed")}
+          goal={goals.soldGoal}
+          variant="celebration"
+        />
+      </div>
 
       {/* Focus Strip */}
       <FocusStrip 
