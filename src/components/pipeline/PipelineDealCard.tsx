@@ -242,12 +242,12 @@ export function PipelineDealCard({
 
           {/* Quick Move Arrows */}
           {(prevStage || nextStage) && (
-            <div className="flex items-center justify-center gap-1 pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center justify-center gap-1 pt-1">
               {prevStage && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       className="h-6 w-6"
                       onClick={(e) => {
@@ -259,7 +259,7 @@ export function PipelineDealCard({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p>Move to {prevStage.label}</p>
+                    <p>Move To {prevStage.label}</p>
                   </TooltipContent>
                 </Tooltip>
               )}
@@ -267,7 +267,7 @@ export function PipelineDealCard({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="icon"
                       className="h-6 w-6"
                       onClick={(e) => {
@@ -279,7 +279,7 @@ export function PipelineDealCard({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
-                    <p>Move to {nextStage.label}</p>
+                    <p>Move To {nextStage.label}</p>
                   </TooltipContent>
                 </Tooltip>
               )}
