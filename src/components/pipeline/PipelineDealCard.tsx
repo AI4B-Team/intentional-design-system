@@ -1,13 +1,21 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { Bath, Bed, Ruler, Timer } from "lucide-react";
+import { Bath, Bed, MoreVertical, Ruler, Timer } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 interface PipelineDeal {
   id: string;
@@ -76,16 +84,23 @@ function formatCurrency(amount: number): string {
 export function PipelineDealCard({
   deal,
   stageConfig,
+  nextStage,
+  prevStage,
   onView,
+  onMove,
 }: PipelineDealCardProps) {
   const urgency = getUrgencyLevel(deal.days_in_stage, stageConfig.targetDays);
   const isOverdue = urgency === "overdue" || urgency === "critical";
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
 
   return (
     <TooltipProvider delayDuration={300}>
       <Card
         className={cn(
-          "transition-all duration-200 hover:shadow-lg group cursor-pointer",
+          "transition-all duration-200 hover:shadow-lg group cursor-pointer relative",
           "border-l-4",
           urgency === "critical" && "border-l-destructive bg-destructive/5",
           urgency === "overdue" && "border-l-warning bg-warning/5",
@@ -96,14 +111,78 @@ export function PipelineDealCard({
         onClick={onView}
       >
         <div className="p-3 flex flex-col gap-2">
-          {/* Address (top) */}
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground leading-snug break-words">
-              {deal.address}
-            </p>
-            <p className="text-xs text-muted-foreground leading-snug break-words">
-              {deal.city}, {deal.state} {deal.zip}
-            </p>
+          {/* Top row: Address + Timer badge + Menu */}
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground leading-snug break-words">
+                {deal.address}
+              </p>
+              <p className="text-xs text-muted-foreground leading-snug break-words">
+                {deal.city}, {deal.state} {deal.zip}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-1 shrink-0">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5",
+                      isOverdue && "border-warning/40"
+                    )}
+                  >
+                    <Timer
+                      className={cn(
+                        "h-3 w-3",
+                        isOverdue ? "text-warning" : "text-muted-foreground"
+                      )}
+                    />
+                    <span
+                      className={cn(
+                        "text-xs font-medium tabular-nums",
+                        isOverdue ? "text-warning" : "text-muted-foreground"
+                      )}
+                    >
+                      {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>
+                    {deal.days_in_stage} Day{deal.days_in_stage !== 1 ? "s" : ""} In {stageConfig.label}
+                    {stageConfig.targetDays > 0 ? ` (Target: ${stageConfig.targetDays})` : ""}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild onClick={handleMenuClick}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" onClick={handleMenuClick}>
+                  <DropdownMenuItem onClick={() => onView()}>
+                    View Details
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {prevStage && (
+                    <DropdownMenuItem onClick={() => onMove(prevStage.id)}>
+                      Move to {prevStage.label}
+                    </DropdownMenuItem>
+                  )}
+                  {nextStage && (
+                    <DropdownMenuItem onClick={() => onMove(nextStage.id)}>
+                      Move to {nextStage.label}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {/* Specs (middle) - single row with tooltips */}
@@ -145,54 +224,19 @@ export function PipelineDealCard({
             </Tooltip>
           </div>
 
-          {/* Price + ARV + Days (bottom row) */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3">
-              <div className="text-base font-bold text-success">
-                {formatCurrency(deal.asking_price)}
-              </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="text-xs text-muted-foreground">
-                    ARV: {formatCurrency(deal.arv)}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  <p>After Repair Value</p>
-                </TooltipContent>
-              </Tooltip>
+          {/* Price + ARV (bottom row) */}
+          <div className="flex items-center gap-3">
+            <div className="text-base font-bold text-success">
+              {formatCurrency(deal.asking_price)}
             </div>
-
             <Tooltip>
               <TooltipTrigger asChild>
-                <div
-                  className={cn(
-                    "shrink-0 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5",
-                    isOverdue && "border-warning/40"
-                  )}
-                >
-                  <Timer
-                    className={cn(
-                      "h-3 w-3",
-                      isOverdue ? "text-warning" : "text-muted-foreground"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-xs font-medium tabular-nums",
-                      isOverdue ? "text-warning" : "text-muted-foreground"
-                    )}
-                  >
-                    {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
-                  </span>
+                <div className="text-xs text-muted-foreground">
+                  ARV: {formatCurrency(deal.arv)}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                <p>
-                  {stageConfig.targetDays > 0
-                    ? `${deal.days_in_stage} day(s) in ${stageConfig.label} (target: ${stageConfig.targetDays})`
-                    : `${deal.days_in_stage} day(s) in ${stageConfig.label}`}
-                </p>
+                <p>After Repair Value</p>
               </TooltipContent>
             </Tooltip>
           </div>
