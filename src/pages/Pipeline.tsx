@@ -868,32 +868,34 @@ export default function Pipeline() {
         onFilterChange={handleFocusFilterChange}
       />
 
-      {/* Filters */}
-      <div className="flex items-center gap-4 mb-4">
-        <Select value={sourceFilter} onValueChange={setSourceFilter}>
-          <SelectTrigger className="w-40">
-            <SelectValue placeholder="All Sources" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sources</SelectItem>
-            {sources.map(source => (
-              <SelectItem key={source} value={source}>{source}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button variant="secondary" size="sm" icon={<SlidersHorizontal />}>
-          Filter
-        </Button>
-        {(focusFilter || stalledFilter) && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => { setFocusFilter(null); setStalledFilter(false); }}
-            className="text-muted-foreground h-8"
-          >
-            Clear Filters
+      {/* Filters - Sticky on scroll */}
+      <div className="sticky top-16 z-40 bg-background py-3 -mx-4 px-4 lg:-mx-6 lg:px-6 border-b border-transparent [&.is-stuck]:border-border [&.is-stuck]:shadow-sm transition-all">
+        <div className="flex items-center gap-4">
+          <Select value={sourceFilter} onValueChange={setSourceFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="All Sources" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sources</SelectItem>
+              {sources.map(source => (
+                <SelectItem key={source} value={source}>{source}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button variant="secondary" size="sm" icon={<SlidersHorizontal />}>
+            Filter
           </Button>
-        )}
+          {(focusFilter || stalledFilter) && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => { setFocusFilter(null); setStalledFilter(false); }}
+              className="text-muted-foreground h-8"
+            >
+              Clear Filters
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Kanban Board */}
