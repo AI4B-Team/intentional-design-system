@@ -88,7 +88,7 @@ export function usePipelineDeals() {
           notes: property.notes || null,
           // Add variety to property types for demo
           property_type: property.property_type || (() => {
-            const types = ["single_family", "multi_family", "condo", "townhouse", "mobile", "land"];
+            const types = ["single_family", "duplex", "triplex", "quadplex", "condo", "townhouse", "mobile", "land"];
             return types[idHash % types.length];
           })(),
           beds: property.beds || 0,

@@ -41,6 +41,9 @@ function getLeadType(source: string): string {
 function getHomeType(propertyType: string): string {
   const typeMap: Record<string, string> = {
     "single_family": "Single Family",
+    "duplex": "Duplex",
+    "triplex": "Triplex",
+    "quadplex": "Quadplex",
     "multi_family": "Multi-Family",
     "condo": "Condo",
     "townhouse": "Townhouse",
