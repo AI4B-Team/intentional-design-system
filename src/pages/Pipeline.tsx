@@ -1121,16 +1121,26 @@ export default function Pipeline() {
                         <Badge variant="secondary" size="sm" className="rounded-md uppercase">{selectedDeal.contact_type}</Badge>
                       </div>
                       <div className="flex gap-2">
-                        {(selectedDeal.contact_phone || true) && (
-                          <Button variant="secondary" size="sm">
-                            <Phone className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {(selectedDeal.contact_email || true) && (
-                          <Button variant="secondary" size="sm">
-                            <Mail className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="secondary" size="sm">
+                              <Phone className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Call {selectedDeal.contact_phone || "(512) 555-0147"}
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="secondary" size="sm">
+                              <Mail className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Email {selectedDeal.contact_email || `${selectedDeal.contact_name.toLowerCase().replace(/\s+/g, '.')}@email.com`}
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     </div>
                     {/* Phone & Email display */}
