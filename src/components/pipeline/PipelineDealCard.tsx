@@ -98,9 +98,9 @@ export function PipelineDealCard({
 
   return (
     <TooltipProvider delayDuration={300}>
-      <Card
+      <div
         className={cn(
-          "transition-all duration-200 hover:shadow-lg group cursor-pointer relative",
+          "transition-all duration-200 hover:shadow-md group cursor-pointer relative bg-card rounded-lg",
           "border-l-4",
           urgency === "critical" && "border-l-destructive bg-destructive/5",
           urgency === "overdue" && "border-l-warning bg-warning/5",
@@ -110,14 +110,14 @@ export function PipelineDealCard({
         )}
         onClick={onView}
       >
-        <div className="p-3 flex flex-col gap-2">
+        <div className="px-2 py-1.5 flex flex-col gap-1">
           {/* Top row: Timer badge + Menu */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between -mr-1">
             <Tooltip>
               <TooltipTrigger asChild>
                 <div
                   className={cn(
-                    "inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5",
+                    "inline-flex items-center gap-1 rounded-full border border-border bg-background px-1.5 py-0.5",
                     isOverdue && "border-warning/40"
                   )}
                 >
@@ -150,7 +150,7 @@ export function PipelineDealCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-0.5"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -240,7 +240,7 @@ export function PipelineDealCard({
             </Tooltip>
           </div>
         </div>
-      </Card>
+      </div>
     </TooltipProvider>
   );
 }
