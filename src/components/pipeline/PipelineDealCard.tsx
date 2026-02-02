@@ -31,18 +31,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
-// Stage-specific primary actions
-const STAGE_PRIMARY_ACTIONS: Record<string, { label: string; icon: React.ElementType; tooltip: string }> = {
-  new: { label: "Call", icon: Phone, tooltip: "Call Lead" },
-  contacted: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up" },
-  appointment: { label: "Log Outcome", icon: ClipboardCheck, tooltip: "Log Appointment Outcome" },
-  offer_made: { label: "Follow Up", icon: MessageSquare, tooltip: "Follow Up On Offer" },
-  negotiating: { label: "Respond", icon: MessageSquare, tooltip: "Respond To Counter" },
-  follow_up: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up" },
-  under_contract: { label: "Timeline", icon: Calendar, tooltip: "View Contract Timeline" },
-  marketing: { label: "Manage", icon: FileText, tooltip: "Manage Marketing" },
-  closed: { label: "Details", icon: FileText, tooltip: "View Deal Details" },
-  sold: { label: "Details", icon: FileText, tooltip: "View Deal Details" },
+// Stage-specific primary actions with category colors
+const STAGE_PRIMARY_ACTIONS: Record<string, { label: string; icon: React.ElementType; tooltip: string; colorClass: string }> = {
+  new: { label: "Call", icon: Phone, tooltip: "Call Lead", colorClass: "border-red-500 text-red-600 hover:bg-red-50" },
+  contacted: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up", colorClass: "border-red-500 text-red-600 hover:bg-red-50" },
+  appointment: { label: "Log Outcome", icon: ClipboardCheck, tooltip: "Log Appointment Outcome", colorClass: "border-red-500 text-red-600 hover:bg-red-50" },
+  offer_made: { label: "Follow Up", icon: MessageSquare, tooltip: "Follow Up On Offer", colorClass: "border-amber-500 text-amber-600 hover:bg-amber-50" },
+  negotiating: { label: "Respond", icon: MessageSquare, tooltip: "Respond To Counter", colorClass: "border-amber-500 text-amber-600 hover:bg-amber-50" },
+  follow_up: { label: "Follow Up", icon: CalendarCheck, tooltip: "Schedule Follow Up", colorClass: "border-amber-500 text-amber-600 hover:bg-amber-50" },
+  under_contract: { label: "Timeline", icon: Calendar, tooltip: "View Contract Timeline", colorClass: "border-blue-500 text-blue-600 hover:bg-blue-50" },
+  marketing: { label: "Manage", icon: FileText, tooltip: "Manage Marketing", colorClass: "border-blue-500 text-blue-600 hover:bg-blue-50" },
+  closed: { label: "Details", icon: FileText, tooltip: "View Deal Details", colorClass: "border-emerald-500 text-emerald-600 hover:bg-emerald-50" },
+  sold: { label: "Details", icon: FileText, tooltip: "View Deal Details", colorClass: "border-emerald-500 text-emerald-600 hover:bg-emerald-50" },
 };
 
 interface PipelineDeal {
@@ -302,7 +302,7 @@ export function PipelineDealCard({
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-6 px-3"
+                      className={cn("h-6 px-3", action.colorClass)}
                       onClick={(e) => {
                         e.stopPropagation();
                         onView();
