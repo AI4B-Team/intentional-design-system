@@ -32,6 +32,8 @@ import {
   MessageSquare,
   MoreVertical,
   Image as ImageIcon,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 // Dummy placeholder images for properties without photos
@@ -97,11 +99,19 @@ function formatPhoneForTel(phone?: string) {
 interface PropertyCardProps {
   property: PropertyCardData;
   onOpenDetails?: (id: string) => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
 }
 
 export function PropertyCard({
   property,
   onOpenDetails,
+  onMoveLeft,
+  onMoveRight,
+  canMoveLeft = true,
+  canMoveRight = true,
 }: PropertyCardProps) {
   const [galleryOpen, setGalleryOpen] = React.useState(false);
   const imgs = property.images?.length ? property.images : getPropertyImages(property.id);
@@ -270,93 +280,137 @@ export function PropertyCard({
         {/* Bottom utility row */}
         <div className="p-3 pt-2">
           <div className="flex items-center justify-between">
-            {/* Left: Photo count */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setGalleryOpen(true);
-                  }}
-                >
-                  <ImageIcon className="h-4 w-4" />
-                  <span className="text-xs tabular-nums">{imgs.length}</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>{imgs.length} Photo{imgs.length !== 1 ? "s" : ""}</p>
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Right: Contact icons - tightly grouped */}
+            {/* Left: All action icons grouped together */}
             <div className="flex items-center gap-0.5">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-foreground hover:text-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (property.sellerPhone) {
-                      window.open(`tel:${formatPhoneForTel(property.sellerPhone)}`);
-                    }
-                  }}
-                  aria-label="Call seller"
-                >
-                  <Phone className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>{canCall ? "Call Seller" : "No Phone On File"}</p>
-              </TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGalleryOpen(true);
+                    }}
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                    <span className="text-xs tabular-nums">{imgs.length}</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{imgs.length} Photo{imgs.length !== 1 ? "s" : ""}</p>
+                </TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-foreground hover:text-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (property.sellerEmail) {
-                      window.open(`mailto:${property.sellerEmail}`);
-                    }
-                  }}
-                  aria-label="Email seller"
-                >
-                  <Mail className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>{canEmail ? "Email Seller" : "No Email On File"}</p>
-              </TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-foreground hover:text-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (property.sellerPhone) {
+                        window.open(`tel:${formatPhoneForTel(property.sellerPhone)}`);
+                      }
+                    }}
+                    aria-label="Call seller"
+                  >
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{canCall ? "Call Seller" : "No Phone On File"}</p>
+                </TooltipContent>
+              </Tooltip>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Open comments/notes panel
-                  }}
-                  aria-label="View comments"
-                >
-                  <MessageSquare className="h-4 w-4" />
-                  <span className="text-xs tabular-nums">5</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top">
-                <p>View Comments (5)</p>
-              </TooltipContent>
-            </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-foreground hover:text-foreground"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (property.sellerEmail) {
+                        window.open(`mailto:${property.sellerEmail}`);
+                      }
+                    }}
+                    aria-label="Email seller"
+                  >
+                    <Mail className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{canEmail ? "Email Seller" : "No Email On File"}</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // TODO: Open comments/notes panel
+                    }}
+                    aria-label="View comments"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-xs tabular-nums">5</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>View Comments (5)</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+
+            {/* Right: Navigation arrows */}
+            <div className="flex items-center gap-0.5">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-foreground hover:text-foreground disabled:opacity-40"
+                    disabled={!canMoveLeft}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveLeft?.();
+                    }}
+                    aria-label="Move to previous stage"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Move to Previous Stage</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-foreground hover:text-foreground disabled:opacity-40"
+                    disabled={!canMoveRight}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMoveRight?.();
+                    }}
+                    aria-label="Move to next stage"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>Move to Next Stage</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>

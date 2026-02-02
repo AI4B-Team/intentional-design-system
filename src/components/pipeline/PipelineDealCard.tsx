@@ -82,6 +82,10 @@ export function PipelineDealCard({
     <PropertyCard
       property={propertyData}
       onOpenDetails={() => onView()}
+      onMoveLeft={prevStage ? () => onMove(prevStage.id) : undefined}
+      onMoveRight={nextStage ? () => onMove(nextStage.id) : undefined}
+      canMoveLeft={!!prevStage}
+      canMoveRight={!!nextStage}
     />
   );
 }
