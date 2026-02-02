@@ -1031,7 +1031,7 @@ export default function Pipeline() {
 
       {/* Deal Detail Modal */}
       <Dialog open={!!selectedDeal} onOpenChange={(open) => !open && setSelectedDeal(null)}>
-        <DialogContent className="max-w-lg overflow-visible">
+        <DialogContent className="max-w-lg overflow-visible max-h-[85vh] overflow-y-auto top-[5%] translate-y-0">
           {selectedDeal && (
             <>
               <DialogHeader>
