@@ -34,8 +34,16 @@ import {
   Image as ImageIcon,
 } from "lucide-react";
 
-// Dummy placeholder image for properties without photos
-const DUMMY_PROPERTY_IMAGE = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop";
+// Dummy placeholder images for properties without photos
+const DUMMY_PROPERTY_IMAGES = [
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1554995207-c18c203602cb?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=300&fit=crop",
+];
 
 export interface PropertyCardData {
   id: string;
@@ -77,8 +85,12 @@ export function PropertyCard({
   onOpenDetails,
 }: PropertyCardProps) {
   const [galleryOpen, setGalleryOpen] = React.useState(false);
-  const imgs = property.images?.length ? property.images : [DUMMY_PROPERTY_IMAGE];
-  const thumb = imgs[0];
+  const imgs = property.images?.length ? property.images : DUMMY_PROPERTY_IMAGES;
+  
+  // Show 4 thumbnails max, with last one showing "+X" if more exist
+  const maxThumbnails = 4;
+  const displayThumbnails = imgs.slice(0, maxThumbnails);
+  const remainingCount = imgs.length - maxThumbnails;
 
   const locationLine = `${property.city}, ${property.state} ${property.zip}`;
 
@@ -187,18 +199,54 @@ export function PropertyCard({
           </div>
         </div>
 
+        {/* Photo thumbnails row */}
+        <div className="px-3 pb-2">
+          <button
+            type="button"
+            className="flex gap-1.5 w-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setGalleryOpen(true);
+            }}
+            aria-label="Open photos"
+          >
+            {displayThumbnails.map((src, idx) => {
+              const isLast = idx === displayThumbnails.length - 1;
+              const showOverlay = isLast && remainingCount > 0;
+              
+              return (
+                <div
+                  key={idx}
+                  className="relative h-10 w-10 rounded overflow-hidden bg-muted flex-shrink-0"
+                >
+                  <img
+                    src={src}
+                    alt={`Photo ${idx + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                  {showOverlay && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                      <span className="text-white text-xs font-semibold">+{remainingCount}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </button>
+        </div>
+
         <Separator />
 
         {/* Bottom utility row */}
         <div className="p-3 pt-2">
           <div className="flex items-center justify-between">
-            {/* Left: Photo icon */}
+            {/* Left: Photo count */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-1.5 text-muted-foreground hover:text-foreground gap-1"
+                  className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     setGalleryOpen(true);
