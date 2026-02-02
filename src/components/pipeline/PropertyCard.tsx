@@ -30,7 +30,8 @@ import {
   Phone,
   Smartphone,
   Mail,
-  MessageSquare,
+  StickyNote,
+  
   MoreVertical,
   ChevronLeft,
   ChevronRight,
@@ -360,7 +361,7 @@ export function PropertyCard({
                     }}
                     aria-label="View Comments"
                   >
-                    <MessageSquare className="h-4 w-4" />
+                    <StickyNote className="h-4 w-4" />
                     <span className="text-xs tabular-nums">5</span>
                   </Button>
                 </TooltipTrigger>
