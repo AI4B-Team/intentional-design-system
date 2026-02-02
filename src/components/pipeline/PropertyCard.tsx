@@ -292,8 +292,8 @@ export function PropertyCard({
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                  size="sm"
+                  className="h-7 px-1.5 text-muted-foreground hover:text-foreground gap-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     // TODO: Open comments/notes panel
@@ -301,10 +301,11 @@ export function PropertyCard({
                   aria-label="View comments"
                 >
                   <MessageSquare className="h-4 w-4" />
+                  <span className="text-xs tabular-nums">5</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>View Comments</p>
+                <p>View Comments (5)</p>
               </TooltipContent>
             </Tooltip>
           </div>
