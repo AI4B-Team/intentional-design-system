@@ -375,14 +375,16 @@ export function AppSidebar({
         />
       )}
 
-      {/* Sidebar - sticky on desktop, fixed height */}
+      {/* Sidebar - fixed position on desktop to ensure full height coverage */}
       <aside
         data-sidebar
         className={cn(
-          "fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200",
+          "fixed inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200",
+          "lg:sticky lg:top-0 lg:self-stretch lg:h-auto lg:min-h-screen",
           collapsed ? "lg:w-16" : "lg:w-64",
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
         )}
+        style={{ height: '100%', minHeight: '100vh' }}
       >
         {sidebarContent}
       </aside>
