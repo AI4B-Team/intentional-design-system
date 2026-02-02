@@ -466,7 +466,7 @@ function StageColumn({
           <div 
             ref={setNodeRef}
             className={cn(
-              "p-2 space-y-2 min-h-[100px] transition-all duration-200",
+              "p-2 pr-4 space-y-2 min-h-[100px] transition-all duration-200",
               isOver && "bg-primary/5"
             )}
           >
