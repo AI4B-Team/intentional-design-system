@@ -147,7 +147,7 @@ export function PropertyCard({
             </div>
 
             {/* Right: time badge + 3-dot menu */}
-            <div className="flex items-center gap-1 flex-shrink-0">
+            <div className="flex items-center gap-1 flex-shrink-0 pr-1.5">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className={cn(
@@ -369,13 +369,17 @@ export function PropertyCard({
             </div>
 
             {/* Right: Navigation arrows */}
-            <div className="flex items-center gap-0.5 flex-shrink-0">
+            <div className="flex items-center gap-0 flex-shrink-0 pr-1.5">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-foreground hover:text-foreground disabled:opacity-40"
+                  <button
+                    type="button"
+                    className={cn(
+                      "h-6 w-6 inline-flex items-center justify-center rounded text-muted-foreground transition-colors",
+                      "hover:text-foreground",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      "disabled:pointer-events-none disabled:opacity-40"
+                    )}
                     disabled={!canMoveLeft}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -384,7 +388,7 @@ export function PropertyCard({
                     aria-label="Move to previous stage"
                   >
                     <ChevronLeft className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
                   <p>Move to Previous Stage</p>
@@ -393,10 +397,14 @@ export function PropertyCard({
 
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-foreground hover:text-foreground disabled:opacity-40"
+                  <button
+                    type="button"
+                    className={cn(
+                      "h-6 w-6 inline-flex items-center justify-center rounded text-muted-foreground transition-colors",
+                      "hover:text-foreground",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                      "disabled:pointer-events-none disabled:opacity-40"
+                    )}
                     disabled={!canMoveRight}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -405,7 +413,7 @@ export function PropertyCard({
                     aria-label="Move to next stage"
                   >
                     <ChevronRight className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
                   <p>Move to Next Stage</p>
