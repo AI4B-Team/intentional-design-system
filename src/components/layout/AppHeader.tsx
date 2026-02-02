@@ -61,13 +61,13 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
 
       {/* Search - Far Left */}
       <div className="hidden md:block relative flex-1 max-w-md">
-        <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
+        <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
         <Input
           type="search"
           placeholder="Enter an address, city, or ZIP for insights"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-7 h-9 bg-surface-secondary border-0"
+          className="!pl-6 h-9 bg-surface-secondary border-0"
         />
       </div>
 
