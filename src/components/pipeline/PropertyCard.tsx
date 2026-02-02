@@ -47,6 +47,7 @@ export interface PropertyCardData {
   baths?: number;
   sqft?: number;
   price?: number;
+  arv?: number;
   homeType?: string;
   leadType?: string;
   daysInStage?: number;
@@ -175,9 +176,16 @@ export function PropertyCard({
             )}
           </div>
 
-          {/* Price */}
-          <div className="text-base font-bold text-success mt-2">
-            {formatMoney(property.price)}
+          {/* Price + ARV */}
+          <div className="flex items-center gap-3 mt-2">
+            <div className="text-base font-bold text-success">
+              {formatMoney(property.price)}
+            </div>
+            {property.arv != null && (
+              <div className="text-xs text-muted-foreground">
+                ARV: {formatMoney(property.arv)}
+              </div>
+            )}
           </div>
         </div>
 
