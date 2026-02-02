@@ -1118,7 +1118,7 @@ export default function Pipeline() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="font-medium">{selectedDeal.contact_name}</p>
-                        <Badge variant="secondary" size="sm">{selectedDeal.contact_type}</Badge>
+                        <Badge variant="secondary" size="sm" className="rounded-md uppercase">{selectedDeal.contact_type}</Badge>
                       </div>
                       <div className="flex gap-2">
                         {(selectedDeal.contact_phone || true) && (
