@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
-import { Bath, Bed, ChevronLeft, ChevronRight, MoreVertical, Ruler, Timer } from "lucide-react";
+import { Bath, Bed, ChevronLeft, ChevronRight, Eye, MoreVertical, Ruler, Timer } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -240,51 +240,74 @@ export function PipelineDealCard({
             </Tooltip>
           </div>
 
-          {/* Quick Move Arrows */}
-          {(prevStage || nextStage) && (
-            <div className="flex items-center justify-center gap-1 pt-1">
-              {prevStage && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMove(prevStage.id);
-                      }}
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    <p>Move To {prevStage.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-              {nextStage && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onMove(nextStage.id);
-                      }}
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
-                    <p>Move To {nextStage.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-          )}
+          {/* Quick Move Arrows + Action Button */}
+          <div className="flex items-center justify-center gap-1 pt-1">
+            {prevStage ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMove(prevStage.id);
+                    }}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Move To {prevStage.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <div className="w-6" />
+            )}
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-6 px-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onView();
+                  }}
+                >
+                  <Eye className="h-3.5 w-3.5 mr-1" />
+                  View
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>View Deal Details</p>
+              </TooltipContent>
+            </Tooltip>
+
+            {nextStage ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-6 w-6"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onMove(nextStage.id);
+                    }}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Move To {nextStage.label}</p>
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <div className="w-6" />
+            )}
+          </div>
         </div>
       </div>
     </TooltipProvider>
