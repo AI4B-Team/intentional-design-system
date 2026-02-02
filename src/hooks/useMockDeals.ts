@@ -239,7 +239,7 @@ const mockDeals: MarketplaceDeal[] = [
     imageUrl: "https://images.unsplash.com/photo-1558036117-15d82a90b9b1?w=800&q=80",
     lat: 27.3364,
     lng: -82.5307,
-    createdAt: getDateString(5),
+    createdAt: getDateString(1), // Changed to 1 day to sort between Sold (0 days) and New 2 Days Ago (2 days)
     status: "for_sale",
   },
   {
