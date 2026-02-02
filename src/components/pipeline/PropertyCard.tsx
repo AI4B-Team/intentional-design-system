@@ -124,7 +124,11 @@ export function PropertyCard({
                   <div className="inline-flex items-center gap-1 px-1.5 py-0.5 text-muted-foreground">
                     <Clock className="h-3 w-3" />
                     <span className="text-xs font-medium tabular-nums">
-                      {property.daysInStage != null ? `${property.daysInStage}d` : "—"}
+                      {property.daysInStage != null 
+                        ? property.daysInStage === 0 
+                          ? "Today" 
+                          : `${property.daysInStage}D`
+                        : "—"}
                     </span>
                   </div>
                 </TooltipTrigger>
