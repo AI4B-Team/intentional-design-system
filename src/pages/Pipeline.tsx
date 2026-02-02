@@ -869,7 +869,7 @@ export default function Pipeline() {
       />
 
       {/* Filters - Sticky on scroll */}
-      <div className="sticky top-16 z-40 bg-background py-3 -mx-4 px-4 lg:-mx-6 lg:px-6 border-b border-transparent [&.is-stuck]:border-border [&.is-stuck]:shadow-sm transition-all">
+      <div className="sticky top-16 z-40 bg-background py-3 -mx-4 px-4 lg:-mx-6 lg:px-6 border-b border-border/50 shadow-sm mb-4">
         <div className="flex items-center gap-4">
           <Select value={sourceFilter} onValueChange={setSourceFilter}>
             <SelectTrigger className="w-40">
@@ -906,7 +906,7 @@ export default function Pipeline() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-4 overflow-x-auto pb-4 min-h-[600px]">
           {PIPELINE_STAGES.map(stage => (
             <StageColumn
               key={stage.id}
