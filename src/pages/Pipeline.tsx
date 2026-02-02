@@ -707,12 +707,14 @@ function StageColumn({
   allDeals, 
   onViewDeal,
   onMoveDeal,
+  onAddDeal,
 }: { 
   stage: typeof PIPELINE_STAGES[0]; 
   deals: PipelineDeal[];
   allDeals: PipelineDeal[];
   onViewDeal: (deal: PipelineDeal) => void;
   onMoveDeal: (dealId: string, newStage: string) => void;
+  onAddDeal: (stageId: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `stage-${stage.id}`,
@@ -756,6 +758,7 @@ function StageColumn({
                     variant="ghost" 
                     size="sm" 
                     className="h-6 w-6 p-0 text-muted-foreground hover:text-brand hover:bg-brand/10 transition-colors"
+                    onClick={() => onAddDeal(stage.id)}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -920,6 +923,19 @@ export default function Pipeline() {
   const [focusFilter, setFocusFilter] = React.useState<string | null>(null);
   const [stalledFilter, setStalledFilter] = React.useState(false);
   const [activeDragId, setActiveDragId] = React.useState<string | null>(null);
+  const [addDealStage, setAddDealStage] = React.useState<string | null>(null);
+  const [newDealForm, setNewDealForm] = React.useState({
+    address: "",
+    city: "",
+    state: "",
+    zip: "",
+    asking_price: "",
+    arv: "",
+    contact_name: "",
+    beds: "3",
+    baths: "2",
+    sqft: "1500",
+  });
 
   // DnD sensors with activation constraints for smooth dragging
   const sensors = useSensors(
@@ -1092,6 +1108,56 @@ export default function Pipeline() {
     if (enabled) setFocusFilter(null);
   };
 
+  const handleAddDeal = (stageId: string) => {
+    setAddDealStage(stageId);
+    setNewDealForm({
+      address: "",
+      city: "",
+      state: "",
+      zip: "",
+      asking_price: "",
+      arv: "",
+      contact_name: "",
+      beds: "3",
+      baths: "2",
+      sqft: "1500",
+    });
+  };
+
+  const handleCreateDeal = () => {
+    if (!addDealStage || !newDealForm.address) return;
+    
+    const newDeal: PipelineDeal = {
+      id: `new-${Date.now()}`,
+      address: newDealForm.address,
+      city: newDealForm.city || "Austin",
+      state: newDealForm.state || "TX",
+      zip: newDealForm.zip || "78701",
+      stage: addDealStage,
+      asking_price: parseInt(newDealForm.asking_price) || 250000,
+      offer_amount: null,
+      arv: parseInt(newDealForm.arv) || 300000,
+      equity_percentage: 20,
+      lead_score: 75,
+      contact_name: newDealForm.contact_name || "New Contact",
+      contact_phone: null,
+      contact_email: null,
+      contact_type: "Seller",
+      source: "Manual Entry",
+      days_in_stage: 0,
+      created_at: new Date().toISOString(),
+      last_activity: new Date().toISOString(),
+      notes: null,
+      property_type: "Single Family",
+      beds: parseInt(newDealForm.beds) || 3,
+      baths: parseInt(newDealForm.baths) || 2,
+      sqft: parseInt(newDealForm.sqft) || 1500,
+    };
+    
+    setDeals(prev => [...prev, newDeal]);
+    setAddDealStage(null);
+  };
+
   return (
     <PageLayout>
       <PageHeader
@@ -1115,7 +1181,7 @@ export default function Pipeline() {
                   Goals
                 </Button>
               </GoalSettingsDialog>
-              <Button variant="primary" size="sm" icon={<Plus />}>
+              <Button variant="primary" size="sm" icon={<Plus />} onClick={() => handleAddDeal("new")}>
                 Add Deal
               </Button>
             </div>
@@ -1243,6 +1309,7 @@ export default function Pipeline() {
               allDeals={deals}
               onViewDeal={handleViewDeal}
               onMoveDeal={handleMoveDeal}
+              onAddDeal={handleAddDeal}
             />
           ))}
         </div>
@@ -1402,6 +1469,129 @@ export default function Pipeline() {
               </DialogFooter>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Deal Dialog */}
+      <Dialog open={!!addDealStage} onOpenChange={(open) => !open && setAddDealStage(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-brand" />
+              Add New Deal
+            </DialogTitle>
+            <DialogDescription>
+              Adding to: {PIPELINE_STAGES.find(s => s.id === addDealStage)?.label || "Pipeline"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm font-medium">Property Address *</label>
+              <Input
+                placeholder="123 Main Street"
+                value={newDealForm.address}
+                onChange={(e) => setNewDealForm(prev => ({ ...prev, address: e.target.value }))}
+              />
+            </div>
+            
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-sm font-medium">City</label>
+                <Input
+                  placeholder="Austin"
+                  value={newDealForm.city}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, city: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">State</label>
+                <Input
+                  placeholder="TX"
+                  value={newDealForm.state}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, state: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">ZIP</label>
+                <Input
+                  placeholder="78701"
+                  value={newDealForm.zip}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, zip: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium">Asking Price</label>
+                <Input
+                  type="number"
+                  placeholder="250000"
+                  value={newDealForm.asking_price}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, asking_price: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">ARV</label>
+                <Input
+                  type="number"
+                  placeholder="300000"
+                  value={newDealForm.arv}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, arv: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Contact Name</label>
+              <Input
+                placeholder="John Smith"
+                value={newDealForm.contact_name}
+                onChange={(e) => setNewDealForm(prev => ({ ...prev, contact_name: e.target.value }))}
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-sm font-medium">Beds</label>
+                <Input
+                  type="number"
+                  value={newDealForm.beds}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, beds: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Baths</label>
+                <Input
+                  type="number"
+                  value={newDealForm.baths}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, baths: e.target.value }))}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Sqft</label>
+                <Input
+                  type="number"
+                  value={newDealForm.sqft}
+                  onChange={(e) => setNewDealForm(prev => ({ ...prev, sqft: e.target.value }))}
+                />
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="secondary" onClick={() => setAddDealStage(null)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              onClick={handleCreateDeal}
+              disabled={!newDealForm.address}
+            >
+              Add Deal
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </PageLayout>
