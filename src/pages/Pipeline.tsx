@@ -401,7 +401,7 @@ function StageColumn({
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
           <div className="flex items-center justify-between mb-2">
-            {/* Left: title box with icon, label, count */}
+            {/* Single white box containing all header elements */}
             <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
               <stage.icon className={cn(
                 "h-4 w-4",
@@ -412,24 +412,20 @@ function StageColumn({
               )} />
               <span className="text-small font-semibold">{stage.label}</span>
               <Badge variant="secondary" size="sm">{deals.length}</Badge>
-            </div>
-
-            {/* Right: + and 3-dot icons aligned far right */}
-            <div className="flex items-center gap-0.5">
+              
+              {/* + and 3-dot icons inside the box, no background */}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="h-6 w-6 p-0 text-muted-foreground hover:text-brand hover:bg-brand/10 transition-colors"
+                    <button 
+                      className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-brand transition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
                         onAddDeal(stage.id);
                       }}
                     >
                       <Plus className="h-4 w-4" />
-                    </Button>
+                    </button>
                   </TooltipTrigger>
                   <TooltipContent side="top">
                     <p className="text-tiny">Add deal to {stage.label}</p>
@@ -438,14 +434,12 @@ function StageColumn({
               </TooltipProvider>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground transition-colors"
+                  <button 
+                    className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MoreVertical className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => onAddDeal(stage.id)}>
