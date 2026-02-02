@@ -16,14 +16,26 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Bed,
   Bath,
   Ruler,
   Clock,
   Phone,
   Mail,
+  MessageSquare,
+  MoreVertical,
   Image as ImageIcon,
 } from "lucide-react";
+
+// Dummy placeholder image for properties without photos
+const DUMMY_PROPERTY_IMAGE = "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop";
 
 export interface PropertyCardData {
   id: string;
@@ -64,7 +76,7 @@ export function PropertyCard({
   onOpenDetails,
 }: PropertyCardProps) {
   const [galleryOpen, setGalleryOpen] = React.useState(false);
-  const imgs = property.images ?? [];
+  const imgs = property.images?.length ? property.images : [DUMMY_PROPERTY_IMAGE];
   const thumb = imgs[0];
 
   const locationLine = `${property.city}, ${property.state} ${property.zip}`;
@@ -80,24 +92,60 @@ export function PropertyCard({
         )}
         onClick={() => onOpenDetails?.(property.id)}
       >
-        {/* Top badges */}
+        {/* Top row: homeType badge + time badge + menu */}
         <div className="p-3 pb-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            {property.homeType && (
-              <Badge variant="secondary" size="sm">
-                {property.homeType}
-              </Badge>
-            )}
-            {property.leadType && (
-              <Badge variant="outline" size="sm" className="bg-primary/10 text-primary border-primary/20">
-                {property.leadType}
-              </Badge>
-            )}
+          <div className="flex items-center justify-between">
+            {/* Left: homeType badge only */}
+            <div className="flex items-center gap-2">
+              {property.homeType && (
+                <Badge variant="secondary" size="sm">
+                  {property.homeType}
+                </Badge>
+              )}
+            </div>
+
+            {/* Right: time badge + 3-dot menu */}
+            <div className="flex items-center gap-1">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 bg-muted text-muted-foreground border border-border-subtle">
+                    <Clock className="h-3 w-3" />
+                    <span className="text-xs font-medium tabular-nums">
+                      {property.daysInStage != null ? `${property.daysInStage}d` : "—"}
+                    </span>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p>{property.daysInStage ?? 0} days in current stage</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                  <DropdownMenuItem onClick={() => onOpenDetails?.(property.id)}>
+                    View Details
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Edit Deal</DropdownMenuItem>
+                  <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
 
         {/* Middle content */}
-        <div className="p-3">
+        <div className="p-3 pt-2">
           <p className="text-sm font-semibold text-foreground leading-snug break-words">
             {property.address}
           </p>
@@ -133,109 +181,124 @@ export function PropertyCard({
           </div>
         </div>
 
+        {/* Property thumbnail */}
+        <div className="px-3 pb-2">
+          <button
+            type="button"
+            className="w-full rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+            onClick={(e) => {
+              e.stopPropagation();
+              setGalleryOpen(true);
+            }}
+            aria-label="Open photos"
+          >
+            <img
+              src={thumb}
+              alt="Property"
+              className="w-full h-24 object-cover"
+            />
+          </button>
+        </div>
+
         <Separator />
 
         {/* Bottom utility row */}
-        <div className="p-3 pt-2.5">
-          <div className="flex items-center gap-3">
-            {/* Thumbnail + gallery */}
-            <button
-              type="button"
-              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                setGalleryOpen(true);
-              }}
-              aria-label="Open photos"
-            >
-              <div className="h-8 w-8 rounded-md bg-muted flex items-center justify-center overflow-hidden shrink-0">
-                {thumb ? (
-                  <img
-                    src={thumb}
-                    alt="Property thumbnail"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <ImageIcon className="h-4 w-4 text-muted-foreground" />
-                )}
-              </div>
-              <span className="text-xs font-medium">
-                Photos{imgs.length > 0 ? ` (${imgs.length})` : ""}
-              </span>
-            </button>
+        <div className="p-3 pt-2">
+          <div className="flex items-center justify-end gap-0.5">
+            {/* Photo count button */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setGalleryOpen(true);
+                  }}
+                >
+                  <ImageIcon className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>{imgs.length} Photo{imgs.length !== 1 ? "s" : ""}</p>
+              </TooltipContent>
+            </Tooltip>
 
-            {/* Time + divider + contact */}
-            <div className="flex items-center gap-2 ml-auto">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="h-3.5 w-3.5" />
-                    <span className="text-xs font-medium tabular-nums">
-                      {property.daysInStage != null ? `${property.daysInStage}d` : "—"}
-                    </span>
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="top">
-                  <p>{property.daysInStage ?? 0} days in current stage</p>
-                </TooltipContent>
-              </Tooltip>
+            <Separator orientation="vertical" className="h-5 mx-1" />
 
-              <Separator orientation="vertical" className="h-5" />
+            {/* Contact icons - tightly grouped */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-7 w-7",
+                    canCall ? "text-muted-foreground hover:text-success" : "text-muted-foreground/40 cursor-not-allowed"
+                  )}
+                  disabled={!canCall}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (property.sellerPhone) {
+                      window.open(`tel:${formatPhoneForTel(property.sellerPhone)}`);
+                    }
+                  }}
+                  aria-label="Call seller"
+                >
+                  <Phone className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>{canCall ? "Call seller" : "No phone on file"}</p>
+              </TooltipContent>
+            </Tooltip>
 
-              <div className="flex items-center gap-1">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={cn(
-                        "h-7 w-7",
-                        canCall ? "text-muted-foreground hover:text-success" : "text-muted-foreground/40 cursor-not-allowed"
-                      )}
-                      disabled={!canCall}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (property.sellerPhone) {
-                          window.open(`tel:${formatPhoneForTel(property.sellerPhone)}`);
-                        }
-                      }}
-                      aria-label="Call seller"
-                    >
-                      <Phone className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p>{canCall ? "Call seller" : "No phone on file"}</p>
-                  </TooltipContent>
-                </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-7 w-7",
+                    canEmail ? "text-muted-foreground hover:text-primary" : "text-muted-foreground/40 cursor-not-allowed"
+                  )}
+                  disabled={!canEmail}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (property.sellerEmail) {
+                      window.open(`mailto:${property.sellerEmail}`);
+                    }
+                  }}
+                  aria-label="Email seller"
+                >
+                  <Mail className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>{canEmail ? "Email seller" : "No email on file"}</p>
+              </TooltipContent>
+            </Tooltip>
 
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={cn(
-                        "h-7 w-7",
-                        canEmail ? "text-muted-foreground hover:text-primary" : "text-muted-foreground/40 cursor-not-allowed"
-                      )}
-                      disabled={!canEmail}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (property.sellerEmail) {
-                          window.open(`mailto:${property.sellerEmail}`);
-                        }
-                      }}
-                      aria-label="Email seller"
-                    >
-                      <Mail className="h-4 w-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p>{canEmail ? "Email seller" : "No email on file"}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // TODO: Open comments/notes panel
+                  }}
+                  aria-label="View comments"
+                >
+                  <MessageSquare className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>View Comments</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
@@ -248,23 +311,17 @@ export function PropertyCard({
               </DialogTitle>
             </DialogHeader>
 
-            {imgs.length === 0 ? (
-              <div className="flex items-center justify-center py-12 text-muted-foreground">
-                No photos available.
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-2">
-                {imgs.map((src, idx) => (
-                  <div key={idx} className="relative overflow-hidden rounded-md">
-                    <img
-                      src={src}
-                      alt={`Photo ${idx + 1}`}
-                      className="h-44 w-full object-cover"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-2 gap-2">
+              {imgs.map((src, idx) => (
+                <div key={idx} className="relative overflow-hidden rounded-md">
+                  <img
+                    src={src}
+                    alt={`Photo ${idx + 1}`}
+                    className="h-44 w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
           </DialogContent>
         </Dialog>
       </div>
