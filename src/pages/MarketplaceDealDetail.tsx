@@ -40,6 +40,7 @@ import {
   Send,
   Copy,
   Check,
+  Car,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
@@ -584,47 +585,43 @@ export default function MarketplaceDealDetail() {
                 <MapPin className="h-4 w-4" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
               </p>
-              <div className="flex items-center gap-4 text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Home className="h-4 w-4" />
-                  <strong className="text-foreground">{deal.beds}</strong> Beds
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Home className="h-4 w-4" />
-                  <strong className="text-foreground">{deal.baths}</strong> Baths
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Tag className="h-4 w-4" />
-                  <strong className="text-foreground">{deal.sqft.toLocaleString()}</strong> Sqft
-                </span>
-              </div>
             </div>
 
-            {/* Property Details Grid */}
-            <div className="grid grid-cols-3 gap-3">
+            {/* Property Details Grid - 4 per row */}
+            <div className="grid grid-cols-4 gap-3">
+              {/* Row 1: Beds, Baths, Half Bath, SqFt */}
               <Card className="p-4 flex items-center gap-3">
                 <Home className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">{deal.propertyType}</span>
+                <span className="text-sm font-medium">{deal.beds} Beds</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">Built in {yearBuilt}</span>
+                <Home className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">{deal.baths} Baths</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Home className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">0 Half Bath</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
                 <Tag className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">{lotSize} Acres Lot</span>
+                <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
+              </Card>
+              {/* Row 2: Year Built, Lot Size, Parking, Price/SqFt */}
+              <Card className="p-4 flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">Built {yearBuilt}</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Tag className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">{lotSize} Acres</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Car className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">2 Car Garage</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
                 <DollarSign className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">${deal.arv.toLocaleString()} ARV</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <DollarSign className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">${pricePerSqft}/sqft</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
-                <DollarSign className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">${hoaFee}/mo HOA</span>
+                <span className="text-sm font-medium">${pricePerSqft}/SqFt</span>
               </Card>
             </div>
 
