@@ -43,7 +43,26 @@ const DUMMY_PROPERTY_IMAGES = [
   "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop",
   "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
   "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&h=300&fit=crop",
 ];
+
+// Get a shuffled subset of images based on property ID for variety
+function getPropertyImages(propertyId: string): string[] {
+  // Simple hash from property ID to create variety
+  const hash = propertyId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const startIdx = hash % DUMMY_PROPERTY_IMAGES.length;
+  const count = 5 + (hash % 8); // 5-12 images per property
+  
+  const images: string[] = [];
+  for (let i = 0; i < count; i++) {
+    images.push(DUMMY_PROPERTY_IMAGES[(startIdx + i) % DUMMY_PROPERTY_IMAGES.length]);
+  }
+  return images;
+}
 
 export interface PropertyCardData {
   id: string;
@@ -85,10 +104,10 @@ export function PropertyCard({
   onOpenDetails,
 }: PropertyCardProps) {
   const [galleryOpen, setGalleryOpen] = React.useState(false);
-  const imgs = property.images?.length ? property.images : DUMMY_PROPERTY_IMAGES;
+  const imgs = property.images?.length ? property.images : getPropertyImages(property.id);
   
-  // Show 4 thumbnails max, with last one showing "+X" if more exist
-  const maxThumbnails = 4;
+  // Show 5 thumbnails max, with last one showing "+X" if more exist
+  const maxThumbnails = 5;
   const displayThumbnails = imgs.slice(0, maxThumbnails);
   const remainingCount = imgs.length - maxThumbnails;
 
@@ -207,7 +226,7 @@ export function PropertyCard({
         <div className="px-3 pb-2">
           <button
             type="button"
-            className="flex gap-1.5 w-full"
+            className="flex gap-1.5 w-full justify-center"
             onClick={(e) => {
               e.stopPropagation();
               setGalleryOpen(true);
