@@ -394,7 +394,7 @@ function StageColumn({
   const dealIds = deals.map(d => d.id);
 
   return (
-    <div className="flex-shrink-0 w-80" data-stage-id={stage.id}>
+    <div className="flex-shrink-0 w-72" data-stage-id={stage.id}>
       <div className={cn(
         "bg-surface-secondary rounded-lg border transition-all duration-200",
         isOver 
