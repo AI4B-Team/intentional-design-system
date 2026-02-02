@@ -156,7 +156,7 @@ export function PropertyCard({
                       ? "bg-destructive/15 text-destructive animate-pulse" 
                       : property.daysInStage != null && property.daysInStage >= 2 
                         ? "bg-warning/15 text-warning" 
-                        : "text-muted-foreground"
+                        : "bg-muted text-muted-foreground"
                   )}>
                     <Clock className="h-3 w-3" />
                     <span className="text-xs font-medium tabular-nums">
