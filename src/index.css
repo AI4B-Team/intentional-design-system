@@ -16,6 +16,22 @@
     /* Default: no zoom compensation needed */
     --app-zoom: 1;
     --app-viewport-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  body {
+    height: auto;
+    overflow-y: auto;
+  }
+
+  #root {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: visible;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
   }
 
   /* The app is intentionally scaled down globally.
@@ -27,20 +43,7 @@
       --app-zoom: 0.9;
       --app-viewport-height: calc(100vh / var(--app-zoom));
       zoom: var(--app-zoom);
-      /* Allow native browser scrolling - no fixed height */
       min-height: calc(100vh / var(--app-zoom));
-    }
-
-    body {
-      /* Allow native browser scrolling */
-      min-height: 100%;
-    }
-
-    #root {
-      /* Allow native browser scrolling */
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
     }
   }
   
