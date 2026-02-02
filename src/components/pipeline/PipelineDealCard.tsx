@@ -145,10 +145,22 @@ export function PipelineDealCard({
             </Tooltip>
           </div>
 
-          {/* Price + Days (bottom row) */}
+          {/* Price + ARV + Days (bottom row) */}
           <div className="flex items-center justify-between gap-2">
-            <div className="text-base font-bold text-success">
-              {formatCurrency(deal.asking_price)}
+            <div className="flex items-center gap-3">
+              <div className="text-base font-bold text-success">
+                {formatCurrency(deal.asking_price)}
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="text-xs text-muted-foreground">
+                    ARV: {formatCurrency(deal.arv)}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>After Repair Value</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             <Tooltip>
