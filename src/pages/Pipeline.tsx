@@ -791,36 +791,6 @@ export default function Pipeline() {
         }
       />
 
-      {/* Filters - Sticky top control */}
-      <div className="sticky top-0 z-50 bg-background py-3 -mx-4 px-4 lg:-mx-6 lg:px-6 border-b border-border shadow-sm mb-4">
-        <div className="flex items-center gap-4">
-          <Select value={sourceFilter} onValueChange={setSourceFilter}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Sources" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sources</SelectItem>
-              {sources.map(source => (
-                <SelectItem key={source} value={source}>{source}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button variant="secondary" size="sm" icon={<SlidersHorizontal />}>
-            Filter
-          </Button>
-          {(focusFilter || stalledFilter) && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => { setFocusFilter(null); setStalledFilter(false); }}
-              className="text-muted-foreground h-8"
-            >
-              Clear Filters
-            </Button>
-          )}
-        </div>
-      </div>
-
       {/* Pipeline Value Cards */}
       <div className="mb-4 -mt-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
