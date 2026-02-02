@@ -99,9 +99,9 @@ export function PropertyCard({
             {/* Left: homeType badge only */}
             <div className="flex items-center gap-2">
               {property.homeType && (
-                <Badge variant="secondary" size="sm">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success/15 text-success border border-success/20">
                   {property.homeType}
-                </Badge>
+                </span>
               )}
             </div>
 
