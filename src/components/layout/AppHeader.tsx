@@ -64,7 +64,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
         <Input
           type="search"
-          placeholder="Search properties, contacts..."
+          placeholder="Enter an address, city, or ZIP for insights"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-9 h-9 bg-surface-secondary border-0"
