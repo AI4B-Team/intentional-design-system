@@ -69,13 +69,13 @@ import {
   RefreshCw,
   MessageSquare,
   Zap,
-  UserPlus,
+  Users,
+  Handshake,
+  BadgeDollarSign,
   CalendarClock,
   Send,
   MessageCircle,
-  FileCheck,
   Megaphone,
-  CheckCircle,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -105,12 +105,12 @@ const PIPELINE_STAGES: {
   targetDays: number;
   category: string;
 }[] = [
-  // === DISCOVERY GROUP (Red) ===
+  // === DISCOVERY GROUP (Red) - Uses Users icon like dashboard ===
   { 
     id: "new", 
     label: "New Leads", 
     color: "bg-red-500", 
-    icon: UserPlus,
+    icon: Users,
     description: "Fresh leads requiring qualification",
     targetDays: 2,
     category: "discovery",
@@ -133,12 +133,12 @@ const PIPELINE_STAGES: {
     targetDays: 3,
     category: "discovery",
   },
-  // === INTENT GROUP (Yellow/Amber) ===
+  // === INTENT GROUP (Yellow/Amber) - Uses FileText icon like dashboard ===
   { 
     id: "offer_made", 
     label: "Offer Made", 
     color: "bg-amber-500", 
-    icon: Send,
+    icon: FileText,
     description: "Offer submitted, awaiting response",
     targetDays: 7,
     category: "intent",
@@ -161,12 +161,12 @@ const PIPELINE_STAGES: {
     targetDays: 14,
     category: "intent",
   },
-  // === COMMITMENT GROUP (Blue) ===
+  // === COMMITMENT GROUP (Blue) - Uses Handshake icon like dashboard ===
   { 
     id: "under_contract", 
     label: "Under Contract", 
     color: "bg-blue-500", 
-    icon: FileCheck,
+    icon: Handshake,
     description: "Contract signed, heading to close",
     targetDays: 30,
     category: "commitment",
@@ -180,12 +180,12 @@ const PIPELINE_STAGES: {
     targetDays: 14,
     category: "commitment",
   },
-  // === OUTCOME GROUP (Green) ===
+  // === OUTCOME GROUP (Green) - Uses BadgeDollarSign icon like dashboard ===
   { 
     id: "closed", 
     label: "Purchased", 
     color: "bg-emerald-500", 
-    icon: CheckCircle,
+    icon: BadgeDollarSign,
     description: "Deal completed",
     targetDays: 0,
     category: "outcome",
@@ -194,7 +194,7 @@ const PIPELINE_STAGES: {
     id: "sold", 
     label: "Sold", 
     color: "bg-emerald-500", 
-    icon: DollarSign,
+    icon: BadgeDollarSign,
     description: "Property sold and funds received",
     targetDays: 0,
     category: "outcome",
