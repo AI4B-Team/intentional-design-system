@@ -1,0 +1,175 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { differenceInDays } from "date-fns";
+import { toast } from "sonner";
+
+export interface PipelineDeal {
+  id: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  stage: string;
+  asking_price: number;
+  offer_amount: number | null;
+  arv: number;
+  equity_percentage: number;
+  lead_score: number;
+  contact_name: string;
+  contact_phone: string | null;
+  contact_email: string | null;
+  contact_type: string;
+  source: string;
+  days_in_stage: number;
+  created_at: string;
+  last_activity: string;
+  notes: string | null;
+  property_type: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+}
+
+export function usePipelineDeals() {
+  return useQuery({
+    queryKey: ["pipeline-deals"],
+    queryFn: async (): Promise<PipelineDeal[]> => {
+      const { data, error } = await supabase
+        .from("properties")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      // Map properties to PipelineDeal format
+      return (data || []).map((property) => {
+        // Use estimated_value or avm_value as asking price equivalent
+        const askingPrice = property.estimated_value || property.avm_value || property.mao_standard || 0;
+        const arv = property.arv || (askingPrice ? askingPrice * 1.2 : 0);
+        const offerAmount = property.mao_standard || null;
+        
+        // Calculate equity percentage
+        const repairEstimate = property.repair_estimate || 0;
+        const equityAmount = arv - askingPrice - repairEstimate;
+        const equityPercentage = arv > 0 
+          ? Math.round((equityAmount / arv) * 100) 
+          : (property.equity_percent || 0);
+
+        // Calculate days in stage based on updated_at
+        const daysInStage = differenceInDays(
+          new Date(),
+          new Date(property.updated_at || property.created_at || new Date())
+        );
+
+        return {
+          id: property.id,
+          address: property.address || "Unknown Address",
+          city: property.city || "",
+          state: property.state || "",
+          zip: property.zip || "",
+          stage: property.status || "new",
+          asking_price: Number(askingPrice) || 0,
+          offer_amount: offerAmount ? Number(offerAmount) : null,
+          arv: Number(arv) || 0,
+          equity_percentage: equityPercentage,
+          lead_score: property.motivation_score || property.velocity_score || 50,
+          contact_name: property.owner_name || "Unknown",
+          contact_phone: property.owner_phone || null,
+          contact_email: property.owner_email || null,
+          contact_type: "Seller",
+          source: property.source || "Unknown",
+          days_in_stage: Math.max(0, daysInStage),
+          created_at: property.created_at || new Date().toISOString(),
+          last_activity: property.updated_at || property.created_at || new Date().toISOString(),
+          notes: property.notes || null,
+          property_type: property.property_type || "Single Family",
+          beds: property.beds || 0,
+          baths: Number(property.baths) || 0,
+          sqft: property.sqft || 0,
+        };
+      });
+    },
+    refetchInterval: 30000,
+  });
+}
+
+export function useUpdatePipelineDealStage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, stage }: { id: string; stage: string }) => {
+      const { error } = await supabase
+        .from("properties")
+        .update({ 
+          status: stage, 
+          updated_at: new Date().toISOString() 
+        })
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-deals"] });
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["pipeline-value-stats"] });
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to update deal: " + error.message);
+    },
+  });
+}
+
+export function useCreatePipelineDeal() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (deal: {
+      address: string;
+      city: string;
+      state: string;
+      zip: string;
+      status: string;
+      estimated_value: number;
+      arv: number;
+      owner_name: string;
+      beds: number;
+      baths: number;
+      sqft: number;
+    }) => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Not authenticated");
+
+      // Get user's organization
+      const { data: membership } = await supabase
+        .from("organization_members")
+        .select("organization_id")
+        .eq("user_id", userData.user.id)
+        .eq("status", "active")
+        .single();
+
+      const { data, error } = await supabase
+        .from("properties")
+        .insert({
+          ...deal,
+          user_id: userData.user.id,
+          organization_id: membership?.organization_id || null,
+          source: "Manual Entry",
+          property_type: "Single Family",
+          motivation_score: 75,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pipeline-deals"] });
+      queryClient.invalidateQueries({ queryKey: ["pipeline-stats"] });
+      toast.success("Deal added successfully");
+    },
+    onError: (error: Error) => {
+      toast.error("Failed to create deal: " + error.message);
+    },
+  });
+}
