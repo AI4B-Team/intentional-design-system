@@ -222,11 +222,7 @@ export function PropertyCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={cn(
-                    "h-7 w-7",
-                    canCall ? "text-muted-foreground hover:text-success" : "text-muted-foreground/40 cursor-not-allowed"
-                  )}
-                  disabled={!canCall}
+                  className="h-7 w-7 text-foreground hover:text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (property.sellerPhone) {
@@ -239,7 +235,7 @@ export function PropertyCard({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>{canCall ? "Call seller" : "No phone on file"}</p>
+                <p>{canCall ? "Call Seller" : "No Phone On File"}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -248,11 +244,7 @@ export function PropertyCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className={cn(
-                    "h-7 w-7",
-                    canEmail ? "text-muted-foreground hover:text-primary" : "text-muted-foreground/40 cursor-not-allowed"
-                  )}
-                  disabled={!canEmail}
+                  className="h-7 w-7 text-foreground hover:text-foreground"
                   onClick={(e) => {
                     e.stopPropagation();
                     if (property.sellerEmail) {
@@ -265,7 +257,7 @@ export function PropertyCard({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top">
-                <p>{canEmail ? "Email seller" : "No email on file"}</p>
+                <p>{canEmail ? "Email Seller" : "No Email On File"}</p>
               </TooltipContent>
             </Tooltip>
 
@@ -274,7 +266,7 @@ export function PropertyCard({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-7 px-1.5 text-muted-foreground hover:text-foreground gap-1"
+                  className="h-7 px-1.5 text-foreground hover:text-foreground gap-1"
                   onClick={(e) => {
                     e.stopPropagation();
                     // TODO: Open comments/notes panel
