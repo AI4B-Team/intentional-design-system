@@ -53,7 +53,7 @@ export function FocusStrip({
         id: "follow_up",
         type: "follow_up",
         icon: Bell,
-        label: `${offersNeedFollowUp.length} Offer${offersNeedFollowUp.length > 1 ? "s" : ""} Need Follow-Up`,
+        label: `${offersNeedFollowUp.length} Offer${offersNeedFollowUp.length > 1 ? "s Need" : " Needs"} Follow-Up`,
         count: offersNeedFollowUp.length,
         deals: offersNeedFollowUp,
         color: "bg-warning/10 text-warning border-warning/30",
