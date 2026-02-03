@@ -55,7 +55,7 @@ import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
 import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
 
-type ViewMode = "overview" | "flip" | "hold";
+type ViewMode = "flip" | "hold";
 type LayoutMode = "detail" | "split";
 type UserType = "investor" | "agent" | "investor-agent";
 
@@ -192,8 +192,8 @@ export default function MarketplaceDealDetail() {
   const [userType, setUserType] = useState<UserType>("investor");
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
-  const [compType, setCompType] = useState<"investor" | "retail">("investor");
-  const [viewMode, setViewMode] = useState<ViewMode>("overview");
+  const [compType, setCompType] = useState<"investor" | "retail">("retail");
+  const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("detail");
   
   // Use shared saved deals hook
@@ -670,7 +670,7 @@ export default function MarketplaceDealDetail() {
           <div className="lg:col-span-2 space-y-6">
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
-              {(["overview", "flip", "hold"] as ViewMode[]).map((mode) => (
+              {(["flip", "hold"] as ViewMode[]).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
@@ -681,7 +681,7 @@ export default function MarketplaceDealDetail() {
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {mode}
+                  {mode === "flip" ? "Flip" : "Hold"}
                 </button>
               ))}
             </div>
@@ -697,25 +697,23 @@ export default function MarketplaceDealDetail() {
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">ARV</span>
                   <span className="text-3xl font-bold text-success">${deal.arv.toLocaleString()}</span>
                 </div>
-                {/* Last Sold - shown on Flip/Hold views */}
-                {viewMode !== "overview" && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
-                      Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
-                    </span>
-                    <span className={cn(
-                      "flex items-center gap-0.5 text-sm font-semibold",
-                      priceChange >= 0 ? "text-success" : "text-destructive"
-                    )}>
-                      {priceChange >= 0 ? (
-                        <ArrowUpRight className="h-4 w-4" />
-                      ) : (
-                        <ArrowDownRight className="h-4 w-4" />
-                      )}
-                      {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
-                    </span>
-                  </div>
-                )}
+                {/* Last Sold - always shown since we only have Flip/Hold views */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
+                  </span>
+                  <span className={cn(
+                    "flex items-center gap-0.5 text-sm font-semibold",
+                    priceChange >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    {priceChange >= 0 ? (
+                      <ArrowUpRight className="h-4 w-4" />
+                    ) : (
+                      <ArrowDownRight className="h-4 w-4" />
+                    )}
+                    {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
+                  </span>
+                </div>
               </div>
               <p className="flex items-center gap-2 text-lg text-muted-foreground">
                 <MapPin className="h-5 w-5" />
@@ -761,25 +759,15 @@ export default function MarketplaceDealDetail() {
               </Card>
             </div>
 
-            {/* Comparable Sales Section */}
+            {/* Comparable Sales Section - Only shown on Flip view */}
+            {viewMode === "flip" && (
             <Card className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
                   <h2 className="text-lg font-semibold">Comparable Sales</h2>
-                  {/* Comp Type Toggle */}
+                  {/* Comp Type Toggle - Retail first */}
                   <div className="flex items-center gap-1 ml-2 bg-muted rounded-lg p-0.5">
-                    <button
-                      onClick={() => setCompType("investor")}
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        compType === "investor"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Investor Comps
-                    </button>
                     <button
                       onClick={() => setCompType("retail")}
                       className={cn(
@@ -790,6 +778,17 @@ export default function MarketplaceDealDetail() {
                       )}
                     >
                       Retail Comps
+                    </button>
+                    <button
+                      onClick={() => setCompType("investor")}
+                      className={cn(
+                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
+                        compType === "investor"
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      Investor Comps
                     </button>
                   </div>
                 </div>
@@ -855,9 +854,10 @@ export default function MarketplaceDealDetail() {
                 </p>
               </div>
             </Card>
+            )}
 
-            {/* Buyer Search - Shown on Flip/Hold views */}
-            {viewMode !== "overview" && (
+            {/* Buyer Search - Always shown since we only have Flip/Hold views */}
+            {(
               <BuyerSearch
                 subjectAddress={deal.address}
                 subjectCity={deal.city}
@@ -867,158 +867,219 @@ export default function MarketplaceDealDetail() {
               />
             )}
 
-            {/* Investment Analysis - Two Column Layout */}
+            {/* Investment Analysis - Conditional based on view mode */}
+            {viewMode === "flip" && (
             <Card className="p-6 relative">
               <div className="flex items-center gap-2 mb-6">
                 <Zap className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold">Investment Analysis</h2>
+                <h2 className="text-lg font-semibold">Flip Analysis</h2>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative">
-                {/* Fix & Flip Column */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b">
-                    <Wrench className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold">Fix & Flip</h3>
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Purchase Price</span>
+                    <span className="font-medium">${deal.price.toLocaleString()}</span>
                   </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Purchase Price</span>
-                      <span className="font-medium">${deal.price.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">After Repair Value (ARV)</span>
-                      <span className="font-medium text-primary">${deal.arv.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Est. Repairs</span>
-                      <span className="font-medium text-destructive">-${estRepairs.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Holding Costs</span>
-                      <span className="font-medium text-destructive">-${holdingCosts.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Closing Costs (6%)</span>
-                      <span className="font-medium text-destructive">-${closingCosts.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Agent Commission (5%)</span>
-                      <span className="font-medium text-destructive">-${agentCommission.toLocaleString()}</span>
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">After Repair Value (ARV)</span>
+                    <span className="font-medium text-primary">${deal.arv.toLocaleString()}</span>
                   </div>
-
-                  <div className="pt-3 border-t space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold">Potential Profit</span>
-                      <span className={cn(
-                        "text-xl font-bold",
-                        profit > 0 ? "text-success" : "text-destructive"
-                      )}>
-                        ${profit.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">ROI</span>
-                      <span className={cn(
-                        "font-semibold",
-                        roi >= 20 ? "text-success" : roi >= 10 ? "text-warning" : "text-destructive"
-                      )}>
-                        {roi}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">ARV Ratio</span>
-                      <span className="font-semibold">{deal.arvPercent}%</span>
-                    </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Est. Repairs</span>
+                    <span className="font-medium text-destructive">-${estRepairs.toLocaleString()}</span>
                   </div>
-
-                  <DealRiskMeter arvPercent={deal.arvPercent} />
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Holding Costs</span>
+                    <span className="font-medium text-destructive">-${holdingCosts.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Closing Costs (6%)</span>
+                    <span className="font-medium text-destructive">-${closingCosts.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Agent Commission (5%)</span>
+                    <span className="font-medium text-destructive">-${agentCommission.toLocaleString()}</span>
+                  </div>
                 </div>
 
-
-                {/* Rental/Cashflow Column */}
-                <div className="space-y-4 lg:pl-6 lg:border-l">
-                  <div className="flex items-center gap-2 pb-2 border-b">
-                    <Home className="h-4 w-4 text-primary" />
-                    <h3 className="font-semibold">Rental Cashflow</h3>
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Potential Profit</span>
+                    <span className={cn(
+                      "text-xl font-bold",
+                      profit > 0 ? "text-success" : "text-destructive"
+                    )}>
+                      ${profit.toLocaleString()}
+                    </span>
                   </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">ROI</span>
+                    <span className={cn(
+                      "font-semibold",
+                      roi >= 20 ? "text-success" : roi >= 10 ? "text-warning" : "text-destructive"
+                    )}>
+                      {roi}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">ARV Ratio</span>
+                    <span className="font-semibold">{deal.arvPercent}%</span>
+                  </div>
+                </div>
 
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Est. Monthly Rent</span>
-                      <span className="font-medium text-success">${estRent.toLocaleString()}</span>
+                {/* MAO Section */}
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">Maximum Allowable Offer</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">MAO (70% Rule)</p>
+                      <p className="text-lg font-bold text-primary">
+                        ${Math.round(deal.arv * 0.70 - estRepairs).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">ARV × 70% − Repairs</p>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Mortgage (P&I)</span>
-                      <span className="font-medium">-${mortgage.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Property Tax</span>
-                      <span className="font-medium">-${propertyTax.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Insurance</span>
-                      <span className="font-medium">-${insurance.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">PITI Total</span>
-                      <span className="font-medium text-destructive">-${estPiti.toLocaleString()}/mo</span>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">WMAO (Wholesale)</p>
+                      <p className="text-lg font-bold text-amber-600">
+                        ${Math.round(deal.arv * 0.65 - estRepairs).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">ARV × 65% − Repairs</p>
                     </div>
                   </div>
-
-                  <div className="pt-3 border-t space-y-2">
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>Vacancy (5%)</span>
-                      <span>-${vacancy}</span>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">Conservative (60%)</p>
+                      <p className="text-lg font-bold text-success">
+                        ${Math.round(deal.arv * 0.60 - estRepairs).toLocaleString()}
+                      </p>
                     </div>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>Maintenance (8%)</span>
-                      <span>-${maintenance}</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground">
-                      <span>Property Mgmt (10%)</span>
-                      <span>-${propertyMgmt}</span>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">Aggressive (75%)</p>
+                      <p className="text-lg font-bold text-destructive">
+                        ${Math.round(deal.arv * 0.75 - estRepairs).toLocaleString()}
+                      </p>
                     </div>
                   </div>
+                </div>
 
-                  <div className="pt-3 border-t space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold">Net Cashflow</span>
-                      <span className={cn(
+                <DealRiskMeter arvPercent={deal.arvPercent} />
+              </div>
+            </Card>
+            )}
+
+            {viewMode === "hold" && (
+            <Card className="p-6 relative">
+              <div className="flex items-center gap-2 mb-6">
+                <Home className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold">Rental Cashflow Analysis</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Purchase Price</span>
+                    <span className="font-medium">${deal.price.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Est. Monthly Rent</span>
+                    <span className="font-medium text-success">${estRent.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Mortgage (P&I)</span>
+                    <span className="font-medium">-${mortgage.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Property Tax</span>
+                    <span className="font-medium">-${propertyTax.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Insurance</span>
+                    <span className="font-medium">-${insurance.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">PITI Total</span>
+                    <span className="font-medium text-destructive">-${estPiti.toLocaleString()}/mo</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <span>Vacancy (5%)</span>
+                    <span>-${vacancy}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <span>Maintenance (8%)</span>
+                    <span>-${maintenance}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs text-muted-foreground">
+                    <span>Property Mgmt (10%)</span>
+                    <span>-${propertyMgmt}</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Net Cashflow</span>
+                    <span className={cn(
+                      "text-xl font-bold",
+                      netCashflow >= 0 ? "text-success" : "text-destructive"
+                    )}>
+                      {netCashflow >= 0 ? "+" : ""}${netCashflow.toLocaleString()}/mo
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Annual Cashflow</span>
+                    <span className={cn(
+                      "font-semibold",
+                      netCashflow >= 0 ? "text-success" : "text-destructive"
+                    )}>
+                      {netCashflow >= 0 ? "+" : ""}${(netCashflow * 12).toLocaleString()}/yr
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-muted-foreground mb-1">Cap Rate</p>
+                      <p className={cn(
                         "text-xl font-bold",
-                        netCashflow >= 0 ? "text-success" : "text-destructive"
-                      )}>
-                        {netCashflow >= 0 ? "+" : ""}${netCashflow.toLocaleString()}/mo
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Cap Rate</span>
-                      <span className={cn(
-                        "font-semibold",
                         capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
                       )}>
                         {capRate.toFixed(1)}%
-                      </span>
+                      </p>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">Cash-on-Cash</span>
-                      <span className={cn(
-                        "font-semibold",
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-muted-foreground mb-1">Cash-on-Cash</p>
+                      <p className={cn(
+                        "text-xl font-bold",
                         cashOnCash >= 10 ? "text-success" : cashOnCash >= 6 ? "text-warning" : "text-muted-foreground"
                       )}>
                         {cashOnCash.toFixed(1)}%
-                      </span>
+                      </p>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-muted-foreground">GRM</span>
-                      <span className="font-semibold">{grm.toFixed(1)}</span>
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-muted-foreground mb-1">GRM</p>
+                      <p className="text-xl font-bold">{grm.toFixed(1)}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3 text-center">
+                      <p className="text-xs text-muted-foreground mb-1">1% Rule</p>
+                      <p className={cn(
+                        "text-xl font-bold",
+                        (estRent / deal.price * 100) >= 1 ? "text-success" : "text-warning"
+                      )}>
+                        {(estRent / deal.price * 100).toFixed(2)}%
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </Card>
+            )}
 
             {/* Lead Types */}
             <div>
