@@ -54,8 +54,9 @@ import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
 import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
+import { BuyerActivitySearch } from "@/components/marketplace-deals/BuyerActivitySearch";
 
-type ViewMode = "flip" | "hold";
+type ViewMode = "flip" | "hold" | "buyers";
 type LayoutMode = "detail" | "split";
 type UserType = "investor" | "agent" | "investor-agent";
 
@@ -670,7 +671,7 @@ export default function MarketplaceDealDetail() {
           <div className="lg:col-span-2 space-y-6">
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
-              {(["flip", "hold"] as ViewMode[]).map((mode) => (
+              {(["flip", "hold", "buyers"] as ViewMode[]).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
@@ -681,7 +682,7 @@ export default function MarketplaceDealDetail() {
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {mode === "flip" ? "Flip" : "Hold"}
+                  {mode === "flip" ? "Flip" : mode === "hold" ? "Hold" : "Buyers"}
                 </button>
               ))}
             </div>
@@ -856,14 +857,24 @@ export default function MarketplaceDealDetail() {
             </Card>
             )}
 
-            {/* Buyer Search - Always shown since we only have Flip/Hold views */}
-            {(
+            {/* Buyer Search - Shown on Flip/Hold views for exit strategy */}
+            {(viewMode === "flip" || viewMode === "hold") && (
               <BuyerSearch
                 subjectAddress={deal.address}
                 subjectCity={deal.city}
                 subjectState={deal.state}
                 subjectPrice={deal.price}
                 subjectArv={deal.arv}
+              />
+            )}
+
+            {/* Buyer Activity Search - Shown on Buyers view */}
+            {viewMode === "buyers" && (
+              <BuyerActivitySearch
+                subjectAddress={deal.address}
+                subjectCity={deal.city}
+                subjectState={deal.state}
+                subjectPrice={deal.price}
               />
             )}
 
