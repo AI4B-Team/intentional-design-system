@@ -41,10 +41,17 @@ import {
   Copy,
   Check,
   Car,
+  Building,
+  Users,
+  Star,
+  ArrowUpRight,
+  ArrowDownRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
+import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 
+type ViewMode = "overview" | "flip" | "hold";
 type UserType = "investor" | "agent" | "investor-agent";
 
 interface MessageTemplate {
@@ -181,6 +188,7 @@ export default function MarketplaceDealDetail() {
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
   const [compType, setCompType] = useState<"investor" | "retail">("investor");
+  const [viewMode, setViewMode] = useState<ViewMode>("overview");
   
   // Use shared saved deals hook
   const { isSaved, toggleSave } = useSavedDeals();
@@ -210,6 +218,11 @@ export default function MarketplaceDealDetail() {
 
   // Use deal's main image + mock additional images
   const images = [deal.imageUrl, ...mockImages.slice(0, 9)];
+
+  // Mock last sold data
+  const lastSoldPrice = 200000;
+  const lastSoldDate = "May 2025";
+  const priceChange = deal.price - lastSoldPrice;
 
   // Mock additional data
   const yearBuilt = 2006;
@@ -569,20 +582,57 @@ export default function MarketplaceDealDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
+              {(["overview", "flip", "hold"] as ViewMode[]).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  className={cn(
+                    "px-4 py-2 text-sm font-medium rounded-md transition-colors capitalize",
+                    viewMode === mode
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {mode}
+                </button>
+              ))}
+            </div>
+
             {/* Price, ARV & Address */}
             <div>
-              <div className="flex items-center gap-6 mb-1">
+              <div className="flex items-center flex-wrap gap-4 mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Price</span>
-                  <h1 className="text-3xl font-bold">${deal.price.toLocaleString()}</h1>
+                  <span className="text-3xl font-bold">${deal.price.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">ARV</span>
-                  <span className="text-2xl font-semibold text-foreground">${deal.arv.toLocaleString()}</span>
+                  <span className="text-3xl font-bold text-success">${deal.arv.toLocaleString()}</span>
                 </div>
+                {/* Last Sold - shown on Flip/Hold views */}
+                {viewMode !== "overview" && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">
+                      Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
+                    </span>
+                    <span className={cn(
+                      "flex items-center gap-0.5 text-sm font-semibold",
+                      priceChange >= 0 ? "text-success" : "text-destructive"
+                    )}>
+                      {priceChange >= 0 ? (
+                        <ArrowUpRight className="h-4 w-4" />
+                      ) : (
+                        <ArrowDownRight className="h-4 w-4" />
+                      )}
+                      {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
+                    </span>
+                  </div>
+                )}
               </div>
-              <p className="flex items-center gap-2 text-muted-foreground mb-2">
-                <MapPin className="h-4 w-4" />
+              <p className="flex items-center gap-2 text-lg text-muted-foreground">
+                <MapPin className="h-5 w-5" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
               </p>
             </div>
@@ -719,6 +769,17 @@ export default function MarketplaceDealDetail() {
                 </p>
               </div>
             </Card>
+
+            {/* Buyer Search - Shown on Flip/Hold views */}
+            {viewMode !== "overview" && (
+              <BuyerSearch
+                subjectAddress={deal.address}
+                subjectCity={deal.city}
+                subjectState={deal.state}
+                subjectPrice={deal.price}
+                subjectArv={deal.arv}
+              />
+            )}
 
             {/* Investment Analysis - Two Column Layout */}
             <Card className="p-6 relative">
