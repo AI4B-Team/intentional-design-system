@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, Ruler, SlidersHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import {
   Popover,
   PopoverContent,
@@ -72,6 +73,65 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [overlaysOpen, setOverlaysOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  
+  // Map filter sliders
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000000]);
+  const [sqftRange, setSqftRange] = useState<[number, number]>([0, 5000]);
+  const [pricePerSqftRange, setPricePerSqftRange] = useState<[number, number]>([0, 500]);
+  
+  // Calculate min/max values from deals
+  const filterBounds = useMemo(() => {
+    if (deals.length === 0) {
+      return {
+        minPrice: 0, maxPrice: 1000000,
+        minSqft: 0, maxSqft: 5000,
+        minPricePerSqft: 0, maxPricePerSqft: 500,
+      };
+    }
+    const prices = deals.map(d => d.price);
+    const sqfts = deals.map(d => d.sqft);
+    const pricesPerSqft = deals.map(d => Math.round(d.price / d.sqft));
+    return {
+      minPrice: Math.min(...prices),
+      maxPrice: Math.max(...prices),
+      minSqft: Math.min(...sqfts),
+      maxSqft: Math.max(...sqfts),
+      minPricePerSqft: Math.min(...pricesPerSqft),
+      maxPricePerSqft: Math.max(...pricesPerSqft),
+    };
+  }, [deals]);
+  
+  // Filter deals based on slider values
+  const filteredDeals = useMemo(() => {
+    return deals.filter(deal => {
+      const pricePerSqft = deal.price / deal.sqft;
+      return (
+        deal.price >= priceRange[0] && deal.price <= priceRange[1] &&
+        deal.sqft >= sqftRange[0] && deal.sqft <= sqftRange[1] &&
+        pricePerSqft >= pricePerSqftRange[0] && pricePerSqft <= pricePerSqftRange[1]
+      );
+    });
+  }, [deals, priceRange, sqftRange, pricePerSqftRange]);
+  
+  // Check if any filter is active
+  const hasActiveFilters = useMemo(() => {
+    return (
+      priceRange[0] > filterBounds.minPrice ||
+      priceRange[1] < filterBounds.maxPrice ||
+      sqftRange[0] > filterBounds.minSqft ||
+      sqftRange[1] < filterBounds.maxSqft ||
+      pricePerSqftRange[0] > filterBounds.minPricePerSqft ||
+      pricePerSqftRange[1] < filterBounds.maxPricePerSqft
+    );
+  }, [priceRange, sqftRange, pricePerSqftRange, filterBounds]);
+  
+  // Reset filters to default
+  const resetFilters = useCallback(() => {
+    setPriceRange([filterBounds.minPrice, filterBounds.maxPrice]);
+    setSqftRange([filterBounds.minSqft, filterBounds.maxSqft]);
+    setPricePerSqftRange([filterBounds.minPricePerSqft, filterBounds.maxPricePerSqft]);
+  }, [filterBounds]);
   
   // Draw to Analyze states
   const [isDrawing, setIsDrawing] = useState(false);
@@ -91,6 +151,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const loadedRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
+  const markersRef = useRef<any[]>([]);
 
   // Check if a point is inside a polygon using ray casting algorithm
   const isPointInPolygon = useCallback((point: [number, number], polygon: [number, number][]) => {
@@ -200,32 +261,6 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           }).addTo(map);
 
-          // Add markers for deals
-          deals.forEach((deal) => {
-            const formattedPrice = deal.price >= 1000000 
-              ? `${(deal.price / 1000000).toFixed(1)}M` 
-              : `${Math.round(deal.price / 1000)}K`;
-
-            const priceIcon = L.divIcon({
-              className: "custom-price-marker",
-              html: `<div class="price-marker">${formattedPrice}</div>`,
-              iconSize: [60, 28],
-              iconAnchor: [30, 28],
-            });
-
-            const marker = L.marker([deal.lat, deal.lng], { icon: priceIcon }).addTo(map);
-            
-            marker.bindPopup(`
-              <div class="p-2 min-w-[200px]">
-                <img src="${deal.imageUrl}" alt="${deal.address}" class="w-full h-24 object-cover rounded-md mb-2" />
-                <p class="font-semibold text-sm">${deal.address}</p>
-                <p class="text-xs text-gray-500">${deal.city}, ${deal.state} ${deal.zip}</p>
-                <p class="text-lg font-bold text-emerald-600 mt-1">$${deal.price.toLocaleString()}</p>
-                <p class="text-xs text-gray-500">${deal.beds} bd | ${deal.baths} ba | ${deal.sqft.toLocaleString()} sqft</p>
-              </div>
-            `);
-          });
-
           setIsReady(true);
         }
       } catch (error) {
@@ -242,7 +277,48 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         mapInstanceRef.current = null;
       }
     };
-  }, [deals]);
+  }, []);
+
+  // Update markers when filteredDeals change
+  useEffect(() => {
+    if (!mapInstanceRef.current || !isReady) return;
+    
+    const { map, L } = mapInstanceRef.current;
+    
+    // Remove existing markers
+    markersRef.current.forEach(marker => {
+      map.removeLayer(marker);
+    });
+    markersRef.current = [];
+    
+    // Add markers for filtered deals
+    filteredDeals.forEach((deal) => {
+      const formattedPrice = deal.price >= 1000000 
+        ? `${(deal.price / 1000000).toFixed(1)}M` 
+        : `${Math.round(deal.price / 1000)}K`;
+
+      const priceIcon = L.divIcon({
+        className: "custom-price-marker",
+        html: `<div class="price-marker">${formattedPrice}</div>`,
+        iconSize: [60, 28],
+        iconAnchor: [30, 28],
+      });
+
+      const marker = L.marker([deal.lat, deal.lng], { icon: priceIcon }).addTo(map);
+      
+      marker.bindPopup(`
+        <div class="p-2 min-w-[200px]">
+          <img src="${deal.imageUrl}" alt="${deal.address}" class="w-full h-24 object-cover rounded-md mb-2" />
+          <p class="font-semibold text-sm">${deal.address}</p>
+          <p class="text-xs text-gray-500">${deal.city}, ${deal.state} ${deal.zip}</p>
+          <p class="text-lg font-bold text-emerald-600 mt-1">$${deal.price.toLocaleString()}</p>
+          <p class="text-xs text-gray-500">${deal.beds} bd | ${deal.baths} ba | ${deal.sqft.toLocaleString()} sqft</p>
+        </div>
+      `);
+      
+      markersRef.current.push(marker);
+    });
+  }, [filteredDeals, isReady]);
 
   // Update tile layer when map type changes
   useEffect(() => {
@@ -611,6 +687,97 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </div>
       )}
 
+      {/* Map Filter Sliders */}
+      <div className="absolute bottom-3 left-3 right-3 z-10">
+        <Card className="p-3 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm">Map Filters</span>
+              <span className="text-xs text-muted-foreground">
+                ({filteredDeals.length} of {deals.length} properties)
+              </span>
+            </div>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={resetFilters}
+              >
+                <RotateCcw className="h-3 w-3" />
+                Reset
+              </Button>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-3 gap-6">
+            {/* Purchase Price */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" />
+                  Purchase Price
+                </Label>
+                <span className="text-xs font-medium">
+                  ${(priceRange[0] / 1000).toFixed(0)}K - ${(priceRange[1] / 1000).toFixed(0)}K
+                </span>
+              </div>
+              <Slider
+                value={priceRange}
+                min={filterBounds.minPrice}
+                max={filterBounds.maxPrice}
+                step={5000}
+                onValueChange={(value) => setPriceRange(value as [number, number])}
+                className="w-full"
+              />
+            </div>
+            
+            {/* Square Footage */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Ruler className="h-3 w-3" />
+                  Property SqFt
+                </Label>
+                <span className="text-xs font-medium">
+                  {sqftRange[0].toLocaleString()} - {sqftRange[1].toLocaleString()}
+                </span>
+              </div>
+              <Slider
+                value={sqftRange}
+                min={filterBounds.minSqft}
+                max={filterBounds.maxSqft}
+                step={100}
+                onValueChange={(value) => setSqftRange(value as [number, number])}
+                className="w-full"
+              />
+            </div>
+            
+            {/* Price Per SqFt */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs text-muted-foreground flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" />
+                  Price/SqFt
+                </Label>
+                <span className="text-xs font-medium">
+                  ${pricePerSqftRange[0]} - ${pricePerSqftRange[1]}
+                </span>
+              </div>
+              <Slider
+                value={pricePerSqftRange}
+                min={filterBounds.minPricePerSqft}
+                max={filterBounds.maxPricePerSqft}
+                step={5}
+                onValueChange={(value) => setPricePerSqftRange(value as [number, number])}
+                className="w-full"
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {/* Custom CSS for price markers and zoom controls */}
       <style>{`
         .leaflet-container {
@@ -640,10 +807,10 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         .leaflet-control {
           z-index: 10 !important;
         }
-        /* Move zoom controls to bottom right */
+        /* Move zoom controls above the filter bar */
         .leaflet-top.leaflet-left {
           top: auto !important;
-          bottom: 30px !important;
+          bottom: 110px !important;
           left: auto !important;
           right: 10px !important;
         }
