@@ -46,12 +46,17 @@ import {
   Star,
   ArrowUpRight,
   ArrowDownRight,
+  PanelLeftClose,
+  PanelLeft,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
 import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
+import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
 
 type ViewMode = "overview" | "flip" | "hold";
+type LayoutMode = "detail" | "split";
 type UserType = "investor" | "agent" | "investor-agent";
 
 interface MessageTemplate {
@@ -189,6 +194,7 @@ export default function MarketplaceDealDetail() {
   const [showShareCopied, setShowShareCopied] = useState(false);
   const [compType, setCompType] = useState<"investor" | "retail">("investor");
   const [viewMode, setViewMode] = useState<ViewMode>("overview");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("detail");
   
   // Use shared saved deals hook
   const { isSaved, toggleSave } = useSavedDeals();
@@ -411,11 +417,45 @@ export default function MarketplaceDealDetail() {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  // Prepare comps data for map
+  const mapComps = mockComps.map((comp) => ({
+    id: comp.id,
+    address: comp.address,
+    beds: comp.beds,
+    baths: comp.baths,
+    sqft: comp.sqft,
+    salePrice: comp.salePrice,
+    pricePerSqft: comp.pricePerSqft,
+    distanceMiles: comp.distanceMiles,
+    similarity: comp.similarity,
+    saleDate: comp.saleDate,
+    quality: comp.quality,
+    saleType: comp.saleType,
+  }));
+
+  const subjectForMap = {
+    address: deal.address,
+    city: deal.city,
+    state: deal.state,
+    zip: deal.zip,
+    beds: deal.beds,
+    baths: deal.baths,
+    sqft: deal.sqft,
+    price: deal.price,
+    arv: deal.arv,
+  };
+
   return (
-    <AppLayout>
-      <div className="max-w-7xl mx-auto">
+    <AppLayout fullWidth={layoutMode === "split"}>
+      <div className={cn(
+        "flex flex-col h-full",
+        layoutMode === "split" ? "overflow-hidden" : ""
+      )}>
         {/* Top Navigation */}
-        <div className="flex items-center justify-between mb-4">
+        <div className={cn(
+          "flex items-center justify-between mb-4 flex-shrink-0",
+          layoutMode === "split" ? "px-4" : "max-w-7xl mx-auto w-full"
+        )}>
           <div className="flex items-center gap-6">
             <Button
               variant="ghost"
@@ -445,6 +485,28 @@ export default function MarketplaceDealDetail() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Layout Mode Toggle */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={layoutMode === "split" ? "secondary" : "ghost"}
+                    size="icon"
+                    onClick={() => setLayoutMode(layoutMode === "split" ? "detail" : "split")}
+                  >
+                    {layoutMode === "split" ? (
+                      <PanelLeftClose className="h-4 w-4" />
+                    ) : (
+                      <Map className="h-4 w-4" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {layoutMode === "split" ? "Close Map View" : "Open Map View"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            
             <Button
               variant="ghost"
               className="gap-2"
@@ -483,7 +545,7 @@ export default function MarketplaceDealDetail() {
             >
               {showShareCopied ? (
                 <>
-                  <Check className="h-4 w-4 text-green-600" />
+                  <Check className="h-4 w-4 text-success" />
                   Copied!
                 </>
               ) : (
@@ -496,8 +558,32 @@ export default function MarketplaceDealDetail() {
           </div>
         </div>
 
-        {/* Image Gallery - Compact Layout */}
-        <div className="flex gap-2 mb-6 h-[320px]">
+        {/* Main Content Area - Split or Detail Mode */}
+        <div className={cn(
+          "flex-1",
+          layoutMode === "split" ? "flex overflow-hidden" : ""
+        )}>
+          {/* Map Panel - Only in Split Mode */}
+          {layoutMode === "split" && (
+            <div className="w-1/2 h-full border-r">
+              <PropertyDetailMap
+                subjectProperty={subjectForMap}
+                comps={mapComps}
+              />
+            </div>
+          )}
+
+          {/* Detail Panel */}
+          <div className={cn(
+            layoutMode === "split" 
+              ? "w-1/2 h-full overflow-y-auto p-4" 
+              : "max-w-7xl mx-auto w-full"
+          )}>
+            {/* Image Gallery - Compact Layout */}
+            <div className={cn(
+              "flex gap-2 mb-6",
+              layoutMode === "split" ? "h-[200px]" : "h-[320px]"
+            )}>
           {/* Main Image - Takes ~60% width */}
           <div className="relative flex-[3] rounded-xl overflow-hidden">
             <img
@@ -507,8 +593,8 @@ export default function MarketplaceDealDetail() {
             />
 
             {/* For Sale Badge */}
-            <Badge className="absolute top-3 left-3 bg-white text-foreground gap-1.5 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <Badge className="absolute top-3 left-3 bg-background text-foreground gap-1.5 shadow-md">
+              <span className="w-2 h-2 rounded-full bg-success" />
               For sale
             </Badge>
 
@@ -531,7 +617,7 @@ export default function MarketplaceDealDetail() {
             </Button>
 
             {/* Property Type Badge - Bottom Left */}
-            <Badge className="absolute bottom-3 left-3 bg-emerald-600 text-white shadow-md">
+            <Badge className="absolute bottom-3 left-3 bg-success text-success-foreground shadow-md">
               {deal.propertyType}
             </Badge>
 
@@ -1106,6 +1192,8 @@ export default function MarketplaceDealDetail() {
                 Only HomesDaily Connects You To The Listing Agent.
               </p>
             </Card>
+          </div>
+        </div>
           </div>
         </div>
       </div>
