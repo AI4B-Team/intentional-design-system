@@ -4,3 +4,4 @@ export { MarketplaceListings } from "./marketplace-listings";
 export { MoreFiltersDialog, defaultFilters, type AdvancedFilters } from "./more-filters-dialog";
 export { BuyerSearch } from "./BuyerSearch";
 export { PropertyDetailMap } from "./PropertyDetailMap";
+export { BuyerActivitySearch } from "./BuyerActivitySearch";
