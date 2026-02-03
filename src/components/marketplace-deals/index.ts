@@ -5,3 +5,5 @@ export { MoreFiltersDialog, defaultFilters, type AdvancedFilters } from "./more-
 export { BuyerSearch } from "./BuyerSearch";
 export { PropertyDetailMap } from "./PropertyDetailMap";
 export { BuyerActivitySearch } from "./BuyerActivitySearch";
+export { BuyBoxWizard } from "./BuyBoxWizard";
+export { DealScore, DealScoreInline } from "./DealScore";

@@ -38,6 +38,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BuyBoxCreator } from "@/components/property-scout/BuyBoxCreator";
+import { BuyBoxWizard } from "@/components/marketplace-deals/BuyBoxWizard";
 import { BuyBox as BuyBoxType } from "@/types/property-scout";
 import { toast } from "sonner";
 
@@ -535,11 +536,8 @@ const BuyBox: React.FC = () => {
           if (!open) setEditingBuyBox(null);
         }}
       >
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editingBuyBox ? "Edit Buy Box" : "Create Buy Box"}</DialogTitle>
-          </DialogHeader>
-          <BuyBoxCreator
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <BuyBoxWizard
             onSave={handleSave}
             onCancel={() => {
               setShowCreateDialog(false);
