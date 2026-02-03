@@ -55,6 +55,7 @@ import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
 import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
 import { BuyerActivitySearch } from "@/components/marketplace-deals/BuyerActivitySearch";
+import { DealScore } from "@/components/marketplace-deals/DealScore";
 
 type ViewMode = "flip" | "hold" | "buyers";
 type LayoutMode = "detail" | "split";
@@ -983,6 +984,70 @@ export default function MarketplaceDealDetail() {
             )}
 
             {viewMode === "hold" && (
+            <>
+            {/* Deal Score Card */}
+            <DealScore 
+              score={Math.round(capRate * 10 + cashOnCash * 2)}
+              showBadges={true}
+              badges={[
+                ...(netCashflow >= 200 ? [{ label: 'Strong Cash Flow', variant: 'success' as const }] : []),
+                ...(capRate >= 6 ? [{ label: 'Low Risk', variant: 'success' as const }] : []),
+                { label: `${capRate.toFixed(1)}% Cap`, variant: 'info' as const },
+                ...(grm <= 12 ? [{ label: 'A+ Location', variant: 'warning' as const }] : []),
+              ]}
+            />
+
+            {/* Key Metrics Summary */}
+            <Card className="p-4 bg-gradient-to-r from-muted/50 to-muted/30">
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className={cn(
+                    "text-2xl font-bold",
+                    cashOnCash >= 10 ? "text-success" : cashOnCash >= 6 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {cashOnCash.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">ROI</p>
+                </div>
+                <div>
+                  <p className={cn(
+                    "text-2xl font-bold",
+                    netCashflow >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    ${Math.abs(netCashflow).toLocaleString()}/mo
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Cash Flow</p>
+                </div>
+                <div>
+                  <p className={cn(
+                    "text-2xl font-bold",
+                    capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {capRate.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Cap Rate</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* AI Insight */}
+            <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+              <div className="flex items-start gap-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">AI Insight</span>
+                </div>
+                <Badge variant="outline" className="ml-auto text-xs bg-success/10 text-success border-success/30">
+                  3.1s
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mt-2">
+                Strong rental demand in {deal.zip}. Similar properties rent within 12 days. 
+                {capRate >= 7 ? " Cap rate exceeds market average." : ""}
+                {netCashflow >= 300 ? " Excellent monthly cash flow potential." : ""}
+              </p>
+            </Card>
+
             <Card className="p-6 relative">
               <div className="flex items-center gap-2 mb-6">
                 <Home className="h-5 w-5 text-primary" />
@@ -1063,6 +1128,9 @@ export default function MarketplaceDealDetail() {
                       )}>
                         {capRate.toFixed(1)}%
                       </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {capRate >= 8 ? "Excellent" : capRate >= 6 ? "Good" : capRate >= 4 ? "Fair" : "Below Avg"}
+                      </p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-3 text-center">
                       <p className="text-xs text-muted-foreground mb-1">Cash-on-Cash</p>
@@ -1072,10 +1140,16 @@ export default function MarketplaceDealDetail() {
                       )}>
                         {cashOnCash.toFixed(1)}%
                       </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {cashOnCash >= 12 ? "Excellent" : cashOnCash >= 8 ? "Good" : cashOnCash >= 5 ? "Fair" : "Below Avg"}
+                      </p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-3 text-center">
                       <p className="text-xs text-muted-foreground mb-1">GRM</p>
                       <p className="text-xl font-bold">{grm.toFixed(1)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {grm <= 10 ? "Excellent" : grm <= 15 ? "Good" : "High"}
+                      </p>
                     </div>
                     <div className="bg-muted/50 rounded-lg p-3 text-center">
                       <p className="text-xs text-muted-foreground mb-1">1% Rule</p>
@@ -1085,11 +1159,15 @@ export default function MarketplaceDealDetail() {
                       )}>
                         {(estRent / deal.price * 100).toFixed(2)}%
                       </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {(estRent / deal.price * 100) >= 1 ? "Passes ✓" : "Below 1%"}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </Card>
+            </>
             )}
 
             {/* Lead Types */}
