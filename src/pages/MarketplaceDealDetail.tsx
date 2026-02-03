@@ -656,18 +656,18 @@ export default function MarketplaceDealDetail() {
                 <Tag className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
               </Card>
-              {/* Row 2: Year Built, Lot Size, Parking, Price/SqFt */}
+              {/* Row 2: Year Built, Parking, Lot Size, Price/SqFt */}
               <Card className="p-4 flex items-center gap-3">
                 <Calendar className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">Built {yearBuilt}</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-muted-foreground" />
-                <span className="text-sm font-medium">{lotSize} Acres</span>
-              </Card>
-              <Card className="p-4 flex items-center gap-3">
                 <Car className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">2 Car Garage</span>
+              </Card>
+              <Card className="p-4 flex items-center gap-3">
+                <Tag className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm font-medium">{lotSize} Acres</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
                 <DollarSign className="h-5 w-5 text-muted-foreground" />
