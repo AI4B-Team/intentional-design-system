@@ -322,73 +322,74 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
         <CollapsibleContent>
           <div className="px-4 pb-4">
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end mb-3 py-2 border-b border-border">
-              <div className="flex items-center gap-2">
+            {/* Filter Toggle + Action Buttons Row */}
+            <div className="flex items-center justify-between gap-2 mb-3 pt-2">
+              {/* Filter Toggle */}
+              <div className="flex rounded-lg border border-border overflow-hidden">
+                <button
+                  onClick={() => setBuyerFilter("flippers")}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5",
+                    buyerFilter === "flippers"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background hover:bg-muted text-muted-foreground"
+                  )}
+                >
+                  <Home className="h-3 w-3" />
+                  Flippers
+                </button>
+                <button
+                  onClick={() => setBuyerFilter("landlords")}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5 border-x border-border",
+                    buyerFilter === "landlords"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background hover:bg-muted text-muted-foreground"
+                  )}
+                >
+                  <Building2 className="h-3 w-3" />
+                  Landlords
+                </button>
+                <button
+                  onClick={() => setBuyerFilter("all")}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5",
+                    buyerFilter === "all"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background hover:bg-muted text-muted-foreground"
+                  )}
+                >
+                  <Users className="h-3 w-3" />
+                  All
+                </button>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1.5">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="gap-1.5 text-xs"
+                  className="gap-1 text-xs h-8 px-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate("/dispo/buyers");
                   }}
                 >
                   <UserPlus className="h-3.5 w-3.5" />
-                  Add Buyers
+                  Add
                 </Button>
                 <Button
                   size="sm"
-                  className="gap-1.5 text-xs"
+                  className="gap-1 text-xs h-8 px-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`);
                   }}
                 >
                   <Send className="h-3.5 w-3.5" />
-                  Launch Campaign
+                  Campaign
                 </Button>
               </div>
-            </div>
-
-            {/* Filter Toggle */}
-            <div className="flex rounded-lg border border-border overflow-hidden mb-3">
-              <button
-                onClick={() => setBuyerFilter("flippers")}
-                className={cn(
-                  "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
-                  buyerFilter === "flippers"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background hover:bg-muted text-muted-foreground"
-                )}
-              >
-                <Home className="h-3 w-3" />
-                Flippers
-              </button>
-              <button
-                onClick={() => setBuyerFilter("landlords")}
-                className={cn(
-                  "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border-x border-border",
-                  buyerFilter === "landlords"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background hover:bg-muted text-muted-foreground"
-                )}
-              >
-                <Building2 className="h-3 w-3" />
-                Landlords
-              </button>
-              <button
-                onClick={() => setBuyerFilter("all")}
-                className={cn(
-                  "flex-1 px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
-                  buyerFilter === "all"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background hover:bg-muted text-muted-foreground"
-                )}
-              >
-                <Users className="h-3 w-3" />
-                All
-              </button>
             </div>
 
             {/* Show on Map Button */}
@@ -453,55 +454,53 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                       )}
                     </div>
 
-                    <div className="flex items-center gap-1 mt-2">
+                    <div className="flex items-center gap-0.5 mt-2 -mx-1">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
+                        className="h-7 flex-1 text-xs gap-1 justify-center px-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           window.location.href = `tel:${buyer.phone}`;
                         }}
                       >
-                        <Phone className="h-3.5 w-3.5" />
+                        <Phone className="h-3 w-3" />
                         Call
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
+                        className="h-7 flex-1 text-xs gap-1 justify-center px-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           openAITemplates(buyer, "sms");
                         }}
                       >
-                        <MessageCircle className="h-3.5 w-3.5" />
-                        <Sparkles className="h-2.5 w-2.5 text-primary" />
+                        <MessageCircle className="h-3 w-3" />
                         SMS
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
+                        className="h-7 flex-1 text-xs gap-1 justify-center px-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           openAITemplates(buyer, "email");
                         }}
                       >
-                        <Mail className="h-3.5 w-3.5" />
-                        <Sparkles className="h-2.5 w-2.5 text-primary" />
+                        <Mail className="h-3 w-3" />
                         Email
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
+                        className="h-7 flex-1 text-xs gap-1 justify-center px-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleViewBuyer(buyer);
                         }}
                       >
-                        <Users className="h-3.5 w-3.5" />
+                        <Users className="h-3 w-3" />
                         Profile
                       </Button>
                     </div>
