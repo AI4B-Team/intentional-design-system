@@ -152,11 +152,12 @@ const mockImages = [
   "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
 ];
 
-// Mock listing agent data
-const mockAgent = {
+// Mock contact data - type can be "agent" or "seller"
+const mockContact = {
   name: "Carolina Vassalo Coimbra",
   phone: "(305) 851-2820",
   email: "carolina45@gmail.com",
+  type: "agent" as "agent" | "seller", // This would come from the system/import
 };
 
 function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
@@ -1317,26 +1318,31 @@ export default function MarketplaceDealDetail() {
             {/* Agent Contact Card - Horizontal layout for split mode */}
             {layoutMode === "split" && (
               <Card className="p-5">
-                {/* Row 1: Agent Info + User Type + Templates */}
+                {/* Row 1: Contact Info + User Type + Templates */}
                 <div className="flex flex-wrap items-start gap-6 mb-4">
-                  {/* Agent Info */}
+                  {/* Contact Info */}
                   <div className="flex-shrink-0 min-w-[180px]">
-                    <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
-                    <h3 className="text-lg font-semibold mb-2">{mockAgent.name}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm text-muted-foreground">Contact</p>
+                      <Badge variant="secondary" className="text-xs">
+                        {mockContact.type === "agent" ? "Agent" : "Seller"}
+                      </Badge>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">{mockContact.name}</h3>
                     <div className="space-y-1">
                       <a
-                        href={`tel:${mockAgent.phone}`}
+                        href={`tel:${mockContact.phone}`}
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         <Phone className="h-4 w-4" />
-                        {mockAgent.phone}
+                        {mockContact.phone}
                       </a>
                       <a
-                        href={`mailto:${mockAgent.email}`}
+                        href={`mailto:${mockContact.email}`}
                         className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                       >
                         <Mail className="h-4 w-4" />
-                        {mockAgent.email}
+                        {mockContact.email}
                       </a>
                     </div>
                   </div>
@@ -1399,7 +1405,7 @@ export default function MarketplaceDealDetail() {
                           key={template.id}
                           onClick={() => {
                             const filledMessage = template.message
-                              .replace("{agentName}", mockAgent.name.split(" ")[0])
+                              .replace("{agentName}", mockContact.name.split(" ")[0])
                               .replace("{address}", deal.address)
                               .replace("{price}", `$${Math.round(deal.price * 0.9).toLocaleString()}`)
                               .replace("{priceRange}", `$${Math.round(deal.price * 0.85).toLocaleString()} - $${Math.round(deal.price * 0.92).toLocaleString()}`)
@@ -1448,24 +1454,29 @@ export default function MarketplaceDealDetail() {
           {layoutMode !== "split" && (
             <div className="space-y-4">
               <Card className="p-5 sticky top-6">
-                {/* Agent Info */}
-                <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
-                <h3 className="text-lg font-semibold mb-3">{mockAgent.name}</h3>
+                {/* Contact Info */}
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-sm text-muted-foreground">Contact</p>
+                  <Badge variant="secondary" className="text-xs">
+                    {mockContact.type === "agent" ? "Agent" : "Seller"}
+                  </Badge>
+                </div>
+                <h3 className="text-lg font-semibold mb-3">{mockContact.name}</h3>
 
                 <div className="space-y-2 mb-4">
                   <a
-                    href={`tel:${mockAgent.phone}`}
+                    href={`tel:${mockContact.phone}`}
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Phone className="h-4 w-4" />
-                    {mockAgent.phone}
+                    {mockContact.phone}
                   </a>
                   <a
-                    href={`mailto:${mockAgent.email}`}
+                    href={`mailto:${mockContact.email}`}
                     className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     <Mail className="h-4 w-4" />
-                    {mockAgent.email}
+                    {mockContact.email}
                   </a>
                 </div>
 
@@ -1529,7 +1540,7 @@ export default function MarketplaceDealDetail() {
                             <button
                               onClick={() => {
                                 const filledMessage = template.message
-                                  .replace("{agentName}", mockAgent.name.split(" ")[0])
+                                  .replace("{agentName}", mockContact.name.split(" ")[0])
                                   .replace("{address}", deal.address)
                                   .replace("{price}", `$${Math.round(deal.price * 0.9).toLocaleString()}`)
                                   .replace("{priceRange}", `$${Math.round(deal.price * 0.85).toLocaleString()} - $${Math.round(deal.price * 0.92).toLocaleString()}`)
