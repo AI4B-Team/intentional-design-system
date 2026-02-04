@@ -19,9 +19,9 @@ export function DealScore({
 }: DealScoreProps) {
   // Calculate the stroke-dashoffset for the progress ring
   const sizes = {
-    sm: { container: 80, stroke: 6, fontSize: 'text-2xl' },
-    md: { container: 120, stroke: 8, fontSize: 'text-4xl' },
-    lg: { container: 160, stroke: 10, fontSize: 'text-5xl' },
+    sm: { container: 80, stroke: 6, fontSize: 'text-2xl', innerPadding: 6 },
+    md: { container: 140, stroke: 10, fontSize: 'text-5xl', innerPadding: 10 },
+    lg: { container: 180, stroke: 12, fontSize: 'text-6xl', innerPadding: 12 },
   };
   
   const config = sizes[size];
@@ -29,15 +29,8 @@ export function DealScore({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   
-  // Determine color based on score
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return { gradient: 'from-emerald-400 to-emerald-600', stroke: 'stroke-emerald-500' };
-    if (score >= 60) return { gradient: 'from-blue-400 to-indigo-500', stroke: 'stroke-blue-500' };
-    if (score >= 40) return { gradient: 'from-amber-400 to-orange-500', stroke: 'stroke-amber-500' };
-    return { gradient: 'from-red-400 to-red-600', stroke: 'stroke-red-500' };
-  };
-  
-  const colors = getScoreColor(score);
+  // Generate unique gradient ID
+  const gradientId = `scoreGradient-${score}-${Math.random().toString(36).substr(2, 9)}`;
 
   // Default badges based on score categories
   const defaultBadges = [
@@ -52,19 +45,19 @@ export function DealScore({
   const getBadgeStyles = (variant: string) => {
     switch (variant) {
       case 'success':
-        return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        return 'bg-success/15 text-success border-success/40 hover:bg-success/25';
       case 'warning':
-        return 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+        return 'bg-warning/15 text-warning border-warning/40 hover:bg-warning/25';
       case 'info':
-        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        return 'bg-primary/15 text-primary border-primary/40 hover:bg-primary/25';
       default:
-        return 'bg-slate-500/20 text-slate-300 border-slate-500/30';
+        return 'bg-muted text-muted-foreground border-border hover:bg-muted/80';
     }
   };
 
   return (
     <div className={cn(
-      "flex flex-col items-center gap-4 p-6 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900",
+      "flex flex-col items-center gap-5 p-8 rounded-2xl bg-gradient-to-br from-muted/80 to-muted/40 border border-border/50",
       className
     )}>
       {/* Circular Score Ring */}
@@ -82,7 +75,7 @@ export function DealScore({
             fill="none"
             stroke="currentColor"
             strokeWidth={config.stroke}
-            className="text-slate-700"
+            className="text-border/50"
           />
         </svg>
         
@@ -93,10 +86,11 @@ export function DealScore({
           height={config.container}
         >
           <defs>
-            <linearGradient id={`scoreGradient-${score}`} x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#818cf8" />
-              <stop offset="50%" stopColor="#6366f1" />
-              <stop offset="100%" stopColor="#4f46e5" />
+            <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+              {/* Using emerald (primary) to teal gradient matching site theme */}
+              <stop offset="0%" stopColor="hsl(var(--primary))" />
+              <stop offset="50%" stopColor="hsl(160, 84%, 39%)" />
+              <stop offset="100%" stopColor="hsl(174, 72%, 46%)" />
             </linearGradient>
           </defs>
           <circle
@@ -104,21 +98,29 @@ export function DealScore({
             cy={config.container / 2}
             r={radius}
             fill="none"
-            stroke={`url(#scoreGradient-${score})`}
+            stroke={`url(#${gradientId})`}
             strokeWidth={config.stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
-            className="transition-all duration-1000 ease-out"
+            className="transition-all duration-1000 ease-out drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]"
           />
         </svg>
         
-        {/* Center content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800/80 rounded-full m-2">
-          <span className={cn("font-bold text-white", config.fontSize)}>
+        {/* Center content - dark circle with score */}
+        <div 
+          className="absolute flex flex-col items-center justify-center rounded-full bg-gradient-to-br from-slate-800 to-slate-900 shadow-inner"
+          style={{ 
+            top: config.innerPadding, 
+            left: config.innerPadding, 
+            right: config.innerPadding, 
+            bottom: config.innerPadding 
+          }}
+        >
+          <span className={cn("font-bold text-white tabular-nums leading-none", config.fontSize)}>
             {score}
           </span>
-          <span className="text-xs uppercase tracking-widest text-slate-400">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 mt-1">
             Score
           </span>
         </div>
@@ -126,13 +128,13 @@ export function DealScore({
 
       {/* Badges */}
       {showBadges && displayBadges.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2">
+        <div className="flex flex-wrap justify-center gap-2.5">
           {displayBadges.slice(0, 4).map((badge, idx) => (
             <Badge
               key={idx}
               variant="outline"
               className={cn(
-                "text-xs font-medium border rounded-full px-3 py-1",
+                "text-xs font-medium border rounded-full px-4 py-1.5 transition-colors",
                 getBadgeStyles(badge.variant)
               )}
             >
@@ -145,13 +147,67 @@ export function DealScore({
   );
 }
 
+// Compact inline version for property detail headers
+export function DealScoreCompact({ score, className }: { score: number; className?: string }) {
+  const size = 56;
+  const stroke = 5;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  const gradientId = `scoreGradientCompact-${Math.random().toString(36).substr(2, 9)}`;
+
+  return (
+    <div className={cn("relative", className)} style={{ width: size, height: size }}>
+      {/* Background ring */}
+      <svg className="absolute inset-0 -rotate-90" width={size} height={size}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={stroke}
+          className="text-border/50"
+        />
+      </svg>
+      
+      {/* Progress ring */}
+      <svg className="absolute inset-0 -rotate-90" width={size} height={size}>
+        <defs>
+          <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="hsl(var(--primary))" />
+            <stop offset="100%" stopColor="hsl(174, 72%, 46%)" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke={`url(#${gradientId})`}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-700 ease-out"
+        />
+      </svg>
+      
+      {/* Center */}
+      <div className="absolute inset-[5px] flex items-center justify-center rounded-full bg-gradient-to-br from-slate-800 to-slate-900">
+        <span className="text-lg font-bold text-white tabular-nums">{score}</span>
+      </div>
+    </div>
+  );
+}
+
 // Simple inline version for cards
 export function DealScoreInline({ score, className }: { score: number; className?: string }) {
   const getScoreColor = (score: number) => {
-    if (score >= 80) return 'text-emerald-500';
-    if (score >= 60) return 'text-blue-500';
-    if (score >= 40) return 'text-amber-500';
-    return 'text-red-500';
+    if (score >= 80) return 'text-success';
+    if (score >= 60) return 'text-primary';
+    if (score >= 40) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getLabel = (score: number) => {
