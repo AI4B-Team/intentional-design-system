@@ -71,9 +71,10 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
   if (viewMode === 'list') {
     return (
       <Card
-        className={`relative transition-all hover:shadow-md ${
+        className={`relative transition-all hover:shadow-md cursor-pointer ${
           !buyBox.isActive ? 'opacity-60' : ''
         }`}
+        onClick={() => onEdit(buyBox)}
       >
         <div className="flex items-center gap-4 p-4">
           {/* Icon */}
@@ -147,12 +148,13 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
           </div>
 
           {/* Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-              <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 bg-white z-[100]">
               <DropdownMenuItem onClick={() => onEdit(buyBox)} className="gap-2 cursor-pointer">
                 <Pencil className="h-4 w-4" />
@@ -185,6 +187,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
       </Card>
     );
