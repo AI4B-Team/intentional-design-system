@@ -337,6 +337,12 @@ export function PropertyDetailMap({
       }
     }
 
+    // Leaflet can render a gray strip when its container height changes (common in split-view layouts).
+    // This forces the map to re-measure and fill the full container.
+    window.setTimeout(() => {
+      map.invalidateSize();
+    }, 0);
+
     return () => {
       // Cleanup handled by React
     };
