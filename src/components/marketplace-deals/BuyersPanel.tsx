@@ -113,9 +113,17 @@ const mockBuyers: Buyer[] = [
 export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPanelProps) {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(true);
-  const [buyerFilter, setBuyerFilter] = useState<"all" | "flippers" | "landlords">(
-    viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all"
-  );
+  
+  // Default filter based on view mode
+  const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
+  const [buyerFilter, setBuyerFilter] = useState<"all" | "flippers" | "landlords">(defaultFilter);
+  
+  // Get the display label for the badge
+  const getBuyerTypeLabel = () => {
+    if (buyerFilter === "flippers") return "Flippers";
+    if (buyerFilter === "landlords") return "Landlords";
+    return "All Buyers";
+  };
 
   const filteredBuyers = mockBuyers.filter((buyer) => {
     if (buyerFilter === "all") return true;
@@ -137,7 +145,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
               <Users className="h-4 w-4 text-primary" />
               <span className="font-semibold">Buyers</span>
               <Badge variant="secondary" className="text-xs">
-                {viewMode === "flip" ? "Flippers" : viewMode === "hold" ? "Landlords" : "All"}
+                {getBuyerTypeLabel()}
               </Badge>
             </div>
             {isOpen ? (
