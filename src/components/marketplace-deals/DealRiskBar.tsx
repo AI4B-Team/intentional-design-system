@@ -33,8 +33,15 @@ export function DealRiskBar({ arvPercent, className }: DealRiskBarProps) {
 
       {/* Gradient Bar with Indicator */}
       <div className="relative">
-        {/* Gradient Bar */}
-        <div className="h-3 rounded-full bg-gradient-to-r from-success via-warning to-destructive" />
+        {/* Solid Color Segments Bar */}
+        <div className="h-3 rounded-full overflow-hidden flex">
+          {/* Green segment: 50% - 70% (40% of bar width) */}
+          <div className="w-[40%] bg-success" />
+          {/* Yellow segment: 70% - 85% (30% of bar width) */}
+          <div className="w-[30%] bg-warning" />
+          {/* Red segment: 85% - 100% (30% of bar width) */}
+          <div className="w-[30%] bg-destructive" />
+        </div>
         
         {/* Indicator Circle */}
         <div 
