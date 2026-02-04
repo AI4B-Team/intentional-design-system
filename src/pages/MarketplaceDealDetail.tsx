@@ -688,7 +688,7 @@ export default function MarketplaceDealDetail() {
               ))}
             </div>
 
-            {/* Price, ARV & Address */}
+            {/* Price, ARV, Deal Score & Address */}
             <div>
               <div className="flex items-center flex-wrap gap-4 mb-2">
                 <div className="flex items-center gap-2">
@@ -715,6 +715,16 @@ export default function MarketplaceDealDetail() {
                     )}
                     {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
                   </span>
+                </div>
+                {/* Deal Score - Far Right */}
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Score</span>
+                  <div className={cn(
+                    "flex items-center justify-center w-12 h-12 rounded-full text-lg font-bold text-white",
+                    roi >= 25 ? "bg-emerald-500" : roi >= 15 ? "bg-blue-500" : roi >= 5 ? "bg-amber-500" : "bg-red-500"
+                  )}>
+                    {Math.min(Math.round(roi * 3 + 20), 100)}
+                  </div>
                 </div>
               </div>
               <p className="flex items-center gap-2 text-lg text-muted-foreground">
@@ -760,6 +770,110 @@ export default function MarketplaceDealDetail() {
                 <span className="text-sm font-medium">${pricePerSqft}/SqFt</span>
               </Card>
             </div>
+
+            {/* Fix & Flip Analysis - Only shown on Flip view */}
+            {viewMode === "flip" && (
+            <Card className="p-6 relative">
+              <div className="flex items-center gap-2 mb-6">
+                <Zap className="h-5 w-5 text-primary" />
+                <h2 className="text-lg font-semibold">Fix & Flip Analysis</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Purchase Price</span>
+                    <span className="font-medium">${deal.price.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">After Repair Value (ARV)</span>
+                    <span className="font-medium text-primary">${deal.arv.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Est. Repairs</span>
+                    <span className="font-medium text-destructive">-${estRepairs.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Holding Costs</span>
+                    <span className="font-medium text-destructive">-${holdingCosts.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Closing Costs (6%)</span>
+                    <span className="font-medium text-destructive">-${closingCosts.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Agent Commission (5%)</span>
+                    <span className="font-medium text-destructive">-${agentCommission.toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">Potential Profit</span>
+                    <span className={cn(
+                      "text-xl font-bold",
+                      profit > 0 ? "text-success" : "text-destructive"
+                    )}>
+                      ${profit.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">ROI</span>
+                    <span className={cn(
+                      "font-semibold",
+                      roi >= 20 ? "text-success" : roi >= 10 ? "text-warning" : "text-destructive"
+                    )}>
+                      {roi}%
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">ARV Ratio</span>
+                    <span className="font-semibold">{deal.arvPercent}%</span>
+                  </div>
+                </div>
+
+                {/* MAO Section */}
+                <div className="pt-3 border-t space-y-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    <span className="font-semibold text-sm">Maximum Allowable Offer</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">MAO (70% Rule)</p>
+                      <p className="text-lg font-bold text-primary">
+                        ${Math.round(deal.arv * 0.70 - estRepairs).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">ARV × 70% − Repairs</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">WMAO (Wholesale)</p>
+                      <p className="text-lg font-bold text-warning">
+                        ${Math.round(deal.arv * 0.65 - estRepairs).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">ARV × 65% − Repairs</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">Conservative (60%)</p>
+                      <p className="text-lg font-bold text-success">
+                        ${Math.round(deal.arv * 0.60 - estRepairs).toLocaleString()}
+                      </p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-xs text-muted-foreground mb-1">Aggressive (75%)</p>
+                      <p className="text-lg font-bold text-destructive">
+                        ${Math.round(deal.arv * 0.75 - estRepairs).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <DealRiskMeter arvPercent={deal.arvPercent} />
+              </div>
+            </Card>
+            )}
 
             {/* Comparable Sales Section - Only shown on Flip view */}
             {viewMode === "flip" && (
@@ -854,131 +968,6 @@ export default function MarketplaceDealDetail() {
                     ${Math.round(mockComps.reduce((sum, c) => sum + c.salePrice, 0) / mockComps.length).toLocaleString()}
                   </span>
                 </p>
-              </div>
-            </Card>
-            )}
-
-            {/* Buyer Search - Shown on Flip/Hold views for exit strategy */}
-            {(viewMode === "flip" || viewMode === "hold") && (
-              <BuyerSearch
-                subjectAddress={deal.address}
-                subjectCity={deal.city}
-                subjectState={deal.state}
-                subjectPrice={deal.price}
-                subjectArv={deal.arv}
-              />
-            )}
-
-            {/* Buyer Activity Search - Shown on Buyers view */}
-            {viewMode === "buyers" && (
-              <BuyerActivitySearch
-                subjectAddress={deal.address}
-                subjectCity={deal.city}
-                subjectState={deal.state}
-                subjectPrice={deal.price}
-              />
-            )}
-
-            {/* Investment Analysis - Conditional based on view mode */}
-            {viewMode === "flip" && (
-            <Card className="p-6 relative">
-              <div className="flex items-center gap-2 mb-6">
-                <Zap className="h-5 w-5 text-primary" />
-                <h2 className="text-lg font-semibold">Flip Analysis</h2>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Purchase Price</span>
-                    <span className="font-medium">${deal.price.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">After Repair Value (ARV)</span>
-                    <span className="font-medium text-primary">${deal.arv.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Est. Repairs</span>
-                    <span className="font-medium text-destructive">-${estRepairs.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Holding Costs</span>
-                    <span className="font-medium text-destructive">-${holdingCosts.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Closing Costs (6%)</span>
-                    <span className="font-medium text-destructive">-${closingCosts.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">Agent Commission (5%)</span>
-                    <span className="font-medium text-destructive">-${agentCommission.toLocaleString()}</span>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">Potential Profit</span>
-                    <span className={cn(
-                      "text-xl font-bold",
-                      profit > 0 ? "text-success" : "text-destructive"
-                    )}>
-                      ${profit.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">ROI</span>
-                    <span className={cn(
-                      "font-semibold",
-                      roi >= 20 ? "text-success" : roi >= 10 ? "text-warning" : "text-destructive"
-                    )}>
-                      {roi}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-muted-foreground">ARV Ratio</span>
-                    <span className="font-semibold">{deal.arvPercent}%</span>
-                  </div>
-                </div>
-
-                {/* MAO Section */}
-                <div className="pt-3 border-t space-y-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-primary" />
-                    <span className="font-semibold text-sm">Maximum Allowable Offer</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">MAO (70% Rule)</p>
-                      <p className="text-lg font-bold text-primary">
-                        ${Math.round(deal.arv * 0.70 - estRepairs).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">ARV × 70% − Repairs</p>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">WMAO (Wholesale)</p>
-                      <p className="text-lg font-bold text-amber-600">
-                        ${Math.round(deal.arv * 0.65 - estRepairs).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">ARV × 65% − Repairs</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Conservative (60%)</p>
-                      <p className="text-lg font-bold text-success">
-                        ${Math.round(deal.arv * 0.60 - estRepairs).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Aggressive (75%)</p>
-                      <p className="text-lg font-bold text-destructive">
-                        ${Math.round(deal.arv * 0.75 - estRepairs).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <DealRiskMeter arvPercent={deal.arvPercent} />
               </div>
             </Card>
             )}
