@@ -756,10 +756,9 @@ export default function MarketplaceDealDetail() {
               className="w-full h-full object-cover"
             />
 
-            {/* For Sale Badge */}
-            <Badge className="absolute top-3 left-3 bg-background text-foreground gap-1.5 shadow-md">
-              <span className="w-2 h-2 rounded-full bg-success" />
-              For sale
+            {/* Status Badge - matches listing card styling */}
+            <Badge className="absolute top-3 left-3 text-xs font-medium px-2 py-0.5 rounded shadow-md bg-success text-success-foreground">
+              For Sale
             </Badge>
 
             {/* Navigation Arrows */}
