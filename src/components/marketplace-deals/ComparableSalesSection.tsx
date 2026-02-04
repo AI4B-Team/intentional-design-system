@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import L from "leaflet";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,25 +13,15 @@ import {
   TrendingUp,
   Plus,
   RefreshCw,
-  Trash2,
   FileText,
   Printer,
   Share2,
   Download,
   MapPin,
-  Home,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import "leaflet/dist/leaflet.css";
-
-// Fix leaflet default icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
-});
+import { CompMap } from "./CompMap";
 
 interface Comp {
   id: string;
@@ -78,36 +66,6 @@ interface ComparableSalesSectionProps {
   onRemoveComp?: (id: string) => void;
   onGenerateReport?: (selectedIds: string[]) => void;
 }
-
-// Custom marker icons
-const createCustomIcon = (color: string, label?: string) => {
-  return L.divIcon({
-    className: "custom-marker",
-    html: `
-      <div style="
-        width: 32px;
-        height: 32px;
-        background: ${color};
-        border: 3px solid white;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 12px;
-        font-weight: bold;
-        color: white;
-      ">${label || ""}</div>
-    `,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-    popupAnchor: [0, -16],
-  });
-};
-
-const subjectIcon = createCustomIcon("#10b981", "S");
-const excellentCompIcon = createCustomIcon("#22c55e", "");
-const goodCompIcon = createCustomIcon("#f59e0b", "");
 
 export function ComparableSalesSection({
   subjectProperty,
@@ -287,70 +245,25 @@ export function ComparableSalesSection({
 
       {/* Map */}
       {showMap && (
-        <div className="h-[250px] rounded-lg overflow-hidden mb-4 border">
-          <MapContainer
-            center={[subjectLat, subjectLng]}
-            zoom={14}
-            style={{ height: "100%", width: "100%" }}
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            {/* Subject Property Marker */}
-            <Marker position={[subjectLat, subjectLng]} icon={subjectIcon}>
-              <Popup>
-                <div className="text-center">
-                  <p className="font-semibold text-sm">Subject Property</p>
-                  <p className="text-xs text-muted-foreground">{subjectProperty.address}</p>
-                  <p className="text-sm font-medium text-primary mt-1">
-                    ${subjectProperty.price.toLocaleString()}
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-
-            {/* Comp Markers */}
-            {compsWithCoords.map((comp, idx) => (
-              <Marker
-                key={comp.id}
-                position={[comp.latitude!, comp.longitude!]}
-                icon={comp.quality === "excellent" ? excellentCompIcon : goodCompIcon}
-              >
-                <Popup>
-                  <div className="min-w-[180px]">
-                    <p className="font-semibold text-sm">{comp.address}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {comp.beds} bd • {comp.baths} ba • {comp.sqft.toLocaleString()} sqft
-                    </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-medium">
-                        ${comp.salePrice.toLocaleString()}
-                      </span>
-                      <Badge variant="outline" className="text-xs">
-                        {comp.distanceMiles} mi
-                      </Badge>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-
-            {/* 1 Mile Radius Circle */}
-            <Circle
-              center={[subjectLat, subjectLng]}
-              radius={1609} // 1 mile in meters
-              pathOptions={{
-                color: "hsl(var(--primary))",
-                fillColor: "hsl(var(--primary))",
-                fillOpacity: 0.05,
-                weight: 2,
-                dashArray: "5, 5",
-              }}
-            />
-          </MapContainer>
+        <div className="mb-4">
+          <CompMap
+            subjectLat={subjectLat}
+            subjectLng={subjectLng}
+            subjectAddress={subjectProperty.address}
+            subjectPrice={subjectProperty.price}
+            comps={compsWithCoords.map((c) => ({
+              id: c.id,
+              address: c.address,
+              beds: c.beds,
+              baths: c.baths,
+              sqft: c.sqft,
+              salePrice: c.salePrice,
+              distanceMiles: c.distanceMiles,
+              quality: c.quality,
+              latitude: c.latitude!,
+              longitude: c.longitude!,
+            }))}
+          />
         </div>
       )}
 
@@ -375,8 +288,8 @@ export function ComparableSalesSection({
               selectedComps.has(comp.id)
                 ? "border-primary bg-primary/5 ring-1 ring-primary/20"
                 : comp.quality === "excellent"
-                ? "border-emerald-200 bg-emerald-50/50 hover:border-emerald-300"
-                : "border-amber-200 bg-amber-50/50 hover:border-amber-300"
+                ? "border-success/30 bg-success/5 hover:border-success/50"
+                : "border-warning/30 bg-warning/5 hover:border-warning/50"
             )}
             onClick={() => handleToggleComp(comp.id)}
           >
@@ -402,8 +315,8 @@ export function ComparableSalesSection({
                   className={cn(
                     "text-xs shrink-0",
                     comp.quality === "excellent"
-                      ? "border-emerald-500 text-emerald-700 bg-emerald-100"
-                      : "border-amber-500 text-amber-700 bg-amber-100"
+                      ? "border-success text-success bg-success/10"
+                      : "border-warning text-warning bg-warning/10"
                   )}
                 >
                   {comp.similarity}% Match
