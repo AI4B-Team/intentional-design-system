@@ -907,9 +907,15 @@ export default function MarketplaceDealDetail() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={cn(
+          "grid gap-6",
+          layoutMode === "split" ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
+        )}>
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className={cn(
+            "space-y-6",
+            layoutMode === "split" ? "" : "lg:col-span-2"
+          )}>
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
               {(["flip", "hold", "buyers"] as ViewMode[]).map((mode) => (
@@ -1307,91 +1313,88 @@ export default function MarketplaceDealDetail() {
                 stylish pavers and room to relax or entertain. Plus, a 2-car garage adds convenience and extra storage.
               </p>
             </div>
-          </div>
 
-          {/* Sidebar - Agent Card with AI Templates */}
-          <div className="flex flex-col h-full">
-            {/* Top Section - Agent Info and Templates */}
-            <Card className="p-5">
-              {/* Agent Info */}
-              <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
-              <h3 className="text-lg font-semibold mb-3">{mockAgent.name}</h3>
+            {/* Agent Contact Card - Horizontal layout for split mode */}
+            {layoutMode === "split" && (
+              <Card className="p-5">
+                <div className="flex gap-6">
+                  {/* Agent Info */}
+                  <div className="flex-shrink-0">
+                    <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
+                    <h3 className="text-lg font-semibold mb-2">{mockAgent.name}</h3>
+                    <div className="space-y-1">
+                      <a
+                        href={`tel:${mockAgent.phone}`}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <Phone className="h-4 w-4" />
+                        {mockAgent.phone}
+                      </a>
+                      <a
+                        href={`mailto:${mockAgent.email}`}
+                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        <Mail className="h-4 w-4" />
+                        {mockAgent.email}
+                      </a>
+                    </div>
+                  </div>
 
-              <div className="space-y-2 mb-4">
-                <a
-                  href={`tel:${mockAgent.phone}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Phone className="h-4 w-4" />
-                  {mockAgent.phone}
-                </a>
-                <a
-                  href={`mailto:${mockAgent.email}`}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <Mail className="h-4 w-4" />
-                  {mockAgent.email}
-                </a>
-              </div>
-
-              {/* User Type Toggle */}
-              <div className="mb-4">
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <User className="h-3 w-3" />
-                  I am a...
-                </p>
-                <div className="flex rounded-lg border border-border overflow-hidden">
-                  <button
-                    onClick={() => setUserType("investor")}
-                    className={cn(
-                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
-                      userType === "investor" 
-                        ? "bg-brand text-white" 
-                        : "bg-background hover:bg-muted text-muted-foreground"
-                    )}
-                  >
-                    <DollarSign className="h-3 w-3" />
-                    Investor
-                  </button>
-                  <button
-                    onClick={() => setUserType("agent")}
-                    className={cn(
-                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border-x border-border",
-                      userType === "agent" 
-                        ? "bg-brand text-white" 
-                        : "bg-background hover:bg-muted text-muted-foreground"
-                    )}
-                  >
-                    <Briefcase className="h-3 w-3" />
-                    Agent
-                  </button>
-                  <button
-                    onClick={() => setUserType("investor-agent")}
-                    className={cn(
-                      "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
-                      userType === "investor-agent" 
-                        ? "bg-brand text-white" 
-                        : "bg-background hover:bg-muted text-muted-foreground"
-                    )}
-                  >
-                    <BadgeCheck className="h-3 w-3" />
-                    Licensed
-                  </button>
-                </div>
-              </div>
-
-              {/* AI Message Templates */}
-              <div>
-                <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3 text-brand" />
-                  AI Message Templates
-                </p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {MESSAGE_TEMPLATES[userType].map((template) => (
-                    <TooltipProvider key={template.id}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
+                  {/* User Type & Templates */}
+                  <div className="flex-shrink-0 space-y-3">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        I am a...
+                      </p>
+                      <div className="flex rounded-lg border border-border overflow-hidden">
+                        <button
+                          onClick={() => setUserType("investor")}
+                          className={cn(
+                            "px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                            userType === "investor" 
+                              ? "bg-brand text-white" 
+                              : "bg-background hover:bg-muted text-muted-foreground"
+                          )}
+                        >
+                          <DollarSign className="h-3 w-3" />
+                          Investor
+                        </button>
+                        <button
+                          onClick={() => setUserType("agent")}
+                          className={cn(
+                            "px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border-x border-border",
+                            userType === "agent" 
+                              ? "bg-brand text-white" 
+                              : "bg-background hover:bg-muted text-muted-foreground"
+                          )}
+                        >
+                          <Briefcase className="h-3 w-3" />
+                          Agent
+                        </button>
+                        <button
+                          onClick={() => setUserType("investor-agent")}
+                          className={cn(
+                            "px-3 py-1.5 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                            userType === "investor-agent" 
+                              ? "bg-brand text-white" 
+                              : "bg-background hover:bg-muted text-muted-foreground"
+                          )}
+                        >
+                          <BadgeCheck className="h-3 w-3" />
+                          Licensed
+                        </button>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                        <Sparkles className="h-3 w-3 text-brand" />
+                        AI Message Templates
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {MESSAGE_TEMPLATES[userType].map((template) => (
                           <button
+                            key={template.id}
                             onClick={() => {
                               const filledMessage = template.message
                                 .replace("{agentName}", mockAgent.name.split(" ")[0])
@@ -1401,67 +1404,193 @@ export default function MarketplaceDealDetail() {
                                 .replace("{loanAmount}", `$${Math.round(deal.price * 0.97).toLocaleString()}`);
                               setMessage(filledMessage);
                             }}
-                            className="px-2.5 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors text-left truncate"
+                            className="px-2.5 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors"
                           >
                             {template.label}
                           </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left" className="max-w-[250px]">
-                          <p className="text-tiny">{template.label.replace(/[^\w\s]/g, '').trim()}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  ))}
-                </div>
-              </div>
-            </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Spacer to push message box to bottom */}
-            <div className="flex-1" />
-
-            {/* Bottom Section - Message Input */}
-            <Card className="p-5 mt-4 sticky bottom-6">
-              {/* Message Input */}
-              <Textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={
-                  userType === "investor" 
-                    ? "Write your offer message..." 
-                    : userType === "agent"
-                    ? "Write on behalf of your client..."
-                    : "Write your message (include license disclosure)..."
-                }
-                className="min-h-[120px] mb-3 text-sm"
-              />
-
-              {/* Send Actions */}
-              <div className="space-y-2">
-                <Button variant="primary" className="w-full gap-2" disabled={!message.trim()}>
-                  <Send className="h-4 w-4" />
-                  Send Message
-                </Button>
-                
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="secondary" className="w-full gap-2 text-xs" size="sm">
-                        <Mail className="h-3.5 w-3.5" />
-                        Launch Campaign To Similar Listings
+                  {/* Message Input - Takes remaining space */}
+                  <div className="flex-1 flex flex-col">
+                    <Textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder={
+                        userType === "investor" 
+                          ? "Write your offer message..." 
+                          : userType === "agent"
+                          ? "Write on behalf of your client..."
+                          : "Write your message (include license disclosure)..."
+                      }
+                      className="flex-1 min-h-[100px] mb-2 text-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button variant="primary" className="gap-2" disabled={!message.trim()}>
+                        <Send className="h-4 w-4" />
+                        Send Message
                       </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-[220px]">
-                      <p className="text-tiny">Send this message to multiple agents with similar listings in one click</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-
-              <p className="text-xs text-center text-muted-foreground mt-4">
-                Only HomesDaily Connects You To The Listing Agent.
-              </p>
-            </Card>
+                      <Button variant="secondary" className="gap-2 text-xs" size="sm">
+                        <Mail className="h-3.5 w-3.5" />
+                        Launch Campaign
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            )}
           </div>
+
+          {/* Sidebar - Agent Card with AI Templates (Only in detail mode) */}
+          {layoutMode !== "split" && (
+            <div className="space-y-4">
+              <Card className="p-5 sticky top-6">
+                {/* Agent Info */}
+                <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
+                <h3 className="text-lg font-semibold mb-3">{mockAgent.name}</h3>
+
+                <div className="space-y-2 mb-4">
+                  <a
+                    href={`tel:${mockAgent.phone}`}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Phone className="h-4 w-4" />
+                    {mockAgent.phone}
+                  </a>
+                  <a
+                    href={`mailto:${mockAgent.email}`}
+                    className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <Mail className="h-4 w-4" />
+                    {mockAgent.email}
+                  </a>
+                </div>
+
+                {/* User Type Toggle */}
+                <div className="mb-4">
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    I am a...
+                  </p>
+                  <div className="flex rounded-lg border border-border overflow-hidden">
+                    <button
+                      onClick={() => setUserType("investor")}
+                      className={cn(
+                        "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                        userType === "investor" 
+                          ? "bg-brand text-white" 
+                          : "bg-background hover:bg-muted text-muted-foreground"
+                      )}
+                    >
+                      <DollarSign className="h-3 w-3" />
+                      Investor
+                    </button>
+                    <button
+                      onClick={() => setUserType("agent")}
+                      className={cn(
+                        "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5 border-x border-border",
+                        userType === "agent" 
+                          ? "bg-brand text-white" 
+                          : "bg-background hover:bg-muted text-muted-foreground"
+                      )}
+                    >
+                      <Briefcase className="h-3 w-3" />
+                      Agent
+                    </button>
+                    <button
+                      onClick={() => setUserType("investor-agent")}
+                      className={cn(
+                        "flex-1 px-3 py-2 text-xs font-medium transition-colors flex items-center justify-center gap-1.5",
+                        userType === "investor-agent" 
+                          ? "bg-brand text-white" 
+                          : "bg-background hover:bg-muted text-muted-foreground"
+                      )}
+                    >
+                      <BadgeCheck className="h-3 w-3" />
+                      Licensed
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI Message Templates */}
+                <div className="mb-4">
+                  <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3 text-brand" />
+                    AI Message Templates
+                  </p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {MESSAGE_TEMPLATES[userType].map((template) => (
+                      <TooltipProvider key={template.id}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => {
+                                const filledMessage = template.message
+                                  .replace("{agentName}", mockAgent.name.split(" ")[0])
+                                  .replace("{address}", deal.address)
+                                  .replace("{price}", `$${Math.round(deal.price * 0.9).toLocaleString()}`)
+                                  .replace("{priceRange}", `$${Math.round(deal.price * 0.85).toLocaleString()} - $${Math.round(deal.price * 0.92).toLocaleString()}`)
+                                  .replace("{loanAmount}", `$${Math.round(deal.price * 0.97).toLocaleString()}`);
+                                setMessage(filledMessage);
+                              }}
+                              className="px-2.5 py-1.5 text-xs rounded-md bg-muted hover:bg-muted/80 transition-colors text-left truncate"
+                            >
+                              {template.label}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-[250px]">
+                            <p className="text-tiny">{template.label.replace(/[^\w\s]/g, '').trim()}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Message Input */}
+                <Textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={
+                    userType === "investor" 
+                      ? "Write your offer message..." 
+                      : userType === "agent"
+                      ? "Write on behalf of your client..."
+                      : "Write your message (include license disclosure)..."
+                  }
+                  className="min-h-[120px] mb-3 text-sm"
+                />
+
+                {/* Send Actions */}
+                <div className="space-y-2">
+                  <Button variant="primary" className="w-full gap-2" disabled={!message.trim()}>
+                    <Send className="h-4 w-4" />
+                    Send Message
+                  </Button>
+                  
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button variant="secondary" className="w-full gap-2 text-xs" size="sm">
+                          <Mail className="h-3.5 w-3.5" />
+                          Launch Campaign To Similar Listings
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-[220px]">
+                        <p className="text-tiny">Send this message to multiple agents with similar listings in one click</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
+                <p className="text-xs text-center text-muted-foreground mt-4">
+                  Only HomesDaily Connects You To The Listing Agent.
+                </p>
+              </Card>
+            </div>
+          )}
         </div>
           </div>
         </div>
