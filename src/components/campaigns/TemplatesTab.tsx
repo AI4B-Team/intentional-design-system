@@ -456,75 +456,7 @@ export function TemplatesTab() {
 
         {/* Builder Content - 50/50 Split */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Panel - LIVE Preview */}
-          <div>
-            <Card variant="default" padding="md" className="sticky top-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="relative flex items-center">
-                  <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
-                  <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
-                </div>
-                <h3 className="font-semibold">Template Preview</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
-                    {currentOfferConfig && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
-                  </div>
-                  <div>
-                    <p className="font-medium">{formData.name || "Untitled Template"}</p>
-                    <p className="text-tiny text-muted-foreground uppercase tracking-wide">{currentOfferConfig?.label}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Badge variant="secondary" size="sm">
-                    {formData.market_type === "off_market" ? "OFF-MARKET" : "MLS"}
-                  </Badge>
-                  {formData.document_type === "loi" && <Badge variant="secondary" size="sm">LOI</Badge>}
-                  {formData.document_type === "purchase_agreement" && <Badge variant="secondary" size="sm">PA</Badge>}
-                </div>
-
-                <div className="space-y-2 text-small">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Deposit:</span>
-                    <span className="font-medium">${(formData.terms.depositAmount || 1000).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Closing:</span>
-                    <span className="font-medium">{formData.terms.closingTimeline || 14} days</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Inspection:</span>
-                    <span className="font-medium">{formData.terms.inspectionPeriod || 10} days</span>
-                  </div>
-                </div>
-
-                <div className="border-t pt-3 space-y-2">
-                  <div className="flex items-center gap-2 text-small">
-                    <Mail className={cn("h-4 w-4", formData.email_subject ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.email_subject ? "text-success" : "text-muted-foreground"}>
-                      {formData.email_subject ? "Email configured" : "Email not configured"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-small">
-                    <MessageSquare className={cn("h-4 w-4", formData.sms_body ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
-                      {formData.sms_body ? "SMS configured" : "SMS not configured"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-small">
-                    <FileText className={cn("h-4 w-4", formData.loi_content ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
-                      {formData.loi_content ? "LOI configured" : "LOI not configured"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Right Panel - Controls */}
+          {/* Left Panel - Controls */}
           <div>
             <Card variant="default" padding="lg">
               <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
@@ -853,6 +785,74 @@ export function TemplatesTab() {
                   </TabsContent>
                 </div>
               </Tabs>
+            </Card>
+          </div>
+
+          {/* Right Panel - LIVE Preview */}
+          <div>
+            <Card variant="default" padding="md" className="sticky top-4">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="relative flex items-center">
+                  <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
+                  <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
+                </div>
+                <h3 className="font-semibold">Template Preview</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
+                    {currentOfferConfig && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
+                  </div>
+                  <div>
+                    <p className="font-medium">{formData.name || "Untitled Template"}</p>
+                    <p className="text-tiny text-muted-foreground uppercase tracking-wide">{currentOfferConfig?.label}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Badge variant="secondary" size="sm">
+                    {formData.market_type === "off_market" ? "OFF-MARKET" : "MLS"}
+                  </Badge>
+                  {formData.document_type === "loi" && <Badge variant="secondary" size="sm">LOI</Badge>}
+                  {formData.document_type === "purchase_agreement" && <Badge variant="secondary" size="sm">PA</Badge>}
+                </div>
+
+                <div className="space-y-2 text-small">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Deposit:</span>
+                    <span className="font-medium">${(formData.terms.depositAmount || 1000).toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Closing:</span>
+                    <span className="font-medium">{formData.terms.closingTimeline || 14} days</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Inspection:</span>
+                    <span className="font-medium">{formData.terms.inspectionPeriod || 10} days</span>
+                  </div>
+                </div>
+
+                <div className="border-t pt-3 space-y-2">
+                  <div className="flex items-center gap-2 text-small">
+                    <Mail className={cn("h-4 w-4", formData.email_subject ? "text-success" : "text-muted-foreground")} />
+                    <span className={formData.email_subject ? "text-success" : "text-muted-foreground"}>
+                      {formData.email_subject ? "Email configured" : "Email not configured"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-small">
+                    <MessageSquare className={cn("h-4 w-4", formData.sms_body ? "text-success" : "text-muted-foreground")} />
+                    <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
+                      {formData.sms_body ? "SMS configured" : "SMS not configured"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-small">
+                    <FileText className={cn("h-4 w-4", formData.loi_content ? "text-success" : "text-muted-foreground")} />
+                    <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
+                      {formData.loi_content ? "LOI configured" : "LOI not configured"}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </Card>
           </div>
         </div>
