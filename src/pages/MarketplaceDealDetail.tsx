@@ -947,22 +947,39 @@ export default function MarketplaceDealDetail() {
             "space-y-6",
             layoutMode === "split" ? "" : "lg:col-span-2"
           )}>
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
-              {(["flip", "hold"] as ViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-md transition-colors capitalize",
-                    viewMode === mode
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {mode === "flip" ? "Flip" : "Hold"}
-                </button>
-              ))}
+            {/* View Mode Toggle + Buyers Button */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
+                {(["flip", "hold"] as ViewMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={cn(
+                      "px-4 py-2 text-sm font-medium rounded-md transition-colors capitalize",
+                      viewMode === mode
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {mode === "flip" ? "Flip" : "Hold"}
+                  </button>
+                ))}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  // Scroll to buyers panel
+                  const buyersPanel = document.querySelector('[data-buyers-panel]');
+                  if (buyersPanel) {
+                    buyersPanel.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
+                <Users className="h-4 w-4" />
+                Buyers
+              </Button>
             </div>
 
             {/* Price, ARV, Deal Score & Address */}
