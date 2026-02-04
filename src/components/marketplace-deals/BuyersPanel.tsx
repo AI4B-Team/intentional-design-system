@@ -252,9 +252,8 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
             )}
 
             {/* Buyers List */}
-            <ScrollArea className="h-[280px]">
-              <div className="space-y-2">
-                {filteredBuyers.map((buyer) => (
+            <div className="space-y-2">
+              {filteredBuyers.map((buyer) => (
                   <div
                     key={buyer.id}
                     className="p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
@@ -356,7 +355,6 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                   </div>
                 ))}
               </div>
-            </ScrollArea>
           </div>
         </CollapsibleContent>
       </Card>
