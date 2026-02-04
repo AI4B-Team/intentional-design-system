@@ -1101,10 +1101,10 @@ export default function MarketplaceDealDetail() {
                         </p>
                       </div>
                     ) : profit > 15000 ? (
-                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-primary/10 border border-primary/20">
-                        <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-warning/10 border border-warning/20">
+                        <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
                         <p className="text-xs text-foreground">
-                          <span className="font-medium text-primary">Moderate Opportunity:</span> Solid profit potential at ${profit.toLocaleString()}. Verify repair estimates before proceeding.
+                          <span className="font-medium text-warning">Tight Margins:</span> ${profit.toLocaleString()} profit leaves little room for error. Negotiate a better purchase price to maximize earnings—unexpected costs can quickly eat into this buffer.
                         </p>
                       </div>
                     ) : (
