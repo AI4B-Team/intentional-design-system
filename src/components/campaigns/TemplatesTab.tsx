@@ -455,6 +455,26 @@ export function TemplatesTab() {
         <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
           <TabsList className="bg-transparent border-0 p-0 h-auto mb-6 gap-2">
             <TabsTrigger 
+              value="general" 
+              className={cn(
+                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
+                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
+              )}
+            >
+              <Settings className="h-4 w-4 mr-2" />
+              General
+            </TabsTrigger>
+            <TabsTrigger 
+              value="terms"
+              className={cn(
+                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
+                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
+              )}
+            >
+              <FileCheck className="h-4 w-4 mr-2" />
+              Terms
+            </TabsTrigger>
+            <TabsTrigger 
               value="loi" 
               className={cn(
                 "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
@@ -462,7 +482,7 @@ export function TemplatesTab() {
               )}
             >
               <FileText className="h-4 w-4 mr-2" />
-              LOI Document
+              LOI
             </TabsTrigger>
             <TabsTrigger 
               value="email"
@@ -472,7 +492,7 @@ export function TemplatesTab() {
               )}
             >
               <Mail className="h-4 w-4 mr-2" />
-              Email Message
+              Email
             </TabsTrigger>
             <TabsTrigger 
               value="sms"
@@ -482,7 +502,7 @@ export function TemplatesTab() {
               )}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
-              Text Message
+              SMS
             </TabsTrigger>
           </TabsList>
 
