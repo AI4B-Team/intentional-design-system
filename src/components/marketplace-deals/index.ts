@@ -7,3 +7,4 @@ export { PropertyDetailMap } from "./PropertyDetailMap";
 export { BuyerActivitySearch } from "./BuyerActivitySearch";
 export { BuyBoxWizard } from "./BuyBoxWizard";
 export { DealScore, DealScoreCompact, DealScoreInline } from "./DealScore";
+export { ComparableSalesSection } from "./ComparableSalesSection";
