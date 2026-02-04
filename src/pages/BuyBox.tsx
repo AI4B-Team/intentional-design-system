@@ -1,28 +1,15 @@
 import React, { useState } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { 
   Plus, 
   Search, 
-  Target, 
-  MoreHorizontal, 
-  Pencil, 
-  Trash2, 
-  Copy,
-  ToggleLeft,
-  ToggleRight,
-  MapPin,
-  DollarSign,
-  Home,
-  Building2,
   LayoutGrid,
   List,
-  Bed,
-  TrendingUp
+  Target,
 } from "lucide-react";
+import { BuyBoxCard } from "@/components/marketplace-deals/BuyBoxCard";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   DropdownMenu,
@@ -208,21 +195,6 @@ const BuyBox: React.FC = () => {
     toast.success("Buy box deleted");
   };
 
-  const formatPrice = (price?: number) => {
-    if (!price) return null;
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const getPropertyTypeIcon = (types?: string[]) => {
-    if (!types || types.length === 0) return <Home className="h-4 w-4" />;
-    if (types.includes("multi_family")) return <Building2 className="h-4 w-4" />;
-    return <Home className="h-4 w-4" />;
-  };
-
   return (
     <PageLayout title="Buy Box">
       {/* Header */}
@@ -269,243 +241,18 @@ const BuyBox: React.FC = () => {
         : "flex flex-col gap-3"
       }>
         {filteredBuyBoxes.map((buyBox) => (
-          viewMode === "grid" ? (
-            // Grid Card View
-            <Card
-              key={buyBox.id}
-              className={`relative transition-all hover:shadow-md hover:-translate-y-0.5 ${
-                !buyBox.isActive ? "opacity-60" : ""
-              }`}
-            >
-              {/* Card Header with Icon and Title */}
-              <div className="p-4 pb-0">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-start gap-3 min-w-0 flex-1">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl shrink-0 ${
-                      buyBox.isActive ? "bg-primary/10" : "bg-muted"
-                    }`}>
-                      <Target className={`h-5 w-5 ${buyBox.isActive ? "text-primary" : "text-muted-foreground"}`} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-semibold text-base truncate">{buyBox.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-1 mt-0.5">
-                        {buyBox.description || "No description"}
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40 bg-white z-[100]">
-                      <DropdownMenuItem
-                        onClick={() => {
-                          setEditingBuyBox(buyBox);
-                          setShowCreateDialog(true);
-                        }}
-                        className="gap-2 cursor-pointer"
-                      >
-                        <Pencil className="h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleDuplicate(buyBox)}
-                        className="gap-2 cursor-pointer"
-                      >
-                        <Copy className="h-4 w-4" />
-                        Duplicate
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => handleToggleActive(buyBox.id)}
-                        className="gap-2 cursor-pointer"
-                      >
-                        {buyBox.isActive ? (
-                          <>
-                            <ToggleLeft className="h-4 w-4" />
-                            Deactivate
-                          </>
-                        ) : (
-                          <>
-                            <ToggleRight className="h-4 w-4" />
-                            Activate
-                          </>
-                        )}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        onClick={() => handleDelete(buyBox.id)}
-                        className="gap-2 cursor-pointer text-destructive focus:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
-
-              {/* Criteria Tags */}
-              <div className="px-4 py-3">
-                <div className="flex flex-wrap gap-1.5">
-                  {buyBox.criteria.states && buyBox.criteria.states.length > 0 && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-background">
-                      <MapPin className="h-3 w-3" />
-                      {buyBox.criteria.states.slice(0, 2).join(", ")}
-                      {buyBox.criteria.states.length > 2 && ` +${buyBox.criteria.states.length - 2}`}
-                    </Badge>
-                  )}
-                  {buyBox.criteria.propertyTypes && buyBox.criteria.propertyTypes.length > 0 && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-background">
-                      {getPropertyTypeIcon(buyBox.criteria.propertyTypes)}
-                      {buyBox.criteria.propertyTypes.length === 1
-                        ? buyBox.criteria.propertyTypes[0].replace("_", " ")
-                        : `${buyBox.criteria.propertyTypes.length} types`}
-                    </Badge>
-                  )}
-                  {(buyBox.criteria.minPrice || buyBox.criteria.maxPrice) && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-background">
-                      <DollarSign className="h-3 w-3" />
-                      {formatPrice(buyBox.criteria.minPrice) || "$0"} -{" "}
-                      {formatPrice(buyBox.criteria.maxPrice) || "Any"}
-                    </Badge>
-                  )}
-                  {buyBox.criteria.minBedrooms && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-background">
-                      <Bed className="h-3 w-3" />
-                      {buyBox.criteria.minBedrooms}+ beds
-                    </Badge>
-                  )}
-                  {buyBox.criteria.minEquity && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-background">
-                      <TrendingUp className="h-3 w-3" />
-                      {buyBox.criteria.minEquity}%+ equity
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* Footer Stats */}
-              <div className="px-4 pb-4">
-                <div className="flex items-center justify-between pt-3 border-t">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={buyBox.isActive ? "default" : "secondary"} className="text-xs">
-                      {buyBox.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-sm">
-                    <span className="text-muted-foreground">Matches:</span>
-                    <span className="font-semibold text-primary">{buyBox.matchCount || 0}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          ) : (
-            // List View
-            <Card
-              key={buyBox.id}
-              className={`transition-all hover:shadow-md ${
-                !buyBox.isActive ? "opacity-60" : ""
-              }`}
-            >
-              <div className="flex items-center gap-4 p-4">
-                {/* Icon */}
-                <div className={`flex h-10 w-10 items-center justify-center rounded-xl shrink-0 ${
-                  buyBox.isActive ? "bg-primary/10" : "bg-muted"
-                }`}>
-                  <Target className={`h-5 w-5 ${buyBox.isActive ? "text-primary" : "text-muted-foreground"}`} />
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold truncate">{buyBox.name}</h3>
-                    <Badge variant={buyBox.isActive ? "default" : "secondary"} className="text-xs shrink-0">
-                      {buyBox.isActive ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-muted-foreground line-clamp-1">
-                    {buyBox.description || "No description"}
-                  </p>
-                </div>
-
-                {/* Criteria Summary */}
-                <div className="hidden lg:flex items-center gap-2 shrink-0">
-                  {buyBox.criteria.states && buyBox.criteria.states.length > 0 && (
-                    <Badge variant="outline" className="text-xs gap-1">
-                      <MapPin className="h-3 w-3" />
-                      {buyBox.criteria.states.slice(0, 2).join(", ")}
-                    </Badge>
-                  )}
-                  {(buyBox.criteria.minPrice || buyBox.criteria.maxPrice) && (
-                    <Badge variant="outline" className="text-xs gap-1">
-                      <DollarSign className="h-3 w-3" />
-                      {formatPrice(buyBox.criteria.minPrice) || "$0"} - {formatPrice(buyBox.criteria.maxPrice) || "Any"}
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Match Count */}
-                <div className="flex items-center gap-1.5 text-sm shrink-0 min-w-[80px] justify-end">
-                  <span className="text-muted-foreground">Matches:</span>
-                  <span className="font-semibold text-primary">{buyBox.matchCount || 0}</span>
-                </div>
-
-                {/* Actions */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-40 bg-white z-[100]">
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setEditingBuyBox(buyBox);
-                        setShowCreateDialog(true);
-                      }}
-                      className="gap-2 cursor-pointer"
-                    >
-                      <Pencil className="h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleDuplicate(buyBox)}
-                      className="gap-2 cursor-pointer"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Duplicate
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => handleToggleActive(buyBox.id)}
-                      className="gap-2 cursor-pointer"
-                    >
-                      {buyBox.isActive ? (
-                        <>
-                          <ToggleLeft className="h-4 w-4" />
-                          Deactivate
-                        </>
-                      ) : (
-                        <>
-                          <ToggleRight className="h-4 w-4" />
-                          Activate
-                        </>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      onClick={() => handleDelete(buyBox.id)}
-                      className="gap-2 cursor-pointer text-destructive focus:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </Card>
-          )
+          <BuyBoxCard
+            key={buyBox.id}
+            buyBox={buyBox}
+            viewMode={viewMode}
+            onEdit={(bb) => {
+              setEditingBuyBox(bb);
+              setShowCreateDialog(true);
+            }}
+            onDuplicate={handleDuplicate}
+            onToggleActive={handleToggleActive}
+            onDelete={handleDelete}
+          />
         ))}
 
         {/* Empty State */}
