@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sparkles, Copy, Check, Loader2, Mail, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -177,71 +176,69 @@ export function AIMessageTemplatesDialog({
               <p className="text-sm text-muted-foreground">Generating personalized templates...</p>
             </div>
           ) : (
-            <ScrollArea className="h-[400px]">
-              <div className="space-y-3 pr-4">
-                {templates.map((template, index) => (
-                  <div
-                    key={index}
-                    className="p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
-                  >
-                    {/* Badge at top */}
-                    <div className="flex items-center justify-between mb-3">
-                      <Badge
-                        variant="outline"
-                        className={cn("text-xs", getToneColor("tone" in template ? template.tone : ""))}
-                      >
-                        {"tone" in template ? template.tone : "Template"}
-                      </Badge>
-                    </div>
-
-                    {/* Content */}
-                    {messageType === "email" && "subject" in template ? (
-                      <div className="space-y-2 mb-3">
-                        <div>
-                          <span className="text-xs font-medium text-muted-foreground">Subject:</span>
-                          <p className="text-sm font-medium">{(template as EmailTemplate).subject}</p>
-                        </div>
-                        <div>
-                          <span className="text-xs font-medium text-muted-foreground">Body:</span>
-                          <p className="text-sm whitespace-pre-wrap">{(template as EmailTemplate).body}</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-sm mb-3">{(template as SmsTemplate).message}</p>
-                    )}
-
-                    {/* Actions at bottom */}
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 px-2 text-xs"
-                        onClick={() => handleCopy(
-                          messageType === "email" && "body" in template 
-                            ? `${(template as EmailTemplate).subject}\n\n${(template as EmailTemplate).body}`
-                            : (template as SmsTemplate).message,
-                          index
-                        )}
-                      >
-                        {copiedIndex === index ? (
-                          <Check className="h-3 w-3 mr-1 text-success" />
-                        ) : (
-                          <Copy className="h-3 w-3 mr-1" />
-                        )}
-                        Copy
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="h-7 px-3 text-xs"
-                        onClick={() => handleUseTemplate(template)}
-                      >
-                        Use
-                      </Button>
-                    </div>
+            <div className="space-y-3">
+              {templates.map((template, index) => (
+                <div
+                  key={index}
+                  className="p-4 rounded-lg border bg-card hover:bg-muted/30 transition-colors"
+                >
+                  {/* Badge at top */}
+                  <div className="flex items-center justify-between mb-3">
+                    <Badge
+                      variant="outline"
+                      className={cn("text-xs", getToneColor("tone" in template ? template.tone : ""))}
+                    >
+                      {"tone" in template ? template.tone : "Template"}
+                    </Badge>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+
+                  {/* Content */}
+                  {messageType === "email" && "subject" in template ? (
+                    <div className="space-y-2 mb-3">
+                      <div>
+                        <span className="text-xs font-medium text-muted-foreground">Subject:</span>
+                        <p className="text-sm font-medium">{(template as EmailTemplate).subject}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs font-medium text-muted-foreground">Body:</span>
+                        <p className="text-sm whitespace-pre-wrap">{(template as EmailTemplate).body}</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm mb-3">{(template as SmsTemplate).message}</p>
+                  )}
+
+                  {/* Actions at bottom */}
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 px-2 text-xs"
+                      onClick={() => handleCopy(
+                        messageType === "email" && "body" in template 
+                          ? `${(template as EmailTemplate).subject}\n\n${(template as EmailTemplate).body}`
+                          : (template as SmsTemplate).message,
+                        index
+                      )}
+                    >
+                      {copiedIndex === index ? (
+                        <Check className="h-3 w-3 mr-1 text-success" />
+                      ) : (
+                        <Copy className="h-3 w-3 mr-1" />
+                      )}
+                      Copy
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-7 px-3 text-xs"
+                      onClick={() => handleUseTemplate(template)}
+                    >
+                      Use
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </DialogContent>
