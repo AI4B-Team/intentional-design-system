@@ -390,20 +390,18 @@ export function PropertyDetailMap({
       <div className="absolute top-3 right-3 z-[1000] flex gap-2">
         {/* Buyers Near Property - Only show when in buyers view */}
         {showBuyers && (
-          <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-2.5 py-1 shadow-md flex items-center gap-2">
-            <Users className="h-3 w-3 text-success-foreground" />
+          <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-2.5 h-8 shadow-md flex items-center gap-2">
+            <Users className="h-3.5 w-3.5 text-success-foreground" />
             <span className="text-xs font-medium text-success-foreground">
               {buyers.length} Buyers Near Property
             </span>
             {onCloseBuyersView && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-5 w-5 hover:bg-success-foreground/20 p-0"
+              <button
+                className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
                 onClick={onCloseBuyersView}
               >
                 <X className="h-3 w-3 text-success-foreground" />
-              </Button>
+              </button>
             )}
           </div>
         )}
