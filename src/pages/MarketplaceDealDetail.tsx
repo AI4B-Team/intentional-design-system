@@ -431,6 +431,24 @@ function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepair
   );
 }
 
+// Session storage keys for persistent preferences
+const DETAIL_VIEW_MODE_KEY = "marketplace-detail-view-mode";
+const DETAIL_LAYOUT_MODE_KEY = "marketplace-detail-layout-mode";
+
+function getStoredDetailViewMode(): ViewMode {
+  if (typeof window === "undefined") return "flip";
+  const stored = sessionStorage.getItem(DETAIL_VIEW_MODE_KEY);
+  if (stored === "flip" || stored === "hold" || stored === "buyers") return stored as ViewMode;
+  return "flip";
+}
+
+function getStoredDetailLayoutMode(): LayoutMode {
+  if (typeof window === "undefined") return "detail";
+  const stored = sessionStorage.getItem(DETAIL_LAYOUT_MODE_KEY);
+  if (stored === "detail" || stored === "split") return stored as LayoutMode;
+  return "detail";
+}
+
 export default function MarketplaceDealDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -441,8 +459,17 @@ export default function MarketplaceDealDetail() {
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
   // compType state moved to ComparableSalesSection component
-  const [viewMode, setViewMode] = useState<ViewMode>("flip");
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>("detail");
+  const [viewMode, setViewMode] = useState<ViewMode>(getStoredDetailViewMode);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
+
+  // Persist view mode and layout mode changes to sessionStorage
+  React.useEffect(() => {
+    sessionStorage.setItem(DETAIL_VIEW_MODE_KEY, viewMode);
+  }, [viewMode]);
+
+  React.useEffect(() => {
+    sessionStorage.setItem(DETAIL_LAYOUT_MODE_KEY, layoutMode);
+  }, [layoutMode]);
   
   // Use shared saved deals hook
   const { isSaved, toggleSave } = useSavedDeals();
