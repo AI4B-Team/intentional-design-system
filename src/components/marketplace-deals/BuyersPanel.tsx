@@ -305,7 +305,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
             </ScrollArea>
 
             <p className="text-xs text-center text-muted-foreground mt-3">
-              {filteredBuyers.length} buyers match this property
+              {filteredBuyers.length} Buyers Match This Property
             </p>
           </div>
         </CollapsibleContent>
