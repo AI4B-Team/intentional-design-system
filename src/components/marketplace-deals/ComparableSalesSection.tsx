@@ -194,7 +194,7 @@ export function ComparableSalesSection({
                   <RefreshCw className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Refresh comps</TooltipContent>
+              <TooltipContent>Refresh Comps</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
