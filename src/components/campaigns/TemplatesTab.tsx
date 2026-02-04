@@ -8,14 +8,6 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -66,6 +58,7 @@ import {
   Check,
   AlertTriangle,
   ChevronRight,
+  Save,
 } from "lucide-react";
 import {
   useOfferTemplates,
@@ -77,6 +70,13 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import {
+  TemplateDocumentSelector,
+  TemplateTermsForm,
+  TemplateEmailForm,
+  TemplateSmsForm,
+  TemplateLivePreview,
+} from "./template-builder";
 
 // Offer type configurations
 const OFFER_TYPE_CONFIGS = [
@@ -418,441 +418,130 @@ export function TemplatesTab() {
   const investorOffers = OFFER_TYPE_CONFIGS.filter((c) => !c.isLicenseRequired);
   const licensedOffers = OFFER_TYPE_CONFIGS.filter((c) => c.isLicenseRequired);
 
+  const [useSampleData, setUseSampleData] = useState(true);
+  const [includeSms, setIncludeSms] = useState(true);
+
   // Builder View
   if (viewMode === "builder") {
     return (
-      <div className="space-y-6">
-        {/* Builder Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={handleBackToGrid}>
-              <ArrowLeft className="h-4 w-4" />
+      <div className="space-y-0">
+        {/* Builder Header - Inspired by reference */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={handleBackToGrid} className="shrink-0">
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className={cn("h-12 w-12 rounded-xl flex items-center justify-center", currentOfferConfig?.bgColor)}>
-              {currentOfferConfig?.icon && <currentOfferConfig.icon className={cn("h-6 w-6", currentOfferConfig.color)} />}
-            </div>
             <div>
-              <h2 className="text-xl font-bold text-foreground">
-                {editingTemplate ? "Edit Template" : "Create Template"}
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                {currentOfferConfig?.label} Template
+              <h1 className="text-xl font-bold text-foreground">
+                {formData.name || "Professional Cash Offer"}
+              </h1>
+              <p className="text-small text-muted-foreground">
+                Description (optional)
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={handleBackToGrid}>
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={handleSave}
-              disabled={!formData.name.trim() || createTemplate.isPending || updateTemplate.isPending}
-            >
-              {editingTemplate ? "Save Changes" : "Create Template"}
-            </Button>
-          </div>
+          <Button
+            variant="primary"
+            onClick={handleSave}
+            disabled={!formData.name.trim() || createTemplate.isPending || updateTemplate.isPending}
+            className="gap-2"
+          >
+            <Save className="h-4 w-4" />
+            {editingTemplate ? "Save Package" : "Save Package"}
+          </Button>
         </div>
 
-        {/* Builder Content - 50/50 Split */}
+        {/* Horizontal Document Type Tabs */}
         <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
+          <TabsList className="bg-transparent border-0 p-0 h-auto mb-6 gap-2">
+            <TabsTrigger 
+              value="loi" 
+              className={cn(
+                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
+                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
+              )}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              LOI Document
+            </TabsTrigger>
+            <TabsTrigger 
+              value="email"
+              className={cn(
+                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
+                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
+              )}
+            >
+              <Mail className="h-4 w-4 mr-2" />
+              Email Message
+            </TabsTrigger>
+            <TabsTrigger 
+              value="sms"
+              className={cn(
+                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
+                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
+              )}
+            >
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Text Message
+            </TabsTrigger>
+          </TabsList>
+
+          {/* 50/50 Split Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Panel - Tab Buttons */}
-            <div>
-              <Card variant="default" padding="lg">
-                <TabsList className="flex flex-col w-full h-auto space-y-1">
-                  <TabsTrigger value="general" className="w-full justify-start">General</TabsTrigger>
-                  <TabsTrigger value="terms" className="w-full justify-start">Terms</TabsTrigger>
-                  <TabsTrigger value="email" className="w-full justify-start">Email</TabsTrigger>
-                  <TabsTrigger value="sms" className="w-full justify-start">SMS</TabsTrigger>
-                  <TabsTrigger value="loi" className="w-full justify-start">LOI</TabsTrigger>
-                </TabsList>
+            {/* Left Panel - Form Controls */}
+            <div className="space-y-6">
+              {/* LOI Tab Content */}
+              <TabsContent value="loi" className="mt-0 space-y-6">
+                {/* Template Selector */}
+                <TemplateDocumentSelector
+                  selectedTemplate={formData.offer_type}
+                  onSelectTemplate={(id) => setFormData({ ...formData, offer_type: id })}
+                />
 
-                {/* Summary Info */}
-                <div className="mt-6 pt-6 border-t space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
-                      {currentOfferConfig && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
-                    </div>
-                    <div>
-                      <p className="font-medium">{formData.name || "Untitled Template"}</p>
-                      <p className="text-tiny text-muted-foreground uppercase tracking-wide">{currentOfferConfig?.label}</p>
-                    </div>
-                  </div>
+                {/* Terms Form */}
+                <TemplateTermsForm
+                  terms={formData.terms}
+                  offerType={formData.offer_type}
+                  onChange={(terms) => setFormData({ ...formData, terms })}
+                />
+              </TabsContent>
 
-                  <div className="flex gap-2">
-                    <Badge variant="secondary" size="sm">
-                      {formData.market_type === "off_market" ? "OFF-MARKET" : "MLS"}
-                    </Badge>
-                    {formData.document_type === "loi" && <Badge variant="secondary" size="sm">LOI</Badge>}
-                    {formData.document_type === "purchase_agreement" && <Badge variant="secondary" size="sm">PA</Badge>}
-                  </div>
+              {/* Email Tab Content */}
+              <TabsContent value="email" className="mt-0">
+                <TemplateEmailForm
+                  subject={formData.email_subject}
+                  body={formData.email_body}
+                  onSubjectChange={(v) => setFormData({ ...formData, email_subject: v })}
+                  onBodyChange={(v) => setFormData({ ...formData, email_body: v })}
+                />
+              </TabsContent>
 
-                  <div className="space-y-2 text-small">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Deposit:</span>
-                      <span className="font-medium">${(formData.terms.depositAmount || 1000).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Closing:</span>
-                      <span className="font-medium">{formData.terms.closingTimeline || 14} days</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Inspection:</span>
-                      <span className="font-medium">{formData.terms.inspectionPeriod || 10} days</span>
-                    </div>
-                  </div>
-
-                  <div className="border-t pt-3 space-y-2">
-                    <div className="flex items-center gap-2 text-small">
-                      <Mail className={cn("h-4 w-4", formData.email_subject ? "text-success" : "text-muted-foreground")} />
-                      <span className={formData.email_subject ? "text-success" : "text-muted-foreground"}>
-                        {formData.email_subject ? "Email configured" : "Email not configured"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-small">
-                      <MessageSquare className={cn("h-4 w-4", formData.sms_body ? "text-success" : "text-muted-foreground")} />
-                      <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
-                        {formData.sms_body ? "SMS configured" : "SMS not configured"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-small">
-                      <FileText className={cn("h-4 w-4", formData.loi_content ? "text-success" : "text-muted-foreground")} />
-                      <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
-                        {formData.loi_content ? "LOI configured" : "LOI not configured"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+              {/* SMS Tab Content */}
+              <TabsContent value="sms" className="mt-0">
+                <TemplateSmsForm
+                  message={formData.sms_body}
+                  includeSms={includeSms}
+                  onMessageChange={(v) => setFormData({ ...formData, sms_body: v })}
+                  onIncludeSmsChange={setIncludeSms}
+                />
+              </TabsContent>
             </div>
 
-            {/* Right Panel - LIVE Preview with Tab Content */}
+            {/* Right Panel - Live Preview (Always visible) */}
             <div>
-              <Card variant="default" padding="lg" className="sticky top-4">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="relative flex items-center">
-                    <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
-                    <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
-                  </div>
-                  <h3 className="font-semibold">Template Preview</h3>
-                </div>
-
-                <TabsContent value="general" className="space-y-4 mt-0">
-                  <div className="space-y-2">
-                    <Label>Template Name *</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="e.g., Standard Cash Offer - Dallas"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Description</Label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="Brief description of when to use this template"
-                      rows={2}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Offer Type</Label>
-                      <Select
-                        value={formData.offer_type}
-                        onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {OFFER_TYPE_CONFIGS.map((opt) => (
-                            <SelectItem key={opt.id} value={opt.id}>
-                              <div className="flex items-center gap-2">
-                                <opt.icon className={cn("h-4 w-4", opt.color)} />
-                                {opt.label}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Market Type</Label>
-                      <Select
-                        value={formData.market_type}
-                        onValueChange={(v) => setFormData({ ...formData, market_type: v })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="off_market">
-                            <div className="flex items-center gap-2">
-                              <Home className="h-4 w-4" />
-                              Off-Market
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="on_market">
-                            <div className="flex items-center gap-2">
-                              <Building className="h-4 w-4" />
-                              On-Market (MLS)
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Document Type</Label>
-                      <Select
-                        value={formData.document_type}
-                        onValueChange={(v) => setFormData({ ...formData, document_type: v })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {DOCUMENT_TYPE_OPTIONS.map((opt) => (
-                            <SelectItem key={opt.value} value={opt.value}>
-                              {opt.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="flex items-center gap-4 pt-6">
-                      <Switch
-                        id="include-pof"
-                        checked={formData.include_pof}
-                        onCheckedChange={(v) => setFormData({ ...formData, include_pof: v })}
-                      />
-                      <Label htmlFor="include-pof">
-                        Include POF
-                        {isPOFRequired && <span className="text-destructive ml-1">*</span>}
-                      </Label>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 pt-2">
-                    <Switch
-                      id="is-default"
-                      checked={formData.is_default}
-                      onCheckedChange={(v) => setFormData({ ...formData, is_default: v })}
-                    />
-                    <Label htmlFor="is-default">Set as default for this offer type</Label>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="terms" className="space-y-4 mt-0">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Earnest Money Deposit ($)</Label>
-                      <Input
-                        type="number"
-                        value={formData.terms.depositAmount || 1000}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          terms: { ...formData.terms, depositAmount: parseInt(e.target.value) || 0 }
-                        })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Closing Timeline (days)</Label>
-                      <Input
-                        type="number"
-                        value={formData.terms.closingTimeline || 14}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          terms: { ...formData.terms, closingTimeline: parseInt(e.target.value) || 0 }
-                        })}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Inspection Period (days)</Label>
-                      <Input
-                        type="number"
-                        value={formData.terms.inspectionPeriod || 10}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          terms: { ...formData.terms, inspectionPeriod: parseInt(e.target.value) || 0 }
-                        })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Offer Expiration (hours)</Label>
-                      <Input
-                        type="number"
-                        value={formData.terms.offerExpiration || 72}
-                        onChange={(e) => setFormData({
-                          ...formData,
-                          terms: { ...formData.terms, offerExpiration: parseInt(e.target.value) || 0 }
-                        })}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Creative terms for specific offer types */}
-                  {(formData.offer_type === "seller_financing" || formData.offer_type === "hybrid") && (
-                    <>
-                      <div className="border-t pt-4 mt-4">
-                        <h4 className="font-medium mb-4">Financing Terms</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label>Down Payment (%)</Label>
-                            <Input
-                              type="number"
-                              value={formData.terms.downPayment || 10}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                terms: { ...formData.terms, downPayment: parseInt(e.target.value) || 0 }
-                              })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Interest Rate (%)</Label>
-                            <Input
-                              type="number"
-                              step="0.1"
-                              value={formData.terms.interestRate || 6}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                terms: { ...formData.terms, interestRate: parseFloat(e.target.value) || 0 }
-                              })}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4 mt-4">
-                          <div className="space-y-2">
-                            <Label>Term (months)</Label>
-                            <Input
-                              type="number"
-                              value={formData.terms.termMonths || 360}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                terms: { ...formData.terms, termMonths: parseInt(e.target.value) || 0 }
-                              })}
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label>Balloon (months)</Label>
-                            <Input
-                              type="number"
-                              value={formData.terms.balloonMonths || 60}
-                              onChange={(e) => setFormData({
-                                ...formData,
-                                terms: { ...formData.terms, balloonMonths: parseInt(e.target.value) || 0 }
-                              })}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {formData.offer_type === "novation" && (
-                    <div className="border-t pt-4 mt-4">
-                      <h4 className="font-medium mb-4">Novation Terms</h4>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label>Marketing Period (days)</Label>
-                          <Input
-                            type="number"
-                            value={formData.terms.marketingPeriod || 90}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              terms: { ...formData.terms, marketingPeriod: parseInt(e.target.value) || 0 }
-                            })}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Profit Split (%)</Label>
-                          <Input
-                            type="number"
-                            value={formData.terms.profitSplit || 50}
-                            onChange={(e) => setFormData({
-                              ...formData,
-                              terms: { ...formData.terms, profitSplit: parseInt(e.target.value) || 0 }
-                            })}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </TabsContent>
-
-                <TabsContent value="email" className="space-y-4 mt-0">
-                  <div className="space-y-2">
-                    <Label>Subject Line</Label>
-                    <Input
-                      value={formData.email_subject}
-                      onChange={(e) => setFormData({ ...formData, email_subject: e.target.value })}
-                      placeholder="Cash Offer for {{property_address}}"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Email Body</Label>
-                    <Textarea
-                      value={formData.email_body}
-                      onChange={(e) => setFormData({ ...formData, email_body: e.target.value })}
-                      placeholder="Write your email content..."
-                      rows={14}
-                      className="font-mono text-sm"
-                    />
-                  </div>
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-tiny text-muted-foreground">
-                      <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{closing_days}}"}
-                    </p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="sms" className="space-y-4 mt-0">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label>SMS Message</Label>
-                      <span className={cn(
-                        "text-tiny",
-                        formData.sms_body.length > 160 ? "text-warning" : "text-muted-foreground"
-                      )}>
-                        {formData.sms_body.length}/160 characters
-                      </span>
-                    </div>
-                    <Textarea
-                      value={formData.sms_body}
-                      onChange={(e) => setFormData({ ...formData, sms_body: e.target.value })}
-                      placeholder="Write your SMS message..."
-                      rows={4}
-                    />
-                  </div>
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-tiny text-muted-foreground">
-                      <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}
-                    </p>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="loi" className="space-y-4 mt-0">
-                  <div className="space-y-2">
-                    <Label>Letter of Intent / Purchase Agreement</Label>
-                    <Textarea
-                      value={formData.loi_content}
-                      onChange={(e) => setFormData({ ...formData, loi_content: e.target.value })}
-                      placeholder="Write your LOI content..."
-                      rows={18}
-                      className="font-mono text-sm"
-                    />
-                  </div>
-                  <div className="p-3 bg-muted/50 rounded-lg">
-                    <p className="text-tiny text-muted-foreground">
-                      <strong>Available variables:</strong> {"{{date}}"}, {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{property_city}}"}, {"{{property_state}}"}, {"{{property_zip}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{inspection_period}}"}, {"{{closing_days}}"}
-                    </p>
-                  </div>
-                </TabsContent>
-              </Card>
+              <TemplateLivePreview
+                templateName={
+                  formData.offer_type === "cash" ? "Standard Cash Offer" :
+                  formData.offer_type === "hybrid" ? "Hybrid Offer- Subject To + Seller Finance" :
+                  formData.offer_type === "seller_financing" ? "Seller Financing Offer" :
+                  formData.offer_type === "subject_to" ? "Subject To Acquisition" :
+                  "Standard Cash Offer"
+                }
+                templateType={formData.offer_type}
+                loiContent={formData.loi_content}
+                useSampleData={useSampleData}
+                onToggleSampleData={() => setUseSampleData(!useSampleData)}
+              />
             </div>
           </div>
         </Tabs>
