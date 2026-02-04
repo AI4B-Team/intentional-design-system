@@ -984,22 +984,35 @@ export default function MarketplaceDealDetail() {
                   <DealScoreCompact score={Math.min(Math.round(roi * 3 + 20), 100)} />
                 </div>
               </div>
-              {/* Row 2: Last Sold info */}
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-muted-foreground">
-                  Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
-                </span>
-                <span className={cn(
-                  "flex items-center gap-0.5 text-sm font-semibold",
-                  priceChange >= 0 ? "text-success" : "text-destructive"
-                )}>
-                  {priceChange >= 0 ? (
-                    <ArrowUpRight className="h-4 w-4" />
-                  ) : (
-                    <ArrowDownRight className="h-4 w-4" />
-                  )}
-                  {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
-                </span>
+              {/* Row 2: Last Sold info + Property Labels */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
+                  </span>
+                  <span className={cn(
+                    "flex items-center gap-0.5 text-sm font-semibold",
+                    priceChange >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    {priceChange >= 0 ? (
+                      <ArrowUpRight className="h-4 w-4" />
+                    ) : (
+                      <ArrowDownRight className="h-4 w-4" />
+                    )}
+                    {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
+                    Low Risk
+                  </Badge>
+                  <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
+                    9.2% Cap
+                  </Badge>
+                  <Badge variant="outline" className="border-warning text-warning bg-warning/10 rounded-full px-3 py-1 text-xs font-medium">
+                    A+ Location
+                  </Badge>
+                </div>
               </div>
               {/* Row 3: Address */}
               <p className="flex items-center gap-2 text-lg text-muted-foreground">
