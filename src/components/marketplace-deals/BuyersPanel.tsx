@@ -213,7 +213,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
             {/* Buyers List */}
             <ScrollArea className="h-[280px]">
-              <div className="space-y-2 pr-2">
+              <div className="space-y-2">
                 {filteredBuyers.map((buyer) => (
                   <div
                     key={buyer.id}
@@ -254,7 +254,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                         </span>
                       )}
                       {buyer.dealsCompleted && (
-                        <span>{buyer.dealsCompleted} deals</span>
+                        <span>{buyer.dealsCompleted} Deals</span>
                       )}
                       {buyer.maxPrice && (
                         <span>Max ${(buyer.maxPrice / 1000).toFixed(0)}k</span>
