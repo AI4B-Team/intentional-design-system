@@ -402,8 +402,8 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
               </Button>
             )}
 
-            {/* Buyers List */}
-            <div className="space-y-2">
+            {/* Buyers List - Scrollable */}
+            <div className="max-h-[400px] overflow-y-auto pr-2 -mr-2 space-y-2">
               {filteredBuyers.map((buyer) => (
                   <div
                     key={buyer.id}
