@@ -454,10 +454,10 @@ export function TemplatesTab() {
           </div>
         </div>
 
-        {/* Builder Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel - Form */}
-          <div className="lg:col-span-2">
+        {/* Builder Content - 50/50 Split */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Panel - Controls */}
+          <div>
             <Card variant="default" padding="lg">
               <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
                 <TabsList className="grid w-full grid-cols-5">
@@ -788,10 +788,16 @@ export function TemplatesTab() {
             </Card>
           </div>
 
-          {/* Right Panel - Preview */}
-          <div className="lg:col-span-1">
+          {/* Right Panel - LIVE Preview */}
+          <div>
             <Card variant="default" padding="md" className="sticky top-4">
-              <h3 className="font-semibold mb-4">Template Preview</h3>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="relative flex items-center">
+                  <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
+                  <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
+                </div>
+                <h3 className="font-semibold">Template Preview</h3>
+              </div>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
