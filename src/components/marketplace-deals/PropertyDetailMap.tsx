@@ -116,8 +116,12 @@ export function PropertyDetailMap({
       mapInstanceRef.current = L.map(mapRef.current, {
         center: [centerLat, centerLng],
         zoom: 14,
-        zoomControl: true,
+        zoomControl: false, // We'll add custom position
+        scrollWheelZoom: false, // Prevent scroll zoom
       });
+
+      // Add zoom control to bottom right
+      L.control.zoom({ position: 'bottomright' }).addTo(mapInstanceRef.current);
 
       const tileUrl = mapType === "satellite"
         ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -434,9 +438,25 @@ export function PropertyDetailMap({
         </Popover>
       </div>
       
-      {/* Buyers View Header - Below top controls */}
+      {/* Property Quick Info - Left side, below map toggle */}
+      <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
+        <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
+        <p className="font-semibold text-sm">{subjectProperty.address}</p>
+        <p className="text-xs text-muted-foreground mb-2">
+          {subjectProperty.city}, {subjectProperty.state} {subjectProperty.zip}
+        </p>
+        <div className="flex items-center gap-3 text-sm">
+          <span className="font-bold">${subjectProperty.price.toLocaleString()}</span>
+          <span className="text-success font-semibold">ARV: ${subjectProperty.arv.toLocaleString()}</span>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {subjectProperty.beds} bd • {subjectProperty.baths} ba • {subjectProperty.sqft.toLocaleString()} sqft
+        </p>
+      </div>
+
+      {/* Buyers View Header - Below subject property box */}
       {showBuyers && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-success/95 backdrop-blur-sm rounded-lg border border-success px-4 py-2 shadow-lg z-[1000] flex items-center gap-3">
+        <div className="absolute top-[180px] left-3 bg-success/95 backdrop-blur-sm rounded-lg border border-success px-4 py-2 shadow-lg z-[1000] flex items-center gap-3">
           <Users className="h-4 w-4 text-success-foreground" />
           <span className="text-sm font-medium text-success-foreground">
             {buyers.length} Buyers Near Property
@@ -453,8 +473,6 @@ export function PropertyDetailMap({
           )}
         </div>
       )}
-
-      {/* Property Quick Info - Left side, below map toggle */}
       <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
         <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
         <p className="font-semibold text-sm">{subjectProperty.address}</p>
