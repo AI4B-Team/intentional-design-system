@@ -760,8 +760,8 @@ export default function MarketplaceDealDetail() {
       )}>
         {/* Top Navigation */}
         <div className={cn(
-          "flex items-center justify-between mb-4 flex-shrink-0",
-          layoutMode === "split" ? "px-4" : "max-w-7xl mx-auto w-full"
+          "flex items-center justify-between flex-shrink-0",
+          layoutMode === "split" ? "px-4 py-2" : "max-w-7xl mx-auto w-full mb-4"
         )}>
           <div className="flex items-center gap-6">
             <Button
@@ -868,7 +868,7 @@ export default function MarketplaceDealDetail() {
         )}>
           {/* Map Panel - Only in Split Mode - Fixed/Locked */}
           {layoutMode === "split" && (
-            <div className="w-1/2 h-[calc(100vh-4rem)] sticky top-16 min-h-0 border-r overflow-hidden">
+            <div className="w-1/2 h-full min-h-0 border-r overflow-hidden">
               <PropertyDetailMap
                 subjectProperty={subjectForMap}
                 comps={mapComps}
