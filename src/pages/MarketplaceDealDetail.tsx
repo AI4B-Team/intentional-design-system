@@ -753,8 +753,10 @@ export default function MarketplaceDealDetail() {
   return (
     <AppLayout fullWidth={layoutMode === "split"}>
       <div className={cn(
-        "flex flex-col h-full",
-        layoutMode === "split" ? "overflow-hidden" : ""
+        "flex flex-col",
+        // AppHeader is fixed at h-16 (4rem). In split view we lock the content area
+        // to the remaining viewport height so the left map + overlays are always above the fold.
+        layoutMode === "split" ? "h-[calc(100vh-4rem)] overflow-hidden" : ""
       )}>
         {/* Top Navigation */}
         <div className={cn(
@@ -862,11 +864,11 @@ export default function MarketplaceDealDetail() {
         {/* Main Content Area - Split or Detail Mode */}
         <div className={cn(
           "flex-1",
-          layoutMode === "split" ? "flex overflow-hidden" : ""
+          layoutMode === "split" ? "flex overflow-hidden min-h-0" : ""
         )}>
           {/* Map Panel - Only in Split Mode - Fixed/Locked */}
           {layoutMode === "split" && (
-            <div className="w-1/2 h-full border-r sticky top-0 overflow-hidden">
+            <div className="w-1/2 h-[calc(100vh-4rem)] sticky top-16 min-h-0 border-r overflow-hidden">
               <PropertyDetailMap
                 subjectProperty={subjectForMap}
                 comps={mapComps}
@@ -880,7 +882,7 @@ export default function MarketplaceDealDetail() {
           {/* Detail Panel - Scrollable */}
           <div className={cn(
             layoutMode === "split" 
-              ? "w-1/2 h-full overflow-y-auto p-4" 
+              ? "w-1/2 h-full min-h-0 overflow-y-auto p-4" 
               : "max-w-7xl mx-auto w-full"
           )}>
             {/* Image Gallery - Compact Layout */}
