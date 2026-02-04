@@ -9,16 +9,16 @@ import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/
 import { cn } from "@/lib/utils";
 
 export type LayoutMode = "cards" | "split" | "map";
-type CardViewMode = "overview" | "flip" | "hold";
+type CardViewMode = "flip" | "hold";
 
 // Session storage key for global view mode
 const GLOBAL_VIEW_MODE_KEY = "marketplace-global-card-view-mode";
 
 function getStoredGlobalViewMode(): CardViewMode {
-  if (typeof window === "undefined") return "overview";
+  if (typeof window === "undefined") return "flip";
   const stored = sessionStorage.getItem(GLOBAL_VIEW_MODE_KEY);
-  if (stored === "flip" || stored === "hold" || stored === "overview") return stored;
-  return "overview";
+  if (stored === "flip" || stored === "hold") return stored;
+  return "flip";
 }
 
 function setStoredGlobalViewMode(mode: CardViewMode) {

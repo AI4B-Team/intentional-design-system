@@ -55,13 +55,13 @@ import { cn } from "@/lib/utils";
 // Session storage key for view mode preference
 const VIEW_MODE_STORAGE_KEY = "marketplace-card-view-mode";
 
-type CardViewMode = "overview" | "flip" | "hold";
+type CardViewMode = "flip" | "hold";
 
 function getStoredViewMode(): CardViewMode {
-  if (typeof window === "undefined") return "overview";
+  if (typeof window === "undefined") return "flip";
   const stored = sessionStorage.getItem(VIEW_MODE_STORAGE_KEY);
-  if (stored === "flip" || stored === "hold" || stored === "overview") return stored;
-  return "overview";
+  if (stored === "flip" || stored === "hold") return stored;
+  return "flip";
 }
 
 function setStoredViewMode(mode: CardViewMode) {
@@ -181,11 +181,7 @@ const INVESTOR_ONLY_TAGS = [
 ];
 
 function getFilteredTags(tags: string[], viewMode: CardViewMode): string[] {
-  if (viewMode === "overview") {
-    // Only show neutral/lifestyle tags in Overview
-    return tags.filter(tag => !INVESTOR_ONLY_TAGS.includes(tag));
-  }
-  // Flip and Hold can show all tags
+  // Flip and Hold can show all tags - no more overview filtering needed
   return tags;
 }
 
@@ -412,26 +408,6 @@ function DealListItem({
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={(e) => handleViewModeChange(e, "overview")}
-                          className={cn(
-                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
-                            cardViewMode === "overview"
-                              ? "bg-background text-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
-                          )}
-                        >
-                          Overview
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent className="bg-white text-foreground border shadow-md">
-                        <p>Basic Property Details</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
                           onClick={(e) => handleViewModeChange(e, "flip")}
                           className={cn(
                             "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
@@ -512,9 +488,7 @@ function DealListItem({
           </div>
 
           {/* Financial metrics - Conditional based on view mode */}
-          {cardViewMode === "overview" ? (
-            null /* Overview mode - no additional financial metrics */
-          ) : cardViewMode === "flip" ? (
+          {cardViewMode === "flip" ? (
             <div className="flex justify-between py-3 text-xs">
               <div>
                 <span className="text-muted-foreground block">ARV</span>
@@ -564,26 +538,24 @@ function DealListItem({
             <DealRiskMeter arvPercent={deal.arvPercent} />
           )}
 
-          {/* Bottom row: Summary - Only show in Flip/Hold modes */}
-          {cardViewMode !== "overview" && (
-            <div className="flex items-center justify-end gap-3 mt-2">
-              {cardViewMode === "flip" ? (
-                <div className={cn(
-                  "text-sm font-bold",
-                  profitPotential >= 0 ? "text-success" : "text-destructive"
-                )}>
-                  {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
-                </div>
-              ) : (
-                <div className={cn(
-                  "text-sm font-bold",
-                  monthlyCashflow >= 0 ? "text-success" : "text-destructive"
-                )}>
-                  {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo cash flow
-                </div>
-              )}
-            </div>
-          )}
+          {/* Bottom row: Summary */}
+          <div className="flex items-center justify-end gap-3 mt-2">
+            {cardViewMode === "flip" ? (
+              <div className={cn(
+                "text-sm font-bold",
+                profitPotential >= 0 ? "text-success" : "text-destructive"
+              )}>
+                {profitPotential >= 0 ? "+" : ""}{formatCurrency(profitPotential)} profit
+              </div>
+            ) : (
+              <div className={cn(
+                "text-sm font-bold",
+                monthlyCashflow >= 0 ? "text-success" : "text-destructive"
+              )}>
+                {monthlyCashflow >= 0 ? "+" : ""}{formatCurrency(monthlyCashflow)}/mo cash flow
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </Card>
@@ -821,17 +793,6 @@ function DealCard({
           <span className="text-[10px] text-muted-foreground mb-1">View Property As:</span>
           <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
             <button
-              onClick={(e) => handleViewModeChange(e, "overview")}
-              className={cn(
-                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
-                cardViewMode === "overview"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              Overview
-            </button>
-            <button
               onClick={(e) => handleViewModeChange(e, "flip")}
               className={cn(
                 "px-3 py-1 text-xs font-medium rounded-sm transition-all",
@@ -857,16 +818,7 @@ function DealCard({
         </div>
 
         {/* Conditional Content based on View Mode */}
-        {cardViewMode === "overview" ? (
-          <>
-            {/* Overview Mode - Just price prominent */}
-            <div className="mt-2 border-t border-border pt-2">
-              <div className="text-center">
-                <span className="text-2xl font-bold text-foreground">{formatCurrency(askingPrice)}</span>
-              </div>
-            </div>
-          </>
-        ) : cardViewMode === "flip" ? (
+        {cardViewMode === "flip" ? (
           <>
             {/* Deal Risk Meter - Flip Mode */}
             <DealRiskMeter arvPercent={deal.arvPercent} />
@@ -969,29 +921,17 @@ function DealCard({
         )}
 
         {/* Property Specs - Single row (no year built to prevent wrapping) */}
-        <div className={cn(
-          "border-t border-border",
-          cardViewMode === "overview" ? "mt-2 pt-1" : "mt-3 pt-2"
-        )}>
+        <div className="border-t border-border mt-3 pt-2">
           <div className="grid grid-cols-3 divide-x-2 divide-border text-sm text-muted-foreground">
-            <div className={cn(
-              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
-            )}>
+            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
               <Bed className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.beds} Beds</span>
             </div>
-            <div className={cn(
-              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
-            )}>
+            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
               <Bath className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.baths} Baths</span>
             </div>
-            <div className={cn(
-              "flex items-center justify-center gap-1 whitespace-nowrap px-1",
-              cardViewMode === "overview" ? "py-0.5" : "py-1.5"
-            )}>
+            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
               <Ruler className="h-3.5 w-3.5 shrink-0" />
               <span>{deal.sqft.toLocaleString()} SF</span>
             </div>
@@ -1051,26 +991,6 @@ export function MarketplaceListings({
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground mr-1">View As:</span>
             <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => onGlobalCardViewModeChange?.("overview")}
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
-                        effectiveCardViewMode === "overview"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Overview
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent className="bg-white text-foreground border shadow-md">
-                    <p>Basic Property Details</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
