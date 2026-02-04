@@ -178,87 +178,77 @@ export function ComparableSalesSection({
 
       {/* Filter Controls & Action Buttons */}
       <div className="flex items-center justify-between gap-3 mb-4 pb-4 border-b">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Filters */}
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Timeline</span>
-            <Select value={timeframe} onValueChange={setTimeframe}>
-              <SelectTrigger className="w-[70px] h-7 bg-background text-xs">
-                <SelectValue placeholder="6 Mo" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
-                <SelectItem value="3" className="text-xs">3 Mo</SelectItem>
-                <SelectItem value="6" className="text-xs">6 Mo</SelectItem>
-                <SelectItem value="12" className="text-xs">12 Mo</SelectItem>
-                <SelectItem value="24" className="text-xs">24 Mo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+              <span className="text-muted-foreground">Timeline:</span>
+              <SelectValue placeholder="6 Mo" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[100]">
+              <SelectItem value="3" className="text-xs">3 Mo</SelectItem>
+              <SelectItem value="6" className="text-xs">6 Mo</SelectItem>
+              <SelectItem value="12" className="text-xs">12 Mo</SelectItem>
+              <SelectItem value="24" className="text-xs">24 Mo</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Radius</span>
-            <Select value={radius} onValueChange={setRadius}>
-              <SelectTrigger className="w-[65px] h-7 bg-background text-xs">
-                <SelectValue placeholder="1 Mi" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
-                <SelectItem value="0.25" className="text-xs">0.25 Mi</SelectItem>
-                <SelectItem value="0.5" className="text-xs">0.5 Mi</SelectItem>
-                <SelectItem value="1" className="text-xs">1 Mi</SelectItem>
-                <SelectItem value="2" className="text-xs">2 Mi</SelectItem>
-                <SelectItem value="5" className="text-xs">5 Mi</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={radius} onValueChange={setRadius}>
+            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+              <span className="text-muted-foreground">Radius:</span>
+              <SelectValue placeholder="1 Mi" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[100]">
+              <SelectItem value="0.25" className="text-xs">0.25 Mi</SelectItem>
+              <SelectItem value="0.5" className="text-xs">0.5 Mi</SelectItem>
+              <SelectItem value="1" className="text-xs">1 Mi</SelectItem>
+              <SelectItem value="2" className="text-xs">2 Mi</SelectItem>
+              <SelectItem value="5" className="text-xs">5 Mi</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Beds</span>
-            <Select value={bedsFilter} onValueChange={setBedsFilter}>
-              <SelectTrigger className="w-[55px] h-7 bg-background text-xs">
-                <SelectValue placeholder="Any" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
-                <SelectItem value="any" className="text-xs">Any</SelectItem>
-                <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
-                <SelectItem value="1-3" className="text-xs">1-3</SelectItem>
-                <SelectItem value="2-4" className="text-xs">2-4</SelectItem>
-                <SelectItem value="3-5" className="text-xs">3-5</SelectItem>
-                <SelectItem value="4+" className="text-xs">4+</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={bedsFilter} onValueChange={setBedsFilter}>
+            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+              <span className="text-muted-foreground">Beds:</span>
+              <SelectValue placeholder="Any" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[100]">
+              <SelectItem value="any" className="text-xs">Any</SelectItem>
+              <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+              <SelectItem value="1-3" className="text-xs">1-3</SelectItem>
+              <SelectItem value="2-4" className="text-xs">2-4</SelectItem>
+              <SelectItem value="3-5" className="text-xs">3-5</SelectItem>
+              <SelectItem value="4+" className="text-xs">4+</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Baths</span>
-            <Select value={bathsFilter} onValueChange={setBathsFilter}>
-              <SelectTrigger className="w-[55px] h-7 bg-background text-xs">
-                <SelectValue placeholder="Any" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
-                <SelectItem value="any" className="text-xs">Any</SelectItem>
-                <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
-                <SelectItem value="2-3" className="text-xs">2-3</SelectItem>
-                <SelectItem value="3+" className="text-xs">3+</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={bathsFilter} onValueChange={setBathsFilter}>
+            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+              <span className="text-muted-foreground">Baths:</span>
+              <SelectValue placeholder="Any" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[100]">
+              <SelectItem value="any" className="text-xs">Any</SelectItem>
+              <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+              <SelectItem value="2-3" className="text-xs">2-3</SelectItem>
+              <SelectItem value="3+" className="text-xs">3+</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">SqFt</span>
-            <Select value={sqftFilter} onValueChange={setSqftFilter}>
-              <SelectTrigger className="w-[60px] h-7 bg-background text-xs">
-                <SelectValue placeholder="Any" />
-              </SelectTrigger>
-              <SelectContent className="bg-background z-[100]">
-                <SelectItem value="any" className="text-xs">Any</SelectItem>
-                <SelectItem value="0-1000" className="text-xs">0-1k</SelectItem>
-                <SelectItem value="1000-1500" className="text-xs">1-1.5k</SelectItem>
-                <SelectItem value="1500-2000" className="text-xs">1.5-2k</SelectItem>
-                <SelectItem value="2000-3000" className="text-xs">2-3k</SelectItem>
-                <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={sqftFilter} onValueChange={setSqftFilter}>
+            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+              <span className="text-muted-foreground">SqFt:</span>
+              <SelectValue placeholder="Any" />
+            </SelectTrigger>
+            <SelectContent className="bg-background z-[100]">
+              <SelectItem value="any" className="text-xs">Any</SelectItem>
+              <SelectItem value="0-1000" className="text-xs">0-1k</SelectItem>
+              <SelectItem value="1000-1500" className="text-xs">1-1.5k</SelectItem>
+              <SelectItem value="1500-2000" className="text-xs">1.5-2k</SelectItem>
+              <SelectItem value="2000-3000" className="text-xs">2-3k</SelectItem>
+              <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
+            </SelectContent>
+          </Select>
 
           <div className="w-px h-6 bg-border mx-1" />
 
