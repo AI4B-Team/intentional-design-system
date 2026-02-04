@@ -386,8 +386,28 @@ export function PropertyDetailMap({
         </div>
       </div>
 
-      {/* Right side controls: Draw + Intel */}
+      {/* Right side controls: Buyers + Draw + Intel */}
       <div className="absolute top-3 right-3 z-[1000] flex gap-2">
+        {/* Buyers Near Property - Only show when in buyers view */}
+        {showBuyers && (
+          <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-2.5 py-1 shadow-md flex items-center gap-2">
+            <Users className="h-3 w-3 text-success-foreground" />
+            <span className="text-xs font-medium text-success-foreground">
+              {buyers.length} Buyers Near Property
+            </span>
+            {onCloseBuyersView && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-5 w-5 hover:bg-success-foreground/20 p-0"
+                onClick={onCloseBuyersView}
+              >
+                <X className="h-3 w-3 text-success-foreground" />
+              </Button>
+            )}
+          </div>
+        )}
+
         {/* Draw Button */}
         <Button
           variant="outline"
@@ -453,26 +473,6 @@ export function PropertyDetailMap({
           {subjectProperty.beds} bd • {subjectProperty.baths} ba • {subjectProperty.sqft.toLocaleString()} sqft
         </p>
       </div>
-
-      {/* Buyers View Header - Below subject property box */}
-      {showBuyers && (
-        <div className="absolute top-[180px] left-3 bg-success/95 backdrop-blur-sm rounded-lg border border-success px-4 py-2 shadow-lg z-[1000] flex items-center gap-3">
-          <Users className="h-4 w-4 text-success-foreground" />
-          <span className="text-sm font-medium text-success-foreground">
-            {buyers.length} Buyers Near Property
-          </span>
-          {onCloseBuyersView && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 hover:bg-success-foreground/20"
-              onClick={onCloseBuyersView}
-            >
-              <X className="h-4 w-4 text-success-foreground" />
-            </Button>
-          )}
-        </div>
-      )}
       <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
         <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
         <p className="font-semibold text-sm">{subjectProperty.address}</p>
