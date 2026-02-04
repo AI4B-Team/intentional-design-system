@@ -1022,6 +1022,54 @@ export default function MarketplaceDealDetail() {
 
             {viewMode === "hold" && (
             <>
+            {/* Key Metrics Summary - Prominent at top */}
+            <Card className="p-5 border-2">
+              <div className="grid grid-cols-3 divide-x">
+                <div className="text-center px-4">
+                  <p className={cn(
+                    "text-3xl font-bold",
+                    cashOnCash >= 10 ? "text-success" : cashOnCash >= 6 ? "text-primary" : "text-muted-foreground"
+                  )}>
+                    {cashOnCash.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">ROI</p>
+                </div>
+                <div className="text-center px-4">
+                  <p className={cn(
+                    "text-3xl font-bold",
+                    netCashflow >= 0 ? "text-success" : "text-destructive"
+                  )}>
+                    ${Math.abs(netCashflow).toLocaleString()}/mo
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Cash Flow</p>
+                </div>
+                <div className="text-center px-4">
+                  <p className="text-3xl font-bold text-foreground">
+                    {capRate.toFixed(1)}%
+                  </p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide mt-1">Cap Rate</p>
+                </div>
+              </div>
+            </Card>
+
+            {/* AI Insight */}
+            <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">AI Insight</span>
+                </div>
+                <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/30">
+                  3.1s
+                </Badge>
+              </div>
+              <p className="text-sm text-foreground">
+                Strong rental demand in {deal.zip}. Similar properties rent within 12 days.
+                {capRate >= 7 ? " Cap rate exceeds market average." : ""}
+                {netCashflow >= 300 ? " Excellent monthly cash flow potential." : ""}
+              </p>
+            </Card>
+
             {/* Deal Score Card */}
             <DealScore 
               score={Math.round(capRate * 10 + cashOnCash * 2)}
@@ -1033,57 +1081,6 @@ export default function MarketplaceDealDetail() {
                 ...(grm <= 12 ? [{ label: 'A+ Location', variant: 'warning' as const }] : []),
               ]}
             />
-
-            {/* Key Metrics Summary */}
-            <Card className="p-4 bg-gradient-to-r from-muted/50 to-muted/30">
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div>
-                  <p className={cn(
-                    "text-2xl font-bold",
-                    cashOnCash >= 10 ? "text-success" : cashOnCash >= 6 ? "text-warning" : "text-muted-foreground"
-                  )}>
-                    {cashOnCash.toFixed(1)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">ROI</p>
-                </div>
-                <div>
-                  <p className={cn(
-                    "text-2xl font-bold",
-                    netCashflow >= 0 ? "text-success" : "text-destructive"
-                  )}>
-                    ${Math.abs(netCashflow).toLocaleString()}/mo
-                  </p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Cash Flow</p>
-                </div>
-                <div>
-                  <p className={cn(
-                    "text-2xl font-bold",
-                    capRate >= 8 ? "text-success" : capRate >= 5 ? "text-warning" : "text-muted-foreground"
-                  )}>
-                    {capRate.toFixed(1)}%
-                  </p>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Cap Rate</p>
-                </div>
-              </div>
-            </Card>
-
-            {/* AI Insight */}
-            <Card className="p-4 bg-gradient-to-r from-primary/5 to-primary/10 border-primary/20">
-              <div className="flex items-start gap-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">AI Insight</span>
-                </div>
-                <Badge variant="outline" className="ml-auto text-xs bg-success/10 text-success border-success/30">
-                  3.1s
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                Strong rental demand in {deal.zip}. Similar properties rent within 12 days. 
-                {capRate >= 7 ? " Cap rate exceeds market average." : ""}
-                {netCashflow >= 300 ? " Excellent monthly cash flow potential." : ""}
-              </p>
-            </Card>
 
             <Card className="p-6 relative">
               <div className="flex items-center gap-2 mb-6">
