@@ -1003,15 +1003,52 @@ export default function MarketplaceDealDetail() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
-                    Low Risk
-                  </Badge>
-                  <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
-                    9.2% Cap
-                  </Badge>
-                  <Badge variant="outline" className="border-warning text-warning bg-warning/10 rounded-full px-3 py-1 text-xs font-medium">
-                    A+ Location
-                  </Badge>
+                  {viewMode === "flip" ? (
+                    <>
+                      <Badge variant="outline" className={cn(
+                        "rounded-full px-3 py-1 text-xs font-medium",
+                        profit >= 30000 
+                          ? "border-success text-success bg-success/10" 
+                          : profit >= 15000 
+                            ? "border-warning text-warning bg-warning/10"
+                            : "border-destructive text-destructive bg-destructive/10"
+                      )}>
+                        ${(profit / 1000).toFixed(0)}k Profit
+                      </Badge>
+                      <Badge variant="outline" className={cn(
+                        "rounded-full px-3 py-1 text-xs font-medium",
+                        deal.arvPercent <= 70 
+                          ? "border-success text-success bg-success/10" 
+                          : deal.arvPercent <= 85 
+                            ? "border-warning text-warning bg-warning/10"
+                            : "border-destructive text-destructive bg-destructive/10"
+                      )}>
+                        {deal.arvPercent}% ARV
+                      </Badge>
+                      <Badge variant="outline" className={cn(
+                        "rounded-full px-3 py-1 text-xs font-medium",
+                        estRepairs <= 15000 
+                          ? "border-success text-success bg-success/10" 
+                          : estRepairs <= 35000 
+                            ? "border-warning text-warning bg-warning/10"
+                            : "border-destructive text-destructive bg-destructive/10"
+                      )}>
+                        ${(estRepairs / 1000).toFixed(0)}k Rehab
+                      </Badge>
+                    </>
+                  ) : (
+                    <>
+                      <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
+                        Low Risk
+                      </Badge>
+                      <Badge variant="outline" className="border-success text-success bg-success/10 rounded-full px-3 py-1 text-xs font-medium">
+                        9.2% Cap
+                      </Badge>
+                      <Badge variant="outline" className="border-warning text-warning bg-warning/10 rounded-full px-3 py-1 text-xs font-medium">
+                        A+ Location
+                      </Badge>
+                    </>
+                  )}
                 </div>
               </div>
               {/* Row 3: Address */}
