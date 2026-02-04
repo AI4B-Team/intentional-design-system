@@ -301,7 +301,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
   };
 
   return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} data-buyers-panel>
       <Card className="overflow-hidden border-success/50 bg-success/5">
         <CollapsibleTrigger asChild>
           <button className="w-full p-4 flex items-center justify-between bg-success/10 hover:bg-success/20 transition-colors rounded-t-lg">
