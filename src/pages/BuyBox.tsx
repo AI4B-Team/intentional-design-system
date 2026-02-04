@@ -538,7 +538,7 @@ const BuyBox: React.FC = () => {
           if (!open) setEditingBuyBox(null);
         }}
       >
-        <DialogContent size="lg" className="max-h-[85vh] overflow-y-auto">
+        <DialogContent size="xl">
           <DialogHeader>
             <DialogTitle>Create Your BuyBox</DialogTitle>
             <DialogDescription>Set your investment criteria to start matching with deals</DialogDescription>
