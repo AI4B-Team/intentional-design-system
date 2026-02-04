@@ -806,9 +806,9 @@ export default function MarketplaceDealDetail() {
           "flex-1",
           layoutMode === "split" ? "flex overflow-hidden" : ""
         )}>
-          {/* Map Panel - Only in Split Mode */}
+          {/* Map Panel - Only in Split Mode - Fixed/Locked */}
           {layoutMode === "split" && (
-            <div className="w-1/2 h-full border-r">
+            <div className="w-1/2 h-full border-r sticky top-0 overflow-hidden">
               <PropertyDetailMap
                 subjectProperty={subjectForMap}
                 comps={mapComps}
@@ -816,7 +816,7 @@ export default function MarketplaceDealDetail() {
             </div>
           )}
 
-          {/* Detail Panel */}
+          {/* Detail Panel - Scrollable */}
           <div className={cn(
             layoutMode === "split" 
               ? "w-1/2 h-full overflow-y-auto p-4" 
