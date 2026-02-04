@@ -321,7 +321,7 @@ function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepair
         {showWmao && (
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-sm text-muted-foreground">Assignment Fee (Your Profit)</Label>
+              <Label className="text-sm text-muted-foreground">Desired Assignment Fee (Your Profit)</Label>
               <div className="flex items-center gap-1">
                 <span className="text-muted-foreground">$</span>
                 <Input
