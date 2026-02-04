@@ -173,7 +173,6 @@ export function ComparableSalesSection({
             </button>
           </div>
         </div>
-        <Badge variant="secondary">{comps.length} Comps</Badge>
       </div>
 
       {/* Filter Controls & Action Buttons */}
@@ -354,19 +353,22 @@ export function ComparableSalesSection({
       )}
 
       {/* Comp List Header with Select All */}
-      <div className="flex items-center gap-3 mb-3 px-1">
-        <Checkbox
-          checked={selectedComps.size === comps.length && comps.length > 0}
-          onCheckedChange={handleSelectAll}
-        />
-        <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
-          Select All
-        </span>
-        {selectedComps.size > 0 && (
-          <Badge variant="secondary" className="text-xs">
-            {selectedComps.size} Selected
-          </Badge>
-        )}
+      <div className="flex items-center justify-between mb-3 px-1">
+        <div className="flex items-center gap-3">
+          <Checkbox
+            checked={selectedComps.size === comps.length && comps.length > 0}
+            onCheckedChange={handleSelectAll}
+          />
+          <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
+            Select All
+          </span>
+          {selectedComps.size > 0 && (
+            <Badge variant="secondary" className="text-xs">
+              {selectedComps.size} Selected
+            </Badge>
+          )}
+        </div>
+        <Badge variant="secondary">{comps.length} Comps</Badge>
       </div>
 
       {/* Comp List */}
