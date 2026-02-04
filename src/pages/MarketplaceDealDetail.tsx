@@ -1019,11 +1019,6 @@ export default function MarketplaceDealDetail() {
                 <MapPin className="h-5 w-5" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
               </p>
-              
-              {/* Deal Risk Meter - Moved directly under address */}
-              {viewMode === "flip" && (
-                <DealRiskMeter arvPercent={deal.arvPercent} />
-              )}
             </div>
 
             {/* Property Details Grid - 4 per row */}
