@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
 import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
 import { NotificationsDropdown } from "./NotificationsDropdown";
+import { useMockDeals } from "@/hooks/useMockDeals";
 
 interface Breadcrumb {
   label: string;
@@ -49,6 +51,44 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   // Show marketplace-specific buttons only on /marketplace routes
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
 
+  // Get all deals for search matching
+  const { deals } = useMockDeals({
+    filters: { address: "", leadType: "all", homeTypes: [], priceMin: "", priceMax: "", bedsMin: "", bathsMin: "" },
+    sortBy: "newest",
+    page: 1,
+    perPage: 100,
+  });
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!searchQuery.trim()) return;
+    
+    const query = searchQuery.trim().toLowerCase();
+    
+    // Find a matching deal by address, city, or zip
+    const matchedDeal = deals.find((deal) => {
+      const fullAddress = `${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`.toLowerCase();
+      return (
+        deal.address.toLowerCase().includes(query) ||
+        fullAddress.includes(query) ||
+        deal.city.toLowerCase().includes(query) ||
+        deal.zip.includes(query)
+      );
+    });
+    
+    if (matchedDeal) {
+      // Navigate to the property detail page
+      navigate(`/marketplace/deal/${matchedDeal.id}`);
+      setSearchQuery("");
+    } else {
+      // Show toast if no match found
+      toast.info("No matching property found", {
+        description: "Try searching with a different address, city, or ZIP code.",
+      });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur border-b border-border flex items-center px-4 lg:px-6 gap-2">
       {/* Mobile Menu Button */}
@@ -60,7 +100,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       </button>
 
       {/* Search - Far Left */}
-      <div className="hidden md:block relative flex-1 max-w-md">
+      <form onSubmit={handleSearch} className="hidden md:block relative flex-1 max-w-md">
         <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
         <Input
           type="search"
@@ -69,7 +109,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="!pl-6 h-9 bg-surface-secondary border-0"
         />
-      </div>
+      </form>
 
       {/* Breadcrumbs (only if provided and has multiple items) */}
       {breadcrumbs && breadcrumbs.length > 1 && (
