@@ -66,6 +66,7 @@ import { DealScore, DealScoreCompact } from "@/components/marketplace-deals/Deal
 import { ComparableSalesSection } from "@/components/marketplace-deals/ComparableSalesSection";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
+import { DealRiskBar } from "@/components/marketplace-deals/DealRiskBar";
 
 type ViewMode = "flip" | "hold";
 type LayoutMode = "detail" | "split";
@@ -1076,6 +1077,13 @@ export default function MarketplaceDealDetail() {
                 <span className="text-sm font-medium">${pricePerSqft}/SqFt</span>
               </Card>
             </div>
+
+            {/* Deal Risk Bar - Only shown on Flip view */}
+            {viewMode === "flip" && (
+              <Card className="p-4">
+                <DealRiskBar arvPercent={deal.arvPercent} />
+              </Card>
+            )}
 
             {/* Fix & Flip Analysis - Only shown on Flip view */}
             {viewMode === "flip" && (
