@@ -202,9 +202,6 @@ export function ComparableSalesSection({
         {/* Selection Actions */}
         {selectedComps.size > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">
-              {selectedComps.size} selected
-            </span>
             <Button variant="secondary" size="sm" onClick={handleGenerateReport}>
               <FileText className="h-4 w-4 mr-1" />
               Create Report
@@ -276,6 +273,11 @@ export function ComparableSalesSection({
         <span className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
           Select All
         </span>
+        {selectedComps.size > 0 && (
+          <Badge variant="secondary" className="text-xs">
+            {selectedComps.size} Selected
+          </Badge>
+        )}
       </div>
 
       {/* Comp List */}
