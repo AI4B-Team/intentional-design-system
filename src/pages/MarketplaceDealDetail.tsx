@@ -690,7 +690,8 @@ export default function MarketplaceDealDetail() {
 
             {/* Price, ARV, Deal Score & Address */}
             <div>
-              <div className="flex items-center flex-wrap gap-4 mb-2">
+              {/* Row 1: Price, ARV, Deal Score */}
+              <div className="flex items-center gap-4 mb-1">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Price</span>
                   <span className="text-3xl font-bold">${deal.price.toLocaleString()}</span>
@@ -699,34 +700,35 @@ export default function MarketplaceDealDetail() {
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">ARV</span>
                   <span className="text-3xl font-bold text-success">${deal.arv.toLocaleString()}</span>
                 </div>
-                {/* Last Sold - always shown since we only have Flip/Hold views */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
-                  </span>
-                  <span className={cn(
-                    "flex items-center gap-0.5 text-sm font-semibold",
-                    priceChange >= 0 ? "text-success" : "text-destructive"
-                  )}>
-                    {priceChange >= 0 ? (
-                      <ArrowUpRight className="h-4 w-4" />
-                    ) : (
-                      <ArrowDownRight className="h-4 w-4" />
-                    )}
-                    {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
-                  </span>
-                </div>
                 {/* Deal Score - Far Right */}
                 <div className="ml-auto flex items-center gap-2">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Score</span>
                   <div className={cn(
                     "flex items-center justify-center w-12 h-12 rounded-full text-lg font-bold text-white",
-                    roi >= 25 ? "bg-emerald-500" : roi >= 15 ? "bg-blue-500" : roi >= 5 ? "bg-amber-500" : "bg-red-500"
+                    roi >= 25 ? "bg-success" : roi >= 15 ? "bg-primary" : roi >= 5 ? "bg-warning" : "bg-destructive"
                   )}>
                     {Math.min(Math.round(roi * 3 + 20), 100)}
                   </div>
                 </div>
               </div>
+              {/* Row 2: Last Sold info */}
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm text-muted-foreground">
+                  Last Sold ${lastSoldPrice.toLocaleString()} ({lastSoldDate})
+                </span>
+                <span className={cn(
+                  "flex items-center gap-0.5 text-sm font-semibold",
+                  priceChange >= 0 ? "text-success" : "text-destructive"
+                )}>
+                  {priceChange >= 0 ? (
+                    <ArrowUpRight className="h-4 w-4" />
+                  ) : (
+                    <ArrowDownRight className="h-4 w-4" />
+                  )}
+                  {priceChange >= 0 ? "+" : ""}${Math.abs(priceChange).toLocaleString()}
+                </span>
+              </div>
+              {/* Row 3: Address */}
               <p className="flex items-center gap-2 text-lg text-muted-foreground">
                 <MapPin className="h-5 w-5" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
