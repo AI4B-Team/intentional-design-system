@@ -793,10 +793,6 @@ export default function MarketplaceDealDetail() {
               <Heart className={cn("h-4 w-4", isSaved(deal.id) && "fill-destructive text-destructive")} />
               {isSaved(deal.id) ? "Saved" : "Save"}
             </Button>
-            <Button variant="ghost" className="gap-2">
-              <EyeOff className="h-4 w-4" />
-              Hide
-            </Button>
             <Button 
               variant="ghost" 
               className="gap-2"
