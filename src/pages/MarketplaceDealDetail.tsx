@@ -1264,17 +1264,6 @@ export default function MarketplaceDealDetail() {
               </p>
             </Card>
 
-            {/* Deal Score Card */}
-            <DealScore 
-              score={Math.round(capRate * 10 + cashOnCash * 2)}
-              showBadges={true}
-              badges={[
-                ...(netCashflow >= 200 ? [{ label: 'Strong Cash Flow', variant: 'success' as const }] : []),
-                ...(capRate >= 6 ? [{ label: 'Low Risk', variant: 'success' as const }] : []),
-                { label: `${capRate.toFixed(1)}% Cap`, variant: 'info' as const },
-                ...(grm <= 12 ? [{ label: 'A+ Location', variant: 'warning' as const }] : []),
-              ]}
-            />
 
             <Card className="p-6 relative">
               <div className="flex items-center gap-2 mb-6">
