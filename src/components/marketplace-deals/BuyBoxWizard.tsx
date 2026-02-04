@@ -155,18 +155,11 @@ export const BuyBoxWizard: React.FC<BuyBoxWizardProps> = ({
   return (
     <div className="space-y-6">
       {/* Progress Header */}
-      <div className="space-y-4">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Create Your BuyBox</h2>
-          <p className="text-muted-foreground">Set your investment criteria to start matching with deals</p>
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
+          <Progress value={(step / 2) * 100} className="h-2" />
         </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex-1">
-            <Progress value={(step / 2) * 100} className="h-2" />
-          </div>
-          <span className="text-sm text-muted-foreground">Step {step} of 2</span>
-        </div>
+        <span className="text-sm text-content-secondary">Step {step} of 2</span>
       </div>
 
       {/* Step 1: Name Your BuyBox */}
