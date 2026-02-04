@@ -112,7 +112,7 @@ const mockBuyers: Buyer[] = [
 
 export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPanelProps) {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(true); // Default open
+  const [isOpen, setIsOpen] = useState(false); // Default closed
   
   // Default filter based on view mode
   const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
