@@ -179,67 +179,67 @@ export function ComparableSalesSection({
       {/* Filter Controls */}
       <div className="flex items-center gap-2 mb-4 pb-4 border-b overflow-x-auto">
         <Select value={timeframe} onValueChange={setTimeframe}>
-          <SelectTrigger className="w-[110px] h-9 bg-background shrink-0">
+          <SelectTrigger className="w-[90px] h-8 bg-background shrink-0 text-xs">
             <SelectValue placeholder="Timeframe" />
           </SelectTrigger>
           <SelectContent className="bg-background z-[100]">
-            <SelectItem value="3">3 Months</SelectItem>
-            <SelectItem value="6">6 Months</SelectItem>
-            <SelectItem value="12">12 Months</SelectItem>
-            <SelectItem value="24">24 Months</SelectItem>
+            <SelectItem value="3" className="text-xs">3 Mo</SelectItem>
+            <SelectItem value="6" className="text-xs">6 Mo</SelectItem>
+            <SelectItem value="12" className="text-xs">12 Mo</SelectItem>
+            <SelectItem value="24" className="text-xs">24 Mo</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={radius} onValueChange={setRadius}>
-          <SelectTrigger className="w-[120px] h-9 bg-background shrink-0">
+          <SelectTrigger className="w-[80px] h-8 bg-background shrink-0 text-xs">
             <SelectValue placeholder="Radius" />
           </SelectTrigger>
           <SelectContent className="bg-background z-[100]">
-            <SelectItem value="0.25">0.25 Mi</SelectItem>
-            <SelectItem value="0.5">0.5 Mi</SelectItem>
-            <SelectItem value="1">1 Mi</SelectItem>
-            <SelectItem value="2">2 Mi</SelectItem>
-            <SelectItem value="5">5 Mi</SelectItem>
+            <SelectItem value="0.25" className="text-xs">0.25 Mi</SelectItem>
+            <SelectItem value="0.5" className="text-xs">0.5 Mi</SelectItem>
+            <SelectItem value="1" className="text-xs">1 Mi</SelectItem>
+            <SelectItem value="2" className="text-xs">2 Mi</SelectItem>
+            <SelectItem value="5" className="text-xs">5 Mi</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={bedsFilter} onValueChange={setBedsFilter}>
-          <SelectTrigger className="w-[100px] h-9 bg-background shrink-0">
+          <SelectTrigger className="w-[75px] h-8 bg-background shrink-0 text-xs">
             <SelectValue placeholder="Beds" />
           </SelectTrigger>
           <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any">Beds: Any</SelectItem>
-            <SelectItem value="1-2">1-2 Beds</SelectItem>
-            <SelectItem value="1-3">1-3 Beds</SelectItem>
-            <SelectItem value="2-4">2-4 Beds</SelectItem>
-            <SelectItem value="3-5">3-5 Beds</SelectItem>
-            <SelectItem value="4+">4+ Beds</SelectItem>
+            <SelectItem value="any" className="text-xs">Any</SelectItem>
+            <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+            <SelectItem value="1-3" className="text-xs">1-3</SelectItem>
+            <SelectItem value="2-4" className="text-xs">2-4</SelectItem>
+            <SelectItem value="3-5" className="text-xs">3-5</SelectItem>
+            <SelectItem value="4+" className="text-xs">4+</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={bathsFilter} onValueChange={setBathsFilter}>
-          <SelectTrigger className="w-[100px] h-9 bg-background shrink-0">
+          <SelectTrigger className="w-[75px] h-8 bg-background shrink-0 text-xs">
             <SelectValue placeholder="Baths" />
           </SelectTrigger>
           <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any">Baths: Any</SelectItem>
-            <SelectItem value="1-2">1-2 Baths</SelectItem>
-            <SelectItem value="2-3">2-3 Baths</SelectItem>
-            <SelectItem value="3+">3+ Baths</SelectItem>
+            <SelectItem value="any" className="text-xs">Any</SelectItem>
+            <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+            <SelectItem value="2-3" className="text-xs">2-3</SelectItem>
+            <SelectItem value="3+" className="text-xs">3+</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={sqftFilter} onValueChange={setSqftFilter}>
-          <SelectTrigger className="w-[110px] h-9 bg-background shrink-0">
+          <SelectTrigger className="w-[85px] h-8 bg-background shrink-0 text-xs">
             <SelectValue placeholder="Sqft" />
           </SelectTrigger>
           <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any">Sqft: Any</SelectItem>
-            <SelectItem value="0-1000">0-1k Sqft</SelectItem>
-            <SelectItem value="1000-1500">1-1.5k Sqft</SelectItem>
-            <SelectItem value="1500-2000">1.5-2k Sqft</SelectItem>
-            <SelectItem value="2000-3000">2-3k Sqft</SelectItem>
-            <SelectItem value="3000+">3k+ Sqft</SelectItem>
+            <SelectItem value="any" className="text-xs">Any</SelectItem>
+            <SelectItem value="0-1000" className="text-xs">0-1k</SelectItem>
+            <SelectItem value="1000-1500" className="text-xs">1-1.5k</SelectItem>
+            <SelectItem value="1500-2000" className="text-xs">1.5-2k</SelectItem>
+            <SelectItem value="2000-3000" className="text-xs">2-3k</SelectItem>
+            <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
           </SelectContent>
         </Select>
       </div>
