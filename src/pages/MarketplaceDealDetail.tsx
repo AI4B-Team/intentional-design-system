@@ -52,6 +52,9 @@ import {
   PanelLeftClose,
   PanelLeft,
   Map,
+  AlertTriangle,
+  CheckCircle,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
@@ -1081,6 +1084,58 @@ export default function MarketplaceDealDetail() {
                   </div>
                 </div>
 
+                {/* AI Insights Box */}
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
+                      <Sparkles className="h-3 w-3 text-primary-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">AI Insights</span>
+                  </div>
+                  <div className="space-y-2">
+                    {profit > 30000 ? (
+                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-success/10 border border-success/20">
+                        <TrendingUp className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-foreground">
+                          <span className="font-medium text-success">Strong deal potential.</span> Profit margin exceeds $30K with a healthy {roi}% ROI. Consider moving quickly.
+                        </p>
+                      </div>
+                    ) : profit > 15000 ? (
+                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-primary/10 border border-primary/20">
+                        <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-foreground">
+                          <span className="font-medium text-primary">Moderate opportunity.</span> Solid profit potential at ${profit.toLocaleString()}. Verify repair estimates before proceeding.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-warning/10 border border-warning/20">
+                        <AlertTriangle className="h-4 w-4 text-warning mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-foreground">
+                          <span className="font-medium text-warning">Thin margins.</span> Consider negotiating a lower purchase price or reducing repair scope to improve returns.
+                        </p>
+                      </div>
+                    )}
+                    {deal.arvPercent < 70 && (
+                      <div className="flex items-start gap-2 p-2.5 rounded-md bg-success/10 border border-success/20">
+                        <CheckCircle className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-foreground">
+                          <span className="font-medium text-success">Below 70% ARV.</span> This deal meets the 70% rule, indicating good equity buffer for unexpected costs.
+                        </p>
+                      </div>
+                    )}
+                    {(() => {
+                      const daysOnMarket = Math.floor((new Date().getTime() - new Date(deal.createdAt).getTime()) / (1000 * 60 * 60 * 24));
+                      return daysOnMarket > 60 ? (
+                        <div className="flex items-start gap-2 p-2.5 rounded-md bg-info/10 border border-info/20">
+                          <Info className="h-4 w-4 text-info mt-0.5 flex-shrink-0" />
+                          <p className="text-xs text-foreground">
+                            <span className="font-medium text-info">Extended market time.</span> {daysOnMarket} days on market suggests room for negotiation.
+                          </p>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                </div>
               
               </div>
             </Card>
