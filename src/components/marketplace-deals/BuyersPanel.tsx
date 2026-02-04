@@ -20,6 +20,7 @@ import {
   MapPin,
   ExternalLink,
   Send,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -299,6 +300,18 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                       >
                         <Phone className="h-3 w-3" />
                         Call
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-xs gap-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = `sms:${buyer.phone}`;
+                        }}
+                      >
+                        <MessageCircle className="h-3 w-3" />
+                        SMS
                       </Button>
                       <Button
                         variant="ghost"
