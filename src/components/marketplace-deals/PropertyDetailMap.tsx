@@ -1,9 +1,17 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Users } from "lucide-react";
+import { X, Users, Layers, PenTool, ChevronDown, ChevronUp, Map, Satellite } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface CompData {
   id: string;
@@ -87,6 +95,14 @@ export function PropertyDetailMap({
 }: PropertyDetailMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const tileLayerRef = useRef<L.TileLayer | null>(null);
+  
+  // Map controls state
+  const [mapType, setMapType] = useState<"map" | "satellite">("map");
+  const [overlaysOpen, setOverlaysOpen] = useState(false);
+  const [showFloodZones, setShowFloodZones] = useState(false);
+  const [showSchoolDistricts, setShowSchoolDistricts] = useState(false);
+  const [showCrimeData, setShowCrimeData] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -103,9 +119,30 @@ export function PropertyDetailMap({
         zoomControl: true,
       });
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      }).addTo(mapInstanceRef.current);
+      const tileUrl = mapType === "satellite"
+        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      
+      const attribution = mapType === "satellite"
+        ? '&copy; Esri'
+        : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+      tileLayerRef.current = L.tileLayer(tileUrl, { attribution }).addTo(mapInstanceRef.current);
+    } else {
+      // Update tile layer if map type changes
+      if (tileLayerRef.current) {
+        mapInstanceRef.current.removeLayer(tileLayerRef.current);
+      }
+      
+      const tileUrl = mapType === "satellite"
+        ? "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+        : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      
+      const attribution = mapType === "satellite"
+        ? '&copy; Esri'
+        : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+
+      tileLayerRef.current = L.tileLayer(tileUrl, { attribution }).addTo(mapInstanceRef.current);
     }
 
     const map = mapInstanceRef.current;
@@ -299,7 +336,7 @@ export function PropertyDetailMap({
     return () => {
       // Cleanup handled by React
     };
-  }, [subjectProperty, comps, buyers, showBuyers]);
+  }, [subjectProperty, comps, buyers, showBuyers, mapType]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -315,9 +352,91 @@ export function PropertyDetailMap({
     <div className="relative h-full w-full">
       <div ref={mapRef} className="h-full w-full" />
       
-      {/* Buyers View Header */}
+      {/* Map Type Toggle - Top Left */}
+      <div className="absolute top-3 left-3 z-[1000]">
+        <div className="bg-background rounded-lg shadow-md overflow-hidden flex">
+          <button
+            onClick={() => setMapType("map")}
+            className={cn(
+              "px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5",
+              mapType === "map"
+                ? "bg-background text-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            )}
+          >
+            <Map className="h-3.5 w-3.5" />
+            Map
+          </button>
+          <button
+            onClick={() => setMapType("satellite")}
+            className={cn(
+              "px-3 py-1.5 text-xs font-medium transition-colors border-l flex items-center gap-1.5",
+              mapType === "satellite"
+                ? "bg-background text-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            )}
+          >
+            <Satellite className="h-3.5 w-3.5" />
+            Satellite
+          </button>
+        </div>
+      </div>
+
+      {/* Right side controls: Draw + Intel */}
+      <div className="absolute top-3 right-3 z-[1000] flex gap-2">
+        {/* Draw Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="bg-background shadow-md gap-1.5 text-xs h-8"
+        >
+          <PenTool className="h-3.5 w-3.5" />
+          Draw
+        </Button>
+        
+        {/* Intel Popover */}
+        <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="bg-background shadow-md gap-1.5 text-xs h-8">
+              <Layers className="h-3.5 w-3.5" />
+              Intel
+              {overlaysOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-0 shadow-lg z-[1100]" align="end">
+            <div className="p-3">
+              <p className="font-semibold text-sm mb-3">Data Layers</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm cursor-pointer">Flood Zones</Label>
+                  <Checkbox 
+                    checked={showFloodZones}
+                    onCheckedChange={(checked) => setShowFloodZones(!!checked)}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm cursor-pointer">School Districts</Label>
+                  <Checkbox 
+                    checked={showSchoolDistricts}
+                    onCheckedChange={(checked) => setShowSchoolDistricts(!!checked)}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm cursor-pointer">Crime Data</Label>
+                  <Checkbox 
+                    checked={showCrimeData}
+                    onCheckedChange={(checked) => setShowCrimeData(!!checked)}
+                  />
+                </div>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
+      
+      {/* Buyers View Header - Below top controls */}
       {showBuyers && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-success/95 backdrop-blur-sm rounded-lg border border-success px-4 py-2 shadow-lg z-[1000] flex items-center gap-3">
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 bg-success/95 backdrop-blur-sm rounded-lg border border-success px-4 py-2 shadow-lg z-[1000] flex items-center gap-3">
           <Users className="h-4 w-4 text-success-foreground" />
           <span className="text-sm font-medium text-success-foreground">
             {buyers.length} Buyers Near Property
@@ -335,43 +454,9 @@ export function PropertyDetailMap({
         </div>
       )}
 
-      {/* Legend */}
-      <div className="absolute bottom-4 left-4 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000]">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Map Legend</p>
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 border-2 border-white shadow" />
-            <span className="text-xs">Subject Property</span>
-          </div>
-          {showBuyers ? (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-primary border-2 border-white shadow" />
-                <span className="text-xs">Flipper</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-warning border-2 border-white shadow" />
-                <span className="text-xs">Landlord</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-success border-2 border-white shadow" />
-                <span className="text-xs">Excellent Match (90%+)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-warning border-2 border-white shadow" />
-                <span className="text-xs">Good Match (70-89%)</span>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Property Quick Info */}
-      <div className="absolute top-4 left-4 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[280px]">
-        <Badge className="mb-2 bg-primary text-primary-foreground">Subject Property</Badge>
+      {/* Property Quick Info - Left side, below map toggle */}
+      <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
+        <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
         <p className="font-semibold text-sm">{subjectProperty.address}</p>
         <p className="text-xs text-muted-foreground mb-2">
           {subjectProperty.city}, {subjectProperty.state} {subjectProperty.zip}
@@ -385,10 +470,44 @@ export function PropertyDetailMap({
         </p>
       </div>
 
-      {/* Count Badge */}
+      {/* Legend - Bottom Left */}
+      <div className="absolute bottom-4 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000]">
+        <p className="text-xs font-medium text-muted-foreground mb-2">Map Legend</p>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-br from-primary to-primary/80 border-2 border-background shadow" />
+            <span className="text-xs">Subject Property</span>
+          </div>
+          {showBuyers ? (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow" />
+                <span className="text-xs">Flipper</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-warning border-2 border-background shadow" />
+                <span className="text-xs">Landlord</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-success border-2 border-background shadow" />
+                <span className="text-xs">Excellent Match</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3.5 h-3.5 rounded-full bg-warning border-2 border-background shadow" />
+                <span className="text-xs">Good Match</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Count Badge - Bottom Right */}
       {!showBuyers && (
-        <div className="absolute top-4 right-4 bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg z-[1000]">
-          <p className="text-sm font-medium">{comps.length} Comps Shown</p>
+        <div className="absolute bottom-4 right-3 bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg z-[1000]">
+          <p className="text-xs font-medium">{comps.length} Comps Shown</p>
         </div>
       )}
     </div>
