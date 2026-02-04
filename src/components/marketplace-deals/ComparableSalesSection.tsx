@@ -173,9 +173,45 @@ export function ComparableSalesSection({
             </button>
           </div>
         </div>
+
+        {/* Action Buttons - Far Right */}
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onAddComp}>
+                  + Comp
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add a custom comparable</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRefreshComps}>
+                  <RefreshCw className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh comps</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowMap(!showMap)}>
+                  <MapPin className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{showMap ? "Hide Map" : "Show Map"}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
 
-      {/* Filter Controls & Action Buttons */}
+      {/* Filter Controls */}
       <div className="flex items-center justify-between gap-3 mb-4 pb-4 border-b">
         <div className="flex items-center gap-2">
           {/* Filters */}
@@ -248,42 +284,6 @@ export function ComparableSalesSection({
               <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
             </SelectContent>
           </Select>
-
-          <div className="w-px h-6 bg-border mx-1" />
-
-          {/* Action Buttons */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onAddComp}>
-                  + Comp
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add a custom comparable</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRefreshComps}>
-                  <RefreshCw className="h-3.5 w-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Refresh comps</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowMap(!showMap)}>
-                  <MapPin className="h-3.5 w-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{showMap ? "Hide Map" : "Show Map"}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
 
         {/* Selection Actions */}
