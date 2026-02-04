@@ -724,7 +724,7 @@ export default function MarketplaceDealDetail() {
     arv: deal.arv,
   };
 
-  // Mock buyers data for map
+  // Mock buyers data for map - synced with BuyersPanel
   const mockBuyersForMap = [
     { id: "1", name: "Marcus Johnson", company: "Johnson Investments LLC", buyerType: "flipper" as const, maxPrice: 350000, isVerified: true, dealsCompleted: 23 },
     { id: "2", name: "Sarah Chen", company: "Coastal Rentals Group", buyerType: "landlord" as const, maxPrice: 400000, isVerified: true, dealsCompleted: 45 },
@@ -734,6 +734,13 @@ export default function MarketplaceDealDetail() {
     { id: "6", name: "Jessica Palmer", company: "Palm Realty Ventures", buyerType: "landlord" as const, maxPrice: 450000, isVerified: true, dealsCompleted: 28 },
     { id: "7", name: "Robert Kim", buyerType: "flipper" as const, maxPrice: 300000, isVerified: true, dealsCompleted: 15 },
     { id: "8", name: "Amanda Foster", company: "Foster Capital Group", buyerType: "landlord" as const, maxPrice: 600000, isVerified: true, dealsCompleted: 52 },
+    { id: "9", name: "Carlos Mendez", buyerType: "flipper" as const, maxPrice: 200000, isVerified: false, dealsCompleted: 6 },
+    { id: "10", name: "Linda Chang", company: "Evergreen Properties", buyerType: "landlord" as const, maxPrice: 550000, isVerified: true, dealsCompleted: 67 },
+    { id: "11", name: "Brian Scott", buyerType: "flipper" as const, maxPrice: 180000, isVerified: false, dealsCompleted: 4 },
+    { id: "12", name: "Rachel Green", company: "Sunshine State Rentals", buyerType: "landlord" as const, maxPrice: 375000, isVerified: true, dealsCompleted: 19 },
+    { id: "13", name: "James Morrison", buyerType: "flipper" as const, maxPrice: 325000, isVerified: true, dealsCompleted: 34 },
+    { id: "14", name: "Nicole Adams", company: "Adams Investment Co", buyerType: "landlord" as const, maxPrice: 425000, isVerified: false, dealsCompleted: 11 },
+    { id: "15", name: "Kevin O'Brien", buyerType: "flipper" as const, maxPrice: 290000, isVerified: true, dealsCompleted: 21 },
   ];
 
   // Filter buyers based on current view mode
