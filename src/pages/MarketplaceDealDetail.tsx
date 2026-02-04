@@ -189,15 +189,18 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
   );
 }
 
-// MAO Calculator with user controls
+// MAO Calculator with user controls - supports both Flipper MAO and Wholesale MAO
 function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepairs: number }) {
   const [arvPercent, setArvPercent] = useState(70);
   const [repairs, setRepairs] = useState(defaultRepairs);
   const [holdingCosts, setHoldingCosts] = useState(5000);
   const [closingCostPercent, setClosingCostPercent] = useState(6);
+  const [assignmentFee, setAssignmentFee] = useState(10000);
+  const [showWmao, setShowWmao] = useState(false);
 
   const closingCosts = Math.round(arv * (closingCostPercent / 100));
   const mao = Math.round(arv * (arvPercent / 100) - repairs - holdingCosts - closingCosts);
+  const wmao = Math.round(mao - assignmentFee); // Wholesale MAO = MAO - Assignment Fee
 
   const presets = [
     { label: "Conservative", percent: 60, color: "text-success" },
@@ -213,7 +216,24 @@ function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepair
           <Target className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">MAO Calculator</h2>
         </div>
-        <Badge variant="secondary" className="text-xs">Interactive</Badge>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={!showWmao ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowWmao(false)}
+            className="text-xs"
+          >
+            Flipper
+          </Button>
+          <Button
+            variant={showWmao ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowWmao(true)}
+            className="text-xs"
+          >
+            Wholesaler
+          </Button>
+        </div>
       </div>
 
       {/* Preset Buttons */}
@@ -296,30 +316,89 @@ function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepair
             </div>
           </div>
         </div>
+
+        {/* Assignment Fee - Only shown in Wholesaler mode */}
+        {showWmao && (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-sm text-muted-foreground">Assignment Fee (Your Profit)</Label>
+              <div className="flex items-center gap-1">
+                <span className="text-muted-foreground">$</span>
+                <Input
+                  type="number"
+                  value={assignmentFee}
+                  onChange={(e) => setAssignmentFee(Number(e.target.value))}
+                  className="w-24 h-8 text-sm text-right"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Result */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 border border-primary/20">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground mb-1">Maximum Allowable Offer</p>
-            <p className="text-3xl font-bold text-primary">
-              ${mao.toLocaleString()}
-            </p>
+      {/* Results */}
+      {showWmao ? (
+        // Wholesaler View - Shows both MAO (for buyer) and WMAO (max offer to seller)
+        <div className="space-y-3">
+          {/* WMAO - Primary result for wholesalers */}
+          <div className="bg-gradient-to-r from-success/10 to-success/5 rounded-lg p-4 border border-success/20">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Max Offer to Seller (WMAO)</p>
+                <p className="text-3xl font-bold text-success">
+                  ${wmao.toLocaleString()}
+                </p>
+              </div>
+              <div className="text-right text-sm text-muted-foreground">
+                <p>MAO: ${mao.toLocaleString()}</p>
+                <p>− Assignment Fee: ${assignmentFee.toLocaleString()}</p>
+              </div>
+            </div>
           </div>
-          <div className="text-right text-sm text-muted-foreground">
-            <p>ARV × {arvPercent}% = ${Math.round(arv * (arvPercent / 100)).toLocaleString()}</p>
-            <p>− Repairs: ${repairs.toLocaleString()}</p>
-            <p>− Holding: ${holdingCosts.toLocaleString()}</p>
-            <p>− Closing: ${closingCosts.toLocaleString()}</p>
+          
+          {/* MAO - Secondary for reference */}
+          <div className="bg-surface-secondary/50 rounded-lg p-3 border border-border">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Buyer's MAO (Your Ask Price)</p>
+                <p className="text-lg font-semibold text-primary">
+                  ${mao.toLocaleString()}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">Your Profit</p>
+                <p className="text-lg font-semibold text-success">
+                  ${assignmentFee.toLocaleString()}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        // Flipper View - Original MAO display
+        <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 border border-primary/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Maximum Allowable Offer</p>
+              <p className="text-3xl font-bold text-primary">
+                ${mao.toLocaleString()}
+              </p>
+            </div>
+            <div className="text-right text-sm text-muted-foreground">
+              <p>ARV × {arvPercent}% = ${Math.round(arv * (arvPercent / 100)).toLocaleString()}</p>
+              <p>− Repairs: ${repairs.toLocaleString()}</p>
+              <p>− Holding: ${holdingCosts.toLocaleString()}</p>
+              <p>− Closing: ${closingCosts.toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Quick Compare Grid */}
       <div className="grid grid-cols-4 gap-2 mt-4">
         {[60, 65, 70, 75].map((pct) => {
-          const value = Math.round(arv * (pct / 100) - repairs - holdingCosts - closingCosts);
+          const pctMao = Math.round(arv * (pct / 100) - repairs - holdingCosts - closingCosts);
+          const value = showWmao ? pctMao - assignmentFee : pctMao;
           return (
             <div 
               key={pct}
