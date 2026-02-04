@@ -21,9 +21,11 @@ import {
   ExternalLink,
   Send,
   MessageCircle,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { AIMessageTemplatesDialog } from "./AIMessageTemplatesDialog";
 
 interface Buyer {
   id: string;
@@ -116,6 +118,11 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false); // Default closed
   
+  // AI Template Dialog state
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null);
+  const [messageType, setMessageType] = useState<"email" | "sms">("email");
+  
   // Default filter based on view mode
   const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
   const [buyerFilter, setBuyerFilter] = useState<"all" | "flippers" | "landlords">(defaultFilter);
@@ -142,6 +149,12 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
   const handleViewBuyer = (buyerId: string) => {
     navigate(`/dispo/buyers?id=${buyerId}`);
+  };
+
+  const openAITemplates = (buyer: Buyer, type: "email" | "sms") => {
+    setSelectedBuyer(buyer);
+    setMessageType(type);
+    setAiDialogOpen(true);
   };
 
   return (
@@ -307,10 +320,11 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                         className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `sms:${buyer.phone}`;
+                          openAITemplates(buyer, "sms");
                         }}
                       >
                         <MessageCircle className="h-3.5 w-3.5" />
+                        <Sparkles className="h-2.5 w-2.5 text-primary" />
                         SMS
                       </Button>
                       <Button
@@ -319,10 +333,11 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                         className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = `mailto:${buyer.email}`;
+                          openAITemplates(buyer, "email");
                         }}
                       >
                         <Mail className="h-3.5 w-3.5" />
+                        <Sparkles className="h-2.5 w-2.5 text-primary" />
                         Email
                       </Button>
                       <Button
@@ -345,6 +360,23 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
           </div>
         </CollapsibleContent>
       </Card>
+
+      {/* AI Message Templates Dialog */}
+      {selectedBuyer && (
+        <AIMessageTemplatesDialog
+          open={aiDialogOpen}
+          onOpenChange={(open) => {
+            setAiDialogOpen(open);
+            if (!open) setSelectedBuyer(null);
+          }}
+          buyerName={selectedBuyer.name}
+          buyerEmail={selectedBuyer.email}
+          buyerPhone={selectedBuyer.phone}
+          buyerType={selectedBuyer.buyerType}
+          propertyAddress={propertyAddress || ""}
+          messageType={messageType}
+        />
+      )}
     </Collapsible>
   );
 }
