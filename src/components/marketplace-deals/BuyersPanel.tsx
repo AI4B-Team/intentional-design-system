@@ -8,6 +8,12 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   ChevronDown,
   ChevronUp,
   Users,
@@ -19,8 +25,8 @@ import {
   MapPin,
   Send,
   MessageCircle,
-  Sparkles,
   UserPlus,
+  MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -312,19 +318,37 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                 {filteredBuyers.length} {getBuyerTypeLabel()}
               </Badge>
             </div>
-            {isOpen ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            )}
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate("/dispo/buyers")}>
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Add Buyer
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`)}>
+                    <Send className="h-4 w-4 mr-2" />
+                    Launch Campaign
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              {isOpen ? (
+                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
           </button>
         </CollapsibleTrigger>
 
         <CollapsibleContent>
           <div className="px-4 pb-4">
-            {/* Filter Toggle + Action Buttons Row */}
-            <div className="flex items-center justify-between gap-2 mb-3 pt-2">
-              {/* Filter Toggle */}
+            {/* Filter Toggle */}
+            <div className="flex items-center justify-center gap-2 mb-3 pt-2">
               <div className="flex rounded-lg border border-border overflow-hidden">
                 <button
                   onClick={() => setBuyerFilter("flippers")}
@@ -362,33 +386,6 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                   <Users className="h-3 w-3" />
                   All
                 </button>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex items-center gap-1.5">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-1 text-xs h-8 px-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate("/dispo/buyers");
-                  }}
-                >
-                  <UserPlus className="h-3.5 w-3.5" />
-                  Add
-                </Button>
-                <Button
-                  size="sm"
-                  className="gap-1 text-xs h-8 px-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`);
-                  }}
-                >
-                  <Send className="h-3.5 w-3.5" />
-                  Campaign
-                </Button>
               </div>
             </div>
 
