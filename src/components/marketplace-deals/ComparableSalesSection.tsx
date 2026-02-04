@@ -10,6 +10,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   TrendingUp,
   Plus,
   RefreshCw,
@@ -79,6 +86,13 @@ export function ComparableSalesSection({
   const [compType, setCompType] = useState<"retail" | "investor">("retail");
   const [selectedComps, setSelectedComps] = useState<Set<string>>(new Set());
   const [showMap, setShowMap] = useState(true);
+  
+  // Filter states
+  const [timeframe, setTimeframe] = useState("6");
+  const [radius, setRadius] = useState("1");
+  const [bedsFilter, setBedsFilter] = useState("any");
+  const [bathsFilter, setBathsFilter] = useState("any");
+  const [sqftFilter, setSqftFilter] = useState("any");
 
   const comps = compType === "retail" ? retailComps : investorComps;
 
@@ -160,6 +174,75 @@ export function ComparableSalesSection({
           </div>
         </div>
         <Badge variant="secondary">{comps.length} Comps</Badge>
+      </div>
+
+      {/* Filter Controls */}
+      <div className="flex flex-wrap items-center gap-3 mb-4 pb-4 border-b">
+        <Select value={timeframe} onValueChange={setTimeframe}>
+          <SelectTrigger className="w-[130px] h-10 bg-background">
+            <SelectValue placeholder="Timeframe" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-[100]">
+            <SelectItem value="3">3 Months</SelectItem>
+            <SelectItem value="6">6 Months</SelectItem>
+            <SelectItem value="12">12 Months</SelectItem>
+            <SelectItem value="24">24 Months</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={radius} onValueChange={setRadius}>
+          <SelectTrigger className="w-[140px] h-10 bg-background">
+            <SelectValue placeholder="Radius" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-[100]">
+            <SelectItem value="0.25">0.25 Mile Radius</SelectItem>
+            <SelectItem value="0.5">0.5 Mile Radius</SelectItem>
+            <SelectItem value="1">1 Mile Radius</SelectItem>
+            <SelectItem value="2">2 Mile Radius</SelectItem>
+            <SelectItem value="5">5 Mile Radius</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={bedsFilter} onValueChange={setBedsFilter}>
+          <SelectTrigger className="w-[120px] h-10 bg-background">
+            <SelectValue placeholder="Beds" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-[100]">
+            <SelectItem value="any">Beds: Any</SelectItem>
+            <SelectItem value="1-2">Beds: 1-2</SelectItem>
+            <SelectItem value="1-3">Beds: 1-3</SelectItem>
+            <SelectItem value="2-4">Beds: 2-4</SelectItem>
+            <SelectItem value="3-5">Beds: 3-5</SelectItem>
+            <SelectItem value="4+">Beds: 4+</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={bathsFilter} onValueChange={setBathsFilter}>
+          <SelectTrigger className="w-[120px] h-10 bg-background">
+            <SelectValue placeholder="Baths" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-[100]">
+            <SelectItem value="any">Baths: Any</SelectItem>
+            <SelectItem value="1-2">Baths: 1-2</SelectItem>
+            <SelectItem value="2-3">Baths: 2-3</SelectItem>
+            <SelectItem value="3+">Baths: 3+</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={sqftFilter} onValueChange={setSqftFilter}>
+          <SelectTrigger className="w-[150px] h-10 bg-background">
+            <SelectValue placeholder="Sqft" />
+          </SelectTrigger>
+          <SelectContent className="bg-background z-[100]">
+            <SelectItem value="any">Sqft: Any</SelectItem>
+            <SelectItem value="0-1000">0 - 1,000 Sqft</SelectItem>
+            <SelectItem value="600-900">600 - 900 Sqft</SelectItem>
+            <SelectItem value="1000-1500">1,000 - 1,500 Sqft</SelectItem>
+            <SelectItem value="1500-2000">1,500 - 2,000 Sqft</SelectItem>
+            <SelectItem value="2000-3000">2,000 - 3,000 Sqft</SelectItem>
+            <SelectItem value="3000+">3,000+ Sqft</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Action Buttons */}
