@@ -95,7 +95,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
           </div>
 
           {/* Quick Stats */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-5">
             {buyBox.criteria.states && buyBox.criteria.states.length > 0 && (
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
@@ -109,6 +109,27 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
                   {formatPrice(buyBox.criteria.minPrice) || '$0'} -{' '}
                   {formatPrice(buyBox.criteria.maxPrice) || 'Any'}
                 </span>
+              </div>
+            )}
+            {buyBox.criteria.minBedrooms && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <Bed className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{buyBox.criteria.minBedrooms}+</span>
+                <span className="text-muted-foreground">Beds</span>
+              </div>
+            )}
+            {buyBox.criteria.minBathrooms && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <Bath className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{buyBox.criteria.minBathrooms}+</span>
+                <span className="text-muted-foreground">Baths</span>
+              </div>
+            )}
+            {buyBox.criteria.minSquareFeet && (
+              <div className="flex items-center gap-1.5 text-sm">
+                <Square className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium">{(buyBox.criteria.minSquareFeet / 1000).toFixed(1)}k+</span>
+                <span className="text-muted-foreground">SqFt</span>
               </div>
             )}
           </div>
