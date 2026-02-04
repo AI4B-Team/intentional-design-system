@@ -455,407 +455,407 @@ export function TemplatesTab() {
         </div>
 
         {/* Builder Content - 50/50 Split */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Panel - Controls */}
-          <div>
-            <Card variant="default" padding="lg">
-              <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="general">General</TabsTrigger>
-                  <TabsTrigger value="terms">Terms</TabsTrigger>
-                  <TabsTrigger value="email">Email</TabsTrigger>
-                  <TabsTrigger value="sms">SMS</TabsTrigger>
-                  <TabsTrigger value="loi">LOI</TabsTrigger>
+        <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Panel - Tab Buttons */}
+            <div>
+              <Card variant="default" padding="lg">
+                <TabsList className="flex flex-col w-full h-auto space-y-1">
+                  <TabsTrigger value="general" className="w-full justify-start">General</TabsTrigger>
+                  <TabsTrigger value="terms" className="w-full justify-start">Terms</TabsTrigger>
+                  <TabsTrigger value="email" className="w-full justify-start">Email</TabsTrigger>
+                  <TabsTrigger value="sms" className="w-full justify-start">SMS</TabsTrigger>
+                  <TabsTrigger value="loi" className="w-full justify-start">LOI</TabsTrigger>
                 </TabsList>
 
-                <div className="mt-6">
-                  <TabsContent value="general" className="space-y-4 mt-0">
+                {/* Summary Info */}
+                <div className="mt-6 pt-6 border-t space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
+                      {currentOfferConfig && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
+                    </div>
+                    <div>
+                      <p className="font-medium">{formData.name || "Untitled Template"}</p>
+                      <p className="text-tiny text-muted-foreground uppercase tracking-wide">{currentOfferConfig?.label}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Badge variant="secondary" size="sm">
+                      {formData.market_type === "off_market" ? "OFF-MARKET" : "MLS"}
+                    </Badge>
+                    {formData.document_type === "loi" && <Badge variant="secondary" size="sm">LOI</Badge>}
+                    {formData.document_type === "purchase_agreement" && <Badge variant="secondary" size="sm">PA</Badge>}
+                  </div>
+
+                  <div className="space-y-2 text-small">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Deposit:</span>
+                      <span className="font-medium">${(formData.terms.depositAmount || 1000).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Closing:</span>
+                      <span className="font-medium">{formData.terms.closingTimeline || 14} days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Inspection:</span>
+                      <span className="font-medium">{formData.terms.inspectionPeriod || 10} days</span>
+                    </div>
+                  </div>
+
+                  <div className="border-t pt-3 space-y-2">
+                    <div className="flex items-center gap-2 text-small">
+                      <Mail className={cn("h-4 w-4", formData.email_subject ? "text-success" : "text-muted-foreground")} />
+                      <span className={formData.email_subject ? "text-success" : "text-muted-foreground"}>
+                        {formData.email_subject ? "Email configured" : "Email not configured"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-small">
+                      <MessageSquare className={cn("h-4 w-4", formData.sms_body ? "text-success" : "text-muted-foreground")} />
+                      <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
+                        {formData.sms_body ? "SMS configured" : "SMS not configured"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-small">
+                      <FileText className={cn("h-4 w-4", formData.loi_content ? "text-success" : "text-muted-foreground")} />
+                      <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
+                        {formData.loi_content ? "LOI configured" : "LOI not configured"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Right Panel - LIVE Preview with Tab Content */}
+            <div>
+              <Card variant="default" padding="lg" className="sticky top-4">
+                <div className="flex items-center gap-2 mb-6">
+                  <div className="relative flex items-center">
+                    <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
+                    <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
+                  </div>
+                  <h3 className="font-semibold">Template Preview</h3>
+                </div>
+
+                <TabsContent value="general" className="space-y-4 mt-0">
+                  <div className="space-y-2">
+                    <Label>Template Name *</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Standard Cash Offer - Dallas"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Description</Label>
+                    <Textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Brief description of when to use this template"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Template Name *</Label>
-                      <Input
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g., Standard Cash Offer - Dallas"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Description</Label>
-                      <Textarea
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Brief description of when to use this template"
-                        rows={2}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Offer Type</Label>
-                        <Select
-                          value={formData.offer_type}
-                          onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {OFFER_TYPE_CONFIGS.map((opt) => (
-                              <SelectItem key={opt.id} value={opt.id}>
-                                <div className="flex items-center gap-2">
-                                  <opt.icon className={cn("h-4 w-4", opt.color)} />
-                                  {opt.label}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Market Type</Label>
-                        <Select
-                          value={formData.market_type}
-                          onValueChange={(v) => setFormData({ ...formData, market_type: v })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="off_market">
+                      <Label>Offer Type</Label>
+                      <Select
+                        value={formData.offer_type}
+                        onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {OFFER_TYPE_CONFIGS.map((opt) => (
+                            <SelectItem key={opt.id} value={opt.id}>
                               <div className="flex items-center gap-2">
-                                <Home className="h-4 w-4" />
-                                Off-Market
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="on_market">
-                              <div className="flex items-center gap-2">
-                                <Building className="h-4 w-4" />
-                                On-Market (MLS)
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Document Type</Label>
-                        <Select
-                          value={formData.document_type}
-                          onValueChange={(v) => setFormData({ ...formData, document_type: v })}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {DOCUMENT_TYPE_OPTIONS.map((opt) => (
-                              <SelectItem key={opt.value} value={opt.value}>
+                                <opt.icon className={cn("h-4 w-4", opt.color)} />
                                 {opt.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center gap-4 pt-6">
-                        <Switch
-                          id="include-pof"
-                          checked={formData.include_pof}
-                          onCheckedChange={(v) => setFormData({ ...formData, include_pof: v })}
-                        />
-                        <Label htmlFor="include-pof">
-                          Include POF
-                          {isPOFRequired && <span className="text-destructive ml-1">*</span>}
-                        </Label>
-                      </div>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
-                    <div className="flex items-center gap-4 pt-2">
+                    <div className="space-y-2">
+                      <Label>Market Type</Label>
+                      <Select
+                        value={formData.market_type}
+                        onValueChange={(v) => setFormData({ ...formData, market_type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="off_market">
+                            <div className="flex items-center gap-2">
+                              <Home className="h-4 w-4" />
+                              Off-Market
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="on_market">
+                            <div className="flex items-center gap-2">
+                              <Building className="h-4 w-4" />
+                              On-Market (MLS)
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Document Type</Label>
+                      <Select
+                        value={formData.document_type}
+                        onValueChange={(v) => setFormData({ ...formData, document_type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DOCUMENT_TYPE_OPTIONS.map((opt) => (
+                            <SelectItem key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="flex items-center gap-4 pt-6">
                       <Switch
-                        id="is-default"
-                        checked={formData.is_default}
-                        onCheckedChange={(v) => setFormData({ ...formData, is_default: v })}
+                        id="include-pof"
+                        checked={formData.include_pof}
+                        onCheckedChange={(v) => setFormData({ ...formData, include_pof: v })}
                       />
-                      <Label htmlFor="is-default">Set as default for this offer type</Label>
+                      <Label htmlFor="include-pof">
+                        Include POF
+                        {isPOFRequired && <span className="text-destructive ml-1">*</span>}
+                      </Label>
                     </div>
-                  </TabsContent>
+                  </div>
+                  <div className="flex items-center gap-4 pt-2">
+                    <Switch
+                      id="is-default"
+                      checked={formData.is_default}
+                      onCheckedChange={(v) => setFormData({ ...formData, is_default: v })}
+                    />
+                    <Label htmlFor="is-default">Set as default for this offer type</Label>
+                  </div>
+                </TabsContent>
 
-                  <TabsContent value="terms" className="space-y-4 mt-0">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Earnest Money Deposit ($)</Label>
-                        <Input
-                          type="number"
-                          value={formData.terms.depositAmount || 1000}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            terms: { ...formData.terms, depositAmount: parseInt(e.target.value) || 0 }
-                          })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Closing Timeline (days)</Label>
-                        <Input
-                          type="number"
-                          value={formData.terms.closingTimeline || 14}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            terms: { ...formData.terms, closingTimeline: parseInt(e.target.value) || 0 }
-                          })}
-                        />
-                      </div>
+                <TabsContent value="terms" className="space-y-4 mt-0">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Earnest Money Deposit ($)</Label>
+                      <Input
+                        type="number"
+                        value={formData.terms.depositAmount || 1000}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          terms: { ...formData.terms, depositAmount: parseInt(e.target.value) || 0 }
+                        })}
+                      />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Inspection Period (days)</Label>
-                        <Input
-                          type="number"
-                          value={formData.terms.inspectionPeriod || 10}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            terms: { ...formData.terms, inspectionPeriod: parseInt(e.target.value) || 0 }
-                          })}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Offer Expiration (hours)</Label>
-                        <Input
-                          type="number"
-                          value={formData.terms.offerExpiration || 72}
-                          onChange={(e) => setFormData({
-                            ...formData,
-                            terms: { ...formData.terms, offerExpiration: parseInt(e.target.value) || 0 }
-                          })}
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label>Closing Timeline (days)</Label>
+                      <Input
+                        type="number"
+                        value={formData.terms.closingTimeline || 14}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          terms: { ...formData.terms, closingTimeline: parseInt(e.target.value) || 0 }
+                        })}
+                      />
                     </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Inspection Period (days)</Label>
+                      <Input
+                        type="number"
+                        value={formData.terms.inspectionPeriod || 10}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          terms: { ...formData.terms, inspectionPeriod: parseInt(e.target.value) || 0 }
+                        })}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Offer Expiration (hours)</Label>
+                      <Input
+                        type="number"
+                        value={formData.terms.offerExpiration || 72}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          terms: { ...formData.terms, offerExpiration: parseInt(e.target.value) || 0 }
+                        })}
+                      />
+                    </div>
+                  </div>
 
-                    {/* Creative terms for specific offer types */}
-                    {(formData.offer_type === "seller_financing" || formData.offer_type === "hybrid") && (
-                      <>
-                        <div className="border-t pt-4 mt-4">
-                          <h4 className="font-medium mb-4">Financing Terms</h4>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                              <Label>Down Payment (%)</Label>
-                              <Input
-                                type="number"
-                                value={formData.terms.downPayment || 10}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  terms: { ...formData.terms, downPayment: parseInt(e.target.value) || 0 }
-                                })}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Interest Rate (%)</Label>
-                              <Input
-                                type="number"
-                                step="0.1"
-                                value={formData.terms.interestRate || 6}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  terms: { ...formData.terms, interestRate: parseFloat(e.target.value) || 0 }
-                                })}
-                              />
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div className="space-y-2">
-                              <Label>Term (months)</Label>
-                              <Input
-                                type="number"
-                                value={formData.terms.termMonths || 360}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  terms: { ...formData.terms, termMonths: parseInt(e.target.value) || 0 }
-                                })}
-                              />
-                            </div>
-                            <div className="space-y-2">
-                              <Label>Balloon (months)</Label>
-                              <Input
-                                type="number"
-                                value={formData.terms.balloonMonths || 60}
-                                onChange={(e) => setFormData({
-                                  ...formData,
-                                  terms: { ...formData.terms, balloonMonths: parseInt(e.target.value) || 0 }
-                                })}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {formData.offer_type === "novation" && (
+                  {/* Creative terms for specific offer types */}
+                  {(formData.offer_type === "seller_financing" || formData.offer_type === "hybrid") && (
+                    <>
                       <div className="border-t pt-4 mt-4">
-                        <h4 className="font-medium mb-4">Novation Terms</h4>
+                        <h4 className="font-medium mb-4">Financing Terms</h4>
                         <div className="grid grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label>Marketing Period (days)</Label>
+                            <Label>Down Payment (%)</Label>
                             <Input
                               type="number"
-                              value={formData.terms.marketingPeriod || 90}
+                              value={formData.terms.downPayment || 10}
                               onChange={(e) => setFormData({
                                 ...formData,
-                                terms: { ...formData.terms, marketingPeriod: parseInt(e.target.value) || 0 }
+                                terms: { ...formData.terms, downPayment: parseInt(e.target.value) || 0 }
                               })}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label>Profit Split (%)</Label>
+                            <Label>Interest Rate (%)</Label>
                             <Input
                               type="number"
-                              value={formData.terms.profitSplit || 50}
+                              step="0.1"
+                              value={formData.terms.interestRate || 6}
                               onChange={(e) => setFormData({
                                 ...formData,
-                                terms: { ...formData.terms, profitSplit: parseInt(e.target.value) || 0 }
+                                terms: { ...formData.terms, interestRate: parseFloat(e.target.value) || 0 }
+                              })}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div className="space-y-2">
+                            <Label>Term (months)</Label>
+                            <Input
+                              type="number"
+                              value={formData.terms.termMonths || 360}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                terms: { ...formData.terms, termMonths: parseInt(e.target.value) || 0 }
+                              })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Balloon (months)</Label>
+                            <Input
+                              type="number"
+                              value={formData.terms.balloonMonths || 60}
+                              onChange={(e) => setFormData({
+                                ...formData,
+                                terms: { ...formData.terms, balloonMonths: parseInt(e.target.value) || 0 }
                               })}
                             />
                           </div>
                         </div>
                       </div>
-                    )}
-                  </TabsContent>
+                    </>
+                  )}
 
-                  <TabsContent value="email" className="space-y-4 mt-0">
-                    <div className="space-y-2">
-                      <Label>Subject Line</Label>
-                      <Input
-                        value={formData.email_subject}
-                        onChange={(e) => setFormData({ ...formData, email_subject: e.target.value })}
-                        placeholder="Cash Offer for {{property_address}}"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Email Body</Label>
-                      <Textarea
-                        value={formData.email_body}
-                        onChange={(e) => setFormData({ ...formData, email_body: e.target.value })}
-                        placeholder="Write your email content..."
-                        rows={14}
-                        className="font-mono text-sm"
-                      />
-                    </div>
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-tiny text-muted-foreground">
-                        <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{closing_days}}"}
-                      </p>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="sms" className="space-y-4 mt-0">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <Label>SMS Message</Label>
-                        <span className={cn(
-                          "text-tiny",
-                          formData.sms_body.length > 160 ? "text-warning" : "text-muted-foreground"
-                        )}>
-                          {formData.sms_body.length}/160 characters
-                        </span>
+                  {formData.offer_type === "novation" && (
+                    <div className="border-t pt-4 mt-4">
+                      <h4 className="font-medium mb-4">Novation Terms</h4>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Marketing Period (days)</Label>
+                          <Input
+                            type="number"
+                            value={formData.terms.marketingPeriod || 90}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              terms: { ...formData.terms, marketingPeriod: parseInt(e.target.value) || 0 }
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Profit Split (%)</Label>
+                          <Input
+                            type="number"
+                            value={formData.terms.profitSplit || 50}
+                            onChange={(e) => setFormData({
+                              ...formData,
+                              terms: { ...formData.terms, profitSplit: parseInt(e.target.value) || 0 }
+                            })}
+                          />
+                        </div>
                       </div>
-                      <Textarea
-                        value={formData.sms_body}
-                        onChange={(e) => setFormData({ ...formData, sms_body: e.target.value })}
-                        placeholder="Write your SMS message..."
-                        rows={4}
-                      />
                     </div>
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-tiny text-muted-foreground">
-                        <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}
-                      </p>
-                    </div>
-                  </TabsContent>
+                  )}
+                </TabsContent>
 
-                  <TabsContent value="loi" className="space-y-4 mt-0">
-                    <div className="space-y-2">
-                      <Label>Letter of Intent / Purchase Agreement</Label>
-                      <Textarea
-                        value={formData.loi_content}
-                        onChange={(e) => setFormData({ ...formData, loi_content: e.target.value })}
-                        placeholder="Write your LOI content..."
-                        rows={18}
-                        className="font-mono text-sm"
-                      />
+                <TabsContent value="email" className="space-y-4 mt-0">
+                  <div className="space-y-2">
+                    <Label>Subject Line</Label>
+                    <Input
+                      value={formData.email_subject}
+                      onChange={(e) => setFormData({ ...formData, email_subject: e.target.value })}
+                      placeholder="Cash Offer for {{property_address}}"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Email Body</Label>
+                    <Textarea
+                      value={formData.email_body}
+                      onChange={(e) => setFormData({ ...formData, email_body: e.target.value })}
+                      placeholder="Write your email content..."
+                      rows={14}
+                      className="font-mono text-sm"
+                    />
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-tiny text-muted-foreground">
+                      <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{closing_days}}"}
+                    </p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="sms" className="space-y-4 mt-0">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>SMS Message</Label>
+                      <span className={cn(
+                        "text-tiny",
+                        formData.sms_body.length > 160 ? "text-warning" : "text-muted-foreground"
+                      )}>
+                        {formData.sms_body.length}/160 characters
+                      </span>
                     </div>
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <p className="text-tiny text-muted-foreground">
-                        <strong>Available variables:</strong> {"{{date}}"}, {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{property_city}}"}, {"{{property_state}}"}, {"{{property_zip}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{inspection_period}}"}, {"{{closing_days}}"}
-                      </p>
-                    </div>
-                  </TabsContent>
-                </div>
-              </Tabs>
-            </Card>
+                    <Textarea
+                      value={formData.sms_body}
+                      onChange={(e) => setFormData({ ...formData, sms_body: e.target.value })}
+                      placeholder="Write your SMS message..."
+                      rows={4}
+                    />
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-tiny text-muted-foreground">
+                      <strong>Available variables:</strong> {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}
+                    </p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="loi" className="space-y-4 mt-0">
+                  <div className="space-y-2">
+                    <Label>Letter of Intent / Purchase Agreement</Label>
+                    <Textarea
+                      value={formData.loi_content}
+                      onChange={(e) => setFormData({ ...formData, loi_content: e.target.value })}
+                      placeholder="Write your LOI content..."
+                      rows={18}
+                      className="font-mono text-sm"
+                    />
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg">
+                    <p className="text-tiny text-muted-foreground">
+                      <strong>Available variables:</strong> {"{{date}}"}, {"{{seller_name}}"}, {"{{buyer_name}}"}, {"{{property_address}}"}, {"{{property_city}}"}, {"{{property_state}}"}, {"{{property_zip}}"}, {"{{offer_amount}}"}, {"{{deposit_amount}}"}, {"{{inspection_period}}"}, {"{{closing_days}}"}
+                    </p>
+                  </div>
+                </TabsContent>
+              </Card>
+            </div>
           </div>
-
-          {/* Right Panel - LIVE Preview */}
-          <div>
-            <Card variant="default" padding="md" className="sticky top-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="relative flex items-center">
-                  <span className="absolute -left-0.5 h-2 w-2 rounded-full bg-success animate-pulse" />
-                  <Badge variant="secondary" className="pl-3 text-tiny font-semibold">LIVE</Badge>
-                </div>
-                <h3 className="font-semibold">Template Preview</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", currentOfferConfig?.bgColor)}>
-                    {currentOfferConfig && <currentOfferConfig.icon className={cn("h-5 w-5", currentOfferConfig.color)} />}
-                  </div>
-                  <div>
-                    <p className="font-medium">{formData.name || "Untitled Template"}</p>
-                    <p className="text-tiny text-muted-foreground uppercase tracking-wide">{currentOfferConfig?.label}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Badge variant="secondary" size="sm">
-                    {formData.market_type === "off_market" ? "OFF-MARKET" : "MLS"}
-                  </Badge>
-                  {formData.document_type === "loi" && <Badge variant="secondary" size="sm">LOI</Badge>}
-                  {formData.document_type === "purchase_agreement" && <Badge variant="secondary" size="sm">PA</Badge>}
-                </div>
-
-                <div className="space-y-2 text-small">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Deposit:</span>
-                    <span className="font-medium">${(formData.terms.depositAmount || 1000).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Closing:</span>
-                    <span className="font-medium">{formData.terms.closingTimeline || 14} days</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Inspection:</span>
-                    <span className="font-medium">{formData.terms.inspectionPeriod || 10} days</span>
-                  </div>
-                </div>
-
-                <div className="border-t pt-3 space-y-2">
-                  <div className="flex items-center gap-2 text-small">
-                    <Mail className={cn("h-4 w-4", formData.email_subject ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.email_subject ? "text-success" : "text-muted-foreground"}>
-                      {formData.email_subject ? "Email configured" : "Email not configured"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-small">
-                    <MessageSquare className={cn("h-4 w-4", formData.sms_body ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.sms_body ? "text-success" : "text-muted-foreground"}>
-                      {formData.sms_body ? "SMS configured" : "SMS not configured"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-small">
-                    <FileText className={cn("h-4 w-4", formData.loi_content ? "text-success" : "text-muted-foreground")} />
-                    <span className={formData.loi_content ? "text-success" : "text-muted-foreground"}>
-                      {formData.loi_content ? "LOI configured" : "LOI not configured"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
+        </Tabs>
       </div>
     );
   }
