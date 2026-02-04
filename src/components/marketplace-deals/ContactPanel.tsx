@@ -70,7 +70,7 @@ const MESSAGE_TEMPLATES: Record<string, MessageTemplate[]> = {
 };
 
 export function ContactPanel({ contact, propertyAddress, propertyPrice }: ContactPanelProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false); // Default closed
   const [userType, setUserType] = useState<"investor" | "agent" | "investor-agent">("investor");
   const [message, setMessage] = useState("");
 
@@ -86,9 +86,9 @@ export function ContactPanel({ contact, propertyAddress, propertyPrice }: Contac
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden border-warning/50 bg-warning/5">
         <CollapsibleTrigger asChild>
-          <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+          <button className="w-full p-4 flex items-center justify-between hover:bg-warning/10 transition-colors">
             <div className="flex items-center gap-2">
               <span className="font-semibold">Contact</span>
               <Badge variant="secondary" className="text-xs">
