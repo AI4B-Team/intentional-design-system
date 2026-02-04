@@ -1310,8 +1310,9 @@ export default function MarketplaceDealDetail() {
           </div>
 
           {/* Sidebar - Agent Card with AI Templates */}
-          <div className="space-y-4">
-            <Card className="p-5 sticky top-6">
+          <div className="flex flex-col h-full">
+            {/* Top Section - Agent Info and Templates */}
+            <Card className="p-5">
               {/* Agent Info */}
               <p className="text-sm text-muted-foreground mb-1">Listing Agent</p>
               <h3 className="text-lg font-semibold mb-3">{mockAgent.name}</h3>
@@ -1380,7 +1381,7 @@ export default function MarketplaceDealDetail() {
               </div>
 
               {/* AI Message Templates */}
-              <div className="mb-4">
+              <div>
                 <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                   <Sparkles className="h-3 w-3 text-brand" />
                   AI Message Templates
@@ -1413,7 +1414,13 @@ export default function MarketplaceDealDetail() {
                   ))}
                 </div>
               </div>
+            </Card>
 
+            {/* Spacer to push message box to bottom */}
+            <div className="flex-1" />
+
+            {/* Bottom Section - Message Input */}
+            <Card className="p-5 mt-4 sticky bottom-6">
               {/* Message Input */}
               <Textarea
                 value={message}
