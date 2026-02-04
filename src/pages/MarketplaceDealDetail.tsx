@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
   TooltipContent,
@@ -183,6 +186,165 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
         <span>100%</span>
       </div>
     </div>
+  );
+}
+
+// MAO Calculator with user controls
+function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepairs: number }) {
+  const [arvPercent, setArvPercent] = useState(70);
+  const [repairs, setRepairs] = useState(defaultRepairs);
+  const [holdingCosts, setHoldingCosts] = useState(5000);
+  const [closingCostPercent, setClosingCostPercent] = useState(6);
+
+  const closingCosts = Math.round(arv * (closingCostPercent / 100));
+  const mao = Math.round(arv * (arvPercent / 100) - repairs - holdingCosts - closingCosts);
+
+  const presets = [
+    { label: "Conservative", percent: 60, color: "text-success" },
+    { label: "Standard", percent: 70, color: "text-primary" },
+    { label: "Aggressive", percent: 75, color: "text-warning" },
+    { label: "Wholesale", percent: 65, color: "text-muted-foreground" },
+  ];
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Target className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">MAO Calculator</h2>
+        </div>
+        <Badge variant="secondary" className="text-xs">Interactive</Badge>
+      </div>
+
+      {/* Preset Buttons */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {presets.map((preset) => (
+          <Button
+            key={preset.percent}
+            variant={arvPercent === preset.percent ? "default" : "outline"}
+            size="sm"
+            onClick={() => setArvPercent(preset.percent)}
+            className="text-xs"
+          >
+            {preset.label} ({preset.percent}%)
+          </Button>
+        ))}
+      </div>
+
+      {/* Controls */}
+      <div className="space-y-4 mb-6">
+        {/* ARV Percent Slider */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <Label className="text-sm text-muted-foreground">ARV Percentage</Label>
+            <span className="text-sm font-semibold">{arvPercent}%</span>
+          </div>
+          <Slider
+            value={[arvPercent]}
+            onValueChange={([val]) => setArvPercent(val)}
+            min={50}
+            max={85}
+            step={1}
+            className="w-full"
+          />
+        </div>
+
+        {/* Repairs Input */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <Label className="text-sm text-muted-foreground">Est. Repairs</Label>
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">$</span>
+              <Input
+                type="number"
+                value={repairs}
+                onChange={(e) => setRepairs(Number(e.target.value))}
+                className="w-24 h-8 text-sm text-right"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Holding Costs Input */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <Label className="text-sm text-muted-foreground">Holding Costs</Label>
+            <div className="flex items-center gap-1">
+              <span className="text-muted-foreground">$</span>
+              <Input
+                type="number"
+                value={holdingCosts}
+                onChange={(e) => setHoldingCosts(Number(e.target.value))}
+                className="w-24 h-8 text-sm text-right"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Closing Costs */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <Label className="text-sm text-muted-foreground">Closing Costs</Label>
+            <div className="flex items-center gap-1">
+              <Input
+                type="number"
+                value={closingCostPercent}
+                onChange={(e) => setClosingCostPercent(Number(e.target.value))}
+                className="w-16 h-8 text-sm text-right"
+              />
+              <span className="text-muted-foreground">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Result */}
+      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-4 border border-primary/20">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground mb-1">Maximum Allowable Offer</p>
+            <p className="text-3xl font-bold text-primary">
+              ${mao.toLocaleString()}
+            </p>
+          </div>
+          <div className="text-right text-sm text-muted-foreground">
+            <p>ARV × {arvPercent}% = ${Math.round(arv * (arvPercent / 100)).toLocaleString()}</p>
+            <p>− Repairs: ${repairs.toLocaleString()}</p>
+            <p>− Holding: ${holdingCosts.toLocaleString()}</p>
+            <p>− Closing: ${closingCosts.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Compare Grid */}
+      <div className="grid grid-cols-4 gap-2 mt-4">
+        {[60, 65, 70, 75].map((pct) => {
+          const value = Math.round(arv * (pct / 100) - repairs - holdingCosts - closingCosts);
+          return (
+            <div 
+              key={pct}
+              className={cn(
+                "text-center p-2 rounded-lg border cursor-pointer transition-all",
+                arvPercent === pct 
+                  ? "border-primary bg-primary/10" 
+                  : "border-border hover:border-primary/50"
+              )}
+              onClick={() => setArvPercent(pct)}
+            >
+              <p className="text-xs text-muted-foreground">{pct}%</p>
+              <p className={cn(
+                "text-sm font-bold",
+                pct === 60 ? "text-success" : 
+                pct === 65 ? "text-muted-foreground" :
+                pct === 70 ? "text-primary" : "text-warning"
+              )}>
+                ${(value / 1000).toFixed(0)}K
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </Card>
   );
 }
 
@@ -728,6 +890,11 @@ export default function MarketplaceDealDetail() {
                 <MapPin className="h-5 w-5" />
                 {deal.address}, {deal.city}, {deal.state} {deal.zip}
               </p>
+              
+              {/* Deal Risk Meter - Moved directly under address */}
+              {viewMode === "flip" && (
+                <DealRiskMeter arvPercent={deal.arvPercent} />
+              )}
             </div>
 
             {/* Property Details Grid - 4 per row */}
@@ -829,50 +996,18 @@ export default function MarketplaceDealDetail() {
                   </div>
                 </div>
 
-                {/* MAO Section */}
-                <div className="pt-3 border-t space-y-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Target className="h-4 w-4 text-primary" />
-                    <span className="font-semibold text-sm">Maximum Allowable Offer</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">MAO (70% Rule)</p>
-                      <p className="text-lg font-bold text-primary">
-                        ${Math.round(deal.arv * 0.70 - estRepairs).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">ARV × 70% − Repairs</p>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">WMAO (Wholesale)</p>
-                      <p className="text-lg font-bold text-warning">
-                        ${Math.round(deal.arv * 0.65 - estRepairs).toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">ARV × 65% − Repairs</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Conservative (60%)</p>
-                      <p className="text-lg font-bold text-success">
-                        ${Math.round(deal.arv * 0.60 - estRepairs).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <p className="text-xs text-muted-foreground mb-1">Aggressive (75%)</p>
-                      <p className="text-lg font-bold text-destructive">
-                        ${Math.round(deal.arv * 0.75 - estRepairs).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <DealRiskMeter arvPercent={deal.arvPercent} />
+              
               </div>
             </Card>
             )}
 
-            {/* Comparable Sales Section - Only shown on Flip view */}
+            {/* MAO Calculator Card - Only shown on Flip view */}
+            {viewMode === "flip" && (
+            <MaoCalculatorCard 
+              arv={deal.arv}
+              defaultRepairs={estRepairs}
+            />
+            )}
             {viewMode === "flip" && (
               <ComparableSalesSection
                 subjectProperty={subjectForMap}
