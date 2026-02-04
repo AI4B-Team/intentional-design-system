@@ -111,7 +111,7 @@ const SelectContent = React.forwardRef<
       ref={ref}
       className={cn(
         // Force high z-index (above dialogs at z-[110]) and solid background for visibility
-        "relative z-[200] max-h-96 min-w-[8rem] overflow-hidden rounded-medium border border-border bg-white shadow-lg",
+        "relative z-[200] max-h-96 min-w-[8rem] overflow-hidden rounded-lg border border-border bg-white shadow-lg",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
