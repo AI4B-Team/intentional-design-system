@@ -112,7 +112,7 @@ const mockBuyers: Buyer[] = [
 
 export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPanelProps) {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true); // Default open
   
   // Default filter based on view mode
   const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
@@ -138,9 +138,9 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <Card className="overflow-hidden">
+      <Card className="overflow-hidden border-success/50 bg-success/5">
         <CollapsibleTrigger asChild>
-          <button className="w-full p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+          <button className="w-full p-4 flex items-center justify-between hover:bg-success/10 transition-colors">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
               <span className="font-semibold">Buyers</span>
