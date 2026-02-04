@@ -176,82 +176,98 @@ export function ComparableSalesSection({
         <Badge variant="secondary">{comps.length} Comps</Badge>
       </div>
 
-      {/* Filter Controls */}
-      <div className="flex items-center gap-2 mb-4 pb-4 border-b overflow-x-auto">
-        <Select value={timeframe} onValueChange={setTimeframe}>
-          <SelectTrigger className="w-[90px] h-8 bg-background shrink-0 text-xs">
-            <SelectValue placeholder="Timeframe" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[100]">
-            <SelectItem value="3" className="text-xs">3 Mo</SelectItem>
-            <SelectItem value="6" className="text-xs">6 Mo</SelectItem>
-            <SelectItem value="12" className="text-xs">12 Mo</SelectItem>
-            <SelectItem value="24" className="text-xs">24 Mo</SelectItem>
-          </SelectContent>
-        </Select>
+      {/* Filter Controls & Action Buttons */}
+      <div className="flex items-center justify-between gap-3 mb-4 pb-4 border-b">
+        <div className="flex items-center gap-3">
+          {/* Filters */}
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Timeline</span>
+            <Select value={timeframe} onValueChange={setTimeframe}>
+              <SelectTrigger className="w-[70px] h-7 bg-background text-xs">
+                <SelectValue placeholder="6 Mo" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[100]">
+                <SelectItem value="3" className="text-xs">3 Mo</SelectItem>
+                <SelectItem value="6" className="text-xs">6 Mo</SelectItem>
+                <SelectItem value="12" className="text-xs">12 Mo</SelectItem>
+                <SelectItem value="24" className="text-xs">24 Mo</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Select value={radius} onValueChange={setRadius}>
-          <SelectTrigger className="w-[80px] h-8 bg-background shrink-0 text-xs">
-            <SelectValue placeholder="Radius" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[100]">
-            <SelectItem value="0.25" className="text-xs">0.25 Mi</SelectItem>
-            <SelectItem value="0.5" className="text-xs">0.5 Mi</SelectItem>
-            <SelectItem value="1" className="text-xs">1 Mi</SelectItem>
-            <SelectItem value="2" className="text-xs">2 Mi</SelectItem>
-            <SelectItem value="5" className="text-xs">5 Mi</SelectItem>
-          </SelectContent>
-        </Select>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Radius</span>
+            <Select value={radius} onValueChange={setRadius}>
+              <SelectTrigger className="w-[65px] h-7 bg-background text-xs">
+                <SelectValue placeholder="1 Mi" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[100]">
+                <SelectItem value="0.25" className="text-xs">0.25 Mi</SelectItem>
+                <SelectItem value="0.5" className="text-xs">0.5 Mi</SelectItem>
+                <SelectItem value="1" className="text-xs">1 Mi</SelectItem>
+                <SelectItem value="2" className="text-xs">2 Mi</SelectItem>
+                <SelectItem value="5" className="text-xs">5 Mi</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Select value={bedsFilter} onValueChange={setBedsFilter}>
-          <SelectTrigger className="w-[75px] h-8 bg-background shrink-0 text-xs">
-            <SelectValue placeholder="Beds" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any" className="text-xs">Any</SelectItem>
-            <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
-            <SelectItem value="1-3" className="text-xs">1-3</SelectItem>
-            <SelectItem value="2-4" className="text-xs">2-4</SelectItem>
-            <SelectItem value="3-5" className="text-xs">3-5</SelectItem>
-            <SelectItem value="4+" className="text-xs">4+</SelectItem>
-          </SelectContent>
-        </Select>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Beds</span>
+            <Select value={bedsFilter} onValueChange={setBedsFilter}>
+              <SelectTrigger className="w-[55px] h-7 bg-background text-xs">
+                <SelectValue placeholder="Any" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[100]">
+                <SelectItem value="any" className="text-xs">Any</SelectItem>
+                <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+                <SelectItem value="1-3" className="text-xs">1-3</SelectItem>
+                <SelectItem value="2-4" className="text-xs">2-4</SelectItem>
+                <SelectItem value="3-5" className="text-xs">3-5</SelectItem>
+                <SelectItem value="4+" className="text-xs">4+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Select value={bathsFilter} onValueChange={setBathsFilter}>
-          <SelectTrigger className="w-[75px] h-8 bg-background shrink-0 text-xs">
-            <SelectValue placeholder="Baths" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any" className="text-xs">Any</SelectItem>
-            <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
-            <SelectItem value="2-3" className="text-xs">2-3</SelectItem>
-            <SelectItem value="3+" className="text-xs">3+</SelectItem>
-          </SelectContent>
-        </Select>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Baths</span>
+            <Select value={bathsFilter} onValueChange={setBathsFilter}>
+              <SelectTrigger className="w-[55px] h-7 bg-background text-xs">
+                <SelectValue placeholder="Any" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[100]">
+                <SelectItem value="any" className="text-xs">Any</SelectItem>
+                <SelectItem value="1-2" className="text-xs">1-2</SelectItem>
+                <SelectItem value="2-3" className="text-xs">2-3</SelectItem>
+                <SelectItem value="3+" className="text-xs">3+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-        <Select value={sqftFilter} onValueChange={setSqftFilter}>
-          <SelectTrigger className="w-[85px] h-8 bg-background shrink-0 text-xs">
-            <SelectValue placeholder="Sqft" />
-          </SelectTrigger>
-          <SelectContent className="bg-background z-[100]">
-            <SelectItem value="any" className="text-xs">Any</SelectItem>
-            <SelectItem value="0-1000" className="text-xs">0-1k</SelectItem>
-            <SelectItem value="1000-1500" className="text-xs">1-1.5k</SelectItem>
-            <SelectItem value="1500-2000" className="text-xs">1.5-2k</SelectItem>
-            <SelectItem value="2000-3000" className="text-xs">2-3k</SelectItem>
-            <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-muted-foreground uppercase tracking-wide">SqFt</span>
+            <Select value={sqftFilter} onValueChange={setSqftFilter}>
+              <SelectTrigger className="w-[60px] h-7 bg-background text-xs">
+                <SelectValue placeholder="Any" />
+              </SelectTrigger>
+              <SelectContent className="bg-background z-[100]">
+                <SelectItem value="any" className="text-xs">Any</SelectItem>
+                <SelectItem value="0-1000" className="text-xs">0-1k</SelectItem>
+                <SelectItem value="1000-1500" className="text-xs">1-1.5k</SelectItem>
+                <SelectItem value="1500-2000" className="text-xs">1.5-2k</SelectItem>
+                <SelectItem value="2000-3000" className="text-xs">2-3k</SelectItem>
+                <SelectItem value="3000+" className="text-xs">3k+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Action Buttons */}
-      <div className="flex items-center justify-between gap-2 mb-4 pb-4 border-b">
-        <div className="flex items-center gap-2">
+          <div className="w-px h-6 bg-border mx-1" />
+
+          {/* Action Buttons */}
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={onAddComp}>
-                  <Plus className="h-4 w-4 mr-1" />
+                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onAddComp}>
+                  <Plus className="h-3 w-3 mr-1" />
                   Add Comp
                 </Button>
               </TooltipTrigger>
@@ -262,37 +278,38 @@ export function ComparableSalesSection({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={onRefreshComps}>
-                  <RefreshCw className="h-4 w-4 mr-1" />
-                  Refresh
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onRefreshComps}>
+                  <RefreshCw className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Fetch updated comps</TooltipContent>
+              <TooltipContent>Refresh comps</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowMap(!showMap)}
-          >
-            <MapPin className="h-4 w-4 mr-1" />
-            {showMap ? "Hide Map" : "Show Map"}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowMap(!showMap)}>
+                  <MapPin className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{showMap ? "Hide Map" : "Show Map"}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Selection Actions */}
         {selectedComps.size > 0 && (
           <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" onClick={handleGenerateReport}>
-              <FileText className="h-4 w-4 mr-1" />
+            <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={handleGenerateReport}>
+              <FileText className="h-3 w-3 mr-1" />
               Create Report
             </Button>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Printer className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Printer className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Print Report</TooltipContent>
@@ -301,8 +318,8 @@ export function ComparableSalesSection({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Share2 className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Share2 className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Share Report</TooltipContent>
@@ -311,8 +328,8 @@ export function ComparableSalesSection({
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Download className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <Download className="h-3.5 w-3.5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>Download PDF</TooltipContent>
