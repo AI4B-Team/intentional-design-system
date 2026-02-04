@@ -212,11 +212,11 @@ export function ComparableSalesSection({
       </div>
 
       {/* Filter Controls */}
-      <div className="flex items-center justify-center gap-3 mb-4 pb-4 border-b">
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-center gap-4 mb-4 pb-4 border-b">
+        <div className="flex items-center gap-3">
           {/* Filters */}
           <Select value={timeframe} onValueChange={setTimeframe}>
-            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+            <SelectTrigger className="min-w-[130px] h-8 bg-background text-xs gap-1 px-3">
               <span className="text-muted-foreground">Timeline:</span>
               <SelectValue placeholder="6 Mo" />
             </SelectTrigger>
@@ -229,7 +229,7 @@ export function ComparableSalesSection({
           </Select>
 
           <Select value={radius} onValueChange={setRadius}>
-            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+            <SelectTrigger className="min-w-[130px] h-8 bg-background text-xs gap-1 px-3">
               <span className="text-muted-foreground">Radius:</span>
               <SelectValue placeholder="1 Mi" />
             </SelectTrigger>
@@ -243,7 +243,7 @@ export function ComparableSalesSection({
           </Select>
 
           <Select value={bedsFilter} onValueChange={setBedsFilter}>
-            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+            <SelectTrigger className="min-w-[110px] h-8 bg-background text-xs gap-1 px-3">
               <span className="text-muted-foreground">Beds:</span>
               <SelectValue placeholder="Any" />
             </SelectTrigger>
@@ -258,7 +258,7 @@ export function ComparableSalesSection({
           </Select>
 
           <Select value={bathsFilter} onValueChange={setBathsFilter}>
-            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+            <SelectTrigger className="min-w-[110px] h-8 bg-background text-xs gap-1 px-3">
               <span className="text-muted-foreground">Baths:</span>
               <SelectValue placeholder="Any" />
             </SelectTrigger>
@@ -271,7 +271,7 @@ export function ComparableSalesSection({
           </Select>
 
           <Select value={sqftFilter} onValueChange={setSqftFilter}>
-            <SelectTrigger className="w-auto h-7 bg-background text-xs gap-1 px-2">
+            <SelectTrigger className="min-w-[110px] h-8 bg-background text-xs gap-1 px-3">
               <span className="text-muted-foreground">SqFt:</span>
               <SelectValue placeholder="Any" />
             </SelectTrigger>
