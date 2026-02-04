@@ -183,7 +183,7 @@ export function ComparableSalesSection({
                   Add Comp
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Add a custom comparable</TooltipContent>
+              <TooltipContent>Add A Custom Comparable</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
