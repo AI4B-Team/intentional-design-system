@@ -309,7 +309,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
               <Users className="h-4 w-4 text-primary" />
               <span className="font-semibold">Buyers</span>
               <Badge variant="secondary" className="text-xs">
-                {getBuyerTypeLabel()}
+                {filteredBuyers.length} {getBuyerTypeLabel()}
               </Badge>
             </div>
             {isOpen ? (
@@ -322,12 +322,8 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
         <CollapsibleContent>
           <div className="px-4 pb-4">
-            {/* Buyer Count & Action Buttons */}
-            <div className="flex items-center justify-between mb-3 py-2 border-b border-border">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-foreground">{filteredBuyers.length}</span>
-                <span className="text-sm text-muted-foreground">Buyers Found</span>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end mb-3 py-2 border-b border-border">
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
