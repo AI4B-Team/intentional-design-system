@@ -67,7 +67,7 @@ import { ComparableSalesSection } from "@/components/marketplace-deals/Comparabl
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 
-type ViewMode = "flip" | "hold" | "buyers";
+type ViewMode = "flip" | "hold";
 type LayoutMode = "detail" | "split";
 type UserType = "investor" | "agent" | "investor-agent";
 
@@ -441,7 +441,7 @@ const DETAIL_LAYOUT_MODE_KEY = "marketplace-detail-layout-mode";
 function getStoredDetailViewMode(): ViewMode {
   if (typeof window === "undefined") return "flip";
   const stored = sessionStorage.getItem(DETAIL_VIEW_MODE_KEY);
-  if (stored === "flip" || stored === "hold" || stored === "buyers") return stored as ViewMode;
+  if (stored === "flip" || stored === "hold") return stored as ViewMode;
   return "flip";
 }
 
@@ -952,7 +952,7 @@ export default function MarketplaceDealDetail() {
           )}>
             {/* View Mode Toggle */}
             <div className="flex items-center gap-1 bg-muted rounded-lg p-1 w-fit">
-              {(["flip", "hold", "buyers"] as ViewMode[]).map((mode) => (
+              {(["flip", "hold"] as ViewMode[]).map((mode) => (
                 <button
                   key={mode}
                   onClick={() => setViewMode(mode)}
@@ -963,7 +963,7 @@ export default function MarketplaceDealDetail() {
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {mode === "flip" ? "Flip" : mode === "hold" ? "Hold" : "Buyers"}
+                  {mode === "flip" ? "Flip" : "Hold"}
                 </button>
               ))}
             </div>
