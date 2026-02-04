@@ -88,7 +88,7 @@ export function ContactPanel({ contact, propertyAddress, propertyPrice }: Contac
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card className="overflow-hidden border-warning/50 bg-warning/5">
         <CollapsibleTrigger asChild>
-          <button className="w-full p-4 flex items-center justify-between hover:bg-warning/10 transition-colors">
+          <button className="w-full p-4 flex items-center justify-between bg-warning/10 hover:bg-warning/20 transition-colors rounded-t-lg">
             <div className="flex items-center gap-2">
               <User className="h-4 w-4 text-warning" />
               <span className="font-semibold">Contact</span>

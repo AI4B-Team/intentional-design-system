@@ -140,7 +140,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <Card className="overflow-hidden border-success/50 bg-success/5">
         <CollapsibleTrigger asChild>
-          <button className="w-full p-4 flex items-center justify-between hover:bg-success/10 transition-colors">
+          <button className="w-full p-4 flex items-center justify-between bg-success/10 hover:bg-success/20 transition-colors rounded-t-lg">
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-primary" />
               <span className="font-semibold">Buyers</span>
