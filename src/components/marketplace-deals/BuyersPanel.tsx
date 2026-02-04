@@ -20,6 +20,7 @@ import {
   Send,
   MessageCircle,
   Sparkles,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -321,23 +322,37 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
         <CollapsibleContent>
           <div className="px-4 pb-4">
-            {/* Buyer Count & Campaign Button */}
+            {/* Buyer Count & Action Buttons */}
             <div className="flex items-center justify-between mb-3 py-2 border-b border-border">
               <div className="flex items-center gap-2">
                 <span className="text-2xl font-bold text-foreground">{filteredBuyers.length}</span>
                 <span className="text-sm text-muted-foreground">Buyers Found</span>
               </div>
-              <Button
-                size="sm"
-                className="gap-1.5 text-xs"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`);
-                }}
-              >
-                <Send className="h-3.5 w-3.5" />
-                Launch Campaign
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/dispo/buyers");
+                  }}
+                >
+                  <UserPlus className="h-3.5 w-3.5" />
+                  Add Buyers
+                </Button>
+                <Button
+                  size="sm"
+                  className="gap-1.5 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`);
+                  }}
+                >
+                  <Send className="h-3.5 w-3.5" />
+                  Launch Campaign
+                </Button>
+              </div>
             </div>
 
             {/* Filter Toggle */}
