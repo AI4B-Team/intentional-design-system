@@ -36,6 +36,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogBody,
 } from "@/components/ui/dialog";
 import { BuyBoxCreator } from "@/components/property-scout/BuyBoxCreator";
 import { BuyBoxWizard } from "@/components/marketplace-deals/BuyBoxWizard";
@@ -536,15 +538,21 @@ const BuyBox: React.FC = () => {
           if (!open) setEditingBuyBox(null);
         }}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <BuyBoxWizard
-            onSave={handleSave}
-            onCancel={() => {
-              setShowCreateDialog(false);
-              setEditingBuyBox(null);
-            }}
-            existingBuyBox={editingBuyBox || undefined}
-          />
+        <DialogContent size="lg" className="max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Your BuyBox</DialogTitle>
+            <DialogDescription>Set your investment criteria to start matching with deals</DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <BuyBoxWizard
+              onSave={handleSave}
+              onCancel={() => {
+                setShowCreateDialog(false);
+                setEditingBuyBox(null);
+              }}
+              existingBuyBox={editingBuyBox || undefined}
+            />
+          </DialogBody>
         </DialogContent>
       </Dialog>
     </PageLayout>
