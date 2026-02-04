@@ -141,8 +141,8 @@ export function CompMap({
           center={[subjectLat, subjectLng]}
           radius={1609}
           pathOptions={{
-            color: "hsl(142, 76%, 36%)",
-            fillColor: "hsl(142, 76%, 36%)",
+            color: "hsl(var(--primary))",
+            fillColor: "hsl(var(--primary))",
             fillOpacity: 0.05,
             weight: 2,
             dashArray: "5, 5",
