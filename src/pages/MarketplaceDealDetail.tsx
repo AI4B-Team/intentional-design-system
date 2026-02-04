@@ -465,6 +465,7 @@ export default function MarketplaceDealDetail() {
   // compType state moved to ComparableSalesSection component
   const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
+  const [showBuyersOnMap, setShowBuyersOnMap] = useState(false);
 
   // Persist view mode and layout mode changes to sessionStorage
   React.useEffect(() => {
@@ -723,6 +724,25 @@ export default function MarketplaceDealDetail() {
     arv: deal.arv,
   };
 
+  // Mock buyers data for map
+  const mockBuyersForMap = [
+    { id: "1", name: "Marcus Johnson", company: "Johnson Investments LLC", buyerType: "flipper" as const, maxPrice: 350000, isVerified: true, dealsCompleted: 23 },
+    { id: "2", name: "Sarah Chen", company: "Coastal Rentals Group", buyerType: "landlord" as const, maxPrice: 400000, isVerified: true, dealsCompleted: 45 },
+    { id: "3", name: "David Williams", buyerType: "flipper" as const, maxPrice: 275000, isVerified: false, dealsCompleted: 12 },
+    { id: "4", name: "Elena Rodriguez", company: "ER Property Holdings", buyerType: "landlord" as const, maxPrice: 500000, isVerified: true, dealsCompleted: 31 },
+    { id: "5", name: "Mike Thompson", buyerType: "flipper" as const, maxPrice: 225000, isVerified: false, dealsCompleted: 8 },
+    { id: "6", name: "Jessica Palmer", company: "Palm Realty Ventures", buyerType: "landlord" as const, maxPrice: 450000, isVerified: true, dealsCompleted: 28 },
+    { id: "7", name: "Robert Kim", buyerType: "flipper" as const, maxPrice: 300000, isVerified: true, dealsCompleted: 15 },
+    { id: "8", name: "Amanda Foster", company: "Foster Capital Group", buyerType: "landlord" as const, maxPrice: 600000, isVerified: true, dealsCompleted: 52 },
+  ];
+
+  // Filter buyers based on current view mode
+  const filteredBuyersForMap = viewMode === "flip" 
+    ? mockBuyersForMap.filter(b => b.buyerType === "flipper")
+    : viewMode === "hold"
+    ? mockBuyersForMap.filter(b => b.buyerType === "landlord")
+    : mockBuyersForMap;
+
   return (
     <AppLayout fullWidth={layoutMode === "split"}>
       <div className={cn(
@@ -843,6 +863,9 @@ export default function MarketplaceDealDetail() {
               <PropertyDetailMap
                 subjectProperty={subjectForMap}
                 comps={mapComps}
+                buyers={filteredBuyersForMap}
+                showBuyers={showBuyersOnMap}
+                onCloseBuyersView={() => setShowBuyersOnMap(false)}
               />
             </div>
           )}
@@ -966,19 +989,22 @@ export default function MarketplaceDealDetail() {
                 ))}
               </div>
               <Button
-                variant="outline"
+                variant={showBuyersOnMap ? "default" : "outline"}
                 size="sm"
                 className="gap-2"
                 onClick={() => {
-                  // Scroll to buyers panel
-                  const buyersPanel = document.querySelector('[data-buyers-panel]');
-                  if (buyersPanel) {
-                    buyersPanel.scrollIntoView({ behavior: 'smooth' });
+                  // If in split mode, toggle buyers on map
+                  if (layoutMode === "split") {
+                    setShowBuyersOnMap(!showBuyersOnMap);
+                  } else {
+                    // If not in split mode, open split mode and show buyers
+                    setLayoutMode("split");
+                    setShowBuyersOnMap(true);
                   }
                 }}
               >
                 <Users className="h-4 w-4" />
-                Buyers
+                {filteredBuyersForMap.length} Buyers
               </Button>
             </div>
 
