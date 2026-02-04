@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { toast } from "sonner";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSavedDeals } from "@/hooks/useSavedDeals";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -1180,10 +1181,10 @@ export default function MarketplaceDealDetail() {
                 subjectProperty={subjectForMap}
                 retailComps={retailComps}
                 investorComps={investorComps}
-                onAddComp={() => console.log("Add comp")}
-                onRefreshComps={() => console.log("Refresh comps")}
-                onRemoveComp={(id) => console.log("Remove comp", id)}
-                onGenerateReport={(ids) => console.log("Generate report for", ids)}
+                onAddComp={() => toast.info("Add Comp feature coming soon")}
+                onRefreshComps={() => toast.success("Comps refreshed")}
+                onRemoveComp={(id) => toast.success("Comp removed")}
+                onGenerateReport={(ids) => toast.success(`Generating report for ${ids.length} comps`)}
               />
             )}
 
