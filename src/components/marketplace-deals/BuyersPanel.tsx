@@ -19,6 +19,7 @@ import {
   Star,
   MapPin,
   ExternalLink,
+  Send,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
@@ -164,6 +165,25 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
 
         <CollapsibleContent>
           <div className="px-4 pb-4">
+            {/* Buyer Count & Campaign Button */}
+            <div className="flex items-center justify-between mb-3 py-2 border-b border-border">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold text-foreground">{filteredBuyers.length}</span>
+                <span className="text-sm text-muted-foreground">Buyers Found</span>
+              </div>
+              <Button
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/dispo/campaigns/new?property=${encodeURIComponent(propertyAddress || "")}&buyerType=${buyerFilter}`);
+                }}
+              >
+                <Send className="h-3.5 w-3.5" />
+                Launch Campaign
+              </Button>
+            </div>
+
             {/* Filter Toggle */}
             <div className="flex rounded-lg border border-border overflow-hidden mb-3">
               <button
@@ -309,10 +329,6 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                 ))}
               </div>
             </ScrollArea>
-
-            <p className="text-xs text-center text-muted-foreground mt-3">
-              {filteredBuyers.length} Buyers Match This Property
-            </p>
           </div>
         </CollapsibleContent>
       </Card>
