@@ -267,7 +267,7 @@ export default function D4DProperties() {
 
           {/* Select all bar */}
           {selectMode && (
-            <div className="px-4 pb-3 flex items-center justify-between">
+            <div className="px-4 pb-3 flex items-center gap-3">
               <button
                 onClick={toggleSelectAll}
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
