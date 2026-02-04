@@ -462,7 +462,7 @@ export default function MarketplaceDealDetail() {
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
   // compType state moved to ComparableSalesSection component
-  const [viewMode, setViewMode] = useState<ViewMode>(getStoredDetailViewMode);
+  const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
 
   // Persist view mode and layout mode changes to sessionStorage
