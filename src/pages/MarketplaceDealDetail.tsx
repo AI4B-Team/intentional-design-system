@@ -754,9 +754,9 @@ export default function MarketplaceDealDetail() {
     <AppLayout fullWidth={layoutMode === "split"}>
       <div className={cn(
         "flex flex-col",
-        // AppHeader is fixed at h-16 (4rem). In split view we lock the content area
-        // to the remaining viewport height so the left map + overlays are always above the fold.
-        layoutMode === "split" ? "h-[calc(100vh-4rem)] overflow-hidden" : ""
+        // In split view, fill the available height provided by AppLayout's <main> (which already
+        // accounts for the sticky header) to avoid a leftover strip at the bottom.
+        layoutMode === "split" ? "flex-1 min-h-0 overflow-hidden" : ""
       )}>
         {/* Top Navigation */}
         <div className={cn(

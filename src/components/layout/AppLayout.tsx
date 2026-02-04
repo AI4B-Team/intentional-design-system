@@ -21,6 +21,7 @@ const collapsedByDefaultPrefixes = ["/properties/", "/d4d/properties/", "/market
 
 export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) {
   const location = useLocation();
+  const lockViewportHeight = fullWidth && location.pathname.startsWith("/marketplace/deal/");
   const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname) ||
     collapsedByDefaultPrefixes.some(prefix => location.pathname.startsWith(prefix));
   
@@ -72,7 +73,12 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   };
 
   return (
-    <div className="min-h-screen flex bg-surface-secondary relative">
+    <div className={cn(
+      "min-h-screen flex bg-surface-secondary relative",
+      // For split-view deal detail, we want the layout locked to the viewport height so
+      // the left map stays above-the-fold and only the right panel scrolls.
+      lockViewportHeight ? "h-screen overflow-hidden" : ""
+    )}>
       {/*
         Left-rail background layer (desktop): ensures the sidebar background color
         always reaches the bottom of the viewport/page visually, even if any
@@ -111,7 +117,10 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
           className={cn(
             // Allow flex children (like split-view layouts) to properly constrain height and
             // use internal scrolling without forcing the whole document to scroll.
-            "flex-1 flex flex-col overflow-visible min-h-0",
+            cn(
+              "flex-1 flex flex-col min-h-0",
+              lockViewportHeight ? "overflow-hidden" : "overflow-visible"
+            ),
             fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >
