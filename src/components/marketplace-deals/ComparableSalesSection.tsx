@@ -179,8 +179,8 @@ export function ComparableSalesSection({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="h-7 text-xs" onClick={onAddComp}>
-                  + Comp
+                <Button variant="outline" size="sm" className="h-7 text-xs whitespace-nowrap" onClick={onAddComp}>
+                  Add Comp
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Add a custom comparable</TooltipContent>
