@@ -933,7 +933,7 @@ export default function MarketplaceDealDetail() {
                     }}
                   >
                     <Camera className="h-3.5 w-3.5" />
-                    See All 10 Photos
+                    {layoutMode === "split" ? "+10" : "See All 10 Photos"}
                   </button>
                 )}
               </div>
