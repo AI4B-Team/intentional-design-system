@@ -55,7 +55,7 @@ import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
 import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
 import { BuyerActivitySearch } from "@/components/marketplace-deals/BuyerActivitySearch";
-import { DealScore } from "@/components/marketplace-deals/DealScore";
+import { DealScore, DealScoreCompact } from "@/components/marketplace-deals/DealScore";
 
 type ViewMode = "flip" | "hold" | "buyers";
 type LayoutMode = "detail" | "split";
@@ -701,14 +701,9 @@ export default function MarketplaceDealDetail() {
                   <span className="text-3xl font-bold text-success">${deal.arv.toLocaleString()}</span>
                 </div>
                 {/* Deal Score - Far Right */}
-                <div className="ml-auto flex items-center gap-2">
+                <div className="ml-auto flex items-center gap-3">
                   <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Score</span>
-                  <div className={cn(
-                    "flex items-center justify-center w-12 h-12 rounded-full text-lg font-bold text-white",
-                    roi >= 25 ? "bg-success" : roi >= 15 ? "bg-primary" : roi >= 5 ? "bg-warning" : "bg-destructive"
-                  )}>
-                    {Math.min(Math.round(roi * 3 + 20), 100)}
-                  </div>
+                  <DealScoreCompact score={Math.min(Math.round(roi * 3 + 20), 100)} />
                 </div>
               </div>
               {/* Row 2: Last Sold info */}
