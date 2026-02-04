@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,7 +17,6 @@ import {
   Mail,
   Star,
   MapPin,
-  ExternalLink,
   Send,
   MessageCircle,
   Sparkles,
@@ -26,6 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
 import { AIMessageTemplatesDialog } from "./AIMessageTemplatesDialog";
+import { BuyerProfileModal } from "./BuyerProfileModal";
 
 interface Buyer {
   id: string;
@@ -248,6 +247,10 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
   const [selectedBuyer, setSelectedBuyer] = useState<Buyer | null>(null);
   const [messageType, setMessageType] = useState<"email" | "sms">("email");
   
+  // Profile Modal state
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [profileBuyer, setProfileBuyer] = useState<Buyer | null>(null);
+  
   // Default filter based on view mode
   const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
   const [buyerFilter, setBuyerFilter] = useState<"all" | "flippers" | "landlords">(defaultFilter);
@@ -272,14 +275,28 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
     return true;
   });
 
-  const handleViewBuyer = (buyerId: string) => {
-    navigate(`/dispo/buyers?id=${buyerId}`);
+  const handleViewBuyer = (buyer: Buyer) => {
+    setProfileBuyer(buyer);
+    setProfileModalOpen(true);
   };
 
   const openAITemplates = (buyer: Buyer, type: "email" | "sms") => {
     setSelectedBuyer(buyer);
     setMessageType(type);
     setAiDialogOpen(true);
+  };
+  
+  const handleProfileContact = (type: "call" | "sms" | "email") => {
+    if (!profileBuyer) return;
+    if (type === "call") {
+      window.location.href = `tel:${profileBuyer.phone}`;
+    } else if (type === "sms") {
+      setProfileModalOpen(false);
+      openAITemplates(profileBuyer, "sms");
+    } else {
+      setProfileModalOpen(false);
+      openAITemplates(profileBuyer, "email");
+    }
   };
 
   return (
@@ -382,7 +399,7 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                   <div
                     key={buyer.id}
                     className="p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                    onClick={() => handleViewBuyer(buyer.id)}
+                    onClick={() => handleViewBuyer(buyer)}
                   >
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -470,10 +487,10 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                         className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleViewBuyer(buyer.id);
+                          handleViewBuyer(buyer);
                         }}
                       >
-                        <ExternalLink className="h-3.5 w-3.5" />
+                        <Users className="h-3.5 w-3.5" />
                         Profile
                       </Button>
                     </div>
@@ -483,6 +500,14 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
           </div>
         </CollapsibleContent>
       </Card>
+
+      {/* Buyer Profile Modal */}
+      <BuyerProfileModal
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
+        buyer={profileBuyer}
+        onContact={handleProfileContact}
+      />
 
       {/* AI Message Templates Dialog */}
       {selectedBuyer && (
