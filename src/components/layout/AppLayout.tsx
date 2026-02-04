@@ -109,7 +109,9 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         <main
           ref={mainRef}
           className={cn(
-            "flex-1 flex flex-col overflow-visible",
+            // Allow flex children (like split-view layouts) to properly constrain height and
+            // use internal scrolling without forcing the whole document to scroll.
+            "flex-1 flex flex-col overflow-visible min-h-0",
             fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
           )}
         >
