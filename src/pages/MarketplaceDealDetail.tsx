@@ -204,9 +204,9 @@ function MaoCalculatorCard({ arv, defaultRepairs }: { arv: number; defaultRepair
 
   const presets = [
     { label: "Conservative", percent: 60, color: "text-success" },
+    { label: "Moderate", percent: 65, color: "text-muted-foreground" },
     { label: "Standard", percent: 70, color: "text-primary" },
     { label: "Aggressive", percent: 75, color: "text-warning" },
-    { label: "Wholesale", percent: 65, color: "text-muted-foreground" },
   ];
 
   return (
