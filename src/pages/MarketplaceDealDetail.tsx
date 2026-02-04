@@ -56,6 +56,7 @@ import { BuyerSearch } from "@/components/marketplace-deals/BuyerSearch";
 import { PropertyDetailMap } from "@/components/marketplace-deals/PropertyDetailMap";
 import { BuyerActivitySearch } from "@/components/marketplace-deals/BuyerActivitySearch";
 import { DealScore, DealScoreCompact } from "@/components/marketplace-deals/DealScore";
+import { ComparableSalesSection } from "@/components/marketplace-deals/ComparableSalesSection";
 
 type ViewMode = "flip" | "hold" | "buyers";
 type LayoutMode = "detail" | "split";
@@ -194,7 +195,7 @@ export default function MarketplaceDealDetail() {
   const [userType, setUserType] = useState<UserType>("investor");
   const [copiedTemplate, setCopiedTemplate] = useState<string | null>(null);
   const [showShareCopied, setShowShareCopied] = useState(false);
-  const [compType, setCompType] = useState<"investor" | "retail">("retail");
+  // compType state moved to ComparableSalesSection component
   const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("detail");
   
@@ -408,8 +409,7 @@ export default function MarketplaceDealDetail() {
     },
   ];
 
-  // Select active comps based on toggle
-  const mockComps = compType === "investor" ? investorComps : retailComps;
+  // mockComps selection now handled by ComparableSalesSection component
 
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
@@ -419,8 +419,8 @@ export default function MarketplaceDealDetail() {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  // Prepare comps data for map
-  const mapComps = mockComps.map((comp) => ({
+  // Prepare comps data for map (using retailComps as default for PropertyDetailMap)
+  const mapComps = retailComps.map((comp) => ({
     id: comp.id,
     address: comp.address,
     beds: comp.beds,
@@ -874,99 +874,15 @@ export default function MarketplaceDealDetail() {
 
             {/* Comparable Sales Section - Only shown on Flip view */}
             {viewMode === "flip" && (
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-semibold">Comparable Sales</h2>
-                  {/* Comp Type Toggle - Retail first */}
-                  <div className="flex items-center gap-1 ml-2 bg-muted rounded-lg p-0.5">
-                    <button
-                      onClick={() => setCompType("retail")}
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        compType === "retail"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Retail Comps
-                    </button>
-                    <button
-                      onClick={() => setCompType("investor")}
-                      className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-md transition-colors",
-                        compType === "investor"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Investor Comps
-                    </button>
-                  </div>
-                </div>
-                <Badge variant="secondary">{mockComps.length} Selected Comps</Badge>
-              </div>
-
-              <div className="space-y-3">
-                {mockComps.map((comp) => (
-                  <div
-                    key={comp.id}
-                    className={cn(
-                      "flex items-center justify-between p-3 rounded-lg border-2 transition-colors",
-                      comp.quality === "excellent" 
-                        ? "border-emerald-200 bg-emerald-50/50" 
-                        : "border-amber-200 bg-amber-50/50"
-                    )}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium text-sm">{comp.address}</p>
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-xs",
-                            comp.quality === "excellent" 
-                              ? "border-emerald-500 text-emerald-700 bg-emerald-100" 
-                              : "border-amber-500 text-amber-700 bg-amber-100"
-                          )}
-                        >
-                          {comp.similarity}% Match
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span>{comp.beds} bd • {comp.baths} ba • {comp.sqft.toLocaleString()} sqft</span>
-                        <span>{comp.distanceMiles} mi away</span>
-                        <span>Sold {new Date(comp.saleDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">${comp.salePrice.toLocaleString()}</p>
-                      <p className="text-xs text-muted-foreground">${comp.pricePerSqft}/sqft</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                    <span className="text-xs text-muted-foreground">Excellent Match (90%+)</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-amber-500" />
-                    <span className="text-xs text-muted-foreground">Good Match (70-89%)</span>
-                  </div>
-                </div>
-                <p className="text-sm">
-                  <span className="text-muted-foreground">Avg Comp Price:</span>{" "}
-                  <span className="font-semibold">
-                    ${Math.round(mockComps.reduce((sum, c) => sum + c.salePrice, 0) / mockComps.length).toLocaleString()}
-                  </span>
-                </p>
-              </div>
-            </Card>
+              <ComparableSalesSection
+                subjectProperty={subjectForMap}
+                retailComps={retailComps}
+                investorComps={investorComps}
+                onAddComp={() => console.log("Add comp")}
+                onRefreshComps={() => console.log("Refresh comps")}
+                onRemoveComp={(id) => console.log("Remove comp", id)}
+                onGenerateReport={(ids) => console.log("Generate report for", ids)}
+              />
             )}
 
             {viewMode === "hold" && (
