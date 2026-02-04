@@ -29,7 +29,36 @@ export function DealScore({
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (score / 100) * circumference;
   
-  // Generate unique gradient ID
+  // Determine gradient colors based on score: red (bad), yellow (good), green (great)
+  const getGradientColors = (score: number) => {
+    if (score >= 70) {
+      // Great - Green gradient
+      return {
+        start: 'hsl(142, 76%, 36%)', // emerald-600
+        mid: 'hsl(152, 76%, 40%)',
+        end: 'hsl(160, 84%, 39%)',
+        glow: 'hsl(142, 76%, 36%)',
+      };
+    }
+    if (score >= 40) {
+      // Good - Yellow/Amber gradient
+      return {
+        start: 'hsl(45, 93%, 47%)', // amber-500
+        mid: 'hsl(38, 92%, 50%)',
+        end: 'hsl(32, 95%, 44%)',
+        glow: 'hsl(45, 93%, 47%)',
+      };
+    }
+    // Bad - Red gradient
+    return {
+      start: 'hsl(0, 84%, 60%)', // red-500
+      mid: 'hsl(0, 72%, 51%)',
+      end: 'hsl(0, 74%, 42%)',
+      glow: 'hsl(0, 84%, 60%)',
+    };
+  };
+  
+  const gradientColors = getGradientColors(score);
   const gradientId = `scoreGradient-${score}-${Math.random().toString(36).substr(2, 9)}`;
 
   // Default badges based on score categories
@@ -87,10 +116,9 @@ export function DealScore({
         >
           <defs>
             <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-              {/* Using emerald (primary) to teal gradient matching site theme */}
-              <stop offset="0%" stopColor="hsl(var(--primary))" />
-              <stop offset="50%" stopColor="hsl(160, 84%, 39%)" />
-              <stop offset="100%" stopColor="hsl(174, 72%, 46%)" />
+              <stop offset="0%" stopColor={gradientColors.start} />
+              <stop offset="50%" stopColor={gradientColors.mid} />
+              <stop offset="100%" stopColor={gradientColors.end} />
             </linearGradient>
           </defs>
           <circle
@@ -156,6 +184,19 @@ export function DealScoreCompact({ score, className }: { score: number; classNam
   const offset = circumference - (score / 100) * circumference;
   const gradientId = `scoreGradientCompact-${Math.random().toString(36).substr(2, 9)}`;
 
+  // Determine gradient colors based on score: red (bad), yellow (good), green (great)
+  const getGradientColors = (score: number) => {
+    if (score >= 70) {
+      return { start: 'hsl(142, 76%, 36%)', end: 'hsl(160, 84%, 39%)' };
+    }
+    if (score >= 40) {
+      return { start: 'hsl(45, 93%, 47%)', end: 'hsl(32, 95%, 44%)' };
+    }
+    return { start: 'hsl(0, 84%, 60%)', end: 'hsl(0, 74%, 42%)' };
+  };
+  
+  const gradientColors = getGradientColors(score);
+
   return (
     <div className={cn("relative", className)} style={{ width: size, height: size }}>
       {/* Background ring */}
@@ -175,8 +216,8 @@ export function DealScoreCompact({ score, className }: { score: number; classNam
       <svg className="absolute inset-0 -rotate-90" width={size} height={size}>
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="hsl(var(--primary))" />
-            <stop offset="100%" stopColor="hsl(174, 72%, 46%)" />
+            <stop offset="0%" stopColor={gradientColors.start} />
+            <stop offset="100%" stopColor={gradientColors.end} />
           </linearGradient>
         </defs>
         <circle
