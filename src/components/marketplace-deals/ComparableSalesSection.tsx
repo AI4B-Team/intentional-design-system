@@ -286,45 +286,6 @@ export function ComparableSalesSection({
           </Select>
         </div>
 
-        {/* Selection Actions */}
-        {selectedComps.size > 0 && (
-          <div className="flex items-center gap-2">
-            <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={handleGenerateReport}>
-              <FileText className="h-3 w-3 mr-1" />
-              Create Report
-            </Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <Printer className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Print Report</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <Share2 className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Share Report</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <Download className="h-3.5 w-3.5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Download PDF</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
       </div>
 
       {/* Map */}
@@ -367,7 +328,48 @@ export function ComparableSalesSection({
             </Badge>
           )}
         </div>
-        <Badge variant="secondary">{comps.length} Comps</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">{comps.length} Comps</Badge>
+          {/* Selection Actions - appear to the right of X Comps badge */}
+          {selectedComps.size > 0 && (
+            <>
+              <Button variant="secondary" size="sm" className="h-7 text-xs" onClick={handleGenerateReport}>
+                <FileText className="h-3 w-3 mr-1" />
+                Create Report
+              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Printer className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Print Report</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Share2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Share Report</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                      <Download className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Download PDF</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Comp List */}
