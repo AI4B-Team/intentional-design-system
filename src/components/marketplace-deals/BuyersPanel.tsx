@@ -288,53 +288,53 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-1 mt-2">
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-2 text-xs gap-1"
+                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           window.location.href = `tel:${buyer.phone}`;
                         }}
                       >
-                        <Phone className="h-3 w-3" />
+                        <Phone className="h-3.5 w-3.5" />
                         Call
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-2 text-xs gap-1"
+                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           window.location.href = `sms:${buyer.phone}`;
                         }}
                       >
-                        <MessageCircle className="h-3 w-3" />
+                        <MessageCircle className="h-3.5 w-3.5" />
                         SMS
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-2 text-xs gap-1"
+                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           window.location.href = `mailto:${buyer.email}`;
                         }}
                       >
-                        <Mail className="h-3 w-3" />
+                        <Mail className="h-3.5 w-3.5" />
                         Email
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-6 px-2 text-xs gap-1 ml-auto"
+                        className="h-7 flex-1 text-xs gap-1.5 justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleViewBuyer(buyer.id);
                         }}
                       >
-                        <ExternalLink className="h-3 w-3" />
+                        <ExternalLink className="h-3.5 w-3.5" />
                         Profile
                       </Button>
                     </div>
