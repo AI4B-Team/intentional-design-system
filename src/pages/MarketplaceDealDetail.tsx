@@ -988,24 +988,17 @@ export default function MarketplaceDealDetail() {
                   </button>
                 ))}
               </div>
-              <Button
-                variant={showBuyersOnMap ? "default" : "outline"}
-                size="sm"
-                className="gap-2"
-                onClick={() => {
-                  // If in split mode, toggle buyers on map
-                  if (layoutMode === "split") {
-                    setShowBuyersOnMap(!showBuyersOnMap);
-                  } else {
-                    // If not in split mode, open split mode and show buyers
-                    setLayoutMode("split");
-                    setShowBuyersOnMap(true);
-                  }
-                }}
-              >
-                <Users className="h-4 w-4" />
-                {filteredBuyersForMap.length} Buyers
-              </Button>
+              {layoutMode === "split" && (
+                <Button
+                  variant={showBuyersOnMap ? "default" : "outline"}
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => setShowBuyersOnMap(!showBuyersOnMap)}
+                >
+                  <Users className="h-4 w-4" />
+                  {filteredBuyersForMap.length} Buyers
+                </Button>
+              )}
             </div>
 
             {/* Price, ARV, Deal Score & Address */}
