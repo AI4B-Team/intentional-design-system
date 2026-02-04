@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -117,6 +117,12 @@ export function BuyersPanel({ viewMode, onShowOnMap, propertyAddress }: BuyersPa
   // Default filter based on view mode
   const defaultFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
   const [buyerFilter, setBuyerFilter] = useState<"all" | "flippers" | "landlords">(defaultFilter);
+  
+  // Sync filter when viewMode changes from parent
+  useEffect(() => {
+    const newFilter = viewMode === "flip" ? "flippers" : viewMode === "hold" ? "landlords" : "all";
+    setBuyerFilter(newFilter);
+  }, [viewMode]);
   
   // Get the display label for the badge
   const getBuyerTypeLabel = () => {
