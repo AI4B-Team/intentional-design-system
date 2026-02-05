@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.generate-buyer-message]
 verify_jwt = false
+
+[functions.dialer-copilot]
+verify_jwt = false
