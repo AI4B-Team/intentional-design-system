@@ -230,16 +230,16 @@ function PipelineValueCard({
 
           {/* Next expected close for contracts - with clock icon inline */}
           {nextExpectedClose !== undefined && nextExpectedClose > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
-              <Clock className="h-3.5 w-3.5 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 text-sm px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
+              <Clock className="h-4 w-4 shrink-0" />
               <span>Next Expected Close: {nextExpectedClose} {nextExpectedClose === 1 ? "Day" : "Days"}</span>
             </div>
           )}
 
           {/* Goal gap context for celebration variant */}
           {variant === "celebration" && goalGap > 0 && (
-            <div className="inline-flex items-center gap-1.5 text-tiny px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
-              <BarChart3 className="h-3.5 w-3.5 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 text-sm px-2.5 py-1.5 rounded-md font-medium bg-muted text-muted-foreground whitespace-nowrap">
+              <BarChart3 className="h-4 w-4 shrink-0" />
               <span>{goalGap} {goalGap === 1 ? "Deal" : "Deals"} Needed To Hit Goal</span>
             </div>
           )}
