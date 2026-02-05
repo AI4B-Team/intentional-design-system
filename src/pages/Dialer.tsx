@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useDialer } from "@/hooks/useDialer";
+import { useDialerCopilot } from "@/hooks/useDialerCopilot";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -20,6 +21,7 @@ import {
   DispositionPanel,
   AutoDialCountdown,
 } from "@/components/dialer";
+import { DialerCopilotPanel, type CallMode, type ContactContext } from "@/components/dialer/copilot";
 import { Plus, Settings, Clock } from "lucide-react";
 
 interface SessionStats {
@@ -34,6 +36,10 @@ export default function Dialer() {
   const { user } = useAuth();
   const { organizationId } = useOrganizationContext();
   const dialer = useDialer();
+  const copilot = useDialerCopilot();
+
+  // Call mode state
+  const [callMode, setCallMode] = React.useState<CallMode>('listen_mode');
 
   // Session state
   const [sessionStartTime, setSessionStartTime] = React.useState<Date | null>(null);
@@ -49,6 +55,7 @@ export default function Dialer() {
   const [autoDialEnabled, setAutoDialEnabled] = React.useState(true);
   const [autoDialDelay, setAutoDialDelay] = React.useState(3);
   const [nextContact, setNextContact] = React.useState<any>(null);
+  const [liveTranscript, setLiveTranscript] = React.useState("");
 
   // Session stats
   const [stats, setStats] = React.useState<SessionStats>({
@@ -117,8 +124,98 @@ export default function Dialer() {
       dialer.callStatus === "no-answer"
     ) {
       setShowDisposition(true);
+      copilot.setPhase('after');
     }
   }, [dialer.callStatus]);
+
+  // Update copilot phase based on call state
+  React.useEffect(() => {
+    if (dialer.isOnCall) {
+      copilot.setPhase('during');
+    } else if (!showDisposition) {
+      copilot.setPhase('before');
+    }
+  }, [dialer.isOnCall, showDisposition]);
+
+  // Fetch briefing when contact changes
+  React.useEffect(() => {
+    if (dialer.currentContact) {
+      const context: ContactContext = {
+        contactName: dialer.currentContact.contact_name,
+        propertyAddress: dialer.currentContact.property_address,
+        // These would come from actual data in production
+        lastContactDate: undefined,
+        lastOffer: undefined,
+        arv: undefined,
+        equity: undefined,
+        motivation: undefined,
+        callHistory: [],
+      };
+      copilot.fetchBriefing(context);
+    }
+  }, [dialer.currentContact?.id]);
+
+  // Periodically refresh suggestions during call
+  React.useEffect(() => {
+    if (!dialer.isOnCall) return;
+
+    const interval = setInterval(() => {
+      if (dialer.currentContact) {
+        const context: ContactContext = {
+          contactName: dialer.currentContact.contact_name,
+          propertyAddress: dialer.currentContact.property_address,
+        };
+        copilot.fetchSuggestions(context, liveTranscript);
+        copilot.analyzeSentiment(liveTranscript);
+      }
+    }, 15000); // Refresh every 15 seconds
+
+    return () => clearInterval(interval);
+  }, [dialer.isOnCall, liveTranscript]);
+
+  // Build contact context for copilot
+  const getContactContext = (): ContactContext => ({
+    contactName: dialer.currentContact?.contact_name,
+    propertyAddress: dialer.currentContact?.property_address,
+    lastContactDate: undefined,
+  });
+
+  // Handle objection from copilot
+  const handleObjectionSubmit = (text: string) => {
+    copilot.handleObjection(text, getContactContext());
+  };
+
+  // Handle suggestion click
+  const handleSuggestionClick = (text: string) => {
+    toast.info(`Suggestion: ${text}`);
+    // Could add to notes or show in script panel
+  };
+
+  // Refresh suggestions manually
+  const handleRefreshSuggestions = () => {
+    copilot.fetchSuggestions(getContactContext(), liveTranscript);
+  };
+
+  // Post-call actions
+  const handleCreateTask = (task: any) => {
+    toast.success(`Task created: ${task.title}`);
+    // Would integrate with task system
+  };
+
+  const handleSendSms = (message: string) => {
+    toast.success("SMS queued for sending");
+    // Would integrate with SMS system
+  };
+
+  const handleSendEmail = (email: { subject: string; body: string }) => {
+    toast.success("Email draft created");
+    // Would integrate with email system
+  };
+
+  const handleUpdateStage = (stage: string) => {
+    toast.success(`Stage updated to: ${stage}`);
+    // Would update pipeline stage
+  };
 
   // Format session time
   const formatSessionTime = (seconds: number) => {
@@ -289,10 +386,10 @@ export default function Dialer() {
           sessionDuration={sessionDuration}
         />
 
-        {/* Main Content */}
-        <div className="grid lg:grid-cols-5 gap-6 mt-6">
+        {/* Main Content - 3 Column Layout */}
+        <div className="grid lg:grid-cols-12 gap-6 mt-6">
           {/* Left Column - Queue & Contact */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-3 space-y-6">
             {/* Queue Selector */}
             <QueueSelector
               selectedQueueId={selectedQueueId}
@@ -357,8 +454,8 @@ export default function Dialer() {
             </div>
           </div>
 
-          {/* Right Column - Dialer & Script */}
-          <div className="lg:col-span-3 space-y-6">
+          {/* Center Column - Dialer & Script */}
+          <div className="lg:col-span-5 space-y-6">
             {/* Dialer Controls */}
             <DialerControls
               phoneNumber={dialer.currentContact?.phone_number || ""}
@@ -381,6 +478,31 @@ export default function Dialer() {
               mergeData={mergeData}
               notes={callNotes}
               onNotesChange={setCallNotes}
+            />
+          </div>
+
+          {/* Right Column - AI Copilot */}
+          <div className="lg:col-span-4 space-y-6">
+            <DialerCopilotPanel
+              phase={copilot.phase}
+              callMode={callMode}
+              onCallModeChange={setCallMode}
+              briefing={copilot.briefing}
+              suggestions={copilot.suggestions}
+              objectionResponse={copilot.objectionResponse}
+              sentiment={copilot.sentiment}
+              postCallActions={copilot.postCallActions}
+              isLoading={copilot.isLoading}
+              contactName={dialer.currentContact?.contact_name}
+              isOnCall={dialer.isOnCall}
+              onObjectionSubmit={handleObjectionSubmit}
+              onClearObjection={copilot.clearObjection}
+              onSuggestionClick={handleSuggestionClick}
+              onRefreshSuggestions={handleRefreshSuggestions}
+              onCreateTask={handleCreateTask}
+              onSendSms={handleSendSms}
+              onSendEmail={handleSendEmail}
+              onUpdateStage={handleUpdateStage}
             />
           </div>
         </div>
