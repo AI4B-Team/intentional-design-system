@@ -21,8 +21,9 @@ import {
   DispositionPanel,
   AutoDialCountdown,
 } from "@/components/dialer";
+import { DialerDashboard } from "@/components/dialer/dashboard";
 import { DialerCopilotPanel, type CallMode, type ContactContext } from "@/components/dialer/copilot";
-import { Plus, Settings, Clock } from "lucide-react";
+import { Plus, Settings, Clock, ArrowLeft } from "lucide-react";
 
 interface SessionStats {
   callsMade: number;
@@ -32,12 +33,17 @@ interface SessionStats {
   sessionDuration: number;
 }
 
+type DialerView = 'dashboard' | 'calling';
+
 export default function Dialer() {
   const { user } = useAuth();
   const { organizationId } = useOrganizationContext();
   const dialer = useDialer();
   const copilot = useDialerCopilot();
 
+  // View state
+  const [currentView, setCurrentView] = React.useState<DialerView>('dashboard');
+  
   // Call mode state
   const [callMode, setCallMode] = React.useState<CallMode>('listen_mode');
 
@@ -143,7 +149,6 @@ export default function Dialer() {
       const context: ContactContext = {
         contactName: dialer.currentContact.contact_name,
         propertyAddress: dialer.currentContact.property_address,
-        // These would come from actual data in production
         lastContactDate: undefined,
         lastOffer: undefined,
         arv: undefined,
@@ -168,7 +173,7 @@ export default function Dialer() {
         copilot.fetchSuggestions(context, liveTranscript);
         copilot.analyzeSentiment(liveTranscript);
       }
-    }, 15000); // Refresh every 15 seconds
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [dialer.isOnCall, liveTranscript]);
@@ -188,7 +193,6 @@ export default function Dialer() {
   // Handle suggestion click
   const handleSuggestionClick = (text: string) => {
     toast.info(`Suggestion: ${text}`);
-    // Could add to notes or show in script panel
   };
 
   // Refresh suggestions manually
@@ -199,22 +203,18 @@ export default function Dialer() {
   // Post-call actions
   const handleCreateTask = (task: any) => {
     toast.success(`Task created: ${task.title}`);
-    // Would integrate with task system
   };
 
   const handleSendSms = (message: string) => {
     toast.success("SMS queued for sending");
-    // Would integrate with SMS system
   };
 
   const handleSendEmail = (email: { subject: string; body: string }) => {
     toast.success("Email draft created");
-    // Would integrate with email system
   };
 
   const handleUpdateStage = (stage: string) => {
     toast.success(`Stage updated to: ${stage}`);
-    // Would update pipeline stage
   };
 
   // Format session time
@@ -238,6 +238,21 @@ export default function Dialer() {
 
   const statusIndicator = getStatusIndicator();
 
+  // Handle mode selection from dashboard
+  const handleModeSelect = (mode: 'start_call' | 'voice_agent' | 'listen_mode') => {
+    if (mode === 'start_call') {
+      setCallMode('listen_mode');
+    } else if (mode === 'voice_agent') {
+      setCallMode('voice_agent');
+    } else {
+      setCallMode('listen_mode');
+    }
+    setCurrentView('calling');
+    if (!sessionStartTime) {
+      setSessionStartTime(new Date());
+    }
+  };
+
   // Handle start calling
   const handleStartCalling = async () => {
     if (!selectedQueueId) {
@@ -249,14 +264,12 @@ export default function Dialer() {
       setSessionStartTime(new Date());
     }
 
-    // Get next contact
     const contact = await dialer.getNextContact(selectedQueueId);
     if (!contact) {
       toast.info("No more contacts in this queue");
       return;
     }
 
-    // Start the call
     handleMakeCall();
   };
 
@@ -286,7 +299,6 @@ export default function Dialer() {
   ) => {
     await dialer.setDisposition(dispositionId, notes, followUpDate);
 
-    // Update stats based on disposition
     const { data: disposition } = await supabase
       .from("call_dispositions")
       .select("marks_as_success, name")
@@ -301,7 +313,6 @@ export default function Dialer() {
       setStats((prev) => ({ ...prev, appointmentsSet: prev.appointmentsSet + 1 }));
     }
 
-    // Update talk time
     setStats((prev) => ({
       ...prev,
       totalTalkTime: prev.totalTalkTime + dialer.callDuration,
@@ -310,7 +321,6 @@ export default function Dialer() {
     setShowDisposition(false);
     setCallNotes("");
 
-    // Auto-advance to next contact
     if (continueDialing && autoDialEnabled && selectedQueueId) {
       const next = await dialer.getNextContact(selectedQueueId);
       if (next) {
@@ -349,183 +359,207 @@ export default function Dialer() {
     your_phone: "",
   };
 
+  // Show dashboard view
+  if (currentView === 'dashboard') {
+    return (
+      <PageLayout title="Dialer">
+        <DialerDashboard 
+          onStartCall={() => setCurrentView('calling')}
+          onSelectMode={handleModeSelect}
+        />
+      </PageLayout>
+    );
+  }
+
+  // Show calling view
   return (
     <PageLayout
       title="Power Dialer"
       headerActions={
-          <div className="flex items-center gap-4">
-            {/* Status Indicator */}
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{statusIndicator.emoji}</span>
-              <span className={cn("font-medium", statusIndicator.color)}>
-                {statusIndicator.text}
-              </span>
-            </div>
+        <div className="flex items-center gap-4">
+          {/* Back to Dashboard */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setCurrentView('dashboard')}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Dashboard
+          </Button>
 
-            {/* Session Timer */}
-            {sessionStartTime && (
-              <Badge variant="secondary" className="gap-2 text-body">
-                <Clock className="h-4 w-4" />
-                Session: {formatSessionTime(sessionDuration)}
-              </Badge>
-            )}
-
-            <Button variant="secondary" size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              New Queue
-            </Button>
+          {/* Status Indicator */}
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{statusIndicator.emoji}</span>
+            <span className={cn("font-medium", statusIndicator.color)}>
+              {statusIndicator.text}
+            </span>
           </div>
-        }
-      >
-        {/* Stats Bar */}
-        <DialerStatsBar
-          callsMade={stats.callsMade}
-          contactsReached={stats.contactsReached}
-          appointmentsSet={stats.appointmentsSet}
-          totalTalkTime={stats.totalTalkTime}
-          sessionDuration={sessionDuration}
-        />
 
-        {/* Main Content - 3 Column Layout */}
-        <div className="grid lg:grid-cols-12 gap-6 mt-6">
-          {/* Left Column - Queue & Contact */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Queue Selector */}
-            <QueueSelector
-              selectedQueueId={selectedQueueId}
-              onQueueChange={setSelectedQueueId}
-              onCreateQueue={() => toast.info("Create queue coming soon")}
-              onPauseQueue={() => setIsPaused(!isPaused)}
-              onSkipContact={handleSkipContact}
-              isPaused={isPaused}
-              isOnCall={dialer.isOnCall}
-            />
+          {/* Session Timer */}
+          {sessionStartTime && (
+            <Badge variant="secondary" className="gap-2 text-body">
+              <Clock className="h-4 w-4" />
+              Session: {formatSessionTime(sessionDuration)}
+            </Badge>
+          )}
 
-            {/* Current Contact Card */}
-            <CurrentContactCard
-              contact={dialer.currentContact}
-              onStartCalling={handleStartCalling}
-            />
+          <Button variant="secondary" size="sm">
+            <Plus className="h-4 w-4 mr-1" />
+            New Queue
+          </Button>
+        </div>
+      }
+    >
+      {/* Stats Bar */}
+      <DialerStatsBar
+        callsMade={stats.callsMade}
+        contactsReached={stats.contactsReached}
+        appointmentsSet={stats.appointmentsSet}
+        totalTalkTime={stats.totalTalkTime}
+        sessionDuration={sessionDuration}
+      />
 
-            {/* Auto-dial Settings */}
-            <div className="bg-white border border-border-subtle rounded-medium p-4 space-y-3">
+      {/* Main Content - 3 Column Layout */}
+      <div className="grid lg:grid-cols-12 gap-6 mt-6">
+        {/* Left Column - Queue & Contact */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Queue Selector */}
+          <QueueSelector
+            selectedQueueId={selectedQueueId}
+            onQueueChange={setSelectedQueueId}
+            onCreateQueue={() => toast.info("Create queue coming soon")}
+            onPauseQueue={() => setIsPaused(!isPaused)}
+            onSkipContact={handleSkipContact}
+            isPaused={isPaused}
+            isOnCall={dialer.isOnCall}
+          />
+
+          {/* Current Contact Card */}
+          <CurrentContactCard
+            contact={dialer.currentContact}
+            onStartCalling={handleStartCalling}
+          />
+
+          {/* Auto-dial Settings */}
+          <div className="bg-white border border-border-subtle rounded-medium p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Settings className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium text-foreground text-small">
+                  Dialer Settings
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="auto-dial" className="text-small">
+                Auto-dial next contact
+              </Label>
+              <Switch
+                id="auto-dial"
+                checked={autoDialEnabled}
+                onCheckedChange={setAutoDialEnabled}
+              />
+            </div>
+            {autoDialEnabled && (
               <div className="flex items-center justify-between">
+                <Label className="text-small">Delay between calls</Label>
                 <div className="flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium text-foreground text-small">
-                    Dialer Settings
-                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAutoDialDelay(Math.max(1, autoDialDelay - 1))}
+                    disabled={autoDialDelay <= 1}
+                  >
+                    -
+                  </Button>
+                  <span className="w-8 text-center font-medium">{autoDialDelay}s</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setAutoDialDelay(Math.min(10, autoDialDelay + 1))}
+                    disabled={autoDialDelay >= 10}
+                  >
+                    +
+                  </Button>
                 </div>
               </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="auto-dial" className="text-small">
-                  Auto-dial next contact
-                </Label>
-                <Switch
-                  id="auto-dial"
-                  checked={autoDialEnabled}
-                  onCheckedChange={setAutoDialEnabled}
-                />
-              </div>
-              {autoDialEnabled && (
-                <div className="flex items-center justify-between">
-                  <Label className="text-small">Delay between calls</Label>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setAutoDialDelay(Math.max(1, autoDialDelay - 1))}
-                      disabled={autoDialDelay <= 1}
-                    >
-                      -
-                    </Button>
-                    <span className="w-8 text-center font-medium">{autoDialDelay}s</span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setAutoDialDelay(Math.min(10, autoDialDelay + 1))}
-                      disabled={autoDialDelay >= 10}
-                    >
-                      +
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Center Column - Dialer & Script */}
-          <div className="lg:col-span-5 space-y-6">
-            {/* Dialer Controls */}
-            <DialerControls
-              phoneNumber={dialer.currentContact?.phone_number || ""}
-              contactName={dialer.currentContact?.contact_name}
-              callStatus={dialer.callStatus}
-              callDuration={dialer.callDuration}
-              onCall={handleMakeCall}
-              onEndCall={dialer.endCall}
-              onMuteToggle={() => setIsMuted(!isMuted)}
-              onHoldToggle={() => setIsOnHold(!isOnHold)}
-              isMuted={isMuted}
-              isOnHold={isOnHold}
-              showKeypad={showKeypad}
-              onKeypadToggle={() => setShowKeypad(!showKeypad)}
-            />
-
-            {/* Script Panel */}
-            <CallScriptPanel
-              script={currentScript}
-              mergeData={mergeData}
-              notes={callNotes}
-              onNotesChange={setCallNotes}
-            />
-          </div>
-
-          {/* Right Column - AI Copilot */}
-          <div className="lg:col-span-4 space-y-6">
-            <DialerCopilotPanel
-              phase={copilot.phase}
-              callMode={callMode}
-              onCallModeChange={setCallMode}
-              briefing={copilot.briefing}
-              suggestions={copilot.suggestions}
-              objectionResponse={copilot.objectionResponse}
-              sentiment={copilot.sentiment}
-              postCallActions={copilot.postCallActions}
-              isLoading={copilot.isLoading}
-              contactName={dialer.currentContact?.contact_name}
-              isOnCall={dialer.isOnCall}
-              onObjectionSubmit={handleObjectionSubmit}
-              onClearObjection={copilot.clearObjection}
-              onSuggestionClick={handleSuggestionClick}
-              onRefreshSuggestions={handleRefreshSuggestions}
-              onCreateTask={handleCreateTask}
-              onSendSms={handleSendSms}
-              onSendEmail={handleSendEmail}
-              onUpdateStage={handleUpdateStage}
-            />
+            )}
           </div>
         </div>
 
-        {/* Disposition Panel */}
-        <DispositionPanel
-          open={showDisposition}
-          onOpenChange={setShowDisposition}
-          onSave={handleDispositionSave}
-        />
-
-        {/* Auto-dial Countdown */}
-        {showCountdown && (
-          <AutoDialCountdown
-            seconds={autoDialDelay}
-            contactName={nextContact?.contact_name}
-            onCancel={() => {
-              setShowCountdown(false);
-              setNextContact(null);
-            }}
-            onComplete={handleCountdownComplete}
+        {/* Center Column - Dialer & Script */}
+        <div className="lg:col-span-5 space-y-6">
+          {/* Dialer Controls */}
+          <DialerControls
+            phoneNumber={dialer.currentContact?.phone_number || ""}
+            contactName={dialer.currentContact?.contact_name}
+            callStatus={dialer.callStatus}
+            callDuration={dialer.callDuration}
+            onCall={handleMakeCall}
+            onEndCall={dialer.endCall}
+            onMuteToggle={() => setIsMuted(!isMuted)}
+            onHoldToggle={() => setIsOnHold(!isOnHold)}
+            isMuted={isMuted}
+            isOnHold={isOnHold}
+            showKeypad={showKeypad}
+            onKeypadToggle={() => setShowKeypad(!showKeypad)}
           />
-        )}
+
+          {/* Script Panel */}
+          <CallScriptPanel
+            script={currentScript}
+            mergeData={mergeData}
+            notes={callNotes}
+            onNotesChange={setCallNotes}
+          />
+        </div>
+
+        {/* Right Column - AI Copilot */}
+        <div className="lg:col-span-4 space-y-6">
+          <DialerCopilotPanel
+            phase={copilot.phase}
+            callMode={callMode}
+            onCallModeChange={setCallMode}
+            briefing={copilot.briefing}
+            suggestions={copilot.suggestions}
+            objectionResponse={copilot.objectionResponse}
+            sentiment={copilot.sentiment}
+            postCallActions={copilot.postCallActions}
+            isLoading={copilot.isLoading}
+            contactName={dialer.currentContact?.contact_name}
+            isOnCall={dialer.isOnCall}
+            onObjectionSubmit={handleObjectionSubmit}
+            onClearObjection={copilot.clearObjection}
+            onSuggestionClick={handleSuggestionClick}
+            onRefreshSuggestions={handleRefreshSuggestions}
+            onCreateTask={handleCreateTask}
+            onSendSms={handleSendSms}
+            onSendEmail={handleSendEmail}
+            onUpdateStage={handleUpdateStage}
+          />
+        </div>
+      </div>
+
+      {/* Disposition Panel */}
+      <DispositionPanel
+        open={showDisposition}
+        onOpenChange={setShowDisposition}
+        onSave={handleDispositionSave}
+      />
+
+      {/* Auto-dial Countdown */}
+      {showCountdown && (
+        <AutoDialCountdown
+          seconds={autoDialDelay}
+          contactName={nextContact?.contact_name}
+          onCancel={() => {
+            setShowCountdown(false);
+            setNextContact(null);
+          }}
+          onComplete={handleCountdownComplete}
+        />
+      )}
     </PageLayout>
   );
 }
