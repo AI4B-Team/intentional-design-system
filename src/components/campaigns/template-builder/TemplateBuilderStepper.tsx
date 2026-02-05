@@ -232,10 +232,10 @@ export function TemplateBuilderStepper({
         </div>
       </Card>
 
-      {/* Main Content with Preview */}
-      <div className="flex gap-6">
+      {/* Main Content with Preview - 50/50 split */}
+      <div className="grid grid-cols-2 gap-6">
         {/* Form Content */}
-        <div className="flex-1">
+        <div className="min-w-0">
           {/* General Step */}
           {activeStep === "general" && (
             <Card className="p-6">
@@ -407,8 +407,8 @@ export function TemplateBuilderStepper({
           </div>
         </div>
 
-        {/* Right Preview Panel */}
-        <div className="w-[400px] shrink-0">
+        {/* Right Preview Panel - 50% width */}
+        <div className="min-w-0">
           <div className="sticky top-4">
             <TemplateLivePreview
               templateName={getTemplateName()}
