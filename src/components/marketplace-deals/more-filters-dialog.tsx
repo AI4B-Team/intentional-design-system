@@ -223,8 +223,8 @@ export function MoreFiltersDialog({
     "Log",
     "Manufactured/Mobile",
     "Modular",
-    "SIP (Structural Insulated Panels)",
-    "ICF (Insulated Concrete Forms)",
+    "SIP Panels",
+    "ICF",
     "Timber Frame",
     "Post and Beam",
     "Mixed/Other",
@@ -363,7 +363,7 @@ export function MoreFiltersDialog({
               {/* Construction Type */}
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground">Construction Type</Label>
-                <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                <div className="grid grid-cols-4 gap-x-4 gap-y-2">
                   {constructionTypeOptions.map((type) => (
                     <div key={type} className="flex items-center space-x-2">
                       <Checkbox
@@ -371,7 +371,7 @@ export function MoreFiltersDialog({
                         checked={localFilters.constructionTypes.includes(type)}
                         onCheckedChange={() => toggleArrayValue("constructionTypes", type)}
                       />
-                      <Label htmlFor={`construction-${type}`} className="cursor-pointer text-sm">
+                      <Label htmlFor={`construction-${type}`} className="cursor-pointer text-sm whitespace-nowrap">
                         {type}
                       </Label>
                     </div>
