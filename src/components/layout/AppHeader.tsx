@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Menu,
-  Search,
   Plus,
   User,
   ChevronRight,
@@ -28,6 +26,7 @@ import { HelpButton } from "@/components/help";
 import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 import { useMockDeals } from "@/hooks/useMockDeals";
+import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
 interface Breadcrumb {
   label: string;
@@ -59,12 +58,10 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
     perPage: 100,
   });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddressSelect = (address: string, placeId?: string) => {
+    if (!address.trim()) return;
     
-    if (!searchQuery.trim()) return;
-    
-    const query = searchQuery.trim().toLowerCase();
+    const query = address.trim().toLowerCase();
     
     // Find a matching deal by address, city, or zip
     const matchedDeal = deals.find((deal) => {
@@ -99,17 +96,13 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Search - Far Left */}
-      <form onSubmit={handleSearch} className="hidden md:block relative flex-1 max-w-md">
-        <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary" />
-        <Input
-          type="search"
-          placeholder="Enter an address, city, or ZIP for insights"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="!pl-6 h-9 bg-surface-secondary border-0"
-        />
-      </form>
+      {/* Search with Address Autocomplete */}
+      <AddressAutocomplete
+        value={searchQuery}
+        onChange={setSearchQuery}
+        onSelect={handleAddressSelect}
+        className="hidden md:block flex-1 max-w-md"
+      />
 
       {/* Breadcrumbs (only if provided and has multiple items) */}
       {breadcrumbs && breadcrumbs.length > 1 && (
