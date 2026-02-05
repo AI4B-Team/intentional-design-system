@@ -394,23 +394,21 @@ export function PropertyDetailMap({
 
       {/* Right side controls: Buyers + Draw + Intel */}
       <div className="absolute top-3 right-3 z-[1000] flex gap-2">
-        {/* Buyers Near Property - Only show when in buyers view */}
-        {showBuyers && (
-          <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 h-9 shadow-md flex items-center gap-2">
-            <Users className="h-4 w-4 text-success-foreground" />
-            <span className="text-xs font-medium text-success-foreground">
-              {buyers.length} Buyers Near Property
-            </span>
-            {onCloseBuyersView && (
-              <button
-                className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
-                onClick={onCloseBuyersView}
-              >
-                <X className="h-3.5 w-3.5 text-success-foreground" />
-              </button>
-            )}
-          </div>
-        )}
+        {/* Buyers Near Property Badge - Always visible */}
+        <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 h-9 shadow-md flex items-center gap-2">
+          <Users className="h-4 w-4 text-success-foreground" />
+          <span className="text-xs font-medium text-success-foreground">
+            {buyers.length} Buyers Near Property
+          </span>
+          {showBuyers && onCloseBuyersView && (
+            <button
+              className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
+              onClick={onCloseBuyersView}
+            >
+              <X className="h-3.5 w-3.5 text-success-foreground" />
+            </button>
+          )}
+        </div>
 
         {/* Draw Button */}
         <Button
@@ -528,7 +526,7 @@ export function PropertyDetailMap({
 
       {/* Count Badge - Bottom Right */}
       {!showBuyers && (
-        <div className="absolute bottom-4 right-3 bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg z-[1000]">
+        <div className="absolute bottom-4 left-44 bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg z-[1000]">
           <p className="text-xs font-medium">{comps.length} Comps Shown</p>
         </div>
       )}
