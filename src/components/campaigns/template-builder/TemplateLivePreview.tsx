@@ -76,7 +76,7 @@ export function TemplateLivePreview({
       <div className="flex items-center justify-between mb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-foreground">Live Preview</h3>
+            <h3 className="font-semibold text-foreground">LIVE Preview</h3>
           </div>
           <div className="flex items-center gap-1 mt-1">
             <Check className="h-3.5 w-3.5 text-success" />
