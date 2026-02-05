@@ -142,7 +142,7 @@ export function AIMessageTemplatesDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-3 pb-4">
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-2 text-muted-foreground">
               {messageType === "email" ? (
