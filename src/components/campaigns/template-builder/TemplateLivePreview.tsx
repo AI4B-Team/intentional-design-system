@@ -18,39 +18,43 @@ interface TemplateLivePreviewProps {
 }
 
 const SAMPLE_DATA = {
-  your_name: "Alex Johnson",
-  your_company: "AcquireFlow Investments",
-  your_address: "456 Business Ave",
-  your_city: "Austin",
-  your_state: "TX",
-  your_zip: "78701",
-  your_phone: "(555) 123-4567",
-  your_email: "alex@acquireflow.com",
-  agent_name: "John Smith",
-  agent_first_name: "John",
-  property_address: "123 Main Street",
-  property_city: "Dallas",
-  property_state: "TX",
-  property_zip: "75001",
-  offer_amount: "$360,000",
-  earnest_money: "$10,000",
-  closing_timeline: "30",
+  your_name: "Marcus Chen",
+  your_company: "Summit Capital Partners",
+  your_address: "2100 Commerce Tower, Suite 450",
+  your_city: "Phoenix",
+  your_state: "AZ",
+  your_zip: "85004",
+  your_phone: "(602) 555-8900",
+  your_email: "offers@summitcapital.com",
+  agent_name: "Sarah Mitchell",
+  agent_first_name: "Sarah",
+  agent_email: "sarah.mitchell@compass.com",
+  agent_brokerage: "Compass Real Estate",
+  property_address: "4821 Sonoran Vista Dr",
+  property_city: "Scottsdale",
+  property_state: "AZ",
+  property_zip: "85255",
+  list_price: "$485,000",
+  offer_amount: "$465,000",
+  earnest_money: "$15,000",
+  closing_timeline: "21",
   closing_timeline_type: "days",
-  inspection_period: "10",
+  inspection_period: "7",
   inspection_period_type: "business days",
-  existing_loan_balance: "$180,000",
-  existing_monthly_payment: "$1,450",
-  existing_interest_rate: "4.5",
-  loan_type: "FHA",
-  seller_finance_amount: "$150,000",
-  seller_finance_interest_rate: "6",
+  existing_loan_balance: "$280,000",
+  existing_monthly_payment: "$1,850",
+  existing_interest_rate: "3.75",
+  loan_type: "Conventional",
+  seller_finance_amount: "$200,000",
+  seller_finance_interest_rate: "5.5",
   seller_finance_term: "30",
-  seller_finance_balloon: "5",
-  seller_finance_monthly_payment: "$899",
-  seller_name: "Jane Doe",
-  buyer_name: "Alex Johnson",
-  deposit_amount: "$10,000",
-  closing_days: "30",
+  seller_finance_balloon: "7",
+  seller_finance_monthly_payment: "$1,136",
+  seller_name: "Robert & Linda Thompson",
+  buyer_name: "Marcus Chen",
+  deposit_amount: "$15,000",
+  closing_days: "21",
+  days_on_market: "47",
   date: new Date().toLocaleDateString(),
 };
 
@@ -136,11 +140,11 @@ export function TemplateLivePreview({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-tiny text-muted-foreground w-12">To:</span>
-                  <span className="text-small">{useSampleData ? "agent@remax.com" : "{agent_email}"}</span>
+                  <span className="text-small">{useSampleData ? SAMPLE_DATA.agent_email : "{agent_email}"}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-tiny text-muted-foreground w-12">Subject:</span>
-                  <span className="text-small font-medium">{displayEmailSubject || "No subject"}</span>
+                  <span className="text-small font-medium">{displayEmailSubject || "Enter a subject line"}</span>
                 </div>
               </div>
             </div>
