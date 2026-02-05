@@ -93,34 +93,6 @@ export function TemplateDocumentSelector({ selectedTemplate, onSelectTemplate }:
           </button>
         ))}
       </div>
-
-      {/* Selected Template Card */}
-      {selectedConfig && (
-        <Card className="bg-accent/5 border-accent/20 p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Check className="h-5 w-5 text-accent" />
-              <div>
-                <p className="text-tiny text-muted-foreground uppercase tracking-wide font-medium">Selected Template</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="font-semibold text-foreground">{selectedConfig.name}</span>
-                  <Badge 
-                    variant="outline" 
-                    size="sm" 
-                    className={selectedConfig.badgeColor}
-                  >
-                    {selectedConfig.badge}
-                  </Badge>
-                </div>
-                <p className="text-small text-muted-foreground">{selectedConfig.description}</p>
-              </div>
-            </div>
-            <Button variant="link" size="sm" className="text-accent shrink-0">
-              Change
-            </Button>
-          </div>
-        </Card>
-      )}
     </div>
   );
 }
