@@ -82,7 +82,7 @@ export function TemplateEmailForm({ subject, body, onSubjectChange, onBodyChange
         <div className="flex items-start gap-2 text-small text-muted-foreground">
           <Lightbulb className="h-4 w-4 text-warning shrink-0 mt-0.5" />
           <p>
-            Use merge fields like {"{property_address}"} and {"{offer_amount}"} to personalize each email
+            Insert merge fields to auto-fill property details, agent info, and offer terms for each recipient
           </p>
         </div>
       </div>
