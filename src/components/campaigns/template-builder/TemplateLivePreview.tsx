@@ -148,6 +148,27 @@ export function TemplateLivePreview({
                 </div>
               </div>
             </div>
+            {/* Key Terms Strip */}
+            <div className="border-b bg-primary/5 px-4 py-2.5 flex items-center gap-6">
+              <div className="flex items-center gap-1.5">
+                <span className="text-tiny text-muted-foreground">Offer:</span>
+                <span className="text-small font-semibold text-primary">
+                  {useSampleData ? SAMPLE_DATA.offer_amount : "{offer_amount}"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-tiny text-muted-foreground">Close:</span>
+                <span className="text-small font-medium">
+                  {useSampleData ? `${SAMPLE_DATA.closing_timeline} days` : "{closing_timeline} days"}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-tiny text-muted-foreground">EMD:</span>
+                <span className="text-small font-medium">
+                  {useSampleData ? SAMPLE_DATA.earnest_money : "{earnest_money}"}
+                </span>
+              </div>
+            </div>
             {/* Email Body */}
             <ScrollArea className="h-[calc(100vh-480px)] min-h-[300px]">
               <div className="p-4">
