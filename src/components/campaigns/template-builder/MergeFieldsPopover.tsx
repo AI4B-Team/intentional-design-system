@@ -200,7 +200,7 @@ export function MergeFieldsPopover({
           )}
         >
           <Sparkles className="h-3.5 w-3.5 text-primary" />
-          <span className="font-medium">Insert Field</span>
+          <span className="font-medium">Insert Merge Field</span>
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>
       </PopoverTrigger>

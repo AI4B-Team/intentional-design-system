@@ -120,13 +120,13 @@ export function TemplateLivePreview({
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Sample
+                Sample Data
               </span>
               <span className={cn(
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Template
+                Template Tags
               </span>
             </div>
           </div>
@@ -202,13 +202,13 @@ export function TemplateLivePreview({
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Sample
+                Sample Data
               </span>
               <span className={cn(
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Template
+                Template Tags
               </span>
             </div>
           </div>
@@ -258,14 +258,13 @@ export function TemplateLivePreview({
               </div>
             </div>
           </div>
-          {/* Character count */}
-          {includeSms && (
+          {/* Message count info */}
+          {includeSms && smsMessage.length > 0 && (
             <div className="mt-3 text-center">
-              <span className={cn(
-                "text-small font-medium",
-                smsMessage.length > 160 ? "text-warning" : "text-muted-foreground"
-              )}>
-                {smsMessage.length}/160 characters
+              <span className="text-tiny text-muted-foreground">
+                {smsMessage.length > 160 
+                  ? `${Math.ceil(smsMessage.length / 160)} SMS segments` 
+                  : "Standard SMS (1 segment)"}
               </span>
             </div>
           )}
@@ -289,13 +288,13 @@ export function TemplateLivePreview({
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Sample
+                Sample Data
               </span>
               <span className={cn(
                 "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
                 !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
-                Template
+                Template Tags
               </span>
             </div>
           </div>
