@@ -83,15 +83,6 @@ export function TemplateLivePreview({
             <span className="text-small text-success">Using custom terms</span>
           </div>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={onToggleSampleData}
-          className="gap-2"
-        >
-          <Eye className="h-4 w-4" />
-          Sample Data
-        </Button>
       </div>
 
       {/* LOI Document Preview */}
@@ -103,8 +94,27 @@ export function TemplateLivePreview({
               <span className="font-medium text-small">LOI Document</span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-small text-muted-foreground">Template:</span>
-              <span className="text-small font-medium">{templateName || "Standard Cash Offer"}</span>
+              {/* Sample Data Toggle - Pill Style */}
+              <div 
+                className="flex items-center bg-muted rounded-full p-0.5 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleSampleData();
+                }}
+              >
+                <span className={cn(
+                  "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                  useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}>
+                  Sample
+                </span>
+                <span className={cn(
+                  "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                  !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                )}>
+                  Template
+                </span>
+              </div>
               {isLoiExpanded ? (
                 <ChevronUp className="h-4 w-4 text-muted-foreground" />
               ) : (
@@ -131,6 +141,34 @@ export function TemplateLivePreview({
                       : "{your_city}, {your_state} {your_zip}"
                     }
                   </p>
+                </div>
+
+                {/* Key Terms Summary */}
+                <div className="grid grid-cols-2 gap-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
+                  <div className="space-y-0.5">
+                    <span className="text-tiny text-muted-foreground">Purchase Price</span>
+                    <p className="text-sm font-semibold text-foreground">
+                      {useSampleData ? SAMPLE_DATA.offer_amount : "{offer_amount}"}
+                    </p>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-tiny text-muted-foreground">Earnest Money</span>
+                    <p className="text-sm font-semibold text-foreground">
+                      {useSampleData ? SAMPLE_DATA.earnest_money : "{earnest_money}"}
+                    </p>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-tiny text-muted-foreground">Inspection Period</span>
+                    <p className="text-sm font-semibold text-foreground">
+                      {useSampleData ? `${SAMPLE_DATA.inspection_period} ${SAMPLE_DATA.inspection_period_type}` : "{inspection_period} {inspection_period_type}"}
+                    </p>
+                  </div>
+                  <div className="space-y-0.5">
+                    <span className="text-tiny text-muted-foreground">Closing Timeline</span>
+                    <p className="text-sm font-semibold text-foreground">
+                      {useSampleData ? `${SAMPLE_DATA.closing_timeline} ${SAMPLE_DATA.closing_timeline_type}` : "{closing_timeline} {closing_timeline_type}"}
+                    </p>
+                  </div>
                 </div>
 
                 {/* Letter Content */}

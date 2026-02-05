@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DollarSign, Lightbulb } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { DollarSign, Lightbulb, Briefcase, Heart, ChevronDown, TrendingUp } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -39,23 +42,68 @@ interface TemplateTermsFormProps {
 
 export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsFormProps) {
   const showHybridTerms = offerType === "hybrid" || offerType === "seller_financing";
+  const [hybridExpanded, setHybridExpanded] = React.useState(showHybridTerms);
+
+  // Seller Perception Logic
+  const sellerPerception = useMemo(() => {
+    let score = 0;
+    
+    // Earnest money: higher is better for seller
+    const earnest = terms.depositAmount || 5000;
+    if (earnest >= 10000) score += 2;
+    else if (earnest >= 5000) score += 1;
+    
+    // Due diligence: shorter is better for seller
+    const dd = terms.inspectionPeriod || 10;
+    if (dd <= 7) score += 2;
+    else if (dd <= 10) score += 1;
+    else if (dd >= 21) score -= 1;
+    
+    // Closing timeline: shorter is better
+    const closing = terms.closingTimeline || 30;
+    if (closing <= 14) score += 2;
+    else if (closing <= 30) score += 1;
+    else if (closing >= 60) score -= 1;
+    
+    // Financing type
+    if (terms.financingType === "cash") score += 2;
+    else if (terms.financingType === "conventional") score += 1;
+    else if (terms.financingType === "seller_financing") score -= 1;
+    
+    // Seller-friendly conditions
+    if (terms.asIsPurchase) score += 1;
+    if (terms.flexiblePossession) score += 1;
+    
+    if (score >= 6) return { level: "friendly", label: "Seller-Friendly", color: "success" as const };
+    if (score >= 3) return { level: "neutral", label: "Neutral", color: "warning" as const };
+    return { level: "aggressive", label: "Aggressive", color: "error" as const };
+  }, [terms]);
 
   return (
     <div className="space-y-6">
       <Card variant="default" padding="lg" className="border-border">
-        <div className="flex items-center gap-2 mb-4">
-          <DollarSign className="h-5 w-5 text-accent" />
-          <h4 className="font-semibold text-foreground">Customize Offer Terms</h4>
+        {/* Header with Seller Perception */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5 text-accent" />
+            <h4 className="font-semibold text-foreground">Customize Offer Terms</h4>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-tiny text-muted-foreground">Seller Perception:</span>
+            <Badge variant={sellerPerception.color} size="sm">
+              {sellerPerception.label}
+            </Badge>
+          </div>
         </div>
         <p className="text-small text-muted-foreground mb-6">
           Set default values for this package. These will auto-populate in your LOI.
         </p>
 
-        {/* General Terms Section */}
+        {/* Section A: Acquisition Basics */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-small font-medium text-muted-foreground">
-            <DollarSign className="h-4 w-4" />
-            General Terms
+          <div className="flex items-center gap-2">
+            <Briefcase className="h-4 w-4 text-primary" />
+            <span className="text-small font-semibold text-foreground">Acquisition Basics</span>
           </div>
 
           <div className="space-y-2">
@@ -156,8 +204,21 @@ export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsF
             </div>
           </div>
 
-          {/* Checkboxes */}
-          <div className="space-y-3 pt-2">
+        </div>
+
+        <Separator className="my-6" />
+
+        {/* Section B: Seller-Friendly Conditions */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Heart className="h-4 w-4 text-success" />
+            <span className="text-small font-semibold text-foreground">Seller-Friendly Conditions</span>
+          </div>
+          <p className="text-tiny text-muted-foreground -mt-2">
+            These options can make your offer more attractive to sellers.
+          </p>
+
+          <div className="space-y-3 bg-muted/30 rounded-lg p-4">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="as-is"
@@ -181,13 +242,20 @@ export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsF
           </div>
         </div>
 
-        {/* Hybrid Structure Terms */}
+        {/* Section C: Hybrid Structure Terms - Collapsible */}
         {showHybridTerms && (
-          <div className="border-t pt-6 mt-6 space-y-4">
-            <div className="flex items-center gap-2 text-small font-medium text-muted-foreground">
-              <DollarSign className="h-4 w-4" />
-              Hybrid Structure Terms
-            </div>
+          <Collapsible open={hybridExpanded} onOpenChange={setHybridExpanded} className="mt-6">
+            <CollapsibleTrigger className="w-full">
+              <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-accent" />
+                  <span className="text-small font-semibold text-foreground">Seller Financing / Hybrid Terms</span>
+                </div>
+                <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", hybridExpanded && "rotate-180")} />
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="mt-3 p-4 bg-muted/30 rounded-lg border border-border/50 space-y-4">
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -248,19 +316,21 @@ export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsF
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-small">Balloon Payment</Label>
-              <div className="relative">
-                <Input
-                  type="number"
-                  value={terms.balloonPayment || 5}
-                  onChange={(e) => onChange({ ...terms, balloonPayment: parseInt(e.target.value) || 0 })}
-                  className="max-w-[200px]"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">years</span>
+                <div className="space-y-2">
+                  <Label className="text-small">Balloon Payment</Label>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      value={terms.balloonPayment || 5}
+                      onChange={(e) => onChange({ ...terms, balloonPayment: parseInt(e.target.value) || 0 })}
+                      className="max-w-[200px]"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">years</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </CollapsibleContent>
+          </Collapsible>
         )}
 
         {/* Info Box */}
