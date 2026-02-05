@@ -1,25 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Lightbulb, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Lightbulb } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const SMS_MERGE_FIELDS = [
-  { value: "agent_first_name", label: "Agent First Name" },
-  { value: "property_address", label: "Property Address" },
-  { value: "offer_amount", label: "Offer Amount" },
-  { value: "your_name", label: "Your Name" },
-  { value: "your_phone", label: "Your Phone" },
-];
+import { MergeFieldsPopover } from "./MergeFieldsPopover";
 
 interface TemplateSmsFormProps {
   message: string;
@@ -29,12 +15,22 @@ interface TemplateSmsFormProps {
 }
 
 export function TemplateSmsForm({ message, includeSms, onMessageChange, onIncludeSmsChange }: TemplateSmsFormProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const characterCount = message.length;
   const isOverLimit = characterCount > 160;
 
   const insertField = (field: string) => {
-    const variable = `{${field}}`;
-    onMessageChange(message + variable);
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart || message.length;
+      const end = textarea.selectionEnd || message.length;
+      const newValue = message.slice(0, start) + field + message.slice(end);
+      onMessageChange(newValue);
+      setTimeout(() => {
+        textarea.focus();
+        textarea.setSelectionRange(start + field.length, start + field.length);
+      }, 0);
+    }
   };
 
   return (
@@ -62,27 +58,11 @@ export function TemplateSmsForm({ message, includeSms, onMessageChange, onInclud
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <Label className="text-small">Message</Label>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Insert Field
-                  <ChevronDown className="h-4 w-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {SMS_MERGE_FIELDS.map((field) => (
-                  <DropdownMenuItem
-                    key={field.value}
-                    onClick={() => insertField(field.value)}
-                  >
-                    {`{${field.value}}`} - {field.label}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <MergeFieldsPopover onInsert={insertField} variant="sms" />
           </div>
 
           <Textarea
+            ref={textareaRef}
             value={message}
             onChange={(e) => onMessageChange(e.target.value)}
             placeholder="Hey {agent_first_name}! Just sent over an offer for {property_address}..."
