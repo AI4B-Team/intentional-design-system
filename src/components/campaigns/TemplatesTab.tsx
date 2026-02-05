@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -510,6 +511,95 @@ export function TemplatesTab() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Panel - Form Controls */}
             <div className="space-y-6">
+              {/* General Tab Content */}
+              <TabsContent value="general" className="mt-0 space-y-6">
+                <Card variant="default" padding="lg" className="border-border">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Settings className="h-5 w-5 text-accent" />
+                    <h4 className="font-semibold text-foreground">Package Settings</h4>
+                  </div>
+                  <p className="text-small text-muted-foreground mb-6">
+                    Configure basic settings for this offer package.
+                  </p>
+
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-small">Package Name</Label>
+                      <Input
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="e.g., Professional Cash Offer"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-small">Description (optional)</Label>
+                      <Textarea
+                        value={formData.description || ""}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        placeholder="Describe when to use this template..."
+                        rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-small">Market Type</Label>
+                      <Select
+                        value={formData.market_type}
+                        onValueChange={(v) => setFormData({ ...formData, market_type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="on_market">On-Market (MLS)</SelectItem>
+                          <SelectItem value="off_market">Off-Market</SelectItem>
+                          <SelectItem value="both">Both</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-small">Offer Type</Label>
+                      <Select
+                        value={formData.offer_type}
+                        onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="cash">All Cash</SelectItem>
+                          <SelectItem value="hybrid">Hybrid (Subject To + Seller Finance)</SelectItem>
+                          <SelectItem value="seller_financing">Seller Financing</SelectItem>
+                          <SelectItem value="subject_to">Subject To</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2">
+                      <Checkbox
+                        id="is-default"
+                        checked={formData.is_default}
+                        onCheckedChange={(checked) => setFormData({ ...formData, is_default: !!checked })}
+                      />
+                      <Label htmlFor="is-default" className="text-small cursor-pointer">
+                        Set as default template for this offer type
+                      </Label>
+                    </div>
+                  </div>
+                </Card>
+              </TabsContent>
+
+              {/* Terms Tab Content */}
+              <TabsContent value="terms" className="mt-0 space-y-6">
+                <TemplateTermsForm
+                  terms={formData.terms}
+                  offerType={formData.offer_type}
+                  onChange={(terms) => setFormData({ ...formData, terms })}
+                />
+              </TabsContent>
+
               {/* LOI Tab Content */}
               <TabsContent value="loi" className="mt-0 space-y-6">
                 {/* Template Selector */}
