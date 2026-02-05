@@ -1,30 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { Lightbulb, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-const EMAIL_MERGE_FIELDS = [
-  { value: "agent_name", label: "Agent Name" },
-  { value: "agent_first_name", label: "Agent First Name" },
-  { value: "property_address", label: "Property Address" },
-  { value: "offer_amount", label: "Offer Amount" },
-  { value: "earnest_money", label: "Earnest Money" },
-  { value: "closing_timeline", label: "Closing Timeline" },
-  { value: "inspection_period", label: "Inspection Period" },
-  { value: "your_name", label: "Your Name" },
-  { value: "your_company", label: "Your Company" },
-  { value: "your_phone", label: "Your Phone" },
-  { value: "your_email", label: "Your Email" },
-];
+import { Lightbulb } from "lucide-react";
+import { MergeFieldsPopover } from "./MergeFieldsPopover";
 
 interface TemplateEmailFormProps {
   subject: string;
@@ -34,12 +14,36 @@ interface TemplateEmailFormProps {
 }
 
 export function TemplateEmailForm({ subject, body, onSubjectChange, onBodyChange }: TemplateEmailFormProps) {
-  const insertField = (field: string, target: "subject" | "body") => {
-    const variable = `{${field}}`;
-    if (target === "subject") {
-      onSubjectChange(subject + variable);
+  const subjectRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const [activeField, setActiveField] = React.useState<"subject" | "body">("body");
+
+  const insertField = (field: string) => {
+    if (activeField === "subject") {
+      const input = subjectRef.current;
+      if (input) {
+        const start = input.selectionStart || subject.length;
+        const end = input.selectionEnd || subject.length;
+        const newValue = subject.slice(0, start) + field + subject.slice(end);
+        onSubjectChange(newValue);
+        // Restore cursor position after React re-renders
+        setTimeout(() => {
+          input.focus();
+          input.setSelectionRange(start + field.length, start + field.length);
+        }, 0);
+      }
     } else {
-      onBodyChange(body + variable);
+      const textarea = bodyRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart || body.length;
+        const end = textarea.selectionEnd || body.length;
+        const newValue = body.slice(0, start) + field + body.slice(end);
+        onBodyChange(newValue);
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(start + field.length, start + field.length);
+        }, 0);
+      }
     }
   };
 
@@ -47,32 +51,17 @@ export function TemplateEmailForm({ subject, body, onSubjectChange, onBodyChange
     <Card variant="default" padding="lg">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-foreground">Email Message</h3>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
-              Insert Field
-              <ChevronDown className="h-4 w-4 ml-2" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="max-h-64 overflow-y-auto">
-            {EMAIL_MERGE_FIELDS.map((field) => (
-              <DropdownMenuItem
-                key={field.value}
-                onClick={() => insertField(field.value, "body")}
-              >
-                {`{${field.value}}`} - {field.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <MergeFieldsPopover onInsert={insertField} variant="email" />
       </div>
 
       <div className="space-y-4">
         <div className="space-y-2">
           <Label className="text-small">Subject Line</Label>
           <Input
+            ref={subjectRef}
             value={subject}
             onChange={(e) => onSubjectChange(e.target.value)}
+            onFocus={() => setActiveField("subject")}
             placeholder="Offer for {property_address}"
           />
         </div>
@@ -80,8 +69,10 @@ export function TemplateEmailForm({ subject, body, onSubjectChange, onBodyChange
         <div className="space-y-2">
           <Label className="text-small">Email Body</Label>
           <Textarea
+            ref={bodyRef}
             value={body}
             onChange={(e) => onBodyChange(e.target.value)}
+            onFocus={() => setActiveField("body")}
             placeholder="Write your email content..."
             rows={16}
             className="font-mono text-sm"
