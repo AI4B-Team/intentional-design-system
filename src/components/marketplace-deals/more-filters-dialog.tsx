@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 export interface AdvancedFilters {
   // Property Structure
   propertyTypes: string[];
+  constructionTypes: string[];
   yearBuiltMin: string;
   yearBuiltMax: string;
   storiesMin: string;
@@ -94,6 +95,7 @@ export interface AdvancedFilters {
 
 const defaultFilters: AdvancedFilters = {
   propertyTypes: [],
+  constructionTypes: [],
   yearBuiltMin: "",
   yearBuiltMax: "",
   storiesMin: "",
@@ -208,6 +210,24 @@ export function MoreFiltersDialog({
     { id: "condos", label: "Condos", icon: Building },
     { id: "multi", label: "Multi", icon: Building2 },
     { id: "land", label: "Land", icon: Trees },
+  ];
+
+  const constructionTypeOptions = [
+    "Wood Frame",
+    "Brick",
+    "Concrete Block",
+    "Stone",
+    "Stucco",
+    "Steel Frame",
+    "Adobe",
+    "Log",
+    "Manufactured/Mobile",
+    "Modular",
+    "SIP (Structural Insulated Panels)",
+    "ICF (Insulated Concrete Forms)",
+    "Timber Frame",
+    "Post and Beam",
+    "Mixed/Other",
   ];
 
   return (
@@ -338,6 +358,25 @@ export function MoreFiltersDialog({
                     </div>
                   ))}
                 </RadioGroup>
+              </div>
+
+              {/* Construction Type */}
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Construction Type</Label>
+                <div className="grid grid-cols-3 gap-x-6 gap-y-2">
+                  {constructionTypeOptions.map((type) => (
+                    <div key={type} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`construction-${type}`}
+                        checked={localFilters.constructionTypes.includes(type)}
+                        onCheckedChange={() => toggleArrayValue("constructionTypes", type)}
+                      />
+                      <Label htmlFor={`construction-${type}`} className="cursor-pointer text-sm">
+                        {type}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </CollapsibleSection>
