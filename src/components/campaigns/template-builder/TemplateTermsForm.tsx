@@ -267,7 +267,7 @@ export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsF
         <div className="mt-6 p-3 bg-warning/10 border border-warning/20 rounded-lg flex items-start gap-2">
           <Lightbulb className="h-4 w-4 text-warning shrink-0 mt-0.5" />
           <p className="text-small text-warning">
-            These values will auto-populate in your LOI document and can be adjusted when sending to specific properties.
+            Set your default offer terms here. These become placeholders in your LOI and can be customized per property before sending.
           </p>
         </div>
       </Card>
