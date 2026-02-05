@@ -218,6 +218,7 @@ export function MoreFiltersDialog({
     "Concrete Block",
     "Stone",
     "Stucco",
+    "Frame Stucco",
     "Steel Frame",
     "Adobe",
     "Log",
