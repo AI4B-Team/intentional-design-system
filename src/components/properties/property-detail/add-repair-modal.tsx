@@ -89,7 +89,7 @@ export function AddRepairModal({ open, onOpenChange, onAdd, editingRepair }: Add
           <DialogTitle>{editingRepair ? "Edit Repair Item" : "Add Repair Item"}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           {/* Category */}
           <div>
             <Label htmlFor="category">Category *</Label>

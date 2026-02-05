@@ -114,7 +114,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
           <DialogTitle>Schedule Appointment</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           {/* Date Picker */}
           <div>
             <Label>Date *</Label>

@@ -133,7 +133,7 @@ export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalPro
           <DialogTitle>Add Comparable Sale</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           {/* Address */}
           <div>
             <Label htmlFor="address">Address *</Label>

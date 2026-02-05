@@ -180,8 +180,9 @@ export function AddItemModal({
           <DialogTitle>Add Repair Item</DialogTitle>
         </DialogHeader>
 
-        <Tabs defaultValue="library" className="flex-1 flex flex-col min-h-0">
-          <TabsList className="w-full justify-start">
+        <div className="px-6 py-4 flex-1 flex flex-col min-h-0">
+          <Tabs defaultValue="library" className="flex-1 flex flex-col min-h-0">
+            <TabsList className="w-full justify-start">
             <TabsTrigger value="library">From Library</TabsTrigger>
             <TabsTrigger value="custom">Custom Item</TabsTrigger>
           </TabsList>
@@ -420,6 +421,7 @@ export function AddItemModal({
             </div>
           </TabsContent>
         </Tabs>
+        </div>
       </DialogContent>
     </Dialog>
   );

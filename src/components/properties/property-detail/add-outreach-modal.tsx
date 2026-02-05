@@ -104,7 +104,7 @@ export function AddOutreachModal({ open, onOpenChange, propertyId }: AddOutreach
           <DialogTitle>Log Contact</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           {/* Channel & Direction */}
           <div className="grid grid-cols-2 gap-4">
             <div>

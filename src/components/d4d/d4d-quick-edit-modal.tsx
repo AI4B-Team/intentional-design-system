@@ -114,7 +114,7 @@ export function D4DQuickEditModal({
           <DialogTitle>Quick Edit</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-5 py-2">
+        <div className="px-6 py-4 space-y-5">
           {/* Address display */}
           <div className="p-3 rounded-lg bg-muted/50 text-sm">
             {property.formatted_address || `${property.street_number} ${property.street_name}`}

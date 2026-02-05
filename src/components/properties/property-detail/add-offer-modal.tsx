@@ -107,7 +107,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
           <DialogTitle>New Offer</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={(e) => handleSubmit(e, true)} className="space-y-4">
+        <form onSubmit={(e) => handleSubmit(e, true)} className="px-6 py-4 space-y-4">
           {/* Offer Amount */}
           <div>
             <Label htmlFor="offerAmount">Offer Amount *</Label>

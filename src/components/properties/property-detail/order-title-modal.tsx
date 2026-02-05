@@ -224,9 +224,10 @@ export function OrderTitleModal({
           )}
         </DialogHeader>
 
-        {/* Ordering in progress */}
-        {isOrdering && !isComplete && (
-          <div className="py-8 text-center">
+        <div className="px-6 py-4">
+          {/* Ordering in progress */}
+          {isOrdering && !isComplete && (
+            <div className="py-8 text-center">
             <div className="h-16 w-16 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-4">
               <Loader2 className="h-8 w-8 text-brand animate-spin" />
             </div>
@@ -379,6 +380,7 @@ export function OrderTitleModal({
             </p>
           </div>
         )}
+        </div>
 
         {/* Footer */}
         {!isOrdering && !isComplete && (
