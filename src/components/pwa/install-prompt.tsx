@@ -27,7 +27,7 @@ export function InstallBanner() {
                 <Smartphone className="h-5 w-5 text-brand" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-small font-medium text-content">Install DealFlow</p>
+                <p className="text-small font-medium text-content">Install RealElite</p>
                 <p className="text-tiny text-content-secondary mt-0.5">
                   Tap <Share className="h-3 w-3 inline mx-0.5" /> then "Add to Home Screen" <Plus className="h-3 w-3 inline mx-0.5" />
                 </p>
@@ -55,7 +55,7 @@ export function InstallBanner() {
               <Download className="h-5 w-5 text-brand" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-small font-medium text-content">Install DealFlow</p>
+              <p className="text-small font-medium text-content">Install RealElite</p>
               <p className="text-tiny text-content-secondary">Add to home screen for the best experience</p>
             </div>
             <div className="flex items-center gap-2">

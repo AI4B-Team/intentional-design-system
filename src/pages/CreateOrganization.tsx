@@ -54,7 +54,7 @@ export default function CreateOrganization() {
             <div className="h-10 w-10 rounded-lg bg-brand-accent flex items-center justify-center">
               <Building2 className="h-6 w-6 text-content-inverse" />
             </div>
-            <span className="text-2xl font-bold text-content">DealFlow</span>
+            <span className="text-2xl font-bold text-content">RealElite</span>
           </div>
           <p className="text-content-secondary">Create Your Organization</p>
         </div>
@@ -64,7 +64,7 @@ export default function CreateOrganization() {
             Welcome, {user?.user_metadata?.full_name || "there"}!
           </h1>
           <p className="text-content-secondary text-center mb-6">
-            Set up your organization to get started with DealFlow.
+            Set up your organization to get started with RealElite.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

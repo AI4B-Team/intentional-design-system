@@ -132,7 +132,7 @@ function ConnectGHLModal({
                 Connect GoHighLevel
               </DialogTitle>
               <DialogDescription>
-                Sync your DealFlow data with GoHighLevel CRM
+                Sync your RealElite data with GoHighLevel CRM
               </DialogDescription>
             </DialogHeader>
 
@@ -337,7 +337,7 @@ function GHLConfiguration() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Contacts Sync</CardTitle>
-                <CardDescription>Map DealFlow properties to GHL contacts</CardDescription>
+                <CardDescription>Map RealElite properties to GHL contacts</CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
@@ -355,7 +355,7 @@ function GHLConfiguration() {
                 <table className="w-full text-small">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-3 font-medium">DealFlow Field</th>
+                      <th className="text-left p-3 font-medium">RealElite Field</th>
                       <th className="text-center p-3 font-medium w-12">→</th>
                       <th className="text-left p-3 font-medium">GHL Field</th>
                     </tr>
@@ -402,7 +402,7 @@ function GHLConfiguration() {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>Pipeline Sync</CardTitle>
-                <CardDescription>Map DealFlow stages to GHL pipeline stages</CardDescription>
+                <CardDescription>Map RealElite stages to GHL pipeline stages</CardDescription>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
@@ -433,7 +433,7 @@ function GHLConfiguration() {
                 <table className="w-full text-small">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-3 font-medium">DealFlow Stage</th>
+                      <th className="text-left p-3 font-medium">RealElite Stage</th>
                       <th className="text-center p-3 font-medium w-12">→</th>
                       <th className="text-left p-3 font-medium">GHL Stage</th>
                     </tr>
@@ -529,7 +529,7 @@ function GHLConfiguration() {
           <CardHeader>
             <CardTitle>Two-Way Sync</CardTitle>
             <CardDescription>
-              Allow changes from GHL to update DealFlow
+              Allow changes from GHL to update RealElite
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -541,7 +541,7 @@ function GHLConfiguration() {
                 </p>
                 <p className="text-tiny text-content-secondary">
                   With two-way sync enabled, changes made in GoHighLevel will update records
-                  in DealFlow. This could overwrite data if not configured correctly.
+                  in RealElite. This could overwrite data if not configured correctly.
                 </p>
               </div>
             </div>
@@ -554,7 +554,7 @@ function GHLConfiguration() {
               <div>
                 <Label>Enable Two-Way Sync</Label>
                 <p className="text-tiny text-content-secondary">
-                  Changes in GHL will update DealFlow
+                  Changes in GHL will update RealElite
                 </p>
               </div>
             </div>
@@ -570,7 +570,7 @@ function GHLConfiguration() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="dealflow_wins">DealFlow Wins</SelectItem>
+                    <SelectItem value="dealflow_wins">RealElite Wins</SelectItem>
                     <SelectItem value="ghl_wins">GHL Wins</SelectItem>
                     <SelectItem value="most_recent_wins">Most Recent Wins</SelectItem>
                   </SelectContent>
@@ -672,7 +672,7 @@ function GHLConfiguration() {
                     Full Re-sync
                   </p>
                   <p className="text-small text-content-secondary mt-1">
-                    Update all existing GHL records with current DealFlow data.
+                    Update all existing GHL records with current RealElite data.
                     Use this after changing field mappings.
                   </p>
                   <Button
@@ -1060,7 +1060,7 @@ function ClosebotConfiguration() {
           <CardHeader>
             <CardTitle>Webhook Configuration</CardTitle>
             <CardDescription>
-              Configure Closebot to send conversation data back to DealFlow
+              Configure Closebot to send conversation data back to RealElite
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -1101,7 +1101,7 @@ function ClosebotConfiguration() {
             <div className="p-4 bg-info/10 border border-info/20 rounded-lg">
               <p className="text-small text-info font-medium">Data Mapping</p>
               <p className="text-tiny text-info/80 mt-1">
-                When Closebot sends data, it will automatically map to DealFlow fields:
+                When Closebot sends data, it will automatically map to RealElite fields:
               </p>
               <ul className="text-tiny text-info/80 mt-2 space-y-1 list-disc list-inside">
                 <li>motivation_level → motivation_score</li>
@@ -1268,7 +1268,7 @@ export default function SettingsIntegrations() {
     >
       <PageHeader
         title="Integrations"
-        description="Connect DealFlow with your favorite tools"
+        description="Connect RealElite with your favorite tools"
       />
 
       <div className="space-y-lg">

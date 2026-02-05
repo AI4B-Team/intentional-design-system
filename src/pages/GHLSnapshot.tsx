@@ -177,7 +177,7 @@ const MESSAGE_TEMPLATES = {
 function generateSnapshotJSON() {
   const snapshot = {
     version: "1.0",
-    name: "DealFlow Pro - Real Estate Investing Snapshot",
+    name: "RealElite Pro - Real Estate Investing Snapshot",
     description: "Complete GHL configuration for real estate wholesaling and investing businesses",
     created_at: new Date().toISOString(),
     pipelines: Object.entries(PIPELINES).map(([key, pipeline]) => ({
@@ -320,7 +320,7 @@ export default function GHLSnapshot() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "dealflow-ghl-snapshot.json";
+    a.download = "realelite-ghl-snapshot.json";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -420,7 +420,7 @@ export default function GHLSnapshot() {
                 { step: 2, title: "Open GHL Settings", desc: "In your GHL account, go to Settings → Business Profile → Snapshots" },
                 { step: 3, title: "Import Snapshot", desc: "Click 'Import Snapshot' and upload the downloaded JSON file" },
                 { step: 4, title: "Review & Apply", desc: "Review the imported items and click 'Apply Snapshot' to add them to your account" },
-                { step: 5, title: "Connect to DealFlow", desc: "Return to Settings → Integrations → GHL in DealFlow to connect your account" },
+                { step: 5, title: "Connect to RealElite", desc: "Return to Settings → Integrations → GHL in RealElite to connect your account" },
               ].map((item) => (
                 <div key={item.step} className="flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-brand/10 flex items-center justify-center text-small font-semibold text-brand shrink-0">
