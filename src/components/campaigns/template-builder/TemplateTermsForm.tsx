@@ -58,51 +58,50 @@ export function TemplateTermsForm({ terms, offerType, onChange }: TemplateTermsF
             General Terms
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label className="text-small">Earnest Money</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                <Input
-                  type="text"
-                  value={terms.depositAmount?.toLocaleString() || "5,000"}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value.replace(/,/g, "")) || 0;
-                    onChange({ ...terms, depositAmount: value });
-                  }}
-                  className="pl-7"
-                />
-              </div>
+          <div className="space-y-2">
+            <Label className="text-small">Earnest Money</Label>
+            <div className="relative max-w-xs">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+              <Input
+                type="text"
+                value={terms.depositAmount?.toLocaleString() || "5,000"}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value.replace(/,/g, "")) || 0;
+                  onChange({ ...terms, depositAmount: value });
+                }}
+                className="pl-7"
+              />
             </div>
-            <div className="space-y-2">
-              <Label className="text-small">Due Diligence Period</Label>
-              <div className="flex gap-2">
-                <Select
-                  value={terms.inspectionPeriod?.toString() || "10"}
-                  onValueChange={(v) => onChange({ ...terms, inspectionPeriod: parseInt(v) })}
-                >
-                  <SelectTrigger className="w-24">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[5, 7, 10, 14, 15, 21, 30].map((d) => (
-                      <SelectItem key={d} value={d.toString()}>{d}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={terms.inspectionPeriodType || "business"}
-                  onValueChange={(v) => onChange({ ...terms, inspectionPeriodType: v })}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="business">business days</SelectItem>
-                    <SelectItem value="calendar">calendar days</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-small">Due Diligence Period</Label>
+            <div className="flex gap-2 max-w-md">
+              <Select
+                value={terms.inspectionPeriod?.toString() || "10"}
+                onValueChange={(v) => onChange({ ...terms, inspectionPeriod: parseInt(v) })}
+              >
+                <SelectTrigger className="w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[5, 7, 10, 14, 15, 21, 30].map((d) => (
+                    <SelectItem key={d} value={d.toString()}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={terms.inspectionPeriodType || "days"}
+                onValueChange={(v) => onChange({ ...terms, inspectionPeriodType: v })}
+              >
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="days">Days</SelectItem>
+                  <SelectItem value="business">Business Days</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
