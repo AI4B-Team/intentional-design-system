@@ -157,7 +157,7 @@ export default function OnboardingJoin() {
             <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
               <Users className="h-6 w-6 text-blue-500" />
             </div>
-            <h1 className="text-h2 font-semibold text-content">Join an Organization</h1>
+            <h1 className="text-h2 font-semibold text-content">Join An Organization</h1>
             <p className="text-small text-content-secondary mt-1">
               Enter your invite code to join a team
             </p>
