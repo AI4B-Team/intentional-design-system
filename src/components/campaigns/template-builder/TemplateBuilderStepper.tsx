@@ -23,8 +23,6 @@ import {
   ChevronRight,
   ArrowLeft,
   Save,
-  Eye,
-  EyeOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -84,7 +82,6 @@ export function TemplateBuilderStepper({
   isEditing,
 }: TemplateBuilderStepperProps) {
   const [activeStep, setActiveStep] = useState("general");
-  const [showPreview, setShowPreview] = useState(false);
   const [useSampleData, setUseSampleData] = useState(true);
   const [includeSms, setIncludeSms] = useState(true);
 
@@ -147,26 +144,15 @@ export function TemplateBuilderStepper({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowPreview(!showPreview)}
-            className="gap-2"
-          >
-            {showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-            {showPreview ? "Hide Preview" : "Show Preview"}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={onSave}
-            disabled={!formData.name.trim() || isSaving}
-            className="gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {isSaving ? "Saving..." : "Save Template"}
-          </Button>
-        </div>
+        <Button
+          variant="primary"
+          onClick={onSave}
+          disabled={!formData.name.trim() || isSaving}
+          className="gap-2"
+        >
+          <Save className="h-4 w-4" />
+          {isSaving ? "Saving..." : "Save Template"}
+        </Button>
       </div>
 
       <div className="flex gap-8">
@@ -245,7 +231,7 @@ export function TemplateBuilderStepper({
         </div>
 
         {/* Main Content Area */}
-        <div className={cn("flex-1 transition-all", showPreview ? "max-w-xl" : "max-w-2xl")}>
+        <div className="flex-1 max-w-2xl">
           {/* General Step */}
           {activeStep === "general" && (
             <Card className="p-6">
@@ -417,20 +403,18 @@ export function TemplateBuilderStepper({
           </div>
         </div>
 
-        {/* Right Preview Panel (conditional) */}
-        {showPreview && (
-          <div className="w-96 shrink-0">
-            <div className="sticky top-4">
-              <TemplateLivePreview
-                templateName={getTemplateName()}
-                templateType={formData.offer_type}
-                loiContent={formData.loi_content}
-                useSampleData={useSampleData}
-                onToggleSampleData={() => setUseSampleData(!useSampleData)}
-              />
-            </div>
+        {/* Right Preview Panel (always visible) */}
+        <div className="w-[400px] shrink-0">
+          <div className="sticky top-4">
+            <TemplateLivePreview
+              templateName={getTemplateName()}
+              templateType={formData.offer_type}
+              loiContent={formData.loi_content}
+              useSampleData={useSampleData}
+              onToggleSampleData={() => setUseSampleData(!useSampleData)}
+            />
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
