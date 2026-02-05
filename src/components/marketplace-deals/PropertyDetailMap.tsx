@@ -400,14 +400,12 @@ export function PropertyDetailMap({
           <span className="text-xs font-medium text-success-foreground">
             {buyers.length} Buyers Near Property
           </span>
-          {showBuyers && onCloseBuyersView && (
-            <button
-              className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
-              onClick={onCloseBuyersView}
-            >
-              <X className="h-3.5 w-3.5 text-success-foreground" />
-            </button>
-          )}
+          <button
+            className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
+            onClick={onCloseBuyersView}
+          >
+            <X className="h-3.5 w-3.5 text-success-foreground" />
+          </button>
         </div>
 
         {/* Draw Button */}
