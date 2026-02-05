@@ -15,11 +15,11 @@ interface TemplateOption {
 
 const LOI_TEMPLATES: TemplateOption[] = [
   {
-    id: "hybrid",
-    name: "Hybrid Offer- Subject To + Seller Finance",
-    description: "Combined financing approach",
-    badge: "Hybrid",
-    badgeColor: "bg-warning/20 text-warning border-warning/30",
+    id: "cash",
+    name: "Cash Offer",
+    description: "Quick closing with cash offer",
+    badge: "Cash",
+    badgeColor: "bg-success/20 text-success border-success/30",
   },
   {
     id: "seller_financing",
@@ -30,17 +30,24 @@ const LOI_TEMPLATES: TemplateOption[] = [
   },
   {
     id: "subject_to",
-    name: "Subject To Acquisition",
+    name: "Subject-To Offer",
     description: "Take over existing financing",
     badge: "Subject To",
     badgeColor: "bg-purple-500/20 text-purple-600 border-purple-500/30",
   },
   {
-    id: "cash",
-    name: "Standard Cash Offer",
-    description: "Quick closing with cash offer",
-    badge: "Cash",
-    badgeColor: "bg-success/20 text-success border-success/30",
+    id: "novation",
+    name: "Novation Offer",
+    description: "Replace seller on existing contract",
+    badge: "Novation",
+    badgeColor: "bg-orange-500/20 text-orange-600 border-orange-500/30",
+  },
+  {
+    id: "hybrid",
+    name: "Hybrid - Subj-To & Seller Financing",
+    description: "Combined financing approach",
+    badge: "Hybrid",
+    badgeColor: "bg-warning/20 text-warning border-warning/30",
   },
 ];
 
