@@ -416,6 +416,11 @@ export function TemplateBuilderStepper({
               loiContent={formData.loi_content}
               useSampleData={useSampleData}
               onToggleSampleData={() => setUseSampleData(!useSampleData)}
+              activeStep={activeStep}
+              emailSubject={formData.email_subject}
+              emailBody={formData.email_body}
+              smsMessage={formData.sms_body}
+              includeSms={includeSms}
             />
           </div>
         </div>

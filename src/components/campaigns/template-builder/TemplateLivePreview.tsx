@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { FileText, Check, ChevronDown, ChevronUp, Eye } from "lucide-react";
+import { FileText, Check, ChevronDown, ChevronUp, Mail, MessageSquare, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TemplateLivePreviewProps {
@@ -13,6 +13,11 @@ interface TemplateLivePreviewProps {
   loiContent: string;
   useSampleData: boolean;
   onToggleSampleData: () => void;
+  activeStep?: string;
+  emailSubject?: string;
+  emailBody?: string;
+  smsMessage?: string;
+  includeSms?: boolean;
 }
 
 const SAMPLE_DATA = {
@@ -45,6 +50,11 @@ const SAMPLE_DATA = {
   seller_finance_term: "30",
   seller_finance_balloon: "5",
   seller_finance_monthly_payment: "$899",
+  seller_name: "Jane Doe",
+  buyer_name: "Alex Johnson",
+  deposit_amount: "$10,000",
+  closing_days: "30",
+  date: new Date().toLocaleDateString(),
 };
 
 export function TemplateLivePreview({
@@ -53,8 +63,15 @@ export function TemplateLivePreview({
   loiContent,
   useSampleData,
   onToggleSampleData,
+  activeStep = "general",
+  emailSubject = "",
+  emailBody = "",
+  smsMessage = "",
+  includeSms = true,
 }: TemplateLivePreviewProps) {
   const [isLoiExpanded, setIsLoiExpanded] = useState(true);
+  const [isEmailExpanded, setIsEmailExpanded] = useState(true);
+  const [isSmsExpanded, setIsSmsExpanded] = useState(true);
 
   const processContent = (content: string): string => {
     if (!useSampleData) return content;
@@ -69,6 +86,13 @@ export function TemplateLivePreview({
   };
 
   const displayContent = processContent(loiContent);
+  const displayEmailSubject = processContent(emailSubject);
+  const displayEmailBody = processContent(emailBody);
+  const displaySmsMessage = processContent(smsMessage);
+
+  const showEmailPreview = activeStep === "email";
+  const showSmsPreview = activeStep === "sms";
+  const showLoiPreview = !showEmailPreview && !showSmsPreview;
 
   return (
     <Card variant="default" padding="lg" className="sticky top-4 h-fit">
@@ -85,105 +109,285 @@ export function TemplateLivePreview({
         </div>
       </div>
 
-      {/* LOI Document Preview */}
-      <Collapsible open={isLoiExpanded} onOpenChange={setIsLoiExpanded}>
-        <CollapsibleTrigger asChild>
-          <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-            <div className="flex items-center gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium text-small">Letter Of Intent (LOI)</span>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Sample Data Toggle - Pill Style */}
-              <div 
-                className="flex items-center bg-muted rounded-full p-0.5 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleSampleData();
-                }}
-              >
-                <span className={cn(
-                  "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
-                  useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-                )}>
-                  Sample
-                </span>
-                <span className={cn(
-                  "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
-                  !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
-                )}>
-                  Template
-                </span>
+      {/* Email Preview */}
+      {showEmailPreview && (
+        <Collapsible open={isEmailExpanded} onOpenChange={setIsEmailExpanded}>
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium text-small">Email Preview</span>
               </div>
-              {isLoiExpanded ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center gap-3">
+                {/* Sample Data Toggle - Pill Style */}
+                <div 
+                  className="flex items-center bg-muted rounded-full p-0.5 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSampleData();
+                  }}
+                >
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Sample
+                  </span>
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Template
+                  </span>
+                </div>
+                {isEmailExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-3 border rounded-lg bg-white overflow-hidden">
+              {/* Email Header */}
+              <div className="border-b bg-muted/20 p-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-tiny text-muted-foreground w-12">From:</span>
+                    <span className="text-small">{useSampleData ? SAMPLE_DATA.your_email : "{your_email}"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-tiny text-muted-foreground w-12">To:</span>
+                    <span className="text-small">{useSampleData ? "agent@remax.com" : "{agent_email}"}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-tiny text-muted-foreground w-12">Subject:</span>
+                    <span className="text-small font-medium">{displayEmailSubject || "No subject"}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Email Body */}
+              <ScrollArea className="h-[calc(100vh-480px)] min-h-[300px]">
+                <div className="p-4">
+                  <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
+                    {displayEmailBody || (
+                      <div className="text-muted-foreground italic">
+                        No email content configured. Add content in the Email editor.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* SMS Preview */}
+      {showSmsPreview && (
+        <Collapsible open={isSmsExpanded} onOpenChange={setIsSmsExpanded}>
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium text-small">SMS Preview</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {/* Sample Data Toggle - Pill Style */}
+                <div 
+                  className="flex items-center bg-muted rounded-full p-0.5 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSampleData();
+                  }}
+                >
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Sample
+                  </span>
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Template
+                  </span>
+                </div>
+                {isSmsExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-3">
+              {/* Phone mockup */}
+              <div className="mx-auto max-w-[280px]">
+                <div className="bg-gray-900 rounded-[2rem] p-2 shadow-xl">
+                  <div className="bg-gray-900 rounded-t-[1.5rem] pt-2 pb-1 flex justify-center">
+                    <div className="w-20 h-5 bg-black rounded-full" />
+                  </div>
+                  <div className="bg-gray-100 rounded-[1.25rem] min-h-[400px] flex flex-col">
+                    {/* Messages header */}
+                    <div className="bg-gray-200 rounded-t-[1.25rem] p-3 flex items-center justify-center border-b">
+                      <div className="text-center">
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-1">
+                          <span className="text-sm font-semibold text-primary">
+                            {useSampleData ? "JS" : "??"}
+                          </span>
+                        </div>
+                        <span className="text-tiny font-medium text-gray-700">
+                          {useSampleData ? SAMPLE_DATA.agent_first_name : "{agent_first_name}"}
+                        </span>
+                      </div>
+                    </div>
+                    {/* Message bubbles */}
+                    <div className="flex-1 p-3 space-y-2">
+                      {includeSms && (displaySmsMessage || smsMessage) ? (
+                        <div className="flex justify-end">
+                          <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-md px-3 py-2 max-w-[85%]">
+                            <p className="text-sm leading-relaxed">
+                              {displaySmsMessage}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground text-sm italic">
+                          {includeSms ? "No SMS content configured" : "SMS disabled"}
+                        </div>
+                      )}
+                    </div>
+                    {/* Input area mockup */}
+                    <div className="p-2 border-t">
+                      <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2">
+                        <div className="flex-1 text-gray-400 text-sm">iMessage</div>
+                        <div className="w-6 h-6 rounded-full bg-primary/20" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Character count */}
+              {includeSms && (
+                <div className="mt-3 text-center">
+                  <span className={cn(
+                    "text-small font-medium",
+                    smsMessage.length > 160 ? "text-warning" : "text-muted-foreground"
+                  )}>
+                    {smsMessage.length}/160 characters
+                  </span>
+                </div>
               )}
             </div>
-          </button>
-        </CollapsibleTrigger>
-        <CollapsibleContent>
-          <div className="mt-3 border rounded-lg bg-white p-6">
-            <ScrollArea className="h-[calc(100vh-380px)] min-h-[400px]">
-              <div className="space-y-4">
-                {/* Company Header */}
-                <div className="border-b pb-4">
-                  <h4 className="font-bold text-lg text-foreground">
-                    {useSampleData ? SAMPLE_DATA.your_company : "{your_company}"}
-                  </h4>
-                  <p className="text-small text-muted-foreground">
-                    {useSampleData ? SAMPLE_DATA.your_address : "{your_address}"}
-                  </p>
-                  <p className="text-small text-muted-foreground">
-                    {useSampleData 
-                      ? `${SAMPLE_DATA.your_city}, ${SAMPLE_DATA.your_state} ${SAMPLE_DATA.your_zip}` 
-                      : "{your_city}, {your_state} {your_zip}"
-                    }
-                  </p>
-                </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
 
-                {/* Key Terms Summary */}
-                <div className="grid grid-cols-2 gap-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
-                  <div className="space-y-0.5">
-                    <span className="text-tiny text-muted-foreground">Purchase Price</span>
-                    <p className="text-sm font-semibold text-foreground">
-                      {useSampleData ? SAMPLE_DATA.offer_amount : "{offer_amount}"}
-                    </p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <span className="text-tiny text-muted-foreground">Earnest Money</span>
-                    <p className="text-sm font-semibold text-foreground">
-                      {useSampleData ? SAMPLE_DATA.earnest_money : "{earnest_money}"}
-                    </p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <span className="text-tiny text-muted-foreground">Inspection Period</span>
-                    <p className="text-sm font-semibold text-foreground">
-                      {useSampleData ? `${SAMPLE_DATA.inspection_period} ${SAMPLE_DATA.inspection_period_type}` : "{inspection_period} {inspection_period_type}"}
-                    </p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <span className="text-tiny text-muted-foreground">Closing Timeline</span>
-                    <p className="text-sm font-semibold text-foreground">
-                      {useSampleData ? `${SAMPLE_DATA.closing_timeline} ${SAMPLE_DATA.closing_timeline_type}` : "{closing_timeline} {closing_timeline_type}"}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Letter Content */}
-                <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
-                  {displayContent || (
-                    <div className="text-muted-foreground italic">
-                      No LOI content configured. Add content in the LOI editor.
-                    </div>
-                  )}
-                </div>
+      {/* LOI Document Preview */}
+      {showLoiPreview && (
+        <Collapsible open={isLoiExpanded} onOpenChange={setIsLoiExpanded}>
+          <CollapsibleTrigger asChild>
+            <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="font-medium text-small">Letter Of Intent (LOI)</span>
               </div>
-            </ScrollArea>
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+              <div className="flex items-center gap-3">
+                {/* Sample Data Toggle - Pill Style */}
+                <div 
+                  className="flex items-center bg-muted rounded-full p-0.5 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSampleData();
+                  }}
+                >
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Sample
+                  </span>
+                  <span className={cn(
+                    "px-2.5 py-1 text-tiny font-medium rounded-full transition-colors",
+                    !useSampleData ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                  )}>
+                    Template
+                  </span>
+                </div>
+                {isLoiExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                )}
+              </div>
+            </button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-3 border rounded-lg bg-white p-6">
+              <ScrollArea className="h-[calc(100vh-380px)] min-h-[400px]">
+                <div className="space-y-4">
+                  {/* Company Header */}
+                  <div className="border-b pb-4">
+                    <h4 className="font-bold text-lg text-foreground">
+                      {useSampleData ? SAMPLE_DATA.your_company : "{your_company}"}
+                    </h4>
+                    <p className="text-small text-muted-foreground">
+                      {useSampleData ? SAMPLE_DATA.your_address : "{your_address}"}
+                    </p>
+                    <p className="text-small text-muted-foreground">
+                      {useSampleData 
+                        ? `${SAMPLE_DATA.your_city}, ${SAMPLE_DATA.your_state} ${SAMPLE_DATA.your_zip}` 
+                        : "{your_city}, {your_state} {your_zip}"
+                      }
+                    </p>
+                  </div>
+
+                  {/* Key Terms Summary */}
+                  <div className="grid grid-cols-2 gap-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
+                    <div className="space-y-0.5">
+                      <span className="text-tiny text-muted-foreground">Purchase Price</span>
+                      <p className="text-sm font-semibold text-foreground">
+                        {useSampleData ? SAMPLE_DATA.offer_amount : "{offer_amount}"}
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-tiny text-muted-foreground">Earnest Money</span>
+                      <p className="text-sm font-semibold text-foreground">
+                        {useSampleData ? SAMPLE_DATA.earnest_money : "{earnest_money}"}
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-tiny text-muted-foreground">Inspection Period</span>
+                      <p className="text-sm font-semibold text-foreground">
+                        {useSampleData ? `${SAMPLE_DATA.inspection_period} ${SAMPLE_DATA.inspection_period_type}` : "{inspection_period} {inspection_period_type}"}
+                      </p>
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-tiny text-muted-foreground">Closing Timeline</span>
+                      <p className="text-sm font-semibold text-foreground">
+                        {useSampleData ? `${SAMPLE_DATA.closing_timeline} ${SAMPLE_DATA.closing_timeline_type}` : "{closing_timeline} {closing_timeline_type}"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Letter Content */}
+                  <div className="whitespace-pre-wrap text-sm text-foreground leading-relaxed">
+                    {displayContent || (
+                      <div className="text-muted-foreground italic">
+                        No LOI content configured. Add content in the LOI editor.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </ScrollArea>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      )}
     </Card>
   );
 }
