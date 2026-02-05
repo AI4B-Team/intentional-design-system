@@ -45,7 +45,7 @@ export default function Install() {
             <div className="mx-auto mb-4 h-20 w-20 rounded-2xl bg-gradient-to-br from-brand to-brand-accent flex items-center justify-center shadow-lg">
               <Smartphone className="h-10 w-10 text-white" />
             </div>
-            <CardTitle className="text-h2">Install DealFlow</CardTitle>
+            <CardTitle className="text-h2">Install RealElite</CardTitle>
             <CardDescription>
               Get the full app experience on your device
             </CardDescription>
@@ -60,7 +60,7 @@ export default function Install() {
                 </div>
                 <p className="text-body font-medium text-content">Already Installed!</p>
                 <p className="text-small text-content-secondary mt-1">
-                  You're using DealFlow as an app
+                  You're using RealElite as an app
                 </p>
                 <Button variant="primary" className="mt-4" asChild>
                   <Link to="/dashboard">Open Dashboard</Link>
@@ -115,11 +115,11 @@ export default function Install() {
               /* Android/Chrome install button */
               <div className="text-center space-y-4">
                 <p className="text-small text-content-secondary">
-                  Click the button below to add DealFlow to your home screen
+                  Click the button below to add RealElite to your home screen
                 </p>
                 <Button variant="primary" size="lg" onClick={promptInstall} className="w-full">
                   <Download className="h-5 w-5 mr-2" />
-                  Install DealFlow
+                  Install RealElite
                 </Button>
               </div>
             ) : (

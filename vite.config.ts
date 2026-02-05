@@ -20,8 +20,8 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: "DealFlow Command Center",
-        short_name: "DealFlow",
+        name: "RealElite Command Center",
+        short_name: "RealElite",
         description: "Real Estate Investment Platform - Manage properties, analyze deals, and close faster",
         start_url: "/dashboard",
         display: "standalone",

@@ -144,7 +144,7 @@ export function WorkflowShowcase() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <h2 className="text-center text-h2 md:text-[2rem] font-semibold text-content mb-12">
-          Watch how DealFlow transforms leads into revenue—automatically
+          Watch how RealElite transforms leads into revenue—automatically
         </h2>
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
@@ -317,7 +317,7 @@ function DashboardPreview({ activeStep }: { activeStep: number }) {
         </div>
         <div className="flex-1 flex justify-center">
           <div className="px-3 py-1 rounded-md bg-[#1a1f2e] text-[10px] text-white/50">
-            app.dealflow.com
+            app.realelite.com
           </div>
         </div>
       </div>

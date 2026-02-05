@@ -33,7 +33,7 @@ interface OnboardingStep {
 const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     id: "welcome",
-    title: "Welcome to DealFlow",
+    title: "Welcome to RealElite",
     description: "Your all-in-one real estate investment platform",
     icon: Rocket,
     skippable: false,
@@ -82,7 +82,7 @@ export default function Onboarding() {
   const handleNext = () => {
     if (isLastStep) {
       // Mark onboarding complete
-      localStorage.setItem("dealflow_onboarding_complete", "true");
+      localStorage.setItem("realelite_onboarding_complete", "true");
       navigate("/dashboard");
     } else {
       setCurrentStep((prev) => prev + 1);
@@ -100,7 +100,7 @@ export default function Onboarding() {
   };
 
   const handleSkipAll = () => {
-    localStorage.setItem("dealflow_onboarding_complete", "true");
+    localStorage.setItem("realelite_onboarding_complete", "true");
     navigate("/dashboard");
   };
 
@@ -200,7 +200,7 @@ export default function Onboarding() {
                   </Button>
                 </div>
                 <p className="text-center text-tiny text-content-tertiary">
-                  Start with one property to see how DealFlow works
+                  Start with one property to see how RealElite works
                 </p>
               </div>
             )}

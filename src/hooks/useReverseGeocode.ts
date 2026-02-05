@@ -60,7 +60,7 @@ export function useReverseGeocode() {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
         {
           headers: {
-            'User-Agent': 'DealFlow-D4D/1.0'
+            'User-Agent': 'RealElite-D4D/1.0'
           }
         }
       );

@@ -82,7 +82,7 @@ export function HelpButton({ variant = "icon", className }: HelpButtonProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Rocket className="h-5 w-5 text-brand" />
-              Getting Started with DealFlow
+              Getting Started with RealElite
             </DialogTitle>
             <DialogDescription>
               Follow these steps to get the most out of your investment platform

@@ -248,8 +248,8 @@ export default function SubmitDeal() {
             <div className="mt-8 pt-6 border-t border-border-subtle">
               <p className="text-small text-content-secondary">
                 Questions? Contact us at{" "}
-                <a href="mailto:deals@dealflow.com" className="text-brand hover:underline">
-                  deals@dealflow.com
+                <a href="mailto:deals@realelite.com" className="text-brand hover:underline">
+                  deals@realelite.com
                 </a>
               </p>
             </div>
