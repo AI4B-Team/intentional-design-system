@@ -393,7 +393,7 @@ export function PropertyDetailMap({
       </div>
 
       {/* Right side controls: Buyers + Draw + Intel */}
-      <div className="absolute top-3 right-3 z-[1000] flex gap-2">
+      <div className="absolute top-3 right-3 z-[1000] flex items-center gap-2">
         {/* Buyers Near Property Badge - Always visible */}
         <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 h-9 shadow-md flex items-center gap-2">
           <Users className="h-4 w-4 text-success-foreground" />
