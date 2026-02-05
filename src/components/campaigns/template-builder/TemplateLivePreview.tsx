@@ -115,7 +115,7 @@ export function TemplateLivePreview({
         </CollapsibleTrigger>
         <CollapsibleContent>
           <div className="mt-3 border rounded-lg bg-white p-6">
-            <ScrollArea className="h-[500px]">
+            <ScrollArea className="h-[calc(100vh-380px)] min-h-[400px]">
               <div className="space-y-4">
                 {/* Company Header */}
                 <div className="border-b pb-4">
