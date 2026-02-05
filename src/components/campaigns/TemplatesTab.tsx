@@ -456,85 +456,103 @@ export function TemplatesTab() {
       </div>
 
       {/* Offer Type Selection Grid */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         {/* Investor Offers */}
         <div>
-          <h3 className="text-lg font-semibold text-foreground mb-4">Investor Offers</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {investorOffers.map((config) => (
-              <Card
-                key={config.id}
-                variant="default"
-                padding="lg"
-                className="cursor-pointer transition-all hover:shadow-lg hover:border-accent/50 group"
-                onClick={() => handleSelectOfferType(config.id)}
-              >
-                <div className="flex items-start gap-4">
-                  <div className={cn("p-3 rounded-lg shrink-0", config.bgColor)}>
-                    <config.icon className={cn("h-6 w-6", config.color)} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <h4 className="font-semibold text-foreground">{config.label}</h4>
+          <h3 className="text-lg font-semibold text-foreground mb-3">Investor Offers</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {investorOffers.map((config) => {
+              const isCash = config.id === "cash";
+              return (
+                <Card
+                  key={config.id}
+                  variant="default"
+                  padding="md"
+                  className={cn(
+                    "cursor-pointer transition-all hover:shadow-lg group relative overflow-hidden",
+                    "hover:border-accent/50 hover:-translate-y-0.5",
+                    "before:absolute before:inset-y-0 before:right-0 before:w-1 before:bg-transparent before:transition-colors",
+                    "hover:before:bg-accent/30"
+                  )}
+                  onClick={() => handleSelectOfferType(config.id)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={cn("p-2.5 rounded-lg shrink-0", config.bgColor)}>
+                      <config.icon className={cn("h-5 w-5", config.color)} />
                     </div>
-                    <p className="text-small text-muted-foreground mb-3">{config.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {config.features.slice(0, 3).map((feature, idx) => (
-                        <span key={idx} className="text-tiny px-2 py-1 bg-muted rounded-full text-muted-foreground">
-                          {feature}
-                        </span>
-                      ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <h4 className="font-semibold text-foreground">{config.label}</h4>
+                        {isCash && (
+                          <Badge variant="secondary" size="sm" className="bg-success/10 text-success border-success/20">
+                            Most Common
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-small text-muted-foreground mb-2">{config.description}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {config.features.slice(0, 3).map((feature, idx) => (
+                          <span key={idx} className="text-tiny px-2 py-0.5 bg-muted rounded-full text-muted-foreground">
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
                     </div>
+                    <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
-                </div>
-              </Card>
-            ))}
+                </Card>
+              );
+            })}
           </div>
         </div>
 
         {/* Licensed Offers */}
         <div>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <h3 className="text-lg font-semibold text-foreground">Agent Options</h3>
-            <Badge variant="warning" size="sm">License Required</Badge>
+            <span className="text-tiny text-muted-foreground">For licensed agents and referral workflows</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {licensedOffers.map((config) => (
               <Card
                 key={config.id}
                 variant="default"
-                padding="lg"
-                className="cursor-pointer transition-all hover:shadow-lg hover:border-accent/50 group"
+                padding="md"
+                className={cn(
+                  "cursor-pointer transition-all hover:shadow-lg group relative overflow-hidden",
+                  "hover:border-accent/50 hover:-translate-y-0.5",
+                  "before:absolute before:inset-y-0 before:right-0 before:w-1 before:bg-transparent before:transition-colors",
+                  "hover:before:bg-accent/30"
+                )}
                 onClick={() => handleSelectOfferType(config.id)}
               >
-                <div className="flex items-start gap-4">
-                  <div className={cn("p-3 rounded-lg shrink-0", config.bgColor)}>
-                    <config.icon className={cn("h-6 w-6", config.color)} />
+                <div className="flex items-start gap-3">
+                  <div className={cn("p-2.5 rounded-lg shrink-0 opacity-75", config.bgColor)}>
+                    <config.icon className={cn("h-5 w-5", config.color)} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
                       <h4 className="font-semibold text-foreground">{config.label}</h4>
                       <Badge variant="warning" size="sm">License Required</Badge>
                     </div>
-                    <p className="text-small text-muted-foreground mb-3">{config.description}</p>
+                    <p className="text-small text-muted-foreground mb-2">{config.description}</p>
                     {config.disclosures && (
-                      <div className="p-2 bg-warning/10 border border-warning/20 rounded-md mb-3">
+                      <div className="p-1.5 bg-warning/10 border border-warning/20 rounded-md mb-2">
                         <div className="flex items-center gap-1.5 text-warning text-tiny">
                           <AlertTriangle className="h-3 w-3" />
                           <span>Disclosures required</span>
                         </div>
                       </div>
                     )}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {config.features.slice(0, 2).map((feature, idx) => (
-                        <span key={idx} className="text-tiny px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                        <span key={idx} className="text-tiny px-2 py-0.5 bg-muted rounded-full text-muted-foreground">
                           {feature}
                         </span>
                       ))}
                     </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent transition-colors shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-accent group-hover:translate-x-0.5 transition-all shrink-0" />
                 </div>
               </Card>
             ))}
@@ -543,8 +561,8 @@ export function TemplatesTab() {
       </div>
 
       {/* Existing Templates */}
-      <div className="border-t pt-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="border-t pt-6">
+        <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-foreground">Saved Templates</h3>
           <div className="flex items-center gap-3">
             <div className="relative w-64">
@@ -579,13 +597,13 @@ export function TemplatesTab() {
             ))}
           </div>
         ) : filteredTemplates?.length === 0 ? (
-          <Card variant="default" padding="lg" className="text-center">
+          <Card variant="default" padding="lg" className="text-center py-12">
             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No Templates Found</h3>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground max-w-sm mx-auto">
               {searchQuery || filterType !== "all"
                 ? "Try adjusting your search or filter"
-                : "Select an offer type above to create your first template"}
+                : "Create your first offer template to reuse terms, messages, and LOIs across deals"}
             </p>
           </Card>
         ) : (
