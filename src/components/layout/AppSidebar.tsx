@@ -72,6 +72,7 @@ const topNavItems: NavItem[] = [
 ];
 
 const afterLeadsItems: NavItem[] = [
+  { label: "Dialer", href: "/dialer", icon: Phone },
   { label: "Financing", href: "/financing", icon: DollarSign },
 ];
 
