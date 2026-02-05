@@ -1681,6 +1681,65 @@ export type Database = {
           },
         ]
       }
+      comp_searches: {
+        Row: {
+          avg_price_per_sqft: number | null
+          avg_sale_price: number | null
+          comps_found: number | null
+          created_at: string
+          id: string
+          organization_id: string | null
+          search_params: Json | null
+          subject_address: string
+          subject_city: string | null
+          subject_property_id: string | null
+          subject_state: string | null
+          subject_zip: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_price_per_sqft?: number | null
+          avg_sale_price?: number | null
+          comps_found?: number | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          search_params?: Json | null
+          subject_address: string
+          subject_city?: string | null
+          subject_property_id?: string | null
+          subject_state?: string | null
+          subject_zip?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_price_per_sqft?: number | null
+          avg_sale_price?: number | null
+          comps_found?: number | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          search_params?: Json | null
+          subject_address?: string
+          subject_city?: string | null
+          subject_property_id?: string | null
+          subject_state?: string | null
+          subject_zip?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comp_searches_subject_property_id_fkey"
+            columns: ["subject_property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       compliance_checks: {
         Row: {
           check_type: string
