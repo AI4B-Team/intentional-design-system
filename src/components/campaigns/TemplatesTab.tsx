@@ -77,6 +77,7 @@ import {
   TemplateEmailForm,
   TemplateSmsForm,
   TemplateLivePreview,
+  TemplateBuilderStepper,
 } from "./template-builder";
 
 // Offer type configurations
@@ -422,240 +423,17 @@ export function TemplatesTab() {
   const [useSampleData, setUseSampleData] = useState(true);
   const [includeSms, setIncludeSms] = useState(true);
 
-  // Builder View
+  // Builder View - Vertical Stepper Layout
   if (viewMode === "builder") {
     return (
-      <div className="space-y-0">
-        {/* Builder Header - Inspired by reference */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={handleBackToGrid} className="shrink-0">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">
-                {formData.name || "Professional Cash Offer"}
-              </h1>
-              <p className="text-small text-muted-foreground">
-                Description (optional)
-              </p>
-            </div>
-          </div>
-          <Button
-            variant="primary"
-            onClick={handleSave}
-            disabled={!formData.name.trim() || createTemplate.isPending || updateTemplate.isPending}
-            className="gap-2"
-          >
-            <Save className="h-4 w-4" />
-            {editingTemplate ? "Save Package" : "Save Package"}
-          </Button>
-        </div>
-
-        {/* Horizontal Document Type Tabs */}
-        <Tabs value={activeBuilderTab} onValueChange={setActiveBuilderTab}>
-          <TabsList className="bg-transparent border-0 p-0 h-auto mb-6 gap-2">
-            <TabsTrigger 
-              value="general" 
-              className={cn(
-                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
-                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
-              )}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              General
-            </TabsTrigger>
-            <TabsTrigger 
-              value="terms"
-              className={cn(
-                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
-                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
-              )}
-            >
-              <FileCheck className="h-4 w-4 mr-2" />
-              Terms
-            </TabsTrigger>
-            <TabsTrigger 
-              value="loi" 
-              className={cn(
-                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
-                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
-              )}
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              LOI
-            </TabsTrigger>
-            <TabsTrigger 
-              value="email"
-              className={cn(
-                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
-                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
-              )}
-            >
-              <Mail className="h-4 w-4 mr-2" />
-              Email
-            </TabsTrigger>
-            <TabsTrigger 
-              value="sms"
-              className={cn(
-                "px-4 py-2.5 rounded-full border transition-all data-[state=active]:bg-accent data-[state=active]:text-white data-[state=active]:border-accent",
-                "data-[state=inactive]:bg-background data-[state=inactive]:border-border data-[state=inactive]:hover:border-accent/50"
-              )}
-            >
-              <MessageSquare className="h-4 w-4 mr-2" />
-              SMS
-            </TabsTrigger>
-          </TabsList>
-
-          {/* 50/50 Split Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Panel - Form Controls */}
-            <div className="space-y-6">
-              {/* General Tab Content */}
-              <TabsContent value="general" className="mt-0 space-y-6">
-                <Card variant="default" padding="lg" className="border-border">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Settings className="h-5 w-5 text-accent" />
-                    <h4 className="font-semibold text-foreground">Package Settings</h4>
-                  </div>
-                  <p className="text-small text-muted-foreground mb-6">
-                    Configure basic settings for this offer package.
-                  </p>
-
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-small">Campaign Name</Label>
-                      <Input
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="e.g., Professional Cash Offer"
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-small">Description (optional)</Label>
-                      <Textarea
-                        value={formData.description || ""}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        placeholder="Describe when to use this template..."
-                        rows={3}
-                      />
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-small">Market Type</Label>
-                      <Select
-                        value={formData.market_type}
-                        onValueChange={(v) => setFormData({ ...formData, market_type: v })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="on_market">On-Market (MLS)</SelectItem>
-                          <SelectItem value="off_market">Off-Market</SelectItem>
-                          <SelectItem value="both">Both</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-small">Offer Type</Label>
-                      <Select
-                        value={formData.offer_type}
-                        onValueChange={(v) => setFormData({ ...formData, offer_type: v })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cash">All Cash</SelectItem>
-                          <SelectItem value="hybrid">Hybrid (Subject To + Seller Finance)</SelectItem>
-                          <SelectItem value="seller_financing">Seller Financing</SelectItem>
-                          <SelectItem value="subject_to">Subject To</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="flex items-center gap-2 pt-2">
-                      <Checkbox
-                        id="is-default"
-                        checked={formData.is_default}
-                        onCheckedChange={(checked) => setFormData({ ...formData, is_default: !!checked })}
-                      />
-                      <Label htmlFor="is-default" className="text-small cursor-pointer">
-                        Set as default template for this offer type
-                      </Label>
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
-
-              {/* Terms Tab Content */}
-              <TabsContent value="terms" className="mt-0 space-y-6">
-                <TemplateTermsForm
-                  terms={formData.terms}
-                  offerType={formData.offer_type}
-                  onChange={(terms) => setFormData({ ...formData, terms })}
-                />
-              </TabsContent>
-
-              {/* LOI Tab Content */}
-              <TabsContent value="loi" className="mt-0 space-y-6">
-                {/* Template Selector */}
-                <TemplateDocumentSelector
-                  selectedTemplate={formData.offer_type}
-                  onSelectTemplate={(id) => setFormData({ ...formData, offer_type: id })}
-                />
-
-                {/* Terms Form */}
-                <TemplateTermsForm
-                  terms={formData.terms}
-                  offerType={formData.offer_type}
-                  onChange={(terms) => setFormData({ ...formData, terms })}
-                />
-              </TabsContent>
-
-              {/* Email Tab Content */}
-              <TabsContent value="email" className="mt-0">
-                <TemplateEmailForm
-                  subject={formData.email_subject}
-                  body={formData.email_body}
-                  onSubjectChange={(v) => setFormData({ ...formData, email_subject: v })}
-                  onBodyChange={(v) => setFormData({ ...formData, email_body: v })}
-                />
-              </TabsContent>
-
-              {/* SMS Tab Content */}
-              <TabsContent value="sms" className="mt-0">
-                <TemplateSmsForm
-                  message={formData.sms_body}
-                  includeSms={includeSms}
-                  onMessageChange={(v) => setFormData({ ...formData, sms_body: v })}
-                  onIncludeSmsChange={setIncludeSms}
-                />
-              </TabsContent>
-            </div>
-
-            {/* Right Panel - Live Preview (Always visible) */}
-            <div>
-              <TemplateLivePreview
-                templateName={
-                  formData.offer_type === "cash" ? "Standard Cash Offer" :
-                  formData.offer_type === "hybrid" ? "Hybrid Offer- Subject To + Seller Finance" :
-                  formData.offer_type === "seller_financing" ? "Seller Financing Offer" :
-                  formData.offer_type === "subject_to" ? "Subject To Acquisition" :
-                  "Standard Cash Offer"
-                }
-                templateType={formData.offer_type}
-                loiContent={formData.loi_content}
-                useSampleData={useSampleData}
-                onToggleSampleData={() => setUseSampleData(!useSampleData)}
-              />
-            </div>
-          </div>
-        </Tabs>
-      </div>
+      <TemplateBuilderStepper
+        formData={formData}
+        setFormData={setFormData}
+        onSave={handleSave}
+        onBack={handleBackToGrid}
+        isSaving={createTemplate.isPending || updateTemplate.isPending}
+        isEditing={!!editingTemplate}
+      />
     );
   }
 
