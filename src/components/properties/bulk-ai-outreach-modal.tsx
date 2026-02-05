@@ -188,7 +188,7 @@ export function BulkAIOutreachModal({
 
         {status === "idle" && (
           <>
-            <div className="space-y-4 py-4">
+            <div className="px-6 py-4 space-y-4">
               {/* Summary */}
               <div className="p-4 bg-muted/30 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
@@ -223,7 +223,7 @@ export function BulkAIOutreachModal({
                           ) : bot.type === "buyer" ? (
                             <Bot className="h-4 w-4 text-info" />
                           ) : (
-                            <MessageSquare className="h-4 w-4 text-purple-500" />
+                            <MessageSquare className="h-4 w-4 text-content-secondary" />
                           )}
                           {bot.name}
                         </div>
@@ -288,7 +288,7 @@ export function BulkAIOutreachModal({
         )}
 
         {status === "running" && (
-          <div className="py-8 space-y-6">
+          <div className="px-6 py-8 space-y-6">
             <div className="text-center">
               <Loader2 className="h-12 w-12 mx-auto mb-4 text-brand animate-spin" />
               <p className="text-body font-medium text-content">Starting AI Conversations...</p>
@@ -309,7 +309,7 @@ export function BulkAIOutreachModal({
 
         {status === "completed" && result && (
           <>
-            <div className="py-6 space-y-4">
+            <div className="px-6 py-6 space-y-4">
               <div className="text-center">
                 {result.failed === 0 ? (
                   <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-success" />

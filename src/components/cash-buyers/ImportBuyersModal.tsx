@@ -164,8 +164,9 @@ export function ImportBuyersModal({ open, onOpenChange }: ImportBuyersModalProps
           <DialogTitle>Import Buyers from CSV</DialogTitle>
         </DialogHeader>
 
-        {step === 'upload' && (
-          <div className="space-y-4">
+        <div className="px-6 py-4">
+          {step === 'upload' && (
+            <div className="space-y-4">
             <div className="border-2 border-dashed border-border rounded-lg p-12 text-center">
               <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <p className="text-lg font-medium mb-2">Upload CSV File</p>
@@ -308,6 +309,7 @@ export function ImportBuyersModal({ open, onOpenChange }: ImportBuyersModalProps
             </div>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -36,7 +36,7 @@ export function DNCWarningModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-4 space-y-4">
+        <div className="px-6 py-4 space-y-4">
           <div className="bg-destructive/10 border border-destructive/20 rounded-medium p-4">
             <p className="text-small text-content">
               Cold calling numbers on the DNC list may violate federal law and result

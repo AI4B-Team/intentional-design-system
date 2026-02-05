@@ -202,7 +202,7 @@ export function ExportListModal({
           <DialogTitle>Export List</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="px-6 py-4 space-y-6">
           {/* Which records */}
           <div className="space-y-3">
             <Label>Which records?</Label>

@@ -138,8 +138,9 @@ export function SendDealModal({
           <DialogTitle>Send Deal to {buyers.length} Buyer{buyers.length > 1 ? "s" : ""}</DialogTitle>
         </DialogHeader>
 
-        {/* Step Indicator */}
-        <div className="flex items-center gap-2 mb-4">
+        <div className="px-6 py-4">
+          {/* Step Indicator */}
+          <div className="flex items-center gap-2 mb-4">
           {[
             { id: "deal-sheet", label: "Deal Sheet" },
             { id: "delivery", label: "Delivery" },
@@ -498,6 +499,7 @@ export function SendDealModal({
             </div>
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

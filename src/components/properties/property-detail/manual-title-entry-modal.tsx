@@ -255,6 +255,7 @@ export function ManualTitleEntryModal({
           <DialogDescription>{propertyAddress}</DialogDescription>
         </DialogHeader>
 
+        <div className="px-6 py-4">
         <Accordion type="multiple" defaultValue={["basic", "mortgages", "liens", "tax", "hoa"]} className="space-y-2">
           {/* Section 1: Basic Info */}
           <AccordionItem value="basic" className="border rounded-medium px-4">
@@ -596,6 +597,7 @@ export function ManualTitleEntryModal({
             </AccordionContent>
           </AccordionItem>
         </Accordion>
+        </div>
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

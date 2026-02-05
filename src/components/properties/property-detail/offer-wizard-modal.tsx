@@ -395,9 +395,10 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
           </DialogTitle>
         </DialogHeader>
 
-        {/* Step Indicator */}
-        <div className="flex items-center justify-between mb-6">
-          {steps.map((step, index) => (
+        <div className="px-6 py-4">
+          {/* Step Indicator */}
+          <div className="flex items-center justify-between mb-6">
+            {steps.map((step, index) => (
             <React.Fragment key={step.number}>
               <button
                 onClick={() => step.number < currentStep && setCurrentStep(step.number)}
@@ -1002,6 +1003,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
                 : "Schedule"}
             </Button>
           )}
+        </div>
         </div>
       </DialogContent>
     </Dialog>
