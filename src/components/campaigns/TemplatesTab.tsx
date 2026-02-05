@@ -524,7 +524,7 @@ export function TemplatesTab() {
 
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label className="text-small">Package Name</Label>
+                      <Label className="text-small">Campaign Name</Label>
                       <Input
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
