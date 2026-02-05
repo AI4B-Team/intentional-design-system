@@ -66,13 +66,13 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Marketplace", href: "/marketplace", icon: Store },
+  { label: "Dialer", href: "/dialer", icon: Phone },
   { label: "Campaigns", href: "/dispo/campaigns", icon: Megaphone },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Inbox", href: "/inbox", icon: Inbox },
 ];
 
 const afterLeadsItems: NavItem[] = [
-  { label: "Dialer", href: "/dialer", icon: Phone },
   { label: "Financing", href: "/financing", icon: DollarSign },
 ];
 
