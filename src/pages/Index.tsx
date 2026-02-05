@@ -73,11 +73,17 @@ const statsData = [
 ];
 
 const hotOpportunities = [
-  { id: 1, address: "1423 Elm Street", city: "Austin", state: "TX", score: 92, daysAgo: 0 },
-  { id: 2, address: "567 Oak Avenue", city: "Dallas", state: "TX", score: 85, daysAgo: 1 },
-  { id: 3, address: "890 Pine Road", city: "Houston", state: "TX", score: 78, daysAgo: 2 },
-  { id: 4, address: "234 Maple Drive", city: "San Antonio", state: "TX", score: 71, daysAgo: 3 },
-  { id: 5, address: "456 Cedar Lane", city: "Fort Worth", state: "TX", score: 65, daysAgo: 5 },
+  { id: 1, address: "4444 Dahlia Drive", city: "Austin", state: "TX", score: 92, daysAgo: 0 },
+  { id: 2, address: "321 Cedar Lane", city: "Georgetown", state: "TX", score: 89, daysAgo: 0 },
+  { id: 3, address: "3636 Clover Court", city: "Austin", state: "TX", score: 87, daysAgo: 1 },
+  { id: 4, address: "1919 Jasmine Court", city: "Leander", state: "TX", score: 85, daysAgo: 1 },
+  { id: 5, address: "4040 Honeysuckle Lane", city: "Austin", state: "TX", score: 82, daysAgo: 2 },
+  { id: 6, address: "4848 Victory Lane", city: "Austin", state: "TX", score: 80, daysAgo: 2 },
+  { id: 7, address: "555 Hemlock Road", city: "Georgetown", state: "TX", score: 79, daysAgo: 3 },
+  { id: 8, address: "3030 Zinnia Drive", city: "Cedar Park", state: "TX", score: 77, daysAgo: 3 },
+  { id: 9, address: "741 Hickory Place", city: "Round Rock", state: "TX", score: 75, daysAgo: 4 },
+  { id: 10, address: "1313 Tulip Way", city: "Georgetown", state: "TX", score: 73, daysAgo: 5 },
+  { id: 11, address: "2929 Birch Boulevard", city: "Pflugerville", state: "TX", score: 71, daysAgo: 6 },
 ];
 
 const pipelineStages = [
