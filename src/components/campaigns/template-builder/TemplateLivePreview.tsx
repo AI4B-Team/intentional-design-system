@@ -91,7 +91,7 @@ export function TemplateLivePreview({
           <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium text-small">LOI Document</span>
+              <span className="font-medium text-small">Letter Of Intent (LOI)</span>
             </div>
             <div className="flex items-center gap-3">
               {/* Sample Data Toggle - Pill Style */}
