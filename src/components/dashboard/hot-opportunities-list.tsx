@@ -239,6 +239,19 @@ export function HotOpportunitiesList({
           );
         })}
       </div>
+
+      {/* Footer Link */}
+      {onViewAll && (
+        <div className="mt-4 pt-4 border-t border-border">
+          <button
+            onClick={onViewAll}
+            className="w-full flex items-center justify-center gap-2 text-sm font-medium text-brand-accent hover:text-brand-accent/80 transition-colors"
+          >
+            View All Opportunities
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
