@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -11,6 +11,7 @@ export function usePWA() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [needsRefresh, setNeedsRefresh] = useState(false);
+  const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
     // Check if already installed
@@ -49,22 +50,61 @@ export function usePWA() {
     };
   }, []);
 
-  // Listen for service worker updates
+  // Service worker: proactively check for updates and surface when a refresh is needed.
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.addEventListener("updatefound", () => {
+    if (!("serviceWorker" in navigator)) return;
+
+    let cancelled = false;
+    let cleanup: undefined | (() => void);
+
+    const setup = async () => {
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (cancelled || !registration) return;
+
+        registrationRef.current = registration;
+
+        const handleUpdateFound = () => {
           const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                setNeedsRefresh(true);
-              }
-            });
-          }
-        });
-      });
-    }
+          if (!newWorker) return;
+
+          newWorker.addEventListener("statechange", () => {
+            // If there's an existing controller, an update means we need a refresh
+            if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+              setNeedsRefresh(true);
+            }
+          });
+        };
+
+        registration.addEventListener("updatefound", handleUpdateFound);
+
+        const checkForUpdate = () => {
+          registration.update().catch(() => {
+            /* noop */
+          });
+        };
+
+        // Kick off an update check immediately, and also on focus/online.
+        checkForUpdate();
+        window.addEventListener("focus", checkForUpdate);
+        window.addEventListener("online", checkForUpdate);
+
+        cleanup = () => {
+          registration.removeEventListener("updatefound", handleUpdateFound);
+          window.removeEventListener("focus", checkForUpdate);
+          window.removeEventListener("online", checkForUpdate);
+        };
+      } catch {
+        // noop
+      }
+    };
+
+    void setup();
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
   }, []);
 
   const promptInstall = useCallback(async () => {
@@ -82,7 +122,38 @@ export function usePWA() {
   }, [installPrompt]);
 
   const refreshApp = useCallback(() => {
-    window.location.reload();
+    // In a PWA, a plain reload may still be controlled by an old service worker.
+    if (!("serviceWorker" in navigator)) {
+      window.location.reload();
+      return;
+    }
+
+    let reloaded = false;
+    const reloadOnce = () => {
+      if (reloaded) return;
+      reloaded = true;
+      window.location.reload();
+    };
+
+    navigator.serviceWorker.addEventListener("controllerchange", reloadOnce);
+
+    navigator.serviceWorker
+      .getRegistration()
+      .then((registration) => {
+        // If a worker is waiting, try to activate it (supported by the generated SW when skipWaiting is enabled).
+        registration?.waiting?.postMessage({ type: "SKIP_WAITING" });
+        return registration?.update();
+      })
+      .catch(() => {
+        /* noop */
+      })
+      .finally(() => {
+        // Fallback: ensure we still refresh even if controllerchange doesn't fire quickly.
+        window.setTimeout(() => {
+          navigator.serviceWorker.removeEventListener("controllerchange", reloadOnce);
+          reloadOnce();
+        }, 1200);
+      });
   }, []);
 
   return {
