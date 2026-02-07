@@ -1046,7 +1046,7 @@ const App = () => (
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
             <Route path="/deal-sources" element={<Navigate to="/contacts" replace />} />
-            <Route path="/documents" element={<Navigate to="/properties" replace />} />
+            <Route path="/apps/documents" element={<Navigate to="/documents" replace />} />
             
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
