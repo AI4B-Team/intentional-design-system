@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { DialerStatsBar } from '@/components/dialer/dialer-stats-bar';
 import { 
   Play, 
   Bot, 
@@ -16,7 +17,6 @@ import {
   CheckCircle,
   Sparkles,
   Calendar,
-  Users,
   Zap,
   BookOpen,
   MessageSquare,
@@ -66,13 +66,6 @@ interface CallScript {
 
 export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardProps) {
   const navigate = useNavigate();
-
-  const quickStats = {
-    queued: 45,
-    scheduled: 8,
-    followUps: 12,
-    hotLeads: 5,
-  };
 
   const recentCalls: RecentCall[] = [
     { id: '1', name: 'Sarah Johnson', property: '123 Maple Street', time: '2 hours ago', duration: '23:45', sentiment: 85, status: 'closed' },
@@ -180,53 +173,15 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
 
   return (
     <div className="space-y-6">
-      {/* Quick Stats Bar - Decision-oriented metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="border-brand/20">
-          <CardContent className="py-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-brand/10 flex items-center justify-center">
-              <Users className="h-5 w-5 text-brand" />
-            </div>
-            <div>
-              <p className="text-h3 font-bold text-foreground">{quickStats.queued}</p>
-              <p className="text-muted-foreground text-tiny">In Queue</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-info/20">
-          <CardContent className="py-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center">
-              <Calendar className="h-5 w-5 text-info" />
-            </div>
-            <div>
-              <p className="text-h3 font-bold text-foreground">{quickStats.scheduled}</p>
-              <p className="text-muted-foreground text-tiny">Scheduled</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-warning/20">
-          <CardContent className="py-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
-              <MessageSquare className="h-5 w-5 text-warning" />
-            </div>
-            <div>
-              <p className="text-h3 font-bold text-foreground">{quickStats.followUps}</p>
-              <p className="text-muted-foreground text-tiny">Follow-ups</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-destructive/20">
-          <CardContent className="py-4 flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-              <Zap className="h-5 w-5 text-destructive" />
-            </div>
-            <div>
-              <p className="text-h3 font-bold text-foreground">{quickStats.hotLeads}</p>
-              <p className="text-muted-foreground text-tiny">Hot Leads</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Stats Bar - Session performance metrics */}
+      <DialerStatsBar
+        mode="human"
+        callsMade={0}
+        contactsReached={0}
+        appointmentsSet={0}
+        totalTalkTime={0}
+        sessionDuration={0}
+      />
 
       {/* Call Mode Selection */}
       <Card className="border-border">
