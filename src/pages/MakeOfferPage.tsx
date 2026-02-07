@@ -424,11 +424,11 @@ Best regards,
                 <Card className="p-4">
                   <div className="space-y-4">
                     <div>
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{deal.city}, {deal.state}</span>
-                      </div>
                       <h2 className="text-xl font-semibold">{deal.address}</h2>
+                      <div className="flex items-center gap-2 text-muted-foreground text-sm mt-1">
+                        <MapPin className="h-4 w-4" />
+                        <span>{deal.city}, {deal.state} {deal.zip}</span>
+                      </div>
                     </div>
 
                     <div className="flex items-center gap-4 flex-wrap">
