@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,20 +11,15 @@ import {
   Bot, 
   Headphones, 
   Phone, 
-  Target, 
   Clock, 
-  TrendingUp,
-  ArrowUpRight,
   ArrowRight,
   CheckCircle,
   Sparkles,
-  FileText,
   Calendar,
   Users,
   Zap,
   BookOpen,
   MessageSquare,
-  Settings,
   BarChart3,
   Lightbulb,
   ChevronRight,
@@ -71,22 +65,7 @@ interface CallScript {
 }
 
 export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardProps) {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
-
-  // Mock data - in production, fetch from API
-  const stats = {
-    totalCalls: 247,
-    callsTrend: '+23%',
-    closeRate: 67,
-    closeRateTrend: '+12%',
-    avgDuration: '18:43',
-    durationTrend: '-3 min',
-    revenueImpact: 284000,
-    revenueTrend: '+$67K',
-  };
 
   const quickStats = {
     queued: 45,
@@ -191,25 +170,17 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
     }
   };
 
+  const [dismissedTips, setDismissedTips] = React.useState<string[]>([]);
+
+  const dismissTip = (tipId: string) => {
+    setDismissedTips(prev => [...prev, tipId]);
+  };
+
+  const visibleTips = aiTips.filter(tip => !dismissedTips.includes(tip.id)).slice(0, 3);
+
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-h1 font-bold text-foreground">
-            Welcome Back, {firstName}! 👋
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Your AI co-pilot is ready to help you close more deals
-          </p>
-        </div>
-        <Button variant="outline" onClick={() => navigate('/settings/dialer')}>
-          <Settings className="h-4 w-4 mr-2" />
-          Settings
-        </Button>
-      </div>
-
-      {/* Quick Stats Bar */}
+      {/* Quick Stats Bar - Decision-oriented metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="border-brand/20">
           <CardContent className="py-4 flex items-center gap-3">
@@ -257,20 +228,12 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
         </Card>
       </div>
 
-      {/* CTA Section */}
+      {/* Call Mode Selection */}
       <Card className="border-border">
         <CardContent className="py-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-brand" />
-            </div>
-            <div>
-              <h2 className="text-h3 font-semibold text-foreground">Ready To Crush Your Quota?</h2>
-              <p className="text-muted-foreground text-small">Choose your mode and let AI guide you to the close</p>
-            </div>
-          </div>
+          <h2 className="text-body font-semibold text-foreground mb-4">Select Calling Mode</h2>
 
-          {/* Mode Cards - No gradients */}
+          {/* Mode Cards */}
           <div className="grid md:grid-cols-3 gap-4">
             {modes.map((mode) => (
               <button
@@ -299,100 +262,35 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
         </CardContent>
       </Card>
 
-      {/* AI Tips Section */}
-      <Card className="border-brand/20">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-body">
-            <Sparkles className="h-5 w-5 text-brand" />
-            AI Insights
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {aiTips.map((tip) => (
-            <div 
-              key={tip.id}
-              className="flex items-start gap-3 p-3 rounded-lg bg-brand/5 border border-brand/10"
-            >
-              <tip.icon className="h-4 w-4 text-brand mt-0.5 flex-shrink-0" />
-              <p className="text-small text-foreground">{tip.tip}</p>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="h-10 w-10 rounded-lg bg-brand/10 flex items-center justify-center">
-                <Phone className="h-5 w-5 text-brand" />
+      {/* AI Insights - Constrained to 3 max, dismissible */}
+      {visibleTips.length > 0 && (
+        <Card className="border-brand/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-body">
+              <Sparkles className="h-5 w-5 text-brand" />
+              AI Insights
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {visibleTips.map((tip) => (
+              <div 
+                key={tip.id}
+                className="flex items-start gap-3 p-3 rounded-lg bg-brand/5 border border-brand/10 group"
+              >
+                <tip.icon className="h-4 w-4 text-brand mt-0.5 flex-shrink-0" />
+                <p className="text-small text-foreground flex-1">{tip.tip}</p>
+                <button
+                  onClick={() => dismissTip(tip.id)}
+                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-foreground transition-opacity text-tiny"
+                  aria-label="Dismiss"
+                >
+                  ✕
+                </button>
               </div>
-              <Badge variant="outline" className="text-success border-success/30 gap-1">
-                <ArrowUpRight className="h-3 w-3" />
-                {stats.callsTrend}
-              </Badge>
-            </div>
-            <div className="mt-4">
-              <p className="text-h1 font-bold text-foreground">{stats.totalCalls}</p>
-              <p className="text-muted-foreground text-small">Total Calls</p>
-            </div>
+            ))}
           </CardContent>
         </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-                <Target className="h-5 w-5 text-success" />
-              </div>
-              <Badge variant="outline" className="text-success border-success/30 gap-1">
-                <ArrowUpRight className="h-3 w-3" />
-                {stats.closeRateTrend}
-              </Badge>
-            </div>
-            <div className="mt-4">
-              <p className="text-h1 font-bold text-foreground">{stats.closeRate}%</p>
-              <p className="text-muted-foreground text-small">Close Rate</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-info" />
-              </div>
-              <Badge variant="outline" className="text-success border-success/30 gap-1">
-                {stats.durationTrend}
-              </Badge>
-            </div>
-            <div className="mt-4">
-              <p className="text-h1 font-bold text-foreground">{stats.avgDuration}</p>
-              <p className="text-muted-foreground text-small">Avg Duration</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-start justify-between">
-              <div className="h-10 w-10 rounded-lg bg-warning/10 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-warning" />
-              </div>
-              <Badge variant="outline" className="text-success border-success/30 gap-1">
-                <ArrowUpRight className="h-3 w-3" />
-                {stats.revenueTrend}
-              </Badge>
-            </div>
-            <div className="mt-4">
-              <p className="text-h1 font-bold text-foreground">{formatCurrency(stats.revenueImpact)}</p>
-              <p className="text-muted-foreground text-small">Revenue Impact</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      )}
 
       {/* Main Content Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
