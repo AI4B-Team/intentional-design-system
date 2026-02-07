@@ -542,23 +542,24 @@ export default function MarketplaceDealDetail() {
             {/* Tabs Bar - Below Photos */}
             <div className="flex items-center justify-between mb-6">
               {/* Left: Content Tabs */}
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+              <div className="flex items-center gap-2">
                 {contentTabs.map((tab) => {
                   const Icon = tab.icon;
                   return (
-                    <button
+                    <Button
                       key={tab.id}
+                      variant={activeTab === tab.id ? "secondary" : "ghost"}
                       onClick={() => setActiveTab(tab.id as ContentTab)}
                       className={cn(
-                        "px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2",
+                        "gap-2",
                         activeTab === tab.id
-                          ? "bg-background text-foreground shadow-sm"
+                          ? "bg-muted text-foreground"
                           : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Icon className="h-4 w-4" />
                       {tab.label}
-                    </button>
+                    </Button>
                   );
                 })}
               </div>
