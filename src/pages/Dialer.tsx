@@ -64,8 +64,8 @@ export default function Dialer() {
   const [nextContact, setNextContact] = React.useState<any>(null);
   const [liveTranscript, setLiveTranscript] = React.useState("");
   const [isSpeakerOn, setIsSpeakerOn] = React.useState(false);
-  const [demoMode, setDemoMode] = React.useState(false);
-  const [demoDuration, setDemoDuration] = React.useState(8);
+  const [demoMode, setDemoMode] = React.useState(true);
+  const [demoDuration, setDemoDuration] = React.useState(18);
   
   // Mock transcript messages for demo
   const [transcriptMessages, setTranscriptMessages] = React.useState<TranscriptMessage[]>([]);
@@ -418,236 +418,45 @@ export default function Dialer() {
     your_phone: "",
   };
 
-  // Show dashboard view
-  if (currentView === 'dashboard') {
-    return (
-      <PageLayout title="Dialer">
-        <DialerDashboard 
-          onStartCall={() => setCurrentView('calling')}
-          onSelectMode={handleModeSelect}
-        />
-      </PageLayout>
-    );
-  }
+  // Demo contact for the active call view
+  const activeContactName = demoMode ? 'Marcus Williams' : (dialer.currentContact?.contact_name || 'Marcus Williams');
+  const activeContactSubtitle = demoMode ? 'Motivated Seller • 1847 Maple Street' : `Motivated Seller • ${dialer.currentContact?.property_address || '1847 Maple Street'}`;
+  const activeCallDuration = demoMode ? demoDuration : dialer.callDuration;
+  const isActiveCall = dialer.isOnCall || demoMode;
 
-  // Show calling view
+  // Default transcript for demo
+  const defaultTranscript: TranscriptMessage[] = [
+    { id: '1', speaker: 'user', text: "Hey, I know you weren't expecting this call. Got 30 seconds for me to explain why I'm reaching out?", timestamp: '00:00', confidence: 93 },
+    { id: '2', speaker: 'prospect', speakerName: 'Marcus', text: "Uh... I'm pretty slammed right now. What is this about?", timestamp: '00:04', confidence: 88 },
+    { id: '3', speaker: 'user', text: "Fair enough, I'll be quick. I noticed you have a property on Maple Street. Are you still looking to sell, or has your situation changed?", timestamp: '00:30', confidence: 91 },
+    { id: '4', speaker: 'prospect', speakerName: 'Marcus', text: "Yeah, I still need to sell. It's been sitting for a while and I'm getting frustrated honestly.", timestamp: '00:45', confidence: 89 },
+  ];
+
+  // Always show the active call view as the main interface
   return (
-    <PageLayout
-      title="Power Dialer"
-      headerActions={
-        <div className="flex items-center gap-4">
-          {/* Back to Dashboard */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setCurrentView('dashboard')}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Dashboard
-          </Button>
-
-          {/* Status Indicator */}
-          <div className="flex items-center gap-2">
-            <span className="text-lg">{statusIndicator.emoji}</span>
-            <span className={cn("font-medium", statusIndicator.color)}>
-              {statusIndicator.text}
-            </span>
-          </div>
-
-          {/* Session Timer */}
-          {sessionStartTime && (
-            <Badge variant="secondary" className="gap-2 text-body">
-              <Clock className="h-4 w-4" />
-              Session: {formatSessionTime(sessionDuration)}
-            </Badge>
-          )}
-
-          {/* Demo Preview Button */}
-          {!dialer.isOnCall && !demoMode && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => {
-                setDemoMode(true);
-                setDemoDuration(8);
-              }}
-              className="gap-2"
-            >
-              <Sparkles className="h-4 w-4" />
-              Preview Active Call
-            </Button>
-          )}
-
-          <Button variant="secondary" size="sm">
-            <Plus className="h-4 w-4 mr-1" />
-            New Queue
-          </Button>
-        </div>
-      }
-    >
-      {/* Show ActiveCallView when on a call or in demo mode, otherwise show setup view */}
-      {(dialer.isOnCall || demoMode) ? (
-        <ActiveCallView
-          contactName={demoMode ? 'Marcus Williams' : (dialer.currentContact?.contact_name || 'Unknown')}
-          contactSubtitle={demoMode ? 'Motivated Seller • 1847 Maple Street' : `Motivated Seller • ${dialer.currentContact?.property_address || ''}`}
-          callType="Outbound Sales"
-          callDuration={demoMode ? demoDuration : dialer.callDuration}
-          isMuted={isMuted}
-          isSpeakerOn={isSpeakerOn}
-          onMuteToggle={() => setIsMuted(!isMuted)}
-          onSpeakerToggle={() => setIsSpeakerOn(!isSpeakerOn)}
-          onTransfer={() => toast.info('Transfer coming soon')}
-          onEndCall={() => {
-            if (demoMode) {
-              setDemoMode(false);
-            } else {
-              dialer.endCall();
-            }
-          }}
-          transcript={demoMode ? [
-            { id: '1', speaker: 'user', text: "Hey, I know you weren't expecting this call. Got 30 seconds for me to explain why I'm reaching out?", timestamp: '00:00', confidence: 93 },
-            { id: '2', speaker: 'prospect', speakerName: 'Marcus', text: "Uh... I'm pretty slammed right now. What is this about?", timestamp: '00:04', confidence: 88 },
-            { id: '3', speaker: 'user', text: "Fair enough, I'll be quick. I noticed you have a property on Maple Street. Are you still looking to sell, or has your situation changed?", timestamp: '00:30', confidence: 91 },
-            { id: '4', speaker: 'prospect', speakerName: 'Marcus', text: "Yeah, I still need to sell. It's been sitting for a while and I'm getting frustrated honestly.", timestamp: '00:45', confidence: 89 },
-          ] : transcriptMessages}
-          phases={callPhases}
-          currentPhaseId="3"
-          onNextPhase={() => toast.info('Advancing to next phase')}
-        />
-      ) : (
-        <>
-          {/* Stats Bar */}
-          <DialerStatsBar
-            callsMade={stats.callsMade}
-            contactsReached={stats.contactsReached}
-            appointmentsSet={stats.appointmentsSet}
-            totalTalkTime={stats.totalTalkTime}
-            sessionDuration={sessionDuration}
-          />
-
-          {/* Main Content - 3 Column Layout */}
-          <div className="grid lg:grid-cols-12 gap-6 mt-6">
-            {/* Left Column - Queue & Contact */}
-            <div className="lg:col-span-3 space-y-6">
-              {/* Queue Selector */}
-              <QueueSelector
-                selectedQueueId={selectedQueueId}
-                onQueueChange={setSelectedQueueId}
-                onCreateQueue={() => toast.info("Create queue coming soon")}
-                onPauseQueue={() => setIsPaused(!isPaused)}
-                onSkipContact={handleSkipContact}
-                isPaused={isPaused}
-                isOnCall={dialer.isOnCall}
-              />
-
-              {/* Current Contact Card */}
-              <CurrentContactCard
-                contact={dialer.currentContact}
-                onStartCalling={handleStartCalling}
-              />
-
-              {/* Auto-dial Settings */}
-              <div className="bg-white border border-border-subtle rounded-medium p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-medium text-foreground text-small">
-                      Dialer Settings
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="auto-dial" className="text-small">
-                    Auto-dial next contact
-                  </Label>
-                  <Switch
-                    id="auto-dial"
-                    checked={autoDialEnabled}
-                    onCheckedChange={setAutoDialEnabled}
-                  />
-                </div>
-                {autoDialEnabled && (
-                  <div className="flex items-center justify-between">
-                    <Label className="text-small">Delay between calls</Label>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setAutoDialDelay(Math.max(1, autoDialDelay - 1))}
-                        disabled={autoDialDelay <= 1}
-                      >
-                        -
-                      </Button>
-                      <span className="w-8 text-center font-medium">{autoDialDelay}s</span>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setAutoDialDelay(Math.min(10, autoDialDelay + 1))}
-                        disabled={autoDialDelay >= 10}
-                      >
-                        +
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Center Column - Dialer & Script */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Dialer Controls */}
-              <DialerControls
-                phoneNumber={dialer.currentContact?.phone_number || ""}
-                contactName={dialer.currentContact?.contact_name}
-                callStatus={dialer.callStatus}
-                callDuration={dialer.callDuration}
-                onCall={handleMakeCall}
-                onEndCall={dialer.endCall}
-                onMuteToggle={() => setIsMuted(!isMuted)}
-                onHoldToggle={() => setIsOnHold(!isOnHold)}
-                isMuted={isMuted}
-                isOnHold={isOnHold}
-                showKeypad={showKeypad}
-                onKeypadToggle={() => setShowKeypad(!showKeypad)}
-              />
-
-              {/* Script Panel */}
-              <CallScriptPanel
-                script={currentScript}
-                mergeData={mergeData}
-                notes={callNotes}
-                onNotesChange={setCallNotes}
-              />
-            </div>
-
-            {/* Right Column - AI Copilot */}
-            <div className="lg:col-span-4 space-y-6">
-              <DialerCopilotPanel
-                phase={copilot.phase}
-                callMode={callMode}
-                onCallModeChange={setCallMode}
-                briefing={copilot.briefing}
-                suggestions={copilot.suggestions}
-                objectionResponse={copilot.objectionResponse}
-                sentiment={copilot.sentiment}
-                postCallActions={copilot.postCallActions}
-                isLoading={copilot.isLoading}
-                contactName={dialer.currentContact?.contact_name}
-                isOnCall={dialer.isOnCall}
-                onObjectionSubmit={handleObjectionSubmit}
-                onClearObjection={copilot.clearObjection}
-                onSuggestionClick={handleSuggestionClick}
-                onRefreshSuggestions={handleRefreshSuggestions}
-                onCreateTask={handleCreateTask}
-                onSendSms={handleSendSms}
-                onSendEmail={handleSendEmail}
-                onUpdateStage={handleUpdateStage}
-              />
-            </div>
-          </div>
-        </>
-      )}
+    <PageLayout title="Dialer">
+      <ActiveCallView
+        contactName={activeContactName}
+        contactSubtitle={activeContactSubtitle}
+        callType="Outbound Sales"
+        callDuration={activeCallDuration}
+        isMuted={isMuted}
+        isSpeakerOn={isSpeakerOn}
+        onMuteToggle={() => setIsMuted(!isMuted)}
+        onSpeakerToggle={() => setIsSpeakerOn(!isSpeakerOn)}
+        onTransfer={() => toast.info('Transfer coming soon')}
+        onEndCall={() => {
+          if (demoMode) {
+            setDemoMode(false);
+          } else {
+            dialer.endCall();
+          }
+        }}
+        transcript={isActiveCall ? (demoMode ? defaultTranscript : transcriptMessages) : defaultTranscript}
+        phases={callPhases}
+        currentPhaseId="3"
+        onNextPhase={() => toast.info('Advancing to next phase')}
+      />
 
       {/* Disposition Panel */}
       <DispositionPanel
