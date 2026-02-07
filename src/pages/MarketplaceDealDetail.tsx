@@ -370,27 +370,6 @@ export default function MarketplaceDealDetail() {
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant={layoutMode === "split" ? "secondary" : "ghost"}
-                    size="icon"
-                    onClick={() => setLayoutMode(layoutMode === "split" ? "detail" : "split")}
-                    className="gap-1"
-                  >
-                    {layoutMode === "split" ? (
-                      <PanelLeftClose className="h-4 w-4" />
-                    ) : (
-                      <Map className="h-4 w-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {layoutMode === "split" ? "Close Map" : "Map"}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
             
             <Button
               variant="ghost"
