@@ -31,7 +31,7 @@ import {
   Calendar,
   Bed,
   Bath,
-  Tag,
+  Ruler,
   LandPlot,
   DollarSign,
   TrendingUp,
@@ -1103,7 +1103,7 @@ export default function MarketplaceDealDetail() {
                 <span className="text-sm font-medium">0 Half Bath</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-muted-foreground" />
+                <Ruler className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">{deal.sqft.toLocaleString()} SqFt</span>
               </Card>
               {/* Row 2: Year Built, Parking, Lot Size, Price/SqFt */}
