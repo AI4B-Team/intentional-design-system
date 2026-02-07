@@ -319,9 +319,28 @@ export function TransactionRoadmapContent({
   );
 }
 
-// Mock POF documents - empty by default to show "No POF On File" state
+// Mock POF documents - simulating a user who has set up POF with a lender
 // In production, this would fetch from database
-const mockPofDocs: ProofOfFundsDoc[] = [];
+const mockPofDocs: ProofOfFundsDoc[] = [
+  {
+    id: "pof-1",
+    file_name: "POF_FirstNational_500k.pdf",
+    file_url: "#",
+    amount: 500000,
+    lender_name: "First National Bank",
+    expiration_date: "2026-03-15",
+    is_active: true,
+  },
+  {
+    id: "pof-2",
+    file_name: "POF_PrivateMoney_250k.pdf",
+    file_url: "#",
+    amount: 250000,
+    lender_name: "Private Money Lender LLC",
+    expiration_date: "2026-04-20",
+    is_active: true,
+  },
+];
 
 // Milestone 1: Assemble Deal Team
 function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
