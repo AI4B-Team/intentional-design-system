@@ -74,7 +74,7 @@ interface POFManagerProps {
 
 const initialPOFs: POFDocument[] = [
   {
-    id: "1",
+    id: "pof-1",
     lenderName: "First National Bank",
     amount: 500000,
     issueDate: new Date("2026-01-15"),
@@ -86,7 +86,7 @@ const initialPOFs: POFDocument[] = [
     contactPhone: "(555) 123-4567",
   },
   {
-    id: "2",
+    id: "pof-2",
     lenderName: "Private Money Lender LLC",
     amount: 250000,
     issueDate: new Date("2026-01-20"),
@@ -97,7 +97,7 @@ const initialPOFs: POFDocument[] = [
     contactEmail: "info@privatemoney.com",
   },
   {
-    id: "3",
+    id: "pof-3",
     lenderName: "Hard Money Capital",
     amount: 750000,
     issueDate: new Date("2025-12-01"),
