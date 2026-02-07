@@ -503,7 +503,7 @@ function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updat
                       onCheckedChange={(checked) => updateData({ includePof: checked === true })}
                     />
                     <Label htmlFor="include-pof" className="text-sm cursor-pointer">
-                      Include POF in this transaction
+                      Include POF In This Transaction
                     </Label>
                   </div>
 
