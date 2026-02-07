@@ -196,9 +196,12 @@ export default function TransactionRoadmapPage() {
                       <h2 className="text-xl font-semibold">{deal.address}</h2>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 flex-wrap">
                       <div className="text-2xl font-bold text-primary">
                         ${deal.price.toLocaleString()}
+                      </div>
+                      <div className="text-lg font-semibold text-muted-foreground">
+                        ARV: ${deal.arv.toLocaleString()}
                       </div>
                       <Badge variant="secondary" className="bg-success/10 text-success">
                         {deal.propertyType}
