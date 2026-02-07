@@ -95,22 +95,11 @@ export function SessionSidebar({
       <div className="p-4">
         <Button
           onClick={onLiveCallClick}
-          className={cn(
-            'w-full gap-2 font-semibold',
-            isLive
-              ? 'bg-success hover:bg-success/90 text-white'
-              : 'bg-destructive hover:bg-destructive/90 text-white'
-          )}
+          className="w-full gap-2 font-semibold bg-destructive hover:bg-destructive/90 text-white"
         >
           <span className="relative flex h-2 w-2">
-            <span className={cn(
-              'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
-              isLive ? 'bg-white' : 'bg-white/50'
-            )} />
-            <span className={cn(
-              'relative inline-flex rounded-full h-2 w-2',
-              isLive ? 'bg-white' : 'bg-white/70'
-            )} />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
           </span>
           {isLive ? 'LIVE Call' : 'Start Call'}
         </Button>

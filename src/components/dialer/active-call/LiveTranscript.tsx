@@ -66,11 +66,11 @@ export function LiveTranscript({
                 {/* Avatar */}
                 <Avatar className={cn(
                   'h-9 w-9 flex-shrink-0',
-                  isUser ? 'bg-primary' : 'bg-muted'
+                  isUser ? 'bg-success' : 'bg-info'
                 )}>
                   <AvatarFallback className={cn(
                     'text-xs font-semibold',
-                    isUser ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                    isUser ? 'bg-success text-success-foreground' : 'bg-info text-info-foreground'
                   )}>
                     {getInitials(speakerName)}
                   </AvatarFallback>
