@@ -72,6 +72,7 @@ import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
 import TransactionRoadmapPage from "./pages/TransactionRoadmapPage";
+import MakeOfferPage from "./pages/MakeOfferPage";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
@@ -330,6 +331,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MarketplaceDealDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketplace/deal/:id/make-offer"
+              element={
+                <ProtectedRoute>
+                  <MakeOfferPage />
                 </ProtectedRoute>
               }
             />
