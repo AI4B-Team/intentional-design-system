@@ -1,1 +1,1 @@
-export { TransactionRoadmap, type TransactionData, type InvestmentStrategy } from './TransactionRoadmap';
+export { TransactionRoadmapContent, type TransactionData, type InvestmentStrategy } from './TransactionRoadmapContent';

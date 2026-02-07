@@ -71,6 +71,7 @@ import UnifiedInbox from "./pages/UnifiedInbox";
 import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
+import TransactionRoadmapPage from "./pages/TransactionRoadmapPage";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
@@ -329,6 +330,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <MarketplaceDealDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/marketplace/deal/:id/roadmap"
+              element={
+                <ProtectedRoute>
+                  <TransactionRoadmapPage />
                 </ProtectedRoute>
               }
             />
