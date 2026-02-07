@@ -88,7 +88,7 @@ export default function TransactionRoadmapPage() {
 
   return (
     <AppLayout fullWidth>
-      <div className="h-[calc(100vh-4rem)] flex flex-col">
+      <div className="min-h-full flex flex-col bg-white">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-border bg-white px-6 py-4">
           <div className="flex items-center justify-between">
