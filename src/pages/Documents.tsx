@@ -1,6 +1,6 @@
 import * as React from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { PageLayout, PageHeader } from "@/components/layout/page-layout";
+import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,18 +19,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Plus,
   Search,
@@ -52,11 +43,13 @@ import {
   Image,
   ScrollText,
   FilePlus2,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+
+type FolderColor = "blue" | "purple" | "green" | "orange" | "rose";
 
 interface DocumentFolder {
   id: string;
@@ -64,23 +57,33 @@ interface DocumentFolder {
   icon: React.ElementType;
   fileCount: number;
   lastModified: Date;
-  color: "blue" | "purple" | "green" | "orange" | "rose";
+  color: FolderColor;
+  isFavorite: boolean;
 }
 
-const folderColors = {
+const folderColors: Record<FolderColor, {
+  tab: string;
+  card: string;
+  accent: string;
+  text: string;
+  iconBg: string;
+  name: string;
+}> = {
   blue: {
     tab: "bg-blue-200",
     card: "bg-blue-50",
     accent: "bg-blue-100/50",
     text: "text-blue-600",
     iconBg: "bg-blue-100",
+    name: "Blue",
   },
   purple: {
-    tab: "bg-purple-400",
-    card: "bg-purple-500",
-    accent: "bg-purple-400/50",
-    text: "text-white",
-    iconBg: "bg-purple-400",
+    tab: "bg-purple-200",
+    card: "bg-purple-50",
+    accent: "bg-purple-100/50",
+    text: "text-purple-600",
+    iconBg: "bg-purple-100",
+    name: "Purple",
   },
   green: {
     tab: "bg-emerald-200",
@@ -88,6 +91,7 @@ const folderColors = {
     accent: "bg-emerald-100/50",
     text: "text-emerald-600",
     iconBg: "bg-emerald-100",
+    name: "Green",
   },
   orange: {
     tab: "bg-orange-200",
@@ -95,6 +99,7 @@ const folderColors = {
     accent: "bg-orange-100/50",
     text: "text-orange-600",
     iconBg: "bg-orange-100",
+    name: "Orange",
   },
   rose: {
     tab: "bg-rose-200",
@@ -102,49 +107,57 @@ const folderColors = {
     accent: "bg-rose-100/50",
     text: "text-rose-600",
     iconBg: "bg-rose-100",
+    name: "Rose",
   },
 };
 
-const mockFolders: DocumentFolder[] = [
+const colorOptions: FolderColor[] = ["blue", "purple", "green", "orange", "rose"];
+
+const initialFolders: DocumentFolder[] = [
   {
     id: "1",
     name: "Contracts",
     icon: FileCheck,
     fileCount: 12,
-    lastModified: new Date("2026-02-07"),
+    lastModified: new Date("2026-02-07T10:30:00"),
     color: "blue",
+    isFavorite: false,
   },
   {
     id: "2",
     name: "Disclosures",
     icon: ScrollText,
     fileCount: 8,
-    lastModified: new Date("2026-02-06"),
-    color: "purple",
+    lastModified: new Date("2026-02-06T14:15:00"),
+    color: "blue",
+    isFavorite: false,
   },
   {
     id: "3",
     name: "Property Photos",
     icon: Image,
     fileCount: 24,
-    lastModified: new Date("2026-02-07"),
-    color: "green",
+    lastModified: new Date("2026-02-07T09:00:00"),
+    color: "blue",
+    isFavorite: false,
   },
   {
     id: "4",
     name: "Title & Legal",
     icon: FileText,
     fileCount: 5,
-    lastModified: new Date("2026-02-05"),
-    color: "orange",
+    lastModified: new Date("2026-02-05T16:45:00"),
+    color: "blue",
+    isFavorite: false,
   },
   {
     id: "5",
     name: "Addendums",
     icon: FilePlus2,
     fileCount: 3,
-    lastModified: new Date("2026-02-04"),
-    color: "rose",
+    lastModified: new Date("2026-02-04T11:20:00"),
+    color: "blue",
+    isFavorite: false,
   },
 ];
 
@@ -152,16 +165,28 @@ interface FolderCardProps {
   folder: DocumentFolder;
   onDelete: (id: string) => void;
   onRename: (id: string) => void;
-  isActive?: boolean;
+  onChangeColor: (id: string, color: FolderColor) => void;
+  onDuplicate: (id: string) => void;
+  onToggleFavorite: (id: string) => void;
+  onDownload: (id: string) => void;
+  onOpen: (id: string) => void;
 }
 
-function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
+function FolderCard({
+  folder,
+  onDelete,
+  onRename,
+  onChangeColor,
+  onDuplicate,
+  onToggleFavorite,
+  onDownload,
+  onOpen,
+}: FolderCardProps) {
   const colors = folderColors[folder.color];
   const Icon = folder.icon;
-  const isHighlighted = folder.color === "purple";
 
   return (
-    <div className="relative group">
+    <div className="relative group" onClick={() => onOpen(folder.id)}>
       {/* Folder Tab */}
       <div
         className={cn(
@@ -173,9 +198,8 @@ function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
       {/* Folder Body */}
       <div
         className={cn(
-          "relative rounded-xl p-4 min-h-[140px] transition-all duration-200 hover:shadow-lg cursor-pointer",
-          isHighlighted ? colors.card : colors.card,
-          isHighlighted ? "shadow-md" : "shadow-sm border border-border/30"
+          "relative rounded-xl p-4 min-h-[140px] transition-all duration-200 hover:shadow-lg cursor-pointer shadow-sm border border-border/30",
+          colors.card
         )}
       >
         {/* Accent Strip */}
@@ -189,88 +213,106 @@ function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
         {/* Header */}
         <div className="flex items-start justify-between mt-2">
           <div className="flex items-center gap-2">
-            <Icon
-              className={cn(
-                "h-5 w-5",
-                isHighlighted ? "text-white" : colors.text
-              )}
-            />
-            <h3
-              className={cn(
-                "font-semibold",
-                isHighlighted ? "text-white" : "text-foreground"
-              )}
-            >
-              {folder.name}
-            </h3>
+            <Icon className={cn("h-5 w-5", colors.text)} />
+            <h3 className="font-semibold text-foreground">{folder.name}</h3>
+            {folder.isFavorite && (
+              <Star className="h-4 w-4 text-warning fill-warning" />
+            )}
           </div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
               <button
-                className={cn(
-                  "p-1.5 rounded-lg transition-colors",
-                  isHighlighted
-                    ? "bg-white/20 hover:bg-white/30 text-white"
-                    : "bg-background/50 hover:bg-background text-muted-foreground"
-                )}
+                className="p-1.5 rounded-lg bg-background/50 hover:bg-background text-muted-foreground transition-colors"
               >
                 <Menu className="h-4 w-4" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-48 bg-background border border-border shadow-lg z-50">
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="gap-2">
                   <Palette className="h-4 w-4" />
                   Change Color
                 </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem className="gap-2">
-                    <div className="h-4 w-4 rounded-full bg-blue-400" />
-                    Blue
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
-                    <div className="h-4 w-4 rounded-full bg-purple-400" />
-                    Purple
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
-                    <div className="h-4 w-4 rounded-full bg-emerald-400" />
-                    Green
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
-                    <div className="h-4 w-4 rounded-full bg-orange-400" />
-                    Orange
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2">
-                    <div className="h-4 w-4 rounded-full bg-rose-400" />
-                    Rose
-                  </DropdownMenuItem>
+                <DropdownMenuSubContent className="bg-background border border-border shadow-lg">
+                  {colorOptions.map((color) => (
+                    <DropdownMenuItem
+                      key={color}
+                      className="gap-2"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onChangeColor(folder.id, color);
+                      }}
+                    >
+                      <div
+                        className={cn(
+                          "h-4 w-4 rounded-full",
+                          color === "blue" && "bg-blue-400",
+                          color === "purple" && "bg-purple-400",
+                          color === "green" && "bg-emerald-400",
+                          color === "orange" && "bg-orange-400",
+                          color === "rose" && "bg-rose-400"
+                        )}
+                      />
+                      {folderColors[color].name}
+                      {folder.color === color && (
+                        <Check className="h-4 w-4 ml-auto" />
+                      )}
+                    </DropdownMenuItem>
+                  ))}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
-              <DropdownMenuItem className="gap-2" onClick={() => onRename(folder.id)}>
+              <DropdownMenuItem
+                className="gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRename(folder.id);
+                }}
+              >
                 <Edit className="h-4 w-4" />
                 Rename
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
+              <DropdownMenuItem
+                className="gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDuplicate(folder.id);
+                }}
+              >
                 <Copy className="h-4 w-4" />
                 Duplicate
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
+              <DropdownMenuItem className="gap-2" disabled>
                 <FolderInput className="h-4 w-4" />
                 Move To
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
-                <Star className="h-4 w-4" />
-                Add To Favorites
+              <DropdownMenuItem
+                className="gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleFavorite(folder.id);
+                }}
+              >
+                <Star className={cn("h-4 w-4", folder.isFavorite && "fill-current")} />
+                {folder.isFavorite ? "Remove From Favorites" : "Add To Favorites"}
               </DropdownMenuItem>
-              <DropdownMenuItem className="gap-2">
+              <DropdownMenuItem
+                className="gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDownload(folder.id);
+                }}
+              >
                 <Download className="h-4 w-4" />
                 Download
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="gap-2 text-destructive focus:text-destructive"
-                onClick={() => onDelete(folder.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(folder.id);
+                }}
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -280,12 +322,7 @@ function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
         </div>
 
         {/* File Count */}
-        <p
-          className={cn(
-            "text-sm mt-1",
-            isHighlighted ? "text-white/80" : "text-muted-foreground"
-          )}
-        >
+        <p className="text-sm mt-1 text-muted-foreground">
           {folder.fileCount} Files
         </p>
 
@@ -293,13 +330,11 @@ function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
         <div
           className={cn(
             "absolute bottom-3 left-4 right-4 px-3 py-1.5 rounded-lg text-xs",
-            isHighlighted ? "bg-purple-400/60" : colors.accent
+            colors.accent
           )}
         >
-          <span className={isHighlighted ? "text-white/80" : "text-muted-foreground"}>
-            Last Modified:{" "}
-          </span>
-          <span className={cn("font-medium", isHighlighted ? "text-white" : "text-foreground")}>
+          <span className="text-muted-foreground">Last Modified: </span>
+          <span className="font-medium text-foreground">
             {format(folder.lastModified, "MMM dd")}
           </span>
         </div>
@@ -309,48 +344,131 @@ function FolderCard({ folder, onDelete, onRename, isActive }: FolderCardProps) {
 }
 
 export default function Documents() {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [folders, setFolders] = React.useState<DocumentFolder[]>(mockFolders);
+  const [folders, setFolders] = React.useState<DocumentFolder[]>(initialFolders);
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
-  const [newFolder, setNewFolder] = React.useState({
-    name: "",
-    color: "blue" as DocumentFolder["color"],
-  });
+  const [isRenameDialogOpen, setIsRenameDialogOpen] = React.useState(false);
+  const [selectedFolderId, setSelectedFolderId] = React.useState<string | null>(null);
+  const [newFolderName, setNewFolderName] = React.useState("");
 
   const filteredFolders = folders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Sort favorites first
+  const sortedFolders = [...filteredFolders].sort((a, b) => {
+    if (a.isFavorite && !b.isFavorite) return -1;
+    if (!a.isFavorite && b.isFavorite) return 1;
+    return b.lastModified.getTime() - a.lastModified.getTime();
+  });
+
   const handleAddFolder = () => {
-    if (!newFolder.name.trim()) {
+    if (!newFolderName.trim()) {
       toast.error("Please enter a folder name");
       return;
     }
 
     const folder: DocumentFolder = {
       id: Date.now().toString(),
-      name: newFolder.name,
+      name: newFolderName,
       icon: FolderOpen,
       fileCount: 0,
       lastModified: new Date(),
-      color: newFolder.color,
+      color: "blue",
+      isFavorite: false,
     };
 
     setFolders([folder, ...folders]);
-    setNewFolder({ name: "", color: "blue" });
+    setNewFolderName("");
     setIsAddDialogOpen(false);
     toast.success("Folder created");
   };
 
   const handleDelete = (id: string) => {
+    const folder = folders.find((f) => f.id === id);
     setFolders(folders.filter((f) => f.id !== id));
-    toast.success("Folder deleted");
+    toast.success(`"${folder?.name}" deleted`);
   };
 
   const handleRename = (id: string) => {
-    toast.info("Rename functionality coming soon");
+    const folder = folders.find((f) => f.id === id);
+    if (folder) {
+      setSelectedFolderId(id);
+      setNewFolderName(folder.name);
+      setIsRenameDialogOpen(true);
+    }
+  };
+
+  const handleRenameSubmit = () => {
+    if (!newFolderName.trim()) {
+      toast.error("Please enter a folder name");
+      return;
+    }
+
+    setFolders(
+      folders.map((f) =>
+        f.id === selectedFolderId
+          ? { ...f, name: newFolderName, lastModified: new Date() }
+          : f
+      )
+    );
+    setIsRenameDialogOpen(false);
+    setSelectedFolderId(null);
+    setNewFolderName("");
+    toast.success("Folder renamed");
+  };
+
+  const handleChangeColor = (id: string, color: FolderColor) => {
+    setFolders(
+      folders.map((f) =>
+        f.id === id ? { ...f, color, lastModified: new Date() } : f
+      )
+    );
+    toast.success(`Folder color changed to ${folderColors[color].name}`);
+  };
+
+  const handleDuplicate = (id: string) => {
+    const folder = folders.find((f) => f.id === id);
+    if (folder) {
+      const duplicatedFolder: DocumentFolder = {
+        ...folder,
+        id: Date.now().toString(),
+        name: `${folder.name} (Copy)`,
+        lastModified: new Date(),
+        isFavorite: false,
+      };
+      setFolders([duplicatedFolder, ...folders]);
+      toast.success(`"${folder.name}" duplicated`);
+    }
+  };
+
+  const handleToggleFavorite = (id: string) => {
+    const folder = folders.find((f) => f.id === id);
+    setFolders(
+      folders.map((f) =>
+        f.id === id ? { ...f, isFavorite: !f.isFavorite, lastModified: new Date() } : f
+      )
+    );
+    toast.success(
+      folder?.isFavorite
+        ? `"${folder.name}" removed from favorites`
+        : `"${folder?.name}" added to favorites`
+    );
+  };
+
+  const handleDownload = (id: string) => {
+    const folder = folders.find((f) => f.id === id);
+    toast.success(`Downloading "${folder?.name}"...`);
+    // Simulate download delay
+    setTimeout(() => {
+      toast.success(`"${folder?.name}" downloaded`);
+    }, 1500);
+  };
+
+  const handleOpen = (id: string) => {
+    const folder = folders.find((f) => f.id === id);
+    toast.info(`Opening "${folder?.name}"...`);
   };
 
   return (
@@ -403,83 +521,31 @@ export default function Documents() {
             </button>
 
             {/* New Folder Button */}
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="gap-2">
-                  <Plus className="h-4 w-4" />
-                  New Folder
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[400px]">
-                <DialogHeader>
-                  <DialogTitle>Create New Folder</DialogTitle>
-                  <DialogDescription>
-                    Add a new folder to organize your documents.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Folder Name</Label>
-                    <Input
-                      id="name"
-                      placeholder="e.g., Contracts"
-                      value={newFolder.name}
-                      onChange={(e) =>
-                        setNewFolder({ ...newFolder, name: e.target.value })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Color</Label>
-                    <div className="flex gap-2">
-                      {(["blue", "purple", "green", "orange", "rose"] as const).map(
-                        (color) => (
-                          <button
-                            key={color}
-                            onClick={() => setNewFolder({ ...newFolder, color })}
-                            className={cn(
-                              "h-8 w-8 rounded-full transition-all",
-                              color === "blue" && "bg-blue-400",
-                              color === "purple" && "bg-purple-400",
-                              color === "green" && "bg-emerald-400",
-                              color === "orange" && "bg-orange-400",
-                              color === "rose" && "bg-rose-400",
-                              newFolder.color === color &&
-                                "ring-2 ring-offset-2 ring-primary"
-                            )}
-                          />
-                        )
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsAddDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleAddFolder}>Create Folder</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Folder
+            </Button>
           </div>
         </div>
 
         {/* Folders Grid */}
         {viewMode === "grid" ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
-            {filteredFolders.map((folder) => (
+            {sortedFolders.map((folder) => (
               <FolderCard
                 key={folder.id}
                 folder={folder}
                 onDelete={handleDelete}
                 onRename={handleRename}
+                onChangeColor={handleChangeColor}
+                onDuplicate={handleDuplicate}
+                onToggleFavorite={handleToggleFavorite}
+                onDownload={handleDownload}
+                onOpen={handleOpen}
               />
             ))}
 
-            {filteredFolders.length === 0 && (
+            {sortedFolders.length === 0 && (
               <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
                 <FolderOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <h3 className="font-medium text-foreground mb-1">
@@ -504,13 +570,14 @@ export default function Documents() {
           </div>
         ) : (
           <div className="space-y-2 pt-4">
-            {filteredFolders.map((folder) => {
+            {sortedFolders.map((folder) => {
               const Icon = folder.icon;
               const colors = folderColors[folder.color];
               
               return (
                 <div
                   key={folder.id}
+                  onClick={() => handleOpen(folder.id)}
                   className="flex items-center justify-between p-4 rounded-xl bg-card border border-border hover:shadow-md transition-all cursor-pointer"
                 >
                   <div className="flex items-center gap-4">
@@ -518,7 +585,12 @@ export default function Documents() {
                       <Icon className={cn("h-5 w-5", colors.text)} />
                     </div>
                     <div>
-                      <h3 className="font-medium text-foreground">{folder.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-foreground">{folder.name}</h3>
+                        {folder.isFavorite && (
+                          <Star className="h-4 w-4 text-warning fill-warning" />
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground">
                         {folder.fileCount} Files
                       </p>
@@ -526,31 +598,105 @@ export default function Documents() {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="text-sm text-muted-foreground">
-                      {format(folder.lastModified, "MMM dd, yyyy")}
+                      {format(folder.lastModified, "MMM dd, yyyy 'at' h:mm a")}
                     </span>
                     <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
                         <button className="p-1.5 rounded-lg hover:bg-muted transition-colors">
                           <Menu className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem className="gap-2">
+                      <DropdownMenuContent align="end" className="w-48 bg-background border border-border shadow-lg z-50">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpen(folder.id);
+                          }}
+                        >
                           <Eye className="h-4 w-4" />
                           Open
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2" onClick={() => handleRename(folder.id)}>
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="gap-2">
+                            <Palette className="h-4 w-4" />
+                            Change Color
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuSubContent className="bg-background border border-border shadow-lg">
+                            {colorOptions.map((color) => (
+                              <DropdownMenuItem
+                                key={color}
+                                className="gap-2"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleChangeColor(folder.id, color);
+                                }}
+                              >
+                                <div
+                                  className={cn(
+                                    "h-4 w-4 rounded-full",
+                                    color === "blue" && "bg-blue-400",
+                                    color === "purple" && "bg-purple-400",
+                                    color === "green" && "bg-emerald-400",
+                                    color === "orange" && "bg-orange-400",
+                                    color === "rose" && "bg-rose-400"
+                                  )}
+                                />
+                                {folderColors[color].name}
+                                {folder.color === color && (
+                                  <Check className="h-4 w-4 ml-auto" />
+                                )}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuSubContent>
+                        </DropdownMenuSub>
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRename(folder.id);
+                          }}
+                        >
                           <Edit className="h-4 w-4" />
                           Rename
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2">
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDuplicate(folder.id);
+                          }}
+                        >
+                          <Copy className="h-4 w-4" />
+                          Duplicate
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleFavorite(folder.id);
+                          }}
+                        >
+                          <Star className={cn("h-4 w-4", folder.isFavorite && "fill-current")} />
+                          {folder.isFavorite ? "Remove From Favorites" : "Add To Favorites"}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="gap-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDownload(folder.id);
+                          }}
+                        >
                           <Download className="h-4 w-4" />
                           Download
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="gap-2 text-destructive focus:text-destructive"
-                          onClick={() => handleDelete(folder.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(folder.id);
+                          }}
                         >
                           <Trash2 className="h-4 w-4" />
                           Delete
@@ -563,6 +709,70 @@ export default function Documents() {
             })}
           </div>
         )}
+
+        {/* Add Folder Dialog */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle>Create New Folder</DialogTitle>
+              <DialogDescription>
+                Add a new folder to organize your documents.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Folder Name</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g., Contracts"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleAddFolder();
+                  }}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleAddFolder}>Create Folder</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Rename Folder Dialog */}
+        <Dialog open={isRenameDialogOpen} onOpenChange={setIsRenameDialogOpen}>
+          <DialogContent className="sm:max-w-[400px]">
+            <DialogHeader>
+              <DialogTitle>Rename Folder</DialogTitle>
+              <DialogDescription>
+                Enter a new name for this folder.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="rename">Folder Name</Label>
+                <Input
+                  id="rename"
+                  placeholder="e.g., Contracts"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleRenameSubmit();
+                  }}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsRenameDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleRenameSubmit}>Rename</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </PageLayout>
     </AppLayout>
   );
