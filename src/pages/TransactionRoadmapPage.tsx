@@ -100,7 +100,7 @@ export default function TransactionRoadmapPage() {
                 className="gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Property
+                Back To Property
               </Button>
               <div className="h-6 w-px bg-border" />
               <div>
