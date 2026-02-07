@@ -903,7 +903,7 @@ export default function MarketplaceDealDetail() {
             />
 
             {/* Status Badge - matches listing card styling */}
-            <Badge className="absolute top-3 left-3 text-xs font-medium px-2 py-0.5 rounded shadow-md bg-success text-success-foreground">
+            <Badge className="absolute top-3 left-3 text-xs font-medium px-2 py-0.5 rounded shadow-md bg-primary text-primary-foreground">
               For Sale
             </Badge>
 
@@ -926,7 +926,7 @@ export default function MarketplaceDealDetail() {
             </Button>
 
             {/* Property Type Badge - Bottom Left */}
-            <Badge className="absolute bottom-3 left-3 bg-success text-success-foreground shadow-md">
+            <Badge className="absolute bottom-3 left-3 bg-primary text-primary-foreground shadow-md">
               {deal.propertyType}
             </Badge>
 
