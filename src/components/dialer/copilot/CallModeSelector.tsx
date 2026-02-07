@@ -36,43 +36,58 @@ export function CallModeSelector({ mode, onModeChange, disabled }: CallModeSelec
       </div>
       
       <div className="grid grid-cols-2 gap-3">
-        {modes.map((m) => (
-          <button
-            key={m.id}
-            onClick={() => !disabled && onModeChange(m.id)}
-            disabled={disabled}
-            className={cn(
-              "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
-              "hover:border-primary/50",
-              mode === m.id 
-                ? "border-primary bg-primary/5" 
-                : "border-border-subtle bg-muted/30",
-              disabled && "opacity-50 cursor-not-allowed"
-            )}
-          >
-            {m.badge && (
-              <Badge 
-                variant={m.id === 'voice_agent' ? 'secondary' : 'default'}
-                className="absolute -top-2 -right-2 text-[9px] px-1.5 py-0"
-              >
-                {m.badge}
-              </Badge>
-            )}
-            <m.icon className={cn(
-              "h-6 w-6 mb-2",
-              mode === m.id ? "text-primary" : "text-muted-foreground"
-            )} />
-            <span className={cn(
-              "text-sm font-medium",
-              mode === m.id ? "text-primary" : "text-foreground"
-            )}>
-              {m.label}
-            </span>
-            <span className="text-[10px] text-muted-foreground text-center mt-0.5">
-              {m.description}
-            </span>
-          </button>
-        ))}
+        {modes.map((m) => {
+          const isSelected = mode === m.id;
+          const isListenMode = m.id === 'listen_mode';
+          const isVoiceAgent = m.id === 'voice_agent';
+          
+          return (
+            <button
+              key={m.id}
+              onClick={() => !disabled && onModeChange(m.id)}
+              disabled={disabled}
+              className={cn(
+                "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
+                isSelected && isListenMode && "border-info bg-info/5",
+                isSelected && isVoiceAgent && "border-purple-500 bg-purple-500/5",
+                !isSelected && "border-border-subtle bg-muted/30",
+                !isSelected && isListenMode && "hover:border-info/50",
+                !isSelected && isVoiceAgent && "hover:border-purple-500/50",
+                disabled && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              {m.badge && (
+                <Badge 
+                  variant="secondary"
+                  className={cn(
+                    "absolute -top-2 -right-2 text-[9px] px-1.5 py-0",
+                    isListenMode && "bg-info/20 text-info",
+                    isVoiceAgent && "bg-purple-500/20 text-purple-500"
+                  )}
+                >
+                  {m.badge}
+                </Badge>
+              )}
+              <m.icon className={cn(
+                "h-6 w-6 mb-2",
+                isSelected && isListenMode && "text-info",
+                isSelected && isVoiceAgent && "text-purple-500",
+                !isSelected && "text-muted-foreground"
+              )} />
+              <span className={cn(
+                "text-sm font-medium",
+                isSelected && isListenMode && "text-info",
+                isSelected && isVoiceAgent && "text-purple-500",
+                !isSelected && "text-foreground"
+              )}>
+                {m.label}
+              </span>
+              <span className="text-[10px] text-muted-foreground text-center mt-0.5">
+                {m.description}
+              </span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
