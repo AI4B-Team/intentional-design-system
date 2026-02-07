@@ -189,15 +189,15 @@ export function DialerStatsBar({
 
   return (
     <div className="space-y-2">
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-background-secondary rounded-medium border border-border-subtle">
-        {stats.map((stat) => (
+      <div className="flex items-center justify-between p-4 bg-background-secondary rounded-medium border border-border-subtle">
+        {stats.map((stat, index) => (
           <div key={stat.label} className="flex items-center gap-3">
-            <div className={cn("p-2 rounded-small bg-white", stat.color)}>
+            <div className={cn("p-2.5 rounded-full bg-white shadow-sm", stat.color)}>
               <stat.icon className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-tiny text-muted-foreground uppercase tracking-wide">{stat.label}</p>
-              <p className="text-body font-semibold text-foreground">{stat.value}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-medium">{stat.label}</p>
+              <p className="text-lg font-semibold text-foreground tabular-nums">{stat.value}</p>
             </div>
           </div>
         ))}
