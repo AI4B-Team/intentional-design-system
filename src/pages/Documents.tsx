@@ -689,7 +689,7 @@ export default function Documents() {
                 onClick={() => setCurrentFolderId(null)}
                 className="text-2xl font-bold text-muted-foreground hover:text-foreground transition-colors"
               >
-                ASSETS
+                Documents
               </button>
               <ChevronRight className="h-5 w-5 text-muted-foreground" />
               <span className="text-lg font-semibold text-foreground">
@@ -725,7 +725,7 @@ export default function Documents() {
                         : "text-foreground"
                     )}
                   >
-                    ASSETS
+                    Documents
                   </button>
                   
                   {breadcrumbPath.map((folder) => (
