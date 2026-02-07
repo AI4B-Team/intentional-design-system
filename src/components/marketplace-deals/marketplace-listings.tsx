@@ -48,6 +48,8 @@ import {
   Building2,
   Wallet,
   TrendingDown,
+  Calendar,
+  Square,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -471,20 +473,36 @@ function DealListItem({
             </div>
           </div>
 
-          {/* Property Specs Row */}
-          <div className="flex items-center gap-5 text-xs text-muted-foreground py-2.5 border-b border-border">
-            <span className="flex items-center gap-1">
-              <Bed className="h-3.5 w-3.5" />
-              {deal.beds} Beds
-            </span>
-            <span className="flex items-center gap-1">
-              <Bath className="h-3.5 w-3.5" />
-              {deal.baths} Baths
-            </span>
-            <span className="flex items-center gap-1">
-              <Tag className="h-3.5 w-3.5" />
-              {deal.sqft.toLocaleString()} SqFt
-            </span>
+          {/* Property Specs Row - Vertical layout with icons on top */}
+          <div className="grid grid-cols-4 gap-3 py-3 border-b border-border">
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Bed className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.beds}</p>
+              <p className="text-xs text-muted-foreground">Beds</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Bath className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.baths}</p>
+              <p className="text-xs text-muted-foreground">Baths</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Square className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.sqft.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Sq Ft</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">2005</p>
+              <p className="text-xs text-muted-foreground">Built</p>
+            </div>
           </div>
 
           {/* Financial metrics - Conditional based on view mode */}
@@ -920,20 +938,36 @@ function DealCard({
           </>
         )}
 
-        {/* Property Specs - Single row (no year built to prevent wrapping) */}
-        <div className="border-t border-border mt-3 pt-2">
-          <div className="grid grid-cols-3 divide-x-2 divide-border text-sm text-muted-foreground">
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
-              <Bed className="h-3.5 w-3.5 shrink-0" />
-              <span>{deal.beds} Beds</span>
+        {/* Property Specs - Vertical layout with icons on top */}
+        <div className="border-t border-border mt-3 pt-3">
+          <div className="grid grid-cols-4 gap-2">
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Bed className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.beds}</p>
+              <p className="text-xs text-muted-foreground">Beds</p>
             </div>
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
-              <Bath className="h-3.5 w-3.5 shrink-0" />
-              <span>{deal.baths} Baths</span>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Bath className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.baths}</p>
+              <p className="text-xs text-muted-foreground">Baths</p>
             </div>
-            <div className="flex items-center justify-center gap-1 whitespace-nowrap px-1 py-1.5">
-              <Ruler className="h-3.5 w-3.5 shrink-0" />
-              <span>{deal.sqft.toLocaleString()} SF</span>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Square className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">{deal.sqft.toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground">Sq Ft</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center text-muted-foreground mb-1">
+                <Calendar className="h-4 w-4" />
+              </div>
+              <p className="font-semibold text-sm">2005</p>
+              <p className="text-xs text-muted-foreground">Built</p>
             </div>
           </div>
         </div>
