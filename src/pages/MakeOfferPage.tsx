@@ -67,7 +67,7 @@ type ScheduleType = "immediate" | "drip" | "scheduled" | "draft";
 const OFFER_TEMPLATES: OfferTemplate[] = [
   {
     id: "cash",
-    name: "Professional Cash Offer",
+    name: "Cash Offer",
     description: "Standard cash offer with quick close timeline",
     icon: <DollarSign className="h-5 w-5" />,
     supportsEmail: true,
@@ -85,7 +85,7 @@ const OFFER_TEMPLATES: OfferTemplate[] = [
   },
   {
     id: "subject-to",
-    name: "Subject-To Acquisition",
+    name: "Subject-To Offer",
     description: "Take over existing mortgage payments",
     icon: <Home className="h-5 w-5" />,
     supportsEmail: true,
@@ -602,7 +602,7 @@ Best regards,
                     <Tabs value={templateTab} onValueChange={(v) => setTemplateTab(v as any)}>
                       <TabsList className="grid w-full grid-cols-2 max-w-xs">
                         <TabsTrigger value="templates">Templates</TabsTrigger>
-                        <TabsTrigger value="custom">Custom Packages</TabsTrigger>
+                        <TabsTrigger value="custom">Custom</TabsTrigger>
                       </TabsList>
 
                       <TabsContent value="templates" className="mt-4">
