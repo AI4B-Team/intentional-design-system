@@ -43,7 +43,7 @@ import {
   AlertTriangle,
   Bed,
   Bath,
-  Maximize,
+  Ruler,
   Phone,
   Sparkles,
 } from "lucide-react";
@@ -448,7 +448,7 @@ Best regards,
                             <Bath className="h-3.5 w-3.5" /> {deal.baths}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Maximize className="h-3.5 w-3.5" /> {deal.sqft.toLocaleString()}
+                            <Ruler className="h-3.5 w-3.5" /> {deal.sqft.toLocaleString()}
                           </span>
                         </div>
                       </div>
