@@ -111,8 +111,8 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
       label: 'Voice Agent',
       description: 'AI handles the call autonomously',
       icon: Bot,
-      bgColor: 'bg-dialer-voice-agent',
-      textColor: 'text-dialer-voice-agent-foreground',
+      bgColor: 'bg-purple-500',
+      textColor: 'text-white',
       badge: 'Beta',
     },
     {
@@ -120,8 +120,8 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
       label: 'Listen Mode',
       description: 'Capture external calls (Zoom, Meet, etc.)',
       icon: Headphones,
-      bgColor: 'bg-dialer-listen-mode',
-      textColor: 'text-dialer-listen-mode-foreground',
+      bgColor: 'bg-info',
+      textColor: 'text-white',
     },
   ];
 
