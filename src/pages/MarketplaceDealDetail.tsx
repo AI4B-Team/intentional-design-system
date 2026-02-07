@@ -564,34 +564,22 @@ export default function MarketplaceDealDetail() {
                 })}
               </div>
 
-              {/* Right: View Mode + Make Offer */}
-              <div className="flex items-center gap-2">
-                {/* View Mode Toggle (Flip/Hold) */}
-                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                  {(["flip", "hold"] as ViewMode[]).map((mode) => (
-                    <button
-                      key={mode}
-                      onClick={() => setViewMode(mode)}
-                      className={cn(
-                        "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
-                        viewMode === mode
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      {mode === "flip" ? "Flip" : "Hold"}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Make Offer Button */}
-                <Button
-                  onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
-                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground min-w-[200px]"
-                >
-                  <FileText className="h-4 w-4" />
-                  Make Offer
-                </Button>
+              {/* Right: View Mode Toggle */}
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                {(["flip", "hold"] as ViewMode[]).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setViewMode(mode)}
+                    className={cn(
+                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
+                      viewMode === mode
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {mode === "flip" ? "Flip" : "Hold"}
+                  </button>
+                ))}
               </div>
             </div>
             <div className={cn(
@@ -770,6 +758,16 @@ export default function MarketplaceDealDetail() {
               {/* Sidebar - Agent Card with AI Templates (Only in detail mode) */}
               {layoutMode !== "split" && (
                 <div className="space-y-4">
+                  {/* Make Offer Button - Full Width */}
+                  <Button
+                    onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
+                    className="w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                    size="lg"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Make Offer
+                  </Button>
+
                   {/* Contact Panel - Collapsible */}
                   <ContactPanel
                     contact={mockContact}
