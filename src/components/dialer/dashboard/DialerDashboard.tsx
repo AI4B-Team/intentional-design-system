@@ -120,7 +120,7 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
       label: 'Listen Mode',
       description: 'Capture external calls (Zoom, Meet, etc.)',
       icon: Headphones,
-      bgColor: 'bg-info',
+      bgColor: 'bg-blue-500',
       textColor: 'text-white',
     },
   ];
