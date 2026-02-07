@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Users,
   DollarSign,
@@ -27,10 +28,27 @@ import {
   Users2,
   RefreshCcw,
   Repeat,
+  FileText,
+  Upload,
+  ExternalLink,
+  AlertCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type InvestmentStrategy = 'brrrr' | 'flip' | 'buy_and_hold' | 'wholesale' | 'str';
+
+export interface ProofOfFundsDoc {
+  id: string;
+  file_name: string;
+  file_url: string;
+  amount: number;
+  lender_name?: string;
+  expiration_date: string;
+  is_active: boolean;
+}
 
 export interface TransactionData {
   id?: string;
@@ -42,6 +60,8 @@ export interface TransactionData {
   lenderPhone?: string;
   lenderEmail?: string;
   lenderConfirmed: boolean;
+  includePof: boolean;
+  selectedPofId?: string;
   realtorName?: string;
   realtorPhone?: string;
   realtorEmail?: string;
@@ -108,6 +128,7 @@ export function TransactionRoadmapContent({
   const [data, setData] = React.useState<TransactionData>({
     currentMilestone: 1,
     lenderConfirmed: false,
+    includePof: true, // Pre-checked by default
     realtorConfirmed: false,
     escrowConfirmed: false,
     inspectorAgentRecommended: false,
@@ -300,6 +321,54 @@ export function TransactionRoadmapContent({
 
 // Milestone 1: Assemble Deal Team
 function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
+  const { user } = useAuth();
+
+  // Fetch existing POF documents
+  const { data: pofDocs, isLoading: isPofLoading } = useQuery({
+    queryKey: ['proof-of-funds', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('proof_of_funds')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true)
+        .gte('expiration_date', new Date().toISOString().split('T')[0])
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data as ProofOfFundsDoc[];
+    },
+    enabled: !!user?.id,
+  });
+
+  const hasPof = pofDocs && pofDocs.length > 0;
+  const selectedPof = pofDocs?.find(p => p.id === data.selectedPofId) || pofDocs?.[0];
+
+  // Auto-select first POF if available and none selected
+  React.useEffect(() => {
+    if (hasPof && !data.selectedPofId) {
+      updateData({ selectedPofId: pofDocs[0].id });
+    }
+  }, [hasPof, pofDocs, data.selectedPofId]);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div>
@@ -367,6 +436,113 @@ function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updat
               <Search className="h-4 w-4" />
               Search Marketplace Directory
             </Button>
+
+            {/* POF Section */}
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <Label className="text-sm font-medium">Proof of Funds</Label>
+                </div>
+                {hasPof && (
+                  <Badge variant="secondary" className="bg-success/10 text-success text-xs">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    On File
+                  </Badge>
+                )}
+              </div>
+
+              {isPofLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ) : hasPof ? (
+                <div className="space-y-3">
+                  {/* Selected POF Display */}
+                  <div className="p-3 rounded-lg border border-success/30 bg-success/5">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium">{selectedPof?.file_name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {selectedPof?.lender_name || 'Self-funded'} • {formatCurrency(selectedPof?.amount || 0)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Expires: {formatDate(selectedPof?.expiration_date || '')}
+                        </p>
+                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-7 text-xs gap-1"
+                        onClick={() => window.open(selectedPof?.file_url, '_blank')}
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        View
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Include POF Checkbox - Pre-checked */}
+                  <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                    <Checkbox
+                      id="include-pof"
+                      checked={data.includePof}
+                      onCheckedChange={(checked) => updateData({ includePof: checked === true })}
+                    />
+                    <Label htmlFor="include-pof" className="text-sm cursor-pointer">
+                      Include POF in this transaction
+                    </Label>
+                  </div>
+
+                  {/* Select different POF if multiple */}
+                  {pofDocs && pofDocs.length > 1 && (
+                    <div>
+                      <Label className="text-xs text-muted-foreground mb-1.5 block">Select POF</Label>
+                      <select
+                        className="w-full text-sm border rounded-md px-3 py-2 bg-background"
+                        value={data.selectedPofId || ''}
+                        onChange={(e) => updateData({ selectedPofId: e.target.value })}
+                      >
+                        {pofDocs.map((pof) => (
+                          <option key={pof.id} value={pof.id}>
+                            {pof.file_name} - {formatCurrency(pof.amount)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {/* No POF - Prompt to upload */}
+                  <div className="p-3 rounded-lg border border-dashed border-warning/50 bg-warning/5">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-medium text-warning">No Proof of Funds on File</p>
+                        <p className="text-xs text-muted-foreground">
+                          Upload a POF letter to strengthen your offers and close deals faster.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="gap-2 w-full"
+                    onClick={() => {
+                      // Navigate to documents or open upload modal
+                      toast.info('Navigate to Documents to upload a POF letter');
+                    }}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Upload Proof of Funds
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </Card>
 
