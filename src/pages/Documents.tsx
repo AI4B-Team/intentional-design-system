@@ -69,6 +69,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { POFManager } from "@/components/documents/POFManager";
 
 type FolderColor = "blue" | "purple" | "green" | "orange" | "rose";
 
@@ -651,7 +652,8 @@ export default function Documents() {
 
   const handleOpen = (id: string) => {
     const folder = folders.find((f) => f.id === id);
-    if (hasChildren(id)) {
+    // Always navigate into folder, even if no children (for special folders like POF)
+    if (id === "pof" || hasChildren(id)) {
       setCurrentFolderId(id);
       setSearchQuery("");
     } else {
@@ -666,13 +668,16 @@ export default function Documents() {
     }
   };
 
+  // Check if we're in the POF folder - render special POF manager
+  const isInPOFFolder = currentFolderId === "pof";
+
   return (
     <AppLayout>
       <PageLayout>
-        {/* Header with Breadcrumb */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            {currentFolderId && (
+        {/* POF Manager - Special view for Proof of Funds folder */}
+        {isInPOFFolder ? (
+          <div>
+            <div className="flex items-center gap-3 mb-6">
               <Button
                 variant="ghost"
                 size="icon"
@@ -681,90 +686,119 @@ export default function Documents() {
               >
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-            )}
-            
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentFolderId(null)}
-                className={cn(
-                  "text-2xl font-bold transition-colors",
-                  currentFolderId 
-                    ? "text-muted-foreground hover:text-foreground" 
-                    : "text-foreground"
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentFolderId(null)}
+                  className="text-2xl font-bold text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  ASSETS
+                </button>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                <span className="text-lg font-semibold text-foreground">
+                  Proof Of Funds
+                </span>
+              </div>
+            </div>
+            <POFManager onBack={handleNavigateBack} />
+          </div>
+        ) : (
+          <>
+            {/* Header with Breadcrumb */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                {currentFolderId && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleNavigateBack}
+                    className="h-9 w-9"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
                 )}
-              >
-                ASSETS
-              </button>
-              
-              {breadcrumbPath.map((folder) => (
-                <React.Fragment key={folder.id}>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                
+                <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setCurrentFolderId(folder.id)}
+                    onClick={() => setCurrentFolderId(null)}
                     className={cn(
-                      "text-lg font-semibold transition-colors",
-                      folder.id === currentFolderId
-                        ? "text-foreground"
+                      "text-2xl font-bold transition-colors",
+                      currentFolderId 
+                        ? "text-muted-foreground hover:text-foreground" 
+                        : "text-foreground"
+                    )}
+                  >
+                    ASSETS
+                  </button>
+                  
+                  {breadcrumbPath.map((folder) => (
+                    <React.Fragment key={folder.id}>
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      <button
+                        onClick={() => setCurrentFolderId(folder.id)}
+                        className={cn(
+                          "text-lg font-semibold transition-colors",
+                          folder.id === currentFolderId
+                            ? "text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        {folder.name}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Search */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search folders..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 w-64 bg-background"
+                  />
+                </div>
+
+                {/* View Toggles */}
+                <div className="flex items-center bg-muted rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={cn(
+                      "p-2 rounded-md transition-colors",
+                      viewMode === "grid"
+                        ? "bg-background shadow-sm text-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {folder.name}
+                    <LayoutGrid className="h-4 w-4" />
                   </button>
-                </React.Fragment>
-              ))}
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={cn(
+                      "p-2 rounded-md transition-colors",
+                      viewMode === "list"
+                        ? "bg-background shadow-sm text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <List className="h-4 w-4" />
+                  </button>
+                </div>
+
+                {/* Filter */}
+                <button className="p-2 rounded-lg border border-border hover:bg-muted transition-colors">
+                  <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
+                </button>
+
+                {/* New Folder Button */}
+                <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  New Folder
+                </Button>
+              </div>
             </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search folders..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64 bg-background"
-              />
-            </div>
-
-            {/* View Toggles */}
-            <div className="flex items-center bg-muted rounded-lg p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={cn(
-                  "p-2 rounded-md transition-colors",
-                  viewMode === "grid"
-                    ? "bg-background shadow-sm text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={cn(
-                  "p-2 rounded-md transition-colors",
-                  viewMode === "list"
-                    ? "bg-background shadow-sm text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-
-            {/* Filter */}
-            <button className="p-2 rounded-lg border border-border hover:bg-muted transition-colors">
-              <SlidersHorizontal className="h-4 w-4 text-muted-foreground" />
-            </button>
-
-            {/* New Folder Button */}
-            <Button onClick={() => setIsAddDialogOpen(true)} className="gap-2">
-              <Plus className="h-4 w-4" />
-              New Folder
-            </Button>
-          </div>
-        </div>
 
         {/* Folders Grid */}
         {viewMode === "grid" ? (
@@ -1042,6 +1076,8 @@ export default function Documents() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+          </>
+        )}
       </PageLayout>
     </AppLayout>
   );
