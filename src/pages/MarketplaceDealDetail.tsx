@@ -71,7 +71,7 @@ import { ComparableSalesSection } from "@/components/marketplace-deals/Comparabl
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { DealRiskBar } from "@/components/marketplace-deals/DealRiskBar";
-import { MakeOfferWizard } from "@/components/marketplace-deals/MakeOfferWizard";
+
 
 type ViewMode = "flip" | "hold";
 type LayoutMode = "detail" | "split";
@@ -471,7 +471,7 @@ export default function MarketplaceDealDetail() {
   const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
   const [showBuyersOnMap, setShowBuyersOnMap] = useState(false);
-  const [showOfferWizard, setShowOfferWizard] = useState(false);
+  
 
   // Persist view mode and layout mode changes to sessionStorage
   React.useEffect(() => {
@@ -1608,7 +1608,7 @@ export default function MarketplaceDealDetail() {
             <div className="space-y-4">
               {/* Make Offer Button */}
               <Button
-                onClick={() => setShowOfferWizard(true)}
+                onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
                 className="w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
                 size="lg"
               >
@@ -1636,12 +1636,6 @@ export default function MarketplaceDealDetail() {
         </div>
       </div>
 
-      {/* Make Offer Wizard */}
-      <MakeOfferWizard
-        open={showOfferWizard}
-        onOpenChange={setShowOfferWizard}
-        deal={deal}
-      />
     </AppLayout>
   );
 }
