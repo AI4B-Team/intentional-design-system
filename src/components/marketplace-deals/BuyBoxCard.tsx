@@ -202,28 +202,17 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
     >
       {/* Header Row - Title top left, Menu top right */}
       <div className="flex items-start justify-between p-4 pb-3">
-        <div className="flex items-start gap-3 min-w-0 flex-1">
-          <div
-            className={`flex h-10 w-10 items-center justify-center rounded-xl shrink-0 ${
-              buyBox.isActive ? 'bg-primary/10' : 'bg-muted'
-            }`}
-          >
-            <Target
-              className={`h-5 w-5 ${buyBox.isActive ? 'text-primary' : 'text-muted-foreground'}`}
-            />
-          </div>
-          <div className="min-w-0 pt-0.5">
-            <h3 className="font-semibold text-base truncate leading-tight">{buyBox.name}</h3>
-            <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-              {buyBox.description || 'No description'}
-            </p>
-          </div>
+        <div className="min-w-0 flex-1">
+          <h3 className="font-semibold text-base truncate leading-tight">{buyBox.name}</h3>
+          <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
+            {buyBox.description || 'No description'}
+          </p>
         </div>
         
         {/* Menu - Aligned to top right */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 -mt-1 -mr-1">
+            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0 -mt-1 -mr-2">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -299,34 +288,30 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
         </div>
       )}
 
-      {/* Beds / Baths / SqFt Row - Like Marketplace Listing */}
-      {(buyBox.criteria.minBedrooms || buyBox.criteria.minBathrooms || buyBox.criteria.minSquareFeet) && (
-        <div className="px-4 pb-3">
-          <div className="flex items-center gap-4 text-sm">
-            {buyBox.criteria.minBedrooms && (
-              <div className="flex items-center gap-1.5">
-                <Bed className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{buyBox.criteria.minBedrooms}+</span>
-                <span className="text-muted-foreground">Beds</span>
-              </div>
-            )}
-            {buyBox.criteria.minBathrooms && (
-              <div className="flex items-center gap-1.5">
-                <Bath className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{buyBox.criteria.minBathrooms}+</span>
-                <span className="text-muted-foreground">Baths</span>
-              </div>
-            )}
-            {buyBox.criteria.minSquareFeet && (
-              <div className="flex items-center gap-1.5">
-                <Ruler className="h-4 w-4 text-muted-foreground" />
-                <span className="font-medium">{(buyBox.criteria.minSquareFeet / 1000).toFixed(1)}k+</span>
-                <span className="text-muted-foreground">SqFt</span>
-              </div>
-            )}
+      {/* Beds / Baths / SqFt Row - Always show */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1.5">
+            <Bed className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">{buyBox.criteria.minBedrooms || 'Any'}{buyBox.criteria.minBedrooms ? '+' : ''}</span>
+            <span className="text-muted-foreground">Beds</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Bath className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">{buyBox.criteria.minBathrooms || 'Any'}{buyBox.criteria.minBathrooms ? '+' : ''}</span>
+            <span className="text-muted-foreground">Baths</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Ruler className="h-4 w-4 text-muted-foreground" />
+            <span className="font-medium">
+              {buyBox.criteria.minSquareFeet 
+                ? `${(buyBox.criteria.minSquareFeet / 1000).toFixed(1)}k+` 
+                : 'Any'}
+            </span>
+            <span className="text-muted-foreground">SqFt</span>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Footer Stats */}
       <div className="px-4 pb-4">
