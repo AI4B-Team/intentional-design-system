@@ -48,11 +48,11 @@ export function CallModeSelector({ mode, onModeChange, disabled }: CallModeSelec
               disabled={disabled}
               className={cn(
                 "relative flex flex-col items-center p-3 rounded-lg border-2 transition-all",
-                isSelected && isListenMode && "border-info bg-info/5",
-                isSelected && isVoiceAgent && "border-purple-500 bg-purple-500/5",
-                !isSelected && "border-border-subtle bg-muted/30",
-                !isSelected && isListenMode && "hover:border-info/50",
-                !isSelected && isVoiceAgent && "hover:border-purple-500/50",
+                isSelected && isListenMode && "border-info bg-info/10",
+                isSelected && isVoiceAgent && "border-purple-500 bg-purple-500/10",
+                !isSelected && isListenMode && "border-info/30 bg-info/5 hover:border-info/50",
+                !isSelected && isVoiceAgent && "border-purple-500/30 bg-purple-500/5 hover:border-purple-500/50",
+                !isSelected && !isListenMode && !isVoiceAgent && "border-border-subtle bg-muted/30",
                 disabled && "opacity-50 cursor-not-allowed"
               )}
             >
