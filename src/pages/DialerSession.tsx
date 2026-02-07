@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { PageLayout } from '@/components/layout/page-layout';
 import { SessionSidebar, SessionCallView, type TranscriptMessage, type CallPhase } from '@/components/dialer/session';
 
 export default function DialerSession() {
@@ -93,31 +94,33 @@ export default function DialerSession() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
-      {/* Left Sidebar */}
-      <SessionSidebar
-        isLive={isLive}
-        onLiveCallClick={handleLiveCallClick}
-        activeSection={activeSection}
-        onSectionChange={setActiveSection}
-      />
+    <PageLayout fullWidth>
+      <div className="flex h-[calc(100vh-64px)] bg-background">
+        {/* Left Sidebar - Session specific */}
+        <SessionSidebar
+          isLive={isLive}
+          onLiveCallClick={handleLiveCallClick}
+          activeSection={activeSection}
+          onSectionChange={setActiveSection}
+        />
 
-      {/* Main Content */}
-      <SessionCallView
-        contactName="Marcus Williams"
-        contactSubtitle="Motivated Seller • 1847 Maple Street"
-        callType="Outbound Sales"
-        callDuration={callDuration}
-        isMuted={isMuted}
-        isSpeakerOn={isSpeakerOn}
-        onMuteToggle={() => setIsMuted(!isMuted)}
-        onSpeakerToggle={() => setIsSpeakerOn(!isSpeakerOn)}
-        onTransfer={handleTransfer}
-        onEndCall={handleEndCall}
-        transcript={transcript}
-        phases={phases}
-        onNextPhase={handleNextPhase}
-      />
-    </div>
+        {/* Main Content */}
+        <SessionCallView
+          contactName="Marcus Williams"
+          contactSubtitle="Motivated Seller • 1847 Maple Street"
+          callType="Outbound Sales"
+          callDuration={callDuration}
+          isMuted={isMuted}
+          isSpeakerOn={isSpeakerOn}
+          onMuteToggle={() => setIsMuted(!isMuted)}
+          onSpeakerToggle={() => setIsSpeakerOn(!isSpeakerOn)}
+          onTransfer={handleTransfer}
+          onEndCall={handleEndCall}
+          transcript={transcript}
+          phases={phases}
+          onNextPhase={handleNextPhase}
+        />
+      </div>
+    </PageLayout>
   );
 }
