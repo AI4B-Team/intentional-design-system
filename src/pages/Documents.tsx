@@ -40,14 +40,12 @@ import {
   FolderInput,
   Star,
   FileCheck,
-  Image,
+  Camera,
   ScrollText,
   FilePlus2,
   Check,
   ShieldCheck,
-  Home,
   DollarSign,
-  Camera,
   Megaphone,
   FileSignature,
   Shield,
@@ -58,6 +56,15 @@ import {
   Scale,
   Building2,
   Landmark,
+  Home,
+  ChevronRight,
+  ArrowLeft,
+  MapPin,
+  Banknote,
+  ClipboardList,
+  Key,
+  Hammer,
+  FileSpreadsheet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -73,6 +80,8 @@ interface DocumentFolder {
   lastModified: Date;
   color: FolderColor;
   isFavorite: boolean;
+  parentId: string | null;
+  isPropertyFolder?: boolean;
 }
 
 const folderColors: Record<FolderColor, {
@@ -127,164 +136,168 @@ const folderColors: Record<FolderColor, {
 
 const colorOptions: FolderColor[] = ["blue", "purple", "green", "orange", "rose"];
 
+// Helper to create transaction sub-folders
+const createTransactionSubFolders = (parentId: string): DocumentFolder[] => [
+  { id: `${parentId}-photos`, name: "Property Photos", icon: Camera, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-contracts`, name: "Contracts", icon: FileCheck, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-disclosures`, name: "Disclosures", icon: ScrollText, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-title`, name: "Title & Escrow", icon: Landmark, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-inspections`, name: "Inspections", icon: SearchCheck, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-financing`, name: "Financing & POF", icon: Banknote, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-closing`, name: "Closing Documents", icon: Key, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-repairs`, name: "Repairs & Rehab", icon: Hammer, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-comps`, name: "Comps & Analysis", icon: FileSpreadsheet, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+  { id: `${parentId}-addendums`, name: "Addendums", icon: FilePlus2, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId },
+];
+
 const initialFolders: DocumentFolder[] = [
+  // Root level folders
   {
-    id: "1",
-    name: "Purchase Agreements",
-    icon: FileCheck,
+    id: "properties",
+    name: "Properties",
+    icon: Home,
     fileCount: 0,
     lastModified: new Date(),
     color: "blue",
     isFavorite: false,
+    parentId: null,
   },
   {
-    id: "2",
-    name: "Assignment Contracts",
-    icon: FileSignature,
+    id: "templates",
+    name: "Templates",
+    icon: ClipboardList,
     fileCount: 0,
     lastModified: new Date(),
     color: "blue",
     isFavorite: false,
+    parentId: null,
   },
   {
-    id: "3",
-    name: "Disclosures",
-    icon: ScrollText,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "4",
-    name: "Title & Escrow",
-    icon: Landmark,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "5",
-    name: "Inspections",
-    icon: SearchCheck,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "6",
-    name: "Proof Of Funds",
-    icon: DollarSign,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "7",
-    name: "Financing Documents",
+    id: "company-docs",
+    name: "Company Documents",
     icon: Building2,
     fileCount: 0,
     lastModified: new Date(),
     color: "blue",
     isFavorite: false,
+    parentId: null,
   },
   {
-    id: "8",
-    name: "Property Photos",
-    icon: Camera,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "9",
-    name: "Marketing Materials",
-    icon: Megaphone,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "10",
-    name: "Closing Documents",
-    icon: FileText,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "11",
-    name: "Insurance",
-    icon: Shield,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "12",
-    name: "Tax Documents",
-    icon: Receipt,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "13",
-    name: "Leases & Tenants",
-    icon: Users,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "14",
-    name: "Contractors & Vendors",
-    icon: Wrench,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "15",
-    name: "Due Diligence",
-    icon: ShieldCheck,
-    fileCount: 0,
-    lastModified: new Date(),
-    color: "blue",
-    isFavorite: false,
-  },
-  {
-    id: "16",
+    id: "legal",
     name: "Legal & Compliance",
     icon: Scale,
     fileCount: 0,
     lastModified: new Date(),
     color: "blue",
     isFavorite: false,
+    parentId: null,
   },
   {
-    id: "17",
-    name: "Addendums",
-    icon: FilePlus2,
+    id: "marketing",
+    name: "Marketing Materials",
+    icon: Megaphone,
     fileCount: 0,
     lastModified: new Date(),
     color: "blue",
     isFavorite: false,
+    parentId: null,
   },
+  {
+    id: "insurance",
+    name: "Insurance",
+    icon: Shield,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "blue",
+    isFavorite: false,
+    parentId: null,
+  },
+  {
+    id: "tax",
+    name: "Tax Documents",
+    icon: Receipt,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "blue",
+    isFavorite: false,
+    parentId: null,
+  },
+  {
+    id: "vendors",
+    name: "Contractors & Vendors",
+    icon: Wrench,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "blue",
+    isFavorite: false,
+    parentId: null,
+  },
+  {
+    id: "pof",
+    name: "Proof Of Funds",
+    icon: DollarSign,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "blue",
+    isFavorite: false,
+    parentId: null,
+  },
+  
+  // Sample property transaction folders (children of "properties")
+  {
+    id: "prop-123-main",
+    name: "123 Main St Transaction",
+    icon: MapPin,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "green",
+    isFavorite: false,
+    parentId: "properties",
+    isPropertyFolder: true,
+  },
+  {
+    id: "prop-456-oak",
+    name: "456 Oak Ave Transaction",
+    icon: MapPin,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "purple",
+    isFavorite: false,
+    parentId: "properties",
+    isPropertyFolder: true,
+  },
+  {
+    id: "prop-789-elm",
+    name: "789 Elm Blvd Transaction",
+    icon: MapPin,
+    fileCount: 0,
+    lastModified: new Date(),
+    color: "orange",
+    isFavorite: false,
+    parentId: "properties",
+    isPropertyFolder: true,
+  },
+  
+  // Sub-folders for each property transaction
+  ...createTransactionSubFolders("prop-123-main"),
+  ...createTransactionSubFolders("prop-456-oak"),
+  ...createTransactionSubFolders("prop-789-elm"),
+  
+  // Template sub-folders
+  { id: "templates-contracts", name: "Contract Templates", icon: FileCheck, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "templates" },
+  { id: "templates-disclosures", name: "Disclosure Templates", icon: ScrollText, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "templates" },
+  { id: "templates-addendums", name: "Addendum Templates", icon: FilePlus2, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "templates" },
+  { id: "templates-letters", name: "Letter Templates", icon: FileText, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "templates" },
+  
+  // Company docs sub-folders
+  { id: "company-entity", name: "Entity Documents", icon: Building2, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "company-docs" },
+  { id: "company-licenses", name: "Licenses & Permits", icon: ShieldCheck, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "company-docs" },
+  { id: "company-bank", name: "Bank Statements", icon: Landmark, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "company-docs" },
 ];
 
 interface FolderCardProps {
   folder: DocumentFolder;
+  hasChildren: boolean;
   onDelete: (id: string) => void;
   onRename: (id: string) => void;
   onChangeColor: (id: string, color: FolderColor) => void;
@@ -296,6 +309,7 @@ interface FolderCardProps {
 
 function FolderCard({
   folder,
+  hasChildren,
   onDelete,
   onRename,
   onChangeColor,
@@ -336,9 +350,9 @@ function FolderCard({
         <div className="flex items-start justify-between mt-2">
           <div className="flex items-center gap-2">
             <Icon className={cn("h-5 w-5", colors.text)} />
-            <h3 className="font-semibold text-foreground">{folder.name}</h3>
+            <h3 className="font-semibold text-foreground text-sm leading-tight">{folder.name}</h3>
             {folder.isFavorite && (
-              <Star className="h-4 w-4 text-warning fill-warning" />
+              <Star className="h-4 w-4 text-warning fill-warning flex-shrink-0" />
             )}
           </div>
 
@@ -443,9 +457,12 @@ function FolderCard({
           </DropdownMenu>
         </div>
 
-        {/* File Count */}
+        {/* File Count & Sub-folder indicator */}
         <p className="text-sm mt-1 text-muted-foreground">
           {folder.fileCount} Files
+          {hasChildren && (
+            <span className="ml-2 text-xs">• Has Sub-Folders</span>
+          )}
         </p>
 
         {/* Last Modified */}
@@ -469,16 +486,52 @@ export default function Documents() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [folders, setFolders] = React.useState<DocumentFolder[]>(initialFolders);
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
+  const [currentFolderId, setCurrentFolderId] = React.useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = React.useState(false);
   const [selectedFolderId, setSelectedFolderId] = React.useState<string | null>(null);
   const [newFolderName, setNewFolderName] = React.useState("");
 
-  const filteredFolders = folders.filter((folder) =>
+  // Get current folder
+  const currentFolder = currentFolderId 
+    ? folders.find((f) => f.id === currentFolderId) 
+    : null;
+
+  // Build breadcrumb path
+  const getBreadcrumbPath = (): DocumentFolder[] => {
+    const path: DocumentFolder[] = [];
+    let folderId = currentFolderId;
+    
+    while (folderId) {
+      const folder = folders.find((f) => f.id === folderId);
+      if (folder) {
+        path.unshift(folder);
+        folderId = folder.parentId;
+      } else {
+        break;
+      }
+    }
+    
+    return path;
+  };
+
+  const breadcrumbPath = getBreadcrumbPath();
+
+  // Get folders at current level
+  const currentLevelFolders = folders.filter((folder) => 
+    folder.parentId === currentFolderId
+  );
+
+  // Filter by search
+  const filteredFolders = currentLevelFolders.filter((folder) =>
     folder.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Sort favorites first
+  // Check if folder has children
+  const hasChildren = (folderId: string) => 
+    folders.some((f) => f.parentId === folderId);
+
+  // Sort favorites first, then by last modified
   const sortedFolders = [...filteredFolders].sort((a, b) => {
     if (a.isFavorite && !b.isFavorite) return -1;
     if (!a.isFavorite && b.isFavorite) return 1;
@@ -499,9 +552,10 @@ export default function Documents() {
       lastModified: new Date(),
       color: "blue",
       isFavorite: false,
+      parentId: currentFolderId,
     };
 
-    setFolders([folder, ...folders]);
+    setFolders([...folders, folder]);
     setNewFolderName("");
     setIsAddDialogOpen(false);
     toast.success("Folder created");
@@ -509,8 +563,16 @@ export default function Documents() {
 
   const handleDelete = (id: string) => {
     const folder = folders.find((f) => f.id === id);
-    setFolders(folders.filter((f) => f.id !== id));
-    toast.success(`"${folder?.name}" deleted`);
+    // Delete folder and all its children recursively
+    const idsToDelete = new Set<string>();
+    const collectIds = (folderId: string) => {
+      idsToDelete.add(folderId);
+      folders.filter((f) => f.parentId === folderId).forEach((f) => collectIds(f.id));
+    };
+    collectIds(id);
+    
+    setFolders(folders.filter((f) => !idsToDelete.has(f.id)));
+    toast.success(`"${folder?.name}" and its contents deleted`);
   };
 
   const handleRename = (id: string) => {
@@ -560,7 +622,7 @@ export default function Documents() {
         lastModified: new Date(),
         isFavorite: false,
       };
-      setFolders([duplicatedFolder, ...folders]);
+      setFolders([...folders, duplicatedFolder]);
       toast.success(`"${folder.name}" duplicated`);
     }
   };
@@ -582,7 +644,6 @@ export default function Documents() {
   const handleDownload = (id: string) => {
     const folder = folders.find((f) => f.id === id);
     toast.success(`Downloading "${folder?.name}"...`);
-    // Simulate download delay
     setTimeout(() => {
       toast.success(`"${folder?.name}" downloaded`);
     }, 1500);
@@ -590,14 +651,69 @@ export default function Documents() {
 
   const handleOpen = (id: string) => {
     const folder = folders.find((f) => f.id === id);
-    toast.info(`Opening "${folder?.name}"...`);
+    if (hasChildren(id)) {
+      setCurrentFolderId(id);
+      setSearchQuery("");
+    } else {
+      toast.info(`Opening "${folder?.name}"...`);
+    }
+  };
+
+  const handleNavigateBack = () => {
+    if (currentFolder?.parentId !== undefined) {
+      setCurrentFolderId(currentFolder.parentId);
+      setSearchQuery("");
+    }
   };
 
   return (
     <AppLayout>
       <PageLayout>
+        {/* Header with Breadcrumb */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground">ASSETS</h1>
+          <div className="flex items-center gap-3">
+            {currentFolderId && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleNavigateBack}
+                className="h-9 w-9"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentFolderId(null)}
+                className={cn(
+                  "text-2xl font-bold transition-colors",
+                  currentFolderId 
+                    ? "text-muted-foreground hover:text-foreground" 
+                    : "text-foreground"
+                )}
+              >
+                ASSETS
+              </button>
+              
+              {breadcrumbPath.map((folder) => (
+                <React.Fragment key={folder.id}>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <button
+                    onClick={() => setCurrentFolderId(folder.id)}
+                    className={cn(
+                      "text-lg font-semibold transition-colors",
+                      folder.id === currentFolderId
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {folder.name}
+                  </button>
+                </React.Fragment>
+              ))}
+            </div>
+          </div>
 
           <div className="flex items-center gap-3">
             {/* Search */}
@@ -657,6 +773,7 @@ export default function Documents() {
               <FolderCard
                 key={folder.id}
                 folder={folder}
+                hasChildren={hasChildren(folder.id)}
                 onDelete={handleDelete}
                 onRename={handleRename}
                 onChangeColor={handleChangeColor}
@@ -671,12 +788,12 @@ export default function Documents() {
               <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
                 <FolderOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
                 <h3 className="font-medium text-foreground mb-1">
-                  No Folders Found
+                  {searchQuery ? "No Folders Found" : "This Folder Is Empty"}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   {searchQuery
                     ? "Try adjusting your search terms"
-                    : "Get started by creating your first folder"}
+                    : "Create a new folder to get started"}
                 </p>
                 {!searchQuery && (
                   <Button
@@ -695,6 +812,7 @@ export default function Documents() {
             {sortedFolders.map((folder) => {
               const Icon = folder.icon;
               const colors = folderColors[folder.color];
+              const hasSubs = hasChildren(folder.id);
               
               return (
                 <div
@@ -712,9 +830,13 @@ export default function Documents() {
                         {folder.isFavorite && (
                           <Star className="h-4 w-4 text-warning fill-warning" />
                         )}
+                        {hasSubs && (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         {folder.fileCount} Files
+                        {hasSubs && " • Has Sub-Folders"}
                       </p>
                     </div>
                   </div>
@@ -829,6 +951,29 @@ export default function Documents() {
                 </div>
               );
             })}
+
+            {sortedFolders.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <FolderOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                <h3 className="font-medium text-foreground mb-1">
+                  {searchQuery ? "No Folders Found" : "This Folder Is Empty"}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  {searchQuery
+                    ? "Try adjusting your search terms"
+                    : "Create a new folder to get started"}
+                </p>
+                {!searchQuery && (
+                  <Button
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="gap-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                    New Folder
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -838,7 +983,9 @@ export default function Documents() {
             <DialogHeader>
               <DialogTitle>Create New Folder</DialogTitle>
               <DialogDescription>
-                Add a new folder to organize your documents.
+                {currentFolder 
+                  ? `Add a new folder inside "${currentFolder.name}"`
+                  : "Add a new folder to organize your documents."}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
