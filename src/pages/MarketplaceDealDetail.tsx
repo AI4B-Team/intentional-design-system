@@ -39,7 +39,7 @@ import {
   Download,
   LayoutGrid,
   TrendingUp,
-  GitCompare,
+  Scale,
   Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -123,7 +123,7 @@ const MESSAGE_TEMPLATES: Record<UserType, MessageTemplate[]> = {
 const contentTabs = [
   { id: "overview", label: "Overview", icon: LayoutGrid },
   { id: "market", label: "Market", icon: TrendingUp },
-  { id: "comps", label: "Comps", icon: GitCompare },
+  { id: "comps", label: "Comps", icon: Scale },
   { id: "analysis", label: "Analysis", icon: Calculator },
 ];
 
