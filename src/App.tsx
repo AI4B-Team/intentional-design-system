@@ -98,6 +98,7 @@ import D4DAreaDetail from "./pages/D4DAreaDetail";
 import D4DAreaEdit from "./pages/D4DAreaEdit";
 import D4DMileage from "./pages/D4DMileage";
 import Dialer from "./pages/Dialer";
+import DialerSession from "./pages/DialerSession";
 import DialerQueues from "./pages/DialerQueues";
 import DialerQueueDetail from "./pages/DialerQueueDetail";
 import DialerScripts from "./pages/DialerScripts";
@@ -952,6 +953,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Dialer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dialer/session"
+              element={
+                <ProtectedRoute>
+                  <DialerSession />
                 </ProtectedRoute>
               }
             />
