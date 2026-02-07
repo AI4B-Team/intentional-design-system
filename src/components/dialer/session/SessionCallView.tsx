@@ -233,18 +233,6 @@ export function SessionCallView({
               ))}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-border-subtle">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <div className="flex space-x-1">
-                    <span className="w-1 h-4 bg-primary/60 rounded animate-pulse" style={{ animationDelay: '0ms' }} />
-                    <span className="w-1 h-3 bg-primary/60 rounded animate-pulse" style={{ animationDelay: '150ms' }} />
-                    <span className="w-1 h-5 bg-primary/60 rounded animate-pulse" style={{ animationDelay: '300ms' }} />
-                  </div>
-                </div>
-                <span>AI analyzing conversation...</span>
-              </div>
-            </div>
           </div>
         </div>
 
