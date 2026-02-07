@@ -29,6 +29,8 @@ import {
   Camera,
   Home,
   Calendar,
+  Bed,
+  Bath,
   Tag,
   DollarSign,
   TrendingUp,
@@ -1086,15 +1088,15 @@ export default function MarketplaceDealDetail() {
             <div className="grid grid-cols-4 gap-3">
               {/* Row 1: Beds, Baths, Half Bath, SqFt */}
               <Card className="p-4 flex items-center gap-3">
-                <Home className="h-5 w-5 text-muted-foreground" />
+                <Bed className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">{deal.beds} Beds</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Home className="h-5 w-5 text-muted-foreground" />
+                <Bath className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">{deal.baths} Baths</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Home className="h-5 w-5 text-muted-foreground" />
+                <Bath className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">0 Half Bath</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
