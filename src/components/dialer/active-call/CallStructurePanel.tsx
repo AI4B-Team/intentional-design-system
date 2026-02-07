@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, Circle, ArrowRight, Target, MessageSquare, RefreshCw } from 'lucide-react';
+import { CheckCircle2, Circle, ArrowRight, Target, MessageSquare, RefreshCw, Clock } from 'lucide-react';
 
 export interface CallPhase {
   id: string;
@@ -35,13 +35,9 @@ export function CallStructurePanel({
       case 'completed':
         return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'current':
-        return (
-          <div className="h-5 w-5 rounded-full border-2 border-success bg-success/20 flex items-center justify-center">
-            <div className="h-2 w-2 rounded-full bg-success" />
-          </div>
-        );
+        return <Clock className="h-5 w-5 text-success" />;
       default:
-        return <Circle className="h-5 w-5 text-muted-foreground/50" />;
+        return <Circle className="h-5 w-5 text-muted-foreground/40" />;
     }
   };
 
@@ -77,7 +73,7 @@ export function CallStructurePanel({
         </div>
       )}
 
-      {/* Call Structure - Updated design matching reference */}
+      {/* Call Structure - Clean design matching reference */}
       <div className="bg-white border border-border-subtle rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -85,7 +81,7 @@ export function CallStructurePanel({
             <span className="text-sm font-medium text-foreground">Call Structure</span>
           </div>
           {onNextPhase && (
-            <Button variant="ghost" size="sm" onClick={onNextPhase} className="h-7 text-xs gap-1 text-primary hover:text-primary">
+            <Button variant="ghost" size="sm" onClick={onNextPhase} className="h-7 text-xs gap-1 text-foreground hover:text-foreground">
               <ArrowRight className="h-3 w-3" />
               Next Phase
             </Button>
@@ -93,14 +89,14 @@ export function CallStructurePanel({
         </div>
 
         <div className="space-y-2">
-          {phases.map((phase, index) => (
+          {phases.map((phase) => (
             <div
               key={phase.id}
               className={cn(
-                'flex items-center justify-between py-3 px-4 rounded-xl transition-colors border',
-                phase.status === 'current' && 'bg-success/10 border-success/30',
-                phase.status === 'completed' && 'bg-success/5 border-success/20',
-                phase.status === 'pending' && 'bg-muted/50 border-transparent'
+                'flex items-center justify-between py-3 px-4 rounded-lg transition-colors',
+                phase.status === 'current' && 'bg-success/15',
+                phase.status === 'completed' && 'bg-success/10',
+                phase.status === 'pending' && 'bg-muted/50'
               )}
             >
               <div className="flex items-center gap-3">
@@ -108,22 +104,20 @@ export function CallStructurePanel({
                 <span
                   className={cn(
                     'text-sm font-medium',
-                    phase.status === 'current' && 'text-success',
-                    phase.status === 'completed' && 'text-success',
+                    phase.status === 'current' && 'text-foreground',
+                    phase.status === 'completed' && 'text-foreground',
                     phase.status === 'pending' && 'text-muted-foreground'
                   )}
                 >
                   {phase.name}
                 </span>
               </div>
-              {phase.duration && (
-                <span className={cn(
-                  "text-sm font-mono tabular-nums",
-                  phase.status === 'pending' ? 'text-muted-foreground' : 'text-foreground'
-                )}>
-                  {phase.duration}
-                </span>
-              )}
+              <span className={cn(
+                "text-sm font-mono tabular-nums",
+                phase.status === 'pending' ? 'text-muted-foreground' : 'text-foreground'
+              )}>
+                {phase.duration || '0:00'}
+              </span>
             </div>
           ))}
         </div>
