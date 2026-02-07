@@ -102,6 +102,12 @@
     --info: 160 84% 39%;
     --info-foreground: 0 0% 100%;
     --info-muted: 152 81% 96%;
+
+    /* Dialer Mode Accents */
+    --dialer-voice-agent: 262 83% 58%;
+    --dialer-voice-agent-foreground: 0 0% 100%;
+    --dialer-listen-mode: 217 91% 60%;
+    --dialer-listen-mode-foreground: 0 0% 100%;
     
     /* Heat Score Colors */
     --heat-hot: 0 72% 51%;
@@ -198,6 +204,12 @@
     --info: 160 84% 45%;
     --info-foreground: 210 40% 98%;
     --info-muted: 160 60% 12%;
+
+    /* Dialer Mode Accents */
+    --dialer-voice-agent: 262 83% 65%;
+    --dialer-voice-agent-foreground: 0 0% 100%;
+    --dialer-listen-mode: 217 91% 65%;
+    --dialer-listen-mode-foreground: 0 0% 100%;
     
     /* Heat Score Colors - Slightly muted for dark */
     --heat-hot: 0 72% 55%;

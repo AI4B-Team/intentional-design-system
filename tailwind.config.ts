@@ -75,6 +75,12 @@ export default {
           foreground: "hsl(var(--info-foreground))",
           muted: "hsl(var(--info-muted))",
         },
+        dialer: {
+          "voice-agent": "hsl(var(--dialer-voice-agent))",
+          "voice-agent-foreground": "hsl(var(--dialer-voice-agent-foreground))",
+          "listen-mode": "hsl(var(--dialer-listen-mode))",
+          "listen-mode-foreground": "hsl(var(--dialer-listen-mode-foreground))",
+        },
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
