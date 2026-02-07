@@ -37,6 +37,10 @@ import {
   PanelLeftClose,
   FileText,
   Download,
+  LayoutGrid,
+  TrendingUp,
+  GitCompare,
+  Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
@@ -117,10 +121,10 @@ const MESSAGE_TEMPLATES: Record<UserType, MessageTemplate[]> = {
 
 // Content tabs (left side)
 const contentTabs = [
-  { id: "overview", label: "Overview" },
-  { id: "market", label: "Market" },
-  { id: "comps", label: "Comps" },
-  { id: "analysis", label: "Analysis" },
+  { id: "overview", label: "Overview", icon: LayoutGrid },
+  { id: "market", label: "Market", icon: TrendingUp },
+  { id: "comps", label: "Comps", icon: GitCompare },
+  { id: "analysis", label: "Analysis", icon: Calculator },
 ];
 
 // Mock additional images
@@ -539,20 +543,24 @@ export default function MarketplaceDealDetail() {
             <div className="flex items-center justify-between mb-6">
               {/* Left: Content Tabs */}
               <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                {contentTabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id as ContentTab)}
-                    className={cn(
-                      "px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                      activeTab === tab.id
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
+                {contentTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as ContentTab)}
+                      className={cn(
+                        "px-4 py-2 text-sm font-medium rounded-md transition-colors flex items-center gap-2",
+                        activeTab === tab.id
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Right: View Mode + Make Offer */}
