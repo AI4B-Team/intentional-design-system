@@ -164,7 +164,7 @@ export function DialerStatsBar({
             color: "text-success",
           },
           {
-            label: "Appointments",
+            label: "Qualified Leads",
             value: appointmentsSet.toString(),
             icon: Calendar,
             color: "text-warning",
