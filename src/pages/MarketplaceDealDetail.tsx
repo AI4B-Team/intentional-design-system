@@ -32,6 +32,7 @@ import {
   Bed,
   Bath,
   Tag,
+  LandPlot,
   DollarSign,
   TrendingUp,
   Wrench,
@@ -1113,7 +1114,7 @@ export default function MarketplaceDealDetail() {
                 <span className="text-sm font-medium">2 Car Garage</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
-                <Tag className="h-5 w-5 text-muted-foreground" />
+                <LandPlot className="h-5 w-5 text-muted-foreground" />
                 <span className="text-sm font-medium">{lotSize} Acres</span>
               </Card>
               <Card className="p-4 flex items-center gap-3">
