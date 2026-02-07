@@ -17,7 +17,8 @@ import {
   Home,
   Bed,
   Bath,
-  Maximize,
+  Ruler,
+  LandPlot,
   Calendar,
   User,
   Phone,
@@ -176,8 +177,8 @@ export function OverviewTab({ property, onUpdateScore, isUpdating }: OverviewTab
             <InfoRow label="Year Built" value={property.yearBuilt || "—"} icon={Calendar} />
             <InfoRow label="Bedrooms" value={property.beds} icon={Bed} />
             <InfoRow label="Bathrooms" value={property.baths} icon={Bath} />
-            <InfoRow label="Square Feet" value={property.sqft.toLocaleString()} icon={Maximize} />
-            <InfoRow label="Lot Size" value={property.lotSize || "—"} icon={Maximize} />
+            <InfoRow label="Square Feet" value={property.sqft.toLocaleString()} icon={Ruler} />
+            <InfoRow label="Lot Size" value={property.lotSize || "—"} icon={LandPlot} />
           </div>
         </SectionCard>
 
