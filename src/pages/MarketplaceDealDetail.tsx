@@ -586,7 +586,7 @@ export default function MarketplaceDealDetail() {
                 {/* Make Offer Button */}
                 <Button
                   onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
-                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground w-[180px]"
+                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground min-w-[200px]"
                 >
                   <FileText className="h-4 w-4" />
                   Make Offer
