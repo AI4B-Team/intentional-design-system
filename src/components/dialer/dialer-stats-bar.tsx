@@ -1,21 +1,48 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Phone, Users, Calendar, Clock, TrendingUp } from "lucide-react";
+import { Phone, Users, Calendar, Clock, TrendingUp, Bot, Headphones, Target, MessageSquare, Zap, BarChart3, Lightbulb, CheckCircle } from "lucide-react";
+
+type CallMode = 'human' | 'ai_agent' | 'listen';
 
 interface DialerStatsBarProps {
-  callsMade: number;
-  contactsReached: number;
-  appointmentsSet: number;
-  totalTalkTime: number;
-  sessionDuration: number;
+  mode?: CallMode;
+  // Human mode stats
+  callsMade?: number;
+  contactsReached?: number;
+  appointmentsSet?: number;
+  totalTalkTime?: number;
+  sessionDuration?: number;
+  // AI Agent mode stats
+  callsExecuted?: number;
+  liveConversations?: number;
+  qualifiedLeads?: number;
+  avgConversationLength?: number;
+  successRate?: number;
+  // Listen mode stats
+  callsObserved?: number;
+  keyMomentsFlagged?: number;
+  objectionsDetected?: number;
+  buyingSignals?: number;
+  suggestionsUsed?: number;
 }
 
 export function DialerStatsBar({
-  callsMade,
-  contactsReached,
-  appointmentsSet,
-  totalTalkTime,
-  sessionDuration,
+  mode = 'human',
+  callsMade = 0,
+  contactsReached = 0,
+  appointmentsSet = 0,
+  totalTalkTime = 0,
+  sessionDuration = 0,
+  callsExecuted = 0,
+  liveConversations = 0,
+  qualifiedLeads = 0,
+  avgConversationLength = 0,
+  successRate = 0,
+  callsObserved = 0,
+  keyMomentsFlagged = 0,
+  objectionsDetected = 0,
+  buyingSignals = 0,
+  suggestionsUsed = 0,
 }: DialerStatsBarProps) {
   const formatTime = (seconds: number): string => {
     const hrs = Math.floor(seconds / 3600);
@@ -32,52 +59,153 @@ export function DialerStatsBar({
     ? ((callsMade / sessionDuration) * 3600).toFixed(1) 
     : callsMade.toString();
 
-  const stats = [
-    {
-      label: "Calls Made",
-      value: callsMade.toString(),
-      icon: Phone,
-      color: "text-info",
-    },
-    {
-      label: "Contacts Reached",
-      value: `${contactsReached} (${reachRate}%)`,
-      icon: Users,
-      color: "text-success",
-    },
-    {
-      label: "Appointments",
-      value: appointmentsSet.toString(),
-      icon: Calendar,
-      color: "text-warning",
-    },
-    {
-      label: "Talk Time",
-      value: formatTime(totalTalkTime),
-      icon: Clock,
-      color: "text-purple-500",
-    },
-    {
-      label: "Calls/Hour",
-      value: callsPerHour,
-      icon: TrendingUp,
-      color: "text-accent",
-    },
-  ];
+  const getModeIcon = () => {
+    switch (mode) {
+      case 'ai_agent':
+        return <Bot className="h-3 w-3" />;
+      case 'listen':
+        return <Headphones className="h-3 w-3" />;
+      default:
+        return <Phone className="h-3 w-3" />;
+    }
+  };
+
+  const getModeLabel = () => {
+    switch (mode) {
+      case 'ai_agent':
+        return 'AI Agent';
+      case 'listen':
+        return 'Listen Mode';
+      default:
+        return 'Human Call';
+    }
+  };
+
+  const getStats = () => {
+    switch (mode) {
+      case 'ai_agent':
+        return [
+          {
+            label: "Calls Executed",
+            value: callsExecuted.toString(),
+            icon: Zap,
+            color: "text-info",
+          },
+          {
+            label: "Live Conversations",
+            value: liveConversations.toString(),
+            icon: MessageSquare,
+            color: "text-success",
+          },
+          {
+            label: "Qualified Leads",
+            value: qualifiedLeads.toString(),
+            icon: Target,
+            color: "text-warning",
+          },
+          {
+            label: "Avg Conversation",
+            value: formatTime(avgConversationLength),
+            icon: Clock,
+            color: "text-purple-500",
+          },
+          {
+            label: "Success Rate",
+            value: `${successRate}%`,
+            icon: CheckCircle,
+            color: "text-accent",
+          },
+        ];
+      case 'listen':
+        return [
+          {
+            label: "Calls Observed",
+            value: callsObserved.toString(),
+            icon: Headphones,
+            color: "text-info",
+          },
+          {
+            label: "Key Moments",
+            value: keyMomentsFlagged.toString(),
+            icon: Lightbulb,
+            color: "text-success",
+          },
+          {
+            label: "Objections",
+            value: objectionsDetected.toString(),
+            icon: MessageSquare,
+            color: "text-warning",
+          },
+          {
+            label: "Buying Signals",
+            value: buyingSignals.toString(),
+            icon: TrendingUp,
+            color: "text-purple-500",
+          },
+          {
+            label: "Suggestions Used",
+            value: suggestionsUsed.toString(),
+            icon: BarChart3,
+            color: "text-accent",
+          },
+        ];
+      default: // human mode
+        return [
+          {
+            label: "Calls Made",
+            value: callsMade.toString(),
+            icon: Phone,
+            color: "text-info",
+          },
+          {
+            label: "Contacts Reached",
+            value: `${contactsReached} (${reachRate}%)`,
+            icon: Users,
+            color: "text-success",
+          },
+          {
+            label: "Appointments",
+            value: appointmentsSet.toString(),
+            icon: Calendar,
+            color: "text-warning",
+          },
+          {
+            label: "Talk Time",
+            value: formatTime(totalTalkTime),
+            icon: Clock,
+            color: "text-purple-500",
+          },
+          {
+            label: "Calls/Hour",
+            value: callsPerHour,
+            icon: TrendingUp,
+            color: "text-accent",
+          },
+        ];
+    }
+  };
+
+  const stats = getStats();
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-background-secondary rounded-medium border border-border-subtle">
-      {stats.map((stat) => (
-        <div key={stat.label} className="flex items-center gap-3">
-          <div className={cn("p-2 rounded-small bg-white", stat.color)}>
-            <stat.icon className="h-4 w-4" />
+    <div className="space-y-2">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 p-4 bg-background-secondary rounded-medium border border-border-subtle">
+        {stats.map((stat) => (
+          <div key={stat.label} className="flex items-center gap-3">
+            <div className={cn("p-2 rounded-small bg-white", stat.color)}>
+              <stat.icon className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-tiny text-muted-foreground uppercase tracking-wide">{stat.label}</p>
+              <p className="text-body font-semibold text-foreground">{stat.value}</p>
+            </div>
           </div>
-          <div>
-            <p className="text-tiny text-muted-foreground">{stat.label}</p>
-            <p className="text-body font-semibold text-foreground">{stat.value}</p>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
+      <div className="flex items-center justify-end gap-1.5 text-tiny text-muted-foreground">
+        {getModeIcon()}
+        <span>Mode: {getModeLabel()}</span>
+      </div>
     </div>
   );
 }
