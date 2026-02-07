@@ -319,37 +319,48 @@ export function TransactionRoadmapContent({
   );
 }
 
+// Mock POF documents for demo (matches POFManager data)
+const mockPofDocs: ProofOfFundsDoc[] = [
+  {
+    id: "pof-1",
+    file_name: "POF_FirstNational_500k.pdf",
+    file_url: "#",
+    amount: 500000,
+    lender_name: "First National Bank",
+    expiration_date: "2026-02-20",
+    is_active: true,
+  },
+  {
+    id: "pof-2",
+    file_name: "POF_PrivateMoney_250k.pdf",
+    file_url: "#",
+    amount: 250000,
+    lender_name: "Private Money Lender LLC",
+    expiration_date: "2026-03-20",
+    is_active: true,
+  },
+];
+
 // Milestone 1: Assemble Deal Team
 function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
   const { user } = useAuth();
 
-  // Fetch existing POF documents
-  const { data: pofDocs, isLoading: isPofLoading } = useQuery({
-    queryKey: ['proof-of-funds', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('proof_of_funds')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .gte('expiration_date', new Date().toISOString().split('T')[0])
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as ProofOfFundsDoc[];
-    },
-    enabled: !!user?.id,
-  });
+  // Use mock POF documents for now (later can be replaced with DB query)
+  const pofDocs = mockPofDocs;
+  const isPofLoading = false;
 
   const hasPof = pofDocs && pofDocs.length > 0;
   const selectedPof = pofDocs?.find(p => p.id === data.selectedPofId) || pofDocs?.[0];
 
-  // Auto-select first POF if available and none selected
+  // Auto-select first (default) POF if available and none selected
   React.useEffect(() => {
     if (hasPof && !data.selectedPofId) {
-      updateData({ selectedPofId: pofDocs[0].id });
+      // Auto-select the first POF as default and pre-fill lender info
+      const defaultPof = pofDocs[0];
+      updateData({ 
+        selectedPofId: defaultPof.id,
+        lenderName: defaultPof.lender_name || '',
+      });
     }
   }, [hasPof, pofDocs, data.selectedPofId]);
 
