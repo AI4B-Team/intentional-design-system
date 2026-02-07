@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { NavLink } from "@/components/NavLink";
 import {
   Home,
+  Phone,
   Building2,
   Users,
   FileText,
@@ -66,6 +67,7 @@ const navGroups: NavGroup[] = [
       { label: "Dashboard", href: "/", icon: Home },
       { label: "Properties", href: "/properties", icon: Building2, badge: 12 },
       { label: "Contacts", href: "/contacts", icon: Users },
+      { label: "Dialer", href: "/dialer", icon: Phone },
     ],
   },
   {
