@@ -56,6 +56,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals, MarketplaceDeal } from "@/hooks/useMockDeals";
@@ -67,6 +68,7 @@ import { ComparableSalesSection } from "@/components/marketplace-deals/Comparabl
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { DealRiskBar } from "@/components/marketplace-deals/DealRiskBar";
+import { TransactionRoadmap, type TransactionData } from "@/components/transactions";
 
 type ViewMode = "flip" | "hold";
 type LayoutMode = "detail" | "split";
@@ -466,6 +468,7 @@ export default function MarketplaceDealDetail() {
   const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
   const [showBuyersOnMap, setShowBuyersOnMap] = useState(false);
+  const [showTransactionRoadmap, setShowTransactionRoadmap] = useState(false);
 
   // Persist view mode and layout mode changes to sessionStorage
   React.useEffect(() => {
@@ -1600,6 +1603,16 @@ export default function MarketplaceDealDetail() {
           {/* Sidebar - Agent Card with AI Templates (Only in detail mode) */}
           {layoutMode !== "split" && (
             <div className="space-y-4">
+              {/* Make Offer Button */}
+              <Button
+                onClick={() => setShowTransactionRoadmap(true)}
+                className="w-full gap-2 bg-success hover:bg-success/90 text-white"
+                size="lg"
+              >
+                <FileText className="h-5 w-5" />
+                Make Offer
+              </Button>
+
               {/* Contact Panel - Collapsible */}
               <ContactPanel
                 contact={mockContact}
@@ -1615,6 +1628,18 @@ export default function MarketplaceDealDetail() {
               />
             </div>
           )}
+
+          {/* Transaction Roadmap Dialog */}
+          <TransactionRoadmap
+            open={showTransactionRoadmap}
+            onOpenChange={setShowTransactionRoadmap}
+            propertyAddress={deal.address}
+            propertyPrice={deal.price}
+            onSave={(data) => {
+              console.log('Transaction data saved:', data);
+              toast.success('Transaction roadmap saved!');
+            }}
+          />
         </div>
           </div>
         </div>

@@ -6741,6 +6741,258 @@ export type Database = {
           },
         ]
       }
+      property_transactions: {
+        Row: {
+          accepted_offer: number | null
+          accepted_offer_date: string | null
+          appraiser_agent_recommended: boolean | null
+          appraiser_contact_id: string | null
+          appraiser_name: string | null
+          appraiser_phone: string | null
+          closing_documents_signed: boolean | null
+          closing_escrow_wired: boolean | null
+          closing_final_walkthrough: boolean | null
+          closing_financing_finalized: boolean | null
+          closing_keys_received: boolean | null
+          created_at: string
+          current_milestone: number
+          escrow_confirmed: boolean | null
+          escrow_contact_id: string | null
+          escrow_email: string | null
+          escrow_name: string | null
+          escrow_phone: string | null
+          id: string
+          inspector_agent_recommended: boolean | null
+          inspector_contact_id: string | null
+          inspector_name: string | null
+          inspector_phone: string | null
+          insurance_carrier: string | null
+          insurance_contact_id: string | null
+          insurance_name: string | null
+          insurance_phone: string | null
+          investment_strategy:
+            | Database["public"]["Enums"]["investment_strategy"]
+            | null
+          lender_confirmed: boolean | null
+          lender_confirmed_at: string | null
+          lender_contact_id: string | null
+          lender_email: string | null
+          lender_name: string | null
+          lender_phone: string | null
+          listing_price: number | null
+          mao: number | null
+          mao_vs_accepted_variance: number | null
+          milestone_1_completed_at: string | null
+          milestone_2_completed_at: string | null
+          milestone_3_completed_at: string | null
+          milestone_4_completed_at: string | null
+          milestone_5_completed_at: string | null
+          notes: string | null
+          organization_id: string | null
+          property_id: string | null
+          realtor_confirmed: boolean | null
+          realtor_confirmed_at: string | null
+          realtor_contact_id: string | null
+          realtor_email: string | null
+          realtor_name: string | null
+          realtor_phone: string | null
+          status: string
+          strategy_phase_buy: boolean | null
+          strategy_phase_refinance: boolean | null
+          strategy_phase_rehab: boolean | null
+          strategy_phase_rent: boolean | null
+          strategy_phase_repeat: boolean | null
+          total_days_to_close: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accepted_offer?: number | null
+          accepted_offer_date?: string | null
+          appraiser_agent_recommended?: boolean | null
+          appraiser_contact_id?: string | null
+          appraiser_name?: string | null
+          appraiser_phone?: string | null
+          closing_documents_signed?: boolean | null
+          closing_escrow_wired?: boolean | null
+          closing_final_walkthrough?: boolean | null
+          closing_financing_finalized?: boolean | null
+          closing_keys_received?: boolean | null
+          created_at?: string
+          current_milestone?: number
+          escrow_confirmed?: boolean | null
+          escrow_contact_id?: string | null
+          escrow_email?: string | null
+          escrow_name?: string | null
+          escrow_phone?: string | null
+          id?: string
+          inspector_agent_recommended?: boolean | null
+          inspector_contact_id?: string | null
+          inspector_name?: string | null
+          inspector_phone?: string | null
+          insurance_carrier?: string | null
+          insurance_contact_id?: string | null
+          insurance_name?: string | null
+          insurance_phone?: string | null
+          investment_strategy?:
+            | Database["public"]["Enums"]["investment_strategy"]
+            | null
+          lender_confirmed?: boolean | null
+          lender_confirmed_at?: string | null
+          lender_contact_id?: string | null
+          lender_email?: string | null
+          lender_name?: string | null
+          lender_phone?: string | null
+          listing_price?: number | null
+          mao?: number | null
+          mao_vs_accepted_variance?: number | null
+          milestone_1_completed_at?: string | null
+          milestone_2_completed_at?: string | null
+          milestone_3_completed_at?: string | null
+          milestone_4_completed_at?: string | null
+          milestone_5_completed_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          realtor_confirmed?: boolean | null
+          realtor_confirmed_at?: string | null
+          realtor_contact_id?: string | null
+          realtor_email?: string | null
+          realtor_name?: string | null
+          realtor_phone?: string | null
+          status?: string
+          strategy_phase_buy?: boolean | null
+          strategy_phase_refinance?: boolean | null
+          strategy_phase_rehab?: boolean | null
+          strategy_phase_rent?: boolean | null
+          strategy_phase_repeat?: boolean | null
+          total_days_to_close?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accepted_offer?: number | null
+          accepted_offer_date?: string | null
+          appraiser_agent_recommended?: boolean | null
+          appraiser_contact_id?: string | null
+          appraiser_name?: string | null
+          appraiser_phone?: string | null
+          closing_documents_signed?: boolean | null
+          closing_escrow_wired?: boolean | null
+          closing_final_walkthrough?: boolean | null
+          closing_financing_finalized?: boolean | null
+          closing_keys_received?: boolean | null
+          created_at?: string
+          current_milestone?: number
+          escrow_confirmed?: boolean | null
+          escrow_contact_id?: string | null
+          escrow_email?: string | null
+          escrow_name?: string | null
+          escrow_phone?: string | null
+          id?: string
+          inspector_agent_recommended?: boolean | null
+          inspector_contact_id?: string | null
+          inspector_name?: string | null
+          inspector_phone?: string | null
+          insurance_carrier?: string | null
+          insurance_contact_id?: string | null
+          insurance_name?: string | null
+          insurance_phone?: string | null
+          investment_strategy?:
+            | Database["public"]["Enums"]["investment_strategy"]
+            | null
+          lender_confirmed?: boolean | null
+          lender_confirmed_at?: string | null
+          lender_contact_id?: string | null
+          lender_email?: string | null
+          lender_name?: string | null
+          lender_phone?: string | null
+          listing_price?: number | null
+          mao?: number | null
+          mao_vs_accepted_variance?: number | null
+          milestone_1_completed_at?: string | null
+          milestone_2_completed_at?: string | null
+          milestone_3_completed_at?: string | null
+          milestone_4_completed_at?: string | null
+          milestone_5_completed_at?: string | null
+          notes?: string | null
+          organization_id?: string | null
+          property_id?: string | null
+          realtor_confirmed?: boolean | null
+          realtor_confirmed_at?: string | null
+          realtor_contact_id?: string | null
+          realtor_email?: string | null
+          realtor_name?: string | null
+          realtor_phone?: string | null
+          status?: string
+          strategy_phase_buy?: boolean | null
+          strategy_phase_refinance?: boolean | null
+          strategy_phase_rehab?: boolean | null
+          strategy_phase_rent?: boolean | null
+          strategy_phase_repeat?: boolean | null
+          total_days_to_close?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_transactions_appraiser_contact_id_fkey"
+            columns: ["appraiser_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_escrow_contact_id_fkey"
+            columns: ["escrow_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_inspector_contact_id_fkey"
+            columns: ["inspector_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_insurance_contact_id_fkey"
+            columns: ["insurance_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_lender_contact_id_fkey"
+            columns: ["lender_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_transactions_realtor_contact_id_fkey"
+            columns: ["realtor_contact_id"]
+            isOneToOne: false
+            referencedRelation: "deal_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       renovation_images: {
         Row: {
           area_label: string | null
@@ -8409,6 +8661,12 @@ export type Database = {
         | "planned"
         | "completed"
       feedback_type: "general" | "bug" | "feature"
+      investment_strategy:
+        | "brrrr"
+        | "flip"
+        | "buy_and_hold"
+        | "wholesale"
+        | "str"
       jv_experience_level:
         | "beginner"
         | "intermediate"
@@ -8566,6 +8824,13 @@ export const Constants = {
         "completed",
       ],
       feedback_type: ["general", "bug", "feature"],
+      investment_strategy: [
+        "brrrr",
+        "flip",
+        "buy_and_hold",
+        "wholesale",
+        "str",
+      ],
       jv_experience_level: [
         "beginner",
         "intermediate",
