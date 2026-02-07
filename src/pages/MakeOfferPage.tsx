@@ -376,7 +376,12 @@ Best regards,
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {/* Property Type Badge - Bottom Left */}
+                    <Badge variant="secondary" className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm">
+                      {deal.propertyType}
+                    </Badge>
+                    {/* Pagination Dots - Bottom Right */}
+                    <div className="absolute bottom-2 right-2 flex gap-1.5">
                       {propertyImages.map((_, idx) => (
                         <button
                           key={idx}
@@ -433,9 +438,6 @@ Best regards,
                       <div className="text-lg font-semibold text-muted-foreground">
                         ARV: ${deal.arv.toLocaleString()}
                       </div>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary">
-                        {deal.propertyType}
-                      </Badge>
                     </div>
 
                     <div className="grid grid-cols-4 gap-3 pt-2 border-t">
