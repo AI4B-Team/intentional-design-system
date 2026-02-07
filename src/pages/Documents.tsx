@@ -1,5 +1,4 @@
 import * as React from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -672,39 +671,38 @@ export default function Documents() {
   const isInPOFFolder = currentFolderId === "pof";
 
   return (
-    <AppLayout>
-      <PageLayout>
-        {/* POF Manager - Special view for Proof of Funds folder */}
-        {isInPOFFolder ? (
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleNavigateBack}
-                className="h-9 w-9"
+    <PageLayout>
+      {/* POF Manager - Special view for Proof of Funds folder */}
+      {isInPOFFolder ? (
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleNavigateBack}
+              className="h-9 w-9"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentFolderId(null)}
+                className="text-2xl font-bold text-muted-foreground hover:text-foreground transition-colors"
               >
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setCurrentFolderId(null)}
-                  className="text-2xl font-bold text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  ASSETS
-                </button>
-                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                <span className="text-lg font-semibold text-foreground">
-                  Proof Of Funds
-                </span>
-              </div>
+                ASSETS
+              </button>
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              <span className="text-lg font-semibold text-foreground">
+                Proof Of Funds
+              </span>
             </div>
-            <POFManager onBack={handleNavigateBack} />
           </div>
-        ) : (
-          <>
-            {/* Header with Breadcrumb */}
-            <div className="flex items-center justify-between mb-6">
+          <POFManager onBack={handleNavigateBack} />
+        </div>
+      ) : (
+        <>
+          {/* Header with Breadcrumb */}
+          <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 {currentFolderId && (
                   <Button
@@ -1075,10 +1073,9 @@ export default function Documents() {
               <Button onClick={handleRenameSubmit}>Rename</Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
-          </>
-        )}
-      </PageLayout>
-    </AppLayout>
+      </Dialog>
+        </>
+      )}
+    </PageLayout>
   );
 }
