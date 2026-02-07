@@ -111,8 +111,8 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
       label: 'Voice Agent',
       description: 'AI handles the call autonomously',
       icon: Bot,
-      bgColor: 'bg-primary',
-      textColor: 'text-primary-foreground',
+      bgColor: 'bg-purple-500',
+      textColor: 'text-white',
       badge: 'Beta',
     },
     {
