@@ -67,6 +67,16 @@ interface CallScript {
 export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardProps) {
   const navigate = useNavigate();
 
+  const handleModeSelect = (mode: 'start_call' | 'voice_agent' | 'listen_mode') => {
+    if (mode === 'start_call' || mode === 'voice_agent') {
+      // Navigate to the new session page for Start Call and Voice Agent
+      navigate(`/dialer/session?mode=${mode}`);
+    } else {
+      // Listen mode stays on the current page (existing behavior)
+      onSelectMode(mode);
+    }
+  };
+
   const recentCalls: RecentCall[] = [
     { id: '1', name: 'Sarah Johnson', property: '123 Maple Street', time: '2 hours ago', duration: '23:45', sentiment: 85, status: 'closed' },
     { id: '2', name: 'Michael Chen', property: '456 Oak Avenue', time: '4 hours ago', duration: '15:30', sentiment: 72, status: 'follow-up' },
@@ -193,7 +203,7 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
             {modes.map((mode) => (
               <button
                 key={mode.id}
-                onClick={() => onSelectMode(mode.id)}
+                onClick={() => handleModeSelect(mode.id)}
                 className={cn(
                   "relative p-6 rounded-lg text-center transition-all",
                   "hover:scale-[1.02] hover:shadow-lg",
