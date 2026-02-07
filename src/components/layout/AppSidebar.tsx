@@ -90,7 +90,7 @@ const contactsNavItem: NavItem = {
 // Documents - direct nav item
 const documentsNavItem: NavItem = {
   label: "Documents",
-  href: "/apps/documents",
+  href: "/documents",
   icon: FileText,
 };
 
