@@ -117,7 +117,7 @@ export default function TransactionRoadmapPage() {
         {/* Split Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Side - Property Details */}
-          <div className="w-[400px] flex-shrink-0 border-r border-border bg-muted/30 flex flex-col">
+          <div className="w-[400px] flex-shrink-0 border-r border-border bg-white flex flex-col">
             <ScrollArea className="flex-1">
               <div className="p-4 space-y-4">
                 {/* Image Gallery */}
