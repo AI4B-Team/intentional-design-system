@@ -22,7 +22,7 @@ import {
   MessageSquare,
   Bed,
   Bath,
-  Square,
+  Ruler,
   Calendar
 } from 'lucide-react';
 import { BuyBox } from '@/types/property-scout';
@@ -367,7 +367,7 @@ export const BuyBoxWizard: React.FC<BuyBoxWizardProps> = ({
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
-                    <Square className="h-4 w-4" />
+                    <Ruler className="h-4 w-4" />
                     Square Feet (Min)
                   </Label>
                   <Input

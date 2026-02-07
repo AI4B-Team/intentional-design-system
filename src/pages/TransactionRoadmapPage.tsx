@@ -13,7 +13,7 @@ import {
   Calendar,
   Bed,
   Bath,
-  Square,
+  Ruler,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals } from "@/hooks/useMockDeals";
@@ -225,7 +225,7 @@ export default function TransactionRoadmapPage() {
                       </div>
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-muted-foreground">
-                          <Square className="h-4 w-4" />
+                          <Ruler className="h-4 w-4" />
                         </div>
                         <p className="font-semibold">{deal.sqft.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">Sq Ft</p>
