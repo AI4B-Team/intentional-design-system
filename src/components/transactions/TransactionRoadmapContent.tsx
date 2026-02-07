@@ -319,27 +319,9 @@ export function TransactionRoadmapContent({
   );
 }
 
-// Mock POF documents for demo (matches POFManager data)
-const mockPofDocs: ProofOfFundsDoc[] = [
-  {
-    id: "pof-1",
-    file_name: "POF_FirstNational_500k.pdf",
-    file_url: "#",
-    amount: 500000,
-    lender_name: "First National Bank",
-    expiration_date: "2026-02-20",
-    is_active: true,
-  },
-  {
-    id: "pof-2",
-    file_name: "POF_PrivateMoney_250k.pdf",
-    file_url: "#",
-    amount: 250000,
-    lender_name: "Private Money Lender LLC",
-    expiration_date: "2026-03-20",
-    is_active: true,
-  },
-];
+// Mock POF documents - empty by default to show "No POF On File" state
+// In production, this would fetch from database
+const mockPofDocs: ProofOfFundsDoc[] = [];
 
 // Milestone 1: Assemble Deal Team
 function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
@@ -526,31 +508,45 @@ function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updat
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {/* No POF - Prompt to upload */}
+                  {/* No POF - Prompt to upload or get from lenders */}
                   <div className="p-3 rounded-lg border border-dashed border-warning/50 bg-warning/5">
                     <div className="flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-warning">No Proof of Funds on File</p>
+                        <p className="text-sm font-medium text-warning">No Proof Of Funds On File</p>
                         <p className="text-xs text-muted-foreground">
-                          Upload a POF letter to strengthen your offers and close deals faster.
+                          Upload a POF letter or request one from a lender to strengthen your offers.
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="gap-2 w-full"
-                    onClick={() => {
-                      // Navigate to documents or open upload modal
-                      toast.info('Navigate to Documents to upload a POF letter');
-                    }}
-                  >
-                    <Upload className="h-4 w-4" />
-                    Upload Proof of Funds
-                  </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => {
+                        // Navigate to documents to upload
+                        toast.info('Navigate to Documents to upload a POF letter');
+                      }}
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload POF
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => {
+                        // Navigate to lenders marketplace
+                        toast.info('Browse lenders to request a POF letter');
+                      }}
+                    >
+                      <Building className="h-4 w-4" />
+                      Get From Lender
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
