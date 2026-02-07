@@ -432,10 +432,10 @@ Best regards,
                     </div>
 
                     <div className="flex items-center gap-4 flex-wrap">
-                      <div className="text-2xl font-bold text-primary">
+                      <div className="text-2xl font-bold text-foreground">
                         ${deal.price.toLocaleString()}
                       </div>
-                      <div className="text-lg font-semibold text-muted-foreground">
+                      <div className="text-lg font-semibold text-success">
                         ARV: ${deal.arv.toLocaleString()}
                       </div>
                     </div>
