@@ -10,3 +10,4 @@ export { DealScore, DealScoreCompact, DealScoreInline } from "./DealScore";
 export { ComparableSalesSection } from "./ComparableSalesSection";
 export { ContactPanel } from "./ContactPanel";
 export { BuyersPanel } from "./BuyersPanel";
+export { MakeOfferWizard } from "./MakeOfferWizard";
