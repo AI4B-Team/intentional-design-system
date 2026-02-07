@@ -329,7 +329,7 @@ export default function MarketplaceDealDetail() {
           "flex items-center justify-between flex-shrink-0",
           layoutMode === "split" ? "px-4 py-2" : "max-w-7xl mx-auto w-full mb-4"
         )}>
-          {/* Left Side: Back + Content Tabs */}
+          {/* Left Side: Back only */}
           <div className="flex items-center gap-6">
             <Button
               variant="ghost"
@@ -339,56 +339,37 @@ export default function MarketplaceDealDetail() {
               <ArrowLeft className="h-4 w-4" />
               Back To Listings
             </Button>
-
-            {/* Content Tabs */}
-            <div className="flex items-center gap-1">
-              {contentTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as ContentTab)}
-                  className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                    activeTab === tab.id
-                      ? "bg-muted text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Right Side: View Mode Toggle + Actions */}
+          {/* Right Side: Map, Save, Share, PDF Actions */}
           <div className="flex items-center gap-2">
-            {/* View Mode Toggle (Flip/Hold) */}
-            <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-              {(["flip", "hold"] as ViewMode[]).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setViewMode(mode)}
-                  className={cn(
-                    "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
-                    viewMode === mode
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {mode === "flip" ? "Flip" : "Hold"}
-                </button>
-              ))}
-            </div>
-
-            {/* Make Offer Button */}
-            <Button
-              onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
-              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              <FileText className="h-4 w-4" />
-              Make Offer
-            </Button>
-
             {/* Layout Mode Toggle (Map) */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={layoutMode === "split" ? "secondary" : "ghost"}
+                    onClick={() => setLayoutMode(layoutMode === "split" ? "detail" : "split")}
+                    className="gap-2"
+                  >
+                    {layoutMode === "split" ? (
+                      <>
+                        <PanelLeftClose className="h-4 w-4" />
+                        Close Map
+                      </>
+                    ) : (
+                      <>
+                        <Map className="h-4 w-4" />
+                        Map
+                      </>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {layoutMode === "split" ? "Close Map" : "Show Map"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -575,7 +556,56 @@ export default function MarketplaceDealDetail() {
               </div>
             </div>
 
-            {/* Content Grid */}
+            {/* Tabs Bar - Below Photos */}
+            <div className="flex items-center justify-between mb-6">
+              {/* Left: Content Tabs */}
+              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                {contentTabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as ContentTab)}
+                    className={cn(
+                      "px-4 py-2 text-sm font-medium rounded-md transition-colors",
+                      activeTab === tab.id
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right: View Mode + Make Offer */}
+              <div className="flex items-center gap-2">
+                {/* View Mode Toggle (Flip/Hold) */}
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                  {(["flip", "hold"] as ViewMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className={cn(
+                        "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
+                        viewMode === mode
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {mode === "flip" ? "Flip" : "Hold"}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Make Offer Button */}
+                <Button
+                  onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
+                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <FileText className="h-4 w-4" />
+                  Make Offer
+                </Button>
+              </div>
+            </div>
             <div className={cn(
               "grid gap-6",
               layoutMode === "split" ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-3"
