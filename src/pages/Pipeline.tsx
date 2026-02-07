@@ -102,7 +102,7 @@ import {
   Home,
   Bed,
   Bath,
-  Square,
+  Ruler,
   Settings,
   LayoutGrid,
   Columns,
@@ -1105,7 +1105,7 @@ export default function Pipeline() {
                       {selectedDeal.baths} bath
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Square className="h-4 w-4" />
+                      <Ruler className="h-4 w-4" />
                       {selectedDeal.sqft.toLocaleString()} sqft
                     </span>
                   </div>

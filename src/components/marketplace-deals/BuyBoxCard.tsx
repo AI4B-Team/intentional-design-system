@@ -24,7 +24,7 @@ import {
   Building2,
   Bed,
   Bath,
-  Square,
+  Ruler,
   TrendingUp,
 } from 'lucide-react';
 import { BuyBox } from '@/types/property-scout';
@@ -129,7 +129,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
             )}
             {buyBox.criteria.minSquareFeet && (
               <div className="flex items-center gap-1.5 text-sm">
-                <Square className="h-4 w-4 text-muted-foreground" />
+                <Ruler className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{(buyBox.criteria.minSquareFeet / 1000).toFixed(1)}k+</span>
                 <span className="text-muted-foreground">SqFt</span>
               </div>
@@ -319,7 +319,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
             )}
             {buyBox.criteria.minSquareFeet && (
               <div className="flex items-center gap-1.5">
-                <Square className="h-4 w-4 text-muted-foreground" />
+                <Ruler className="h-4 w-4 text-muted-foreground" />
                 <span className="font-medium">{(buyBox.criteria.minSquareFeet / 1000).toFixed(1)}k+</span>
                 <span className="text-muted-foreground">SqFt</span>
               </div>

@@ -49,7 +49,6 @@ import {
   Wallet,
   TrendingDown,
   Calendar,
-  Square,
 } from "lucide-react";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
@@ -491,7 +490,7 @@ function DealListItem({
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center text-muted-foreground mb-1">
-                <Square className="h-4 w-4" />
+                <Ruler className="h-4 w-4" />
               </div>
               <p className="font-semibold text-sm">{deal.sqft.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">Sq Ft</p>
@@ -957,7 +956,7 @@ function DealCard({
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center text-muted-foreground mb-1">
-                <Square className="h-4 w-4" />
+                <Ruler className="h-4 w-4" />
               </div>
               <p className="font-semibold text-sm">{deal.sqft.toLocaleString()}</p>
               <p className="text-xs text-muted-foreground">Sq Ft</p>

@@ -30,7 +30,7 @@ import {
   Building,
   Bed,
   Bath,
-  Square,
+  Ruler,
   DollarSign,
   TrendingUp,
 } from 'lucide-react';
@@ -324,7 +324,7 @@ export default function BuyerDashboard() {
                         )}
                         {deal.sqft && (
                           <span className="flex items-center gap-1">
-                            <Square className="h-4 w-4" />
+                            <Ruler className="h-4 w-4" />
                             {deal.sqft.toLocaleString()}
                           </span>
                         )}
