@@ -57,13 +57,13 @@ export function CallStructurePanel({
             </Button>
           </div>
           <div className="flex items-start gap-3 bg-white border border-border-subtle rounded-lg p-3">
-            <div className="h-10 w-10 rounded-lg bg-success flex items-center justify-center flex-shrink-0">
-              <MessageSquare className="h-5 w-5 text-success-foreground" />
+            <div className="h-10 w-10 rounded-lg bg-warning flex items-center justify-center flex-shrink-0">
+              <MessageSquare className="h-5 w-5 text-warning-foreground" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h4 className="font-semibold text-foreground">{callTemplate.name}</h4>
-                <Badge variant="secondary" className="text-[10px] bg-success/10 text-success">
+                <Badge variant="secondary" className="text-[10px] bg-warning/10 text-warning">
                   {callTemplate.category}
                 </Badge>
               </div>
