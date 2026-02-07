@@ -87,6 +87,13 @@ const contactsNavItem: NavItem = {
 };
 
 
+// Documents - direct nav item
+const documentsNavItem: NavItem = {
+  label: "Documents",
+  href: "/apps/documents",
+  icon: FileText,
+};
+
 // Apps - direct nav item (not a collapsible group)
 const appsNavItem: NavItem = {
   label: "Apps",
@@ -334,6 +341,32 @@ export function AppSidebar({
                 </li>
               );
             })}
+
+            {/* Documents - Direct Link */}
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to={documentsNavItem.href}
+                    onClick={onMobileClose}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                      location.pathname.startsWith(documentsNavItem.href) && "bg-brand-accent text-white font-medium",
+                      collapsed && "justify-center"
+                    )}
+                  >
+                    <documentsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", location.pathname.startsWith(documentsNavItem.href) && "text-white")} />
+                    {!collapsed && <span>{documentsNavItem.label}</span>}
+                  </NavLink>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                    {documentsNavItem.label}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </li>
 
             {/* Apps - Direct Link */}
             <li>
