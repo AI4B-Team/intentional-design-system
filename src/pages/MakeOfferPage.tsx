@@ -354,7 +354,7 @@ export default function MakeOfferPage() {
     { number: 5, title: "Preview", icon: Eye, locked: false },
     { number: 6, title: "Send", icon: Check, locked: false },
     // Transaction Roadmap Steps (7-11) - locked until offer sent
-    { number: 7, title: "Deal Team", icon: Users, locked: !offerSent },
+    { number: 7, title: "Title/Escrow", icon: Users, locked: !offerSent },
     { number: 8, title: "Negotiate", icon: DollarSign, locked: !offerSent },
     { number: 9, title: "Due Diligence", icon: FileText, locked: !offerSent },
     { number: 10, title: "Closing", icon: Key, locked: !offerSent },
@@ -379,19 +379,23 @@ export default function MakeOfferPage() {
         return true;
       case 6:
         return true;
-      // Transaction steps
+      // Transaction steps - streamlined
       case 7:
-        return (transactionData.lenderConfirmed || transactionData.lenderName) && 
-               (transactionData.realtorConfirmed || transactionData.realtorName);
+        // Deal Team: Just need escrow/title company now (lender/agent already done in Step 1)
+        return !!transactionData.escrowName && transactionData.escrowConfirmed;
       case 8:
-        return !!transactionData.acceptedOffer && transactionData.escrowConfirmed;
+        // Negotiate: Need accepted offer
+        return !!transactionData.acceptedOffer;
       case 9:
+        // Due Diligence: Inspector, appraiser, insurance
         return !!transactionData.inspectorName && !!transactionData.appraiserName && !!transactionData.insuranceName;
       case 10:
+        // Closing: All checklist items
         return transactionData.closingFinancingFinalized && transactionData.closingEscrowWired && 
                transactionData.closingFinalWalkthrough && transactionData.closingDocumentsSigned && 
                transactionData.closingKeysReceived;
       case 11:
+        // Strategy: Investment strategy selected
         return !!transactionData.investmentStrategy;
       default:
         return false;
@@ -1613,16 +1617,16 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 7: Deal Team */}
+                {/* Step 7: Deal Team (Escrow/Title - Lender/Agent already done in Step 1) */}
                 {currentStep === 7 && (
                   <div className="space-y-6">
                     <div>
                       <Badge variant="secondary" className="mb-2 bg-success/10 text-success">
                         Offer Sent
                       </Badge>
-                      <h3 className="text-lg font-semibold mb-1">Assemble Your Deal Team</h3>
+                      <h3 className="text-lg font-semibold mb-1">Add Title / Escrow Company</h3>
                       <p className="text-sm text-muted-foreground">
-                        Select or confirm your lender and realtor to move forward
+                        Select your closing coordinator (Lender & Agent confirmed in Step 1)
                       </p>
                     </div>
                     <Milestone1DealTeam 
@@ -1636,9 +1640,9 @@ Best regards,
                 {currentStep === 8 && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">Make & Negotiate Offer</h3>
+                      <h3 className="text-lg font-semibold mb-1">Track Negotiation</h3>
                       <p className="text-sm text-muted-foreground">
-                        Capture the economics and get the property under contract
+                        Record counter-offers and final accepted terms
                       </p>
                     </div>
                     <Milestone2Offer 
