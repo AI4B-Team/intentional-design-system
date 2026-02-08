@@ -18,6 +18,7 @@ import {
   Inbox,
   Sparkles,
   X,
+  Target,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
@@ -329,49 +330,46 @@ export default function TransactionRoadmapPage() {
                 <Card className="p-4">
                   <div className="space-y-4">
                     <div>
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
-                        <MapPin className="h-4 w-4" />
-                        <span>{transaction.city}, {transaction.state}</span>
-                      </div>
                       <h2 className="text-xl font-semibold">{transaction.address}</h2>
+                      <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-1">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span>{transaction.city}, {transaction.state} {transaction.zip}</span>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-4 flex-wrap">
-                      <div className="text-2xl font-bold text-primary">
+                    <div className="flex items-center gap-3">
+                      <div className="text-2xl font-bold">
                         ${transaction.offerAmount.toLocaleString()}
                       </div>
-                      <div className="text-lg font-semibold text-muted-foreground">
+                      <div className="text-lg font-medium text-primary">
                         ARV: ${transaction.arv.toLocaleString()}
                       </div>
-                      <Badge variant="secondary" className="bg-success/10 text-success">
-                        {transaction.propertyType}
-                      </Badge>
                     </div>
 
-                    <div className="grid grid-cols-4 gap-3 pt-2 border-t">
+                    <div className="grid grid-cols-4 gap-3 pt-3 border-t">
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                        <div className="flex items-center justify-center text-muted-foreground mb-1">
                           <Bed className="h-4 w-4" />
                         </div>
                         <p className="font-semibold">{transaction.beds}</p>
                         <p className="text-xs text-muted-foreground">Beds</p>
                       </div>
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                        <div className="flex items-center justify-center text-muted-foreground mb-1">
                           <Bath className="h-4 w-4" />
                         </div>
                         <p className="font-semibold">{transaction.baths}</p>
                         <p className="text-xs text-muted-foreground">Baths</p>
                       </div>
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                        <div className="flex items-center justify-center text-muted-foreground mb-1">
                           <Ruler className="h-4 w-4" />
                         </div>
                         <p className="font-semibold">{transaction.sqft.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">Sq Ft</p>
                       </div>
                       <div className="text-center">
-                        <div className="flex items-center justify-center gap-1 text-muted-foreground">
+                        <div className="flex items-center justify-center text-muted-foreground mb-1">
                           <Calendar className="h-4 w-4" />
                         </div>
                         <p className="font-semibold">2005</p>
@@ -381,27 +379,34 @@ export default function TransactionRoadmapPage() {
                   </div>
                 </Card>
 
-                {/* Quick Stats */}
+                {/* Your Offer */}
                 <Card className="p-4">
-                  <h3 className="font-semibold mb-3">Investment Metrics</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">ARV</span>
-                      <span className="font-semibold">${transaction.arv.toLocaleString()}</span>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-1.5 rounded-full bg-primary/10">
+                      <Target className="h-4 w-4 text-primary" />
                     </div>
-                    <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">Est. Repair</span>
-                      <span className="font-semibold">${(25000).toLocaleString()}</span>
+                    <h3 className="font-semibold">Your Offer</h3>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">ARV</span>
+                      <span className="font-medium text-primary">${transaction.arv.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">Potential Profit</span>
-                      <span className="font-semibold text-success">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Your Offer ({Math.round((transaction.offerAmount / transaction.arv) * 100)}%)</span>
+                      <span className="font-bold text-lg">${transaction.offerAmount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Flipper Profit</span>
+                      <span className="font-medium text-primary">
                         ${(transaction.arv - transaction.offerAmount - 25000).toLocaleString()}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-sm text-muted-foreground">Days on Market</span>
-                      <span className="font-semibold">14</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Wholesaler Fee</span>
+                      <span className="font-medium text-primary">
+                        ${Math.round(transaction.offerAmount * 0.05).toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 </Card>
