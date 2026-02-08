@@ -30,14 +30,14 @@ import { toast } from "sonner";
 const MOCK_TRANSACTIONS = [
   {
     id: "tx-1",
-    propertyId: "deal-1",
-    address: "1234 Oak Street",
+    propertyId: "1", // Match useMockDeals format
+    address: "14060 Sydney Rd",
     city: "Tampa",
     state: "FL",
     zip: "33527",
     propertyType: "Single Family",
-    offerAmount: 185000,
-    arv: 285000,
+    offerAmount: 88000,
+    arv: 235000,
     beds: 3,
     baths: 2,
     sqft: 1850,
@@ -50,7 +50,7 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: "tx-2",
-    propertyId: "deal-2",
+    propertyId: "2",
     address: "567 Pine Avenue",
     city: "Brandon",
     state: "FL",
@@ -70,7 +70,7 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: "tx-3",
-    propertyId: "deal-3",
+    propertyId: "3",
     address: "890 Maple Drive",
     city: "Riverview",
     state: "FL",
@@ -90,7 +90,7 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: "tx-4",
-    propertyId: "deal-4",
+    propertyId: "4",
     address: "321 Cedar Lane",
     city: "Valrico",
     state: "FL",
@@ -105,7 +105,7 @@ const MOCK_TRANSACTIONS = [
   },
   {
     id: "tx-5",
-    propertyId: "deal-5",
+    propertyId: "5",
     address: "456 Birch Court",
     city: "Tampa",
     state: "FL",
