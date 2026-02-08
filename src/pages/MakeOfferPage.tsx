@@ -1470,7 +1470,7 @@ Best regards,
                       </h4>
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-muted-foreground">Package Type</p>
+                          <p className="text-muted-foreground">Offer Type</p>
                           <p className="font-medium">{selectedTemplateData?.name || "Cash Offer"}</p>
                         </div>
                         <div>
