@@ -209,8 +209,7 @@ export default function TransactionRoadmapPage() {
               </Button>
               <div className="h-6 w-px bg-border" />
               <div>
-                <h1 className="text-lg font-semibold">Transaction Roadmap</h1>
-                <p className="text-sm text-muted-foreground">{transaction.address}</p>
+                <h1 className="text-lg font-semibold">Transaction Roadmap: {transaction.address}</h1>
               </div>
             </div>
             <Badge variant="secondary" className="bg-success/10 text-success">
