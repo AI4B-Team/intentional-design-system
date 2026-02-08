@@ -257,7 +257,7 @@ export default function TransactionsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Transaction Roadmap</h1>
+            <h1 className="text-2xl font-bold">Transactions</h1>
             <p className="text-muted-foreground">
               Manage your active offers and transactions through closing
             </p>
