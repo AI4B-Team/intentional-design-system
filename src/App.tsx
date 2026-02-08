@@ -13,6 +13,7 @@ import { AIVAPanel } from "@/components/aiva/AIVAPanel";
 import { AIVAPanelWrapper } from "@/components/aiva/AIVAPanelWrapper";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import SignupFlow from "./pages/SignupFlow";
 import OnboardingOrganization from "./pages/OnboardingOrganization";
 import OnboardingCreate from "./pages/OnboardingCreate";
 import OnboardingJoin from "./pages/OnboardingJoin";
@@ -170,6 +171,14 @@ const App = () => (
                     element={
                       <ProtectedRoute requireOrganization={false}>
                         <OnboardingOrganization />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/signup/flow"
+                    element={
+                      <ProtectedRoute requireOrganization={false}>
+                        <SignupFlow />
                       </ProtectedRoute>
                     }
                   />
