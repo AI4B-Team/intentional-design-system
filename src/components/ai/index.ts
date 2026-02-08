@@ -7,3 +7,4 @@ export {
   ExitStrategyModal,
 } from "./ai-analysis-modal";
 export { AISettingsSection } from "./ai-settings-section";
+export { AIFollowUpRecommendation } from "./AIFollowUpRecommendation";
