@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy, Clock, Settings, CornerUpRight, Eye } from 'lucide-react';
+import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy, Clock, Settings, TrendingUp, Eye, Lightbulb } from 'lucide-react';
 
 export interface TranscriptMessage {
   id: string;
@@ -325,29 +325,34 @@ export function SessionCallView({
           <div className="bg-white border border-border-subtle rounded-lg p-4 space-y-3">
             {/* Question Card */}
             <div className="border border-border-subtle rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <CornerUpRight className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Question</span>
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <Badge variant="secondary" className="bg-primary/10 text-primary font-medium text-xs px-2 py-0.5">
+                    Question
+                  </Badge>
                 </div>
-                <span className="text-sm text-muted-foreground">{questionSuggestion.confidence}%</span>
+                <span className="text-sm text-muted-foreground tabular-nums">{questionSuggestion.confidence}%</span>
               </div>
-              <p className="text-sm text-foreground leading-relaxed">{questionSuggestion.text}</p>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{questionSuggestion.text}</p>
               <div className="flex items-start gap-1.5 mt-3">
-                <Sparkles className="h-3 w-3 text-warning flex-shrink-0 mt-0.5" />
+                <Lightbulb className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-foreground italic">{questionSuggestion.reasoning}</p>
               </div>
             </div>
 
             {/* Coach Tip Card */}
             <div className="border border-border-subtle rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">Coach Tip</span>
+                  <Badge variant="secondary" className="bg-primary/10 text-primary font-medium text-xs px-2 py-0.5">
+                    Coach Tip
+                  </Badge>
                 </div>
-                <span className="text-sm text-muted-foreground">{coachTip.confidence}%</span>
+                <span className="text-sm text-muted-foreground tabular-nums">{coachTip.confidence}%</span>
               </div>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{coachTip.text}</p>
             </div>
 
             {/* Stats */}
