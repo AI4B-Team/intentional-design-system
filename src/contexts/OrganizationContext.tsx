@@ -91,7 +91,8 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       setLoading(true);
       
       // Get user's membership with organization
-      const { data: memberData, error: memberError } = await supabase
+      // NOTE: A user can have multiple active memberships; pick the most recent one.
+      const { data: memberRows, error: memberError } = await supabase
         .from("organization_members")
         .select(`
           *,
@@ -99,7 +100,10 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         `)
         .eq("user_id", user.id)
         .eq("status", "active")
-        .maybeSingle();
+        .order("created_at", { ascending: false })
+        .limit(1);
+
+      const memberData = memberRows?.[0];
 
       if (memberError || !memberData) {
         // User has no organization - will need to create or join one
