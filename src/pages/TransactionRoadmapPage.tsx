@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -21,6 +22,9 @@ import {
   Target,
   DollarSign,
   Clock,
+  Users,
+  FileText,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
@@ -528,39 +532,78 @@ export default function TransactionRoadmapPage() {
           </div>
 
           {/* Right Side - Transaction Coordinator Tools */}
-          <div className="flex-1 bg-muted/30 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="p-6 space-y-6">
-                {/* AI Buyer Matching */}
-                <TCAIBuyerMatching
-                  propertyAddress={transaction.address}
-                  askingPrice={transaction.contractPrice + transaction.assignmentFee}
-                  arv={transaction.arv}
-                  propertyType={transaction.propertyType}
-                  market={transaction.city}
-                />
-
-                {/* Critical Dates */}
-                <TCCriticalDates
-                  contractDate={transaction.contractDate}
-                  criticalDates={criticalDates}
-                  onUpdateDate={handleUpdateCriticalDate}
-                />
-
-                {/* Stakeholders */}
-                <TCStakeholders
-                  stakeholders={stakeholders}
-                  onUpdateStakeholder={handleUpdateStakeholder}
-                  onAddStakeholder={handleAddStakeholder}
-                />
-
-                {/* Document Checklist */}
-                <TCDocumentChecklist
-                  documents={documents}
-                  onUpdateDocument={handleUpdateDocument}
-                />
+          <div className="flex-1 bg-muted/30 overflow-hidden flex flex-col">
+            <Tabs defaultValue="buyers" className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-shrink-0 border-b bg-card px-6 pt-4">
+                <TabsList className="w-full justify-start gap-1 bg-transparent p-0 h-auto">
+                  <TabsTrigger 
+                    value="buyers" 
+                    className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    Buyer Matching
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="dates" 
+                    className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                    Critical Dates
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="stakeholders" 
+                    className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
+                  >
+                    <Users className="h-4 w-4" />
+                    Stakeholders
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="documents" 
+                    className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
+                  >
+                    <FileText className="h-4 w-4" />
+                    Documents
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            </ScrollArea>
+              
+              <ScrollArea className="flex-1">
+                <div className="p-6">
+                  <TabsContent value="buyers" className="mt-0">
+                    <TCAIBuyerMatching
+                      propertyAddress={transaction.address}
+                      askingPrice={transaction.contractPrice + transaction.assignmentFee}
+                      arv={transaction.arv}
+                      propertyType={transaction.propertyType}
+                      market={transaction.city}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="dates" className="mt-0">
+                    <TCCriticalDates
+                      contractDate={transaction.contractDate}
+                      criticalDates={criticalDates}
+                      onUpdateDate={handleUpdateCriticalDate}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="stakeholders" className="mt-0">
+                    <TCStakeholders
+                      stakeholders={stakeholders}
+                      onUpdateStakeholder={handleUpdateStakeholder}
+                      onAddStakeholder={handleAddStakeholder}
+                    />
+                  </TabsContent>
+                  
+                  <TabsContent value="documents" className="mt-0">
+                    <TCDocumentChecklist
+                      documents={documents}
+                      onUpdateDocument={handleUpdateDocument}
+                    />
+                  </TabsContent>
+                </div>
+              </ScrollArea>
+            </Tabs>
           </div>
         </div>
       </div>
