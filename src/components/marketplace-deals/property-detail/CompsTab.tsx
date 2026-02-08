@@ -1,6 +1,7 @@
 import React from "react";
 import { ComparableSalesSection } from "@/components/marketplace-deals/ComparableSalesSection";
 import { RentalCompsSection } from "./RentalCompsSection";
+import { PropertySummaryHeader } from "./PropertySummaryHeader";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface CompsTabProps {
@@ -239,6 +240,9 @@ export function CompsTab({ deal, viewMode }: CompsTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Property Summary Header */}
+      <PropertySummaryHeader deal={deal} />
+      
       <ComparableSalesSection
         investorComps={investorComps}
         retailComps={retailComps}

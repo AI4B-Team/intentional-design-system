@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
+import { PropertySummaryHeader } from "./PropertySummaryHeader";
 
 interface MarketTabProps {
   deal: MarketplaceDeal;
@@ -76,6 +77,9 @@ export function MarketTab({ deal, viewMode }: MarketTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Property Summary Header */}
+      <PropertySummaryHeader deal={deal} />
+      
       {/* Market Health Score */}
       <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
