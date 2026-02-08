@@ -1314,12 +1314,12 @@ Best regards,
                               <span className="font-semibold">$5,000</span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Close:</span>{" "}
-                              <span className="font-semibold">14-21 Days</span>
-                            </div>
-                            <div>
                               <span className="text-muted-foreground">Due Diligence:</span>{" "}
                               <span className="font-semibold">3 Days</span>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Close:</span>{" "}
+                              <span className="font-semibold">14-21 Days</span>
                             </div>
                           </div>
 
