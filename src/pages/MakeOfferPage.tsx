@@ -540,7 +540,7 @@ Best regards,
               <div>
                 <h1 className="text-lg font-semibold flex items-center gap-2">
                   <Send className="h-5 w-5 text-primary" />
-                  Make Offer Campaign
+                  Offer Campaign
                 </h1>
                 <p className="text-sm text-muted-foreground">{deal.address}</p>
               </div>
@@ -769,118 +769,62 @@ Best regards,
 
           {/* Right Side - Offer Wizard */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
-            {/* Step Indicator - Two Rows */}
-            <div className="px-6 py-4 border-b bg-muted/30">
-              <div className="space-y-3 max-w-4xl mx-auto">
-                {/* Offer Steps Row (1-6) */}
-                <div className="flex items-center">
-                  <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Offer</div>
-                  <div className="flex-1 flex items-center">
-                    {steps.slice(0, 6).map((step, index) => (
-                      <React.Fragment key={step.number}>
-                        <button
-                          onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
-                          disabled={step.locked}
-                          className={cn(
-                            "flex items-center gap-1.5 text-xs transition-colors",
-                            step.locked
-                              ? "text-muted-foreground/50 cursor-not-allowed"
-                              : currentStep === step.number
-                              ? "text-primary font-semibold"
-                              : currentStep > step.number
-                              ? "text-success cursor-pointer hover:text-success/80"
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-medium",
-                              step.locked
-                                ? "bg-muted/50 text-muted-foreground/50"
-                                : currentStep === step.number
-                                ? "bg-primary text-primary-foreground"
-                                : currentStep > step.number
-                                ? "bg-success text-white"
-                                : "bg-muted text-muted-foreground"
-                            )}
-                          >
-                            {step.locked ? (
-                              <Lock className="h-3 w-3" />
-                            ) : currentStep > step.number ? (
-                              <Check className="h-3 w-3" />
-                            ) : (
-                              <step.icon className="h-3 w-3" />
-                            )}
-                          </div>
-                          <span className="hidden xl:inline">{step.title}</span>
-                        </button>
-                        {index < 5 && (
-                          <div
-                            className={cn(
-                              "flex-1 h-0.5 mx-2",
-                              currentStep > step.number ? "bg-success" : "bg-muted"
-                            )}
-                          />
+            {/* Step Indicator - Single Row with Icons Above */}
+            <div className="px-6 py-3 border-b bg-muted/30 overflow-x-auto">
+              <div className="flex items-center gap-1 min-w-max">
+                {steps.map((step, index) => (
+                  <React.Fragment key={step.number}>
+                    <button
+                      onClick={() => !step.locked && step.number <= currentStep && setCurrentStep(step.number)}
+                      disabled={step.locked}
+                      className={cn(
+                        "flex flex-col items-center gap-1 px-2 py-1 transition-colors min-w-[52px]",
+                        step.locked
+                          ? "text-muted-foreground/50 cursor-not-allowed"
+                          : currentStep === step.number
+                          ? "text-primary"
+                          : currentStep > step.number
+                          ? "text-success cursor-pointer hover:text-success/80"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "h-7 w-7 rounded-full flex items-center justify-center",
+                          step.locked
+                            ? "bg-muted/50 text-muted-foreground/50"
+                            : currentStep === step.number
+                            ? "bg-primary text-primary-foreground"
+                            : currentStep > step.number
+                            ? "bg-success text-white"
+                            : "bg-muted text-muted-foreground"
                         )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Transaction Steps Row (7-11) */}
-                <div className="flex items-center">
-                  <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Transaction</div>
-                  <div className="flex-1 flex items-center">
-                    {steps.slice(6, 11).map((step, index) => (
-                      <React.Fragment key={step.number}>
-                        <button
-                          onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
-                          disabled={step.locked}
-                          className={cn(
-                            "flex items-center gap-1.5 text-xs transition-colors",
-                            step.locked
-                              ? "text-muted-foreground/50 cursor-not-allowed"
-                              : currentStep === step.number
-                              ? "text-primary font-semibold"
-                              : currentStep > step.number
-                              ? "text-success cursor-pointer hover:text-success/80"
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-medium",
-                              step.locked
-                                ? "bg-muted/50 text-muted-foreground/50"
-                                : currentStep === step.number
-                                ? "bg-primary text-primary-foreground"
-                                : currentStep > step.number
-                                ? "bg-success text-white"
-                                : "bg-muted text-muted-foreground"
-                            )}
-                          >
-                            {step.locked ? (
-                              <Lock className="h-3 w-3" />
-                            ) : currentStep > step.number ? (
-                              <Check className="h-3 w-3" />
-                            ) : (
-                              <step.icon className="h-3 w-3" />
-                            )}
-                          </div>
-                          <span className="hidden xl:inline">{step.title}</span>
-                        </button>
-                        {index < 4 && (
-                          <div
-                            className={cn(
-                              "flex-1 h-0.5 mx-2",
-                              step.locked ? "bg-muted/50" : currentStep > step.number ? "bg-success" : "bg-muted"
-                            )}
-                          />
+                      >
+                        {step.locked ? (
+                          <Lock className="h-3.5 w-3.5" />
+                        ) : currentStep > step.number ? (
+                          <Check className="h-3.5 w-3.5" />
+                        ) : (
+                          <step.icon className="h-3.5 w-3.5" />
                         )}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </div>
+                      </div>
+                      <span className={cn(
+                        "text-[10px] leading-tight text-center whitespace-nowrap",
+                        currentStep === step.number && "font-semibold"
+                      )}>
+                        {step.title}
+                      </span>
+                    </button>
+                    {index < steps.length - 1 && (
+                      <div
+                        className={cn(
+                          "flex-shrink-0 w-4 h-0.5",
+                          step.locked ? "bg-muted/50" : currentStep > step.number ? "bg-success" : "bg-muted"
+                        )}
+                      />
+                    )}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
 
