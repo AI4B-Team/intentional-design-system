@@ -516,7 +516,7 @@ export function PropertyDetailMap({
         <p className="text-xs font-medium text-muted-foreground mb-2">Map Legend</p>
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <div className="w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow" />
+            <div className="w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-background shadow" />
             <span className="text-xs">Subject Property</span>
           </div>
           {showBuyersPanel ? (
