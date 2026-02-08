@@ -600,10 +600,22 @@ Best regards,
                     </div>
 
                     <Tabs value={templateTab} onValueChange={(v) => setTemplateTab(v as any)}>
-                      <TabsList className="grid w-full grid-cols-2 max-w-xs">
-                        <TabsTrigger value="templates">Templates</TabsTrigger>
-                        <TabsTrigger value="custom">Custom</TabsTrigger>
-                      </TabsList>
+                      <div className="flex gap-2 max-w-xs">
+                        <Button
+                          variant={templateTab === "templates" ? "default" : "outline"}
+                          onClick={() => setTemplateTab("templates")}
+                          className="flex-1"
+                        >
+                          Templates
+                        </Button>
+                        <Button
+                          variant={templateTab === "custom" ? "default" : "outline"}
+                          onClick={() => setTemplateTab("custom")}
+                          className="flex-1"
+                        >
+                          Custom
+                        </Button>
+                      </div>
 
                       <TabsContent value="templates" className="mt-4">
                         <div className="grid gap-3">
