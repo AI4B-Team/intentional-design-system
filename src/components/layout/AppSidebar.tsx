@@ -237,7 +237,7 @@ export function AppSidebar({
 
             {/* Top Nav Items */}
             {topNavItems.map((item) => {
-              const isActive = location.pathname === item.href;
+              const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + "/");
               const Icon = item.icon;
               const badgeCount = getBadgeCount(item.badgeKey);
 
