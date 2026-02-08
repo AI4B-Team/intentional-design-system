@@ -1196,7 +1196,7 @@ Best regards,
                             <Switch checked={autoFollowUp} onCheckedChange={setAutoFollowUp} />
                           </div>
                           {autoFollowUp && (
-                            <div className="mt-3 pt-3 border-t border-primary/20 flex items-center gap-3">
+                            <div className="mt-3 pt-3 border-t border-primary/20 flex items-center gap-3 flex-wrap">
                               <Label className="text-sm whitespace-nowrap">Follow up after</Label>
                               <Select value={followUpDays.toString()} onValueChange={(v) => setFollowUpDays(Number(v))}>
                                 <SelectTrigger className="w-24">
@@ -1210,7 +1210,7 @@ Best regards,
                                   <SelectItem value="7">7 days</SelectItem>
                                 </SelectContent>
                               </Select>
-                              <span className="text-sm text-muted-foreground">if no response</span>
+                              <span className="text-sm text-muted-foreground whitespace-nowrap">if no response</span>
                             </div>
                           )}
                         </div>
