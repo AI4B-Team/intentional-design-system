@@ -1256,7 +1256,7 @@ Best regards,
                           </div>
                           <div>
                             <p className="text-muted-foreground">Properties</p>
-                            <p className="font-medium">1 property</p>
+                            <p className="font-medium">1 Property</p>
                           </div>
                           <div>
                             <p className="text-muted-foreground">Offer Amount</p>
