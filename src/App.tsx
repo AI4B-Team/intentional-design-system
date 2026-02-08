@@ -71,7 +71,7 @@ import UnifiedInbox from "./pages/UnifiedInbox";
 import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
-import TransactionRoadmapPage from "./pages/TransactionRoadmapPage";
+// TransactionRoadmapPage removed - now integrated into MakeOfferPage
 import MakeOfferPage from "./pages/MakeOfferPage";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
@@ -342,13 +342,10 @@ const App = () => (
                 </ProtectedRoute>
               }
             />
+            {/* Redirect old roadmap URL to make-offer page */}
             <Route
               path="/marketplace/deal/:id/roadmap"
-              element={
-                <ProtectedRoute>
-                  <TransactionRoadmapPage />
-                </ProtectedRoute>
-              }
+              element={<Navigate to="../make-offer" replace />}
             />
             <Route
               path="/marketplace/buy-box"

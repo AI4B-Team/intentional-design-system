@@ -43,6 +43,9 @@ import {
   Sparkles,
   Target,
   CheckCircle2,
+  Lock,
+  Users,
+  Key,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -52,6 +55,14 @@ import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { OfferInsightCard } from "@/components/ai/OfferInsightCard";
 import { useOfferInsight } from "@/hooks/useOfferInsight";
+import {
+  Milestone1DealTeam,
+  Milestone2Offer,
+  Milestone3DueDiligence,
+  Milestone4Closing,
+  Milestone5Strategy,
+  type TransactionData,
+} from "@/components/transactions/TransactionRoadmapContent";
 
 interface OfferTemplate {
   id: string;
@@ -164,6 +175,34 @@ export default function MakeOfferPage() {
   // Step 4: Preview
   const [previewTab, setPreviewTab] = useState<"email" | "sms">("email");
 
+  // Offer sent state (unlocks steps 6-10)
+  const [offerSent, setOfferSent] = useState(false);
+
+  // Steps 6-10: Transaction Roadmap Data
+  const [transactionData, setTransactionData] = useState<TransactionData>({
+    currentMilestone: 1,
+    lenderConfirmed: false,
+    includePof: true,
+    realtorConfirmed: false,
+    escrowConfirmed: false,
+    inspectorAgentRecommended: false,
+    appraiserAgentRecommended: false,
+    closingFinancingFinalized: false,
+    closingEscrowWired: false,
+    closingFinalWalkthrough: false,
+    closingDocumentsSigned: false,
+    closingKeysReceived: false,
+    strategyPhaseBuy: false,
+    strategyPhaseRehab: false,
+    strategyPhaseRent: false,
+    strategyPhaseRefinance: false,
+    strategyPhaseRepeat: false,
+  });
+
+  const updateTransactionData = (updates: Partial<TransactionData>) => {
+    setTransactionData(prev => ({ ...prev, ...updates }));
+  };
+
   // Mock contact for demo
   const mockContact = {
     name: "Sarah Mitchell",
@@ -228,11 +267,18 @@ export default function MakeOfferPage() {
   const reviewInsight = useOfferInsight("review", insightContext, currentStep === 5);
 
   const steps = [
-    { number: 1, title: "Offer", icon: Package },
-    { number: 2, title: "Pricing", icon: DollarSign },
-    { number: 3, title: "Delivery", icon: Send },
-    { number: 4, title: "Preview", icon: Eye },
-    { number: 5, title: "Review", icon: Check },
+    // Offer Steps (1-5)
+    { number: 1, title: "Offer", icon: Package, locked: false },
+    { number: 2, title: "Pricing", icon: DollarSign, locked: false },
+    { number: 3, title: "Delivery", icon: Send, locked: false },
+    { number: 4, title: "Preview", icon: Eye, locked: false },
+    { number: 5, title: "Send", icon: Check, locked: false },
+    // Transaction Roadmap Steps (6-10) - locked until offer sent
+    { number: 6, title: "Deal Team", icon: Users, locked: !offerSent },
+    { number: 7, title: "Negotiate", icon: DollarSign, locked: !offerSent },
+    { number: 8, title: "Due Diligence", icon: FileText, locked: !offerSent },
+    { number: 9, title: "Closing", icon: Key, locked: !offerSent },
+    { number: 10, title: "Strategy", icon: Target, locked: !offerSent },
   ];
 
   const canProceed = () => {
@@ -248,13 +294,27 @@ export default function MakeOfferPage() {
         return true;
       case 5:
         return true;
+      // Transaction steps - allow proceeding based on completion
+      case 6:
+        return (transactionData.lenderConfirmed || transactionData.lenderName) && 
+               (transactionData.realtorConfirmed || transactionData.realtorName);
+      case 7:
+        return !!transactionData.acceptedOffer && transactionData.escrowConfirmed;
+      case 8:
+        return !!transactionData.inspectorName && !!transactionData.appraiserName && !!transactionData.insuranceName;
+      case 9:
+        return transactionData.closingFinancingFinalized && transactionData.closingEscrowWired && 
+               transactionData.closingFinalWalkthrough && transactionData.closingDocumentsSigned && 
+               transactionData.closingKeysReceived;
+      case 10:
+        return !!transactionData.investmentStrategy;
       default:
         return false;
     }
   };
 
   const handleNext = () => {
-    if (currentStep < 5 && canProceed()) {
+    if (currentStep < 10 && canProceed()) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -265,7 +325,7 @@ export default function MakeOfferPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSendOffer = async () => {
     // Check for Twilio if SMS enabled
     if (smsEnabled && !twilioNumber) {
       toast.error("Error Sending Offers: Twilio configuration not found", {
@@ -284,27 +344,32 @@ export default function MakeOfferPage() {
         toast.success("Campaign saved as draft");
         navigate(`/marketplace/deal/${deal.id}`);
       } else {
-        toast.success("Offer campaign created successfully!", {
-          description: "Transitioning to Transaction Roadmap...",
+        // Mark offer as sent and auto-advance to step 6
+        setOfferSent(true);
+        setCurrentStep(6);
+        
+        // Pre-fill transaction data with offer details
+        updateTransactionData({
+          listingPrice: deal.price,
+          mao: offerAmount,
         });
         
-        // Navigate to Transaction Roadmap with offer data
-        navigate(`/marketplace/deal/${deal.id}/roadmap`, {
-          state: {
-            offerSent: true,
-            offerAmount,
-            offerPercentage,
-            selectedTemplate,
-            emailEnabled,
-            smsEnabled,
-          }
+        toast.success("Offer sent successfully!", {
+          description: "Now complete the transaction roadmap to close the deal.",
         });
       }
     } catch (error) {
-      toast.error("Failed to create offer campaign");
+      toast.error("Failed to send offer");
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleCompleteTransaction = () => {
+    toast.success("Transaction completed! 🎉", {
+      description: "Congratulations on closing this deal!",
+    });
+    navigate(`/marketplace/deal/${deal.id}`);
   };
 
   const selectedTemplateData = OFFER_TEMPLATES.find((t) => t.id === selectedTemplate);
@@ -374,8 +439,10 @@ Best regards,
                 <p className="text-sm text-muted-foreground">{deal.address}</p>
               </div>
             </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary">
-              Step {currentStep} of 5
+            <Badge variant="secondary" className={cn(
+              currentStep <= 5 ? "bg-primary/10 text-primary" : "bg-success/10 text-success"
+            )}>
+              Step {currentStep} of 10
             </Badge>
           </div>
         </div>
@@ -599,50 +666,118 @@ Best regards,
 
           {/* Right Side - Offer Wizard */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
-            {/* Step Indicator */}
+            {/* Step Indicator - Two Rows for 10 Steps */}
             <div className="px-6 py-4 border-b bg-muted/30">
-              <div className="flex items-center justify-between max-w-3xl mx-auto">
-                {steps.map((step, index) => (
-                  <React.Fragment key={step.number}>
-                    <button
-                      onClick={() => step.number < currentStep && setCurrentStep(step.number)}
-                      className={cn(
-                        "flex items-center gap-2 text-small transition-colors",
-                        currentStep === step.number
-                          ? "text-primary font-semibold"
-                          : currentStep > step.number
-                          ? "text-success cursor-pointer hover:text-success/80"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "h-8 w-8 rounded-full flex items-center justify-center text-tiny font-medium",
-                          currentStep === step.number
-                            ? "bg-primary text-primary-foreground"
-                            : currentStep > step.number
-                            ? "bg-success text-white"
-                            : "bg-muted text-muted-foreground"
+              <div className="space-y-3 max-w-4xl mx-auto">
+                {/* Offer Steps Row (1-5) */}
+                <div className="flex items-center">
+                  <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Offer</div>
+                  <div className="flex-1 flex items-center">
+                    {steps.slice(0, 5).map((step, index) => (
+                      <React.Fragment key={step.number}>
+                        <button
+                          onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
+                          disabled={step.locked}
+                          className={cn(
+                            "flex items-center gap-1.5 text-xs transition-colors",
+                            step.locked
+                              ? "text-muted-foreground/50 cursor-not-allowed"
+                              : currentStep === step.number
+                              ? "text-primary font-semibold"
+                              : currentStep > step.number
+                              ? "text-success cursor-pointer hover:text-success/80"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-medium",
+                              step.locked
+                                ? "bg-muted/50 text-muted-foreground/50"
+                                : currentStep === step.number
+                                ? "bg-primary text-primary-foreground"
+                                : currentStep > step.number
+                                ? "bg-success text-white"
+                                : "bg-muted text-muted-foreground"
+                            )}
+                          >
+                            {step.locked ? (
+                              <Lock className="h-3 w-3" />
+                            ) : currentStep > step.number ? (
+                              <Check className="h-3 w-3" />
+                            ) : (
+                              <step.icon className="h-3 w-3" />
+                            )}
+                          </div>
+                          <span className="hidden xl:inline">{step.title}</span>
+                        </button>
+                        {index < 4 && (
+                          <div
+                            className={cn(
+                              "flex-1 h-0.5 mx-2",
+                              currentStep > step.number ? "bg-success" : "bg-muted"
+                            )}
+                          />
                         )}
-                      >
-                        {currentStep > step.number ? (
-                          <Check className="h-4 w-4" />
-                        ) : (
-                          <step.icon className="h-4 w-4" />
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Transaction Steps Row (6-10) */}
+                <div className="flex items-center">
+                  <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Transaction</div>
+                  <div className="flex-1 flex items-center">
+                    {steps.slice(5, 10).map((step, index) => (
+                      <React.Fragment key={step.number}>
+                        <button
+                          onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
+                          disabled={step.locked}
+                          className={cn(
+                            "flex items-center gap-1.5 text-xs transition-colors",
+                            step.locked
+                              ? "text-muted-foreground/50 cursor-not-allowed"
+                              : currentStep === step.number
+                              ? "text-primary font-semibold"
+                              : currentStep > step.number
+                              ? "text-success cursor-pointer hover:text-success/80"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-medium",
+                              step.locked
+                                ? "bg-muted/50 text-muted-foreground/50"
+                                : currentStep === step.number
+                                ? "bg-primary text-primary-foreground"
+                                : currentStep > step.number
+                                ? "bg-success text-white"
+                                : "bg-muted text-muted-foreground"
+                            )}
+                          >
+                            {step.locked ? (
+                              <Lock className="h-3 w-3" />
+                            ) : currentStep > step.number ? (
+                              <Check className="h-3 w-3" />
+                            ) : (
+                              <step.icon className="h-3 w-3" />
+                            )}
+                          </div>
+                          <span className="hidden xl:inline">{step.title}</span>
+                        </button>
+                        {index < 4 && (
+                          <div
+                            className={cn(
+                              "flex-1 h-0.5 mx-2",
+                              step.locked ? "bg-muted/50" : currentStep > step.number ? "bg-success" : "bg-muted"
+                            )}
+                          />
                         )}
-                      </div>
-                      <span className="hidden lg:inline">{step.title}</span>
-                    </button>
-                    {index < steps.length - 1 && (
-                      <div
-                        className={cn(
-                          "flex-1 h-0.5 mx-3",
-                          currentStep > step.number ? "bg-success" : "bg-muted"
-                        )}
-                      />
-                    )}
-                  </React.Fragment>
-                ))}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1341,25 +1476,108 @@ Best regards,
                         </div>
                       </Card>
 
-                      {/* Transaction Roadmap Notice */}
+                      {/* Transaction Next Steps Notice */}
                       {scheduleType !== "draft" && (
                         <Card className="p-4 bg-success/5 border-success/20">
                           <div className="flex items-start gap-3">
                             <Sparkles className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
                             <div>
                               <p className="font-medium text-success">
-                                Transaction Roadmap Will Be Created
+                                Continue To Transaction Steps
                               </p>
                               <p className="text-sm text-muted-foreground mt-1">
-                                Once your offer is sent, you'll be taken to the Transaction Roadmap
-                                to track negotiation, due diligence, closing, and post-close
-                                strategy execution.
+                                After sending your offer, you'll continue to Steps 6-10 to assemble your 
+                                deal team, negotiate, complete due diligence, close, and execute your investment strategy.
                               </p>
                             </div>
                           </div>
                         </Card>
                       )}
                     </div>
+                  </div>
+                )}
+
+                {/* Step 6: Deal Team */}
+                {currentStep === 6 && (
+                  <div className="space-y-6">
+                    <div>
+                      <Badge variant="secondary" className="mb-2 bg-success/10 text-success">
+                        Offer Sent
+                      </Badge>
+                      <h3 className="text-lg font-semibold mb-1">Assemble Your Deal Team</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Select or confirm your lender and realtor to move forward
+                      </p>
+                    </div>
+                    <Milestone1DealTeam 
+                      data={transactionData} 
+                      updateData={updateTransactionData} 
+                    />
+                  </div>
+                )}
+
+                {/* Step 7: Negotiate */}
+                {currentStep === 7 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-1">Make & Negotiate Offer</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Capture the economics and get the property under contract
+                      </p>
+                    </div>
+                    <Milestone2Offer 
+                      data={transactionData} 
+                      updateData={updateTransactionData}
+                      propertyPrice={deal.price}
+                    />
+                  </div>
+                )}
+
+                {/* Step 8: Due Diligence */}
+                {currentStep === 8 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-1">Under Contract / Due Diligence</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Validate the deal before closing
+                      </p>
+                    </div>
+                    <Milestone3DueDiligence 
+                      data={transactionData} 
+                      updateData={updateTransactionData} 
+                    />
+                  </div>
+                )}
+
+                {/* Step 9: Closing */}
+                {currentStep === 9 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-1">Close the Deal</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Final checklist to ownership transfer
+                      </p>
+                    </div>
+                    <Milestone4Closing 
+                      data={transactionData} 
+                      updateData={updateTransactionData} 
+                    />
+                  </div>
+                )}
+
+                {/* Step 10: Strategy */}
+                {currentStep === 10 && (
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-1">Execute Investment Strategy</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Turn the property into a performing asset
+                      </p>
+                    </div>
+                    <Milestone5Strategy 
+                      data={transactionData} 
+                      updateData={updateTransactionData} 
+                    />
                   </div>
                 )}
               </div>
@@ -1370,7 +1588,7 @@ Best regards,
               <Button
                 variant="outline"
                 onClick={handleBack}
-                disabled={currentStep === 1}
+                disabled={currentStep === 1 || (currentStep === 6 && offerSent)}
                 className="gap-2"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -1382,9 +1600,9 @@ Best regards,
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              ) : (
+              ) : currentStep === 5 ? (
                 <Button
-                  onClick={handleSubmit}
+                  onClick={handleSendOffer}
                   disabled={isSubmitting || !canProceed()}
                   className="gap-2 min-w-[140px]"
                 >
@@ -1399,6 +1617,20 @@ Best regards,
                       {scheduleType === "draft" ? "Save Draft" : "Send Offer"}
                     </>
                   )}
+                </Button>
+              ) : currentStep < 10 ? (
+                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2">
+                  Complete & Continue
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleCompleteTransaction}
+                  disabled={!canProceed()}
+                  className="gap-2 min-w-[180px]"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Complete Transaction
                 </Button>
               )}
             </div>
