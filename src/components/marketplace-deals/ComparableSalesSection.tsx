@@ -140,6 +140,14 @@ export function ComparableSalesSection({
     ? Math.round(comps.reduce((sum, c) => sum + c.pricePerSqft, 0) / comps.length)
     : 0;
 
+  const avgSimilarity = comps.length > 0
+    ? Math.round(comps.reduce((sum, c) => sum + c.similarity, 0) / comps.length)
+    : 0;
+
+  const avgDistance = comps.length > 0
+    ? (comps.reduce((sum, c) => sum + c.distanceMiles, 0) / comps.length).toFixed(1)
+    : "0";
+
   return (
     <Card className="p-6">
       {/* Header */}
@@ -288,7 +296,26 @@ export function ComparableSalesSection({
 
       </div>
 
-      {/* Map */}
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold text-primary">${avgCompPrice.toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground">Avg. Sale Price</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">${avgPricePerSqft}</p>
+          <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">{avgSimilarity}%</p>
+          <p className="text-sm text-muted-foreground">Avg. Similarity</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">{avgDistance} mi</p>
+          <p className="text-sm text-muted-foreground">Avg. Distance</p>
+        </div>
+      </div>
+
       {showMap && (
         <div className="mb-4">
           <CompMap
