@@ -12,6 +12,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { CompsSlidePanel } from "./CompsSlidePanel";
+import { BuyersSlidePanel } from "./BuyersSlidePanel";
 
 interface CompData {
   id: string;
@@ -103,6 +105,10 @@ export function PropertyDetailMap({
   const [showFloodZones, setShowFloodZones] = useState(false);
   const [showSchoolDistricts, setShowSchoolDistricts] = useState(false);
   const [showCrimeData, setShowCrimeData] = useState(false);
+  
+  // Slide panel state
+  const [showCompsPanel, setShowCompsPanel] = useState(false);
+  const [showBuyersPanel, setShowBuyersPanel] = useState(false);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -462,25 +468,37 @@ export function PropertyDetailMap({
           </p>
         </div>
 
-        {/* Comps Found Badge */}
+        {/* Comps Found Badge - Clickable */}
         {!showBuyers && (
-          <div className="bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg">
+          <button
+            onClick={() => setShowCompsPanel(!showCompsPanel)}
+            className={cn(
+              "bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg transition-colors hover:bg-muted/80",
+              showCompsPanel && "ring-2 ring-primary"
+            )}
+          >
             <div className="flex items-center gap-2">
               <Scale className="h-4 w-4 text-muted-foreground" />
               <span className="text-xs font-medium">{comps.length} Comps Found</span>
             </div>
-          </div>
+          </button>
         )}
 
-        {/* Buyers Near Property Badge - No X icon */}
-        <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 py-2 shadow-md">
+        {/* Buyers Near Property Badge - Clickable */}
+        <button
+          onClick={() => setShowBuyersPanel(!showBuyersPanel)}
+          className={cn(
+            "bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 py-2 shadow-md transition-colors hover:bg-success/80",
+            showBuyersPanel && "ring-2 ring-success-foreground"
+          )}
+        >
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-success-foreground" />
             <span className="text-xs font-medium text-success-foreground">
               {buyers.length} Buyers Near Property
             </span>
           </div>
-        </div>
+        </button>
       </div>
 
       {/* Legend - Bottom Left */}
@@ -516,6 +534,28 @@ export function PropertyDetailMap({
           )}
         </div>
       </div>
+
+      {/* Comps Slide Panel */}
+      <CompsSlidePanel
+        isOpen={showCompsPanel}
+        onClose={() => setShowCompsPanel(false)}
+        comps={comps}
+        onCompClick={(comp) => {
+          // Center map on the comp when clicked in panel
+          console.log("Comp clicked:", comp);
+        }}
+      />
+
+      {/* Buyers Slide Panel */}
+      <BuyersSlidePanel
+        isOpen={showBuyersPanel}
+        onClose={() => setShowBuyersPanel(false)}
+        buyers={buyers}
+        onBuyerClick={(buyer) => {
+          // Handle buyer click
+          console.log("Buyer clicked:", buyer);
+        }}
+      />
 
     </div>
   );
