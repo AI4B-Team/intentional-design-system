@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PhotoGalleryModal } from "@/components/ui/photo-gallery-modal";
 import {
   Select,
   SelectContent,
@@ -203,6 +204,9 @@ function DealListItem({
 }) {
   const navigate = useNavigate();
   
+  // Gallery modal state
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  
   // Local override state - null means use global mode
   const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
   
@@ -213,6 +217,9 @@ function DealListItem({
   useEffect(() => {
     setLocalViewMode(null);
   }, [globalCardViewMode]);
+  
+  // Build photos array from deal
+  const photos = deal.images?.length ? deal.images : [deal.imageUrl];
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -276,13 +283,19 @@ function DealListItem({
     >
       <div className="flex min-h-[240px]">
         {/* Image Gallery Section */}
-        <div className="relative w-48 flex-shrink-0 flex flex-col gap-1">
+        <div 
+          className="relative w-48 flex-shrink-0 flex flex-col gap-1"
+          onClick={(e) => {
+            e.stopPropagation();
+            setGalleryOpen(true);
+          }}
+        >
           {/* Main Image */}
-          <div className="relative h-[160px]">
+          <div className="relative h-[160px] cursor-pointer">
             <img
               src={deal.imageUrl}
               alt={deal.address}
-              className="w-full h-full object-cover rounded-tl-lg"
+              className="w-full h-full object-cover rounded-tl-lg hover:opacity-95 transition-opacity"
             />
             {/* Selection button */}
             <button
@@ -575,6 +588,14 @@ function DealListItem({
           </div>
         </div>
       </div>
+      
+      {/* Photo Gallery Modal */}
+      <PhotoGalleryModal
+        photos={photos}
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        title={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
+      />
     </Card>
   );
 }
@@ -596,6 +617,9 @@ function DealCard({
 }) {
   const navigate = useNavigate();
   
+  // Gallery modal state
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  
   // Local override state - null means use global mode
   const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
   
@@ -606,6 +630,9 @@ function DealCard({
   useEffect(() => {
     setLocalViewMode(null);
   }, [globalCardViewMode]);
+  
+  // Build photos array from deal
+  const photos = deal.images?.length ? deal.images : [deal.imageUrl];
   
   // Calculate financial details
   const askingPrice = deal.price;
@@ -691,11 +718,17 @@ function DealCard({
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-white" onClick={handleCardClick}>
       {/* Image */}
-      <div className="relative aspect-[16/10]">
+      <div 
+        className="relative aspect-[16/10] cursor-pointer"
+        onClick={(e) => {
+          e.stopPropagation();
+          setGalleryOpen(true);
+        }}
+      >
         <img
           src={deal.imageUrl}
           alt={deal.address}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover hover:opacity-95 transition-opacity"
         />
         
         {/* Top Left: Radio button + Badge */}
@@ -971,6 +1004,14 @@ function DealCard({
           </div>
         </div>
       </div>
+      
+      {/* Photo Gallery Modal */}
+      <PhotoGalleryModal
+        photos={photos}
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        title={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
+      />
     </Card>
   );
 }
