@@ -159,15 +159,6 @@ export function DealSetupStep({
         </p>
       </div>
 
-      {/* AI Insight */}
-      {(insight || insightLoading) && (
-        <OfferInsightCard
-          insight={insight}
-          isLoading={insightLoading}
-          error={insightError}
-          onRefresh={onRefreshInsight}
-        />
-      )}
 
       {/* Property Confirmation */}
       <Card className="p-4">
