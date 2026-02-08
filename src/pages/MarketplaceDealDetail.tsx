@@ -564,7 +564,7 @@ export default function MarketplaceDealDetail() {
                 })}
               </div>
 
-              {/* Right: Buyers Badge + View Mode Toggle */}
+              {/* Right: Buyers Badge + View Mode Toggle + Make Offer */}
               <div className="flex items-center gap-3">
                 {/* Buyers Button - only in split mode */}
                 {layoutMode === "split" && (
@@ -596,6 +596,18 @@ export default function MarketplaceDealDetail() {
                     </button>
                   ))}
                 </div>
+
+                {/* Make Offer Button - only in split mode */}
+                {layoutMode === "split" && (
+                  <Button
+                    onClick={() => navigate(`/marketplace/deal/${deal.id}/make-offer`)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Send className="h-4 w-4" />
+                    Make Offer
+                  </Button>
+                )}
               </div>
             </div>
             <div className={cn(
