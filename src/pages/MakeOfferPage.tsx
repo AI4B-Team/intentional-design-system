@@ -198,9 +198,9 @@ export default function MakeOfferPage() {
   const agentCommission = Math.round(arv * 0.05);
   const flipperProfit = arv - offerAmount - estRepairs - holdingCosts - closingCosts - agentCommission;
   
-  // Wholesaler calculation - what a flipper would pay (70% ARV rule)
-  const buyerMaxOffer = Math.round(arv * 0.70 - estRepairs); // What end buyer would pay
-  const wholesalerProfit = buyerMaxOffer - offerAmount; // Assignment fee potential
+  // Wholesaler calculation - profit margin at 70% ARV sell price
+  const buyerMaxOffer = Math.round(arv * 0.70); // End buyer pays 70% ARV
+  const wholesalerProfit = buyerMaxOffer - offerAmount; // Assignment fee = difference between 70% and your offer %
 
   const steps = [
     { number: 1, title: "Offer Package", icon: Package },
@@ -788,7 +788,7 @@ Best regards,
                         <div>
                           <p className="text-sm font-medium mb-1">Wholesaler Opportunity</p>
                           <p className="text-xs text-muted-foreground">
-                            End buyer pays ~{formatCurrency(buyerMaxOffer)} (70% ARV - repairs)
+                            Sell to end buyer at {formatCurrency(buyerMaxOffer)} (70% ARV)
                           </p>
                         </div>
                         <div className="text-right">
