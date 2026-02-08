@@ -611,7 +611,7 @@ export default function MarketplaceDealDetail() {
                   <OverviewTab deal={deal} viewMode={viewMode} layoutMode={layoutMode} />
                 )}
                 {activeTab === "market" && (
-                  <MarketTab deal={deal} />
+                  <MarketTab deal={deal} viewMode={viewMode} />
                 )}
                 {activeTab === "comps" && (
                   <CompsTab deal={deal} viewMode={viewMode} />

@@ -21,9 +21,10 @@ import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface MarketTabProps {
   deal: MarketplaceDeal;
+  viewMode: "flip" | "hold";
 }
 
-export function MarketTab({ deal }: MarketTabProps) {
+export function MarketTab({ deal, viewMode }: MarketTabProps) {
   // Mock market data
   const marketData = {
     medianPrice: 285000,
@@ -41,6 +42,19 @@ export function MarketTab({ deal }: MarketTabProps) {
     marketHealth: 78,
   };
 
+  // Rental market data for Hold mode
+  const rentalMarketData = {
+    medianRent: 1650,
+    rentChange: 5.8,
+    avgVacancy: 4.2,
+    vacancyChange: -1.5,
+    avgDaysToLease: 21,
+    rentToPrice: ((1650 * 12) / deal.price * 100).toFixed(2),
+    capRateArea: 6.8,
+    grossYield: 7.2,
+    avgRentPerSqft: 1.12,
+  };
+
   const neighborhoodData = {
     walkScore: 72,
     transitScore: 45,
@@ -50,6 +64,8 @@ export function MarketTab({ deal }: MarketTabProps) {
     avgHouseholdIncome: 68500,
     population: 45200,
     populationGrowth: 2.8,
+    renterOccupied: 38,
+    ownerOccupied: 62,
   };
 
   const schools = [
@@ -65,7 +81,9 @@ export function MarketTab({ deal }: MarketTabProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold">Market Health</h2>
+            <h2 className="text-lg font-semibold">
+              {viewMode === "hold" ? "Rental Market Health" : "Market Health"}
+            </h2>
           </div>
           <Badge 
             variant="outline" 
@@ -87,10 +105,97 @@ export function MarketTab({ deal }: MarketTabProps) {
           <Progress value={marketData.marketHealth} className="h-3" />
         </div>
         <p className="text-sm text-muted-foreground mt-3">
-          {deal.city} is experiencing a seller's market with properties selling quickly. 
-          Demand outpaces supply with a {marketData.absorption}-month absorption rate.
+          {viewMode === "hold" 
+            ? `${deal.city} has a strong rental market with ${rentalMarketData.avgVacancy}% vacancy rate and rents growing ${rentalMarketData.rentChange}% year-over-year.`
+            : `${deal.city} is experiencing a seller's market with properties selling quickly. Demand outpaces supply with a ${marketData.absorption}-month absorption rate.`
+          }
         </p>
       </Card>
+
+      {/* Rental Market Metrics - Only show in Hold mode */}
+      {viewMode === "hold" && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Median Rent</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">${rentalMarketData.medianRent.toLocaleString()}</span>
+              <span className="text-xs font-medium flex items-center gap-0.5 text-success">
+                <TrendingUp className="h-3 w-3" />
+                +{rentalMarketData.rentChange}%
+              </span>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Home className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Vacancy Rate</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">{rentalMarketData.avgVacancy}%</span>
+              <span className={cn(
+                "text-xs font-medium flex items-center gap-0.5",
+                rentalMarketData.vacancyChange <= 0 ? "text-success" : "text-destructive"
+              )}>
+                {rentalMarketData.vacancyChange <= 0 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
+                {rentalMarketData.vacancyChange}%
+              </span>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Days to Lease</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">{rentalMarketData.avgDaysToLease}</span>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">Area Cap Rate</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-bold">{rentalMarketData.capRateArea}%</span>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Rental Yield Metrics - Only show in Hold mode */}
+      {viewMode === "hold" && (
+        <Card className="p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Rental Yield Analysis</h2>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <span className="text-sm text-muted-foreground">Rent-to-Price Ratio</span>
+              <span className="font-semibold">{rentalMarketData.rentToPrice}%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <span className="text-sm text-muted-foreground">Gross Yield</span>
+              <span className="font-semibold text-success">{rentalMarketData.grossYield}%</span>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg">
+              <span className="text-sm text-muted-foreground">Rent/SqFt</span>
+              <span className="font-semibold">${rentalMarketData.avgRentPerSqft}</span>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-success/10 border border-success/20 rounded-lg">
+            <p className="text-sm text-foreground">
+              <span className="font-medium text-success">Strong Rental Demand:</span> This area has {neighborhoodData.renterOccupied}% renter-occupied units with growing population (+{neighborhoodData.populationGrowth}%), indicating sustained rental demand.
+            </p>
+          </div>
+        </Card>
+      )}
 
       {/* Key Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
