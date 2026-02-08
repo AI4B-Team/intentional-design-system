@@ -17,20 +17,14 @@ export function OfferInsightCard({
   onRefresh,
   className 
 }: OfferInsightCardProps) {
-  if (error) {
-    return (
-      <div className={cn(
-        "flex items-start gap-3 p-4 rounded-lg bg-destructive/10 border border-destructive/20",
-        className
-      )}>
-        <div className="h-6 w-6 rounded-full bg-destructive/20 flex items-center justify-center flex-shrink-0">
-          <AlertCircle className="h-3.5 w-3.5 text-destructive" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm text-destructive">{error}</p>
-        </div>
-      </div>
-    );
+  // Silently fail - AI insights are non-critical, don't show error UI
+  if (error && !isLoading) {
+    return null;
+  }
+  
+  // Don't render if no insight and not loading
+  if (!insight && !isLoading) {
+    return null;
   }
 
   return (
