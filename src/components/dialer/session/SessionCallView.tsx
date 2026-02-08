@@ -247,11 +247,11 @@ export function SessionCallView({
             <p className="text-xs text-muted-foreground mt-0.5">Real-time suggestions and guidance</p>
           </div>
 
-          {/* Call Template */}
-          <div className="bg-white border border-border-subtle rounded-lg p-4">
+          {/* Call Template - Yellow themed */}
+          <div className="bg-warning/5 border border-warning/30 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-muted-foreground" />
+                <Target className="h-4 w-4 text-warning" />
                 <span className="text-sm font-medium text-foreground">Call Template</span>
               </div>
               <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
@@ -259,14 +259,14 @@ export function SessionCallView({
                 Switch
               </Button>
             </div>
-            <div className="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-lg p-3">
-              <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-                <MessageSquare className="h-5 w-5 text-primary-foreground" />
+            <div className="flex items-start gap-3 bg-warning/10 border border-warning/20 rounded-lg p-3">
+              <div className="h-10 w-10 rounded-lg bg-warning flex items-center justify-center flex-shrink-0">
+                <MessageSquare className="h-5 w-5 text-warning-foreground" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h4 className="font-semibold text-foreground">{callTemplate.name}</h4>
-                  <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary">{callTemplate.category}</Badge>
+                  <Badge variant="secondary" className="text-[10px] bg-warning/20 text-warning">{callTemplate.category}</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-0.5">{callTemplate.description}</p>
               </div>
