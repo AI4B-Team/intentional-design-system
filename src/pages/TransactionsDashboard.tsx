@@ -34,34 +34,51 @@ import {
   Phone,
   MoreHorizontal,
   Filter,
+  Sparkles,
+  FileSignature,
+  Scale,
+  Megaphone,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, differenceInDays, addDays } from "date-fns";
+import { 
+  TransactionStageId, 
+  TRANSACTION_STAGES, 
+  ACTIVE_STAGES,
+  getStageConfig,
+} from "@/lib/transaction-stages";
+import { TCStageCompact } from "@/components/transactions/TCPipelineProgress";
 
-// Mock transaction data
+// Mock transaction data - now uses TC stages (under contract and beyond)
 const MOCK_TRANSACTIONS = [
   {
     id: "tx-1",
-    propertyId: "1", // Match useMockDeals format
+    propertyId: "1",
     address: "14060 Sydney Rd",
     city: "Tampa",
     state: "FL",
     zip: "33527",
     propertyType: "Single Family",
-    offerAmount: 88000,
+    contractPrice: 88000,
+    assignmentFee: 8000,
     arv: 235000,
-    stage: "offer_sent",
-    status: "awaiting_response",
-    offerSentAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(), // Just sent
+    stage: "contract_signed" as TransactionStageId,
+    contractDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    closingDate: addDays(new Date(), 28),
+    nextDeadline: {
+      label: "Earnest Money Due",
+      date: addDays(new Date(), 1),
+    },
+    buyersMatched: 4,
+    buyersInterested: 1,
     lastActivity: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-    sellerName: "Sarah Mitchell",
-    sellerEmail: "sarah@example.com",
-    hasUnreadMessages: false,
-    agent: {
+    seller: {
       name: "Sarah Mitchell",
       phone: "(512) 555-0147",
       email: "sarah.mitchell@premierrealty.com",
     },
+    hasUnreadMessages: false,
   },
   {
     id: "tx-2",
@@ -71,21 +88,25 @@ const MOCK_TRANSACTIONS = [
     state: "FL",
     zip: "33511",
     propertyType: "Townhouse",
-    offerAmount: 145000,
+    contractPrice: 145000,
+    assignmentFee: 12000,
     arv: 220000,
-    stage: "negotiation",
-    status: "counter_received",
-    counterOffer: 155000,
-    offerSentAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+    stage: "due_diligence" as TransactionStageId,
+    contractDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+    closingDate: addDays(new Date(), 21),
+    nextDeadline: {
+      label: "Inspection Deadline",
+      date: addDays(new Date(), 3),
+    },
+    buyersMatched: 6,
+    buyersInterested: 2,
     lastActivity: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    sellerName: "Mike Johnson",
-    sellerEmail: "mike@example.com",
-    hasUnreadMessages: true,
-    agent: {
+    seller: {
       name: "Mike Johnson",
       phone: "(512) 555-0199",
       email: "mike.johnson@realestate.com",
     },
+    hasUnreadMessages: true,
   },
   {
     id: "tx-3",
@@ -95,21 +116,25 @@ const MOCK_TRANSACTIONS = [
     state: "FL",
     zip: "33578",
     propertyType: "Single Family",
-    offerAmount: 210000,
+    contractPrice: 210000,
+    assignmentFee: 15000,
     arv: 320000,
-    stage: "due_diligence",
-    status: "inspection_scheduled",
-    acceptedOffer: 215000,
-    offerSentAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+    stage: "marketing" as TransactionStageId,
+    contractDate: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+    closingDate: addDays(new Date(), 14),
+    nextDeadline: {
+      label: "Find End Buyer",
+      date: addDays(new Date(), 7),
+    },
+    buyersMatched: 8,
+    buyersInterested: 3,
     lastActivity: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-    sellerName: "Linda Williams",
-    sellerEmail: "linda@example.com",
-    hasUnreadMessages: false,
-    agent: {
+    seller: {
       name: "Linda Williams",
       phone: "(512) 555-0211",
       email: "linda.williams@homes.com",
     },
+    hasUnreadMessages: false,
   },
   {
     id: "tx-4",
@@ -119,18 +144,29 @@ const MOCK_TRANSACTIONS = [
     state: "FL",
     zip: "33594",
     propertyType: "Single Family",
-    offerAmount: 175000,
+    contractPrice: 175000,
+    assignmentFee: 10000,
     arv: 260000,
-    stage: "closing",
-    status: "docs_signed",
-    acceptedOffer: 180000,
-    offerSentAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+    stage: "closing" as TransactionStageId,
+    contractDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000),
+    closingDate: addDays(new Date(), 5),
+    nextDeadline: {
+      label: "Closing Date",
+      date: addDays(new Date(), 5),
+    },
+    buyersMatched: 5,
+    buyersInterested: 1,
+    endBuyer: {
+      name: "Marcus Williams",
+      company: "Tampa Bay Investments",
+    },
     lastActivity: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-    closingDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-    sellerName: "Robert Brown",
-    sellerEmail: "robert@example.com",
+    seller: {
+      name: "Robert Brown",
+      phone: "(512) 555-0222",
+      email: "robert.brown@email.com",
+    },
     hasUnreadMessages: false,
-    agent: null,
   },
   {
     id: "tx-5",
@@ -140,59 +176,28 @@ const MOCK_TRANSACTIONS = [
     state: "FL",
     zip: "33612",
     propertyType: "Duplex",
-    offerAmount: 295000,
+    contractPrice: 295000,
+    assignmentFee: 18000,
     arv: 420000,
-    stage: "closed",
-    status: "completed",
-    acceptedOffer: 300000,
-    offerSentAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+    stage: "sold" as TransactionStageId,
+    contractDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000),
+    closingDate: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+    closedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+    buyersMatched: 7,
+    buyersInterested: 2,
+    endBuyer: {
+      name: "Jennifer Chen",
+      company: "Sunshine State Holdings",
+    },
     lastActivity: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    closedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
-    sellerName: "Jessica Davis",
-    sellerEmail: "jessica@example.com",
-    hasUnreadMessages: false,
-    agent: {
+    seller: {
       name: "Jessica Davis",
       phone: "(512) 555-0188",
       email: "jessica.davis@remax.com",
     },
+    hasUnreadMessages: false,
   },
 ];
-
-type TransactionStage = "offer_sent" | "negotiation" | "due_diligence" | "closing" | "closed" | "lost";
-
-const STAGE_CONFIG: Record<TransactionStage, { label: string; icon: React.ReactNode; color: string }> = {
-  offer_sent: {
-    label: "Offer Sent",
-    icon: <Mail className="h-4 w-4" />,
-    color: "bg-blue-500/10 text-blue-600 border-blue-200",
-  },
-  negotiation: {
-    label: "Negotiation",
-    icon: <MessageSquare className="h-4 w-4" />,
-    color: "bg-amber-500/10 text-amber-600 border-amber-200",
-  },
-  due_diligence: {
-    label: "Due Diligence",
-    icon: <FileCheck className="h-4 w-4" />,
-    color: "bg-purple-500/10 text-purple-600 border-purple-200",
-  },
-  closing: {
-    label: "Closing",
-    icon: <Key className="h-4 w-4" />,
-    color: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
-  },
-  closed: {
-    label: "Closed",
-    icon: <CheckCircle2 className="h-4 w-4" />,
-    color: "bg-success/10 text-success border-success/20",
-  },
-  lost: {
-    label: "Lost",
-    icon: <AlertCircle className="h-4 w-4" />,
-    color: "bg-destructive/10 text-destructive border-destructive/20",
-  },
-};
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -219,34 +224,41 @@ export default function TransactionsDashboard() {
     
     const matchesTab =
       activeTab === "active"
-        ? tx.stage !== "closed" && tx.stage !== "lost"
+        ? tx.stage !== "sold" && tx.stage !== "cancelled"
         : activeTab === "closed"
-        ? tx.stage === "closed"
-        : tx.stage === "lost";
+        ? tx.stage === "sold"
+        : tx.stage === "cancelled";
     
     return matchesSearch && matchesStage && matchesTab;
   });
 
   // Stats
+  const activeTransactions = MOCK_TRANSACTIONS.filter(
+    (tx) => tx.stage !== "sold" && tx.stage !== "cancelled"
+  );
   const stats = {
-    active: MOCK_TRANSACTIONS.filter(
-      (tx) => tx.stage !== "closed" && tx.stage !== "lost"
-    ).length,
-    pendingResponse: MOCK_TRANSACTIONS.filter(
-      (tx) => tx.stage === "offer_sent"
-    ).length,
-    inNegotiation: MOCK_TRANSACTIONS.filter(
-      (tx) => tx.stage === "negotiation"
-    ).length,
-    closingSoon: MOCK_TRANSACTIONS.filter(
-      (tx) => tx.stage === "closing"
-    ).length,
-    closed: MOCK_TRANSACTIONS.filter((tx) => tx.stage === "closed").length,
-    totalVolume: MOCK_TRANSACTIONS.filter((tx) => tx.stage === "closed").reduce(
-      (sum, tx) => sum + (tx.acceptedOffer || tx.offerAmount),
+    active: activeTransactions.length,
+    dueDiligence: MOCK_TRANSACTIONS.filter(tx => tx.stage === "due_diligence").length,
+    marketing: MOCK_TRANSACTIONS.filter(tx => tx.stage === "marketing").length,
+    closing: MOCK_TRANSACTIONS.filter(tx => tx.stage === "closing").length,
+    sold: MOCK_TRANSACTIONS.filter(tx => tx.stage === "sold").length,
+    totalVolume: MOCK_TRANSACTIONS.filter(tx => tx.stage === "sold").reduce(
+      (sum, tx) => sum + tx.contractPrice,
+      0
+    ),
+    totalFees: MOCK_TRANSACTIONS.filter(tx => tx.stage === "sold").reduce(
+      (sum, tx) => sum + tx.assignmentFee,
       0
     ),
   };
+
+  // Upcoming deadlines
+  const upcomingDeadlines = activeTransactions
+    .filter(tx => tx.nextDeadline)
+    .sort((a, b) => 
+      new Date(a.nextDeadline!.date).getTime() - new Date(b.nextDeadline!.date).getTime()
+    )
+    .slice(0, 3);
 
   const handleViewTransaction = (tx: typeof MOCK_TRANSACTIONS[0]) => {
     navigate(`/transactions/${tx.propertyId}`);
@@ -258,15 +270,40 @@ export default function TransactionsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Transactions</h1>
+            <h1 className="text-2xl font-bold">Transaction Coordinator</h1>
             <p className="text-muted-foreground">
-              Manage your active offers and transactions through closing
+              Manage deals under contract through closing
             </p>
           </div>
         </div>
 
+        {/* AI Alert Banner */}
+        {upcomingDeadlines.length > 0 && differenceInDays(new Date(upcomingDeadlines[0].nextDeadline!.date), new Date()) <= 2 && (
+          <Card className="p-4 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+            <div className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-lg bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+                <Sparkles className="h-5 w-5 text-amber-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800 dark:text-amber-200">
+                  AI Deadline Alert
+                </h3>
+                <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
+                  <strong>{upcomingDeadlines[0].nextDeadline!.label}</strong> for{" "}
+                  {upcomingDeadlines[0].address} is due{" "}
+                  {formatDistanceToNow(new Date(upcomingDeadlines[0].nextDeadline!.date), { addSuffix: true })}.
+                  {upcomingDeadlines.length > 1 && ` ${upcomingDeadlines.length - 1} more deadlines this week.`}
+                </p>
+              </div>
+              <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-100">
+                View All Deadlines
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">
@@ -280,23 +317,23 @@ export default function TransactionsDashboard() {
           </Card>
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-blue-500/10">
-                <Mail className="h-5 w-5 text-blue-600" />
+              <div className="p-2 rounded-lg bg-purple-500/10">
+                <Search className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.pendingResponse}</p>
-                <p className="text-xs text-muted-foreground">Pending Response</p>
+                <p className="text-2xl font-bold">{stats.dueDiligence}</p>
+                <p className="text-xs text-muted-foreground">Due Diligence</p>
               </div>
             </div>
           </Card>
           <Card className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-amber-500/10">
-                <MessageSquare className="h-5 w-5 text-amber-600" />
+                <Megaphone className="h-5 w-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.inNegotiation}</p>
-                <p className="text-xs text-muted-foreground">Negotiating</p>
+                <p className="text-2xl font-bold">{stats.marketing}</p>
+                <p className="text-xs text-muted-foreground">Marketing</p>
               </div>
             </div>
           </Card>
@@ -306,8 +343,8 @@ export default function TransactionsDashboard() {
                 <Key className="h-5 w-5 text-emerald-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.closingSoon}</p>
-                <p className="text-xs text-muted-foreground">Closing Soon</p>
+                <p className="text-2xl font-bold">{stats.closing}</p>
+                <p className="text-xs text-muted-foreground">Closing</p>
               </div>
             </div>
           </Card>
@@ -317,7 +354,7 @@ export default function TransactionsDashboard() {
                 <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.closed}</p>
+                <p className="text-2xl font-bold">{stats.sold}</p>
                 <p className="text-xs text-muted-foreground">Closed</p>
               </div>
             </div>
@@ -329,7 +366,18 @@ export default function TransactionsDashboard() {
               </div>
               <div>
                 <p className="text-lg font-bold">{formatCurrency(stats.totalVolume)}</p>
-                <p className="text-xs text-muted-foreground">Closed Volume</p>
+                <p className="text-xs text-muted-foreground">Volume</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Target className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-lg font-bold">{formatCurrency(stats.totalFees)}</p>
+                <p className="text-xs text-muted-foreground">Fees Earned</p>
               </div>
             </div>
           </Card>
@@ -358,11 +406,11 @@ export default function TransactionsDashboard() {
               </TabsTrigger>
               <TabsTrigger value="closed" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <CheckCircle2 className="h-4 w-4" />
-                Closed ({stats.closed})
+                Closed ({stats.sold})
               </TabsTrigger>
-              <TabsTrigger value="lost" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
+              <TabsTrigger value="cancelled" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <AlertCircle className="h-4 w-4" />
-                Lost (0)
+                Cancelled (0)
               </TabsTrigger>
             </TabsList>
             
@@ -374,9 +422,10 @@ export default function TransactionsDashboard() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Stages</SelectItem>
-                  <SelectItem value="offer_sent">Offer Sent</SelectItem>
-                  <SelectItem value="negotiation">Negotiation</SelectItem>
+                  <SelectItem value="contract_signed">Contract Signed</SelectItem>
                   <SelectItem value="due_diligence">Due Diligence</SelectItem>
+                  <SelectItem value="title_escrow">Title & Escrow</SelectItem>
+                  <SelectItem value="marketing">Marketing</SelectItem>
                   <SelectItem value="closing">Closing</SelectItem>
                 </SelectContent>
               </Select>
@@ -390,10 +439,10 @@ export default function TransactionsDashboard() {
                 <h3 className="font-semibold mt-4">No Transactions Found</h3>
                 <p className="text-sm text-muted-foreground mt-1">
                   {activeTab === "active"
-                    ? "Send offers to start tracking transactions here"
+                    ? "Get a deal under contract to start tracking here"
                     : activeTab === "closed"
                     ? "No closed transactions yet"
-                    : "No lost transactions"}
+                    : "No cancelled transactions"}
                 </p>
                 {activeTab === "active" && (
                   <Button
@@ -407,86 +456,113 @@ export default function TransactionsDashboard() {
               </Card>
             ) : (
               <div className="space-y-3">
-                {filteredTransactions.map((tx) => {
-                  const stageConfig = STAGE_CONFIG[tx.stage as TransactionStage];
-                  
-                  return (
-                    <Card
-                      key={tx.id}
-                      className="p-4 hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => handleViewTransaction(tx)}
-                    >
-                      <div className="flex items-center gap-4">
-                        {/* Property Image Placeholder */}
-                        <div className="w-20 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                          <Home className="h-6 w-6 text-muted-foreground/50" />
-                        </div>
-
-                        {/* Property Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold truncate">{tx.address}</h3>
-                            {tx.hasUnreadMessages && (
-                              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
-                            <MapPin className="h-3 w-3" />
-                            <span>
-                              {tx.city}, {tx.state} {tx.zip}
-                            </span>
-                            <span className="text-muted-foreground/50">•</span>
-                            <span>{tx.propertyType}</span>
-                          </div>
-                          <div className="flex items-center gap-3 mt-2 text-sm">
-                            <span>
-                              Offer: <strong>{formatCurrency(tx.offerAmount)}</strong>
-                            </span>
-                            {tx.counterOffer && (
-                              <>
-                                <span className="text-muted-foreground/50">→</span>
-                                <span className="text-amber-600">
-                                  Counter: <strong>{formatCurrency(tx.counterOffer)}</strong>
-                                </span>
-                              </>
-                            )}
-                            {tx.acceptedOffer && (
-                              <>
-                                <span className="text-muted-foreground/50">→</span>
-                                <span className="text-success">
-                                  Accepted: <strong>{formatCurrency(tx.acceptedOffer)}</strong>
-                                </span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Stage & Actions */}
-                        <div className="flex items-center gap-4 flex-shrink-0">
-                          <div className="text-right">
-                            <Badge className={cn("gap-1", stageConfig.color)}>
-                              {stageConfig.icon}
-                              {stageConfig.label}
-                            </Badge>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {formatDistanceToNow(new Date(tx.lastActivity), {
-                                addSuffix: true,
-                              })}
-                            </p>
-                          </div>
-                          <Button variant="ghost" size="icon">
-                            <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
+                {filteredTransactions.map((tx) => (
+                  <TransactionCard 
+                    key={tx.id}
+                    transaction={tx}
+                    onClick={() => handleViewTransaction(tx)}
+                  />
+                ))}
               </div>
             )}
           </TabsContent>
         </Tabs>
       </div>
     </AppLayout>
+  );
+}
+
+interface TransactionCardProps {
+  transaction: typeof MOCK_TRANSACTIONS[0];
+  onClick: () => void;
+}
+
+function TransactionCard({ transaction: tx, onClick }: TransactionCardProps) {
+  const daysToClose = tx.closingDate ? differenceInDays(new Date(tx.closingDate), new Date()) : null;
+  const deadlineDays = tx.nextDeadline ? differenceInDays(new Date(tx.nextDeadline.date), new Date()) : null;
+
+  return (
+    <Card
+      className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+      onClick={onClick}
+    >
+      <div className="flex items-center gap-4">
+        {/* Property Image Placeholder */}
+        <div className="w-20 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+          <Home className="h-6 w-6 text-muted-foreground/50" />
+        </div>
+
+        {/* Property Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold truncate">{tx.address}</h3>
+            {tx.hasUnreadMessages && (
+              <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+            )}
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-0.5">
+            <MapPin className="h-3 w-3" />
+            <span>
+              {tx.city}, {tx.state} {tx.zip}
+            </span>
+            <span className="text-muted-foreground/50">•</span>
+            <span>{tx.propertyType}</span>
+          </div>
+          <div className="flex items-center gap-4 mt-2 text-sm">
+            <span>
+              Contract: <strong>{formatCurrency(tx.contractPrice)}</strong>
+            </span>
+            <span className="text-primary">
+              Fee: <strong>{formatCurrency(tx.assignmentFee)}</strong>
+            </span>
+            {tx.buyersInterested && tx.buyersInterested > 0 && (
+              <span className="flex items-center gap-1 text-success">
+                <Users className="h-3.5 w-3.5" />
+                {tx.buyersInterested} interested
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Deadline & Stage */}
+        <div className="flex items-center gap-4 flex-shrink-0">
+          {/* Next Deadline */}
+          {tx.nextDeadline && deadlineDays !== null && (
+            <div className="text-right">
+              <p className={cn(
+                "text-sm font-medium",
+                deadlineDays <= 2 && "text-amber-600",
+                deadlineDays < 0 && "text-destructive"
+              )}>
+                {deadlineDays < 0 
+                  ? `${Math.abs(deadlineDays)}d overdue`
+                  : deadlineDays === 0 
+                  ? "Today"
+                  : `${deadlineDays}d left`
+                }
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {tx.nextDeadline.label}
+              </p>
+            </div>
+          )}
+
+          {/* Days to Close */}
+          {daysToClose !== null && tx.stage !== "sold" && (
+            <div className="text-right">
+              <p className="text-sm font-medium">
+                {daysToClose}d
+              </p>
+              <p className="text-xs text-muted-foreground">To Close</p>
+            </div>
+          )}
+
+          {/* Stage Badge */}
+          <TCStageCompact stage={tx.stage} />
+
+          <ArrowRight className="h-4 w-4 text-muted-foreground" />
+        </div>
+      </div>
+    </Card>
   );
 }
