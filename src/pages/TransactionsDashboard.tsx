@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/select";
 import {
   Search,
-  Filter,
   DollarSign,
   Users,
   FileCheck,
@@ -348,7 +347,6 @@ export default function TransactionsDashboard() {
           </div>
           <Select value={stageFilter} onValueChange={setStageFilter}>
             <SelectTrigger className="w-[180px]">
-              <Filter className="h-4 w-4 mr-2" />
               <SelectValue placeholder="All Stages" />
             </SelectTrigger>
             <SelectContent>
