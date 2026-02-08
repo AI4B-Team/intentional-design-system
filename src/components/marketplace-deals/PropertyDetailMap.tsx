@@ -471,7 +471,10 @@ export function PropertyDetailMap({
         {/* Comps Found Badge - Clickable */}
         {!showBuyers && (
           <button
-            onClick={() => setShowCompsPanel(!showCompsPanel)}
+            onClick={() => {
+              setShowCompsPanel(!showCompsPanel);
+              if (!showCompsPanel) setShowBuyersPanel(false);
+            }}
             className={cn(
               "rounded-lg border px-3 py-2 shadow-lg transition-colors",
               showCompsPanel 
@@ -488,7 +491,10 @@ export function PropertyDetailMap({
 
         {/* Buyers Near Property Badge - Clickable */}
         <button
-          onClick={() => setShowBuyersPanel(!showBuyersPanel)}
+          onClick={() => {
+            setShowBuyersPanel(!showBuyersPanel);
+            if (!showBuyersPanel) setShowCompsPanel(false);
+          }}
           className={cn(
             "rounded-lg border px-3 py-2 shadow-lg transition-colors",
             showBuyersPanel 
@@ -510,10 +516,10 @@ export function PropertyDetailMap({
         <p className="text-xs font-medium text-muted-foreground mb-2">Map Legend</p>
         <div className="space-y-1.5">
           <div className="flex items-center gap-2">
-            <div className="w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-background shadow" />
+            <div className="w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow" />
             <span className="text-xs">Subject Property</span>
           </div>
-          {showBuyers ? (
+          {showBuyersPanel ? (
             <>
               <div className="flex items-center gap-2">
                 <div className="w-3.5 h-3.5 rounded-full bg-primary border-2 border-background shadow" />
