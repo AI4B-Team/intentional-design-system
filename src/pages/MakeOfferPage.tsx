@@ -1028,8 +1028,8 @@ Best regards,
                       ))}
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm text-muted-foreground">Custom:</span>
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-foreground">$</span>
+                        <div className="relative flex items-center">
+                          <span className="absolute left-2.5 text-sm font-medium text-foreground pointer-events-none">$</span>
                           <Input
                             type="number"
                             min={0}
@@ -1038,7 +1038,7 @@ Best regards,
                               const val = Math.max(0, Number(e.target.value));
                               setCustomOfferAmount(val);
                             }}
-                            className="w-32 h-9 pl-6 text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="w-32 h-9 pl-7 text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           />
                         </div>
                       </div>
