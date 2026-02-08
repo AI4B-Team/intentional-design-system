@@ -289,13 +289,6 @@ export function SessionSidebar({
         ))}
       </div>
 
-      {/* AI Badge at Bottom */}
-      <div className="p-4 border-t border-border-subtle">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span>AI-Powered Assistance</span>
-        </div>
-      </div>
     </div>
   );
 }
