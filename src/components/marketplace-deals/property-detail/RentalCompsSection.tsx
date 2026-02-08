@@ -151,7 +151,7 @@ export function RentalCompsSection({ rentalComps, subjectProperty }: RentalComps
         </div>
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
           <p className="text-2xl font-bold">${avgRent.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Avg. Comp Rent</p>
+          <p className="text-sm text-muted-foreground">Avg. Rent Comp</p>
         </div>
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
           <p className="text-2xl font-bold">${avgRentPerSqft}/sqft</p>
