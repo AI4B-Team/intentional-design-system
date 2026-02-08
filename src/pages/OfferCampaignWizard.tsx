@@ -300,6 +300,10 @@ export default function OfferCampaignWizard() {
     selectedTemplate,
     emailEnabled,
     smsEnabled,
+    twilioConfigured: !!twilioNumber,
+    scheduleType,
+    autoFollowUp,
+    followUpDays,
   };
 
   // AI Insights for each step

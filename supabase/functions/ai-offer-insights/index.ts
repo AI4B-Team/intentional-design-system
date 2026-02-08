@@ -53,6 +53,10 @@ interface OfferInsightRequest {
     selectedTemplate?: string;
     emailEnabled?: boolean;
     smsEnabled?: boolean;
+    twilioConfigured?: boolean;
+    scheduleType?: string;
+    autoFollowUp?: boolean;
+    followUpDays?: number;
   };
 }
 
@@ -228,12 +232,41 @@ Give a quick tip about the best delivery strategy for getting a response.`;
         break;
         
       case "preview":
+        const deliveryMethods: string[] = [];
+        if (context.emailEnabled) deliveryMethods.push("Email");
+        if (context.smsEnabled) deliveryMethods.push("SMS");
+        
+        const smsStatus = context.smsEnabled 
+          ? (context.twilioConfigured ? "configured" : "⚠️ NOT CONFIGURED") 
+          : "disabled";
+        
+        const scheduleDesc = context.scheduleType === "immediate" 
+          ? "Send immediately" 
+          : context.scheduleType === "drip" 
+            ? "Drip campaign" 
+            : context.scheduleType === "scheduled"
+              ? "Scheduled for later"
+              : "Draft (not sending)";
+
         userPrompt = `The investor is previewing their offer before sending.
 Property: ${context.propertyAddress}
 Offer: $${context.offerAmount?.toLocaleString()} (${context.offerPercentage}% of ARV)
 Template: ${context.selectedTemplate}
 
-Give a final check tip - what should they verify before sending?`;
+DELIVERY CONFIGURATION:
+- Channels: ${deliveryMethods.length > 0 ? deliveryMethods.join(" + ") : "None selected"}
+- Email: ${context.emailEnabled ? "Enabled" : "Disabled"}
+- SMS: ${context.smsEnabled ? `Enabled (${smsStatus})` : "Disabled"}
+- Schedule: ${scheduleDesc}
+- Auto Follow-up: ${context.autoFollowUp ? `Yes, in ${context.followUpDays} days` : "Disabled"}
+
+Based on their ACTUAL delivery configuration above, provide specific advice:
+${context.smsEnabled && !context.twilioConfigured ? "- WARN them that SMS is enabled but Twilio is not configured!" : ""}
+${!context.emailEnabled && !context.smsEnabled ? "- WARN them that no delivery channels are selected!" : ""}
+${context.emailEnabled && context.smsEnabled ? "- Acknowledge their multi-channel approach" : ""}
+${context.autoFollowUp ? "- Comment on their follow-up timing" : "- Suggest enabling auto follow-up"}
+
+Keep it to 2-3 sentences focused on their specific setup.`;
         break;
         
       case "review":
