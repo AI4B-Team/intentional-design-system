@@ -147,6 +147,7 @@ export default function MakeOfferPage() {
 
   // Step 2: Offer Settings (Pricing)
   const [offerPercentage, setOfferPercentage] = useState(65);
+  const [customOfferAmount, setCustomOfferAmount] = useState<number | null>(null);
   const [estRepairsInput, setEstRepairsInput] = useState(20000);
   const [holdingCostsInput, setHoldingCostsInput] = useState(8000);
   
@@ -192,7 +193,8 @@ export default function MakeOfferPage() {
 
   // Calculations
   const arv = deal.arv;
-  const offerAmount = Math.round(arv * (offerPercentage / 100));
+  const offerAmount = customOfferAmount !== null ? customOfferAmount : Math.round(arv * (offerPercentage / 100));
+  const effectivePercentage = customOfferAmount !== null ? Math.round((customOfferAmount / arv) * 100) : offerPercentage;
   const estimatedSavings = arv - offerAmount;
   
   // Flipper profit calculation (ARV - purchase - repairs - holding - closing - commission)
@@ -785,9 +787,12 @@ Best regards,
                       {PRESET_PERCENTAGES.map((pct) => (
                         <Button
                           key={pct}
-                          variant={offerPercentage === pct ? "default" : "outline"}
+                          variant={customOfferAmount === null && offerPercentage === pct ? "default" : "outline"}
                           size="sm"
-                          onClick={() => setOfferPercentage(pct)}
+                          onClick={() => {
+                            setOfferPercentage(pct);
+                            setCustomOfferAmount(null);
+                          }}
                         >
                           {pct}%
                         </Button>
@@ -797,10 +802,11 @@ Best regards,
                           type="number"
                           min={50}
                           max={100}
-                          value={offerPercentage}
+                          value={customOfferAmount !== null ? effectivePercentage : offerPercentage}
                           onChange={(e) => {
                             const val = Math.min(100, Math.max(50, Number(e.target.value)));
                             setOfferPercentage(val);
+                            setCustomOfferAmount(null);
                           }}
                           className="w-16 h-9 text-center text-sm font-medium"
                         />
@@ -812,11 +818,14 @@ Best regards,
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Label>Offer Percentage</Label>
-                        <span className="text-lg font-semibold text-primary">{offerPercentage}%</span>
+                        <span className="text-lg font-semibold text-primary">{effectivePercentage}%</span>
                       </div>
                       <Slider
-                        value={[offerPercentage]}
-                        onValueChange={([val]) => setOfferPercentage(val)}
+                        value={[effectivePercentage]}
+                        onValueChange={([val]) => {
+                          setOfferPercentage(val);
+                          setCustomOfferAmount(null);
+                        }}
                         min={50}
                         max={100}
                         step={1}
@@ -836,9 +845,19 @@ Best regards,
                       </Card>
                       <Card className="p-4 text-center bg-primary/5 border-primary">
                         <p className="text-sm text-muted-foreground mb-1">Your Offer</p>
-                        <p className="text-xl font-semibold">
-                          {formatCurrency(offerAmount)}
-                        </p>
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="text-lg font-semibold">$</span>
+                          <Input
+                            type="number"
+                            value={offerAmount}
+                            onChange={(e) => {
+                              const val = Number(e.target.value);
+                              setCustomOfferAmount(val);
+                            }}
+                            className="w-28 h-8 text-center text-xl font-semibold border-none bg-transparent p-0"
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">({effectivePercentage}% of ARV)</p>
                       </Card>
                       <Card className="p-4 text-center">
                         <p className="text-sm text-muted-foreground mb-1">Flipper Profit</p>
