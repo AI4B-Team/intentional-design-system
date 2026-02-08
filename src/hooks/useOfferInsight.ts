@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-type InsightStep = "package" | "pricing" | "delivery" | "preview" | "review";
+type InsightStep = "dealSetup" | "package" | "pricing" | "delivery" | "preview" | "review";
 
 interface InsightContext {
   propertyAddress?: string;
