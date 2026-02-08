@@ -1136,14 +1136,24 @@ Best regards,
                     />
 
                     <Tabs value={previewTab} onValueChange={(v) => setPreviewTab(v as any)}>
-                      <TabsList>
-                        <TabsTrigger value="email" disabled={!emailEnabled}>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={previewTab === "email" ? "default" : "outline"}
+                          size="sm"
+                          disabled={!emailEnabled}
+                          onClick={() => setPreviewTab("email")}
+                        >
                           <Mail className="h-4 w-4 mr-2" /> Email Preview
-                        </TabsTrigger>
-                        <TabsTrigger value="sms" disabled={!smsEnabled}>
+                        </Button>
+                        <Button
+                          variant={previewTab === "sms" ? "default" : "outline"}
+                          size="sm"
+                          disabled={!smsEnabled}
+                          onClick={() => setPreviewTab("sms")}
+                        >
                           <MessageSquare className="h-4 w-4 mr-2" /> Text Preview
-                        </TabsTrigger>
-                      </TabsList>
+                        </Button>
+                      </div>
 
                       <TabsContent value="email" className="mt-4">
                         <Card className="overflow-hidden">
