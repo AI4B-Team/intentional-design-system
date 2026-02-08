@@ -515,11 +515,17 @@ function TransactionCard({ transaction: tx, onClick }: TransactionCardProps) {
             <span className="text-primary">
               Fee: <strong>{formatCurrency(tx.assignmentFee)}</strong>
             </span>
+            {tx.buyersMatched && tx.buyersMatched > 0 && (
+              <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 bg-purple-50 text-purple-700 border-purple-200">
+                <Users className="h-3 w-3 mr-1" />
+                {tx.buyersMatched} Buyers Matched
+              </Badge>
+            )}
             {tx.buyersInterested && tx.buyersInterested > 0 && (
-              <span className="flex items-center gap-1 text-success">
-                <Users className="h-3.5 w-3.5" />
-                {tx.buyersInterested} interested
-              </span>
+              <Badge variant="outline" className="text-xs font-medium px-2 py-0.5 bg-success/10 text-success border-success/30">
+                <Users className="h-3 w-3 mr-1" />
+                {tx.buyersInterested} Buyers Interested
+              </Badge>
             )}
           </div>
         </div>
