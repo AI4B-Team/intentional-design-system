@@ -20,33 +20,114 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useMockDeals } from "@/hooks/useMockDeals";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { TransactionRoadmapContent, type TransactionData } from "@/components/transactions/TransactionRoadmapContent";
 import { toast } from "sonner";
 
-// Default filter values for useMockDeals
-const defaultFilters = {
-  address: "",
-  leadType: "all",
-  homeTypes: [],
-  priceMin: "",
-  priceMax: "",
-  bedsMin: "",
-  bathsMin: "",
-};
+// Mock transaction data (matching TransactionsDashboard)
+const MOCK_TRANSACTIONS = [
+  {
+    id: "tx-1",
+    propertyId: "deal-1",
+    address: "1234 Oak Street",
+    city: "Tampa",
+    state: "FL",
+    zip: "33527",
+    propertyType: "Single Family",
+    offerAmount: 185000,
+    arv: 285000,
+    beds: 3,
+    baths: 2,
+    sqft: 1850,
+    agent: {
+      name: "Sarah Mitchell",
+      phone: "(512) 555-0147",
+      email: "sarah.mitchell@premierrealty.com",
+      brokerage: "Premier Realty Group",
+    },
+  },
+  {
+    id: "tx-2",
+    propertyId: "deal-2",
+    address: "567 Pine Avenue",
+    city: "Brandon",
+    state: "FL",
+    zip: "33511",
+    propertyType: "Townhouse",
+    offerAmount: 145000,
+    arv: 220000,
+    beds: 3,
+    baths: 2,
+    sqft: 1600,
+    agent: {
+      name: "Mike Johnson",
+      phone: "(512) 555-0199",
+      email: "mike.johnson@realestate.com",
+      brokerage: "RE/MAX Elite",
+    },
+  },
+  {
+    id: "tx-3",
+    propertyId: "deal-3",
+    address: "890 Maple Drive",
+    city: "Riverview",
+    state: "FL",
+    zip: "33578",
+    propertyType: "Single Family",
+    offerAmount: 210000,
+    arv: 320000,
+    beds: 4,
+    baths: 2.5,
+    sqft: 2200,
+    agent: {
+      name: "Linda Williams",
+      phone: "(512) 555-0211",
+      email: "linda.williams@homes.com",
+      brokerage: "Homes & Co",
+    },
+  },
+  {
+    id: "tx-4",
+    propertyId: "deal-4",
+    address: "321 Cedar Lane",
+    city: "Valrico",
+    state: "FL",
+    zip: "33594",
+    propertyType: "Single Family",
+    offerAmount: 175000,
+    arv: 260000,
+    beds: 3,
+    baths: 2,
+    sqft: 1700,
+    agent: null,
+  },
+  {
+    id: "tx-5",
+    propertyId: "deal-5",
+    address: "456 Birch Court",
+    city: "Tampa",
+    state: "FL",
+    zip: "33612",
+    propertyType: "Duplex",
+    offerAmount: 295000,
+    arv: 420000,
+    beds: 4,
+    baths: 3,
+    sqft: 2400,
+    agent: {
+      name: "Jessica Davis",
+      phone: "(512) 555-0188",
+      email: "jessica.davis@remax.com",
+      brokerage: "RE/MAX Premier",
+    },
+  },
+];
 
 export default function TransactionRoadmapPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { deals } = useMockDeals({
-    filters: defaultFilters,
-    sortBy: "newest",
-    page: 1,
-    perPage: 50,
-  });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showNewTransactionBanner, setShowNewTransactionBanner] = useState(false);
 
@@ -67,13 +148,14 @@ export default function TransactionRoadmapPage() {
     }
   }, [newTransactionState]);
 
-  const deal = deals.find((d) => d.id === id);
+  // Find transaction by propertyId
+  const transaction = MOCK_TRANSACTIONS.find((t) => t.propertyId === id);
 
-  if (!deal) {
+  if (!transaction) {
     return (
       <AppLayout>
         <div className="flex items-center justify-center min-h-[50vh]">
-          <p className="text-muted-foreground">Property not found</p>
+          <p className="text-muted-foreground">Transaction not found</p>
         </div>
       </AppLayout>
     );
@@ -128,7 +210,7 @@ export default function TransactionRoadmapPage() {
               <div className="h-6 w-px bg-border" />
               <div>
                 <h1 className="text-lg font-semibold">Transaction Roadmap</h1>
-                <p className="text-sm text-muted-foreground">{deal.address}</p>
+                <p className="text-sm text-muted-foreground">{transaction.address}</p>
               </div>
             </div>
             <Badge variant="secondary" className="bg-success/10 text-success">
@@ -250,20 +332,20 @@ export default function TransactionRoadmapPage() {
                     <div>
                       <div className="flex items-center gap-2 text-muted-foreground text-sm mb-1">
                         <MapPin className="h-4 w-4" />
-                        <span>{deal.city}, {deal.state}</span>
+                        <span>{transaction.city}, {transaction.state}</span>
                       </div>
-                      <h2 className="text-xl font-semibold">{deal.address}</h2>
+                      <h2 className="text-xl font-semibold">{transaction.address}</h2>
                     </div>
 
                     <div className="flex items-center gap-4 flex-wrap">
                       <div className="text-2xl font-bold text-primary">
-                        ${deal.price.toLocaleString()}
+                        ${transaction.offerAmount.toLocaleString()}
                       </div>
                       <div className="text-lg font-semibold text-muted-foreground">
-                        ARV: ${deal.arv.toLocaleString()}
+                        ARV: ${transaction.arv.toLocaleString()}
                       </div>
                       <Badge variant="secondary" className="bg-success/10 text-success">
-                        {deal.propertyType}
+                        {transaction.propertyType}
                       </Badge>
                     </div>
 
@@ -272,21 +354,21 @@ export default function TransactionRoadmapPage() {
                         <div className="flex items-center justify-center gap-1 text-muted-foreground">
                           <Bed className="h-4 w-4" />
                         </div>
-                        <p className="font-semibold">{deal.beds}</p>
+                        <p className="font-semibold">{transaction.beds}</p>
                         <p className="text-xs text-muted-foreground">Beds</p>
                       </div>
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-muted-foreground">
                           <Bath className="h-4 w-4" />
                         </div>
-                        <p className="font-semibold">{deal.baths}</p>
+                        <p className="font-semibold">{transaction.baths}</p>
                         <p className="text-xs text-muted-foreground">Baths</p>
                       </div>
                       <div className="text-center">
                         <div className="flex items-center justify-center gap-1 text-muted-foreground">
                           <Ruler className="h-4 w-4" />
                         </div>
-                        <p className="font-semibold">{deal.sqft.toLocaleString()}</p>
+                        <p className="font-semibold">{transaction.sqft.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground">Sq Ft</p>
                       </div>
                       <div className="text-center">
@@ -306,7 +388,7 @@ export default function TransactionRoadmapPage() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">ARV</span>
-                      <span className="font-semibold">${deal.arv.toLocaleString()}</span>
+                      <span className="font-semibold">${transaction.arv.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">Est. Repair</span>
@@ -315,7 +397,7 @@ export default function TransactionRoadmapPage() {
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">Potential Profit</span>
                       <span className="font-semibold text-success">
-                        ${(deal.arv - deal.price - 25000).toLocaleString()}
+                        ${(transaction.arv - transaction.offerAmount - 25000).toLocaleString()}
                       </span>
                     </div>
                     <div className="flex items-center justify-between py-2">
@@ -328,15 +410,15 @@ export default function TransactionRoadmapPage() {
                 {/* Contact Panel */}
                 <ContactPanel
                   contact={mockContact}
-                  propertyAddress={deal.address}
-                  propertyPrice={deal.price}
+                  propertyAddress={transaction.address}
+                  propertyPrice={transaction.offerAmount}
                 />
 
                 {/* Buyers Panel */}
                 <BuyersPanel
                   viewMode="flip"
                   onShowOnMap={() => {}}
-                  propertyAddress={deal.address}
+                  propertyAddress={transaction.address}
                 />
               </div>
             </ScrollArea>
@@ -347,8 +429,8 @@ export default function TransactionRoadmapPage() {
             <ScrollArea className="h-full">
               <div className="p-6">
                 <TransactionRoadmapContent
-                  propertyAddress={deal.address}
-                  propertyPrice={deal.price}
+                  propertyAddress={transaction.address}
+                  propertyPrice={transaction.offerAmount}
                   onSave={handleSaveTransaction}
                 />
               </div>
