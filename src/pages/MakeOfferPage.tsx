@@ -187,9 +187,20 @@ export default function MakeOfferPage() {
   }
 
   // Calculations
-  const marketValue = deal.price;
-  const offerAmount = Math.round(marketValue * (offerPercentage / 100));
-  const estimatedSavings = marketValue - offerAmount;
+  const arv = deal.arv;
+  const offerAmount = Math.round(arv * (offerPercentage / 100));
+  const estimatedSavings = arv - offerAmount;
+  
+  // Flipper profit calculation (ARV - purchase - repairs - holding - closing - commission)
+  const estRepairs = 20000;
+  const holdingCosts = 8000;
+  const closingCosts = Math.round(arv * 0.06);
+  const agentCommission = Math.round(arv * 0.05);
+  const flipperProfit = arv - offerAmount - estRepairs - holdingCosts - closingCosts - agentCommission;
+  
+  // Wholesaler calculation - what a flipper would pay (70% ARV rule)
+  const buyerMaxOffer = Math.round(arv * 0.70 - estRepairs); // What end buyer would pay
+  const wholesalerProfit = buyerMaxOffer - offerAmount; // Assignment fee potential
 
   const steps = [
     { number: 1, title: "Offer Package", icon: Package },
@@ -752,21 +763,45 @@ Best regards,
                     <div className="grid grid-cols-3 gap-4 pt-4">
                       <Card className="p-4 text-center">
                         <p className="text-sm text-muted-foreground mb-1">After Repaired Value (ARV)</p>
-                        <p className="text-xl font-semibold">{formatCurrency(marketValue)}</p>
+                        <p className="text-xl font-semibold text-success">{formatCurrency(arv)}</p>
                       </Card>
                       <Card className="p-4 text-center bg-primary/5 border-primary">
                         <p className="text-sm text-muted-foreground mb-1">Your Offer</p>
-                        <p className="text-xl font-semibold text-primary">
+                        <p className="text-xl font-semibold">
                           {formatCurrency(offerAmount)}
                         </p>
                       </Card>
                       <Card className="p-4 text-center">
-                        <p className="text-sm text-muted-foreground mb-1">Est. Savings</p>
-                        <p className="text-xl font-semibold text-success">
-                          {formatCurrency(estimatedSavings)}
+                        <p className="text-sm text-muted-foreground mb-1">Flipper Profit</p>
+                        <p className={cn(
+                          "text-xl font-semibold",
+                          flipperProfit > 0 ? "text-success" : "text-destructive"
+                        )}>
+                          {formatCurrency(flipperProfit)}
                         </p>
                       </Card>
                     </div>
+
+                    {/* Wholesaler Calculation */}
+                    <Card className="p-4 mt-4 bg-surface-secondary/30">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium mb-1">Wholesaler Opportunity</p>
+                          <p className="text-xs text-muted-foreground">
+                            End buyer pays ~{formatCurrency(buyerMaxOffer)} (70% ARV - repairs)
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground mb-0.5">Assignment Fee</p>
+                          <p className={cn(
+                            "text-xl font-bold",
+                            wholesalerProfit > 0 ? "text-success" : "text-destructive"
+                          )}>
+                            {formatCurrency(wholesalerProfit)}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
                   </div>
                 )}
 
