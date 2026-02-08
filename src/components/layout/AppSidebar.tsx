@@ -68,10 +68,16 @@ const topNavItems: NavItem[] = [
   { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Transactions", href: "/transactions", icon: Handshake },
-  { label: "Campaigns", href: "/dispo/campaigns", icon: Megaphone },
-  { label: "Dialer", href: "/dialer", icon: Phone },
   { label: "Inbox", href: "/inbox", icon: Inbox },
+  { label: "Dialer", href: "/dialer", icon: Phone },
 ];
+
+// Items after divider - before Contacts
+const campaignsNavItem: NavItem = {
+  label: "Campaigns",
+  href: "/dispo/campaigns",
+  icon: Megaphone,
+};
 
 const afterLeadsItems: NavItem[] = [
   { label: "Financing", href: "/financing", icon: DollarSign },
@@ -134,9 +140,8 @@ export function AppSidebar({
   };
 
   // Active state checks for navigation items
+  const isCampaignsActive = location.pathname.startsWith(campaignsNavItem.href);
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
-  
-  
   const isAppsActive = location.pathname.startsWith(appsNavItem.href);
 
   const handleSignOut = async () => {
@@ -281,6 +286,31 @@ export function AppSidebar({
               <div className="border-t border-slate-700" />
             </li>
 
+            {/* Campaigns - Direct Link */}
+            <li>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <NavLink
+                    to={campaignsNavItem.href}
+                    onClick={onMobileClose}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
+                      isCampaignsActive && "bg-brand-accent text-white font-medium",
+                      collapsed && "justify-center"
+                    )}
+                  >
+                    <campaignsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isCampaignsActive && "text-white")} />
+                    {!collapsed && <span>{campaignsNavItem.label}</span>}
+                  </NavLink>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                    {campaignsNavItem.label}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </li>
 
             {/* Contacts - Direct Link */}
             <li>
