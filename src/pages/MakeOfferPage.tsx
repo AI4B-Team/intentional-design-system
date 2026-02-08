@@ -492,37 +492,45 @@ Best regards,
                   </h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Asking Price</span>
-                      <span className="font-semibold">${deal.price.toLocaleString()}</span>
+                      <span className="text-sm text-muted-foreground">ARV</span>
+                      <span className="font-semibold text-success">${arv.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Your Offer ({offerPercentage}%)</span>
-                      <span className="font-bold text-primary text-lg">{formatCurrency(offerAmount)}</span>
+                      <span className="font-bold text-lg">{formatCurrency(offerAmount)}</span>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t">
-                      <span className="text-sm text-muted-foreground">Potential Savings</span>
-                      <span className="font-semibold text-success">{formatCurrency(estimatedSavings)}</span>
+                      <span className="text-sm text-muted-foreground">Flipper Profit</span>
+                      <span className={cn(
+                        "font-semibold",
+                        flipperProfit > 0 ? "text-success" : "text-destructive"
+                      )}>{formatCurrency(flipperProfit)}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground">Wholesaler Fee</span>
+                      <span className={cn(
+                        "font-semibold",
+                        wholesalerProfit > 0 ? "text-success" : "text-destructive"
+                      )}>{formatCurrency(wholesalerProfit)}</span>
                     </div>
                   </div>
                 </Card>
 
-                {/* Quick Stats */}
+                {/* Investment Metrics */}
                 <Card className="p-4">
                   <h3 className="font-semibold mb-3">Investment Metrics</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">ARV</span>
-                      <span className="font-semibold">${deal.arv.toLocaleString()}</span>
+                      <span className="text-sm text-muted-foreground">Est. Repairs</span>
+                      <span className="font-semibold">${estRepairs.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">Est. Repair</span>
-                      <span className="font-semibold">${(25000).toLocaleString()}</span>
+                      <span className="text-sm text-muted-foreground">Holding Costs</span>
+                      <span className="font-semibold">${holdingCosts.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
-                      <span className="text-sm text-muted-foreground">Potential Profit</span>
-                      <span className="font-semibold text-success">
-                        ${(deal.arv - offerAmount - 25000).toLocaleString()}
-                      </span>
+                      <span className="text-sm text-muted-foreground">Closing Costs</span>
+                      <span className="font-semibold">${closingCosts.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between py-2">
                       <span className="text-sm text-muted-foreground">Days on Market</span>
