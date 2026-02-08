@@ -103,7 +103,7 @@ const OFFER_TEMPLATES: OfferTemplate[] = [
   },
 ];
 
-const PRESET_PERCENTAGES = [60, 65, 70, 75];
+const PRESET_PERCENTAGES = [60, 65, 70, 75, 80];
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -781,7 +781,7 @@ Best regards,
                     </div>
 
                     {/* Preset Buttons */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       {PRESET_PERCENTAGES.map((pct) => (
                         <Button
                           key={pct}
@@ -792,6 +792,20 @@ Best regards,
                           {pct}%
                         </Button>
                       ))}
+                      <div className="flex items-center gap-1">
+                        <Input
+                          type="number"
+                          min={50}
+                          max={100}
+                          value={offerPercentage}
+                          onChange={(e) => {
+                            const val = Math.min(100, Math.max(50, Number(e.target.value)));
+                            setOfferPercentage(val);
+                          }}
+                          className="w-16 h-9 text-center text-sm font-medium"
+                        />
+                        <span className="text-sm text-muted-foreground">%</span>
+                      </div>
                     </div>
 
                     {/* Slider */}
