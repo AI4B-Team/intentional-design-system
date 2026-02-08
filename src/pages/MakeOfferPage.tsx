@@ -1028,19 +1028,19 @@ Best regards,
                       ))}
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm text-muted-foreground">Custom:</span>
-                        <Input
-                          type="number"
-                          min={50}
-                          max={100}
-                          value={customOfferAmount !== null ? effectivePercentage : offerPercentage}
-                          onChange={(e) => {
-                            const val = Math.min(100, Math.max(50, Number(e.target.value)));
-                            setOfferPercentage(val);
-                            setCustomOfferAmount(null);
-                          }}
-                          className="w-20 h-9 text-center text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                        <span className="text-sm text-muted-foreground">%</span>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                          <Input
+                            type="number"
+                            min={0}
+                            value={customOfferAmount ?? offerAmount}
+                            onChange={(e) => {
+                              const val = Math.max(0, Number(e.target.value));
+                              setCustomOfferAmount(val);
+                            }}
+                            className="w-32 h-9 pl-6 text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                        </div>
                       </div>
                     </div>
 
