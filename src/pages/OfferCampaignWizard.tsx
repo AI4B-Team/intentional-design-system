@@ -1314,6 +1314,10 @@ Best regards,
                               <span className="font-semibold">14-21 Days</span>
                             </div>
                             <div>
+                              <span className="text-muted-foreground">DD:</span>{" "}
+                              <span className="font-semibold">3 Days</span>
+                            </div>
+                            <div>
                               <span className="text-muted-foreground">EMD:</span>{" "}
                               <span className="font-semibold">$5,000</span>
                             </div>
