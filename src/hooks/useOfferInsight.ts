@@ -19,6 +19,10 @@ interface InsightContext {
   selectedTemplate?: string;
   emailEnabled?: boolean;
   smsEnabled?: boolean;
+  twilioConfigured?: boolean;
+  scheduleType?: string;
+  autoFollowUp?: boolean;
+  followUpDays?: number;
 }
 
 export function useOfferInsight(step: InsightStep, context: InsightContext, enabled: boolean = true) {
