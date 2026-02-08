@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { PhotoGalleryModal } from "@/components/ui/photo-gallery-modal";
 import {
   Tooltip,
   TooltipContent,
@@ -181,7 +182,7 @@ export default function MarketplaceDealDetail() {
   const [viewMode, setViewMode] = useState<ViewMode>("flip");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(getStoredDetailLayoutMode);
   const [showBuyersOnMap, setShowBuyersOnMap] = useState(false);
-
+  const [galleryOpen, setGalleryOpen] = useState(false);
   // Persist view mode and layout mode changes to sessionStorage
   React.useEffect(() => {
     sessionStorage.setItem(DETAIL_VIEW_MODE_KEY, viewMode);
@@ -464,11 +465,14 @@ export default function MarketplaceDealDetail() {
               layoutMode === "split" ? "h-[200px]" : "h-[320px]"
             )}>
               {/* Main Image - Takes ~60% width */}
-              <div className="relative flex-[3] rounded-xl overflow-hidden">
+              <div 
+                className="relative flex-[3] rounded-xl overflow-hidden cursor-pointer"
+                onClick={() => setGalleryOpen(true)}
+              >
                 <img
                   src={images[currentImageIndex]}
                   alt={deal.address}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:opacity-95 transition-opacity"
                 />
 
                 {/* Status Badge */}
@@ -481,7 +485,10 @@ export default function MarketplaceDealDetail() {
                   variant="secondary"
                   size="icon"
                   className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 hover:bg-white shadow-lg"
-                  onClick={handlePrevImage}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevImage();
+                  }}
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -489,7 +496,10 @@ export default function MarketplaceDealDetail() {
                   variant="secondary"
                   size="icon"
                   className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 hover:bg-white shadow-lg"
-                  onClick={handleNextImage}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNextImage();
+                  }}
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -500,7 +510,7 @@ export default function MarketplaceDealDetail() {
                 </Badge>
 
                 {/* Media Controls - Bottom Right */}
-                <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                <div className="absolute bottom-3 right-3 flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <Button size="sm" variant="secondary" className="bg-white/90 hover:bg-white gap-1.5 h-8 text-xs">
                     <Rotate3d className="h-3.5 w-3.5" />
                     3D Tour
@@ -522,7 +532,10 @@ export default function MarketplaceDealDetail() {
                   <div
                     key={idx}
                     className="relative rounded-xl overflow-hidden cursor-pointer transition-opacity hover:opacity-90"
-                    onClick={() => setCurrentImageIndex(idx + 1)}
+                    onClick={() => {
+                      setCurrentImageIndex(idx + 1);
+                      setGalleryOpen(true);
+                    }}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
                     {idx === 3 && (
@@ -530,10 +543,11 @@ export default function MarketplaceDealDetail() {
                         className="absolute bottom-2 right-2 bg-white px-3 py-1.5 rounded-md flex items-center gap-1.5 text-xs font-medium shadow-md hover:bg-muted transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
+                          setGalleryOpen(true);
                         }}
                       >
                         <Camera className="h-3.5 w-3.5" />
-                        {layoutMode === "split" ? "+10" : "See All 10 Photos"}
+                        {layoutMode === "split" ? `+${images.length - 4}` : `See All ${images.length} Photos`}
                       </button>
                     )}
                   </div>
@@ -793,6 +807,14 @@ export default function MarketplaceDealDetail() {
           </div>
         </div>
       </div>
+      {/* Photo Gallery Modal */}
+      <PhotoGalleryModal
+        photos={images}
+        open={galleryOpen}
+        onOpenChange={setGalleryOpen}
+        initialIndex={currentImageIndex}
+        title={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
+      />
     </AppLayout>
   );
 }

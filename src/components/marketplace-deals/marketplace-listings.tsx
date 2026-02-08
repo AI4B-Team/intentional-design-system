@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PhotoGalleryModal } from "@/components/ui/photo-gallery-modal";
+import { ImageCarousel } from "./ImageCarousel";
 import {
   Select,
   SelectContent,
@@ -204,9 +204,6 @@ function DealListItem({
 }) {
   const navigate = useNavigate();
   
-  // Gallery modal state
-  const [galleryOpen, setGalleryOpen] = useState(false);
-  
   // Local override state - null means use global mode
   const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
   
@@ -283,20 +280,13 @@ function DealListItem({
     >
       <div className="flex min-h-[240px]">
         {/* Image Gallery Section */}
-        <div 
-          className="relative w-48 flex-shrink-0 flex flex-col gap-1"
-          onClick={(e) => {
-            e.stopPropagation();
-            setGalleryOpen(true);
-          }}
-        >
-          {/* Main Image */}
-          <div className="relative h-[160px] cursor-pointer">
-            <img
-              src={deal.imageUrl}
-              alt={deal.address}
-              className="w-full h-full object-cover rounded-tl-lg hover:opacity-95 transition-opacity"
-            />
+        <div className="relative w-48 flex-shrink-0 flex flex-col gap-1">
+          {/* Main Image with Carousel */}
+          <ImageCarousel
+            images={photos}
+            alt={deal.address}
+            className="relative h-[160px] rounded-tl-lg overflow-hidden"
+          >
             {/* Selection button */}
             <button
               onClick={(e) => {
@@ -361,7 +351,7 @@ function DealListItem({
                 </div>
               );
             })()}
-          </div>
+          </ImageCarousel>
           
           {/* Thumbnail Grid - 2x2 layout */}
           {deal.images && deal.images.length > 1 && (
@@ -589,13 +579,6 @@ function DealListItem({
         </div>
       </div>
       
-      {/* Photo Gallery Modal */}
-      <PhotoGalleryModal
-        photos={photos}
-        open={galleryOpen}
-        onOpenChange={setGalleryOpen}
-        title={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
-      />
     </Card>
   );
 }
@@ -616,9 +599,6 @@ function DealCard({
   globalCardViewMode: CardViewMode;
 }) {
   const navigate = useNavigate();
-  
-  // Gallery modal state
-  const [galleryOpen, setGalleryOpen] = useState(false);
   
   // Local override state - null means use global mode
   const [localViewMode, setLocalViewMode] = useState<CardViewMode | null>(null);
@@ -717,20 +697,12 @@ function DealCard({
 
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-white" onClick={handleCardClick}>
-      {/* Image */}
-      <div 
-        className="relative aspect-[16/10] cursor-pointer"
-        onClick={(e) => {
-          e.stopPropagation();
-          setGalleryOpen(true);
-        }}
+      {/* Image Carousel */}
+      <ImageCarousel
+        images={photos}
+        alt={deal.address}
+        className="relative aspect-[16/10] overflow-hidden"
       >
-        <img
-          src={deal.imageUrl}
-          alt={deal.address}
-          className="w-full h-full object-cover hover:opacity-95 transition-opacity"
-        />
-        
         {/* Top Left: Radio button + Badge */}
         <div className="absolute top-3 left-3 flex items-center gap-2">
           <button
@@ -829,7 +801,7 @@ function DealCard({
             </div>
           );
         })()}
-      </div>
+      </ImageCarousel>
 
       {/* Content */}
       <div className="p-3">
@@ -1005,13 +977,6 @@ function DealCard({
         </div>
       </div>
       
-      {/* Photo Gallery Modal */}
-      <PhotoGalleryModal
-        photos={photos}
-        open={galleryOpen}
-        onOpenChange={setGalleryOpen}
-        title={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
-      />
     </Card>
   );
 }
