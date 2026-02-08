@@ -1029,7 +1029,7 @@ Best regards,
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm text-muted-foreground">Custom:</span>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-foreground">$</span>
                           <Input
                             type="number"
                             min={0}
