@@ -31,11 +31,9 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   const mainRef = React.useRef<HTMLElement>(null);
   const userToggledRef = React.useRef(false);
 
-  // Update sidebar state when navigating to/from collapsed routes
+  // Sync sidebar collapse state to the current route preference
   React.useEffect(() => {
-    if (shouldCollapseByDefault) {
-      setSidebarCollapsed(true);
-    }
+    setSidebarCollapsed(shouldCollapseByDefault);
     setMobileMenuOpen(false);
     userToggledRef.current = false; // Reset user toggle on route change
   }, [location.pathname, shouldCollapseByDefault]);
