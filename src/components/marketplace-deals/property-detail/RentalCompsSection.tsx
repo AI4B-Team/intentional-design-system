@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
@@ -9,7 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DollarSign } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { DollarSign, RefreshCw, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompMap } from "@/components/marketplace-deals/CompMap";
 
@@ -97,10 +104,46 @@ export function RentalCompsSection({ rentalComps, subjectProperty }: RentalComps
         <div className="flex items-center gap-2">
           <DollarSign className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">Rental Comparables</h2>
+          <Badge variant="outline" className="border-success text-success bg-success/10 ml-2">
+            {rentalComps.length} Comps Found
+          </Badge>
         </div>
-        <Badge variant="outline" className="border-success text-success bg-success/10">
-          {rentalComps.length} Comps Found
-        </Badge>
+
+        {/* Action Buttons */}
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" className="h-7 text-xs whitespace-nowrap">
+                  Add Comp
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add A Custom Rental Comparable</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <RefreshCw className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh Comps</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setShowMap(!showMap)}>
+                  <MapPin className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{showMap ? "Hide Map" : "Show Map"}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </div>
 
       {/* Summary Stats */}
