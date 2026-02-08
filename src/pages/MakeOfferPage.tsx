@@ -147,6 +147,8 @@ export default function MakeOfferPage() {
 
   // Step 2: Offer Settings (Pricing)
   const [offerPercentage, setOfferPercentage] = useState(65);
+  const [estRepairsInput, setEstRepairsInput] = useState(20000);
+  const [holdingCostsInput, setHoldingCostsInput] = useState(8000);
   
   // Step 3: Delivery Configuration
   const [emailEnabled, setEmailEnabled] = useState(true);
@@ -194,11 +196,9 @@ export default function MakeOfferPage() {
   const estimatedSavings = arv - offerAmount;
   
   // Flipper profit calculation (ARV - purchase - repairs - holding - closing - commission)
-  const estRepairs = 20000;
-  const holdingCosts = 8000;
   const closingCosts = Math.round(arv * 0.06);
   const agentCommission = Math.round(arv * 0.05);
-  const flipperProfit = arv - offerAmount - estRepairs - holdingCosts - closingCosts - agentCommission;
+  const flipperProfit = arv - offerAmount - estRepairsInput - holdingCostsInput - closingCosts - agentCommission;
   
   // Wholesaler calculation - profit margin at 70% ARV sell price
   const buyerMaxOffer = Math.round(arv * 0.70); // End buyer pays 70% ARV
@@ -545,11 +545,27 @@ Best regards,
                   <div className="space-y-2">
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">Est. Repairs</span>
-                      <span className="font-semibold">${estRepairs.toLocaleString()}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-muted-foreground text-sm">$</span>
+                        <Input
+                          type="number"
+                          value={estRepairsInput}
+                          onChange={(e) => setEstRepairsInput(Number(e.target.value))}
+                          className="w-24 h-7 text-sm text-right font-semibold"
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">Holding Costs</span>
-                      <span className="font-semibold">${holdingCosts.toLocaleString()}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-muted-foreground text-sm">$</span>
+                        <Input
+                          type="number"
+                          value={holdingCostsInput}
+                          onChange={(e) => setHoldingCostsInput(Number(e.target.value))}
+                          className="w-24 h-7 text-sm text-right font-semibold"
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center justify-between py-2 border-b">
                       <span className="text-sm text-muted-foreground">Closing Costs</span>
