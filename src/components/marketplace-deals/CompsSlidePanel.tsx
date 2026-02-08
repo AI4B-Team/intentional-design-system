@@ -38,10 +38,10 @@ export function CompsSlidePanel({ isOpen, onClose, comps, onCompClick }: CompsSl
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-muted/30">
+      <div className="flex items-center justify-between p-4 border-b bg-success/10">
         <div className="flex items-center gap-2">
-          <Scale className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold">{comps.length} Comps Found</h3>
+          <Scale className="h-5 w-5 text-success" />
+          <h3 className="font-semibold text-success">{comps.length} Comps Found</h3>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
           <X className="h-4 w-4" />
