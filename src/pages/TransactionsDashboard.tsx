@@ -8,6 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -213,6 +219,7 @@ export default function TransactionsDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("active");
+  const [showDeadlinesModal, setShowDeadlinesModal] = useState(false);
 
   // Filter transactions
   const filteredTransactions = MOCK_TRANSACTIONS.filter((tx) => {
@@ -252,13 +259,20 @@ export default function TransactionsDashboard() {
     ),
   };
 
-  // Upcoming deadlines
+  // Upcoming deadlines (top 3 for banner)
   const upcomingDeadlines = activeTransactions
     .filter(tx => tx.nextDeadline)
     .sort((a, b) => 
       new Date(a.nextDeadline!.date).getTime() - new Date(b.nextDeadline!.date).getTime()
     )
     .slice(0, 3);
+
+  // All deadlines for modal
+  const allDeadlines = activeTransactions
+    .filter(tx => tx.nextDeadline)
+    .sort((a, b) => 
+      new Date(a.nextDeadline!.date).getTime() - new Date(b.nextDeadline!.date).getTime()
+    );
 
   const handleViewTransaction = (tx: typeof MOCK_TRANSACTIONS[0]) => {
     navigate(`/transactions/${tx.propertyId}`);
@@ -295,7 +309,12 @@ export default function TransactionsDashboard() {
                   {upcomingDeadlines.length > 1 && ` ${upcomingDeadlines.length - 1} more deadlines this week.`}
                 </p>
               </div>
-              <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-100">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                onClick={() => setShowDeadlinesModal(true)}
+              >
                 View All Deadlines
               </Button>
             </div>
@@ -468,6 +487,74 @@ export default function TransactionsDashboard() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* All Deadlines Modal */}
+      <Dialog open={showDeadlinesModal} onOpenChange={setShowDeadlinesModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              All Upcoming Deadlines
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[400px] pr-4">
+            <div className="space-y-3">
+              {allDeadlines.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  No upcoming deadlines
+                </p>
+              ) : (
+                allDeadlines.map((tx) => {
+                  const deadlineDays = differenceInDays(new Date(tx.nextDeadline!.date), new Date());
+                  const isUrgent = deadlineDays <= 2;
+                  const isOverdue = deadlineDays < 0;
+                  
+                  return (
+                    <Card 
+                      key={tx.id} 
+                      className={cn(
+                        "p-3 cursor-pointer hover:shadow-md transition-shadow",
+                        isOverdue && "border-destructive/50 bg-destructive/5",
+                        isUrgent && !isOverdue && "border-amber-300 bg-amber-50"
+                      )}
+                      onClick={() => {
+                        setShowDeadlinesModal(false);
+                        navigate(`/transactions/${tx.propertyId}`);
+                      }}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{tx.address}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {tx.city}, {tx.state}
+                          </p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p className={cn(
+                            "text-sm font-semibold",
+                            isOverdue && "text-destructive",
+                            isUrgent && !isOverdue && "text-amber-600"
+                          )}>
+                            {isOverdue 
+                              ? `${Math.abs(deadlineDays)}d overdue`
+                              : deadlineDays === 0 
+                              ? "Today"
+                              : `${deadlineDays}d left`
+                            }
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {tx.nextDeadline!.label}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })
+              )}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
