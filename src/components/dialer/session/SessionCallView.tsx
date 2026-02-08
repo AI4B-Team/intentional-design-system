@@ -60,7 +60,8 @@ export function SessionCallView({
     type: 'Question' as const,
   });
   const [coachTip] = React.useState({
-    text: "Great job acknowledging their frustration. Now probe deeper into their pain points.",
+    text: "Keep your voice calm and empathetic. They just opened up about a pain point; don't pivot to a hard pitch too fast.",
+    reasoning: "Validating their frustration is more important than the sale right now to maintain trust.",
     confidence: 90,
     type: 'Coach Tip' as const,
   });
@@ -342,7 +343,7 @@ export function SessionCallView({
             </div>
 
             {/* Coach Tip Card */}
-            <div className="border border-border-subtle rounded-xl p-4">
+            <div className="border border-border-subtle rounded-xl p-4 bg-primary/5">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-primary" />
@@ -353,6 +354,10 @@ export function SessionCallView({
                 <span className="text-sm text-muted-foreground tabular-nums">{coachTip.confidence}%</span>
               </div>
               <p className="text-sm text-foreground leading-relaxed font-medium">{coachTip.text}</p>
+              <div className="flex items-start gap-1.5 mt-3">
+                <Lightbulb className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground italic">{coachTip.reasoning}</p>
+              </div>
             </div>
 
             {/* Stats */}
