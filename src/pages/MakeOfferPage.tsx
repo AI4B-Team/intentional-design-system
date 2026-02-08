@@ -1309,7 +1309,7 @@ Best regards,
                       <Card className="p-4">
                         <h4 className="font-medium mb-3 flex items-center gap-2">
                           <Home className="h-4 w-4" />
-                          Target Property
+                          Subject Property
                         </h4>
                         <div className="flex gap-4">
                           <div className="w-20 h-16 rounded bg-muted overflow-hidden flex-shrink-0">
