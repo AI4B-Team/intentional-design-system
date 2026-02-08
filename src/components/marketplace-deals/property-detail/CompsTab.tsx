@@ -1,5 +1,6 @@
 import React from "react";
 import { ComparableSalesSection } from "@/components/marketplace-deals/ComparableSalesSection";
+import { RentalCompsSection } from "./RentalCompsSection";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface CompsTabProps {
@@ -80,6 +81,74 @@ export function CompsTab({ deal, viewMode }: CompsTabProps) {
     },
   ];
 
+  // Mock rental comps data for Hold mode
+  const rentalComps = [
+    {
+      id: "rent1",
+      address: "14234 Maple Lane",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft + 120,
+      monthlyRent: 1695,
+      leaseDate: "2025-12-01",
+      distanceMiles: 0.3,
+      rentPerSqft: 1.12,
+      similarity: 95,
+      quality: "excellent" as const,
+      leaseType: "Annual",
+    },
+    {
+      id: "rent2",
+      address: "7892 Oak Street",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds,
+      baths: deal.baths,
+      sqft: deal.sqft - 80,
+      monthlyRent: 1550,
+      leaseDate: "2025-11-15",
+      distanceMiles: 0.5,
+      rentPerSqft: 1.08,
+      similarity: 92,
+      quality: "excellent" as const,
+      leaseType: "Annual",
+    },
+    {
+      id: "rent3",
+      address: "2456 Pine Drive",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds + 1,
+      baths: deal.baths,
+      sqft: deal.sqft + 350,
+      monthlyRent: 1850,
+      leaseDate: "2025-10-20",
+      distanceMiles: 0.8,
+      rentPerSqft: 0.98,
+      similarity: 78,
+      quality: "good" as const,
+      leaseType: "Annual",
+    },
+    {
+      id: "rent4",
+      address: "9821 Cedar Way",
+      city: deal.city,
+      state: deal.state,
+      beds: deal.beds - 1,
+      baths: deal.baths - 0.5,
+      sqft: deal.sqft - 300,
+      monthlyRent: 1350,
+      leaseDate: "2025-09-01",
+      distanceMiles: 1.1,
+      rentPerSqft: 1.18,
+      similarity: 72,
+      quality: "good" as const,
+      leaseType: "Annual",
+    },
+  ];
+
   // Mock retail comps data (standard MLS sales)
   const retailComps = [
     {
@@ -151,6 +220,22 @@ export function CompsTab({ deal, viewMode }: CompsTabProps) {
       saleType: "Standard",
     },
   ];
+
+  if (viewMode === "hold") {
+    return (
+      <div className="space-y-6">
+        <RentalCompsSection
+          rentalComps={rentalComps}
+          subjectProperty={{
+            address: deal.address,
+            beds: deal.beds,
+            baths: deal.baths,
+            sqft: deal.sqft,
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
