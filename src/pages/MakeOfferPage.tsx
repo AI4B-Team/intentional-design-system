@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,8 @@ import {
   Lock,
   Users,
   Key,
+  Settings2,
+  Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -55,6 +57,12 @@ import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { OfferInsightCard } from "@/components/ai/OfferInsightCard";
 import { useOfferInsight } from "@/hooks/useOfferInsight";
+import {
+  DealSetupStep,
+  ComplianceWarnings,
+  OfferTemplateManager,
+  useOfferTemplates,
+} from "@/components/offer-wizard";
 import {
   Milestone1DealTeam,
   Milestone2Offer,
@@ -125,6 +133,26 @@ function formatCurrency(value: number): string {
   }).format(value);
 }
 
+// Mock POF documents
+const MOCK_POF_DOCUMENTS = [
+  {
+    id: "pof-1",
+    fileName: "Lima_One_POF_500k.pdf",
+    amount: 500000,
+    lenderName: "Lima One Capital",
+    expirationDate: "2026-03-15",
+    isActive: true,
+  },
+  {
+    id: "pof-2",
+    fileName: "Personal_Bank_Statement.pdf",
+    amount: 250000,
+    lenderName: "Wells Fargo",
+    expirationDate: "2026-02-10",
+    isActive: true,
+  },
+];
+
 // Default filter values for useMockDeals
 const defaultOptions = {
   filters: {
@@ -152,17 +180,30 @@ export default function MakeOfferPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Step 1: Template Selection
+  // Template management
+  const { templates, saveTemplate, deleteTemplate, setDefault, getDefaultTemplate } = useOfferTemplates();
+
+  // Step 1: Deal Setup (POF + Agent + Property)
+  const [dealSetupData, setDealSetupData] = useState({
+    selectedPofId: null as string | null,
+    includePof: true,
+    listingAgent: null as { name: string; email: string; phone: string; brokerage?: string; type: "listing" | "buyer" } | null,
+    buyerAgent: null as { name: string; email: string; phone: string; brokerage?: string; type: "listing" | "buyer" } | null,
+    useDualAgency: true,
+    propertyConfirmed: false,
+  });
+
+  // Step 2: Template Selection
   const [templateTab, setTemplateTab] = useState<"templates" | "custom">("templates");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("cash");
 
-  // Step 2: Offer Settings (Pricing)
+  // Step 3: Offer Settings (Pricing)
   const [offerPercentage, setOfferPercentage] = useState(65);
   const [customOfferAmount, setCustomOfferAmount] = useState<number | null>(null);
   const [estRepairsInput, setEstRepairsInput] = useState(20000);
   const [holdingCostsInput, setHoldingCostsInput] = useState(8000);
   
-  // Step 3: Delivery Configuration
+  // Step 4: Delivery Configuration
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [smsEnabled, setSmsEnabled] = useState(false);
   const [twilioNumber, setTwilioNumber] = useState("");
@@ -172,13 +213,17 @@ export default function MakeOfferPage() {
   const [scheduledDate, setScheduledDate] = useState(format(new Date(), "yyyy-MM-dd"));
   const [scheduledTime, setScheduledTime] = useState("09:00");
 
-  // Step 4: Preview
+  // Step 5: Preview
   const [previewTab, setPreviewTab] = useState<"email" | "sms">("email");
 
-  // Offer sent state (unlocks steps 6-10)
+  // Auto follow-up settings
+  const [autoFollowUp, setAutoFollowUp] = useState(true);
+  const [followUpDays, setFollowUpDays] = useState(3);
+
+  // Offer sent state (unlocks steps 7-11)
   const [offerSent, setOfferSent] = useState(false);
 
-  // Steps 6-10: Transaction Roadmap Data
+  // Steps 7-11: Transaction Roadmap Data
   const [transactionData, setTransactionData] = useState<TransactionData>({
     currentMilestone: 1,
     lenderConfirmed: false,
@@ -203,7 +248,20 @@ export default function MakeOfferPage() {
     setTransactionData(prev => ({ ...prev, ...updates }));
   };
 
-  // Mock contact for demo
+  // Load default template on mount
+  useEffect(() => {
+    const defaultTpl = getDefaultTemplate();
+    if (defaultTpl) {
+      setOfferPercentage(defaultTpl.config.offerPercentage);
+      setSelectedTemplate(defaultTpl.config.selectedTemplate);
+      setEmailEnabled(defaultTpl.config.emailEnabled);
+      setSmsEnabled(defaultTpl.config.smsEnabled);
+      setEstRepairsInput(defaultTpl.config.estRepairs);
+      setHoldingCostsInput(defaultTpl.config.holdingCosts);
+    }
+  }, []);
+
+  // Mock contact for demo - set as listing agent
   const mockContact = {
     name: "Sarah Mitchell",
     type: "agent" as const,
@@ -211,6 +269,22 @@ export default function MakeOfferPage() {
     email: "sarah.mitchell@premierrealty.com",
     brokerage: "Premier Realty Group",
   };
+
+  // Set listing agent from mock contact
+  useEffect(() => {
+    if (!dealSetupData.listingAgent) {
+      setDealSetupData(prev => ({
+        ...prev,
+        listingAgent: {
+          name: mockContact.name,
+          email: mockContact.email,
+          phone: mockContact.phone,
+          brokerage: mockContact.brokerage,
+          type: "listing",
+        },
+      }));
+    }
+  }, []);
 
   // Mock images
   const propertyImages = [
@@ -230,20 +304,23 @@ export default function MakeOfferPage() {
     );
   }
 
+  // Determine if on-market (MLS) - for demo, check property type or default
+  const isOnMarket = (deal as any).leadType === "on_market" || (deal as any).leadType === "mls" || false;
+
   // Calculations
   const arv = deal.arv;
   const offerAmount = customOfferAmount !== null ? customOfferAmount : Math.round(arv * (offerPercentage / 100));
   const effectivePercentage = customOfferAmount !== null ? Math.round((customOfferAmount / arv) * 100) : offerPercentage;
   const estimatedSavings = arv - offerAmount;
   
-  // Flipper profit calculation (ARV - purchase - repairs - holding - closing - commission)
+  // Flipper profit calculation
   const closingCosts = Math.round(arv * 0.06);
   const agentCommission = Math.round(arv * 0.05);
   const flipperProfit = arv - offerAmount - estRepairsInput - holdingCostsInput - closingCosts - agentCommission;
   
-  // Wholesaler calculation - profit margin at 70% ARV sell price
-  const buyerMaxOffer = Math.round(arv * 0.70); // End buyer pays 70% ARV
-  const wholesalerProfit = buyerMaxOffer - offerAmount; // Assignment fee = difference between 70% and your offer %
+  // Wholesaler calculation
+  const buyerMaxOffer = Math.round(arv * 0.70);
+  const wholesalerProfit = buyerMaxOffer - offerAmount;
 
   // AI Insight context
   const insightContext = {
@@ -260,53 +337,61 @@ export default function MakeOfferPage() {
   };
 
   // AI Insights for each step
-  const packageInsight = useOfferInsight("package", insightContext, currentStep === 1);
-  const pricingInsight = useOfferInsight("pricing", insightContext, currentStep === 2);
-  const deliveryInsight = useOfferInsight("delivery", insightContext, currentStep === 3);
-  const previewInsight = useOfferInsight("preview", insightContext, currentStep === 4);
-  const reviewInsight = useOfferInsight("review", insightContext, currentStep === 5);
+  const dealSetupInsight = useOfferInsight("dealSetup", insightContext, currentStep === 1);
+  const packageInsight = useOfferInsight("package", insightContext, currentStep === 2);
+  const pricingInsight = useOfferInsight("pricing", insightContext, currentStep === 3);
+  const deliveryInsight = useOfferInsight("delivery", insightContext, currentStep === 4);
+  const previewInsight = useOfferInsight("preview", insightContext, currentStep === 5);
+  const reviewInsight = useOfferInsight("review", insightContext, currentStep === 6);
 
+  // New 11-step flow
   const steps = [
-    // Offer Steps (1-5)
-    { number: 1, title: "Offer", icon: Package, locked: false },
-    { number: 2, title: "Pricing", icon: DollarSign, locked: false },
-    { number: 3, title: "Delivery", icon: Send, locked: false },
-    { number: 4, title: "Preview", icon: Eye, locked: false },
-    { number: 5, title: "Send", icon: Check, locked: false },
-    // Transaction Roadmap Steps (6-10) - locked until offer sent
-    { number: 6, title: "Deal Team", icon: Users, locked: !offerSent },
-    { number: 7, title: "Negotiate", icon: DollarSign, locked: !offerSent },
-    { number: 8, title: "Due Diligence", icon: FileText, locked: !offerSent },
-    { number: 9, title: "Closing", icon: Key, locked: !offerSent },
-    { number: 10, title: "Strategy", icon: Target, locked: !offerSent },
+    // Offer Steps (1-6)
+    { number: 1, title: "Deal Setup", icon: Settings2, locked: false },
+    { number: 2, title: "Offer Type", icon: Package, locked: false },
+    { number: 3, title: "Pricing", icon: DollarSign, locked: false },
+    { number: 4, title: "Delivery", icon: Send, locked: false },
+    { number: 5, title: "Preview", icon: Eye, locked: false },
+    { number: 6, title: "Send", icon: Check, locked: false },
+    // Transaction Roadmap Steps (7-11) - locked until offer sent
+    { number: 7, title: "Deal Team", icon: Users, locked: !offerSent },
+    { number: 8, title: "Negotiate", icon: DollarSign, locked: !offerSent },
+    { number: 9, title: "Due Diligence", icon: FileText, locked: !offerSent },
+    { number: 10, title: "Closing", icon: Key, locked: !offerSent },
+    { number: 11, title: "Strategy", icon: Target, locked: !offerSent },
   ];
 
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return !!selectedTemplate;
+        // Deal Setup: property confirmed, POF if on-market
+        if (!dealSetupData.propertyConfirmed) return false;
+        if (isOnMarket && !dealSetupData.selectedPofId) return false;
+        return true;
       case 2:
-        return offerPercentage >= 50 && offerPercentage <= 100;
+        return !!selectedTemplate;
       case 3:
+        return offerPercentage >= 50 && offerPercentage <= 100;
+      case 4:
         if (smsEnabled && !twilioNumber) return false;
         return emailEnabled || smsEnabled || scheduleType === "draft";
-      case 4:
-        return true;
       case 5:
         return true;
-      // Transaction steps - allow proceeding based on completion
       case 6:
+        return true;
+      // Transaction steps
+      case 7:
         return (transactionData.lenderConfirmed || transactionData.lenderName) && 
                (transactionData.realtorConfirmed || transactionData.realtorName);
-      case 7:
-        return !!transactionData.acceptedOffer && transactionData.escrowConfirmed;
       case 8:
-        return !!transactionData.inspectorName && !!transactionData.appraiserName && !!transactionData.insuranceName;
+        return !!transactionData.acceptedOffer && transactionData.escrowConfirmed;
       case 9:
+        return !!transactionData.inspectorName && !!transactionData.appraiserName && !!transactionData.insuranceName;
+      case 10:
         return transactionData.closingFinancingFinalized && transactionData.closingEscrowWired && 
                transactionData.closingFinalWalkthrough && transactionData.closingDocumentsSigned && 
                transactionData.closingKeysReceived;
-      case 10:
+      case 11:
         return !!transactionData.investmentStrategy;
       default:
         return false;
@@ -314,7 +399,7 @@ export default function MakeOfferPage() {
   };
 
   const handleNext = () => {
-    if (currentStep < 10 && canProceed()) {
+    if (currentStep < 11 && canProceed()) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -344,18 +429,28 @@ export default function MakeOfferPage() {
         toast.success("Campaign saved as draft");
         navigate(`/marketplace/deal/${deal.id}`);
       } else {
-        // Mark offer as sent and auto-advance to step 6
+        // Mark offer as sent and auto-advance to step 7
         setOfferSent(true);
-        setCurrentStep(6);
+        setCurrentStep(7);
         
         // Pre-fill transaction data with offer details
         updateTransactionData({
           listingPrice: deal.price,
           mao: offerAmount,
+          // Copy lender info from deal setup if confirmed
+          lenderName: dealSetupData.selectedPofId ? "Lima One Capital" : undefined,
+          lenderConfirmed: !!dealSetupData.selectedPofId,
+          // Copy realtor info
+          realtorName: dealSetupData.useDualAgency 
+            ? dealSetupData.listingAgent?.name 
+            : dealSetupData.buyerAgent?.name,
+          realtorConfirmed: !!dealSetupData.listingAgent || !!dealSetupData.buyerAgent,
         });
         
         toast.success("Offer sent successfully!", {
-          description: "Now complete the transaction roadmap to close the deal.",
+          description: autoFollowUp 
+            ? `AI will auto-follow up in ${followUpDays} days if no reply. Now complete the transaction steps.`
+            : "Now complete the transaction roadmap to close the deal.",
         });
       }
     } catch (error) {
@@ -370,6 +465,17 @@ export default function MakeOfferPage() {
       description: "Congratulations on closing this deal!",
     });
     navigate(`/marketplace/deal/${deal.id}`);
+  };
+
+  // Template management
+  const currentTemplateConfig = {
+    offerPercentage,
+    selectedTemplate,
+    emailEnabled,
+    smsEnabled,
+    scheduleType,
+    estRepairs: estRepairsInput,
+    holdingCosts: holdingCostsInput,
   };
 
   const selectedTemplateData = OFFER_TEMPLATES.find((t) => t.id === selectedTemplate);
@@ -439,11 +545,18 @@ Best regards,
                 <p className="text-sm text-muted-foreground">{deal.address}</p>
               </div>
             </div>
-            <Badge variant="secondary" className={cn(
-              currentStep <= 5 ? "bg-primary/10 text-primary" : "bg-success/10 text-success"
-            )}>
-              Step {currentStep} of 10
-            </Badge>
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className={cn(
+                currentStep <= 6 ? "bg-primary/10 text-primary" : "bg-success/10 text-success"
+              )}>
+                Step {currentStep} of 11
+              </Badge>
+              {isOnMarket && (
+                <Badge variant="secondary" className="bg-info/10 text-info">
+                  MLS - POF Required
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
 
@@ -479,11 +592,9 @@ Best regards,
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
-                    {/* Property Type Badge - Bottom Left */}
                     <Badge variant="secondary" className="absolute bottom-2 left-2 bg-white/90 backdrop-blur-sm">
                       {deal.propertyType}
                     </Badge>
-                    {/* Pagination Dots - Bottom Right */}
                     <div className="absolute bottom-2 right-2 flex gap-1.5">
                       {propertyImages.map((_, idx) => (
                         <button
@@ -499,8 +610,6 @@ Best regards,
                       ))}
                     </div>
                   </div>
-
-                  {/* Thumbnails */}
                   <div className="p-2 flex gap-2">
                     {propertyImages.map((img, idx) => (
                       <button
@@ -513,11 +622,7 @@ Best regards,
                             : "border-transparent opacity-60 hover:opacity-100"
                         )}
                       >
-                        <img
-                          src={img}
-                          alt={`Thumbnail ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={img} alt={`Thumbnail ${idx + 1}`} className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>
@@ -576,7 +681,7 @@ Best regards,
                   </div>
                 </Card>
 
-                {/* Offer Summary - Dynamic */}
+                {/* Offer Summary */}
                 <Card className="p-4 bg-primary/5 border-primary/20">
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <Target className="h-4 w-4 text-primary" />
@@ -588,22 +693,20 @@ Best regards,
                       <span className="font-semibold text-success">${arv.toLocaleString()}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">Your Offer ({offerPercentage}%)</span>
+                      <span className="text-sm text-muted-foreground">Your Offer ({effectivePercentage}%)</span>
                       <span className="font-bold text-lg">{formatCurrency(offerAmount)}</span>
                     </div>
                     <div className="flex items-center justify-between pt-2 border-t">
                       <span className="text-sm text-muted-foreground">Flipper Profit</span>
-                      <span className={cn(
-                        "font-semibold",
-                        flipperProfit > 0 ? "text-success" : "text-destructive"
-                      )}>{formatCurrency(flipperProfit)}</span>
+                      <span className={cn("font-semibold", flipperProfit > 0 ? "text-success" : "text-destructive")}>
+                        {formatCurrency(flipperProfit)}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-muted-foreground">Wholesaler Fee</span>
-                      <span className={cn(
-                        "font-semibold",
-                        wholesalerProfit > 0 ? "text-success" : "text-destructive"
-                      )}>{formatCurrency(wholesalerProfit)}</span>
+                      <span className={cn("font-semibold", wholesalerProfit > 0 ? "text-success" : "text-destructive")}>
+                        {formatCurrency(wholesalerProfit)}
+                      </span>
                     </div>
                   </div>
                 </Card>
@@ -666,14 +769,14 @@ Best regards,
 
           {/* Right Side - Offer Wizard */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
-            {/* Step Indicator - Two Rows for 10 Steps */}
+            {/* Step Indicator - Two Rows */}
             <div className="px-6 py-4 border-b bg-muted/30">
               <div className="space-y-3 max-w-4xl mx-auto">
-                {/* Offer Steps Row (1-5) */}
+                {/* Offer Steps Row (1-6) */}
                 <div className="flex items-center">
                   <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Offer</div>
                   <div className="flex-1 flex items-center">
-                    {steps.slice(0, 5).map((step, index) => (
+                    {steps.slice(0, 6).map((step, index) => (
                       <React.Fragment key={step.number}>
                         <button
                           onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
@@ -711,7 +814,7 @@ Best regards,
                           </div>
                           <span className="hidden xl:inline">{step.title}</span>
                         </button>
-                        {index < 4 && (
+                        {index < 5 && (
                           <div
                             className={cn(
                               "flex-1 h-0.5 mx-2",
@@ -724,11 +827,11 @@ Best regards,
                   </div>
                 </div>
                 
-                {/* Transaction Steps Row (6-10) */}
+                {/* Transaction Steps Row (7-11) */}
                 <div className="flex items-center">
                   <div className="text-xs font-medium text-muted-foreground w-20 flex-shrink-0">Transaction</div>
                   <div className="flex-1 flex items-center">
-                    {steps.slice(5, 10).map((step, index) => (
+                    {steps.slice(6, 11).map((step, index) => (
                       <React.Fragment key={step.number}>
                         <button
                           onClick={() => !step.locked && step.number < currentStep && setCurrentStep(step.number)}
@@ -784,8 +887,28 @@ Best regards,
             {/* Step Content */}
             <ScrollArea className="flex-1">
               <div className="p-6 max-w-3xl mx-auto">
-                {/* Step 1: Offer Package Selection */}
+                {/* Step 1: Deal Setup (POF + Agent + Property) */}
                 {currentStep === 1 && (
+                  <DealSetupStep
+                    isOnMarket={isOnMarket}
+                    propertyAddress={`${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`}
+                    propertyState={deal.state}
+                    arv={arv}
+                    offerAmount={offerAmount}
+                    pofDocuments={MOCK_POF_DOCUMENTS}
+                    listingAgent={dealSetupData.listingAgent || undefined}
+                    data={dealSetupData}
+                    onUpdate={(updates) => setDealSetupData((prev) => ({ ...prev, ...updates }))}
+                    onUploadPof={() => navigate("/documents?folder=proof-of-funds")}
+                    insight={dealSetupInsight.insight}
+                    insightLoading={dealSetupInsight.isLoading}
+                    insightError={dealSetupInsight.error}
+                    onRefreshInsight={dealSetupInsight.refetch}
+                  />
+                )}
+
+                {/* Step 2: Offer Package Selection */}
+                {currentStep === 2 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Select Offer Package</h3>
@@ -794,7 +917,23 @@ Best regards,
                       </p>
                     </div>
 
-                    {/* AI Insight for Step 1 */}
+                    {/* Template Manager */}
+                    <OfferTemplateManager
+                      currentConfig={currentTemplateConfig}
+                      savedTemplates={templates}
+                      onLoadTemplate={(tpl) => {
+                        setOfferPercentage(tpl.config.offerPercentage);
+                        setSelectedTemplate(tpl.config.selectedTemplate);
+                        setEmailEnabled(tpl.config.emailEnabled);
+                        setSmsEnabled(tpl.config.smsEnabled);
+                        setEstRepairsInput(tpl.config.estRepairs);
+                        setHoldingCostsInput(tpl.config.holdingCosts);
+                      }}
+                      onSaveTemplate={saveTemplate}
+                      onDeleteTemplate={deleteTemplate}
+                      onSetDefault={setDefault}
+                    />
+
                     <OfferInsightCard
                       insight={packageInsight.insight}
                       isLoading={packageInsight.isLoading}
@@ -907,17 +1046,16 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 2: Offer Settings (Pricing) */}
-                {currentStep === 2 && (
+                {/* Step 3: Offer Settings (Pricing) */}
+                {currentStep === 3 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Offer Settings</h3>
                       <p className="text-sm text-muted-foreground">
-                        Define your offer amount based on asking price
+                        Define your offer amount based on ARV
                       </p>
                     </div>
 
-                    {/* AI Insight for Step 2 */}
                     <OfferInsightCard
                       insight={pricingInsight.insight}
                       isLoading={pricingInsight.isLoading}
@@ -989,24 +1127,19 @@ Best regards,
                       </Card>
                       <Card className="p-4 text-center bg-primary/5 border-primary">
                         <p className="text-sm text-muted-foreground mb-1">Your Offer</p>
-                        <p className="text-2xl font-bold">
-                          ${offerAmount.toLocaleString()}
-                        </p>
+                        <p className="text-2xl font-bold">${offerAmount.toLocaleString()}</p>
                         <p className="text-xs text-muted-foreground mt-1">({effectivePercentage}% of ARV)</p>
                       </Card>
                       <Card className="p-4 text-center">
                         <p className="text-sm text-muted-foreground mb-1">Flipper Profit</p>
-                        <p className={cn(
-                          "text-xl font-semibold",
-                          flipperProfit > 0 ? "text-success" : "text-destructive"
-                        )}>
+                        <p className={cn("text-xl font-semibold", flipperProfit > 0 ? "text-success" : "text-destructive")}>
                           {formatCurrency(flipperProfit)}
                         </p>
                       </Card>
                     </div>
 
                     {/* Wholesaler Calculation */}
-                    <Card className="p-4 mt-4 bg-surface-secondary/30">
+                    <Card className="p-4 mt-4 bg-muted/30">
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm font-medium mb-1">Wholesaler Opportunity</p>
@@ -1016,10 +1149,7 @@ Best regards,
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground mb-0.5">Assignment Fee</p>
-                          <p className={cn(
-                            "text-xl font-bold",
-                            wholesalerProfit > 0 ? "text-success" : "text-destructive"
-                          )}>
+                          <p className={cn("text-xl font-bold", wholesalerProfit > 0 ? "text-success" : "text-destructive")}>
                             {formatCurrency(wholesalerProfit)}
                           </p>
                         </div>
@@ -1028,8 +1158,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 3: Delivery Configuration */}
-                {currentStep === 3 && (
+                {/* Step 4: Delivery Configuration */}
+                {currentStep === 4 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Delivery Configuration</h3>
@@ -1038,7 +1168,6 @@ Best regards,
                       </p>
                     </div>
 
-                    {/* AI Insight for Step 3 */}
                     <OfferInsightCard
                       insight={deliveryInsight.insight}
                       isLoading={deliveryInsight.isLoading}
@@ -1105,6 +1234,44 @@ Best regards,
                         )}
                       </Card>
                     </div>
+
+                    {/* Inbox Integration & Auto Follow-up */}
+                    <Card className="p-4 bg-primary/5 border-primary/20">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-primary/10">
+                          <Inbox className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-medium">AI Auto Follow-Up</p>
+                              <p className="text-sm text-muted-foreground">
+                                Automatically follow up if no reply. All communication syncs to your Inbox.
+                              </p>
+                            </div>
+                            <Switch checked={autoFollowUp} onCheckedChange={setAutoFollowUp} />
+                          </div>
+                          {autoFollowUp && (
+                            <div className="mt-3 pt-3 border-t border-primary/20 flex items-center gap-3">
+                              <Label className="text-sm whitespace-nowrap">Follow up after</Label>
+                              <Select value={followUpDays.toString()} onValueChange={(v) => setFollowUpDays(Number(v))}>
+                                <SelectTrigger className="w-24">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">1 day</SelectItem>
+                                  <SelectItem value="2">2 days</SelectItem>
+                                  <SelectItem value="3">3 days</SelectItem>
+                                  <SelectItem value="5">5 days</SelectItem>
+                                  <SelectItem value="7">7 days</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <span className="text-sm text-muted-foreground">if no response</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
 
                     {/* Scheduling Options */}
                     <div className="space-y-4 pt-4 border-t">
@@ -1184,7 +1351,6 @@ Best regards,
                         </Card>
                       </div>
 
-                      {/* Drip Settings */}
                       {scheduleType === "drip" && (
                         <Card className="p-4 mt-4">
                           <div className="grid grid-cols-2 gap-4">
@@ -1209,18 +1375,9 @@ Best regards,
                               />
                             </div>
                           </div>
-                          <div className="mt-4 p-3 bg-muted rounded-lg text-sm">
-                            <p>
-                              <strong>1</strong> offer in <strong>1</strong> batch
-                            </p>
-                            <p className="text-muted-foreground">
-                              Estimated duration: {dripInterval} minutes
-                            </p>
-                          </div>
                         </Card>
                       )}
 
-                      {/* Schedule Settings */}
                       {scheduleType === "scheduled" && (
                         <Card className="p-4 mt-4">
                           <div className="grid grid-cols-2 gap-4">
@@ -1252,8 +1409,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 4: Preview */}
-                {currentStep === 4 && (
+                {/* Step 5: Preview */}
+                {currentStep === 5 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Preview Delivery</h3>
@@ -1262,7 +1419,6 @@ Best regards,
                       </p>
                     </div>
 
-                    {/* AI Insight for Step 4 */}
                     <OfferInsightCard
                       insight={previewInsight.insight}
                       isLoading={previewInsight.isLoading}
@@ -1292,7 +1448,6 @@ Best regards,
 
                       <TabsContent value="email" className="mt-4">
                         <Card className="overflow-hidden">
-                          {/* Email Header */}
                           <div className="p-4 border-b bg-muted/30">
                             <div className="flex items-center gap-2 text-sm">
                               <span className="font-medium">Subject:</span>
@@ -1300,7 +1455,6 @@ Best regards,
                             </div>
                           </div>
                           
-                          {/* Key Terms Strip */}
                           <div className="px-4 py-2 bg-primary/5 border-b flex items-center gap-6 text-sm">
                             <div>
                               <span className="text-muted-foreground">Offer:</span>{" "}
@@ -1316,14 +1470,12 @@ Best regards,
                             </div>
                           </div>
 
-                          {/* Email Body */}
                           <div className="p-4">
                             <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
                               {emailBody}
                             </pre>
                           </div>
 
-                          {/* Merge Field Indicators */}
                           <div className="px-4 py-3 border-t bg-muted/30">
                             <p className="text-xs text-muted-foreground">
                               Merge fields:{" "}
@@ -1336,7 +1488,6 @@ Best regards,
 
                       <TabsContent value="sms" className="mt-4">
                         <Card className="overflow-hidden max-w-md mx-auto">
-                          {/* Phone Frame */}
                           <div className="p-4 bg-muted/30 border-b">
                             <div className="flex items-center gap-2">
                               <Phone className="h-4 w-4 text-muted-foreground" />
@@ -1359,17 +1510,16 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 5: Review & Confirm */}
-                {currentStep === 5 && (
+                {/* Step 6: Review & Send */}
+                {currentStep === 6 && (
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-semibold mb-1">Review Campaign</h3>
+                      <h3 className="text-lg font-semibold mb-1">Review & Send</h3>
                       <p className="text-sm text-muted-foreground">
-                        Confirm your offer campaign details before sending
+                        Confirm all details before sending your offer
                       </p>
                     </div>
 
-                    {/* AI Insight for Step 5 */}
                     <OfferInsightCard
                       insight={reviewInsight.insight}
                       isLoading={reviewInsight.isLoading}
@@ -1377,128 +1527,158 @@ Best regards,
                       onRefresh={reviewInsight.refetch}
                     />
 
-                    <div className="grid gap-4">
-                      {/* Campaign Summary */}
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Package className="h-4 w-4" />
-                          Campaign Summary
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Offer Package</p>
-                            <p className="font-medium">{selectedTemplateData?.name}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Properties</p>
-                            <p className="font-medium">1 Property</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Offer Amount</p>
-                            <p className="font-medium text-primary">{formatCurrency(offerAmount)}</p>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Offer Percentage</p>
-                            <p className="font-medium">{offerPercentage}% of asking</p>
-                          </div>
-                        </div>
-                      </Card>
+                    {/* Compliance Check */}
+                    <ComplianceWarnings
+                      state={deal.state}
+                      offerType={selectedTemplate}
+                      offerAmount={offerAmount}
+                      warnings={[]}
+                      disclosures={[]}
+                      allCleared={true}
+                    />
 
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Send className="h-4 w-4" />
-                          Delivery Settings
-                        </h4>
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <p className="text-muted-foreground">Methods</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              {emailEnabled && (
-                                <Badge variant="secondary" size="sm">
-                                  <Mail className="h-3 w-3 mr-1" /> Email
-                                </Badge>
-                              )}
-                              {smsEnabled && (
-                                <Badge variant="secondary" size="sm">
-                                  <MessageSquare className="h-3 w-3 mr-1" /> SMS
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-muted-foreground">Schedule</p>
-                            <p className="font-medium capitalize">
-                              {scheduleType === "immediate"
-                                ? "Send Immediately"
-                                : scheduleType === "drip"
-                                ? "Drip Campaign"
-                                : scheduleType === "scheduled"
-                                ? `${scheduledDate} at ${scheduledTime}`
-                                : "Save As Draft"}
-                            </p>
-                          </div>
+                    {/* Summary Cards */}
+                    <Card className="p-4">
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        Offer Configuration
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Package Type</p>
+                          <p className="font-medium">{selectedTemplateData?.name || "Cash Offer"}</p>
                         </div>
-                      </Card>
-
-                      {/* Property Card */}
-                      <Card className="p-4">
-                        <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Home className="h-4 w-4" />
-                          Subject Property
-                        </h4>
-                        <div className="flex gap-4">
-                          <div className="w-20 h-16 rounded bg-muted overflow-hidden flex-shrink-0">
-                            {deal.images?.[0] ? (
-                              <img
-                                src={deal.images[0]}
-                                alt={deal.address}
-                                className="w-full h-full object-cover"
-                              />
+                        <div>
+                          <p className="text-muted-foreground">Offer Amount</p>
+                          <p className="font-medium text-lg">{formatCurrency(offerAmount)}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Offer Percentage</p>
+                          <p className="font-medium">{effectivePercentage}% of ARV</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">POF</p>
+                          <p className="font-medium flex items-center gap-1">
+                            {dealSetupData.includePof && dealSetupData.selectedPofId ? (
+                              <>
+                                <CheckCircle2 className="h-4 w-4 text-success" />
+                                Attached
+                              </>
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Home className="h-6 w-6 text-muted-foreground/50" />
-                              </div>
+                              "Not Required"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4">
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <Send className="h-4 w-4" />
+                        Delivery Settings
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground">Methods</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            {emailEnabled && (
+                              <Badge variant="secondary" size="sm">
+                                <Mail className="h-3 w-3 mr-1" /> Email
+                              </Badge>
+                            )}
+                            {smsEnabled && (
+                              <Badge variant="secondary" size="sm">
+                                <MessageSquare className="h-3 w-3 mr-1" /> SMS
+                              </Badge>
                             )}
                           </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{deal.address}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {deal.city}, {deal.state} {deal.zip}
-                            </p>
-                            <div className="flex items-center gap-4 mt-1 text-sm">
-                              <span>Asking: {formatCurrency(deal.price)}</span>
-                              <span className="text-success">ARV: {formatCurrency(arv)}</span>
-                              <span className="text-primary font-medium">
-                                Offer: {formatCurrency(offerAmount)}
-                              </span>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Schedule</p>
+                          <p className="font-medium capitalize">
+                            {scheduleType === "immediate"
+                              ? "Send Immediately"
+                              : scheduleType === "drip"
+                              ? "Drip Campaign"
+                              : scheduleType === "scheduled"
+                              ? `${scheduledDate} at ${scheduledTime}`
+                              : "Save As Draft"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Auto Follow-Up</p>
+                          <p className="font-medium">
+                            {autoFollowUp ? `After ${followUpDays} days` : "Disabled"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">Inbox Sync</p>
+                          <p className="font-medium flex items-center gap-1">
+                            <CheckCircle2 className="h-4 w-4 text-success" />
+                            Enabled
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Property Card */}
+                    <Card className="p-4">
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <Home className="h-4 w-4" />
+                        Subject Property
+                      </h4>
+                      <div className="flex gap-4">
+                        <div className="w-20 h-16 rounded bg-muted overflow-hidden flex-shrink-0">
+                          {deal.images?.[0] ? (
+                            <img
+                              src={deal.images[0]}
+                              alt={deal.address}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Home className="h-6 w-6 text-muted-foreground/50" />
                             </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium">{deal.address}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {deal.city}, {deal.state} {deal.zip}
+                          </p>
+                          <div className="flex items-center gap-4 mt-1 text-sm">
+                            <span>Asking: {formatCurrency(deal.price)}</span>
+                            <span className="text-success">ARV: {formatCurrency(arv)}</span>
+                            <span className="text-primary font-medium">
+                              Offer: {formatCurrency(offerAmount)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Transaction Next Steps Notice */}
+                    {scheduleType !== "draft" && (
+                      <Card className="p-4 bg-success/5 border-success/20">
+                        <div className="flex items-start gap-3">
+                          <Sparkles className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-medium text-success">
+                              Continue To Transaction Steps
+                            </p>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              After sending your offer, you'll continue to Steps 7-11 to assemble your 
+                              deal team, negotiate, complete due diligence, close, and execute your investment strategy.
+                            </p>
                           </div>
                         </div>
                       </Card>
-
-                      {/* Transaction Next Steps Notice */}
-                      {scheduleType !== "draft" && (
-                        <Card className="p-4 bg-success/5 border-success/20">
-                          <div className="flex items-start gap-3">
-                            <Sparkles className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
-                            <div>
-                              <p className="font-medium text-success">
-                                Continue To Transaction Steps
-                              </p>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                After sending your offer, you'll continue to Steps 6-10 to assemble your 
-                                deal team, negotiate, complete due diligence, close, and execute your investment strategy.
-                              </p>
-                            </div>
-                          </div>
-                        </Card>
-                      )}
-                    </div>
+                    )}
                   </div>
                 )}
 
-                {/* Step 6: Deal Team */}
-                {currentStep === 6 && (
+                {/* Step 7: Deal Team */}
+                {currentStep === 7 && (
                   <div className="space-y-6">
                     <div>
                       <Badge variant="secondary" className="mb-2 bg-success/10 text-success">
@@ -1516,8 +1696,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 7: Negotiate */}
-                {currentStep === 7 && (
+                {/* Step 8: Negotiate */}
+                {currentStep === 8 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Make & Negotiate Offer</h3>
@@ -1533,8 +1713,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 8: Due Diligence */}
-                {currentStep === 8 && (
+                {/* Step 9: Due Diligence */}
+                {currentStep === 9 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Under Contract / Due Diligence</h3>
@@ -1549,8 +1729,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 9: Closing */}
-                {currentStep === 9 && (
+                {/* Step 10: Closing */}
+                {currentStep === 10 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Close the Deal</h3>
@@ -1565,8 +1745,8 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 10: Strategy */}
-                {currentStep === 10 && (
+                {/* Step 11: Strategy */}
+                {currentStep === 11 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold mb-1">Execute Investment Strategy</h3>
@@ -1588,19 +1768,19 @@ Best regards,
               <Button
                 variant="outline"
                 onClick={handleBack}
-                disabled={currentStep === 1 || (currentStep === 6 && offerSent)}
+                disabled={currentStep === 1 || (currentStep === 7 && offerSent)}
                 className="gap-2"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Back
               </Button>
 
-              {currentStep < 5 ? (
+              {currentStep < 6 ? (
                 <Button onClick={handleNext} disabled={!canProceed()} className="gap-2">
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              ) : currentStep === 5 ? (
+              ) : currentStep === 6 ? (
                 <Button
                   onClick={handleSendOffer}
                   disabled={isSubmitting || !canProceed()}
@@ -1618,7 +1798,7 @@ Best regards,
                     </>
                   )}
                 </Button>
-              ) : currentStep < 10 ? (
+              ) : currentStep < 11 ? (
                 <Button onClick={handleNext} disabled={!canProceed()} className="gap-2">
                   Complete & Continue
                   <ChevronRight className="h-4 w-4" />
