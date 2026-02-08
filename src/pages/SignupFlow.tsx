@@ -223,34 +223,34 @@ export default function SignupFlow() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen flex overflow-hidden">
       {/* Left Sidebar - Dark */}
-      <aside className="hidden lg:flex lg:w-[320px] bg-slate-900 text-white flex-col">
-        <div className="p-6">
+      <aside className="hidden lg:flex lg:w-[300px] bg-slate-900 text-white flex-col overflow-hidden">
+        <div className="p-5 flex-1 overflow-hidden flex flex-col">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-white" />
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+              <Building2 className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold">RealVest</span>
           </div>
 
           {/* Welcome Message */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-2">
+          <div className="mb-5">
+            <h2 className="text-lg font-semibold mb-1.5">
               Welcome to RealVest! 👋
             </h2>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              We'll guide you through a quick setup to personalize your real estate investing command center. Don't worry—you can update everything later.
+            <p className="text-xs text-slate-400 leading-relaxed">
+              We'll guide you through a quick setup to personalize your real estate investing command center.
             </p>
           </div>
 
           {/* Setup Progress */}
-          <div className="mb-8">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-4">
+          <div className="flex-1 overflow-hidden">
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
               Setup Progress
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {STEPS.map((s, idx) => {
                 const isCompleted = idx < currentStepIndex;
                 const isCurrent = s.id === step;
@@ -259,28 +259,28 @@ export default function SignupFlow() {
                   <div
                     key={s.id}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+                      "flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-colors",
                       isCurrent && "bg-slate-800"
                     )}
                   >
                     <div className="flex flex-col items-center">
                       <div
                         className={cn(
-                          "h-7 w-7 rounded-full flex items-center justify-center text-sm font-medium",
+                          "h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium",
                           isCompleted && "bg-emerald-500 text-white",
                           isCurrent && "bg-primary text-white",
                           !isCompleted && !isCurrent && "bg-slate-700 text-slate-400"
                         )}
                       >
                         {isCompleted ? (
-                          <Check className="h-4 w-4" />
+                          <Check className="h-3.5 w-3.5" />
                         ) : (
                           idx + 1
                         )}
                       </div>
                       {idx < STEPS.length - 1 && (
                         <div className={cn(
-                          "w-0.5 h-4 my-1",
+                          "w-0.5 h-3 my-0.5",
                           isCompleted ? "bg-emerald-500" : "bg-slate-700"
                         )} />
                       )}
@@ -307,45 +307,45 @@ export default function SignupFlow() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-auto p-6 space-y-4">
+        <div className="p-5 pt-0 space-y-3">
           {/* Progress Bar */}
           <div>
-            <div className="flex justify-between text-sm text-slate-400 mb-2">
+            <div className="flex justify-between text-xs text-slate-400 mb-1.5">
               <span>Progress</span>
               <span>{currentStepIndex + 1} of {STEPS.length}</span>
             </div>
-            <Progress value={progressPercent} className="h-1.5 bg-slate-700" />
+            <Progress value={progressPercent} className="h-1 bg-slate-700" />
           </div>
 
           {/* Pro Tip */}
-          <div className="bg-slate-800/50 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-medium">Pro Tip:</span>
+          <div className="bg-slate-800/50 rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+              <span className="text-xs font-medium">Pro Tip:</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
-              This only takes a minute, and you can always adjust your settings anytime from your dashboard.
+              This only takes a minute—you can adjust settings anytime.
             </p>
           </div>
         </div>
       </aside>
 
       {/* Right Content Area */}
-      <main className="flex-1 flex flex-col bg-white">
+      <main className="flex-1 flex flex-col bg-white overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center gap-3 p-4 border-b border-slate-100">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-white" />
+        <div className="lg:hidden flex items-center gap-3 p-3 border-b border-slate-100">
+          <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
+            <Building2 className="h-4 w-4 text-white" />
           </div>
-          <span className="text-lg font-bold text-slate-900">RealVest</span>
+          <span className="text-base font-bold text-slate-900">RealVest</span>
           <div className="ml-auto text-sm text-slate-500">
             Step {currentStepIndex + 1} of {STEPS.length}
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
-          <div className="w-full max-w-xl">
+        <div className="flex-1 flex items-center justify-center p-4 lg:p-8 overflow-auto">
+          <div className="w-full max-w-lg">
             {/* Step: Organization */}
             {step === "organization" && (
               <div className="space-y-6">
@@ -657,7 +657,7 @@ export default function SignupFlow() {
         </div>
 
         {/* Footer */}
-        <div className="p-4 text-center border-t border-slate-100">
+        <div className="p-3 text-center border-t border-slate-100">
           <p className="text-xs text-slate-400">
             Enterprise Ready — Your Data Is Encrypted And Secure At Every Step.
           </p>
