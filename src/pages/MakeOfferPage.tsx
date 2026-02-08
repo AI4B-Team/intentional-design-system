@@ -541,13 +541,10 @@ Best regards,
                 Back To Property
               </Button>
               <div className="h-6 w-px bg-border" />
-              <div>
-                <h1 className="text-lg font-semibold flex items-center gap-2">
-                  <Send className="h-5 w-5 text-primary" />
-                  Offer Campaign
-                </h1>
-                <p className="text-sm text-muted-foreground">{deal.address}</p>
-              </div>
+              <h1 className="text-lg font-semibold flex items-center gap-2">
+                <Send className="h-5 w-5 text-primary" />
+                Offer Campaign: {deal.address}
+              </h1>
             </div>
             <div className="flex items-center gap-3">
               <Badge variant="secondary" className={cn(
