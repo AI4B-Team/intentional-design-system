@@ -148,6 +148,11 @@ export function ComparableSalesSection({
     ? (comps.reduce((sum, c) => sum + c.distanceMiles, 0) / comps.length).toFixed(1)
     : "0";
 
+  // Calculate avg % of ARV for investor comps
+  const avgPercentOfArv = comps.length > 0 && subjectProperty.arv > 0
+    ? Math.round((avgCompPrice / subjectProperty.arv) * 100)
+    : 0;
+
   return (
     <Card className="p-6">
       {/* Header */}
@@ -221,22 +226,45 @@ export function ComparableSalesSection({
 
       {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold text-primary">${subjectProperty.arv.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">ARV</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">${avgPricePerSqft}</p>
-          <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">{avgSimilarity}%</p>
-          <p className="text-sm text-muted-foreground">Avg. Similarity</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">{avgDistance} mi</p>
-          <p className="text-sm text-muted-foreground">Avg. Distance</p>
-        </div>
+        {compType === "investor" ? (
+          <>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold text-primary">${avgCompPrice.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">Avg. Purchase Price</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">{avgPercentOfArv}%</p>
+              <p className="text-sm text-muted-foreground">Avg. % of ARV</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">${avgPricePerSqft}</p>
+              <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">{avgDistance} mi</p>
+              <p className="text-sm text-muted-foreground">Avg. Distance</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold text-primary">${subjectProperty.arv.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">ARV</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">${avgPricePerSqft}</p>
+              <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">{avgSimilarity}%</p>
+              <p className="text-sm text-muted-foreground">Avg. Similarity</p>
+            </div>
+            <div className="text-center p-4 bg-surface-secondary rounded-lg">
+              <p className="text-2xl font-bold">{avgDistance} mi</p>
+              <p className="text-sm text-muted-foreground">Avg. Distance</p>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Filter Controls */}
