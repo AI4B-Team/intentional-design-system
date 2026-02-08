@@ -56,6 +56,7 @@ import { useMockDeals } from "@/hooks/useMockDeals";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { OfferInsightCard } from "@/components/ai/OfferInsightCard";
+import { BuyerIntelligenceCard } from "@/components/ai/BuyerIntelligenceCard";
 import { useOfferInsight } from "@/hooks/useOfferInsight";
 import {
   DealSetupStep,
@@ -322,9 +323,13 @@ export default function MakeOfferPage() {
   const buyerMaxOffer = Math.round(arv * 0.70);
   const wholesalerProfit = buyerMaxOffer - offerAmount;
 
-  // AI Insight context
+  // AI Insight context - include location for buyer matching
   const insightContext = {
     propertyAddress: deal.address,
+    propertyCity: (deal as any).city || "Tampa",
+    propertyState: (deal as any).state || "FL",
+    propertyZip: (deal as any).zip || "33527",
+    propertyType: (deal as any).propertyType || "Single Family",
     arv,
     askingPrice: deal.price,
     offerAmount,
@@ -1006,6 +1011,13 @@ Best regards,
                       isLoading={pricingInsight.isLoading}
                       error={pricingInsight.error}
                       onRefresh={pricingInsight.refetch}
+                    />
+
+                    {/* Buyer Intelligence Card */}
+                    <BuyerIntelligenceCard
+                      data={pricingInsight.buyerIntelligence}
+                      arv={arv}
+                      offerAmount={offerAmount}
                     />
 
                     {/* Preset Buttons */}
