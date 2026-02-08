@@ -299,8 +299,8 @@ export function ComparableSalesSection({
       {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold text-primary">${avgCompPrice.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">Avg. Sale Price</p>
+          <p className="text-2xl font-bold text-primary">${subjectProperty.arv.toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground">ARV</p>
         </div>
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
           <p className="text-2xl font-bold">${avgPricePerSqft}</p>
