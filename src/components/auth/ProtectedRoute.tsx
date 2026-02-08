@@ -29,13 +29,14 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
       return <LoadingPage message="Loading organization..." />;
     }
 
-    // User is authenticated but has no organization - redirect to onboarding
+    // User is authenticated but has no organization - redirect to signup flow
     // Exception: onboarding pages themselves
     const isOnboardingPage = location.pathname.startsWith("/onboarding") || 
+                              location.pathname.startsWith("/signup/flow") ||
                               location.pathname === "/create-organization";
     
     if (!organization && !isOnboardingPage) {
-      return <Navigate to="/onboarding" replace />;
+      return <Navigate to="/signup/flow" replace />;
     }
   }
 

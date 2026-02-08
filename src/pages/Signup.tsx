@@ -69,7 +69,8 @@ export default function Signup() {
       setLoading(false);
     } else {
       toast.success("Account created successfully!");
-      navigate("/dashboard", { replace: true });
+      // Redirect to the new signup flow to complete onboarding
+      navigate("/signup/flow", { replace: true });
     }
   };
 
