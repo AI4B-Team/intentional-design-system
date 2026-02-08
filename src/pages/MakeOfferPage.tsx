@@ -751,7 +751,7 @@ Best regards,
                     {/* Calculations Display */}
                     <div className="grid grid-cols-3 gap-4 pt-4">
                       <Card className="p-4 text-center">
-                        <p className="text-sm text-muted-foreground mb-1">Market Value</p>
+                        <p className="text-sm text-muted-foreground mb-1">After Repaired Value (ARV)</p>
                         <p className="text-xl font-semibold">{formatCurrency(marketValue)}</p>
                       </Card>
                       <Card className="p-4 text-center bg-primary/5 border-primary">
