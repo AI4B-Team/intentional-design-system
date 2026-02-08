@@ -906,6 +906,19 @@ export default function Pipeline() {
         }
       />
 
+      {/* Search Bar */}
+      <div className="mb-4 -mt-4">
+        <div className="relative max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by address, contact, or city..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+      </div>
+
       {/* Pipeline Value Cards - Collapsible */}
       {isKpiExpanded && (
         <div className="mb-4 -mt-4">
