@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy } from 'lucide-react';
+import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy, Clock, Settings } from 'lucide-react';
 
 export interface TranscriptMessage {
   id: string;
@@ -85,15 +85,11 @@ export function SessionCallView({
   const getPhaseIcon = (status: CallPhase['status']) => {
     switch (status) {
       case 'completed':
-        return <CheckCircle2 className="h-4 w-4 text-success" />;
+        return <CheckCircle2 className="h-5 w-5 text-success" />;
       case 'current':
-        return (
-          <div className="h-4 w-4 rounded-full border-2 border-primary bg-primary/20 flex items-center justify-center">
-            <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-          </div>
-        );
+        return <Clock className="h-5 w-5 text-success" />;
       default:
-        return <Circle className="h-4 w-4 text-muted-foreground" />;
+        return <Circle className="h-5 w-5 text-muted-foreground/50" />;
     }
   };
 
@@ -277,31 +273,33 @@ export function SessionCallView({
           <div className="bg-white border border-border-subtle rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-muted-foreground" />
+                <Settings className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium text-foreground">Call Structure</span>
               </div>
-              <Button variant="default" size="sm" onClick={onNextPhase} className="h-7 text-xs gap-1">
+              <Button variant="ghost" size="sm" onClick={onNextPhase} className="h-7 text-xs gap-1.5 text-muted-foreground hover:text-foreground">
                 <ArrowRight className="h-3 w-3" />
                 Next Phase
               </Button>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {phases.map((phase) => (
                 <div key={phase.id} className={cn(
-                  'flex items-center justify-between py-2.5 px-3 rounded-lg transition-colors',
-                  phase.status === 'current' && 'bg-primary/5',
-                  phase.status === 'completed' && 'opacity-75'
+                  'flex items-center justify-between py-3 px-4 rounded-xl transition-colors',
+                  (phase.status === 'current' || phase.status === 'completed') && 'bg-success/10',
+                  phase.status === 'pending' && 'bg-muted/50'
                 )}>
                   <div className="flex items-center gap-3">
                     {getPhaseIcon(phase.status)}
                     <span className={cn(
-                      'text-sm',
-                      phase.status === 'current' && 'font-medium text-primary',
-                      phase.status === 'completed' && 'text-muted-foreground',
-                      phase.status === 'pending' && 'text-muted-foreground'
+                      'text-sm font-medium',
+                      (phase.status === 'current' || phase.status === 'completed') && 'text-foreground',
+                      phase.status === 'pending' && 'text-foreground'
                     )}>{phase.name}</span>
                   </div>
-                  {phase.duration && <span className="text-xs text-muted-foreground tabular-nums">{phase.duration}</span>}
+                  <span className={cn(
+                    'text-sm tabular-nums',
+                    (phase.status === 'current' || phase.status === 'completed') ? 'text-foreground/70' : 'text-muted-foreground'
+                  )}>{phase.duration || '0:00'}</span>
                 </div>
               ))}
             </div>
