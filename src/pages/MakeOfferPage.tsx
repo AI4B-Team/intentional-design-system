@@ -50,6 +50,8 @@ import { cn } from "@/lib/utils";
 import { useMockDeals } from "@/hooks/useMockDeals";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
+import { OfferInsightCard } from "@/components/ai/OfferInsightCard";
+import { useOfferInsight } from "@/hooks/useOfferInsight";
 
 interface OfferTemplate {
   id: string;
@@ -201,6 +203,27 @@ export default function MakeOfferPage() {
   // Wholesaler calculation - profit margin at 70% ARV sell price
   const buyerMaxOffer = Math.round(arv * 0.70); // End buyer pays 70% ARV
   const wholesalerProfit = buyerMaxOffer - offerAmount; // Assignment fee = difference between 70% and your offer %
+
+  // AI Insight context
+  const insightContext = {
+    propertyAddress: deal.address,
+    arv,
+    askingPrice: deal.price,
+    offerAmount,
+    offerPercentage,
+    flipperProfit,
+    wholesalerProfit,
+    selectedTemplate,
+    emailEnabled,
+    smsEnabled,
+  };
+
+  // AI Insights for each step
+  const packageInsight = useOfferInsight("package", insightContext, currentStep === 1);
+  const pricingInsight = useOfferInsight("pricing", insightContext, currentStep === 2);
+  const deliveryInsight = useOfferInsight("delivery", insightContext, currentStep === 3);
+  const previewInsight = useOfferInsight("preview", insightContext, currentStep === 4);
+  const reviewInsight = useOfferInsight("review", insightContext, currentStep === 5);
 
   const steps = [
     { number: 1, title: "Offer Package", icon: Package },
@@ -720,6 +743,14 @@ Best regards,
                         </Card>
                       </TabsContent>
                     </Tabs>
+
+                    {/* AI Insight for Step 1 */}
+                    <OfferInsightCard
+                      insight={packageInsight.insight}
+                      isLoading={packageInsight.isLoading}
+                      error={packageInsight.error}
+                      onRefresh={packageInsight.refetch}
+                    />
                   </div>
                 )}
 
@@ -810,6 +841,14 @@ Best regards,
                         </div>
                       </div>
                     </Card>
+
+                    {/* AI Insight for Step 2 */}
+                    <OfferInsightCard
+                      insight={pricingInsight.insight}
+                      isLoading={pricingInsight.isLoading}
+                      error={pricingInsight.error}
+                      onRefresh={pricingInsight.refetch}
+                    />
                   </div>
                 )}
 
@@ -1026,6 +1065,14 @@ Best regards,
                         </Card>
                       )}
                     </div>
+
+                    {/* AI Insight for Step 3 */}
+                    <OfferInsightCard
+                      insight={deliveryInsight.insight}
+                      isLoading={deliveryInsight.isLoading}
+                      error={deliveryInsight.error}
+                      onRefresh={deliveryInsight.refetch}
+                    />
                   </div>
                 )}
 
@@ -1115,6 +1162,14 @@ Best regards,
                         </Card>
                       </TabsContent>
                     </Tabs>
+
+                    {/* AI Insight for Step 4 */}
+                    <OfferInsightCard
+                      insight={previewInsight.insight}
+                      isLoading={previewInsight.isLoading}
+                      error={previewInsight.error}
+                      onRefresh={previewInsight.refetch}
+                    />
                   </div>
                 )}
 
@@ -1244,6 +1299,14 @@ Best regards,
                           </div>
                         </Card>
                       )}
+
+                      {/* AI Insight for Step 5 */}
+                      <OfferInsightCard
+                        insight={reviewInsight.insight}
+                        isLoading={reviewInsight.isLoading}
+                        error={reviewInsight.error}
+                        onRefresh={reviewInsight.refetch}
+                      />
                     </div>
                   </div>
                 )}
