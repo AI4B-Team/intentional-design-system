@@ -33,6 +33,7 @@ import {
   Mail,
   Phone,
   MoreHorizontal,
+  Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow } from "date-fns";
@@ -345,36 +346,40 @@ export default function TransactionsDashboard() {
               className="pl-9"
             />
           </div>
-          <Select value={stageFilter} onValueChange={setStageFilter}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Stages" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Stages</SelectItem>
-              <SelectItem value="offer_sent">Offer Sent</SelectItem>
-              <SelectItem value="negotiation">Negotiation</SelectItem>
-              <SelectItem value="due_diligence">Due Diligence</SelectItem>
-              <SelectItem value="closing">Closing</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="active" className="gap-2">
-              <TrendingUp className="h-4 w-4" />
-              Active ({stats.active})
-            </TabsTrigger>
-            <TabsTrigger value="closed" className="gap-2">
-              <CheckCircle2 className="h-4 w-4" />
-              Closed ({stats.closed})
-            </TabsTrigger>
-            <TabsTrigger value="lost" className="gap-2">
-              <AlertCircle className="h-4 w-4" />
-              Lost (0)
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between">
+            <TabsList>
+              <TabsTrigger value="active" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Active ({stats.active})
+              </TabsTrigger>
+              <TabsTrigger value="closed" className="gap-2">
+                <CheckCircle2 className="h-4 w-4" />
+                Closed ({stats.closed})
+              </TabsTrigger>
+              <TabsTrigger value="lost" className="gap-2">
+                <AlertCircle className="h-4 w-4" />
+                Lost (0)
+              </TabsTrigger>
+            </TabsList>
+            
+            <Select value={stageFilter} onValueChange={setStageFilter}>
+              <SelectTrigger className="w-[180px]">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue placeholder="All Stages" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Stages</SelectItem>
+                <SelectItem value="offer_sent">Offer Sent</SelectItem>
+                <SelectItem value="negotiation">Negotiation</SelectItem>
+                <SelectItem value="due_diligence">Due Diligence</SelectItem>
+                <SelectItem value="closing">Closing</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <TabsContent value={activeTab} className="mt-4">
             {filteredTransactions.length === 0 ? (
