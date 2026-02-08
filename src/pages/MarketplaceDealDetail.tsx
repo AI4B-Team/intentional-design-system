@@ -564,22 +564,38 @@ export default function MarketplaceDealDetail() {
                 })}
               </div>
 
-              {/* Right: View Mode Toggle */}
-              <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
-                {(["flip", "hold"] as ViewMode[]).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setViewMode(mode)}
-                    className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
-                      viewMode === mode
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
+              {/* Right: Buyers Badge + View Mode Toggle */}
+              <div className="flex items-center gap-3">
+                {/* Buyers Button - only in split mode */}
+                {layoutMode === "split" && (
+                  <Button
+                    variant={showBuyersOnMap ? "default" : "outline"}
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => setShowBuyersOnMap(!showBuyersOnMap)}
                   >
-                    {mode === "flip" ? "Flip" : "Hold"}
-                  </button>
-                ))}
+                    <Users className="h-4 w-4" />
+                    {filteredBuyersForMap.length} Buyers
+                  </Button>
+                )}
+                
+                {/* View Mode Toggle */}
+                <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
+                  {(["flip", "hold"] as ViewMode[]).map((mode) => (
+                    <button
+                      key={mode}
+                      onClick={() => setViewMode(mode)}
+                      className={cn(
+                        "px-3 py-1.5 text-sm font-medium rounded-md transition-colors capitalize",
+                        viewMode === mode
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      {mode === "flip" ? "Flip" : "Hold"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className={cn(
@@ -591,20 +607,6 @@ export default function MarketplaceDealDetail() {
                 "space-y-6",
                 layoutMode === "split" ? "" : "lg:col-span-2"
               )}>
-                {/* Show Buyers Button in Split Mode */}
-                {layoutMode === "split" && (
-                  <div className="flex justify-end">
-                    <Button
-                      variant={showBuyersOnMap ? "default" : "outline"}
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => setShowBuyersOnMap(!showBuyersOnMap)}
-                    >
-                      <Users className="h-4 w-4" />
-                      {filteredBuyersForMap.length} Buyers
-                    </Button>
-                  </div>
-                )}
 
                 {/* Tab Content */}
                 {activeTab === "overview" && (
