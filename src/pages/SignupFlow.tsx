@@ -193,14 +193,19 @@ export default function SignupFlow() {
   const handleComplete = async () => {
     setIsSubmitting(true);
     try {
-      await createOrganization.mutateAsync({
-        name: orgName.trim(),
-      });
-      await refreshOrganization();
+      // Only create organization if user doesn't have one
+      if (!organization) {
+        await createOrganization.mutateAsync({
+          name: orgName.trim(),
+        });
+        await refreshOrganization();
+      }
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating organization:", error);
       toast.error("Failed to create organization");
+      // Still navigate to dashboard even if org creation fails
+      navigate("/dashboard");
     } finally {
       setIsSubmitting(false);
     }
