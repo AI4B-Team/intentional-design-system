@@ -380,22 +380,22 @@ export default function TransactionsDashboard() {
           </Card>
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-success/10">
+              <div className="p-2 rounded-lg bg-success/10 flex-shrink-0">
                 <DollarSign className="h-5 w-5 text-success" />
               </div>
-              <div>
-                <p className="text-lg font-bold">{formatCurrency(stats.totalVolume)}</p>
+              <div className="min-w-0">
+                <p className="text-base font-bold truncate">{formatCurrency(stats.totalVolume)}</p>
                 <p className="text-xs text-muted-foreground">Volume</p>
               </div>
             </div>
           </Card>
           <Card className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
+              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
                 <Target className="h-5 w-5 text-primary" />
               </div>
-              <div>
-                <p className="text-lg font-bold">{formatCurrency(stats.totalFees)}</p>
+              <div className="min-w-0">
+                <p className="text-base font-bold truncate">{formatCurrency(stats.totalFees)}</p>
                 <p className="text-xs text-muted-foreground">Fees Earned</p>
               </div>
             </div>
