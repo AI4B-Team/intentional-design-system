@@ -149,12 +149,13 @@ export default function SignupFlow() {
   const [selectedGoals, setSelectedGoals] = React.useState<string[]>([]);
   const [phone, setPhone] = React.useState("");
 
-  // Redirect if user already has an organization
-  React.useEffect(() => {
-    if (!orgLoading && organization) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [organization, orgLoading, navigate]);
+  // Note: Removed auto-redirect so user can preview the flow even if they have an organization.
+  // If you want to restore the original behavior, uncomment the following:
+  // React.useEffect(() => {
+  //   if (!orgLoading && organization) {
+  //     navigate("/dashboard", { replace: true });
+  //   }
+  // }, [organization, orgLoading, navigate]);
 
   const currentStepIndex = STEPS.findIndex(s => s.id === step);
   const progressPercent = ((currentStepIndex + 1) / STEPS.length) * 100;
