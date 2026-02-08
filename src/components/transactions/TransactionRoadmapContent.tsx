@@ -343,7 +343,7 @@ const mockPofDocs: ProofOfFundsDoc[] = [
 ];
 
 // Milestone 1: Assemble Deal Team
-function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
+export function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
   const { user } = useAuth();
 
   // Use mock POF documents for now (later can be replaced with DB query)
@@ -637,7 +637,7 @@ function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updat
 }
 
 // Milestone 2: Make & Negotiate Offer
-function Milestone2Offer({ data, updateData, propertyPrice }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void; propertyPrice: number }) {
+export function Milestone2Offer({ data, updateData, propertyPrice }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void; propertyPrice: number }) {
   const maoWarning = data.acceptedOffer && data.mao && data.acceptedOffer > data.mao;
 
   return (
@@ -746,7 +746,7 @@ function Milestone2Offer({ data, updateData, propertyPrice }: { data: Transactio
 }
 
 // Milestone 3: Due Diligence
-function Milestone3DueDiligence({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
+export function Milestone3DueDiligence({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
   return (
     <div className="space-y-4">
       <div>
@@ -826,7 +826,7 @@ function Milestone3DueDiligence({ data, updateData }: { data: TransactionData; u
 }
 
 // Milestone 4: Closing the Deal
-function Milestone4Closing({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
+export function Milestone4Closing({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
   const items = [
     { key: 'closingFinancingFinalized', label: 'Finalize financing with lender', checked: data.closingFinancingFinalized },
     { key: 'closingEscrowWired', label: 'Wire escrow deposit', checked: data.closingEscrowWired },
@@ -873,7 +873,7 @@ function Milestone4Closing({ data, updateData }: { data: TransactionData; update
 }
 
 // Milestone 5: Execute Investment Strategy
-function Milestone5Strategy({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
+export function Milestone5Strategy({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
   const strategies = [
     { id: 'brrrr', label: 'BRRRR', description: 'Buy, Rehab, Rent, Refinance, Repeat' },
     { id: 'flip', label: 'Fix & Flip', description: 'Renovate and sell for profit' },
