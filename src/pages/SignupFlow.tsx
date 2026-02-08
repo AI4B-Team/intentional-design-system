@@ -36,10 +36,10 @@ import {
   Bot,
 } from "lucide-react";
 
-type Step = "markets" | "role" | "goals" | "features" | "launch";
+type Step = "organization" | "role" | "goals" | "features" | "launch";
 
 const STEPS: { id: Step; label: string }[] = [
-  { id: "markets", label: "Markets" },
+  { id: "organization", label: "Organization" },
   { id: "role", label: "Role" },
   { id: "goals", label: "Goals" },
   { id: "features", label: "Features" },
@@ -138,7 +138,7 @@ export default function SignupFlow() {
   const { organization, loading: orgLoading, refreshOrganization } = useOrganization();
   const createOrganization = useCreateOrganization();
 
-  const [step, setStep] = React.useState<Step>("markets");
+  const [step, setStep] = React.useState<Step>("organization");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Form data
@@ -161,8 +161,8 @@ export default function SignupFlow() {
 
   const canContinue = () => {
     switch (step) {
-      case "markets":
-        return selectedMarkets.length > 0;
+      case "organization":
+        return orgName.trim().length >= 2;
       case "role":
         return selectedRole !== null;
       case "goals":
@@ -346,64 +346,46 @@ export default function SignupFlow() {
         {/* Content */}
         <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
           <div className="w-full max-w-xl">
-            {/* Step: Markets */}
-            {step === "markets" && (
+            {/* Step: Organization */}
+            {step === "organization" && (
               <div className="space-y-6">
-                <Badge variant="secondary" className="bg-info/10 text-info border-0">
-                  <Target className="h-3 w-3 mr-1" />
-                  Target Markets
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
+                  <Building2 className="h-3 w-3 mr-1" />
+                  Organization Setup
                 </Badge>
                 
                 <div>
                   <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
-                    Where Do You Invest?
+                    Name Your Command Center
                   </h1>
                   <p className="text-slate-600">
-                    Select the states where you're actively looking for deals. This helps us show you relevant data and opportunities.
+                    This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Select Your Markets <span className="text-slate-400">(choose all that apply)</span></Label>
-                  <div className="flex flex-wrap gap-2 max-h-[300px] overflow-y-auto p-1">
-                    {US_STATES.map(state => (
-                      <button
-                        key={state}
-                        onClick={() => toggleMarket(state)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg text-sm font-medium transition-all border",
-                          selectedMarkets.includes(state)
-                            ? "bg-primary text-white border-primary"
-                            : "bg-white text-slate-600 border-slate-200 hover:border-primary/50"
-                        )}
-                      >
-                        {state}
-                        {selectedMarkets.includes(state) && (
-                          <Check className="h-3 w-3 ml-1 inline" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                  {selectedMarkets.length > 0 && (
-                    <p className="text-sm text-primary font-medium">
-                      {selectedMarkets.length} market{selectedMarkets.length > 1 ? 's' : ''} selected
-                    </p>
-                  )}
+                <div className="space-y-2">
+                  <Label htmlFor="org-name">Organization Name</Label>
+                  <Input
+                    id="org-name"
+                    placeholder="e.g., ABC Investments, Home Buyers LLC"
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    className="h-12"
+                  />
+                  <p className="text-sm text-slate-500">
+                    You can always change this later in settings.
+                  </p>
                 </div>
 
-                <div className="flex gap-3">
-                  <Button variant="outline" onClick={handleBack} icon={<ArrowLeft className="h-4 w-4" />}>
-                    Back
-                  </Button>
-                  <Button
-                    onClick={handleNext}
-                    disabled={!canContinue()}
-                    icon={<ArrowRight className="h-4 w-4" />}
-                    iconPosition="right"
-                  >
-                    Continue
-                  </Button>
-                </div>
+                <Button
+                  onClick={handleNext}
+                  disabled={!canContinue()}
+                  className="w-auto"
+                  icon={<ArrowRight className="h-4 w-4" />}
+                  iconPosition="right"
+                >
+                  Continue
+                </Button>
               </div>
             )}
 
