@@ -48,7 +48,7 @@ export function OverviewTab({ deal, viewMode, layoutMode }: OverviewTabProps) {
     <div className="space-y-6">
       {/* Price, ARV, Deal Score & Address */}
       <div>
-        {/* Row 1: Price, ARV, Deal Score */}
+      {/* Row 1: Price, ARV, Est. Rent (Hold only), Deal Score */}
         <div className="flex items-center gap-4 mb-1">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Price</span>
@@ -58,6 +58,12 @@ export function OverviewTab({ deal, viewMode, layoutMode }: OverviewTabProps) {
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">ARV</span>
             <span className="text-3xl font-bold text-success">${deal.arv.toLocaleString()}</span>
           </div>
+          {viewMode === "hold" && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Est. Rent</span>
+              <span className="text-3xl font-bold text-primary">${Math.round(deal.sqft * 1.25).toLocaleString()}/mo</span>
+            </div>
+          )}
           {/* Deal Score - Far Right */}
           <div className="ml-auto flex items-center gap-3">
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Score</span>
