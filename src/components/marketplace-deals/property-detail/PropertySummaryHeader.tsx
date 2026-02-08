@@ -29,7 +29,7 @@ export function PropertySummaryHeader({
   const roi = Math.round((profit / (deal.price + estRepairs)) * 100);
 
   return (
-    <div className="space-y-0 mb-6">
+    <div>
       {/* Row 1: Price, ARV, Est. Rent (Hold only), Deal Score */}
       <div className="flex items-center gap-4 mb-1">
         <div className="flex items-center gap-2">
