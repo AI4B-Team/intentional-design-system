@@ -226,7 +226,7 @@ export default function MakeOfferPage() {
   const reviewInsight = useOfferInsight("review", insightContext, currentStep === 5);
 
   const steps = [
-    { number: 1, title: "Offer Package", icon: Package },
+    { number: 1, title: "Offer", icon: Package },
     { number: 2, title: "Pricing", icon: DollarSign },
     { number: 3, title: "Delivery", icon: Send },
     { number: 4, title: "Preview", icon: Eye },
