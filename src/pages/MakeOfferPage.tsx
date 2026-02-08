@@ -190,7 +190,7 @@ export default function MakeOfferPage() {
     listingAgent: null as { name: string; email: string; phone: string; brokerage?: string; type: "listing" | "buyer" } | null,
     buyerAgent: null as { name: string; email: string; phone: string; brokerage?: string; type: "listing" | "buyer" } | null,
     useDualAgency: true,
-    propertyConfirmed: false,
+    propertyConfirmed: true,
   });
 
   // Step 2: Template Selection
@@ -347,8 +347,8 @@ export default function MakeOfferPage() {
   // New 11-step flow
   const steps = [
     // Offer Steps (1-6)
-    { number: 1, title: "Deal Setup", icon: Settings2, locked: false },
-    { number: 2, title: "Offer Type", icon: Package, locked: false },
+    { number: 1, title: "Deal", icon: Settings2, locked: false },
+    { number: 2, title: "Offer", icon: Package, locked: false },
     { number: 3, title: "Pricing", icon: DollarSign, locked: false },
     { number: 4, title: "Delivery", icon: Send, locked: false },
     { number: 5, title: "Preview", icon: Eye, locked: false },
