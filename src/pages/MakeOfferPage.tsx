@@ -805,7 +805,8 @@ Best regards,
                           {pct}%
                         </Button>
                       ))}
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm text-muted-foreground">Custom:</span>
                         <Input
                           type="number"
                           min={50}
@@ -816,7 +817,7 @@ Best regards,
                             setOfferPercentage(val);
                             setCustomOfferAmount(null);
                           }}
-                          className="w-16 h-9 text-center text-sm font-medium"
+                          className="w-20 h-9 text-center text-sm font-medium"
                         />
                         <span className="text-sm text-muted-foreground">%</span>
                       </div>
