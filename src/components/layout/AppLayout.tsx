@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 
 interface Breadcrumb {
   label: string;
@@ -73,60 +74,62 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   };
 
   return (
-    <div className={cn(
-      "min-h-screen flex bg-surface-secondary relative",
-      // For split-view deal detail, we want the layout locked to the viewport height so
-      // the left map stays above-the-fold and only the right panel scrolls.
-      lockViewportHeight ? "h-screen overflow-hidden" : ""
-    )}>
-      {/*
-        Left-rail background layer (desktop): ensures the sidebar background color
-        always reaches the bottom of the viewport/page visually, even if any
-        scroll/height context changes.
-      */}
-      <div
-        aria-hidden
-        className={cn(
-          "hidden lg:block fixed inset-y-0 left-0 bg-slate-900 z-0",
-          sidebarCollapsed ? "w-16" : "w-64"
-        )}
-      />
-
-      {/* Sidebar - sticky for desktop */}
-      <AppSidebar
-        collapsed={sidebarCollapsed}
-        onToggle={handleSidebarToggle}
-        mobileOpen={mobileMenuOpen}
-        onMobileClose={() => setMobileMenuOpen(false)}
-      />
-
-      {/* Main Content - offset for fixed sidebar on desktop */}
+    <SidebarProvider isCollapsed={sidebarCollapsed}>
       <div className={cn(
-        "flex-1 flex flex-col min-w-0 relative z-10",
-        sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+        "min-h-screen flex bg-surface-secondary relative",
+        // For split-view deal detail, we want the layout locked to the viewport height so
+        // the left map stays above-the-fold and only the right panel scrolls.
+        lockViewportHeight ? "h-screen overflow-hidden" : ""
       )}>
-        {/* Header - sticky at top */}
-        <AppHeader
-          onMenuClick={() => setMobileMenuOpen(true)}
-          breadcrumbs={breadcrumbs}
+        {/*
+          Left-rail background layer (desktop): ensures the sidebar background color
+          always reaches the bottom of the viewport/page visually, even if any
+          scroll/height context changes.
+        */}
+        <div
+          aria-hidden
+          className={cn(
+            "hidden lg:block fixed inset-y-0 left-0 bg-slate-900 z-0",
+            sidebarCollapsed ? "w-16" : "w-64"
+          )}
         />
 
-        {/* Page Content - normal flow, browser handles scrolling */}
-        <main
-          ref={mainRef}
-          className={cn(
-            // Allow flex children (like split-view layouts) to properly constrain height and
-            // use internal scrolling without forcing the whole document to scroll.
-            cn(
-              "flex-1 flex flex-col min-h-0",
-              lockViewportHeight ? "overflow-hidden" : "overflow-visible"
-            ),
-            fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
-          )}
-        >
-          {children}
-        </main>
+        {/* Sidebar - sticky for desktop */}
+        <AppSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={handleSidebarToggle}
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={() => setMobileMenuOpen(false)}
+        />
+
+        {/* Main Content - offset for fixed sidebar on desktop */}
+        <div className={cn(
+          "flex-1 flex flex-col min-w-0 relative z-10",
+          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+        )}>
+          {/* Header - sticky at top */}
+          <AppHeader
+            onMenuClick={() => setMobileMenuOpen(true)}
+            breadcrumbs={breadcrumbs}
+          />
+
+          {/* Page Content - normal flow, browser handles scrolling */}
+          <main
+            ref={mainRef}
+            className={cn(
+              // Allow flex children (like split-view layouts) to properly constrain height and
+              // use internal scrolling without forcing the whole document to scroll.
+              cn(
+                "flex-1 flex flex-col min-h-0",
+                lockViewportHeight ? "overflow-hidden" : "overflow-visible"
+              ),
+              fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
+            )}
+          >
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
