@@ -654,6 +654,9 @@ Best regards,
                                     {template.description}
                                   </p>
                                   <div className="flex items-center gap-3 mt-2">
+                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                      <FileText className="h-3 w-3" /> LOI
+                                    </span>
                                     {template.supportsEmail && (
                                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                         <Mail className="h-3 w-3" /> Email
@@ -664,9 +667,6 @@ Best regards,
                                         <MessageSquare className="h-3 w-3" /> SMS
                                       </span>
                                     )}
-                                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                      <FileText className="h-3 w-3" /> LOI
-                                    </span>
                                   </div>
                                 </div>
                                 <div
