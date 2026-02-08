@@ -366,19 +366,21 @@ export default function TransactionsDashboard() {
               </TabsTrigger>
             </TabsList>
             
-            <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-[180px]">
-                <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="All Stages" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Stages</SelectItem>
-                <SelectItem value="offer_sent">Offer Sent</SelectItem>
-                <SelectItem value="negotiation">Negotiation</SelectItem>
-                <SelectItem value="due_diligence">Due Diligence</SelectItem>
-                <SelectItem value="closing">Closing</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="ml-auto">
+              <Select value={stageFilter} onValueChange={setStageFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <Filter className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="All Stages" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Stages</SelectItem>
+                  <SelectItem value="offer_sent">Offer Sent</SelectItem>
+                  <SelectItem value="negotiation">Negotiation</SelectItem>
+                  <SelectItem value="due_diligence">Due Diligence</SelectItem>
+                  <SelectItem value="closing">Closing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <TabsContent value={activeTab} className="mt-4">
