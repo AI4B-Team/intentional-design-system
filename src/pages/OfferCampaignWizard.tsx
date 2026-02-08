@@ -727,7 +727,7 @@ Best regards,
                         )}
                       </div>
                       <span className={cn(
-                        "text-[10px] leading-tight text-center whitespace-nowrap",
+                        "text-xs leading-tight text-center whitespace-nowrap",
                         currentStep === step.number && "font-semibold"
                       )}>
                         {step.title}
