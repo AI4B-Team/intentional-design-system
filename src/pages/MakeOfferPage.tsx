@@ -1034,7 +1034,7 @@ Best regards,
                             setOfferPercentage(val);
                             setCustomOfferAmount(null);
                           }}
-                          className="w-20 h-9 text-center text-sm font-medium"
+                          className="w-20 h-9 text-center text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <span className="text-sm text-muted-foreground">%</span>
                       </div>
