@@ -17,17 +17,19 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
   
   const handlePrev = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
   
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
   return (
     <div 
-      className={cn("relative", className)}
+      className={cn("relative group", className)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -38,17 +40,23 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
       />
       
       {/* Navigation Arrows - Only show on hover when multiple images */}
-      {hasMultipleImages && isHovered && (
+      {hasMultipleImages && (
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all"
+            className={cn(
+              "absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all z-10",
+              isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
           >
             <ChevronLeft className="h-4 w-4 text-slate-700" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all"
+            className={cn(
+              "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all z-10",
+              isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
           >
             <ChevronRight className="h-4 w-4 text-slate-700" />
           </button>
@@ -57,7 +65,7 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
       
       {/* Image Indicators - Only show when multiple images */}
       {hasMultipleImages && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
           {images.slice(0, 5).map((_, idx) => (
             <div
               key={idx}
