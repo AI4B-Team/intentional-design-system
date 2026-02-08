@@ -116,7 +116,7 @@ const FEATURES = [
   { 
     icon: FileText, 
     label: "Automated Offers", 
-    description: "State-specific contracts, LOIs, and offer letters",
+    description: "Send hundreds of offers in minutes with AI-powered automation",
     color: "text-brand"
   },
 ];
