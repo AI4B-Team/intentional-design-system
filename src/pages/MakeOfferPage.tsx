@@ -659,6 +659,14 @@ Best regards,
                       </p>
                     </div>
 
+                    {/* AI Insight for Step 1 */}
+                    <OfferInsightCard
+                      insight={packageInsight.insight}
+                      isLoading={packageInsight.isLoading}
+                      error={packageInsight.error}
+                      onRefresh={packageInsight.refetch}
+                    />
+
                     <Tabs value={templateTab} onValueChange={(v) => setTemplateTab(v as any)}>
                       <div className="flex gap-2 max-w-xs">
                         <Button
@@ -761,14 +769,6 @@ Best regards,
                         </Card>
                       </TabsContent>
                     </Tabs>
-
-                    {/* AI Insight for Step 1 */}
-                    <OfferInsightCard
-                      insight={packageInsight.insight}
-                      isLoading={packageInsight.isLoading}
-                      error={packageInsight.error}
-                      onRefresh={packageInsight.refetch}
-                    />
                   </div>
                 )}
 
@@ -781,6 +781,14 @@ Best regards,
                         Define your offer amount based on asking price
                       </p>
                     </div>
+
+                    {/* AI Insight for Step 2 */}
+                    <OfferInsightCard
+                      insight={pricingInsight.insight}
+                      isLoading={pricingInsight.isLoading}
+                      error={pricingInsight.error}
+                      onRefresh={pricingInsight.refetch}
+                    />
 
                     {/* Preset Buttons */}
                     <div className="flex gap-2 flex-wrap">
@@ -890,14 +898,6 @@ Best regards,
                         </div>
                       </div>
                     </Card>
-
-                    {/* AI Insight for Step 2 */}
-                    <OfferInsightCard
-                      insight={pricingInsight.insight}
-                      isLoading={pricingInsight.isLoading}
-                      error={pricingInsight.error}
-                      onRefresh={pricingInsight.refetch}
-                    />
                   </div>
                 )}
 
@@ -910,6 +910,14 @@ Best regards,
                         Choose how and when your offers will be sent
                       </p>
                     </div>
+
+                    {/* AI Insight for Step 3 */}
+                    <OfferInsightCard
+                      insight={deliveryInsight.insight}
+                      isLoading={deliveryInsight.isLoading}
+                      error={deliveryInsight.error}
+                      onRefresh={deliveryInsight.refetch}
+                    />
 
                     {/* Delivery Methods */}
                     <div className="space-y-4">
@@ -1114,14 +1122,6 @@ Best regards,
                         </Card>
                       )}
                     </div>
-
-                    {/* AI Insight for Step 3 */}
-                    <OfferInsightCard
-                      insight={deliveryInsight.insight}
-                      isLoading={deliveryInsight.isLoading}
-                      error={deliveryInsight.error}
-                      onRefresh={deliveryInsight.refetch}
-                    />
                   </div>
                 )}
 
@@ -1134,6 +1134,14 @@ Best regards,
                         Review exactly what recipients will receive
                       </p>
                     </div>
+
+                    {/* AI Insight for Step 4 */}
+                    <OfferInsightCard
+                      insight={previewInsight.insight}
+                      isLoading={previewInsight.isLoading}
+                      error={previewInsight.error}
+                      onRefresh={previewInsight.refetch}
+                    />
 
                     <Tabs value={previewTab} onValueChange={(v) => setPreviewTab(v as any)}>
                       <TabsList>
@@ -1211,14 +1219,6 @@ Best regards,
                         </Card>
                       </TabsContent>
                     </Tabs>
-
-                    {/* AI Insight for Step 4 */}
-                    <OfferInsightCard
-                      insight={previewInsight.insight}
-                      isLoading={previewInsight.isLoading}
-                      error={previewInsight.error}
-                      onRefresh={previewInsight.refetch}
-                    />
                   </div>
                 )}
 
@@ -1231,6 +1231,14 @@ Best regards,
                         Confirm your offer campaign details before sending
                       </p>
                     </div>
+
+                    {/* AI Insight for Step 5 */}
+                    <OfferInsightCard
+                      insight={reviewInsight.insight}
+                      isLoading={reviewInsight.isLoading}
+                      error={reviewInsight.error}
+                      onRefresh={reviewInsight.refetch}
+                    />
 
                     <div className="grid gap-4">
                       {/* Campaign Summary */}
@@ -1348,14 +1356,6 @@ Best regards,
                           </div>
                         </Card>
                       )}
-
-                      {/* AI Insight for Step 5 */}
-                      <OfferInsightCard
-                        insight={reviewInsight.insight}
-                        isLoading={reviewInsight.isLoading}
-                        error={reviewInsight.error}
-                        onRefresh={reviewInsight.refetch}
-                      />
                     </div>
                   </div>
                 )}
