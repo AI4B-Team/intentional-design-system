@@ -1332,6 +1332,7 @@ Best regards,
                             </p>
                             <div className="flex items-center gap-4 mt-1 text-sm">
                               <span>Asking: {formatCurrency(deal.price)}</span>
+                              <span className="text-success">ARV: {formatCurrency(arv)}</span>
                               <span className="text-primary font-medium">
                                 Offer: {formatCurrency(offerAmount)}
                               </span>
