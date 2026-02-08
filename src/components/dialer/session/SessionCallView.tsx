@@ -107,8 +107,8 @@ export function SessionCallView({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Avatar className="h-12 w-12 bg-primary/10">
-                <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+            <Avatar className="h-12 w-12 bg-primary">
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {getInitials(contactName)}
                 </AvatarFallback>
               </Avatar>
