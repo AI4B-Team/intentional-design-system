@@ -241,7 +241,7 @@ export function CompsTab({ deal, viewMode }: CompsTabProps) {
   return (
     <div className="space-y-6">
       {/* Property Summary Header */}
-      <PropertySummaryHeader deal={deal} />
+      <PropertySummaryHeader deal={deal} viewMode={viewMode} />
       
       <ComparableSalesSection
         investorComps={investorComps}
