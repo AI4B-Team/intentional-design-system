@@ -104,9 +104,6 @@ export function RentalCompsSection({ rentalComps, subjectProperty }: RentalComps
         <div className="flex items-center gap-2">
           <DollarSign className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold">Rental Comparables</h2>
-          <Badge variant="outline" className="border-success text-success bg-success/10 ml-2">
-            {rentalComps.length} Comps Found
-          </Badge>
         </div>
 
         {/* Action Buttons */}
