@@ -1091,10 +1091,21 @@ Best regards,
                               </SelectContent>
                             </Select>
                             {smsEnabled && !twilioNumber && (
-                              <p className="text-xs text-destructive mt-1 flex items-center gap-1">
-                                <AlertTriangle className="h-3 w-3" />
-                                Twilio number required for SMS delivery
-                              </p>
+                              <div className="mt-2 space-y-2">
+                                <p className="text-xs text-destructive flex items-center gap-1">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Twilio number required for SMS delivery
+                                </p>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="gap-2 text-xs"
+                                  onClick={() => navigate("/settings/dialer?tab=caller-id")}
+                                >
+                                  <Settings2 className="h-3.5 w-3.5" />
+                                  Set Up Twilio Number
+                                </Button>
+                              </div>
                             )}
                           </div>
                         )}
