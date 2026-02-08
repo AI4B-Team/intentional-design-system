@@ -36,10 +36,9 @@ import {
   Bot,
 } from "lucide-react";
 
-type Step = "organization" | "markets" | "role" | "goals" | "features" | "launch";
+type Step = "markets" | "role" | "goals" | "features" | "launch";
 
 const STEPS: { id: Step; label: string }[] = [
-  { id: "organization", label: "Organization" },
   { id: "markets", label: "Markets" },
   { id: "role", label: "Role" },
   { id: "goals", label: "Goals" },
@@ -116,7 +115,7 @@ const FEATURES = [
   },
   { 
     icon: FileText, 
-    label: "Contract Generator", 
+    label: "Automated Offers", 
     description: "State-specific contracts, LOIs, and offer letters",
     color: "text-brand"
   },
@@ -139,7 +138,7 @@ export default function SignupFlow() {
   const { organization, loading: orgLoading, refreshOrganization } = useOrganization();
   const createOrganization = useCreateOrganization();
 
-  const [step, setStep] = React.useState<Step>("organization");
+  const [step, setStep] = React.useState<Step>("markets");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   // Form data
@@ -162,8 +161,6 @@ export default function SignupFlow() {
 
   const canContinue = () => {
     switch (step) {
-      case "organization":
-        return orgName.trim().length >= 2;
       case "markets":
         return selectedMarkets.length > 0;
       case "role":
@@ -349,49 +346,6 @@ export default function SignupFlow() {
         {/* Content */}
         <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
           <div className="w-full max-w-xl">
-            {/* Step: Organization */}
-            {step === "organization" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
-                  <Building2 className="h-3 w-3 mr-1" />
-                  Organization Setup
-                </Badge>
-                
-                <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
-                    Name Your Command Center
-                  </h1>
-                  <p className="text-slate-600">
-                    This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="org-name">Organization Name</Label>
-                  <Input
-                    id="org-name"
-                    placeholder="e.g., ABC Investments, Home Buyers LLC"
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
-                    className="h-12"
-                  />
-                  <p className="text-sm text-slate-500">
-                    You can always change this later in settings.
-                  </p>
-                </div>
-
-                <Button
-                  onClick={handleNext}
-                  disabled={!canContinue()}
-                  className="w-auto"
-                  icon={<ArrowRight className="h-4 w-4" />}
-                  iconPosition="right"
-                >
-                  Continue
-                </Button>
-              </div>
-            )}
-
             {/* Step: Markets */}
             {step === "markets" && (
               <div className="space-y-6">
@@ -658,7 +612,7 @@ export default function SignupFlow() {
             {step === "launch" && (
               <div className="space-y-6 text-center">
                 <div className="flex justify-center">
-                  <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
+                  <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center">
                     <Rocket className="h-10 w-10 text-white" />
                   </div>
                 </div>
@@ -701,7 +655,7 @@ export default function SignupFlow() {
                   <Button
                     onClick={handleComplete}
                     disabled={isSubmitting}
-                    className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 min-w-[180px]"
+                    className="min-w-[180px]"
                     icon={isSubmitting ? undefined : <ArrowRight className="h-4 w-4" />}
                     iconPosition="right"
                   >
