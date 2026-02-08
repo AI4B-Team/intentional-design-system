@@ -443,7 +443,7 @@ export default function MarketplaceDealDetail() {
               <PropertyDetailMap
                 subjectProperty={subjectForMap}
                 comps={retailComps}
-                buyers={filteredBuyersForMap}
+                buyers={mockBuyersForMap}
                 showBuyers={showBuyersOnMap}
                 onCloseBuyersView={() => setShowBuyersOnMap(false)}
               />
