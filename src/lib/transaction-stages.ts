@@ -55,7 +55,7 @@ export const TRANSACTION_STAGES: Record<TransactionStageId, TransactionStage> = 
   due_diligence: {
     id: "due_diligence",
     label: "Due Diligence",
-    shortLabel: "DD",
+    shortLabel: "Due Diligence",
     description: "Inspections, title search, and contingency period",
     icon: Search,
     color: "text-purple-600",
