@@ -695,14 +695,14 @@ Best regards,
           {/* Right Side - Offer Wizard */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
             {/* Step Indicator */}
-            <div className="px-6 py-3 border-b bg-muted/30 overflow-x-auto">
-              <div className="flex items-center gap-1 min-w-max">
+            <div className="px-6 py-3 border-b bg-muted/30">
+              <div className="flex items-center w-full">
                 {steps.map((step, index) => (
                   <React.Fragment key={step.number}>
                     <button
                       onClick={() => step.number <= currentStep && setCurrentStep(step.number)}
                       className={cn(
-                        "flex flex-col items-center gap-1 px-2 py-1 transition-colors min-w-[52px]",
+                        "flex flex-col items-center gap-1 py-1 transition-colors flex-1",
                         currentStep === step.number
                           ? "text-primary"
                           : currentStep > step.number
@@ -736,7 +736,7 @@ Best regards,
                     {index < steps.length - 1 && (
                       <div
                         className={cn(
-                          "flex-shrink-0 w-4 h-0.5",
+                          "flex-shrink-0 w-8 h-0.5",
                           currentStep > step.number ? "bg-success" : "bg-muted"
                         )}
                       />
