@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSavedDeals } from "@/hooks/useSavedDeals";
+import { useSidebarState } from "@/contexts/SidebarContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -170,6 +171,7 @@ function getStoredDetailLayoutMode(): LayoutMode {
 export default function MarketplaceDealDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isCollapsed: sidebarCollapsed } = useSidebarState();
   const [activeTab, setActiveTab] = useState<ContentTab>("overview");
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [message, setMessage] = useState("");
@@ -545,6 +547,8 @@ export default function MarketplaceDealDetail() {
               <div className="flex items-center gap-2">
                 {contentTabs.map((tab) => {
                   const Icon = tab.icon;
+                  // Show icons when: not in split mode, OR sidebar is collapsed
+                  const showIcon = layoutMode !== "split" || sidebarCollapsed;
                   return (
                     <Button
                       key={tab.id}
@@ -554,10 +558,10 @@ export default function MarketplaceDealDetail() {
                         activeTab === tab.id
                           ? "bg-muted text-foreground"
                           : "text-muted-foreground hover:text-foreground",
-                        layoutMode === "split" ? "gap-1 px-3" : "gap-2"
+                        layoutMode === "split" && !sidebarCollapsed ? "gap-1 px-3" : "gap-2"
                       )}
                     >
-                      {layoutMode !== "split" && <Icon className="h-4 w-4" />}
+                      {showIcon && <Icon className="h-4 w-4" />}
                       {tab.label}
                     </Button>
                   );
