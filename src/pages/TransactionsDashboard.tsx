@@ -324,80 +324,66 @@ export default function TransactionsDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-primary/10 mb-2">
                 <TrendingUp className="h-5 w-5 text-primary" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{stats.active}</p>
-                <p className="text-xs text-muted-foreground">Active</p>
-              </div>
+              <p className="text-2xl font-bold">{stats.active}</p>
+              <p className="text-xs text-muted-foreground">Active</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-purple-500/10">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-purple-500/10 mb-2">
                 <Search className="h-5 w-5 text-purple-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{stats.dueDiligence}</p>
-                <p className="text-xs text-muted-foreground">Due Diligence</p>
-              </div>
+              <p className="text-2xl font-bold">{stats.dueDiligence}</p>
+              <p className="text-xs text-muted-foreground">Due Diligence</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-amber-500/10">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-amber-500/10 mb-2">
                 <Megaphone className="h-5 w-5 text-amber-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{stats.marketing}</p>
-                <p className="text-xs text-muted-foreground">Marketing</p>
-              </div>
+              <p className="text-2xl font-bold">{stats.marketing}</p>
+              <p className="text-xs text-muted-foreground">Marketing</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-500/10">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-emerald-500/10 mb-2">
                 <Key className="h-5 w-5 text-emerald-600" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{stats.closing}</p>
-                <p className="text-xs text-muted-foreground">Closing</p>
-              </div>
+              <p className="text-2xl font-bold">{stats.closing}</p>
+              <p className="text-xs text-muted-foreground">Closing</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-success/10">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-success/10 mb-2">
                 <CheckCircle2 className="h-5 w-5 text-success" />
               </div>
-              <div>
-                <p className="text-2xl font-bold">{stats.sold}</p>
-                <p className="text-xs text-muted-foreground">Closed</p>
-              </div>
+              <p className="text-2xl font-bold">{stats.sold}</p>
+              <p className="text-xs text-muted-foreground">Closed</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-success/10 flex-shrink-0">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-success/10 mb-2">
                 <DollarSign className="h-5 w-5 text-success" />
               </div>
-              <div className="min-w-0">
-                <p className="text-base font-bold truncate">{formatCurrency(stats.totalVolume)}</p>
-                <p className="text-xs text-muted-foreground">Volume</p>
-              </div>
+              <p className="text-xl font-bold">{formatCurrency(stats.totalVolume)}</p>
+              <p className="text-xs text-muted-foreground">Volume</p>
             </div>
           </Card>
           <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10 flex-shrink-0">
+            <div className="flex flex-col items-center text-center">
+              <div className="p-2 rounded-lg bg-primary/10 mb-2">
                 <Target className="h-5 w-5 text-primary" />
               </div>
-              <div className="min-w-0">
-                <p className="text-base font-bold truncate">{formatCurrency(stats.totalFees)}</p>
-                <p className="text-xs text-muted-foreground">Fees Earned</p>
-              </div>
+              <p className="text-xl font-bold">{formatCurrency(stats.totalFees)}</p>
+              <p className="text-xs text-muted-foreground">Fees Earned</p>
             </div>
           </Card>
         </div>
