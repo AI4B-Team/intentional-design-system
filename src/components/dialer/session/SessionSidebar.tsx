@@ -248,19 +248,6 @@ export function SessionSidebar({
 
   return (
     <div className="w-64 bg-white border-r border-border-subtle flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-border-subtle">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">
-            <Zap className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h2 className="font-semibold text-foreground">Master Closer</h2>
-            <p className="text-xs text-muted-foreground">AI Sales Co-Pilot</p>
-          </div>
-        </div>
-      </div>
-
       {/* Live Call Button */}
       <div className="p-4">
         <Button
