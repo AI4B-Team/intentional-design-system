@@ -18,13 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
@@ -177,7 +170,6 @@ export default function OfferCampaignWizard() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Template management
   const { templates, saveTemplate, deleteTemplate, setDefault, getDefaultTemplate } = useOfferTemplates();
@@ -379,8 +371,24 @@ export default function OfferCampaignWizard() {
         toast.success("Campaign saved as draft");
         navigate(`/marketplace/deal/${deal.id}`);
       } else {
-        // Show success dialog
-        setShowSuccessDialog(true);
+        // Show success toast and redirect to transaction page
+        toast.success("Offer Sent Successfully!", {
+          description: `Your offer for ${deal.address} is now being tracked. Redirecting to Transaction Roadmap...`,
+          duration: 4000,
+        });
+        
+        // Redirect to the transaction page for this deal
+        setTimeout(() => {
+          navigate(`/transactions/${deal.id}`, { 
+            state: { 
+              newTransaction: true,
+              offerAmount,
+              offerPercentage: effectivePercentage,
+              autoFollowUp,
+              followUpDays,
+            } 
+          });
+        }, 500);
       }
     } catch (error) {
       toast.error("Failed to send offer");
@@ -1522,67 +1530,6 @@ Best regards,
         </div>
       </div>
 
-      {/* Success Dialog */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-success">
-              <CheckCircle2 className="h-5 w-5" />
-              Offer Sent Successfully!
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4 py-4">
-            <p className="text-sm text-muted-foreground">
-              Your offer for <span className="font-medium text-foreground">{deal.address}</span> has been sent.
-            </p>
-            
-            <Card className="p-4 bg-muted/30">
-              <h4 className="font-medium mb-2">What's Next?</h4>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>
-                    <strong>Transaction Roadmap:</strong> Once the seller responds, manage negotiations, due diligence, and closing in the Transaction Dashboard.
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Inbox className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                  <span>
-                    <strong>Inbox:</strong> All responses and follow-ups will appear in your Unified Inbox for easy tracking.
-                  </span>
-                </li>
-                {autoFollowUp && (
-                  <li className="flex items-start gap-2">
-                    <Sparkles className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                    <span>
-                      <strong>AI Auto Follow-Up:</strong> If no response in {followUpDays} days, a follow-up will be sent automatically.
-                    </span>
-                  </li>
-                )}
-              </ul>
-            </Card>
-          </div>
-
-          <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button
-              variant="outline"
-              onClick={() => navigate("/inbox")}
-              className="gap-2"
-            >
-              <Inbox className="h-4 w-4" />
-              Go to Inbox
-            </Button>
-            <Button
-              onClick={() => navigate("/transactions")}
-              className="gap-2"
-            >
-              <ArrowRight className="h-4 w-4" />
-              View Transactions
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </AppLayout>
   );
 }

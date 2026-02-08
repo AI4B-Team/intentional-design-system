@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,10 @@ import {
   Bed,
   Bath,
   Ruler,
+  CheckCircle2,
+  Inbox,
+  Sparkles,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMockDeals } from "@/hooks/useMockDeals";
@@ -36,6 +40,7 @@ const defaultFilters = {
 export default function TransactionRoadmapPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { deals } = useMockDeals({
     filters: defaultFilters,
     sortBy: "newest",
@@ -43,6 +48,24 @@ export default function TransactionRoadmapPage() {
     perPage: 50,
   });
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showNewTransactionBanner, setShowNewTransactionBanner] = useState(false);
+
+  // Check if this is a new transaction from offer flow
+  const newTransactionState = location.state as {
+    newTransaction?: boolean;
+    offerAmount?: number;
+    offerPercentage?: number;
+    autoFollowUp?: boolean;
+    followUpDays?: number;
+  } | null;
+
+  useEffect(() => {
+    if (newTransactionState?.newTransaction) {
+      setShowNewTransactionBanner(true);
+      // Clear the state so refresh doesn't show banner again
+      window.history.replaceState({}, document.title);
+    }
+  }, [newTransactionState]);
 
   const deal = deals.find((d) => d.id === id);
 
@@ -113,6 +136,42 @@ export default function TransactionRoadmapPage() {
             </Badge>
           </div>
         </div>
+
+        {/* New Transaction Banner */}
+        {showNewTransactionBanner && (
+          <div className="bg-success/10 border-b border-success/20 px-6 py-3">
+            <div className="flex items-start gap-3 max-w-4xl mx-auto">
+              <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-success">Transaction Created Successfully!</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Your offer has been sent and this transaction is now being tracked. You can manage negotiations, 
+                  schedule inspections, and track progress through closing right here.
+                </p>
+                <div className="flex items-center gap-4 mt-2 text-sm">
+                  <span className="flex items-center gap-1.5 text-muted-foreground">
+                    <Inbox className="h-4 w-4" />
+                    Responses will appear in your Inbox
+                  </span>
+                  {newTransactionState?.autoFollowUp && (
+                    <span className="flex items-center gap-1.5 text-muted-foreground">
+                      <Sparkles className="h-4 w-4" />
+                      Auto follow-up in {newTransactionState.followUpDays} days
+                    </span>
+                  )}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowNewTransactionBanner(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Split Content */}
         <div className="flex-1 flex overflow-hidden">
