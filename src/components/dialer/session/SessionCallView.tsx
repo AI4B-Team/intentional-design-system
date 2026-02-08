@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy, Clock, Settings } from 'lucide-react';
+import { Sparkles, Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight, Target, MessageSquare, RefreshCw, CheckCircle2, Circle, Zap, Copy, Clock, Settings, CornerUpRight, Eye } from 'lucide-react';
 
 export interface TranscriptMessage {
   id: string;
@@ -53,10 +53,16 @@ export function SessionCallView({
   onNextPhase,
 }: SessionCallViewProps) {
   const [sentiment] = React.useState({ label: 'Neutral', value: 35 });
-  const [suggestion] = React.useState({
-    text: "I can definitely hear the frustration in your voice, and honestly, that's exactly why I reached out. You've got a great property, it shouldn't be sitting there collecting dust.",
-    reasoning: "Empathizes with the prospect's frustration to build rapport.",
-    confidence: 95,
+  const [questionSuggestion] = React.useState({
+    text: "Besides the frustration of it sitting there, what's the biggest headache this is causing for you right now?",
+    reasoning: "This digs into the emotional and practical 'cost of inaction' to build urgency for a solution.",
+    confidence: 88,
+    type: 'Question' as const,
+  });
+  const [coachTip] = React.useState({
+    text: "Great job acknowledging their frustration. Now probe deeper into their pain points.",
+    confidence: 90,
+    type: 'Coach Tip' as const,
   });
   const [stats] = React.useState({ objections: 3, talkRatio: 85, nextSteps: 2 });
 
@@ -227,6 +233,16 @@ export function SessionCallView({
                   )}
                 </div>
               ))}
+              
+              {/* AI Listening Banner */}
+              <div className="flex items-center justify-center gap-2 py-3 px-4 bg-warning/10 rounded-lg">
+                <div className="flex gap-1">
+                  <div className="w-1 h-4 bg-warning rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
+                  <div className="w-1 h-4 bg-warning rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+                  <div className="w-1 h-4 bg-warning rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
+                </div>
+                <span className="text-sm font-medium text-warning">AI Is Listening & Analyzing...</span>
+              </div>
             </div>
 
           </div>
@@ -306,42 +322,47 @@ export function SessionCallView({
           </div>
 
           {/* Smart Suggestions */}
-          <div className="bg-white border border-border-subtle rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-warning" />
-                <span className="text-sm font-medium text-foreground">Smart Suggestions</span>
+          <div className="bg-white border border-border-subtle rounded-lg p-4 space-y-3">
+            {/* Question Card */}
+            <div className="border border-border-subtle rounded-xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <CornerUpRight className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Question</span>
+                </div>
+                <span className="text-sm text-muted-foreground">{questionSuggestion.confidence}%</span>
               </div>
-              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1">
-                <RefreshCw className="h-3 w-3" />
-                Refresh
-              </Button>
+              <p className="text-sm text-foreground leading-relaxed">{questionSuggestion.text}</p>
+              <div className="flex items-start gap-1.5 mt-3">
+                <Sparkles className="h-3 w-3 text-warning flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground italic">{questionSuggestion.reasoning}</p>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="bg-gradient-to-r from-primary/5 to-transparent border border-primary/20 rounded-lg p-3">
-                <p className="text-sm text-foreground">{suggestion.text}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <p className="text-xs text-muted-foreground">{suggestion.reasoning}</p>
-                  <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                    <Copy className="h-3 w-3" />
-                  </Button>
+            {/* Coach Tip Card */}
+            <div className="border border-border-subtle rounded-xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">Coach Tip</span>
                 </div>
+                <span className="text-sm text-muted-foreground">{coachTip.confidence}%</span>
               </div>
+            </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border-subtle">
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-foreground">{stats.objections}</p>
-                  <p className="text-[10px] text-muted-foreground">Objections</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-success">{stats.talkRatio}%</p>
-                  <p className="text-[10px] text-muted-foreground">Talk Ratio</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-foreground">{stats.nextSteps}</p>
-                  <p className="text-[10px] text-muted-foreground">Next Steps</p>
-                </div>
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-border-subtle">
+              <div className="text-center">
+                <p className="text-lg font-semibold text-foreground">{stats.objections}</p>
+                <p className="text-[10px] text-muted-foreground">Objections</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-semibold text-success">{stats.talkRatio}%</p>
+                <p className="text-[10px] text-muted-foreground">Talk Ratio</p>
+              </div>
+              <div className="text-center">
+                <p className="text-lg font-semibold text-foreground">{stats.nextSteps}</p>
+                <p className="text-[10px] text-muted-foreground">Next Steps</p>
               </div>
             </div>
           </div>
