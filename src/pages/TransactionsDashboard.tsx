@@ -351,16 +351,16 @@ export default function TransactionsDashboard() {
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <div className="flex items-center justify-between">
-            <TabsList>
-              <TabsTrigger value="active" className="gap-2">
+            <TabsList className="bg-transparent gap-2 p-0">
+              <TabsTrigger value="active" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <TrendingUp className="h-4 w-4" />
                 Active ({stats.active})
               </TabsTrigger>
-              <TabsTrigger value="closed" className="gap-2">
+              <TabsTrigger value="closed" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <CheckCircle2 className="h-4 w-4" />
                 Closed ({stats.closed})
               </TabsTrigger>
-              <TabsTrigger value="lost" className="gap-2">
+              <TabsTrigger value="lost" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <AlertCircle className="h-4 w-4" />
                 Lost (0)
               </TabsTrigger>
