@@ -320,7 +320,7 @@ Best regards,
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">Select Offer Package</h3>
+                  <h3 className="text-lg font-semibold mb-1">Select Offer Option</h3>
                   <p className="text-sm text-muted-foreground">
                     Choose how your offer will be structured
                   </p>
