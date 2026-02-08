@@ -1030,14 +1030,15 @@ Best regards,
                             $
                           </span>
                           <Input
-                            type="number"
-                            min={0}
-                            value={customOfferAmount ?? offerAmount}
+                            type="text"
+                            inputMode="numeric"
+                            value={(customOfferAmount ?? offerAmount).toLocaleString()}
                             onChange={(e) => {
-                              const val = Math.max(0, Number(e.target.value));
+                              const rawValue = e.target.value.replace(/,/g, '');
+                              const val = Math.max(0, Number(rawValue) || 0);
                               setCustomOfferAmount(val);
                             }}
-                            className="relative z-0 w-32 h-9 pl-7 text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="relative z-0 w-36 h-9 pl-7 text-sm font-medium"
                           />
                         </div>
                       </div>
