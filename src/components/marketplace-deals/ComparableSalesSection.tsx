@@ -219,6 +219,26 @@ export function ComparableSalesSection({
         </div>
       </div>
 
+      {/* Summary Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold text-primary">${subjectProperty.arv.toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground">ARV</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">${avgPricePerSqft}</p>
+          <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">{avgSimilarity}%</p>
+          <p className="text-sm text-muted-foreground">Avg. Similarity</p>
+        </div>
+        <div className="text-center p-4 bg-surface-secondary rounded-lg">
+          <p className="text-2xl font-bold">{avgDistance} mi</p>
+          <p className="text-sm text-muted-foreground">Avg. Distance</p>
+        </div>
+      </div>
+
       {/* Filter Controls */}
       <div className="flex items-center justify-center gap-4 mb-4 pb-4 border-b">
         <div className="flex items-center gap-3">
@@ -293,28 +313,8 @@ export function ComparableSalesSection({
             </SelectContent>
           </Select>
         </div>
-
       </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold text-primary">${subjectProperty.arv.toLocaleString()}</p>
-          <p className="text-sm text-muted-foreground">ARV</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">${avgPricePerSqft}</p>
-          <p className="text-sm text-muted-foreground">Avg. $/SqFt</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">{avgSimilarity}%</p>
-          <p className="text-sm text-muted-foreground">Avg. Similarity</p>
-        </div>
-        <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold">{avgDistance} mi</p>
-          <p className="text-sm text-muted-foreground">Avg. Distance</p>
-        </div>
-      </div>
 
       {showMap && (
         <div className="mb-4">
