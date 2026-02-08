@@ -195,17 +195,16 @@ export default function SignupFlow() {
     try {
       // Only create organization if user doesn't have one
       if (!organization) {
+        const nameToUse = orgName.trim() || "My Organization";
         await createOrganization.mutateAsync({
-          name: orgName.trim(),
+          name: nameToUse,
         });
         await refreshOrganization();
       }
       navigate("/dashboard");
     } catch (error) {
       console.error("Error creating organization:", error);
-      toast.error("Failed to create organization");
-      // Still navigate to dashboard even if org creation fails
-      navigate("/dashboard");
+      toast.error("Failed to create organization. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
