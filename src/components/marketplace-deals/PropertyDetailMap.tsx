@@ -473,13 +473,15 @@ export function PropertyDetailMap({
           <button
             onClick={() => setShowCompsPanel(!showCompsPanel)}
             className={cn(
-              "bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg transition-colors hover:bg-muted/80",
-              showCompsPanel && "ring-2 ring-primary"
+              "rounded-lg border px-3 py-2 shadow-lg transition-colors",
+              showCompsPanel 
+                ? "bg-success border-success" 
+                : "bg-background/95 backdrop-blur-sm hover:bg-muted/80"
             )}
           >
             <div className="flex items-center gap-2">
-              <Scale className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs font-medium">{comps.length} Comps Found</span>
+              <Scale className={cn("h-4 w-4", showCompsPanel ? "text-success-foreground" : "text-muted-foreground")} />
+              <span className={cn("text-xs font-medium", showCompsPanel && "text-success-foreground")}>{comps.length} Comps Found</span>
             </div>
           </button>
         )}
@@ -488,13 +490,15 @@ export function PropertyDetailMap({
         <button
           onClick={() => setShowBuyersPanel(!showBuyersPanel)}
           className={cn(
-            "bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 py-2 shadow-md transition-colors hover:bg-success/80",
-            showBuyersPanel && "ring-2 ring-success-foreground"
+            "rounded-lg border px-3 py-2 shadow-lg transition-colors",
+            showBuyersPanel 
+              ? "bg-success border-success" 
+              : "bg-background/95 backdrop-blur-sm hover:bg-muted/80"
           )}
         >
           <div className="flex items-center gap-2">
-            <Users className="h-4 w-4 text-success-foreground" />
-            <span className="text-xs font-medium text-success-foreground">
+            <Users className={cn("h-4 w-4", showBuyersPanel ? "text-success-foreground" : "text-muted-foreground")} />
+            <span className={cn("text-xs font-medium", showBuyersPanel && "text-success-foreground")}>
               {buyers.length} Buyers Near Property
             </span>
           </div>
