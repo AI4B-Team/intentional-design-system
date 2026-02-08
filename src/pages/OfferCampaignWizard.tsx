@@ -440,7 +440,7 @@ Best regards,
 [Your Company]
 [Your Phone]`;
 
-  const smsBody = `Hi! I'm interested in your property at ${deal.address}. I can offer ${formatCurrency(offerAmount)} cash and close in 14 days. Would you like to discuss? Reply YES or call me.`;
+  const smsBody = `Hi, I just sent over an LOI for ${deal.address}. I'm offering ${formatCurrency(offerAmount)} cash with a 14-21 day close. No fees, no repairs needed. Let me know if you have any questions - Reply YES or call me.`;
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % propertyImages.length);
