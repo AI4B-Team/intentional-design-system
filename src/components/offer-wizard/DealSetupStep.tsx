@@ -467,18 +467,6 @@ export function DealSetupStep({
         </div>
       </Card>
 
-      {/* Compliance Notice */}
-      <Card className="p-3 bg-muted/30 border-muted">
-        <div className="flex items-start gap-2">
-          <Sparkles className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium">State Compliance: {propertyState}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Your offer will include required disclosures for {propertyState} real estate transactions.
-            </p>
-          </div>
-        </div>
-      </Card>
 
       {/* Proceed Gate Warning */}
       {!canProceed && (
