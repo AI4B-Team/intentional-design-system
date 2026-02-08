@@ -525,7 +525,7 @@ export default function TransactionsDashboard() {
                               ? `${Math.abs(deadlineDays)}d overdue`
                               : deadlineDays === 0 
                               ? "Today"
-                              : `${deadlineDays}d left`
+                              : `${deadlineDays}D Left`
                             }
                           </p>
                           <p className="text-xs text-muted-foreground">
@@ -617,7 +617,7 @@ function TransactionCard({ transaction: tx, onClick }: TransactionCardProps) {
                   ? `${Math.abs(deadlineDays)}d overdue`
                   : deadlineDays === 0 
                   ? "Today"
-                  : `${deadlineDays}d left`
+                  : `${deadlineDays}D Left`
                 }
               </p>
               <p className="text-xs text-muted-foreground">

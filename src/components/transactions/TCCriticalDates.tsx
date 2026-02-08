@@ -227,7 +227,7 @@ function DateItem({ date, status, onUpdate }: DateItemProps) {
         {status === "upcoming" && daysUntil <= date.alertDaysBefore && (
           <Badge className="bg-amber-500/10 text-amber-600 gap-1">
             <Bell className="h-3 w-3" />
-            {daysUntil}d left
+            {daysUntil}D Left
           </Badge>
         )}
         {status === "upcoming" && daysUntil > date.alertDaysBefore && (
