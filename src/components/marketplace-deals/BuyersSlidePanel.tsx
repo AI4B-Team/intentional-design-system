@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -25,7 +25,16 @@ interface BuyersSlidePanelProps {
   onBuyerClick?: (buyer: BuyerData) => void;
 }
 
+type FilterType = "all" | "flipper" | "landlord";
+
 export function BuyersSlidePanel({ isOpen, onClose, buyers, onBuyerClick }: BuyersSlidePanelProps) {
+  const [filter, setFilter] = useState<FilterType>("all");
+
+  const filteredBuyers = useMemo(() => {
+    if (filter === "all") return buyers;
+    return buyers.filter((buyer) => buyer.buyerType === filter);
+  }, [buyers, filter]);
+
   if (!isOpen) return null;
 
   return (
@@ -39,17 +48,56 @@ export function BuyersSlidePanel({ isOpen, onClose, buyers, onBuyerClick }: Buye
       <div className="flex items-center justify-between p-4 border-b bg-success/10">
         <div className="flex items-center gap-2">
           <Users className="h-5 w-5 text-success" />
-          <h3 className="font-semibold text-success">{buyers.length} Buyers Near Property</h3>
+          <h3 className="font-semibold text-success">{filteredBuyers.length} Buyers Near Property</h3>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
       </div>
 
+      {/* Filter Toggle */}
+      <div className="p-3 border-b">
+        <div className="flex rounded-lg border bg-muted/30 p-1">
+          <button
+            onClick={() => setFilter("all")}
+            className={cn(
+              "flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
+              filter === "all"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter("flipper")}
+            className={cn(
+              "flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
+              filter === "flipper"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Flippers
+          </button>
+          <button
+            onClick={() => setFilter("landlord")}
+            className={cn(
+              "flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors",
+              filter === "landlord"
+                ? "bg-background shadow-sm text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            Landlords
+          </button>
+        </div>
+      </div>
+
       {/* Buyers List */}
-      <ScrollArea className="h-[calc(100%-60px)]">
+      <ScrollArea className="h-[calc(100%-120px)]">
         <div className="p-3 space-y-3">
-          {buyers.map((buyer) => (
+          {filteredBuyers.map((buyer) => (
             <div
               key={buyer.id}
               onClick={() => onBuyerClick?.(buyer)}
