@@ -70,6 +70,7 @@ export interface TransactionData {
   // Milestone 2
   listingPrice?: number;
   mao?: number;
+  counterOffer?: number;
   acceptedOffer?: number;
   escrowName?: string;
   escrowPhone?: string;
@@ -342,29 +343,8 @@ const mockPofDocs: ProofOfFundsDoc[] = [
   },
 ];
 
-// Milestone 1: Assemble Deal Team
+// Milestone 1: Deal Team (Escrow/Title only - Lender/Agent already set in Offer phase)
 export function Milestone1DealTeam({ data, updateData }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void }) {
-  const { user } = useAuth();
-
-  // Use mock POF documents for now (later can be replaced with DB query)
-  const pofDocs = mockPofDocs;
-  const isPofLoading = false;
-
-  const hasPof = pofDocs && pofDocs.length > 0;
-  const selectedPof = pofDocs?.find(p => p.id === data.selectedPofId) || pofDocs?.[0];
-
-  // Auto-select first (default) POF if available and none selected
-  React.useEffect(() => {
-    if (hasPof && !data.selectedPofId) {
-      // Auto-select the first POF as default and pre-fill lender info
-      const defaultPof = pofDocs[0];
-      updateData({ 
-        selectedPofId: defaultPof.id,
-        lenderName: defaultPof.lender_name || '',
-      });
-    }
-  }, [hasPof, pofDocs, data.selectedPofId]);
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -373,373 +353,186 @@ export function Milestone1DealTeam({ data, updateData }: { data: TransactionData
     }).format(amount);
   };
 
-  const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-1">Assemble Your Deal Team</h3>
-        <p className="text-sm text-muted-foreground">
-          Select or confirm your lender and realtor to move forward.
-        </p>
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-4">
-        {/* Lender Selection */}
-        <Card className="p-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Building className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <h4 className="font-semibold">Lender</h4>
-              <p className="text-sm text-muted-foreground">Who will finance this deal?</p>
-            </div>
+      {/* Show already-confirmed team members from offer phase */}
+      {(data.lenderName || data.realtorName) && (
+        <Card className="p-4 bg-success/5 border-success/20">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <h4 className="font-semibold text-success">Confirmed From Offer</h4>
           </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="lender-confirmed"
-                checked={data.lenderConfirmed}
-                onCheckedChange={(checked) => updateData({ lenderConfirmed: checked === true })}
-              />
-              <Label htmlFor="lender-confirmed" className="text-sm">
-                I already have a lender
-              </Label>
-            </div>
-
-            {!data.lenderConfirmed && (
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Name</Label>
-                  <Input
-                    placeholder="Lender name"
-                    value={data.lenderName || ''}
-                    onChange={(e) => updateData({ lenderName: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Phone</Label>
-                  <Input
-                    placeholder="Phone number"
-                    value={data.lenderPhone || ''}
-                    onChange={(e) => updateData({ lenderPhone: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Input
-                    placeholder="Email address"
-                    value={data.lenderEmail || ''}
-                    onChange={(e) => updateData({ lenderEmail: e.target.value })}
-                  />
-                </div>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            {data.lenderName && (
+              <div className="flex items-center gap-2">
+                <Building className="h-4 w-4 text-muted-foreground" />
+                <span><strong>Lender:</strong> {data.lenderName}</span>
               </div>
             )}
-
-            <Button variant="outline" size="sm" className="gap-2 w-full">
-              <Search className="h-4 w-4" />
-              Search Marketplace Directory
-            </Button>
-
-            {/* POF Section */}
-            <div className="pt-4 border-t">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <Label className="text-sm font-medium">Proof of Funds</Label>
-                </div>
-                {hasPof && (
-                  <Badge variant="secondary" className="bg-success/10 text-success text-xs">
-                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                    On File
-                  </Badge>
-                )}
-              </div>
-
-              {isPofLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-              ) : hasPof ? (
-                <div className="space-y-3">
-                  {/* Selected POF Display */}
-                  <div className="p-3 rounded-lg border border-success/30 bg-success/5">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium">{selectedPof?.file_name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {selectedPof?.lender_name || 'Self-funded'} • {formatCurrency(selectedPof?.amount || 0)}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Expires: {formatDate(selectedPof?.expiration_date || '')}
-                        </p>
-                      </div>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="h-7 text-xs gap-1"
-                        onClick={() => window.open(selectedPof?.file_url, '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3" />
-                        View
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Include POF Checkbox - Pre-checked */}
-                  <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
-                    <Checkbox
-                      id="include-pof"
-                      checked={data.includePof}
-                      onCheckedChange={(checked) => updateData({ includePof: checked === true })}
-                    />
-                    <Label htmlFor="include-pof" className="text-sm cursor-pointer">
-                      Include POF In This Transaction
-                    </Label>
-                  </div>
-
-                  {/* Select different POF if multiple */}
-                  {pofDocs && pofDocs.length > 1 && (
-                    <div>
-                      <Label className="text-xs text-muted-foreground mb-1.5 block">Select POF</Label>
-                      <select
-                        className="w-full text-sm border rounded-md px-3 py-2 bg-background"
-                        value={data.selectedPofId || ''}
-                        onChange={(e) => updateData({ selectedPofId: e.target.value })}
-                      >
-                        {pofDocs.map((pof) => (
-                          <option key={pof.id} value={pof.id}>
-                            {pof.file_name} - {formatCurrency(pof.amount)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {/* No POF - Prompt to upload or get from lenders */}
-                  <div className="p-3 rounded-lg border border-dashed border-warning/50 bg-warning/5">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium text-warning">No Proof Of Funds On File</p>
-                        <p className="text-xs text-muted-foreground">
-                          Upload a POF letter or request one from a lender to strengthen your offers.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-2"
-                      onClick={() => {
-                        // Navigate to documents to upload
-                        toast.info('Navigate to Documents to upload a POF letter');
-                      }}
-                    >
-                      <Upload className="h-4 w-4" />
-                      Upload POF
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-2"
-                      onClick={() => {
-                        // Navigate to lenders marketplace
-                        toast.info('Browse lenders to request a POF letter');
-                      }}
-                    >
-                      <Building className="h-4 w-4" />
-                      Get From Lender
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </Card>
-
-        {/* Realtor Selection */}
-        <Card className="p-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="h-10 w-10 rounded-lg bg-info/10 flex items-center justify-center">
-              <User className="h-5 w-5 text-info" />
-            </div>
-            <div>
-              <h4 className="font-semibold">Real Estate Agent</h4>
-              <p className="text-sm text-muted-foreground">Your transaction agent of record</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="realtor-confirmed"
-                checked={data.realtorConfirmed}
-                onCheckedChange={(checked) => updateData({ realtorConfirmed: checked === true })}
-              />
-              <Label htmlFor="realtor-confirmed" className="text-sm">
-                I already have an agent
-              </Label>
-            </div>
-
-            {!data.realtorConfirmed && (
-              <div className="space-y-3">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Name</Label>
-                  <Input
-                    placeholder="Agent name"
-                    value={data.realtorName || ''}
-                    onChange={(e) => updateData({ realtorName: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Phone</Label>
-                  <Input
-                    placeholder="Phone number"
-                    value={data.realtorPhone || ''}
-                    onChange={(e) => updateData({ realtorPhone: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Email</Label>
-                  <Input
-                    placeholder="Email address"
-                    value={data.realtorEmail || ''}
-                    onChange={(e) => updateData({ realtorEmail: e.target.value })}
-                  />
-                </div>
+            {data.realtorName && (
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span><strong>Agent:</strong> {data.realtorName}</span>
               </div>
             )}
-
-            <Button variant="outline" size="sm" className="gap-2 w-full">
-              <Search className="h-4 w-4" />
-              Search Saved Contacts
-            </Button>
           </div>
         </Card>
-      </div>
+      )}
+
+      {/* Escrow/Title - Required for transaction */}
+      <Card className="p-4">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+            <FileCheck className="h-5 w-5 text-primary" />
+          </div>
+          <div>
+            <h4 className="font-semibold">Escrow / Title Company</h4>
+            <p className="text-sm text-muted-foreground">Required for closing coordination</p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-muted-foreground">Company Name</Label>
+              <Input
+                placeholder="Title company name"
+                value={data.escrowName || ''}
+                onChange={(e) => updateData({ escrowName: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Phone</Label>
+              <Input
+                placeholder="Phone number"
+                value={data.escrowPhone || ''}
+                onChange={(e) => updateData({ escrowPhone: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label className="text-xs text-muted-foreground">Email</Label>
+              <Input
+                placeholder="Email address"
+                value={data.escrowEmail || ''}
+                onChange={(e) => updateData({ escrowEmail: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            <Checkbox
+              id="escrow-confirmed"
+              checked={data.escrowConfirmed}
+              onCheckedChange={(checked) => updateData({ escrowConfirmed: checked === true })}
+            />
+            <Label htmlFor="escrow-confirmed" className="text-sm">
+              Title company confirmed and ready
+            </Label>
+          </div>
+
+          <Button variant="outline" size="sm" className="gap-2">
+            <Search className="h-4 w-4" />
+            Search Saved Title Companies
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 }
 
-// Milestone 2: Make & Negotiate Offer
+// Milestone 2: Negotiate (Counter-offers and acceptance tracking only)
 export function Milestone2Offer({ data, updateData, propertyPrice }: { data: TransactionData; updateData: (updates: Partial<TransactionData>) => void; propertyPrice: number }) {
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const maoWarning = data.acceptedOffer && data.mao && data.acceptedOffer > data.mao;
+  const offerSent = data.mao && data.mao > 0;
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="text-lg font-semibold mb-1">Make & Negotiate Offer</h3>
-        <p className="text-sm text-muted-foreground">
-          Capture the economics and get the property under contract.
-        </p>
-      </div>
+      {/* Show sent offer summary */}
+      {offerSent && (
+        <Card className="p-4 bg-primary/5 border-primary/20">
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 className="h-4 w-4 text-primary" />
+            <h4 className="font-semibold">Offer Sent</h4>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              <span className="text-muted-foreground">Asking Price</span>
+              <p className="font-semibold">{formatCurrency(data.listingPrice || propertyPrice)}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Your Offer</span>
+              <p className="font-semibold text-primary">{formatCurrency(data.mao || 0)}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">Discount</span>
+              <p className="font-semibold text-success">
+                {((1 - (data.mao || 0) / (data.listingPrice || propertyPrice)) * 100).toFixed(0)}% below asking
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
 
-      {/* Pricing */}
+      {/* Negotiation Tracking */}
       <Card className="p-4 space-y-4">
-        <h4 className="font-semibold">Deal Economics</h4>
-        <div className="grid md:grid-cols-3 gap-4">
+        <h4 className="font-semibold">Negotiation Status</h4>
+        
+        <div className="space-y-3">
           <div>
-            <Label className="text-xs text-muted-foreground">Listing Price</Label>
+            <Label className="text-xs text-muted-foreground">Counter-Offer Received (if any)</Label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="number"
-                className="pl-8"
-                value={data.listingPrice || propertyPrice}
-                onChange={(e) => updateData({ listingPrice: Number(e.target.value) })}
+                className="pl-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                placeholder="Enter counter-offer amount"
+                value={data.counterOffer || ''}
+                onChange={(e) => updateData({ counterOffer: Number(e.target.value) })}
               />
             </div>
           </div>
+
           <div>
-            <Label className="text-xs text-muted-foreground">Maximum Allowable Offer (MAO)</Label>
+            <Label className="text-xs text-muted-foreground">Final Accepted Amount</Label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="number"
-                className="pl-8"
-                placeholder="Your max offer"
-                value={data.mao || ''}
-                onChange={(e) => updateData({ mao: Number(e.target.value) })}
-              />
-            </div>
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Accepted Offer Amount</Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="number"
-                className={cn('pl-8', maoWarning && 'border-warning')}
-                placeholder="Enter when accepted"
+                className={cn('pl-8 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none', maoWarning && 'border-warning')}
+                placeholder="Enter when offer is accepted"
                 value={data.acceptedOffer || ''}
                 onChange={(e) => updateData({ acceptedOffer: Number(e.target.value) })}
               />
             </div>
             {maoWarning && (
               <p className="text-xs text-warning mt-1">
-                ⚠️ Exceeds MAO by ${(data.acceptedOffer! - data.mao!).toLocaleString()}
+                ⚠️ Exceeds your original offer by ${((data.acceptedOffer || 0) - (data.mao || 0)).toLocaleString()}
               </p>
             )}
           </div>
         </div>
-      </Card>
 
-      {/* Escrow/Title */}
-      <Card className="p-4">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-lg bg-success/10 flex items-center justify-center">
-            <FileCheck className="h-5 w-5 text-success" />
+        {data.acceptedOffer && (
+          <div className="p-3 bg-success/10 rounded-lg border border-success/20">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-success" />
+              <div>
+                <p className="font-medium text-success">Offer Accepted!</p>
+                <p className="text-xs text-muted-foreground">
+                  Under contract at {formatCurrency(data.acceptedOffer)}
+                </p>
+              </div>
+            </div>
           </div>
-          <div>
-            <h4 className="font-semibold">Escrow / Title Provider</h4>
-            <p className="text-sm text-muted-foreground">For closing coordination</p>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs text-muted-foreground">Company Name</Label>
-            <Input
-              placeholder="Title company name"
-              value={data.escrowName || ''}
-              onChange={(e) => updateData({ escrowName: e.target.value })}
-            />
-          </div>
-          <div>
-            <Label className="text-xs text-muted-foreground">Phone</Label>
-            <Input
-              placeholder="Phone number"
-              value={data.escrowPhone || ''}
-              onChange={(e) => updateData({ escrowPhone: e.target.value })}
-            />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 mt-4">
-          <Checkbox
-            id="escrow-confirmed"
-            checked={data.escrowConfirmed}
-            onCheckedChange={(checked) => updateData({ escrowConfirmed: checked === true })}
-          />
-          <Label htmlFor="escrow-confirmed" className="text-sm">
-            Escrow provider confirmed
-          </Label>
-        </div>
+        )}
       </Card>
     </div>
   );
