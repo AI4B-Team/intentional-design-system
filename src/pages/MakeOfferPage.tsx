@@ -713,7 +713,7 @@ Best regards,
                                   <div className="flex items-center gap-2">
                                     <h4 className="font-medium">{template.name}</h4>
                                     {template.badge && (
-                                      <Badge variant="default" size="sm" className="bg-warning/20 text-warning border-warning/30">
+                                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-warning/15 text-warning border-warning/20">
                                         {template.badge}
                                       </Badge>
                                     )}
