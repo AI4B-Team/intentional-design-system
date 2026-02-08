@@ -853,18 +853,9 @@ Best regards,
                       </Card>
                       <Card className="p-4 text-center bg-primary/5 border-primary">
                         <p className="text-sm text-muted-foreground mb-1">Your Offer</p>
-                        <div className="flex items-center justify-center gap-1">
-                          <span className="text-lg font-semibold">$</span>
-                          <Input
-                            type="number"
-                            value={offerAmount}
-                            onChange={(e) => {
-                              const val = Number(e.target.value);
-                              setCustomOfferAmount(val);
-                            }}
-                            className="w-28 h-8 text-center text-xl font-semibold border-none bg-transparent p-0"
-                          />
-                        </div>
+                        <p className="text-2xl font-bold">
+                          ${offerAmount.toLocaleString()}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1">({effectivePercentage}% of ARV)</p>
                       </Card>
                       <Card className="p-4 text-center">
