@@ -96,11 +96,11 @@ export default function TransactionRoadmapPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => navigate(`/marketplace/deal/${id}`)}
+                onClick={() => navigate("/transactions")}
                 className="gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back To Property
+                Back To Transactions
               </Button>
               <div className="h-6 w-px bg-border" />
               <div>

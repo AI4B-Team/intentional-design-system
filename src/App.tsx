@@ -71,8 +71,9 @@ import UnifiedInbox from "./pages/UnifiedInbox";
 import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
-// TransactionRoadmapPage removed - now integrated into MakeOfferPage
-import MakeOfferPage from "./pages/MakeOfferPage";
+import OfferCampaignWizard from "./pages/OfferCampaignWizard";
+import TransactionsDashboard from "./pages/TransactionsDashboard";
+import TransactionRoadmapPage from "./pages/TransactionRoadmapPage";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
@@ -338,7 +339,23 @@ const App = () => (
               path="/marketplace/deal/:id/make-offer"
               element={
                 <ProtectedRoute>
-                  <MakeOfferPage />
+                  <OfferCampaignWizard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <TransactionsDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions/:id"
+              element={
+                <ProtectedRoute>
+                  <TransactionRoadmapPage />
                 </ProtectedRoute>
               }
             />
