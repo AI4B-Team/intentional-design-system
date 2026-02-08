@@ -248,8 +248,8 @@ export function SessionSidebar({
 
   return (
     <div className="w-64 bg-white border-r border-border-subtle flex flex-col h-full">
-      {/* Live Call Button */}
-      <div className="p-4">
+      {/* Live Call Button - add top padding since header removed */}
+      <div className="p-4 pt-4">
         <Button
           onClick={onLiveCallClick}
           className="w-full gap-2 font-semibold bg-destructive hover:bg-destructive/90 text-white"

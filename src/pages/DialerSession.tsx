@@ -95,7 +95,7 @@ export default function DialerSession() {
 
   return (
     <PageLayout fullWidth>
-      <div className="flex h-[calc(100vh-64px)] bg-background">
+      <div className="flex flex-1 min-h-0 bg-background">
         {/* Left Sidebar - Session specific */}
         <SessionSidebar
           isLive={isLive}
