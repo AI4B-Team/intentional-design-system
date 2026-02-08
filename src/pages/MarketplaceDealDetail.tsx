@@ -564,20 +564,8 @@ export default function MarketplaceDealDetail() {
                 })}
               </div>
 
-              {/* Right: Buyers Badge + View Mode Toggle + Make Offer */}
+              {/* Right: View Mode Toggle + Make Offer */}
               <div className="flex items-center gap-3">
-                {/* Buyers Button - only in split mode */}
-                {layoutMode === "split" && (
-                  <Button
-                    variant={showBuyersOnMap ? "default" : "outline"}
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => setShowBuyersOnMap(!showBuyersOnMap)}
-                  >
-                    <Users className="h-4 w-4" />
-                    {filteredBuyersForMap.length} Buyers
-                  </Button>
-                )}
                 
                 {/* View Mode Toggle */}
                 <div className="flex items-center gap-1 bg-muted rounded-lg p-1">

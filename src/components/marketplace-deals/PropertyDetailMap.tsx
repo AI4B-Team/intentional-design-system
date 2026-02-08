@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { X, Users, Layers, PenTool, ChevronDown, ChevronUp, Map, Satellite } from "lucide-react";
+import { Users, Layers, PenTool, ChevronDown, ChevronUp, Map, Satellite, Scale } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -392,22 +392,8 @@ export function PropertyDetailMap({
         </div>
       </div>
 
-      {/* Right side controls: Buyers + Draw + Intel */}
+      {/* Right side controls: Draw + Intel */}
       <div className="absolute top-3 right-3 z-[1000] flex items-center gap-2">
-        {/* Buyers Near Property Badge - Always visible */}
-        <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 h-9 shadow-md flex items-center gap-2">
-          <Users className="h-4 w-4 text-success-foreground" />
-          <span className="text-xs font-medium text-success-foreground">
-            {buyers.length} Buyers Near Property
-          </span>
-          <button
-            className="h-5 w-5 flex items-center justify-center hover:bg-success-foreground/20 rounded"
-            onClick={onCloseBuyersView}
-          >
-            <X className="h-3.5 w-3.5 text-success-foreground" />
-          </button>
-        </div>
-
         {/* Draw Button */}
         <Button
           variant="outline"
@@ -458,34 +444,43 @@ export function PropertyDetailMap({
         </Popover>
       </div>
       
-      {/* Property Quick Info - Left side, below map toggle */}
-      <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
-        <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
-        <p className="font-semibold text-sm">{subjectProperty.address}</p>
-        <p className="text-xs text-muted-foreground mb-2">
-          {subjectProperty.city}, {subjectProperty.state} {subjectProperty.zip}
-        </p>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="font-bold">${subjectProperty.price.toLocaleString()}</span>
-          <span className="text-success font-semibold">ARV: ${subjectProperty.arv.toLocaleString()}</span>
+      {/* Property Quick Info + Badges - Left side, below map toggle */}
+      <div className="absolute top-14 left-3 z-[1000] flex flex-col gap-2">
+        {/* Subject Property Card */}
+        <div className="bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg max-w-[240px]">
+          <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
+          <p className="font-semibold text-sm">{subjectProperty.address}</p>
+          <p className="text-xs text-muted-foreground mb-2">
+            {subjectProperty.city}, {subjectProperty.state} {subjectProperty.zip}
+          </p>
+          <div className="flex items-center gap-3 text-sm">
+            <span className="font-bold">${subjectProperty.price.toLocaleString()}</span>
+            <span className="text-success font-semibold">ARV: ${subjectProperty.arv.toLocaleString()}</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            {subjectProperty.beds} bd • {subjectProperty.baths} ba • {subjectProperty.sqft.toLocaleString()} sqft
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          {subjectProperty.beds} bd • {subjectProperty.baths} ba • {subjectProperty.sqft.toLocaleString()} sqft
-        </p>
-      </div>
-      <div className="absolute top-14 left-3 bg-background/95 backdrop-blur-sm rounded-lg border p-3 shadow-lg z-[1000] max-w-[240px]">
-        <Badge className="mb-2 bg-primary text-primary-foreground text-[10px]">Subject Property</Badge>
-        <p className="font-semibold text-sm">{subjectProperty.address}</p>
-        <p className="text-xs text-muted-foreground mb-2">
-          {subjectProperty.city}, {subjectProperty.state} {subjectProperty.zip}
-        </p>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="font-bold">${subjectProperty.price.toLocaleString()}</span>
-          <span className="text-success font-semibold">ARV: ${subjectProperty.arv.toLocaleString()}</span>
+
+        {/* Comps Found Badge */}
+        {!showBuyers && (
+          <div className="bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg">
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-medium">{comps.length} Comps Found</span>
+            </div>
+          </div>
+        )}
+
+        {/* Buyers Near Property Badge - No X icon */}
+        <div className="bg-success/95 backdrop-blur-sm rounded-lg border border-success px-3 py-2 shadow-md">
+          <div className="flex items-center gap-2">
+            <Users className="h-4 w-4 text-success-foreground" />
+            <span className="text-xs font-medium text-success-foreground">
+              {buyers.length} Buyers Near Property
+            </span>
+          </div>
         </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          {subjectProperty.beds} bd • {subjectProperty.baths} ba • {subjectProperty.sqft.toLocaleString()} sqft
-        </p>
       </div>
 
       {/* Legend - Bottom Left */}
@@ -522,12 +517,6 @@ export function PropertyDetailMap({
         </div>
       </div>
 
-      {/* Count Badge - Bottom Right */}
-      {!showBuyers && (
-        <div className="absolute bottom-4 left-44 bg-background/95 backdrop-blur-sm rounded-lg border px-3 py-2 shadow-lg z-[1000]">
-          <p className="text-xs font-medium">{comps.length} Comps Shown</p>
-        </div>
-      )}
     </div>
   );
 }
