@@ -57,6 +57,7 @@ import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
 import { BuyersPanel } from "@/components/marketplace-deals/BuyersPanel";
 import { OfferInsightCard } from "@/components/ai/OfferInsightCard";
 import { BuyerIntelligenceCard } from "@/components/ai/BuyerIntelligenceCard";
+import { AIFollowUpRecommendation } from "@/components/ai/AIFollowUpRecommendation";
 import { useOfferInsight } from "@/hooks/useOfferInsight";
 import {
   DealSetupStep,
@@ -1196,42 +1197,14 @@ Best regards,
                     </div>
 
                     {/* Inbox Integration & Auto Follow-up */}
-                    <Card className="p-4 bg-primary/5 border-primary/20">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          <Inbox className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">AI Auto Follow-Up</p>
-                              <p className="text-sm text-muted-foreground">
-                                Automatically follow up if no reply. All communication syncs to your Inbox.
-                              </p>
-                            </div>
-                            <Switch checked={autoFollowUp} onCheckedChange={setAutoFollowUp} />
-                          </div>
-                          {autoFollowUp && (
-                            <div className="mt-3 pt-3 border-t border-primary/20 flex items-center gap-3 flex-wrap">
-                              <Label className="text-sm whitespace-nowrap">Follow up after</Label>
-                              <Select value={followUpDays.toString()} onValueChange={(v) => setFollowUpDays(Number(v))}>
-                                <SelectTrigger className="w-24">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">1 day</SelectItem>
-                                  <SelectItem value="2">2 days</SelectItem>
-                                  <SelectItem value="3">3 days</SelectItem>
-                                  <SelectItem value="5">5 days</SelectItem>
-                                  <SelectItem value="7">7 days</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <span className="text-sm text-muted-foreground whitespace-nowrap">if no response</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </Card>
+                    <AIFollowUpRecommendation
+                      autoFollowUp={autoFollowUp}
+                      onAutoFollowUpChange={setAutoFollowUp}
+                      followUpDays={followUpDays}
+                      onFollowUpDaysChange={setFollowUpDays}
+                      buyerIntelligence={pricingInsight.buyerIntelligence}
+                      offerPercentage={effectivePercentage}
+                    />
 
                     {/* Scheduling Options */}
                     <div className="space-y-4 pt-4 border-t">
