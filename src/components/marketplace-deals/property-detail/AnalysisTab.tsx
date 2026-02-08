@@ -15,6 +15,7 @@ import {
   Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DealRiskBar } from "@/components/marketplace-deals/DealRiskBar";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface AnalysisTabProps {
@@ -278,6 +279,11 @@ export function AnalysisTab({ deal, viewMode }: AnalysisTabProps) {
 
   return (
     <div className="space-y-6">
+      {/* Deal Risk Bar */}
+      <Card className="p-4">
+        <DealRiskBar arvPercent={deal.arvPercent} />
+      </Card>
+
       {/* MAO Calculator */}
       <MaoCalculatorCard arv={deal.arv} defaultRepairs={estRepairs} />
 
