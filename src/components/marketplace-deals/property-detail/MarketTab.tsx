@@ -78,7 +78,7 @@ export function MarketTab({ deal, viewMode }: MarketTabProps) {
   return (
     <div className="space-y-6">
       {/* Property Summary Header */}
-      <PropertySummaryHeader deal={deal} />
+      <PropertySummaryHeader deal={deal} viewMode={viewMode} />
       
       {/* Market Health Score */}
       <Card className="p-6">

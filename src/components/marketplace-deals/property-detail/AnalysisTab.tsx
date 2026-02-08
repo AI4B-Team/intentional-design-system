@@ -281,7 +281,7 @@ export function AnalysisTab({ deal, viewMode }: AnalysisTabProps) {
   return (
     <div className="space-y-6">
       {/* Property Summary Header */}
-      <PropertySummaryHeader deal={deal} />
+      <PropertySummaryHeader deal={deal} viewMode={viewMode} />
       
       {/* Deal Risk Bar */}
       <Card className="p-4">
