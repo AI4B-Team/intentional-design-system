@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -43,11 +50,9 @@ import {
   Sparkles,
   Target,
   CheckCircle2,
-  Lock,
-  Users,
-  Key,
   Settings2,
   Inbox,
+  ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -61,18 +66,9 @@ import { AIFollowUpRecommendation } from "@/components/ai/AIFollowUpRecommendati
 import { useOfferInsight } from "@/hooks/useOfferInsight";
 import {
   DealSetupStep,
-  ComplianceWarnings,
   OfferTemplateManager,
   useOfferTemplates,
 } from "@/components/offer-wizard";
-import {
-  Milestone1DealTeam,
-  Milestone2Offer,
-  Milestone3DueDiligence,
-  Milestone4Closing,
-  Milestone5Strategy,
-  type TransactionData,
-} from "@/components/transactions/TransactionRoadmapContent";
 
 interface OfferTemplate {
   id: string;
@@ -171,7 +167,7 @@ const defaultOptions = {
   perPage: 100,
 };
 
-export default function MakeOfferPage() {
+export default function OfferCampaignWizard() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
@@ -181,6 +177,7 @@ export default function MakeOfferPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Template management
   const { templates, saveTemplate, deleteTemplate, setDefault, getDefaultTemplate } = useOfferTemplates();
@@ -221,34 +218,6 @@ export default function MakeOfferPage() {
   // Auto follow-up settings
   const [autoFollowUp, setAutoFollowUp] = useState(true);
   const [followUpDays, setFollowUpDays] = useState(3);
-
-  // Offer sent state (unlocks steps 7-11)
-  const [offerSent, setOfferSent] = useState(false);
-
-  // Steps 7-11: Transaction Roadmap Data
-  const [transactionData, setTransactionData] = useState<TransactionData>({
-    currentMilestone: 1,
-    lenderConfirmed: false,
-    includePof: true,
-    realtorConfirmed: false,
-    escrowConfirmed: false,
-    inspectorAgentRecommended: false,
-    appraiserAgentRecommended: false,
-    closingFinancingFinalized: false,
-    closingEscrowWired: false,
-    closingFinalWalkthrough: false,
-    closingDocumentsSigned: false,
-    closingKeysReceived: false,
-    strategyPhaseBuy: false,
-    strategyPhaseRehab: false,
-    strategyPhaseRent: false,
-    strategyPhaseRefinance: false,
-    strategyPhaseRepeat: false,
-  });
-
-  const updateTransactionData = (updates: Partial<TransactionData>) => {
-    setTransactionData(prev => ({ ...prev, ...updates }));
-  };
 
   // Load default template on mount
   useEffect(() => {
@@ -313,7 +282,6 @@ export default function MakeOfferPage() {
   const arv = deal.arv;
   const offerAmount = customOfferAmount !== null ? customOfferAmount : Math.round(arv * (offerPercentage / 100));
   const effectivePercentage = customOfferAmount !== null ? Math.round((customOfferAmount / arv) * 100) : offerPercentage;
-  const estimatedSavings = arv - offerAmount;
   
   // Flipper profit calculation
   const closingCosts = Math.round(arv * 0.06);
@@ -324,7 +292,7 @@ export default function MakeOfferPage() {
   const buyerMaxOffer = Math.round(arv * 0.70);
   const wholesalerProfit = buyerMaxOffer - offerAmount;
 
-  // AI Insight context - include location for buyer matching
+  // AI Insight context
   const insightContext = {
     propertyAddress: deal.address,
     propertyCity: (deal as any).city || "Tampa",
@@ -343,34 +311,25 @@ export default function MakeOfferPage() {
   };
 
   // AI Insights for each step
-  const dealSetupInsight = useOfferInsight("dealSetup", insightContext, currentStep === 1);
   const packageInsight = useOfferInsight("package", insightContext, currentStep === 2);
   const pricingInsight = useOfferInsight("pricing", insightContext, currentStep === 3);
   const deliveryInsight = useOfferInsight("delivery", insightContext, currentStep === 4);
   const previewInsight = useOfferInsight("preview", insightContext, currentStep === 5);
   const reviewInsight = useOfferInsight("review", insightContext, currentStep === 6);
 
-  // New 11-step flow
+  // 6-step flow
   const steps = [
-    // Offer Steps (1-6)
-    { number: 1, title: "Deal", icon: Settings2, locked: false },
-    { number: 2, title: "Offer", icon: Package, locked: false },
-    { number: 3, title: "Pricing", icon: DollarSign, locked: false },
-    { number: 4, title: "Delivery", icon: Send, locked: false },
-    { number: 5, title: "Preview", icon: Eye, locked: false },
-    { number: 6, title: "Send", icon: Check, locked: false },
-    // Transaction Roadmap Steps (7-11) - locked until offer sent
-    { number: 7, title: "Title/Escrow", icon: Users, locked: !offerSent },
-    { number: 8, title: "Negotiate", icon: DollarSign, locked: !offerSent },
-    { number: 9, title: "Due Diligence", icon: FileText, locked: !offerSent },
-    { number: 10, title: "Closing", icon: Key, locked: !offerSent },
-    { number: 11, title: "Strategy", icon: Target, locked: !offerSent },
+    { number: 1, title: "Deal", icon: Settings2 },
+    { number: 2, title: "Offer", icon: Package },
+    { number: 3, title: "Pricing", icon: DollarSign },
+    { number: 4, title: "Delivery", icon: Send },
+    { number: 5, title: "Preview", icon: Eye },
+    { number: 6, title: "Send", icon: Check },
   ];
 
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        // Deal Setup: property confirmed, POF if on-market
         if (!dealSetupData.propertyConfirmed) return false;
         if (isOnMarket && !dealSetupData.selectedPofId) return false;
         return true;
@@ -385,31 +344,13 @@ export default function MakeOfferPage() {
         return true;
       case 6:
         return true;
-      // Transaction steps - streamlined
-      case 7:
-        // Deal Team: Just need escrow/title company now (lender/agent already done in Step 1)
-        return !!transactionData.escrowName && transactionData.escrowConfirmed;
-      case 8:
-        // Negotiate: Need accepted offer
-        return !!transactionData.acceptedOffer;
-      case 9:
-        // Due Diligence: Inspector, appraiser, insurance
-        return !!transactionData.inspectorName && !!transactionData.appraiserName && !!transactionData.insuranceName;
-      case 10:
-        // Closing: All checklist items
-        return transactionData.closingFinancingFinalized && transactionData.closingEscrowWired && 
-               transactionData.closingFinalWalkthrough && transactionData.closingDocumentsSigned && 
-               transactionData.closingKeysReceived;
-      case 11:
-        // Strategy: Investment strategy selected
-        return !!transactionData.investmentStrategy;
       default:
         return false;
     }
   };
 
   const handleNext = () => {
-    if (currentStep < 11 && canProceed()) {
+    if (currentStep < 6 && canProceed()) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -421,7 +362,6 @@ export default function MakeOfferPage() {
   };
 
   const handleSendOffer = async () => {
-    // Check for Twilio if SMS enabled
     if (smsEnabled && !twilioNumber) {
       toast.error("Error Sending Offers: Twilio configuration not found", {
         description: "Please configure Twilio or remove text delivery",
@@ -439,42 +379,14 @@ export default function MakeOfferPage() {
         toast.success("Campaign saved as draft");
         navigate(`/marketplace/deal/${deal.id}`);
       } else {
-        // Mark offer as sent and auto-advance to step 7
-        setOfferSent(true);
-        setCurrentStep(7);
-        
-        // Pre-fill transaction data with offer details
-        updateTransactionData({
-          listingPrice: deal.price,
-          mao: offerAmount,
-          // Copy lender info from deal setup if confirmed
-          lenderName: dealSetupData.selectedPofId ? "Lima One Capital" : undefined,
-          lenderConfirmed: !!dealSetupData.selectedPofId,
-          // Copy realtor info
-          realtorName: dealSetupData.useDualAgency 
-            ? dealSetupData.listingAgent?.name 
-            : dealSetupData.buyerAgent?.name,
-          realtorConfirmed: !!dealSetupData.listingAgent || !!dealSetupData.buyerAgent,
-        });
-        
-        toast.success("Offer sent successfully!", {
-          description: autoFollowUp 
-            ? `AI will auto-follow up in ${followUpDays} days if no reply. Now complete the transaction steps.`
-            : "Now complete the transaction roadmap to close the deal.",
-        });
+        // Show success dialog
+        setShowSuccessDialog(true);
       }
     } catch (error) {
       toast.error("Failed to send offer");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleCompleteTransaction = () => {
-    toast.success("Transaction completed! 🎉", {
-      description: "Congratulations on closing this deal!",
-    });
-    navigate(`/marketplace/deal/${deal.id}`);
   };
 
   // Template management
@@ -553,10 +465,8 @@ Best regards,
               </h1>
             </div>
             <div className="flex items-center gap-3">
-              <Badge variant="secondary" className={cn(
-                currentStep <= 6 ? "bg-primary/10 text-primary" : "bg-success/10 text-success"
-              )}>
-                Step {currentStep} of 11
+              <Badge variant="secondary" className="bg-primary/10 text-primary">
+                Step {currentStep} of 6
               </Badge>
               {isOnMarket && (
                 <Badge variant="secondary" className="bg-info/10 text-info">
@@ -776,19 +686,16 @@ Best regards,
 
           {/* Right Side - Offer Wizard */}
           <div className="flex-1 bg-white overflow-hidden flex flex-col">
-            {/* Step Indicator - Single Row with Icons Above */}
+            {/* Step Indicator */}
             <div className="px-6 py-3 border-b bg-muted/30 overflow-x-auto">
               <div className="flex items-center gap-1 min-w-max">
                 {steps.map((step, index) => (
                   <React.Fragment key={step.number}>
                     <button
-                      onClick={() => !step.locked && step.number <= currentStep && setCurrentStep(step.number)}
-                      disabled={step.locked}
+                      onClick={() => step.number <= currentStep && setCurrentStep(step.number)}
                       className={cn(
                         "flex flex-col items-center gap-1 px-2 py-1 transition-colors min-w-[52px]",
-                        step.locked
-                          ? "text-muted-foreground/50 cursor-not-allowed"
-                          : currentStep === step.number
+                        currentStep === step.number
                           ? "text-primary"
                           : currentStep > step.number
                           ? "text-success cursor-pointer hover:text-success/80"
@@ -798,18 +705,14 @@ Best regards,
                       <div
                         className={cn(
                           "h-7 w-7 rounded-full flex items-center justify-center",
-                          step.locked
-                            ? "bg-muted/50 text-muted-foreground/50"
-                            : currentStep === step.number
+                          currentStep === step.number
                             ? "bg-primary text-primary-foreground"
                             : currentStep > step.number
                             ? "bg-success text-white"
                             : "bg-muted text-muted-foreground"
                         )}
                       >
-                        {step.locked ? (
-                          <Lock className="h-3.5 w-3.5" />
-                        ) : currentStep > step.number ? (
+                        {currentStep > step.number ? (
                           <Check className="h-3.5 w-3.5" />
                         ) : (
                           <step.icon className="h-3.5 w-3.5" />
@@ -826,7 +729,7 @@ Best regards,
                       <div
                         className={cn(
                           "flex-shrink-0 w-4 h-0.5",
-                          step.locked ? "bg-muted/50" : currentStep > step.number ? "bg-success" : "bg-muted"
+                          currentStep > step.number ? "bg-success" : "bg-muted"
                         )}
                       />
                     )}
@@ -838,7 +741,7 @@ Best regards,
             {/* Step Content */}
             <ScrollArea className="flex-1">
               <div className="p-6 max-w-3xl mx-auto">
-                {/* Step 1: Deal Setup (POF + Agent + Property) */}
+                {/* Step 1: Deal Setup */}
                 {currentStep === 1 && (
                   <DealSetupStep
                     isOnMarket={isOnMarket}
@@ -851,10 +754,6 @@ Best regards,
                     data={dealSetupData}
                     onUpdate={(updates) => setDealSetupData((prev) => ({ ...prev, ...updates }))}
                     onUploadPof={() => navigate("/documents?folder=proof-of-funds")}
-                    insight={dealSetupInsight.insight}
-                    insightLoading={dealSetupInsight.isLoading}
-                    insightError={dealSetupInsight.error}
-                    onRefreshInsight={dealSetupInsight.refetch}
                   />
                 )}
 
@@ -868,7 +767,6 @@ Best regards,
                       </p>
                     </div>
 
-                    {/* Template Manager */}
                     <OfferTemplateManager
                       currentConfig={currentTemplateConfig}
                       savedTemplates={templates}
@@ -997,7 +895,7 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 3: Offer Settings (Pricing) */}
+                {/* Step 3: Pricing */}
                 {currentStep === 3 && (
                   <div className="space-y-6">
                     <div>
@@ -1014,7 +912,6 @@ Best regards,
                       onRefresh={pricingInsight.refetch}
                     />
 
-                    {/* Buyer Intelligence Card */}
                     <BuyerIntelligenceCard
                       data={pricingInsight.buyerIntelligence}
                       arv={arv}
@@ -1119,7 +1016,7 @@ Best regards,
                   </div>
                 )}
 
-                {/* Step 4: Delivery Configuration */}
+                {/* Step 4: Delivery */}
                 {currentStep === 4 && (
                   <div className="space-y-6">
                     <div>
@@ -1196,7 +1093,7 @@ Best regards,
                       </Card>
                     </div>
 
-                    {/* Inbox Integration & Auto Follow-up */}
+                    {/* Auto Follow-up */}
                     <AIFollowUpRecommendation
                       autoFollowUp={autoFollowUp}
                       onAutoFollowUpChange={setAutoFollowUp}
@@ -1460,8 +1357,6 @@ Best regards,
                       onRefresh={reviewInsight.refetch}
                     />
 
-                    {/* Note: Compliance Check moved to Contract phase (Step 9) */}
-
                     {/* Summary Cards */}
                     <Card className="p-4">
                       <h4 className="font-medium mb-3 flex items-center gap-2">
@@ -1507,12 +1402,12 @@ Best regards,
                           <p className="text-muted-foreground">Methods</p>
                           <div className="flex items-center gap-2 mt-1">
                             {emailEnabled && (
-                              <Badge variant="secondary" size="sm">
+                              <Badge variant="secondary" className="text-xs">
                                 <Mail className="h-3 w-3 mr-1" /> Email
                               </Badge>
                             )}
                             {smsEnabled && (
-                              <Badge variant="secondary" size="sm">
+                              <Badge variant="secondary" className="text-xs">
                                 <MessageSquare className="h-3 w-3 mr-1" /> SMS
                               </Badge>
                             )}
@@ -1581,108 +1476,6 @@ Best regards,
                         </div>
                       </div>
                     </Card>
-
-                    {/* Transaction Next Steps Notice */}
-                    {scheduleType !== "draft" && (
-                      <Card className="p-4 bg-success/5 border-success/20">
-                        <div className="flex items-start gap-3">
-                          <Sparkles className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="font-medium text-success">
-                              Continue To Transaction Steps
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              After sending your offer, you'll continue to Steps 7-11 to assemble your 
-                              deal team, negotiate, complete due diligence, close, and execute your investment strategy.
-                            </p>
-                          </div>
-                        </div>
-                      </Card>
-                    )}
-                  </div>
-                )}
-
-                {/* Step 7: Deal Team (Escrow/Title - Lender/Agent already done in Step 1) */}
-                {currentStep === 7 && (
-                  <div className="space-y-6">
-                    <div>
-                      <Badge variant="secondary" className="mb-2 bg-success/10 text-success">
-                        Offer Sent
-                      </Badge>
-                      <h3 className="text-lg font-semibold mb-1">Add Title / Escrow Company</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Select your closing coordinator (Lender & Agent confirmed in Step 1)
-                      </p>
-                    </div>
-                    <Milestone1DealTeam 
-                      data={transactionData} 
-                      updateData={updateTransactionData} 
-                    />
-                  </div>
-                )}
-
-                {/* Step 8: Negotiate */}
-                {currentStep === 8 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Track Negotiation</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Record counter-offers and final accepted terms
-                      </p>
-                    </div>
-                    <Milestone2Offer 
-                      data={transactionData} 
-                      updateData={updateTransactionData}
-                      propertyPrice={deal.price}
-                    />
-                  </div>
-                )}
-
-                {/* Step 9: Due Diligence */}
-                {currentStep === 9 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Under Contract / Due Diligence</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Validate the deal before closing
-                      </p>
-                    </div>
-                    <Milestone3DueDiligence 
-                      data={transactionData} 
-                      updateData={updateTransactionData} 
-                    />
-                  </div>
-                )}
-
-                {/* Step 10: Closing */}
-                {currentStep === 10 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Close the Deal</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Final checklist to ownership transfer
-                      </p>
-                    </div>
-                    <Milestone4Closing 
-                      data={transactionData} 
-                      updateData={updateTransactionData} 
-                    />
-                  </div>
-                )}
-
-                {/* Step 11: Strategy */}
-                {currentStep === 11 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-1">Execute Investment Strategy</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Turn the property into a performing asset
-                      </p>
-                    </div>
-                    <Milestone5Strategy 
-                      data={transactionData} 
-                      updateData={updateTransactionData} 
-                    />
                   </div>
                 )}
               </div>
@@ -1693,7 +1486,7 @@ Best regards,
               <Button
                 variant="outline"
                 onClick={handleBack}
-                disabled={currentStep === 1 || (currentStep === 7 && offerSent)}
+                disabled={currentStep === 1}
                 className="gap-2"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -1705,7 +1498,7 @@ Best regards,
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              ) : currentStep === 6 ? (
+              ) : (
                 <Button
                   onClick={handleSendOffer}
                   disabled={isSubmitting || !canProceed()}
@@ -1723,25 +1516,73 @@ Best regards,
                     </>
                   )}
                 </Button>
-              ) : currentStep < 11 ? (
-                <Button onClick={handleNext} disabled={!canProceed()} className="gap-2">
-                  Complete & Continue
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleCompleteTransaction}
-                  disabled={!canProceed()}
-                  className="gap-2 min-w-[180px]"
-                >
-                  <CheckCircle2 className="h-4 w-4" />
-                  Complete Transaction
-                </Button>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-success">
+              <CheckCircle2 className="h-5 w-5" />
+              Offer Sent Successfully!
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Your offer for <span className="font-medium text-foreground">{deal.address}</span> has been sent.
+            </p>
+            
+            <Card className="p-4 bg-muted/30">
+              <h4 className="font-medium mb-2">What's Next?</h4>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start gap-2">
+                  <TrendingUp className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Transaction Roadmap:</strong> Once the seller responds, manage negotiations, due diligence, and closing in the Transaction Dashboard.
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Inbox className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>
+                    <strong>Inbox:</strong> All responses and follow-ups will appear in your Unified Inbox for easy tracking.
+                  </span>
+                </li>
+                {autoFollowUp && (
+                  <li className="flex items-start gap-2">
+                    <Sparkles className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                    <span>
+                      <strong>AI Auto Follow-Up:</strong> If no response in {followUpDays} days, a follow-up will be sent automatically.
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </Card>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/inbox")}
+              className="gap-2"
+            >
+              <Inbox className="h-4 w-4" />
+              Go to Inbox
+            </Button>
+            <Button
+              onClick={() => navigate("/transactions")}
+              className="gap-2"
+            >
+              <ArrowRight className="h-4 w-4" />
+              View Transactions
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
