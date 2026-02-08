@@ -1471,15 +1471,7 @@ Best regards,
                       onRefresh={reviewInsight.refetch}
                     />
 
-                    {/* Compliance Check */}
-                    <ComplianceWarnings
-                      state={deal.state}
-                      offerType={selectedTemplate}
-                      offerAmount={offerAmount}
-                      warnings={[]}
-                      disclosures={[]}
-                      allCleared={true}
-                    />
+                    {/* Note: Compliance Check moved to Contract phase (Step 9) */}
 
                     {/* Summary Cards */}
                     <Card className="p-4">
