@@ -153,7 +153,7 @@ export function DealSetupStep({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold mb-1">Deal Setup</h3>
+        <h3 className="text-lg font-semibold mb-1">Deal</h3>
         <p className="text-sm text-muted-foreground">
           Confirm property, proof of funds, and agent representation
         </p>
@@ -184,7 +184,7 @@ export function DealSetupStep({
           <div className="flex-1">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-medium">Property Confirmed</h4>
+                <h4 className="font-medium">Subject Property</h4>
                 <p className="text-sm text-muted-foreground mt-0.5">{propertyAddress}</p>
               </div>
               <Switch
