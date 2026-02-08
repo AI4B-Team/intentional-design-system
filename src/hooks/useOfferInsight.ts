@@ -60,11 +60,13 @@ export function useOfferInsight(step: InsightStep, context: InsightContext, enab
     }
   }, [step, JSON.stringify(context), enabled]);
 
+  // Fetch when step changes or when enabled becomes true
+  // Also refetch when context changes (for real-time advice based on settings)
   useEffect(() => {
     if (enabled) {
       fetchInsight();
     }
-  }, [step, enabled]);
+  }, [fetchInsight]);
 
   return {
     insight,
