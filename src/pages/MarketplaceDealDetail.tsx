@@ -551,13 +551,13 @@ export default function MarketplaceDealDetail() {
                       variant={activeTab === tab.id ? "secondary" : "ghost"}
                       onClick={() => setActiveTab(tab.id as ContentTab)}
                       className={cn(
-                        "gap-2",
                         activeTab === tab.id
                           ? "bg-muted text-foreground"
-                          : "text-muted-foreground hover:text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                        layoutMode === "split" ? "gap-1 px-3" : "gap-2"
                       )}
                     >
-                      <Icon className="h-4 w-4" />
+                      {layoutMode !== "split" && <Icon className="h-4 w-4" />}
                       {tab.label}
                     </Button>
                   );
