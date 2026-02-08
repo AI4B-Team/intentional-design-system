@@ -155,61 +155,19 @@ export function AIFollowUpRecommendation({
                   value={followUpDays.toString()}
                   onValueChange={(v) => onFollowUpDaysChange(Number(v))}
                 >
-                  <SelectTrigger className="w-28">
+                  <SelectTrigger className="w-28 bg-background">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">
-                      <span className="flex items-center gap-2">
-                        1 day
-                        {aiRecommendation.days === 1 && (
-                          <Sparkles className="h-3 w-3 text-primary" />
-                        )}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="2">
-                      <span className="flex items-center gap-2">
-                        2 days
-                        {aiRecommendation.days === 2 && (
-                          <Sparkles className="h-3 w-3 text-primary" />
-                        )}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="3">
-                      <span className="flex items-center gap-2">
-                        3 days
-                        {aiRecommendation.days === 3 && (
-                          <Sparkles className="h-3 w-3 text-primary" />
-                        )}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="5">
-                      <span className="flex items-center gap-2">
-                        5 days
-                        {aiRecommendation.days === 5 && (
-                          <Sparkles className="h-3 w-3 text-primary" />
-                        )}
-                      </span>
-                    </SelectItem>
-                    <SelectItem value="7">
-                      <span className="flex items-center gap-2">
-                        7 days
-                        {aiRecommendation.days === 7 && (
-                          <Sparkles className="h-3 w-3 text-primary" />
-                        )}
-                      </span>
-                    </SelectItem>
+                  <SelectContent className="bg-background">
+                    <SelectItem value="1">1 day</SelectItem>
+                    <SelectItem value="2">2 days</SelectItem>
+                    <SelectItem value="3">3 days</SelectItem>
+                    <SelectItem value="5">5 days</SelectItem>
+                    <SelectItem value="7">7 days</SelectItem>
                     <SelectItem value="0">Manual Only</SelectItem>
                   </SelectContent>
                 </Select>
                 <span className="text-sm text-muted-foreground whitespace-nowrap">if no response</span>
-                
-                {isUsingAiRecommendation && buyerIntelligence && buyerIntelligence.matchingBuyers > 0 && (
-                  <Badge variant="secondary" className="text-xs gap-1">
-                    <Sparkles className="h-3 w-3" />
-                    AI Optimized
-                  </Badge>
-                )}
               </div>
 
               {followUpDays === 0 && (
