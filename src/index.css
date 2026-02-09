@@ -24,6 +24,13 @@
     overflow-y: auto;
   }
 
+  /* Prevent Radix UI scroll-lock from causing layout shifts */
+  body[data-scroll-locked] {
+    position: static !important;
+    overflow: auto !important;
+    margin-right: 0 !important;
+  }
+
   #root {
     height: auto;
     min-height: 100vh;
