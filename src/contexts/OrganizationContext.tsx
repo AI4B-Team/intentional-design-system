@@ -72,13 +72,18 @@ const ROLE_HIERARCHY: Record<OrgRole, number> = {
 };
 
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [organization, setOrganization] = React.useState<Organization | null>(null);
   const [membership, setMembership] = React.useState<OrganizationMember | null>(null);
   const [members, setMembers] = React.useState<OrganizationMember[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   const fetchOrganization = React.useCallback(async () => {
+    // Wait for auth to finish loading before checking organization
+    if (authLoading) {
+      return;
+    }
+    
     if (!user) {
       setOrganization(null);
       setMembership(null);
@@ -145,7 +150,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchMembers = React.useCallback(async () => {
     if (!organization || !membership) {
@@ -179,7 +184,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
 
   React.useEffect(() => {
     fetchOrganization();
-  }, [fetchOrganization]);
+  }, [fetchOrganization, authLoading]);
 
   React.useEffect(() => {
     if (organization && membership) {
