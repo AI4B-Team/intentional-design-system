@@ -142,7 +142,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
             <ChevronDown className="h-3 w-3 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40 bg-background">
+        <DropdownMenuContent className="w-40 bg-background">
           <DropdownMenuItem onClick={() => navigate("/properties/new")}>
             <UserPlus className="h-4 w-4 mr-2" />
             Lead

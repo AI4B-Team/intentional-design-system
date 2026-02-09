@@ -55,7 +55,7 @@ DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayNam
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
->(({ className, sideOffset = 4, side = "bottom", align = "center", ...props }, ref) => (
+>(({ className, sideOffset = 4, side = "bottom", align = "start", ...props }, ref) => (
   <DropdownMenuPrimitive.Portal>
     <DropdownMenuPrimitive.Content
       ref={ref}
@@ -64,8 +64,11 @@ const DropdownMenuContent = React.forwardRef<
       align={align}
       avoidCollisions={true}
       collisionPadding={8}
+      style={{ 
+        transformOrigin: 'var(--radix-dropdown-menu-content-transform-origin)',
+      }}
       className={cn(
-        // Force high z-index (above dialogs at z-[110]) and solid background - always open below trigger
+        // Force high z-index (above dialogs at z-[110]) and solid background
         "z-[200] min-w-[8rem] overflow-hidden rounded-lg border bg-popover p-1 text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
