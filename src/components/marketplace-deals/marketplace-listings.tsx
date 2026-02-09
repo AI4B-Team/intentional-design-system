@@ -57,6 +57,8 @@ import { cn } from "@/lib/utils";
 // Session storage key for view mode preference
 const VIEW_MODE_STORAGE_KEY = "marketplace-card-view-mode";
 
+import { calculateEstimatedRent } from "@/lib/rent-calculations";
+
 type CardViewMode = "flip" | "hold";
 
 function getStoredViewMode(): CardViewMode {
@@ -224,8 +226,8 @@ function DealListItem({
   const estRepairs = Math.round(arvValue * 0.1);
   const profitPotential = arvValue - askingPrice - estRepairs;
   
-  // Estimated rent and PITI (mock calculations)
-  const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
+  // Estimated rent and PITI (consistent calculation)
+  const monthlyRent = calculateEstimatedRent(deal.sqft).monthlyRent;
   const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
   const monthlyCashflow = monthlyRent - piti;
   const annualRent = monthlyRent * 12;
@@ -620,8 +622,8 @@ function DealCard({
   const estRepairs = Math.round(arvValue * 0.1); // Estimate 10% of ARV for repairs
   const profitPotential = arvValue - askingPrice - estRepairs;
   
-  // Estimated rent and PITI (mock calculations)
-  const monthlyRent = Math.round((arvValue * 0.008)); // ~0.8% of ARV
+  // Estimated rent and PITI (consistent calculation)
+  const monthlyRent = calculateEstimatedRent(deal.sqft).monthlyRent;
   const piti = Math.round(askingPrice * 0.007); // ~0.7% of asking price
   
   // Calculate cashflow and cap rate

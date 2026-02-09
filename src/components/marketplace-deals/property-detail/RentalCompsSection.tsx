@@ -19,6 +19,7 @@ import {
 import { DollarSign, RefreshCw, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CompMap } from "@/components/marketplace-deals/CompMap";
+import { calculateEstimatedRent, formatRent } from "@/lib/rent-calculations";
 
 interface RentalComp {
   id: string;
@@ -146,7 +147,7 @@ export function RentalCompsSection({ rentalComps, subjectProperty }: RentalComps
       {/* Summary Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
-          <p className="text-2xl font-bold text-primary">${Math.round(subjectProperty.sqft * parseFloat(avgRentPerSqft)).toLocaleString()}/mo</p>
+          <p className="text-2xl font-bold text-primary">{formatRent(calculateEstimatedRent(subjectProperty.sqft).monthlyRent)}</p>
           <p className="text-sm text-muted-foreground">Est. Rent (Subject)</p>
         </div>
         <div className="text-center p-4 bg-surface-secondary rounded-lg">
