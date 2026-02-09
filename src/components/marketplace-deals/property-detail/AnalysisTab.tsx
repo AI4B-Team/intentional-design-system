@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { DealRiskBar } from "@/components/marketplace-deals/DealRiskBar";
 import { PropertySummaryHeader } from "./PropertySummaryHeader";
+import { calculateEstimatedRent } from "@/lib/rent-calculations";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface AnalysisTabProps {
@@ -263,8 +264,8 @@ export function AnalysisTab({ deal, viewMode }: AnalysisTabProps) {
   const profit = deal.arv - totalCosts;
   const roi = Math.round((profit / (deal.price + estRepairs)) * 100);
 
-  // Rental calculations
-  const estRent = 1650;
+  // Rental calculations - use consistent rent estimate
+  const estRent = calculateEstimatedRent(deal.sqft).monthlyRent;
   const propertyTax = Math.round((deal.price * 0.012) / 12);
   const insurance = Math.round((deal.price * 0.005) / 12);
   const mortgage = Math.round((deal.price * 0.8) * (0.07 / 12) / (1 - Math.pow(1 + 0.07 / 12, -360)));

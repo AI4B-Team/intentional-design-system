@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DealScoreCompact } from "@/components/marketplace-deals/DealScore";
+import { calculateEstimatedRent, formatRent } from "@/lib/rent-calculations";
 import type { MarketplaceDeal } from "@/hooks/useMockDeals";
 
 interface PropertySummaryHeaderProps {
@@ -43,7 +44,7 @@ export function PropertySummaryHeader({
         {viewMode === "hold" && (
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Est. Rent</span>
-            <span className="text-3xl font-bold text-primary">${Math.round(deal.sqft * 1.25).toLocaleString()}/mo</span>
+            <span className="text-3xl font-bold text-primary">{formatRent(calculateEstimatedRent(deal.sqft).monthlyRent)}</span>
           </div>
         )}
         {/* Deal Score - Far Right */}
