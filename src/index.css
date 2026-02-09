@@ -13,8 +13,7 @@
 
 @layer base {
   html {
-    /* Default: no zoom compensation needed */
-    --app-zoom: 1;
+    /* No global zoom - it breaks Radix UI Popper positioning */
     --app-viewport-height: 100vh;
     height: auto;
     overflow-y: auto;
@@ -32,19 +31,6 @@
     overflow-x: auto;
     display: flex;
     flex-direction: column;
-  }
-
-  /* The app is intentionally scaled down globally.
-     When `zoom` is supported, compensate layout size so the UI still fills the viewport
-     (prevents bottom/right blank space caused by scaling). */
-  @supports (zoom: 1) {
-    html {
-      /* Enable global zoom + expose a zoom-aware viewport height token */
-      --app-zoom: 0.9;
-      --app-viewport-height: calc(100vh / var(--app-zoom));
-      zoom: var(--app-zoom);
-      min-height: calc(100vh / var(--app-zoom));
-    }
   }
   
   :root {

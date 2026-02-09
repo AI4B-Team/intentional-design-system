@@ -174,7 +174,7 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="relative z-50 flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
+      <div className="relative flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters - uniform gap-3 for equal spacing */}
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Address Search */}
@@ -232,7 +232,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 bg-background">
+            <PopoverContent className="w-56 p-4" align="start">
               <div className="space-y-3">
                 <div className="font-semibold">Home Type</div>
                 <button
@@ -292,7 +292,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-72 bg-background">
+            <PopoverContent className="w-72 p-4" align="start">
               <div className="space-y-4">
                 {/* Bedrooms */}
                 <div className="space-y-2">
