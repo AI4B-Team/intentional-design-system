@@ -13,6 +13,8 @@ import { AIVAPanel } from "@/components/aiva/AIVAPanel";
 import { AIVAPanelWrapper } from "@/components/aiva/AIVAPanelWrapper";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import SignupFlow from "./pages/SignupFlow";
 import OnboardingOrganization from "./pages/OnboardingOrganization";
 import OnboardingCreate from "./pages/OnboardingCreate";
@@ -151,6 +153,8 @@ const App = () => (
                 {/* Public routes */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/submit-deal" element={<SubmitDeal />} />
                   <Route path="/s/:slug" element={<SellerWebsitePage />} />
                   <Route path="/deals/:slug" element={<PublicDealPage />} />
