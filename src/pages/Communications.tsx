@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
@@ -17,6 +17,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
 } from "lucide-react";
+import { toast } from "sonner";
 
 // ============================================================================
 // CHANNEL CONFIG
@@ -50,7 +51,7 @@ function DirectionBadge({ direction }: { direction: string }) {
 }
 
 // ============================================================================
-// MOCK DATA
+// TYPES & MOCK DATA
 // ============================================================================
 interface Activity {
   id: string;
@@ -78,7 +79,7 @@ interface Contact {
   activities: Activity[];
 }
 
-const MOCK_CONTACTS: Contact[] = [
+const INITIAL_CONTACTS: Contact[] = [
   {
     id: "c1", name: "Marcus Williams", address: "1847 Maple Street",
     tag: "Motivated Seller", avatar: "MW", sentiment: "neutral",
@@ -243,7 +244,7 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
 // CONTACT LIST ITEM
 // ============================================================================
 function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isActive: boolean; onClick: () => void }) {
-  const lastAct = contact.activities[0];
+  const lastAct = contact.activities[contact.activities.length - 1];
   const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
   const channelColorClass = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.colorClass : "";
 
@@ -255,7 +256,6 @@ function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isA
         isActive ? "bg-muted/80 border-l-[3px] border-l-primary" : "border-l-[3px] border-l-transparent hover:bg-muted/40"
       )}
     >
-      {/* Avatar */}
       <div className="relative flex-shrink-0">
         <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-[13px] font-bold text-primary-foreground">
           {contact.avatar}
@@ -264,8 +264,6 @@ function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isA
           <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
         )}
       </div>
-
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <span className={cn("text-[13px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
@@ -291,7 +289,23 @@ function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isA
 // ============================================================================
 // CONVERSATION THREAD
 // ============================================================================
-function ConversationThread({ contact, onCall }: { contact: Contact | null; onCall: () => void }) {
+function ConversationThread({
+  contact,
+  onCall,
+  onSendMessage,
+  messageInput,
+  onMessageInputChange,
+  sendChannel,
+  onSendChannelChange,
+}: {
+  contact: Contact | null;
+  onCall: () => void;
+  onSendMessage: () => void;
+  messageInput: string;
+  onMessageInputChange: (val: string) => void;
+  sendChannel: string;
+  onSendChannelChange: (ch: string) => void;
+}) {
   if (!contact) {
     return (
       <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
@@ -300,6 +314,13 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
       </div>
     );
   }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      onSendMessage();
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
@@ -323,10 +344,22 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
           <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
             <Phone className="h-3.5 w-3.5" /> Call
           </button>
-          <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground text-xs font-semibold hover:text-foreground transition-colors">
+          <button
+            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
             <MessageCircle className="h-3.5 w-3.5" /> SMS
           </button>
-          <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground text-xs font-semibold hover:text-foreground transition-colors">
+          <button
+            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
         </div>
@@ -339,7 +372,6 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
           const Icon = config?.icon || MessageCircle;
           return (
             <div key={act.id} className="flex gap-3.5 mb-5">
-              {/* Timeline icon */}
               <div className="flex flex-col items-center w-8 flex-shrink-0">
                 <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", config?.bgClass)}>
                   <Icon className={cn("h-3.5 w-3.5", config?.colorClass)} />
@@ -348,8 +380,6 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
                   <div className="w-px flex-1 bg-border mt-1" />
                 )}
               </div>
-
-              {/* Content */}
               <div className="flex-1 bg-muted/50 rounded-lg p-3.5 border border-border/50">
                 <div className="flex items-center gap-2 mb-2 flex-wrap">
                   <ChannelBadge channel={act.channel} />
@@ -359,15 +389,12 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
                   )}
                   <span className="text-[11px] text-muted-foreground ml-auto">{act.timestamp}</span>
                 </div>
-
                 {act.subject && (
                   <div className="text-[13px] font-semibold text-foreground mb-1.5">{act.subject}</div>
                 )}
-
                 <div className="text-[13px] text-muted-foreground leading-relaxed">
                   {act.content || act.summary}
                 </div>
-
                 {act.aiSuggestion && (
                   <div className="mt-2.5 p-2.5 bg-primary/5 border border-primary/20 rounded-md flex gap-2 items-start">
                     <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
@@ -385,11 +412,30 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
         <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
           <input
             placeholder="Type a message..."
+            value={messageInput}
+            onChange={e => onMessageInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
             className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
           />
-          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-500">SMS</span>
+          <button
+            onClick={() => {
+              const channels = ["sms", "email"];
+              const idx = channels.indexOf(sendChannel);
+              onSendChannelChange(channels[(idx + 1) % channels.length]);
+            }}
+            className={cn(
+              "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
+              sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"
+            )}
+          >
+            {sendChannel.toUpperCase()}
+          </button>
         </div>
-        <button className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+        <button
+          onClick={onSendMessage}
+          disabled={!messageInput.trim()}
+          className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           <Send className="h-4 w-4" />
         </button>
       </div>
@@ -400,7 +446,15 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
 // ============================================================================
 // AI CO-PILOT PANEL
 // ============================================================================
-function CoPilotPanel({ contact, activeView }: { contact: Contact | null; activeView: string }) {
+function CoPilotPanel({
+  contact,
+  activeView,
+  onQuickReply,
+}: {
+  contact: Contact | null;
+  activeView: string;
+  onQuickReply: (text: string) => void;
+}) {
   return (
     <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
       {/* Header */}
@@ -430,7 +484,7 @@ function CoPilotPanel({ contact, activeView }: { contact: Contact | null; active
               <div className="flex items-center gap-2.5">
                 <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-gradient-to-r from-red-400 via-amber-400 to-emerald-400 transition-all duration-500"
+                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                     style={{ width: contact.sentiment === "positive" ? "75%" : contact.sentiment === "neutral" ? "50%" : "25%" }}
                   />
                 </div>
@@ -449,7 +503,7 @@ function CoPilotPanel({ contact, activeView }: { contact: Contact | null; active
                 <Sparkles className="h-3 w-3" /> Next Best Action
               </div>
               <div className="text-xs text-muted-foreground leading-relaxed">
-                {contact.activities[0]?.aiSuggestion || "Continue the conversation based on your last interaction."}
+                {contact.activities[contact.activities.length - 1]?.aiSuggestion || "Continue the conversation based on your last interaction."}
               </div>
             </div>
 
@@ -474,6 +528,7 @@ function CoPilotPanel({ contact, activeView }: { contact: Contact | null; active
               {["Acknowledge their concern & pivot to value", "Ask about their timeline and motivation", "Send a follow-up with comparable sales data"].map((reply, i) => (
                 <button
                   key={i}
+                  onClick={() => onQuickReply(reply)}
                   className="w-full text-left px-2.5 py-2 mb-1.5 bg-muted/80 border border-border/50 rounded text-xs text-muted-foreground hover:border-primary/30 hover:text-primary transition-all"
                 >
                   {reply}
@@ -490,7 +545,7 @@ function CoPilotPanel({ contact, activeView }: { contact: Contact | null; active
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView() {
+function DialerView({ onCallContact }: { onCallContact: (name: string, phone: string) => void }) {
   const [callingMode, setCallingMode] = useState("start");
   const modes = [
     { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground" },
@@ -555,7 +610,10 @@ function DialerView() {
                 )}>
                   {item.type}
                 </span>
-                <button className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-medium hover:text-foreground transition-colors">
+                <button
+                  onClick={() => onCallContact(item.name, item.phone)}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-medium hover:text-foreground hover:border-primary/50 transition-colors"
+                >
                   <Phone className="h-3 w-3" /> Call
                 </button>
               </div>
@@ -573,6 +631,7 @@ function DialerView() {
             <div
               key={script.id}
               className="p-3.5 bg-muted/50 rounded-lg mb-2.5 border border-border/50 cursor-pointer hover:border-primary/30 transition-all"
+              onClick={() => toast.info(`Loaded script: ${script.name}`)}
             >
               <div className="flex justify-between items-start">
                 <div>
@@ -622,22 +681,99 @@ export default function Communications() {
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS);
+  const [messageInput, setMessageInput] = useState("");
+  const [sendChannel, setSendChannel] = useState("sms");
+
+  const selectedContact = useMemo(() => contacts.find(c => c.id === selectedContactId) || null, [contacts, selectedContactId]);
 
   const filteredContacts = useMemo(() => {
-    let result = MOCK_CONTACTS;
+    let result = contacts;
     if (channelFilter !== "all") {
       result = result.filter(c => c.activities.some(a => a.channel === channelFilter));
     }
     if (statusFilter === "unread") result = result.filter(c => c.unread);
     if (statusFilter === "starred") result = result.filter(c => c.starred);
+    if (statusFilter === "needs_response") {
+      result = result.filter(c => {
+        const last = c.activities[c.activities.length - 1];
+        return last && last.direction === "inbound";
+      });
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(c => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q));
     }
     return result;
-  }, [channelFilter, statusFilter, searchQuery]);
+  }, [contacts, channelFilter, statusFilter, searchQuery]);
+
+  const handleSendMessage = useCallback(() => {
+    if (!messageInput.trim() || !selectedContactId) return;
+
+    const now = new Date();
+    const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+    const newActivity: Activity = {
+      id: `a_${Date.now()}`,
+      channel: sendChannel,
+      direction: "outbound",
+      timestamp: timeStr,
+      content: messageInput.trim(),
+      sentiment: "neutral",
+    };
+
+    setContacts(prev => prev.map(c => {
+      if (c.id !== selectedContactId) return c;
+      return {
+        ...c,
+        activities: [...c.activities, newActivity],
+        lastActivity: "Just now",
+        unread: false,
+      };
+    }));
+
+    toast.success(`${sendChannel.toUpperCase()} sent to ${selectedContact?.name}`);
+    setMessageInput("");
+  }, [messageInput, selectedContactId, sendChannel, selectedContact?.name]);
+
+  const handleCall = useCallback(() => {
+    if (!selectedContact) return;
+    toast.info(`Calling ${selectedContact.name}...`, { duration: 3000 });
+
+    const now = new Date();
+    const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+    const newActivity: Activity = {
+      id: `a_${Date.now()}`,
+      channel: "call",
+      direction: "outbound",
+      timestamp: timeStr,
+      duration: "0:00",
+      summary: `Outbound call initiated to ${selectedContact.name}.`,
+      sentiment: "neutral",
+    };
+
+    setContacts(prev => prev.map(c => {
+      if (c.id !== selectedContact.id) return c;
+      return { ...c, activities: [...c.activities, newActivity], lastActivity: "Just now" };
+    }));
+  }, [selectedContact]);
+
+  const handleDialerCall = useCallback((name: string, phone: string) => {
+    toast.info(`Calling ${name} at ${phone}...`, { duration: 3000 });
+  }, []);
+
+  const handleQuickReply = useCallback((text: string) => {
+    setMessageInput(text);
+    toast.info("Quick reply loaded — press Enter to send");
+  }, []);
+
+  const handleSelectContact = useCallback((id: string) => {
+    setSelectedContactId(id);
+    // Mark as read
+    setContacts(prev => prev.map(c => c.id === id ? { ...c, unread: false } : c));
+    setMessageInput("");
+  }, []);
 
   return (
     <AppLayout fullWidth>
@@ -682,8 +818,8 @@ export default function Communications() {
                     <ContactListItem
                       key={contact.id}
                       contact={contact}
-                      isActive={selectedContact?.id === contact.id}
-                      onClick={() => setSelectedContact(contact)}
+                      isActive={selectedContactId === contact.id}
+                      onClick={() => handleSelectContact(contact.id)}
                     />
                   ))}
                   {filteredContacts.length === 0 && (
@@ -695,15 +831,23 @@ export default function Communications() {
               </div>
 
               {/* Center: Thread */}
-              <ConversationThread contact={selectedContact} onCall={() => {}} />
+              <ConversationThread
+                contact={selectedContact}
+                onCall={handleCall}
+                onSendMessage={handleSendMessage}
+                messageInput={messageInput}
+                onMessageInputChange={setMessageInput}
+                sendChannel={sendChannel}
+                onSendChannelChange={setSendChannel}
+              />
 
               {/* Right: AI Co-Pilot */}
-              <CoPilotPanel contact={selectedContact} activeView={activeView} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           ) : (
             <>
-              <DialerView />
-              <CoPilotPanel contact={selectedContact} activeView={activeView} />
+              <DialerView onCallContact={handleDialerCall} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           )}
         </div>
