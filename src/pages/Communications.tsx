@@ -86,7 +86,7 @@ const MODE_THEME: Record<CallingModeKey, {
     headerBg: "bg-emerald-500/[0.04]",
   },
   voice: {
-    label: "AI Autonomous",
+    label: "AI Agent",
     accent: "text-blue-600",
     bg: "bg-blue-500/[0.03]",
     border: "border-blue-500/20",
@@ -790,7 +790,7 @@ function CoPilotPanel({
               <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
             </span>
             <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
-              {isLiveCall ? theme.label : "AI Active"}
+              {isLiveCall ? theme.label : "AI ACTIVE"}
             </span>
           </div>
         )}
