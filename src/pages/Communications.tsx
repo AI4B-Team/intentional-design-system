@@ -59,6 +59,53 @@ import {
 } from "@/components/ui/alert-dialog";
 
 // ============================================================================
+// CALLING MODE THEME CONFIG
+// ============================================================================
+export type CallingModeKey = "start" | "voice" | "listen";
+
+const MODE_THEME: Record<CallingModeKey, {
+  label: string;
+  accent: string;        // text color
+  bg: string;            // bg tint
+  border: string;        // border color
+  badge: string;         // badge bg
+  badgeText: string;     // badge text
+  dot: string;           // dot/pulse color
+  headerBg: string;      // header background
+}> = {
+  start: {
+    label: "Human Mode",
+    accent: "text-emerald-600",
+    bg: "bg-emerald-500/[0.03]",
+    border: "border-emerald-500/20",
+    badge: "bg-emerald-500/10",
+    badgeText: "text-emerald-600",
+    dot: "bg-emerald-500",
+    headerBg: "bg-emerald-500/[0.04]",
+  },
+  voice: {
+    label: "AI Autonomous",
+    accent: "text-blue-600",
+    bg: "bg-blue-500/[0.03]",
+    border: "border-blue-500/20",
+    badge: "bg-blue-500/10",
+    badgeText: "text-blue-600",
+    dot: "bg-blue-500",
+    headerBg: "bg-blue-500/[0.04]",
+  },
+  listen: {
+    label: "Hybrid Mode",
+    accent: "text-violet-600",
+    bg: "bg-violet-500/[0.03]",
+    border: "border-violet-500/20",
+    badge: "bg-violet-500/10",
+    badgeText: "text-violet-600",
+    dot: "bg-violet-500",
+    headerBg: "bg-violet-500/[0.04]",
+  },
+};
+
+// ============================================================================
 // CHANNEL CONFIG
 // ============================================================================
 const CHANNEL_CONFIG: Record<string, { icon: React.ElementType; label: string; colorClass: string; bgClass: string }> = {
@@ -692,53 +739,56 @@ function CoPilotPanel({
   contact,
   activeView,
   onQuickReply,
+  callingMode = "start",
 }: {
   contact: Contact | null;
   activeView: string;
   onQuickReply: (text: string) => void;
+  callingMode?: CallingModeKey;
 }) {
   const callState = useCallState();
   const isLiveCall = callState.isCallActive && callState.callStatus === "connected";
+  const theme = MODE_THEME[callingMode];
 
   return (
     <div className={cn(
-      "w-[400px] border-l-2 flex flex-col overflow-hidden transition-all",
+      "w-[400px] border-l-2 flex flex-col overflow-hidden transition-all duration-300",
       isLiveCall
-        ? "border-primary/30 bg-primary/[0.02] shadow-[-6px_0_24px_-8px_hsl(var(--primary)/0.12)]"
+        ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
         : "border-primary/15 bg-background shadow-[-4px_0_20px_-5px_hsl(var(--primary)/0.06)]"
     )}>
       {/* Header */}
       <div className={cn(
-        "p-4 border-b flex items-center justify-between",
-        isLiveCall ? "border-primary/15 bg-primary/[0.04]" : "border-primary/10 bg-primary/[0.02]"
+        "p-4 border-b flex items-center justify-between transition-colors duration-300",
+        isLiveCall ? cn("border-border/50", theme.headerBg) : "border-primary/10 bg-primary/[0.02]"
       )}>
         <div className="flex items-center gap-2">
           <div className={cn(
-            "w-7 h-7 rounded-md flex items-center justify-center",
-            isLiveCall ? "bg-primary/15" : "bg-primary/10"
+            "w-7 h-7 rounded-md flex items-center justify-center transition-colors duration-300",
+            isLiveCall ? theme.badge : "bg-primary/10"
           )}>
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <Sparkles className={cn("h-3.5 w-3.5 transition-colors duration-300", isLiveCall ? theme.accent : "text-primary")} />
           </div>
           <div>
             <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
-            <div className="text-[11px] text-muted-foreground">
-              {isLiveCall ? "Live intelligence active" : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing"}
+            <div className={cn("text-[11px] transition-colors duration-300", isLiveCall ? theme.accent : "text-muted-foreground")}>
+              {isLiveCall ? `${theme.label} · Live intelligence active` : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing"}
             </div>
           </div>
         </div>
         {contact && (
           <div className={cn(
-            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
+            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-colors duration-300",
             isLiveCall
-              ? "bg-red-500/10 border-red-500/20"
+              ? cn(theme.badge, theme.border)
               : "bg-emerald-500/10 border-emerald-500/20"
           )}>
             <span className="relative flex h-2 w-2">
-              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", isLiveCall ? "bg-red-400" : "bg-emerald-400")} />
-              <span className={cn("relative inline-flex rounded-full h-2 w-2", isLiveCall ? "bg-red-500" : "bg-emerald-500")} />
+              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors", isLiveCall ? theme.dot : "bg-emerald-400")} />
+              <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
             </span>
-            <span className={cn("text-[10px] font-bold tracking-wider uppercase", isLiveCall ? "text-red-600" : "text-emerald-600")}>
-              {isLiveCall ? "LIVE" : "AI Active"}
+            <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
+              {isLiveCall ? theme.label : "AI Active"}
             </span>
           </div>
         )}
@@ -923,10 +973,9 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView() {
+function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeKey; setCallingMode: (m: CallingModeKey) => void }) {
   const callState = useCallState();
   const navigate = useNavigate();
-  const [callingMode, setCallingMode] = useState("start");
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
   const [calledContactIds, setCalledContactIds] = useState<Set<string>>(new Set());
@@ -1159,7 +1208,7 @@ function DialerView() {
             <button
               key={key}
               onClick={() => {
-                setCallingMode(key);
+                setCallingMode(key as CallingModeKey);
                 if (key === "voice") toast.info("Voice Agent mode — AI will handle calls autonomously");
                 if (key === "listen") toast.info("Listen Mode — captures external calls from Zoom, Meet, etc.");
               }}
@@ -1485,7 +1534,9 @@ export default function Communications() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [callingMode, setCallingMode] = useState<CallingModeKey>("start");
   const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
+  const modeTheme = MODE_THEME[callingMode];
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -1713,10 +1764,13 @@ export default function Communications() {
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
             {callState.isCallActive && (
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold animate-pulse">
-                <span className="w-2 h-2 rounded-full bg-white" />
-                LIVE
-              </button>
+              <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse", modeTheme.badge)}>
+                <span className={cn("relative flex h-2 w-2")}>
+                  <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", modeTheme.dot)} />
+                  <span className={cn("relative inline-flex rounded-full h-2 w-2", modeTheme.dot)} />
+                </span>
+                <span className={modeTheme.badgeText}>LIVE · {modeTheme.label}</span>
+              </div>
             )}
           </div>
 
@@ -1816,6 +1870,7 @@ export default function Communications() {
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
                 <LiveCallInline
+                  callingMode={callingMode}
                   onSmsClick={() => { setSendChannel("sms"); toast.info("Channel set to SMS"); }}
                   onEmailClick={() => { setSendChannel("email"); toast.info("Channel set to Email"); }}
                   onMoreClick={() => {
@@ -1840,12 +1895,12 @@ export default function Communications() {
               )}
 
               {/* Right: AI Co-Pilot */}
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} callingMode={callingMode} />
             </>
           ) : (
             <>
-              <DialerView />
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
+              <DialerView callingMode={callingMode} setCallingMode={setCallingMode} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} callingMode={callingMode} />
             </>
           )}
         </div>
