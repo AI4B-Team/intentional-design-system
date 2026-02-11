@@ -6,7 +6,6 @@ import { useCallState } from "@/contexts/CallContext";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
@@ -47,41 +46,39 @@ export function CallControls({ compact = false, className }: CallControlsProps) 
   const btnSize = compact ? "h-8 w-8" : "h-10 w-10";
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className={cn("flex items-center gap-2", className)}>
-        <ControlButton
-          tooltip={isMuted ? "Unmute" : "Mute"}
-          onClick={toggleMute}
-          className={cn(btnSize, isMuted && "bg-destructive/10")}
-        >
-          {isMuted ? <MicOff className={cn(iconSize, "text-destructive")} /> : <Mic className={iconSize} />}
-        </ControlButton>
+    <div className={cn("flex items-center gap-2", className)}>
+      <ControlButton
+        tooltip={isMuted ? "Unmute" : "Mute"}
+        onClick={toggleMute}
+        className={cn(btnSize, isMuted && "bg-destructive/10")}
+      >
+        {isMuted ? <MicOff className={cn(iconSize, "text-destructive")} /> : <Mic className={iconSize} />}
+      </ControlButton>
 
-        <ControlButton
-          tooltip={isOnHold ? "Resume" : "Hold"}
-          onClick={toggleHold}
-          className={cn(btnSize, isOnHold && "bg-warning/10")}
-        >
-          {isOnHold ? <Play className={cn(iconSize, "text-warning")} /> : <Pause className={iconSize} />}
-        </ControlButton>
+      <ControlButton
+        tooltip={isOnHold ? "Resume" : "Hold"}
+        onClick={toggleHold}
+        className={cn(btnSize, isOnHold && "bg-warning/10")}
+      >
+        {isOnHold ? <Play className={cn(iconSize, "text-warning")} /> : <Pause className={iconSize} />}
+      </ControlButton>
 
-        <ControlButton
-          tooltip={isRecording ? "Stop Recording" : "Record"}
-          onClick={toggleRecording}
-          className={cn(btnSize, isRecording && "bg-destructive/10")}
-        >
-          <Circle className={cn(iconSize, isRecording ? "text-destructive fill-destructive" : "text-muted-foreground")} />
-        </ControlButton>
+      <ControlButton
+        tooltip={isRecording ? "Stop Recording" : "Record"}
+        onClick={toggleRecording}
+        className={cn(btnSize, isRecording && "bg-destructive/10")}
+      >
+        <Circle className={cn(iconSize, isRecording ? "text-destructive fill-destructive" : "text-muted-foreground")} />
+      </ControlButton>
 
-        <ControlButton
-          tooltip="End Call"
-          onClick={endCall}
-          className={cn(btnSize, "bg-destructive/10 hover:bg-destructive/20")}
-        >
-          <PhoneOff className={cn(iconSize, "text-destructive")} />
-        </ControlButton>
-      </div>
-    </TooltipProvider>
+      <ControlButton
+        tooltip="End Call"
+        onClick={endCall}
+        className={cn(btnSize, "bg-destructive/10 hover:bg-destructive/20")}
+      >
+        <PhoneOff className={cn(iconSize, "text-destructive")} />
+      </ControlButton>
+    </div>
   );
 }
 
