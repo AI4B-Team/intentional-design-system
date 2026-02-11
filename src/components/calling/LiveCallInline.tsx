@@ -159,7 +159,15 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           <CallControlButtons callingMode={callingMode} />
           <div className="w-px h-6 bg-border mx-1" />
           <div className="flex gap-2">
-            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold">
+            <button
+              onClick={() => { setSmsComposerOpen(false); setEmailComposerOpen(false); }}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                !smsComposerOpen && !emailComposerOpen
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+              )}
+            >
               <Phone className="h-3.5 w-3.5" /> Call
             </button>
             <button onClick={handleSmsOpen} className={cn(
