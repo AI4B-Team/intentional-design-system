@@ -5,7 +5,33 @@ import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
 
-const Tooltip = TooltipPrimitive.Root;
+const Tooltip = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>
+>(({ children, ...props }, _ref) => {
+  const [open, setOpen] = React.useState(false);
+  const isPointerOver = React.useRef(false);
+
+  return (
+    <TooltipPrimitive.Root
+      {...props}
+      open={open}
+      onOpenChange={(nextOpen) => {
+        // Only open on hover (pointer), not on focus
+        if (nextOpen && !isPointerOver.current) return;
+        setOpen(nextOpen);
+      }}
+    >
+      <div
+        onPointerEnter={() => { isPointerOver.current = true; }}
+        onPointerLeave={() => { isPointerOver.current = false; setOpen(false); }}
+        style={{ display: "contents" }}
+      >
+        {children}
+      </div>
+    </TooltipPrimitive.Root>
+  );
+}) as React.FC<React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>>;
 
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
