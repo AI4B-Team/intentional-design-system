@@ -312,7 +312,7 @@ function ConversationThread({
     return (
       <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
         <MessageCircle className="h-12 w-12 opacity-30" />
-        <span className="text-sm">Select a conversation</span>
+        <span className="text-sm">Select A Conversation</span>
       </div>
     );
   }
