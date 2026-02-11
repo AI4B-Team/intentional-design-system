@@ -559,15 +559,25 @@ function AIAgentHeader({
 // ============================================================================
 // MAIN EXPORT: DialerLiveMode
 // ============================================================================
-export function DialerLiveMode() {
+export function DialerLiveMode({ callingMode: externalMode }: { callingMode?: string }) {
   const callState = useCallState();
   const [aiState, setAiState] = React.useState<AIState>('listening');
-  const [callMode, setCallMode] = React.useState<CallMode>('human');
+  const [callMode, setCallMode] = React.useState<CallMode>(externalMode === 'voice' ? 'ai_agent' : 'human');
   const [smsComposerOpen, setSmsComposerOpen] = React.useState(false);
   const [smsMessage, setSmsMessage] = React.useState('');
   const [emailComposerOpen, setEmailComposerOpen] = React.useState(false);
+  const [sayThisText, setSayThisText] = React.useState<string | null>(null);
 
   const contactName = callState.currentContact?.name || 'Unknown';
+  const isHumanMode = callMode === 'human';
+  const modeBadgeLabel = callMode === 'ai_agent' ? 'Voice Agent' : externalMode === 'listen' ? 'Listen Mode' : 'Human Call';
+  const modeBadgeColor = callMode === 'ai_agent' ? 'bg-violet-500/10 text-violet-600' : externalMode === 'listen' ? 'bg-blue-500/10 text-blue-600' : 'bg-emerald-500/10 text-emerald-600';
+
+  // Sync external mode on mount
+  React.useEffect(() => {
+    if (externalMode === 'voice') setCallMode('ai_agent');
+    else setCallMode('human');
+  }, [externalMode]);
 
   // Cycle AI states for demo feel
   React.useEffect(() => {
@@ -581,7 +591,12 @@ export function DialerLiveMode() {
   }, []);
 
   const handleUseSuggestion = (text: string) => {
-    toast.success('Suggestion loaded');
+    if (isHumanMode) {
+      setSayThisText(text);
+      toast.success('Loaded into teleprompter — say this to the prospect');
+    } else {
+      toast.success('Queued as next AI utterance');
+    }
   };
 
   const handleSmsSend = () => {
@@ -612,6 +627,42 @@ export function DialerLiveMode() {
 
       {/* Center: Call View */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        {/* Mode Badge Bar */}
+        <div className="px-5 py-2 border-b border-border/50 flex items-center justify-between flex-shrink-0 bg-muted/20">
+          <div className="flex items-center gap-3">
+            <span className={cn('px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider', modeBadgeColor)}>
+              {modeBadgeLabel.toUpperCase()}
+            </span>
+            {callState.currentContact?.address && (
+              <span className="text-[11px] text-muted-foreground">
+                📍 {callState.currentContact.address}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={callState.toggleHold}
+              className={cn(
+                'p-2 rounded-lg border transition-colors text-xs flex items-center gap-1.5',
+                callState.isOnHold ? 'bg-amber-500/10 border-amber-500/30 text-amber-600' : 'border-border text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <Pause className="h-3.5 w-3.5" />
+              <span className="text-[10px] font-semibold">{callState.isOnHold ? 'Resume' : 'Hold'}</span>
+            </button>
+            <button
+              onClick={callState.toggleRecording}
+              className={cn(
+                'p-2 rounded-lg border transition-colors text-xs flex items-center gap-1.5',
+                callState.isRecording ? 'bg-red-500/10 border-red-500/30 text-red-600' : 'border-border text-muted-foreground hover:text-foreground'
+              )}
+            >
+              <span className={cn('w-2 h-2 rounded-full flex-shrink-0', callState.isRecording ? 'bg-red-500 animate-pulse' : 'bg-muted-foreground/30')} />
+              <span className="text-[10px] font-semibold">{callState.isRecording ? 'Recording' : 'Record'}</span>
+            </button>
+          </div>
+        </div>
+
         {/* AI Agent header (shown in AI mode) */}
         {callMode === 'ai_agent' && (
           <AIAgentHeader
@@ -644,6 +695,30 @@ export function DialerLiveMode() {
           onSmsChange={setSmsMessage}
           onSmsSend={handleSmsSend}
         />
+
+        {/* "Say This" Teleprompter Bar (Human Mode) */}
+        {sayThisText && isHumanMode && (
+          <div className="border-t border-primary/20 bg-primary/5 px-5 py-3 flex-shrink-0 flex items-center gap-3 animate-in slide-in-from-bottom-2 duration-200">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-[10px] font-bold tracking-wider uppercase text-primary">SAY THIS</span>
+            </div>
+            <div className="flex-1 text-[13px] text-foreground font-medium leading-relaxed">{sayThisText}</div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <button
+                onClick={() => { navigator.clipboard.writeText(sayThisText); toast.success('Copied to clipboard'); }}
+                className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </button>
+              <button
+                onClick={() => setSayThisText(null)}
+                className="p-1.5 rounded-lg border border-border text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right: Strategy Panel */}

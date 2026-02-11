@@ -912,10 +912,9 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView() {
+function DialerView({ callingMode, setCallingMode }: { callingMode: string; setCallingMode: (m: string) => void }) {
   const callState = useCallState();
   const navigate = useNavigate();
-  const [callingMode, setCallingMode] = useState("start");
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
   const [calledContactIds, setCalledContactIds] = useState<Set<string>>(new Set());
@@ -933,17 +932,12 @@ function DialerView() {
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
+    setCalledContactIds(prev => new Set(prev).add(item.id));
     if (callingMode === "voice") {
       toast.info(`AI Voice Agent calling ${item.name}...`, { duration: 3000 });
-      setCalledContactIds(prev => new Set(prev).add(item.id));
-      return;
-    }
-    if (callingMode === "listen") {
+    } else if (callingMode === "listen") {
       toast.info(`Listen Mode active — monitoring call to ${item.name}`, { duration: 3000 });
-      setCalledContactIds(prev => new Set(prev).add(item.id));
-      return;
     }
-    setCalledContactIds(prev => new Set(prev).add(item.id));
     callState.startCall({
       id: item.id,
       name: item.name,
@@ -953,14 +947,12 @@ function DialerView() {
   };
 
   const handleStartPowerDial = () => {
-    if (callingMode === "voice") {
-      toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
-      setCalledContactIds(new Set(dialerContacts.map(c => c.id)));
-      return;
-    }
     if (callingMode === "listen") {
       toast.info("Listen Mode activated — ready to capture external calls");
       return;
+    }
+    if (callingMode === "voice") {
+      toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
     }
     const queueContacts = dialerContacts.map(item => ({
       id: item.id,
@@ -1514,6 +1506,7 @@ export default function Communications() {
   const updateDealSource = useUpdateDealSource();
   const deleteDealSource = useDeleteDealSource();
   const [activeView, setActiveView] = useState("activity");
+  const [dialerCallingMode, setDialerCallingMode] = useState("start");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
@@ -1635,6 +1628,35 @@ export default function Communications() {
     setSendChannel("sms");
     toast.info("Quick reply loaded — press Enter to send");
   }, []);
+
+  // Save call summary to All Activity when a call ends
+  const prevCallActiveRef = React.useRef(callState.isCallActive);
+  React.useEffect(() => {
+    if (prevCallActiveRef.current && !callState.isCallActive && callState.callStatus === "ended" && callState.currentContact) {
+      const contact = callState.currentContact;
+      const now = new Date();
+      const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+      const mins = Math.floor(callState.callDuration / 60);
+      const secs = callState.callDuration % 60;
+      const durStr = `${mins}:${secs.toString().padStart(2, "0")}`;
+      const modeStr = dialerCallingMode === "voice" ? "Voice Agent" : dialerCallingMode === "listen" ? "Listen Mode" : "Human";
+      
+      const callSummary: Activity = {
+        id: `call_${Date.now()}`,
+        channel: "call",
+        direction: "outbound",
+        timestamp: timeStr,
+        content: `${modeStr} call — ${durStr} duration. Follow up recommended.`,
+        sentiment: "neutral",
+      };
+
+      setLocalActivities(prev => ({
+        ...prev,
+        [contact.id]: [...(prev[contact.id] || contacts.find(c => c.id === contact.id)?.activities || []), callSummary],
+      }));
+    }
+    prevCallActiveRef.current = callState.isCallActive;
+  }, [callState.isCallActive, callState.callStatus]);
 
   const handleSelectContact = useCallback((id: string) => {
     setSelectedContactId(id);
@@ -1818,10 +1840,10 @@ export default function Communications() {
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           ) : callState.isCallActive ? (
-            <DialerLiveMode />
+            <DialerLiveMode callingMode={dialerCallingMode} />
           ) : (
             <>
-              <DialerView />
+              <DialerView callingMode={dialerCallingMode} setCallingMode={setDialerCallingMode} />
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           )}
