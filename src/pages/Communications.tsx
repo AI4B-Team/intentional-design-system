@@ -18,8 +18,6 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
-  MoreVertical,
-  Pencil,
   Play, 
   Mic,
   ArrowDownLeft,
@@ -38,15 +36,6 @@ import {
   Home,
   Calendar,
   Copy,
-  Zap,
-  BarChart3,
-  Wand2,
-  StickyNote,
-  Shield,
-  Clock,
-  TrendingUp,
-  AlertTriangle,
-  Target,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -393,8 +382,7 @@ function ConversationThread({
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
 }) {
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
 
   if (!contact) {
     return (
@@ -415,88 +403,58 @@ function ConversationThread({
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Thread Header - Fixed */}
-      <div className="border-b border-border flex-shrink-0">
-        <div className="px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
-              {contact.avatar}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
-              </div>
-              <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
-            </div>
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+            {contact.avatar}
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                contactDetailsOpen
-                  ? "border-primary text-primary bg-primary/5"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {contactDetailsOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-              Details
-            </button>
-            <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-              <Phone className="h-3.5 w-3.5" /> Call
-            </button>
-            <button
-              onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <MessageCircle className="h-3.5 w-3.5" /> SMS
-            </button>
-            <button
-              onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Mail className="h-3.5 w-3.5" /> Email
-            </button>
-
-            {/* 3-dot menu */}
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <MoreVertical className="h-4 w-4" />
-              </button>
-              {menuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-popover border border-border rounded-lg shadow-lg py-1">
-                    <button
-                      onClick={() => { setMenuOpen(false); toast.info("Edit contact coming soon"); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Edit Contact
-                    </button>
-                    <button
-                      onClick={() => { setMenuOpen(false); toast.info("Delete contact coming soon"); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Delete Contact
-                    </button>
-                  </div>
-                </>
-              )}
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
             </div>
+            <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
         </div>
+        <div className="flex gap-2">
+          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+            <Phone className="h-3.5 w-3.5" /> Call
+          </button>
+          <button
+            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <MessageCircle className="h-3.5 w-3.5" /> SMS
+          </button>
+          <button
+            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Mail className="h-3.5 w-3.5" /> Email
+          </button>
+        </div>
+      </div>
 
-        {/* Contact Details - Expandable */}
+      {/* Contact Info Card - Collapsible */}
+      <div className="border-b border-border bg-muted/30 flex-shrink-0">
+        <button
+          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
+          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span>Contact Details</span>
+          {contactDetailsOpen ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5" />
+          )}
+        </button>
         {contactDetailsOpen && (
-          <div className="px-5 pb-3 border-t border-border/50 pt-3 bg-muted/30">
+          <div className="px-5 pb-3">
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2 text-xs">
                 <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -588,107 +546,37 @@ function ConversationThread({
         })}
       </div>
 
-      {/* Command Surface Input */}
-      <div className="border-t border-border flex-shrink-0">
-        {/* Action bar */}
-        <div className="px-5 pt-2.5 pb-1 flex items-center gap-1">
-          {/* Channel toggles */}
-          {[
-            { key: "sms", label: "SMS", icon: MessageCircle, color: "text-blue-500 bg-blue-500/10" },
-            { key: "email", label: "Email", icon: Mail, color: "text-amber-500 bg-amber-500/10" },
-            { key: "note", label: "Note", icon: StickyNote, color: "text-muted-foreground bg-muted" },
-          ].map(ch => (
-            <button
-              key={ch.key}
-              onClick={() => onSendChannelChange(ch.key)}
-              className={cn(
-                "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all",
-                sendChannel === ch.key
-                  ? cn(ch.color, "ring-1 ring-current/20")
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              <ch.icon className="h-3 w-3" />
-              {ch.label}
-            </button>
-          ))}
-
-          <div className="h-4 w-px bg-border mx-1" />
-
-          {/* AI power actions */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => {
-                  if (!messageInput.trim()) {
-                    toast.info("Type a message first, then rewrite with AI");
-                    return;
-                  }
-                  toast.success("AI rewrite applied");
-                }}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
-              >
-                <Wand2 className="h-3 w-3" />
-                Rewrite
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Rewrite with AI</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => onMessageInputChange(messageInput + " [Offer Range: $XX,XXX - $XX,XXX]")}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
-              >
-                <BarChart3 className="h-3 w-3" />
-                Offer
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Insert offer range</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => {
-                  const directive = contact.activities[contact.activities.length - 1]?.aiSuggestion;
-                  if (directive) {
-                    onMessageInputChange(directive);
-                    toast.success("AI directive loaded");
-                  } else {
-                    toast.info("No active directive available");
-                  }
-                }}
-                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
-              >
-                <Zap className="h-3 w-3" />
-                Directive
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Follow AI directive</TooltipContent>
-          </Tooltip>
-        </div>
-
-        {/* Input row */}
-        <div className="px-5 pb-3 pt-1 flex gap-2.5 items-center">
-          <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
-            <input
-              placeholder={sendChannel === "note" ? "Add internal note..." : sendChannel === "email" ? "Compose email..." : "Type a message..."}
-              value={messageInput}
-              onChange={e => onMessageInputChange(e.target.value)}
-              onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
-            />
-          </div>
+      {/* Quick Reply */}
+      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
+        <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
+          <input
+            placeholder="Type a message..."
+            value={messageInput}
+            onChange={e => onMessageInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
+          />
           <button
-            onClick={onSendMessage}
-            disabled={!messageInput.trim()}
-            className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => {
+              const channels = ["sms", "email"];
+              const idx = channels.indexOf(sendChannel);
+              onSendChannelChange(channels[(idx + 1) % channels.length]);
+            }}
+            className={cn(
+              "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
+              sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"
+            )}
           >
-            <Send className="h-4 w-4" />
+            {sendChannel.toUpperCase()}
           </button>
         </div>
+        <button
+          onClick={onSendMessage}
+          disabled={!messageInput.trim()}
+          className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Send className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
@@ -706,46 +594,28 @@ function CoPilotPanel({
   activeView: string;
   onQuickReply: (text: string) => void;
 }) {
-  const { isCallActive, callDuration, transcript, sentiment, sentimentScore, currentCallPhase, aiSuggestions } = useCallState();
-
-  const formatTimer = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-  };
-
-  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
-  const phaseIdx = PHASES.indexOf(currentCallPhase);
-
   return (
-    <div className="w-[400px] border-l border-primary/10 flex flex-col overflow-hidden bg-gradient-to-b from-primary/[0.03] to-muted/40 shadow-[-2px_0_12px_-4px_hsl(var(--primary)/0.08)]">
-      {/* Header — elevated */}
-      <div className="p-4 border-b border-primary/10 flex items-center justify-between bg-primary/[0.04]">
+    <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+      {/* Header */}
+      <div className="p-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/15 flex items-center justify-center shadow-sm">
-            <Sparkles className="h-4 w-4 text-primary" />
+          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
           </div>
           <div>
-            <div className="text-[13px] font-bold text-foreground tracking-tight">AI Command Center</div>
-            <div className="text-[10px] text-muted-foreground">
-              {isCallActive ? "Live call intelligence" : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
+            <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
+            <div className="text-[11px] text-muted-foreground">
+              {activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
             </div>
           </div>
         </div>
         {contact && (
-          <div className={cn(
-            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
-            isCallActive
-              ? "bg-red-500/10 border-red-500/20"
-              : "bg-emerald-500/10 border-emerald-500/20"
-          )}>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <span className="relative flex h-2 w-2">
-              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", isCallActive ? "bg-red-400" : "bg-emerald-400")} />
-              <span className={cn("relative inline-flex rounded-full h-2 w-2", isCallActive ? "bg-red-500" : "bg-emerald-500")} />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className={cn("text-[10px] font-bold tracking-wider uppercase", isCallActive ? "text-red-600" : "text-emerald-600")}>
-              {isCallActive ? "LIVE" : "AI Active"}
-            </span>
+            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">AI Active</span>
           </div>
         )}
       </div>
@@ -756,122 +626,7 @@ function CoPilotPanel({
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
           </div>
-        ) : isCallActive ? (
-          /* ============== LIVE CALL MODE ============== */
-          <div className="space-y-3">
-            {/* Live Timer & Phase */}
-            <div className="p-3.5 rounded-lg border border-primary/20 bg-primary/[0.06]">
-              <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5 text-primary" />
-                  <span className="text-xl font-mono font-bold text-foreground tracking-tight">{formatTimer(callDuration)}</span>
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary uppercase tracking-wider">
-                  {currentCallPhase}
-                </span>
-              </div>
-              {/* Phase Progress */}
-              <div className="flex gap-0.5">
-                {PHASES.map((phase, i) => (
-                  <div key={phase} className="flex-1">
-                    <div className={cn(
-                      "h-1.5 rounded-full transition-all",
-                      i < phaseIdx ? "bg-primary" : i === phaseIdx ? "bg-primary animate-pulse" : "bg-muted"
-                    )} />
-                    <span className={cn(
-                      "text-[8px] mt-0.5 block text-center leading-tight",
-                      i <= phaseIdx ? "text-primary font-semibold" : "text-muted-foreground"
-                    )}>{phase.split(" ")[0]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Live Sentiment */}
-            <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Live Sentiment</span>
-                <span className={cn(
-                  "text-[11px] font-bold capitalize",
-                  sentiment === "positive" ? "text-emerald-600" : sentiment === "negative" ? "text-red-500" : "text-amber-500"
-                )}>{sentiment}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div
-                  className={cn(
-                    "h-full rounded-full transition-all duration-700",
-                    sentiment === "positive" ? "bg-emerald-500" : sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
-                  )}
-                  style={{ width: `${sentimentScore}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Objection Detection */}
-            <div className="p-3.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.06]">
-              <div className="text-[10px] font-semibold text-amber-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <AlertTriangle className="h-3 w-3" /> Objection Detection
-              </div>
-              <div className="text-xs text-foreground leading-relaxed">
-                {transcript.length > 2
-                  ? "Prospect expressed timeline concerns. Pivot to urgency-based framing."
-                  : "Listening for objections..."}
-              </div>
-            </div>
-
-            {/* Say This Next */}
-            <div className="p-3.5 rounded-lg border border-primary/25 bg-primary/[0.06]">
-              <div className="text-[10px] font-bold text-primary uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Target className="h-3 w-3" /> Say This Next
-              </div>
-              <div className="space-y-2">
-                {aiSuggestions.slice(0, 3).map(s => (
-                  <button
-                    key={s.id}
-                    onClick={() => onQuickReply(s.text)}
-                    className="w-full text-left p-2.5 bg-background/60 border border-primary/15 rounded-md text-xs text-foreground leading-relaxed hover:border-primary/40 hover:bg-primary/5 transition-all group"
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={cn(
-                        "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase",
-                        s.type === "question" ? "bg-blue-500/10 text-blue-500" :
-                        s.type === "response" ? "bg-primary/10 text-primary" :
-                        "bg-muted text-muted-foreground"
-                      )}>{s.type}</span>
-                      <span className="text-[10px] text-muted-foreground">{s.confidence}%</span>
-                    </div>
-                    {s.text}
-                  </button>
-                ))}
-                {aiSuggestions.length === 0 && (
-                  <div className="text-xs text-muted-foreground italic">Generating suggestions...</div>
-                )}
-              </div>
-            </div>
-
-            {/* Live Coaching */}
-            <div className="p-3.5 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.05]">
-              <div className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <TrendingUp className="h-3 w-3" /> Call Coaching
-              </div>
-              <div className="space-y-1.5 text-xs text-foreground">
-                <div className="flex items-start gap-2">
-                  <Shield className="h-3 w-3 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Maintain a 60/40 listen-to-talk ratio</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Shield className="h-3 w-3 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Mirror their language about the property</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Shield className="h-3 w-3 text-emerald-500 flex-shrink-0 mt-0.5" />
-                  <span>Ask about their timeline before discussing price</span>
-                </div>
-              </div>
-            </div>
-          </div>
         ) : (
-          /* ============== PASSIVE / NO-CALL MODE ============== */
           <div className="space-y-3">
             {/* Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
@@ -892,9 +647,9 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Directive */}
-            <div className="p-3.5 bg-primary/[0.06] rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-bold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+            {/* Next Best Action */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Directive
               </div>
               <div className="text-xs text-foreground leading-relaxed font-medium">
