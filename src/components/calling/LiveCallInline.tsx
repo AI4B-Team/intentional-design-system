@@ -337,11 +337,13 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
         {/* SAY THIS NEXT — Horizontal suggestion cards anchored at bottom */}
         {aiSuggestions.length > 0 && (
           <div className="border-t border-border bg-muted/20 px-5 py-3 flex-shrink-0 space-y-3">
-            {/* AI Status Bar */}
+            {/* Say This Next + Action Buttons */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Bot className="h-4 w-4" />
-                <span className="font-medium text-foreground">AI Agent Active</span>
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                  <MessageSquareDashed className="h-3.5 w-3.5" /> Say This Next
+                </span>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
@@ -363,11 +365,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                   Offer
                 </button>
               </div>
-            </div>
-
-            {/* Say This Next */}
-            <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-              <MessageSquareDashed className="h-3.5 w-3.5 text-muted-foreground" /> Say This Next
             </div>
             <div className="flex gap-3">
               {aiSuggestions.slice(0, 3).map(s => (
