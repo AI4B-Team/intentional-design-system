@@ -1767,12 +1767,17 @@ export default function Communications() {
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
             {callState.isCallActive && (
-              <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse", modeTheme.badge)}>
-                <span className={cn("relative flex h-2 w-2")}>
-                  <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", modeTheme.dot)} />
-                  <span className={cn("relative inline-flex rounded-full h-2 w-2", modeTheme.dot)} />
+              <div className="flex items-center gap-3">
+                <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse", modeTheme.badge)}>
+                  <span className={cn("relative flex h-2 w-2")}>
+                    <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", modeTheme.dot)} />
+                    <span className={cn("relative inline-flex rounded-full h-2 w-2", modeTheme.dot)} />
+                  </span>
+                  <span className={modeTheme.badgeText}>LIVE · {modeTheme.label}</span>
+                </div>
+                <span className="text-sm font-mono font-bold text-foreground tabular-nums">
+                  {String(Math.floor(callState.callDuration / 60)).padStart(2, "0")}:{String(callState.callDuration % 60).padStart(2, "0")}
                 </span>
-                <span className={modeTheme.badgeText}>LIVE · {modeTheme.label}</span>
               </div>
             )}
           </div>
