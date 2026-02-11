@@ -53,29 +53,34 @@ export function LiveCallInline({ className, onOpenSms, onOpenEmail }: LiveCallIn
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          {/* Communication toggles */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onOpenSms}>
-                <MessageSquare className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">SMS</TooltipContent>
-          </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onOpenEmail}>
-                <Mail className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">Email</TooltipContent>
-          </Tooltip>
+        <div className="flex items-center gap-2">
+          {/* Communication type buttons — matching reference style */}
+          <button
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium"
+            disabled
+          >
+            <PhoneCall className="h-4 w-4" />
+            Call
+          </button>
+          <button
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
+            onClick={onOpenSms}
+          >
+            <MessageSquare className="h-4 w-4" />
+            SMS
+          </button>
+          <button
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+            onClick={onOpenEmail}
+          >
+            <Mail className="h-4 w-4" />
+            Email
+          </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost" className="h-8 w-8">
+              <button className="h-9 w-9 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors">
                 <MoreVertical className="h-4 w-4" />
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={onOpenSms}>Send SMS</DropdownMenuItem>
@@ -83,7 +88,7 @@ export function LiveCallInline({ className, onOpenSms, onOpenEmail }: LiveCallIn
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <div className="w-px h-6 bg-border mx-1" />
+          <div className="w-px h-6 bg-border mx-2" />
 
           {/* Call controls */}
           <CallControls compact />
