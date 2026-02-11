@@ -436,6 +436,12 @@ function ConversationThread({
   onDelete?: () => void;
 }) {
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
+  const composerInputRef = React.useRef<HTMLInputElement>(null);
+
+  const focusComposer = React.useCallback((channel?: string) => {
+    if (channel) onSendChannelChange(channel);
+    setTimeout(() => composerInputRef.current?.focus(), 50);
+  }, [onSendChannelChange]);
 
   if (!contact) {
     return (
@@ -473,7 +479,7 @@ function ConversationThread({
             <Phone className="h-3.5 w-3.5" /> Call
           </button>
           <button
-            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+            onClick={() => focusComposer("sms")}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
@@ -482,7 +488,7 @@ function ConversationThread({
             <MessageCircle className="h-3.5 w-3.5" /> SMS
           </button>
           <button
-            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+            onClick={() => focusComposer("email")}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
@@ -573,7 +579,7 @@ function ConversationThread({
       </div>
 
       {/* Activity Timeline */}
-      <div className="flex-1 min-h-0 overflow-auto p-5">
+      <div className="flex-1 min-h-0 overflow-auto p-5 pb-2">
         {[...contact.activities].reverse().map((act, i) => {
           const config = CHANNEL_CONFIG[act.channel];
           const Icon = config?.icon || MessageCircle;
@@ -618,6 +624,7 @@ function ConversationThread({
       <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
         <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
           <input
+            ref={composerInputRef}
             placeholder="Type a message..."
             value={messageInput}
             onChange={e => onMessageInputChange(e.target.value)}
@@ -1464,6 +1471,7 @@ export default function Communications() {
 
   const handleQuickReply = useCallback((text: string) => {
     setMessageInput(text);
+    setSendChannel("sms");
     toast.info("Quick reply loaded — press Enter to send");
   }, []);
 
