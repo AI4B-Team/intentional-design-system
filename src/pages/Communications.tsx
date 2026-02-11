@@ -290,7 +290,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
             {contact.name}
           </span>
           {/* Hover actions */}
-          <div className="hidden group-hover:flex items-center gap-0.5 flex-shrink-0">
+          <div className="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={e => { e.stopPropagation(); onCall?.(); }}
               className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
@@ -314,7 +314,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
             </button>
           </div>
           {/* Timestamp (hidden on hover) */}
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:hidden">
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:opacity-0 transition-opacity">
             {contact.lastActivity}
           </span>
         </div>
