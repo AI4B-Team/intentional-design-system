@@ -21,6 +21,14 @@ import {
   ArrowUpRight,
   PanelLeftClose,
   PanelLeftOpen,
+  Upload,
+  Plus,
+  Download,
+  Trash2,
+  FolderOpen,
+  UserPlus,
+  X,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -573,6 +581,14 @@ function DialerView() {
   const callState = useCallState();
   const [callingMode, setCallingMode] = useState("start");
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
+  const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
+  const [showManualEntry, setShowManualEntry] = useState(false);
+  const [manualName, setManualName] = useState("");
+  const [manualPhone, setManualPhone] = useState("");
+  const [manualAddress, setManualAddress] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
   const modes = [
     { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
     { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
@@ -589,7 +605,7 @@ function DialerView() {
   };
 
   const handleStartPowerDial = () => {
-    const queueContacts = MOCK_DIALER_QUEUE.map(item => ({
+    const queueContacts = dialerContacts.map(item => ({
       id: item.id,
       name: item.name,
       phone: item.phone,
@@ -618,7 +634,120 @@ function DialerView() {
     }
   };
 
-  // Show auto-advance countdown
+  // CSV parsing
+  const parseCSV = (text: string) => {
+    const lines = text.trim().split("\n");
+    if (lines.length < 2) {
+      toast.error("CSV must have a header row and at least one data row");
+      return;
+    }
+    const header = lines[0].toLowerCase().split(",").map(h => h.trim().replace(/"/g, ""));
+    const nameIdx = header.findIndex(h => h.includes("name"));
+    const phoneIdx = header.findIndex(h => h.includes("phone") || h.includes("number"));
+    const addressIdx = header.findIndex(h => h.includes("address"));
+
+    if (phoneIdx === -1) {
+      toast.error("CSV must contain a 'phone' or 'number' column");
+      return;
+    }
+
+    const newContacts: typeof MOCK_DIALER_QUEUE = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(",").map(c => c.trim().replace(/"/g, ""));
+      const phone = cols[phoneIdx];
+      if (!phone) continue;
+      newContacts.push({
+        id: `csv_${Date.now()}_${i}`,
+        name: nameIdx >= 0 ? cols[nameIdx] || "Unknown" : "Unknown",
+        phone,
+        address: addressIdx >= 0 ? cols[addressIdx] || "" : "",
+        time: "",
+        type: "Imported",
+      });
+    }
+
+    if (newContacts.length === 0) {
+      toast.error("No valid contacts found in CSV");
+      return;
+    }
+
+    setDialerContacts(prev => [...prev, ...newContacts]);
+    toast.success(`${newContacts.length} contacts imported`);
+  };
+
+  const handleFileUpload = (file: File) => {
+    if (!file.name.endsWith(".csv")) {
+      toast.error("Only CSV files are supported");
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      toast.error("File must be under 1MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (text) parseCSV(text);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileUpload(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => setIsDragging(false);
+
+  const handleManualAdd = () => {
+    if (!manualPhone.trim()) {
+      toast.error("Phone number is required");
+      return;
+    }
+    const newContact = {
+      id: `manual_${Date.now()}`,
+      name: manualName.trim() || "Unknown",
+      phone: manualPhone.trim(),
+      address: manualAddress.trim(),
+      time: "",
+      type: "Manual" as const,
+    };
+    setDialerContacts(prev => [...prev, newContact]);
+    setManualName("");
+    setManualPhone("");
+    setManualAddress("");
+    setShowManualEntry(false);
+    toast.success(`${newContact.name} added to dialing list`);
+  };
+
+  const handleRemoveContact = (id: string) => {
+    setDialerContacts(prev => prev.filter(c => c.id !== id));
+  };
+
+  const handleClearList = () => {
+    setDialerContacts([]);
+    toast.info("Dialing list cleared");
+  };
+
+  const downloadTemplate = () => {
+    const csv = "name,phone,address\nJohn Doe,(555) 123-4567,123 Main St\nJane Smith,(555) 987-6543,456 Oak Ave\n";
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dialer_template.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Template downloaded");
+  };
+
   const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
 
   return (
@@ -646,15 +775,15 @@ function DialerView() {
           <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
           <button
             onClick={handleStartPowerDial}
-            disabled={callState.isCallActive}
+            disabled={callState.isCallActive || dialerContacts.length === 0}
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
-              callState.isCallActive
+              callState.isCallActive || dialerContacts.length === 0
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
                 : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
-            {callState.isDialerSessionActive ? "Session Active" : "Start Power Dial"}
+            {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
           </button>
         </div>
         <div className="flex gap-3">
@@ -681,120 +810,281 @@ function DialerView() {
       </div>
 
       <div className="flex gap-5">
-        {/* Call Queue */}
-        <div className="flex-1 p-5 bg-muted/30 rounded-xl border border-border">
-          <div className="flex justify-between items-center mb-3.5">
-            <div className="text-[13px] font-semibold text-foreground">Today's Queue</div>
-            <span className="text-xs text-primary cursor-pointer font-medium">View Calendar</span>
-          </div>
-          {MOCK_DIALER_QUEUE.map((item, i) => {
-            const isCurrentInQueue = callState.isDialerSessionActive && callState.dialerQueue[callState.dialerQueueIndex]?.id === item.id;
-            const isCalledInQueue = callState.isDialerSessionActive && i < callState.dialerQueueIndex;
-            return (
-              <div
-                key={item.id}
-                className={cn(
-                  "flex items-center gap-3 py-3",
-                  i < MOCK_DIALER_QUEUE.length - 1 && "border-b border-border/50",
-                  isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
-                  isCalledInQueue && "opacity-50"
-                )}
-              >
-                <div className={cn(
-                  "w-9 h-9 rounded-md flex items-center justify-center text-[11px] font-semibold",
-                  isCurrentInQueue ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                )}>
-                  {item.name.split(" ").map(n => n[0]).join("")}
-                </div>
-                <div className="flex-1">
-                  <div className="text-[13px] font-medium text-foreground">{item.name}</div>
-                  <div className="text-[11px] text-muted-foreground">{item.address}</div>
-                </div>
-                <div className="flex items-center gap-2.5 text-right">
-                  <span className="text-xs text-muted-foreground">{item.time}</span>
-                  <span className={cn(
-                    "px-2 py-0.5 rounded-full text-[10px] font-semibold",
-                    item.type === "Follow-up" ? "bg-emerald-500/10 text-emerald-600" :
-                    item.type === "Callback" ? "bg-violet-500/10 text-violet-500" :
-                    "bg-blue-500/10 text-blue-500"
-                  )}>
-                    {isCalledInQueue ? "Called" : item.type}
-                  </span>
+        {/* Left column: Dialing List + Import */}
+        <div className="flex-1 flex flex-col gap-5">
+          {/* My Dialing List */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <div className="flex justify-between items-center mb-3.5">
+              <div className="text-[13px] font-semibold text-foreground">
+                My Dialing List
+                <span className="ml-2 text-xs text-muted-foreground font-normal">({dialerContacts.length} contacts)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {dialerContacts.length > 0 && (
                   <button
-                    onClick={() => handleCallFromQueue(item)}
-                    disabled={callState.isCallActive}
-                    className={cn(
-                      "flex items-center gap-1 px-2.5 py-1.5 rounded border text-[11px] font-medium transition-colors",
-                      callState.isCallActive
-                        ? "border-border text-muted-foreground/50 cursor-not-allowed"
-                        : "border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
-                    )}
+                    onClick={handleClearList}
+                    className="text-[11px] text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
                   >
-                    <Phone className="h-3 w-3" /> Call
+                    <Trash2 className="h-3 w-3" /> Clear
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {dialerContacts.length === 0 ? (
+              /* Empty state with import */
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-xl p-8 text-center transition-all",
+                  isDragging ? "border-primary bg-primary/5" : "border-border"
+                )}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+              >
+                <FolderOpen className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
+                <div className="text-sm font-semibold text-foreground mb-1">Import Numbers</div>
+                <div className="text-xs text-muted-foreground mb-1">Drag & drop a CSV file</div>
+                <button onClick={downloadTemplate} className="text-xs text-primary font-medium hover:underline mb-4">
+                  Download template
+                </button>
+                <div className="flex flex-col gap-2 max-w-[280px] mx-auto">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+                  >
+                    <Upload className="h-3.5 w-3.5" /> Choose A File
+                  </button>
+                  <button
+                    onClick={() => setShowManualEntry(true)}
+                    className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Plus className="h-3.5 w-3.5" /> Enter Manually
                   </button>
                 </div>
+                <div className="text-[10px] text-muted-foreground mt-3">Up to 1MB or 1,000 rows · CSV file only</div>
               </div>
-            );
-          })}
-        </div>
+            ) : (
+              /* Contact list */
+              <div>
+                {/* Import actions row */}
+                <div className="flex gap-2 mb-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file);
+                      e.target.value = "";
+                    }}
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+                  >
+                    <Upload className="h-3 w-3" /> Import CSV
+                  </button>
+                  <button
+                    onClick={() => setShowManualEntry(!showManualEntry)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+                  >
+                    <UserPlus className="h-3 w-3" /> Add Contact
+                  </button>
+                  <button
+                    onClick={downloadTemplate}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/50 transition-colors ml-auto"
+                  >
+                    <Download className="h-3 w-3" /> Template
+                  </button>
+                </div>
 
-        {/* Call Scripts */}
-        <div className="w-[280px] p-5 bg-muted/30 rounded-xl border border-border">
-          <div className="flex justify-between items-center mb-3.5">
-            <div className="text-[13px] font-semibold text-foreground">Call Scripts</div>
-            <span className="text-xs text-primary cursor-pointer font-medium">Manage</span>
-          </div>
-          {MOCK_CALL_SCRIPTS.map((script) => (
-            <div
-              key={script.id}
-              className={cn(
-                "p-3.5 rounded-lg mb-2.5 border cursor-pointer transition-all",
-                selectedScriptId === script.id
-                  ? "bg-primary/5 border-primary/30"
-                  : "bg-muted/50 border-border/50 hover:border-primary/30"
-              )}
-              onClick={() => handleSelectScript(script.id)}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <div className="text-[13px] font-semibold text-foreground flex items-center gap-1.5">
-                    {script.name}
-                    {selectedScriptId === script.id && (
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary text-primary-foreground font-bold">SELECTED</span>
-                    )}
+                {/* Manual entry form */}
+                {showManualEntry && (
+                  <div className="p-3.5 mb-3 bg-muted/50 rounded-lg border border-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-foreground">Add Contact</span>
+                      <button onClick={() => setShowManualEntry(false)} className="text-muted-foreground hover:text-foreground">
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <input
+                      placeholder="Name"
+                      value={manualName}
+                      onChange={e => setManualName(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50"
+                    />
+                    <input
+                      placeholder="Phone number *"
+                      value={manualPhone}
+                      onChange={e => setManualPhone(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50"
+                    />
+                    <input
+                      placeholder="Address (optional)"
+                      value={manualAddress}
+                      onChange={e => setManualAddress(e.target.value)}
+                      className="w-full px-3 py-2 rounded-md border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50"
+                    />
+                    <button
+                      onClick={handleManualAdd}
+                      className="w-full px-3 py-2 rounded-md bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors"
+                    >
+                      Add to List
+                    </button>
                   </div>
-                  <div className="text-[10px] font-semibold text-muted-foreground tracking-wider mt-0.5">{script.type}</div>
-                  <div className="text-[11px] text-muted-foreground mt-1">{script.desc}</div>
-                </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="mt-2.5 flex items-center gap-2">
-                <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
-                  <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${script.progress}%` }} />
-                </div>
-                <span className="text-[11px] font-semibold text-primary font-mono">{script.progress}%</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+                )}
 
-      {/* AI Insights */}
-      <div className="p-5 bg-muted/30 rounded-xl border border-border">
-        <div className="text-[13px] font-semibold text-foreground mb-3.5 flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-primary" /> AI Insights
+                {/* Drag-drop zone (subtle) */}
+                <div
+                  className={cn(
+                    "border-2 border-dashed rounded-lg p-2 mb-3 text-center transition-all text-[11px] text-muted-foreground",
+                    isDragging ? "border-primary bg-primary/5" : "border-transparent hover:border-border"
+                  )}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                >
+                  {isDragging ? "Drop CSV here" : "Drag CSV here to add more contacts"}
+                </div>
+
+                {/* Contact rows */}
+                <div className="max-h-[300px] overflow-auto">
+                  {dialerContacts.map((item, i) => {
+                    const isCurrentInQueue = callState.isDialerSessionActive && callState.dialerQueue[callState.dialerQueueIndex]?.id === item.id;
+                    const isCalledInQueue = callState.isDialerSessionActive && i < callState.dialerQueueIndex;
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "flex items-center gap-3 py-3",
+                          i < dialerContacts.length - 1 && "border-b border-border/50",
+                          isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
+                          isCalledInQueue && "opacity-50"
+                        )}
+                      >
+                        <div className={cn(
+                          "w-9 h-9 rounded-md flex items-center justify-center text-[11px] font-semibold",
+                          isCurrentInQueue ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        )}>
+                          {item.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[13px] font-medium text-foreground truncate">{item.name}</div>
+                          <div className="text-[11px] text-muted-foreground truncate">{item.address || item.phone}</div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                            item.type === "Follow-up" ? "bg-emerald-500/10 text-emerald-600" :
+                            item.type === "Callback" ? "bg-violet-500/10 text-violet-500" :
+                            item.type === "Imported" ? "bg-amber-500/10 text-amber-500" :
+                            item.type === "Manual" ? "bg-primary/10 text-primary" :
+                            "bg-blue-500/10 text-blue-500"
+                          )}>
+                            {isCalledInQueue ? "Called" : item.type}
+                          </span>
+                          <button
+                            onClick={() => handleCallFromQueue(item)}
+                            disabled={callState.isCallActive}
+                            className={cn(
+                              "flex items-center gap-1 px-2.5 py-1.5 rounded border text-[11px] font-medium transition-colors",
+                              callState.isCallActive
+                                ? "border-border text-muted-foreground/50 cursor-not-allowed"
+                                : "border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+                            )}
+                          >
+                            <Phone className="h-3 w-3" /> Call
+                          </button>
+                          {!callState.isDialerSessionActive && (
+                            <button
+                              onClick={() => handleRemoveContact(item.id)}
+                              className="p-1 text-muted-foreground/50 hover:text-destructive transition-colors"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="space-y-2.5">
-          {[
-            { icon: "🕐", text: "Best calling hours today: 10 AM - 12 PM based on your success patterns" },
-            { icon: "⚡", text: "5 hot leads haven't been contacted in 3+ days. Consider prioritizing them." },
-            { icon: "💡", text: "Your close rate improves 23% when you mention creative financing options" },
-          ].map((insight, i) => (
-            <div key={i} className="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/50 rounded-md">
-              <span className="text-base">{insight.icon}</span>
-              <span className="text-xs text-muted-foreground">{insight.text}</span>
+
+        {/* Right column: Scripts */}
+        <div className="w-[280px] flex flex-col gap-5">
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <div className="flex justify-between items-center mb-3.5">
+              <div className="text-[13px] font-semibold text-foreground">Call Scripts</div>
+              <span className="text-xs text-primary cursor-pointer font-medium">Manage</span>
             </div>
-          ))}
+            {MOCK_CALL_SCRIPTS.map((script) => (
+              <div
+                key={script.id}
+                className={cn(
+                  "p-3.5 rounded-lg mb-2.5 border cursor-pointer transition-all",
+                  selectedScriptId === script.id
+                    ? "bg-primary/5 border-primary/30"
+                    : "bg-muted/50 border-border/50 hover:border-primary/30"
+                )}
+                onClick={() => handleSelectScript(script.id)}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="text-[13px] font-semibold text-foreground flex items-center gap-1.5">
+                      {script.name}
+                      {selectedScriptId === script.id && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary text-primary-foreground font-bold">SELECTED</span>
+                      )}
+                    </div>
+                    <div className="text-[10px] font-semibold text-muted-foreground tracking-wider mt-0.5">{script.type}</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">{script.desc}</div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div className="mt-2.5 flex items-center gap-2">
+                  <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${script.progress}%` }} />
+                  </div>
+                  <span className="text-[11px] font-semibold text-primary font-mono">{script.progress}%</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* AI Insights */}
+          <div className="p-5 bg-muted/30 rounded-xl border border-border">
+            <div className="text-[13px] font-semibold text-foreground mb-3.5 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" /> AI Insights
+            </div>
+            <div className="space-y-2.5">
+              {[
+                { icon: "🕐", text: "Best calling hours today: 10 AM - 12 PM based on your success patterns" },
+                { icon: "⚡", text: "5 hot leads haven't been contacted in 3+ days. Consider prioritizing them." },
+                { icon: "💡", text: "Your close rate improves 23% when you mention creative financing options" },
+              ].map((insight, i) => (
+                <div key={i} className="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/50 rounded-md">
+                  <span className="text-base">{insight.icon}</span>
+                  <span className="text-xs text-muted-foreground">{insight.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
