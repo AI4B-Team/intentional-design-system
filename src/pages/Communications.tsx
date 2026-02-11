@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
@@ -645,9 +646,11 @@ function CoPilotPanel({
 // ============================================================================
 function DialerView() {
   const callState = useCallState();
+  const navigate = useNavigate();
   const [callingMode, setCallingMode] = useState("start");
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
+  const [calledContactIds, setCalledContactIds] = useState<Set<string>>(new Set());
   const [showManualEntry, setShowManualEntry] = useState(false);
   const [manualName, setManualName] = useState("");
   const [manualPhone, setManualPhone] = useState("");
@@ -662,6 +665,17 @@ function DialerView() {
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
+    if (callingMode === "voice") {
+      toast.info(`AI Voice Agent calling ${item.name}...`, { duration: 3000 });
+      setCalledContactIds(prev => new Set(prev).add(item.id));
+      return;
+    }
+    if (callingMode === "listen") {
+      toast.info(`Listen Mode active — monitoring call to ${item.name}`, { duration: 3000 });
+      setCalledContactIds(prev => new Set(prev).add(item.id));
+      return;
+    }
+    setCalledContactIds(prev => new Set(prev).add(item.id));
     callState.startCall({
       id: item.id,
       name: item.name,
@@ -671,6 +685,15 @@ function DialerView() {
   };
 
   const handleStartPowerDial = () => {
+    if (callingMode === "voice") {
+      toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
+      setCalledContactIds(new Set(dialerContacts.map(c => c.id)));
+      return;
+    }
+    if (callingMode === "listen") {
+      toast.info("Listen Mode activated — ready to capture external calls");
+      return;
+    }
     const queueContacts = dialerContacts.map(item => ({
       id: item.id,
       name: item.name,
@@ -856,7 +879,11 @@ function DialerView() {
           {modes.map(({ key, label, desc, icon: Icon, colorClass, inactiveClass, beta }) => (
             <button
               key={key}
-              onClick={() => setCallingMode(key)}
+              onClick={() => {
+                setCallingMode(key);
+                if (key === "voice") toast.info("Voice Agent mode — AI will handle calls autonomously");
+                if (key === "listen") toast.info("Listen Mode — captures external calls from Zoom, Meet, etc.");
+              }}
               className={cn(
                 "flex-1 p-6 rounded-lg text-center transition-all relative border-2",
                 callingMode === key
@@ -1030,7 +1057,7 @@ function DialerView() {
                 <div className="max-h-[300px] overflow-auto">
                   {dialerContacts.map((item, i) => {
                     const isCurrentInQueue = callState.isDialerSessionActive && callState.dialerQueue[callState.dialerQueueIndex]?.id === item.id;
-                    const isCalledInQueue = callState.isDialerSessionActive && i < callState.dialerQueueIndex;
+                    const isCalledInQueue = (callState.isDialerSessionActive && i < callState.dialerQueueIndex) || calledContactIds.has(item.id);
                     return (
                       <div
                         key={item.id}
@@ -1038,7 +1065,7 @@ function DialerView() {
                           "flex items-center gap-3 py-3",
                           i < dialerContacts.length - 1 && "border-b border-border/50",
                           isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
-                          isCalledInQueue && "opacity-50"
+                          isCalledInQueue && !isCurrentInQueue && "opacity-50"
                         )}
                       >
                         <div className={cn(
@@ -1097,7 +1124,7 @@ function DialerView() {
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
             <div className="flex justify-between items-center mb-3.5">
               <div className="text-[13px] font-semibold text-foreground">Call Scripts</div>
-              <span className="text-xs text-primary cursor-pointer font-medium">Manage</span>
+              <button onClick={() => navigate("/dialer/scripts")} className="text-xs text-primary cursor-pointer font-medium hover:underline">Manage</button>
             </div>
             {MOCK_CALL_SCRIPTS.map((script) => (
               <div
@@ -1121,7 +1148,9 @@ function DialerView() {
                     <div className="text-[10px] font-semibold text-muted-foreground tracking-wider mt-0.5">{script.type}</div>
                     <div className="text-[11px] text-muted-foreground mt-1">{script.desc}</div>
                   </div>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <button onClick={(e) => { e.stopPropagation(); navigate("/dialer/scripts"); }} className="p-1 hover:bg-muted rounded transition-colors">
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </button>
                 </div>
                 <div className="mt-2.5 flex items-center gap-2">
                   <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
