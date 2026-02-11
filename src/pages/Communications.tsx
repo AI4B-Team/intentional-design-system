@@ -413,40 +413,37 @@ function ConversationThread({
       </div>
 
       {/* Contact Info Card - Fixed */}
-      <div className="px-5 py-3 border-b border-border bg-muted/30 flex-shrink-0">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-          <div className="flex items-center gap-2 text-xs">
-            <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+      <div className="px-5 py-2.5 border-b border-border bg-muted/30 flex-shrink-0">
+        <div className="flex items-center gap-4 text-xs flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <Home className="h-3 w-3 text-muted-foreground" />
             <span className="text-muted-foreground">Property:</span>
-            <span className="font-medium text-foreground">{contact.address}</span>
-            <span className="text-muted-foreground/40">·</span>
-            <MapPin className="h-3 w-3 text-muted-foreground flex-shrink-0" />
-            <span className="font-medium text-foreground">Houston, TX 77001</span>
+            <span className="font-medium text-foreground">{contact.address}, Houston, TX 77001</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Phone:</span>
+          <span className="text-border">|</span>
+          <div className="flex items-center gap-1.5">
+            <Phone className="h-3 w-3 text-muted-foreground" />
             <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">(555) 000-0000</button>
             <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-              <Copy className="h-3 w-3 text-muted-foreground" />
+              <Copy className="h-2.5 w-2.5 text-muted-foreground" />
             </button>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Email:</span>
+          <span className="text-border">|</span>
+          <div className="flex items-center gap-1.5">
+            <Mail className="h-3 w-3 text-muted-foreground" />
             <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
             <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-              <Copy className="h-3 w-3 text-muted-foreground" />
+              <Copy className="h-2.5 w-2.5 text-muted-foreground" />
             </button>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Last Contact:</span>
-            <span className="font-medium text-foreground">{contact.lastActivity}</span>
+          <span className="text-border">|</span>
+          <div className="flex items-center gap-1.5">
+            <Calendar className="h-3 w-3 text-muted-foreground" />
+            <span className="text-muted-foreground">{contact.lastActivity}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Lead Score:</span>
+          <span className="text-border">|</span>
+          <div className="flex items-center gap-1.5">
+            <Star className="h-3 w-3 text-muted-foreground" />
             <span className="font-medium text-primary">Hot</span>
           </div>
         </div>
