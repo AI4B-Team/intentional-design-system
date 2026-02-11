@@ -154,7 +154,7 @@ function CallNotesSection({ contactName }: { contactName: string }) {
       />
       <div className="flex items-center justify-between mt-2">
         <span className="text-[10px] text-muted-foreground">
-          {notes.length > 0 ? `${notes.length} chars` : "No notes yet"}
+          {notes.length > 0 ? `${notes.length} chars` : ""}
         </span>
         <button
           onClick={handleSave}
