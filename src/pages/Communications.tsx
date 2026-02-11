@@ -839,13 +839,13 @@ function CoPilotPanel({
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
               <div className="flex items-center gap-3">
-                <div className="text-2xl font-bold text-primary font-mono">72%</div>
                 <div className="flex-1">
                   <div className="h-2 rounded-full bg-muted overflow-hidden">
                     <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
                   </div>
                   <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
                 </div>
+                <div className="text-2xl font-bold text-primary font-mono">72%</div>
               </div>
             </div>
 
