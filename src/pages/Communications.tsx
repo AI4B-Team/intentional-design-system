@@ -863,7 +863,7 @@ function CoPilotPanel({
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
               <div className="flex items-center gap-2.5">
-                <div className="h-2 flex-1 rounded-full bg-muted overflow-hidden">
+                <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
                   <div
                     className={cn("h-full rounded-full transition-all duration-500",
                       callState.sentiment === "positive" ? "bg-emerald-500" :
@@ -896,7 +896,7 @@ function CoPilotPanel({
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
               <div className="flex items-center gap-3">
                 <div className="flex-1">
-                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                  <div className="h-2 rounded-full bg-border overflow-hidden">
                     <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
                   </div>
                   <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
@@ -986,7 +986,7 @@ function CoPilotPanel({
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
               <div className="flex items-center gap-2.5">
-                <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                <div className="h-1.5 flex-1 rounded-full bg-border overflow-hidden">
                   <div
                     className="h-full rounded-full bg-emerald-500 transition-all duration-500"
                     style={{ width: contact.sentiment === "positive" ? "75%" : contact.sentiment === "neutral" ? "50%" : "25%" }}
