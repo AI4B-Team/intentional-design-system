@@ -412,8 +412,44 @@ function ConversationThread({
         </div>
       </div>
 
-      {/* Contact Info Card - Fixed */}
-
+      {/* Contact Details Bar */}
+      <div className="px-5 py-2 border-b border-border bg-muted/20 flex-shrink-0 flex items-center gap-5 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-1.5">
+          <Home className="h-3 w-3" />
+          <span className="font-medium text-foreground">{contact.address}, Houston, TX 77001</span>
+        </div>
+        <span className="text-border">|</span>
+        <div className="flex items-center gap-1.5">
+          <Phone className="h-3 w-3" />
+          <button onClick={onCall} className="font-medium text-primary hover:underline">(555) 000-0000</button>
+          <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Copied"); }} className="p-0.5 hover:bg-muted rounded">
+            <Copy className="h-2.5 w-2.5" />
+          </button>
+        </div>
+        <span className="text-border">|</span>
+        <div className="flex items-center gap-1.5">
+          <Mail className="h-3 w-3" />
+          <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
+          <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Copied"); }} className="p-0.5 hover:bg-muted rounded">
+            <Copy className="h-2.5 w-2.5" />
+          </button>
+        </div>
+        <span className="text-border">|</span>
+        <div className="flex items-center gap-1.5">
+          <span>Lead:</span>
+          <span className="font-semibold text-primary">Hot</span>
+        </div>
+        <span className="text-border">|</span>
+        <div className="flex items-center gap-1.5">
+          <span>Equity:</span>
+          <span className="font-medium text-foreground">$82K</span>
+        </div>
+        <span className="text-border">|</span>
+        <div className="flex items-center gap-1.5">
+          <span>Attempts:</span>
+          <span className="font-medium text-foreground">{contact.activities.length}</span>
+        </div>
+      </div>
       {/* Activity Timeline */}
       <div className="flex-1 min-h-0 overflow-auto p-5">
         {[...contact.activities].reverse().map((act, i) => {
