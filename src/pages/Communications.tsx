@@ -4,38 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
-import { DialerLiveMode } from "@/components/dialer/live-mode";
-import { DialerStatsBar } from "@/components/dialer/live-mode/DialerStatsBar";
-import { DialerCoPilotPanel, type DialerContact } from "@/components/dialer/live-mode/DialerCoPilotPanel";
-import { DialerSmsModal, DialerEmailModal } from "@/components/dialer/live-mode/DialerQuickSendModals";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useDealSources, type DealSource } from "@/hooks/useDealSources";
 import {
   Phone,
   MessageCircle,
@@ -48,6 +18,8 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
+  MoreVertical,
+  Pencil,
   Play, 
   Mic,
   ArrowDownLeft,
@@ -66,11 +38,39 @@ import {
   Home,
   Calendar,
   Copy,
-  MoreVertical,
-  Edit,
+  Zap,
+  BarChart3,
+  Wand2,
+  StickyNote,
+  Shield,
+  Clock,
+  TrendingUp,
+  AlertTriangle,
+  Target,
+  Bot,
+  Eye,
+  Gauge,
+  Hand,
+  Pause,
+  SkipForward,
+  RefreshCw,
+  Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
+// ============================================================================
+// OPERATING MODE
+// ============================================================================
+type OperatingMode = "human" | "hybrid" | "ai_agent";
+
+const MODE_CONFIG: Record<OperatingMode, { label: string; desc: string; icon: React.ElementType; accentClass: string; bgTint: string; badgeClass: string }> = {
+  human: { label: "Human", desc: "You talk, AI guides", icon: Play, accentClass: "text-emerald-600", bgTint: "bg-emerald-500/[0.03]", badgeClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+  hybrid: { label: "Hybrid", desc: "AI talks with oversight", icon: Eye, accentClass: "text-violet-600", bgTint: "bg-violet-500/[0.03]", badgeClass: "bg-violet-500/10 text-violet-600 border-violet-500/20" },
+  ai_agent: { label: "AI Agent", desc: "Fully autonomous", icon: Bot, accentClass: "text-blue-600", bgTint: "bg-blue-500/[0.03]", badgeClass: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+};
+
+const STRATEGY_STEPS = ["Empathy", "Value Framing", "Anchor at $175K", "Close on Timeline"];
 
 // ============================================================================
 // CHANNEL CONFIG
@@ -209,40 +209,16 @@ const MOCK_DIALER_QUEUE = [
 ];
 
 const MOCK_CALL_SCRIPTS = [
-  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68,
-    opening: "Hi {{name}}, I know you weren't expecting my call — got 30 seconds for me to explain why I'm reaching out about {{address}}?",
-    questions: ["What's your timeline for making a decision?", "Have you explored any other options?", "What would an ideal outcome look like?"],
-    objections: [
-      { objection: '"I need to think about it"', response: 'Acknowledge, then ask what specifically they need to think through.' },
-      { objection: '"Your offer is too low"', response: 'Ask what number they had in mind — let them anchor first.' },
-    ],
-    closing: "Based on everything we discussed, I'd love to put together a no-obligation offer. Can I send that over by end of day?"
-  },
-  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42,
-    opening: "Hey {{name}}, we spoke last week about {{address}} — just wanted to circle back and see if anything's changed on your end.",
-    questions: ["Have you had time to think about the offer?", "Are there any concerns I can address?", "Has your timeline shifted at all?"],
-    objections: [
-      { objection: '"I\'m talking to other buyers"', response: 'Great — competition validates the property. Ask what matters most to them beyond price.' },
-      { objection: '"I changed my mind"', response: 'Understand what changed. Was it price, timing, or personal circumstances?' },
-    ],
-    closing: "I want to make this as easy as possible for you. If we can agree on terms today, I can have paperwork ready by tomorrow."
-  },
-  { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15,
-    opening: "Hi, I'm reaching out about {{address}}. I work with cash buyers who can close quickly — is the seller open to off-market offers?",
-    questions: ["What's the seller's primary motivation?", "Is there flexibility on the list price?", "What's the ideal closing timeline for your client?"],
-    objections: [
-      { objection: '"We already have offers"', response: 'Understood — our buyers can often close faster with fewer contingencies. Worth a conversation?' },
-      { objection: '"The seller wants full price"', response: 'We respect that. Can I send a competitive offer for consideration alongside others?' },
-    ],
-    closing: "I'll send over a clean cash offer within 24 hours. What's the best email to reach you?"
-  },
+  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68 },
+  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42 },
+  { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15 },
 ];
 
 // ============================================================================
 // VIEW SWITCHER
 // ============================================================================
-function ViewSwitcher({ activeView, onSwitch }: { activeView: "activity" | "dialer"; onSwitch: (v: "activity" | "dialer") => void }) {
-  const views: Array<{ key: "activity" | "dialer"; label: string; icon: typeof MessageCircle }> = [
+function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onSwitch: (v: string) => void }) {
+  const views = [
     { key: "activity", label: "All Activity", icon: MessageCircle },
     { key: "dialer", label: "Dialer", icon: Phone },
   ];
@@ -333,14 +309,39 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
 // ============================================================================
 // CONTACT LIST ITEM
 // ============================================================================
-function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, onEdit, onDelete }: { 
+function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, condensed }: { 
   contact: Contact; isActive: boolean; onClick: () => void;
   onCall?: () => void; onSms?: () => void; onCopy?: () => void;
-  onEdit?: () => void; onDelete?: () => void;
+  condensed?: boolean;
 }) {
   const lastAct = contact.activities[contact.activities.length - 1];
   const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
   const channelColorClass = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.colorClass : "";
+
+  if (condensed) {
+    return (
+      <div
+        onClick={onClick}
+        className={cn(
+          "group flex items-center gap-2.5 px-3 py-2 cursor-pointer transition-all border-b border-border/30",
+          isActive ? "bg-muted/80 border-l-[3px] border-l-primary" : "border-l-[3px] border-l-transparent hover:bg-muted/40"
+        )}
+      >
+        <div className="relative flex-shrink-0">
+          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-[10px] font-bold text-primary-foreground">
+            {contact.avatar}
+          </div>
+          {contact.unread && (
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-background" />
+          )}
+        </div>
+        <span className={cn("text-[12px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
+          {contact.name}
+        </span>
+        {contact.starred && <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500 flex-shrink-0 ml-auto" />}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -394,30 +395,11 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, on
                     onClick={e => { e.stopPropagation(); onCopy?.(); }}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <Mail className="h-3.5 w-3.5" />
+                    <FileText className="h-3.5 w-3.5" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>Email</TooltipContent>
+                <TooltipContent>Copy Phone</TooltipContent>
               </Tooltip>
-              {/* 3-dot menu */}
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button
-                      onClick={e => e.stopPropagation()}
-                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      <MoreVertical className="h-3.5 w-3.5" />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-36">
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
-                      <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete?.(); }} className="text-destructive focus:text-destructive focus:bg-destructive/90 focus:text-white">
-                      <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
             </div>
           </TooltipProvider>
           {/* Timestamp (hidden on hover) */}
@@ -449,8 +431,7 @@ function ConversationThread({
   onMessageInputChange,
   sendChannel,
   onSendChannelChange,
-  onEdit,
-  onDelete,
+  operatingMode,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -459,66 +440,14 @@ function ConversationThread({
   onMessageInputChange: (val: string) => void;
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  operatingMode: OperatingMode;
 }) {
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
-  const [emailComposeOpen, setEmailComposeOpen] = useState(false);
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [composerType, setComposerType] = useState<"sms" | "email">("sms");
   const [emailSubject, setEmailSubject] = useState("");
-  const [emailBody, setEmailBody] = useState("");
-  const composerInputRef = React.useRef<HTMLInputElement>(null);
-
-  // Draft storage keyed by contactId+channel
-  const draftsRef = React.useRef<Record<string, string>>({});
-
-  // Save current input as draft when channel or contact changes
-  const saveDraft = React.useCallback(() => {
-    if (contact && messageInput.trim()) {
-      draftsRef.current[`${contact.id}_${sendChannel}`] = messageInput;
-    }
-  }, [contact, messageInput, sendChannel]);
-
-  const loadDraft = React.useCallback((contactId: string, channel: string) => {
-    const draft = draftsRef.current[`${contactId}_${channel}`] || "";
-    onMessageInputChange(draft);
-  }, [onMessageInputChange]);
-
-  const focusComposer = React.useCallback((channel: string) => {
-    if (!contact) return;
-    // Save current draft before switching
-    saveDraft();
-    onSendChannelChange(channel);
-    // Load draft for new channel
-    loadDraft(contact.id, channel);
-    setTimeout(() => composerInputRef.current?.focus(), 50);
-  }, [onSendChannelChange, contact, saveDraft, loadDraft]);
-
-  const handleSmsClick = React.useCallback(() => {
-    focusComposer("sms");
-  }, [focusComposer]);
-
-  const handleEmailClick = React.useCallback(() => {
-    if (!contact) return;
-    const hasEmailThread = contact.activities.some(a => a.channel === "email");
-    if (hasEmailThread) {
-      focusComposer("email");
-    } else {
-      // No email thread — open lightweight compose overlay
-      setEmailSubject(`Re: ${contact.address || contact.name}`);
-      setEmailBody("");
-      setEmailComposeOpen(true);
-    }
-  }, [contact, focusComposer]);
-
-  const handleSendEmail = React.useCallback(() => {
-    if (!emailSubject.trim() && !emailBody.trim()) return;
-    // Insert the email body into the composer and send
-    onSendChannelChange("email");
-    onMessageInputChange(emailBody.trim());
-    setEmailComposeOpen(false);
-    toast.success("Email composed — press Send to deliver");
-    setTimeout(() => composerInputRef.current?.focus(), 50);
-  }, [emailSubject, emailBody, onSendChannelChange, onMessageInputChange]);
+  const { isCallActive, currentCallPhase } = useCallState();
 
   if (!contact) {
     return (
@@ -536,76 +465,112 @@ function ConversationThread({
     }
   };
 
+  const openComposer = (type: "sms" | "email") => {
+    setComposerType(type);
+    onSendChannelChange(type);
+    setComposerOpen(true);
+    if (type === "email") {
+      setEmailSubject(`Follow-up on ${contact.address}`);
+      if (!messageInput.trim()) {
+        onMessageInputChange(`Hi ${contact.name.split(" ")[0]},\n\nThank you for our recent conversation about ${contact.address}. I wanted to follow up with the details we discussed.\n\nPlease let me know if you have any questions.\n\nBest regards`);
+      }
+    } else {
+      if (!messageInput.trim()) {
+        onMessageInputChange(`Hey ${contact.name.split(" ")[0]}, just following up on our conversation about ${contact.address}. When works best to chat?`);
+      }
+    }
+  };
+
+  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
+  const phaseIdx = PHASES.indexOf(currentCallPhase);
+
+  const modeConfig = MODE_CONFIG[operatingMode];
+
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
-      {/* Thread Header - Fixed */}
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
-            {contact.avatar}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
+    <div className={cn("flex-1 flex flex-col min-h-0 overflow-hidden", isCallActive && modeConfig.bgTint)}>
+      {/* Thread Header */}
+      <div className="border-b border-border flex-shrink-0">
+        <div className="px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+              {contact.avatar}
             </div>
-            <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
+            </div>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-            <Phone className="h-3.5 w-3.5" /> Call
-          </button>
-          <button
-            onClick={handleSmsClick}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <MessageCircle className="h-3.5 w-3.5" /> SMS
-          </button>
-          <button
-            onClick={handleEmailClick}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Mail className="h-3.5 w-3.5" /> Email
-          </button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                contactDetailsOpen
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {contactDetailsOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+              Details
+            </button>
+            <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+              <Phone className="h-3.5 w-3.5" /> Call
+            </button>
+            <button
+              onClick={() => openComposer("sms")}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                composerOpen && composerType === "sms" ? "border-blue-500 text-blue-600 bg-blue-500/5" : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <MessageCircle className="h-3.5 w-3.5" /> SMS
+            </button>
+            <button
+              onClick={() => openComposer("email")}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                composerOpen && composerType === "email" ? "border-amber-500 text-amber-600 bg-amber-500/5" : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Mail className="h-3.5 w-3.5" /> Email
+            </button>
+
+            {/* 3-dot menu */}
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
                 <MoreVertical className="h-4 w-4" />
               </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36">
-              <DropdownMenuItem onClick={() => onEdit?.()}>
-                <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDelete?.()} className="text-destructive focus:text-destructive focus:bg-destructive/90 focus:text-white">
-                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-popover border border-border rounded-lg shadow-lg py-1">
+                    <button
+                      onClick={() => { setMenuOpen(false); toast.info("Edit contact coming soon"); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> Edit Contact
+                    </button>
+                    <button
+                      onClick={() => { setMenuOpen(false); toast.info("Delete contact coming soon"); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Delete Contact
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Contact Info Card - Collapsible */}
-      <div className="border-b border-border bg-muted/30 flex-shrink-0">
-        <button
-          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
-          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span>Contact Details</span>
-          {contactDetailsOpen ? (
-            <ChevronDown className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
-          )}
-        </button>
+        {/* Contact Details - Expandable */}
         {contactDetailsOpen && (
-          <div className="px-5 pb-3">
+          <div className="px-5 pb-3 border-t border-border/50 pt-3 bg-muted/30">
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2 text-xs">
                 <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -655,8 +620,30 @@ function ConversationThread({
         )}
       </div>
 
+      {/* Strategy Strip — visible during live calls */}
+      {isCallActive && (
+        <div className={cn("px-5 py-2 border-b border-border/50 flex items-center gap-3 flex-shrink-0", modeConfig.bgTint)}>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Strategy:</span>
+          <div className="flex items-center gap-1">
+            {STRATEGY_STEPS.map((step, i) => (
+              <React.Fragment key={step}>
+                {i > 0 && <span className="text-[10px] text-muted-foreground/50">→</span>}
+                <span className={cn(
+                  "text-[11px] font-semibold px-2 py-0.5 rounded-full transition-all",
+                  i <= phaseIdx
+                    ? cn(modeConfig.badgeClass, "border")
+                    : "text-muted-foreground/60"
+                )}>
+                  {step}
+                </span>
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Activity Timeline */}
-      <div className="flex-1 min-h-0 overflow-auto p-5 pb-2">
+      <div className="flex-1 min-h-0 overflow-auto p-5">
         {[...contact.activities].reverse().map((act, i) => {
           const config = CHANNEL_CONFIG[act.channel];
           const Icon = config?.icon || MessageCircle;
@@ -697,100 +684,464 @@ function ConversationThread({
         })}
       </div>
 
-      {/* Sticky Composer */}
-      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
-          <input
-            ref={composerInputRef}
-            placeholder="Type a message..."
-            value={messageInput}
-            onChange={e => onMessageInputChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
-          />
-          <button
-            onClick={() => {
-              saveDraft();
-              const next = sendChannel === "sms" ? "email" : "sms";
-              onSendChannelChange(next);
-              if (contact) loadDraft(contact.id, next);
-            }}
-            className={cn(
-              "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
-              sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"
-            )}
-          >
-            {sendChannel.toUpperCase()}
-          </button>
-        </div>
-        <button
-          onClick={onSendMessage}
-          disabled={!messageInput.trim()}
-          className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send className="h-4 w-4" />
-        </button>
-      </div>
-
-      {/* Email Compose Overlay */}
-      {emailComposeOpen && (
-        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="w-full max-w-md mx-4 bg-background border border-border rounded-lg shadow-lg">
-            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+      {/* SMS/Email Composer Slide-Up */}
+      {composerOpen && (
+        <div className="border-t border-border bg-muted/30 flex-shrink-0 animate-fade-in">
+          <div className="px-5 py-3">
+            <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center gap-2">
-                <Mail className="h-4 w-4 text-primary" />
-                <span className="text-[14px] font-semibold text-foreground">Compose Email</span>
+                {composerType === "email" ? (
+                  <Mail className="h-4 w-4 text-amber-500" />
+                ) : (
+                  <MessageCircle className="h-4 w-4 text-blue-500" />
+                )}
+                <span className="text-[13px] font-semibold text-foreground">
+                  {composerType === "email" ? "Compose Email" : "Send SMS"}
+                </span>
+                <span className="text-[10px] text-muted-foreground">to {contact.name}</span>
               </div>
-              <button
-                onClick={() => setEmailComposeOpen(false)}
-                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <X className="h-4 w-4" />
+              <button onClick={() => setComposerOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+                <X className="h-3.5 w-3.5" />
               </button>
             </div>
-            <div className="p-5 space-y-3">
-              <div>
-                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">To</label>
-                <div className="text-[13px] text-foreground font-medium">{contact.email || contact.name}</div>
-              </div>
-              <div>
-                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Subject</label>
+
+            {composerType === "email" && (
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[11px] text-muted-foreground font-medium">Subject:</span>
                 <input
                   value={emailSubject}
                   onChange={e => setEmailSubject(e.target.value)}
-                  placeholder="Email subject..."
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 text-foreground text-[13px] outline-none focus:border-primary/50 placeholder:text-muted-foreground"
+                  className="flex-1 bg-background border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-primary/50"
                 />
               </div>
-              <div>
-                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Body</label>
-                <textarea
-                  value={emailBody}
-                  onChange={e => setEmailBody(e.target.value)}
-                  placeholder="Write your email..."
-                  rows={5}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 text-foreground text-[13px] outline-none focus:border-primary/50 resize-none placeholder:text-muted-foreground"
-                />
+            )}
+
+            <textarea
+              value={messageInput}
+              onChange={e => onMessageInputChange(e.target.value)}
+              rows={composerType === "email" ? 5 : 2}
+              className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none mb-2.5"
+              placeholder={composerType === "email" ? "Compose your email..." : "Type your message..."}
+            />
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => toast.success("AI rewrite applied")}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all border border-primary/20"
+                >
+                  <Wand2 className="h-3 w-3" /> Rewrite
+                </button>
+                <button
+                  onClick={() => onMessageInputChange(messageInput + "\n\n[Offer Range: $165,000 - $180,000]")}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
+                >
+                  <BarChart3 className="h-3 w-3" /> Add Offer
+                </button>
+                {composerType === "email" && (
+                  <button
+                    onClick={() => toast.info("Attach comps PDF coming soon")}
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
+                  >
+                    <Paperclip className="h-3 w-3" /> Attach
+                  </button>
+                )}
+                <button
+                  onClick={() => toast.info("Scheduled send coming soon")}
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
+                >
+                  <Clock className="h-3 w-3" /> Schedule
+                </button>
               </div>
-            </div>
-            <div className="px-5 py-3.5 border-t border-border flex items-center justify-end gap-2">
               <button
-                onClick={() => setEmailComposeOpen(false)}
-                className="px-4 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => { onSendMessage(); setComposerOpen(false); }}
+                disabled={!messageInput.trim()}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
-                Cancel
-              </button>
-              <button
-                onClick={handleSendEmail}
-                disabled={!emailBody.trim()}
-                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
-                <span className="flex items-center gap-1.5"><Send className="h-3.5 w-3.5" /> Send Email</span>
+                <Send className="h-3.5 w-3.5" /> Send {composerType === "email" ? "Email" : "SMS"}
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Command Surface Input — Mode Aware */}
+      {!composerOpen && (
+        operatingMode === "ai_agent" && isCallActive ? (
+          /* AI Agent Mode — Control Surface */
+          <div className="border-t border-border flex-shrink-0 px-5 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Bot className="h-4 w-4 text-blue-500" />
+                <span className="text-[13px] font-bold text-foreground">AI Agent Active</span>
+                <span className="relative flex h-2 w-2 ml-1">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => toast.info("Taking over call...")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-semibold hover:bg-amber-500/20 transition-colors">
+                  <Hand className="h-3.5 w-3.5" /> Take Over
+                </button>
+                <button onClick={() => toast.info("Agent paused")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                  <Pause className="h-3.5 w-3.5" /> Pause
+                </button>
+                <button onClick={() => toast.info("Strategy changed")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                  <RefreshCw className="h-3.5 w-3.5" /> Change Strategy
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Human / Hybrid — Message Input */
+          <div className="border-t border-border flex-shrink-0">
+            <div className="px-5 pt-2.5 pb-1 flex items-center gap-1">
+              {[
+                { key: "sms", label: "SMS", icon: MessageCircle, color: "text-blue-500 bg-blue-500/10" },
+                { key: "email", label: "Email", icon: Mail, color: "text-amber-500 bg-amber-500/10" },
+                { key: "note", label: "Note", icon: StickyNote, color: "text-muted-foreground bg-muted" },
+              ].map(ch => (
+                <button
+                  key={ch.key}
+                  onClick={() => onSendChannelChange(ch.key)}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all",
+                    sendChannel === ch.key
+                      ? cn(ch.color, "ring-1 ring-current/20")
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                >
+                  <ch.icon className="h-3 w-3" />
+                  {ch.label}
+                </button>
+              ))}
+
+              <div className="h-4 w-px bg-border mx-1" />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      if (!messageInput.trim()) { toast.info("Type a message first"); return; }
+                      toast.success("AI rewrite applied");
+                    }}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
+                  >
+                    <Wand2 className="h-3 w-3" /> Rewrite
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Rewrite with AI</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => onMessageInputChange(messageInput + " [Offer Range: $165K - $180K]")}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+                  >
+                    <BarChart3 className="h-3 w-3" /> Offer
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Insert offer range</TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      const directive = contact.activities[contact.activities.length - 1]?.aiSuggestion;
+                      if (directive) { onMessageInputChange(directive); toast.success("AI directive loaded"); }
+                      else toast.info("No active directive available");
+                    }}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
+                  >
+                    <Zap className="h-3 w-3" /> Directive
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Follow AI directive</TooltipContent>
+              </Tooltip>
+            </div>
+
+            <div className="px-5 pb-3 pt-1 flex gap-2.5 items-center">
+              <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
+                <input
+                  placeholder={sendChannel === "note" ? "Add internal note..." : sendChannel === "email" ? "Compose email..." : "Type a message..."}
+                  value={messageInput}
+                  onChange={e => onMessageInputChange(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
+                />
+              </div>
+              <button
+                onClick={onSendMessage}
+                disabled={!messageInput.trim()}
+                className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )
+      )}
+    </div>
+  );
+}
+// ============================================================================
+// LIVE CALL CENTER (Negotiation Command Center)
+// ============================================================================
+function LiveCallCenter({
+  contact,
+  operatingMode,
+  onQuickReply,
+}: {
+  contact: Contact | null;
+  operatingMode: OperatingMode;
+  onQuickReply: (text: string) => void;
+}) {
+  const {
+    isCallActive, callStatus, callDuration, transcript,
+    sentiment, sentimentScore, currentCallPhase, aiSuggestions,
+    isMuted, toggleMute, endCall,
+  } = useCallState();
+
+  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
+  const phaseIdx = PHASES.indexOf(currentCallPhase);
+  const modeConfig = MODE_CONFIG[operatingMode];
+
+  const formatTimer = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  // Dynamic AI status
+  const getAIStatus = (): { text: string; color: string } => {
+    if (callStatus === "ringing") return { text: "Connecting...", color: "text-amber-500" };
+    if (transcript.length < 2) return { text: "🟢 Listening", color: "text-emerald-500" };
+    if (transcript.length < 4) return { text: "🔵 Analyzing", color: "text-blue-500" };
+    if (transcript.length < 6) return { text: "🟡 Objection Detected", color: "text-amber-500" };
+    return { text: "🟣 Strategy Shift", color: "text-violet-500" };
+  };
+
+  const aiStatus = getAIStatus();
+
+  if (!contact || !isCallActive) return null;
+
+  return (
+    <div className={cn("flex-1 flex flex-col min-h-0 overflow-hidden", modeConfig.bgTint)}>
+      {/* ── Live Call Header ── */}
+      <div className={cn("px-5 py-3 border-b flex items-center justify-between flex-shrink-0",
+        operatingMode === "human" ? "border-b-emerald-500/20 bg-emerald-500/[0.04]" :
+        operatingMode === "hybrid" ? "border-b-violet-500/20 bg-violet-500/[0.04]" :
+        "border-b-blue-500/20 bg-blue-500/[0.04]"
+      )}>
+        <div className="flex items-center gap-3">
+          <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-primary-foreground",
+            operatingMode === "human" ? "bg-emerald-600" : operatingMode === "hybrid" ? "bg-violet-600" : "bg-blue-600"
+          )}>
+            {contact.avatar}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-bold text-foreground">{contact.name}</span>
+              <span className="text-xl font-mono font-bold text-foreground tracking-tight">{formatTimer(callDuration)}</span>
+            </div>
+            <div className="flex items-center gap-2.5 mt-0.5">
+              <span className={cn("text-[11px] font-semibold", aiStatus.color)}>{aiStatus.text}</span>
+              <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border", modeConfig.badgeClass)}>
+                {currentCallPhase}
+              </span>
+              <span className="text-[11px] text-muted-foreground font-mono">Confidence: <span className={cn("font-bold", modeConfig.accentClass)}>82%</span></span>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {operatingMode !== "human" && (
+            <button
+              onClick={() => toast.info("Taking over call...")}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-semibold hover:bg-amber-500/20 transition-colors"
+            >
+              <Hand className="h-3.5 w-3.5" /> Take Over
+            </button>
+          )}
+          <button
+            onClick={toggleMute}
+            className={cn("flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              isMuted ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Mic className="h-3.5 w-3.5" /> {isMuted ? "Unmute" : "Mute"}
+          </button>
+          <button
+            onClick={() => toast.info("Agent paused")}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <Pause className="h-3.5 w-3.5" /> Pause
+          </button>
+          <button
+            onClick={endCall}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors"
+          >
+            <Phone className="h-3.5 w-3.5" /> End
+          </button>
+        </div>
+      </div>
+
+      {/* ── Stage Progress Bar ── */}
+      <div className={cn("px-5 py-2.5 border-b border-border/50 flex-shrink-0", modeConfig.bgTint)}>
+        <div className="flex gap-1">
+          {PHASES.map((phase, i) => (
+            <div key={phase} className="flex-1">
+              <div className={cn(
+                "h-2 rounded-full transition-all duration-500",
+                i < phaseIdx ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") :
+                i === phaseIdx ? cn(
+                  operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500",
+                  "animate-pulse shadow-sm",
+                  operatingMode === "human" ? "shadow-emerald-500/30" : operatingMode === "hybrid" ? "shadow-violet-500/30" : "shadow-blue-500/30"
+                ) :
+                "bg-muted"
+              )} />
+              <span className={cn(
+                "text-[9px] mt-1 block text-center font-medium",
+                i < phaseIdx ? "text-muted-foreground" :
+                i === phaseIdx ? cn(modeConfig.accentClass, "font-bold") :
+                "text-muted-foreground/50"
+              )}>{phase}</span>
+            </div>
+          ))}
+        </div>
+        {/* Strategy Strip */}
+        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/30">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Strategy:</span>
+          {STRATEGY_STEPS.map((step, i) => (
+            <React.Fragment key={step}>
+              {i > 0 && <span className="text-[9px] text-muted-foreground/40">→</span>}
+              <span className={cn(
+                "text-[10px] font-semibold",
+                i <= Math.min(phaseIdx, STRATEGY_STEPS.length - 1) ? modeConfig.accentClass : "text-muted-foreground/50"
+              )}>{step}</span>
+            </React.Fragment>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Live Transcript ── */}
+      <div className="flex-1 min-h-0 overflow-auto px-5 py-4">
+        <div className="space-y-3">
+          {transcript.map(entry => {
+            const isUser = entry.speaker === "user";
+            const isAI = entry.speaker === "ai";
+            return (
+              <div key={entry.id} className="group">
+                <div className={cn("flex gap-2", isUser ? "justify-end" : "justify-start")}>
+                  <div className={cn(
+                    "max-w-[75%] px-3.5 py-2.5 rounded-lg text-[13px] leading-relaxed",
+                    isUser
+                      ? "bg-primary text-primary-foreground"
+                      : isAI
+                        ? cn("border", modeConfig.badgeClass)
+                        : "bg-muted text-foreground"
+                  )}>
+                    {!isUser && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider block mb-1 opacity-60">
+                        {isAI ? "AI" : contact.name.split(" ")[0]}
+                      </span>
+                    )}
+                    {entry.text}
+                  </div>
+                </div>
+                {/* AI Tags — subtle analysis under each prospect message */}
+                {!isUser && !isAI && transcript.length > 2 && (
+                  <div className="flex items-center gap-2 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-semibold">Objection: Price</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 font-semibold">Tone: Defensive</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-semibold">Intent: Medium</span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {callStatus === "connected" && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+              <span className={cn("font-medium", aiStatus.color)}>{aiStatus.text}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Sticky Suggestion Stack ── */}
+      <div className={cn("border-t flex-shrink-0 px-5 py-3",
+        operatingMode === "human" ? "border-t-emerald-500/20 bg-emerald-500/[0.03]" :
+        operatingMode === "hybrid" ? "border-t-violet-500/20 bg-violet-500/[0.03]" :
+        "border-t-blue-500/20 bg-blue-500/[0.03]"
+      )}>
+        <div className="text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5 text-muted-foreground">
+          <Target className="h-3 w-3" /> Say This Next
+        </div>
+        <div className="flex gap-2">
+          {aiSuggestions.slice(0, 3).map(s => (
+            <div key={s.id} className={cn(
+              "flex-1 p-2.5 rounded-lg border text-xs leading-relaxed transition-all hover:shadow-sm cursor-pointer",
+              s.type === "question" ? "border-blue-500/20 bg-blue-500/[0.04] hover:border-blue-500/40" :
+              s.type === "response" ? cn("border-primary/20 bg-primary/[0.04] hover:border-primary/40") :
+              "border-border bg-muted/50 hover:border-foreground/20"
+            )}>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className={cn(
+                  "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase",
+                  s.type === "question" ? "bg-blue-500/10 text-blue-500" :
+                  s.type === "response" ? "bg-primary/10 text-primary" :
+                  "bg-muted text-muted-foreground"
+                )}>{s.type}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">{s.confidence}%</span>
+              </div>
+              <div className="text-foreground mb-2 line-clamp-2">{s.text}</div>
+              <button
+                onClick={() => onQuickReply(s.text)}
+                className={cn(
+                  "w-full py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all border",
+                  s.type === "coach"
+                    ? "bg-muted/80 text-foreground border-border hover:bg-muted"
+                    : cn(modeConfig.badgeClass, "hover:opacity-80")
+                )}
+              >
+                {s.type === "coach" ? "Apply" : "Use"}
+              </button>
+            </div>
+          ))}
+          {aiSuggestions.length === 0 && (
+            <div className="text-xs text-muted-foreground italic py-2">Generating suggestions...</div>
+          )}
+        </div>
+
+        {/* AI Agent control surface */}
+        {operatingMode === "ai_agent" && (
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
+            <div className="flex items-center gap-2">
+              <Bot className="h-4 w-4 text-blue-500" />
+              <span className="text-[12px] font-bold text-foreground">AI Agent Active</span>
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+              </span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button onClick={() => toast.info("Strategy changed")} className="px-2.5 py-1.5 rounded-md border border-border text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                <RefreshCw className="h-3 w-3 inline mr-1" />Strategy
+              </button>
+              <button onClick={() => toast.info("Adjusting offer range...")} className="px-2.5 py-1.5 rounded-md border border-border text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                <BarChart3 className="h-3 w-3 inline mr-1" />Offer
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -802,33 +1153,81 @@ function CoPilotPanel({
   contact,
   activeView,
   onQuickReply,
+  operatingMode,
 }: {
   contact: Contact | null;
-  activeView: "activity" | "dialer";
+  activeView: string;
   onQuickReply: (text: string) => void;
+  operatingMode: OperatingMode;
 }) {
+  const { isCallActive, callDuration, transcript, sentiment, sentimentScore, currentCallPhase, aiSuggestions } = useCallState();
+
+  const formatTimer = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
+  const phaseIdx = PHASES.indexOf(currentCallPhase);
+  const modeConfig = MODE_CONFIG[operatingMode];
+
+  // Dynamic AI status text
+  const getAIStatusText = () => {
+    if (!isCallActive) return activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions";
+    if (transcript.length < 2) return "🟢 Listening...";
+    if (transcript.length < 5) return "🔵 Analyzing...";
+    return "🟣 Strategy Shift Detected...";
+  };
+
   return (
-    <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+    <div className={cn(
+      "w-[400px] border-l flex flex-col overflow-hidden shadow-[-2px_0_12px_-4px_hsl(var(--primary)/0.08)]",
+      isCallActive ? cn("border-l-2", modeConfig.bgTint, 
+        operatingMode === "human" ? "border-l-emerald-500/30" : 
+        operatingMode === "hybrid" ? "border-l-violet-500/30" : "border-l-blue-500/30"
+      ) : "border-primary/10 bg-gradient-to-b from-primary/[0.03] to-muted/40"
+    )}>
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between">
+      <div className={cn("p-4 border-b flex items-center justify-between", 
+        isCallActive ? cn("bg-gradient-to-r", 
+          operatingMode === "human" ? "from-emerald-500/[0.06] border-emerald-500/10" :
+          operatingMode === "hybrid" ? "from-violet-500/[0.06] border-violet-500/10" :
+          "from-blue-500/[0.06] border-blue-500/10"
+        ) : "border-primary/10 bg-primary/[0.04]"
+      )}>
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
+          <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shadow-sm",
+            isCallActive ? (
+              operatingMode === "human" ? "bg-emerald-500/15" :
+              operatingMode === "hybrid" ? "bg-violet-500/15" : "bg-blue-500/15"
+            ) : "bg-primary/15"
+          )}>
+            <Sparkles className={cn("h-4 w-4", isCallActive ? modeConfig.accentClass : "text-primary")} />
           </div>
           <div>
-            <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
-            <div className="text-[11px] text-muted-foreground">
-              {activeView === "dialer" ? "Call coaching & live insights" : "Multi-channel insights & actions"}
-            </div>
+            <div className="text-[13px] font-bold text-foreground tracking-tight">AI Command Center</div>
+            <div className="text-[10px] text-muted-foreground">{getAIStatusText()}</div>
           </div>
         </div>
         {contact && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+          <div className={cn(
+            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
+            isCallActive ? modeConfig.badgeClass : "bg-emerald-500/10 border-emerald-500/20"
+          )}>
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                isCallActive ? (operatingMode === "human" ? "bg-emerald-400" : operatingMode === "hybrid" ? "bg-violet-400" : "bg-blue-400") : "bg-emerald-400"
+              )} />
+              <span className={cn("relative inline-flex rounded-full h-2 w-2",
+                isCallActive ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") : "bg-emerald-500"
+              )} />
             </span>
-            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">AI Active</span>
+            <span className={cn("text-[10px] font-bold tracking-wider uppercase",
+              isCallActive ? modeConfig.accentClass : "text-emerald-600"
+            )}>
+              {isCallActive ? (operatingMode === "ai_agent" ? "AI ACTIVE" : "LIVE") : "AI Active"}
+            </span>
           </div>
         )}
       </div>
@@ -839,67 +1238,99 @@ function CoPilotPanel({
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
           </div>
-        ) : activeView === "dialer" ? (
-          /* ===== DIALER MODE: Call Coaching Content ===== */
+        ) : isCallActive ? (
+          /* ============== LIVE CALL MODE — STRATEGY ONLY ============== */
           <div className="space-y-3">
-            {/* Call Readiness */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Call Coaching
+            {/* Live Timer & Phase */}
+            <div className={cn("p-3.5 rounded-lg border",
+              operatingMode === "human" ? "border-emerald-500/20 bg-emerald-500/[0.06]" :
+              operatingMode === "hybrid" ? "border-violet-500/20 bg-violet-500/[0.06]" :
+              "border-blue-500/20 bg-blue-500/[0.06]"
+            )}>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center gap-2">
+                  <Clock className={cn("h-3.5 w-3.5", modeConfig.accentClass)} />
+                  <span className="text-xl font-mono font-bold text-foreground tracking-tight">{formatTimer(callDuration)}</span>
+                </div>
+                <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", modeConfig.badgeClass, "border")}>
+                  {currentCallPhase}
+                </span>
+              </div>
+              {/* Phase Progress */}
+              <div className="flex gap-0.5">
+                {PHASES.map((phase, i) => (
+                  <div key={phase} className="flex-1">
+                    <div className={cn(
+                      "h-1.5 rounded-full transition-all",
+                      i < phaseIdx ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") :
+                      i === phaseIdx ? cn(operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500", "animate-pulse") :
+                      "bg-muted"
+                    )} />
+                    <span className={cn(
+                      "text-[8px] mt-0.5 block text-center leading-tight",
+                      i <= phaseIdx ? cn(modeConfig.accentClass, "font-semibold") : "text-muted-foreground"
+                    )}>{phase.split(" ")[0]}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Live Sentiment */}
+            <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Live Sentiment</span>
+                <span className={cn(
+                  "text-[11px] font-bold capitalize",
+                  sentiment === "positive" ? "text-emerald-600" : sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                )}>{sentiment}</span>
+              </div>
+              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all duration-700",
+                    sentiment === "positive" ? "bg-emerald-500" : sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                  )}
+                  style={{ width: `${sentimentScore}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Deal Probability */}
+            <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Deal Probability</span>
+                <div className="flex items-center gap-1.5">
+                  <Gauge className={cn("h-3.5 w-3.5", modeConfig.accentClass)} />
+                  <span className={cn("text-lg font-bold", modeConfig.accentClass)}>67%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Directive — compact during live */}
+            <div className={cn("p-3.5 rounded-lg border",
+              operatingMode === "human" ? "border-emerald-500/20 bg-emerald-500/[0.06]" :
+              operatingMode === "hybrid" ? "border-violet-500/20 bg-violet-500/[0.06]" :
+              "border-blue-500/20 bg-blue-500/[0.06]"
+            )}>
+              <div className={cn("text-[11px] font-bold tracking-wider uppercase mb-2 flex items-center gap-1.5", modeConfig.accentClass)}>
+                <Sparkles className="h-3 w-3" /> Directive
               </div>
               <div className="text-xs text-foreground leading-relaxed font-medium">
-                Open with empathy about their property timeline. Mirror their frustration before transitioning to your value prop. Avoid leading with price — let them anchor first.
+                {contact.activities[contact.activities.length - 1]?.aiSuggestion?.slice(0, 120) || "Awaiting data..."}
               </div>
             </div>
 
-            {/* Objection Playbook */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Objection Playbook</div>
-              <div className="space-y-2">
-                {[
-                  { objection: '"I need to think about it"', response: 'Totally fair. What specifically would help you feel more confident?' },
-                  { objection: '"Your offer is too low"', response: 'I hear you. Let me walk through how we arrived at that number — it might make more sense with context.' },
-                  { objection: '"I\'m working with someone else"', response: 'No problem at all. Are they able to close on your timeline?' },
-                ].map((item, i) => (
-                  <div key={i} className="p-2.5 bg-background rounded-md border border-border/50">
-                    <div className="text-[11px] font-semibold text-destructive/80 mb-1">{item.objection}</div>
-                    <div className="text-[11px] text-muted-foreground leading-relaxed">{item.response}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact Intel */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Intel</div>
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between"><span className="text-muted-foreground">Sentiment</span><span className={cn("font-semibold capitalize", contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-destructive" : "text-amber-500")}>{contact.sentiment}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Total Touches</span><span className="font-semibold text-foreground">{contact.activities.length}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Last Channel</span><span className="font-semibold text-foreground capitalize">{contact.activities[contact.activities.length - 1]?.channel || "—"}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Priority</span><span className="font-semibold text-foreground">{contact.unread ? "High" : "Normal"}</span></div>
-              </div>
-            </div>
-
-            {/* Script Tips */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Script Tips</div>
-              <div className="space-y-1.5">
-                {[
-                  "Use their first name early and often",
-                  "Pause after asking questions — let silence work",
-                  "Confirm their timeline before discussing numbers",
-                  "End with a clear next step, not an open question",
-                ].map((tip, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[11px] text-muted-foreground">
-                    <span className="text-primary font-bold mt-0.5">•</span>
-                    <span>{tip}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Take Over button for hybrid/ai modes */}
+            {operatingMode !== "human" && (
+              <button
+                onClick={() => toast.info("Taking over call...")}
+                className="w-full py-3 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-bold hover:bg-amber-500/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <Hand className="h-4 w-4" /> Take Over Call
+              </button>
+            )}
           </div>
         ) : (
-          /* ===== ALL ACTIVITY MODE: Multi-channel insights ===== */
+          /* ============== PASSIVE / NO-CALL MODE ============== */
           <div className="space-y-3">
             {/* Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
@@ -913,16 +1344,14 @@ function CoPilotPanel({
                 </div>
                 <span className={cn(
                   "text-xs font-semibold capitalize",
-                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-destructive" : "text-amber-500"
-                )}>
-                  {contact.sentiment}
-                </span>
+                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                )}>{contact.sentiment}</span>
               </div>
             </div>
 
-            {/* Next Best Action */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+            {/* Directive */}
+            <div className="p-3.5 bg-primary/[0.06] rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-bold tracking-wider uppercase mb-2 flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Directive
               </div>
               <div className="text-xs text-foreground leading-relaxed font-medium">
@@ -995,23 +1424,14 @@ function CoPilotPanel({
     </div>
   );
 }
-
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSelectDialerContact, selectedScriptId: externalScriptId, onSelectScript: externalSelectScript, onOpenSms, onOpenEmail }: {
-  callingMode: string;
-  setCallingMode: (m: string) => void;
-  selectedDialerContact: DialerContact | null;
-  onSelectDialerContact: (c: DialerContact | null) => void;
-  selectedScriptId: string | null;
-  onSelectScript: (id: string) => void;
-  onOpenSms: () => void;
-  onOpenEmail: () => void;
-}) {
+function DialerView() {
   const callState = useCallState();
   const navigate = useNavigate();
-  const selectedScriptId = externalScriptId;
+  const [callingMode, setCallingMode] = useState("start");
+  const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
   const [calledContactIds, setCalledContactIds] = useState<Set<string>>(new Set());
   const [showManualEntry, setShowManualEntry] = useState(false);
@@ -1021,26 +1441,6 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Power Dial state
-  const [pdActive, setPdActive] = useState(false);
-  const [pdIndex, setPdIndex] = useState(0);
-  const [autoAdvance, setAutoAdvance] = useState(true);
-  const [showWrapUp, setShowWrapUp] = useState(false);
-  const [wrapUpOutcome, setWrapUpOutcome] = useState("no_answer");
-  const [wrapUpNotes, setWrapUpNotes] = useState("");
-  const [agentStatus, setAgentStatus] = useState<string | null>(null);
-  const prevCallActive = React.useRef(false);
-
-  // Track call end for wrap-up
-  React.useEffect(() => {
-    if (prevCallActive.current && !callState.isCallActive && pdActive) {
-      setShowWrapUp(true);
-    }
-    prevCallActive.current = callState.isCallActive;
-  }, [callState.isCallActive, pdActive]);
-
-  const pdCurrentContact = pdActive ? dialerContacts[pdIndex] : null;
-
   const modes = [
     { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
     { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
@@ -1048,36 +1448,35 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
-    setCalledContactIds(prev => new Set(prev).add(item.id));
-    onSelectDialerContact({ id: item.id, name: item.name, phone: item.phone, address: item.address, type: item.type });
     if (callingMode === "voice") {
       toast.info(`AI Voice Agent calling ${item.name}...`, { duration: 3000 });
-    } else if (callingMode === "listen") {
-      toast.info(`Listen Mode active — monitoring call to ${item.name}`, { duration: 3000 });
+      setCalledContactIds(prev => new Set(prev).add(item.id));
+      return;
     }
+    if (callingMode === "listen") {
+      toast.info(`Listen Mode active — monitoring call to ${item.name}`, { duration: 3000 });
+      setCalledContactIds(prev => new Set(prev).add(item.id));
+      return;
+    }
+    setCalledContactIds(prev => new Set(prev).add(item.id));
     callState.startCall({
       id: item.id,
       name: item.name,
       phone: item.phone,
       address: item.address,
-    }, "inline");
+    }, "dialer");
   };
 
   const handleStartPowerDial = () => {
-    if (dialerContacts.length === 0) return;
-    setPdActive(true);
-    setPdIndex(0);
-    setCalledContactIds(new Set());
-    const first = dialerContacts[0];
-    onSelectDialerContact({ id: first.id, name: first.name, phone: first.phone, address: first.address, type: first.type });
+    if (callingMode === "voice") {
+      toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
+      setCalledContactIds(new Set(dialerContacts.map(c => c.id)));
+      return;
+    }
     if (callingMode === "listen") {
       toast.info("Listen Mode activated — ready to capture external calls");
-    } else if (callingMode === "voice") {
-      toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
-    } else {
-      toast.success(`Power Dial started — ${dialerContacts.length} contacts`);
+      return;
     }
-    // Also set up CallContext queue
     const queueContacts = dialerContacts.map(item => ({
       id: item.id,
       name: item.name,
@@ -1099,66 +1498,8 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
     callState.startDialerSession();
   };
 
-  const handlePdNext = () => {
-    const nextIdx = pdIndex + 1;
-    if (nextIdx >= dialerContacts.length) {
-      setPdActive(false);
-      toast.success("Power Dial session complete!");
-      return;
-    }
-    setPdIndex(nextIdx);
-    const next = dialerContacts[nextIdx];
-    onSelectDialerContact({ id: next.id, name: next.name, phone: next.phone, address: next.address, type: next.type });
-  };
-
-  const handlePdSkip = () => {
-    handlePdNext();
-  };
-
-  const handlePdEnd = () => {
-    setPdActive(false);
-    toast.info("Power Dial session ended");
-  };
-
-  const handleWrapUpSubmit = () => {
-    toast.success(`Outcome saved: ${wrapUpOutcome.replace("_", " ")}`);
-    setShowWrapUp(false);
-    setWrapUpNotes("");
-    setWrapUpOutcome("no_answer");
-    if (autoAdvance) {
-      handlePdNext();
-    }
-  };
-
-  const handleCallCurrentPd = () => {
-    if (!pdCurrentContact) return;
-    if (callingMode === "listen") {
-      toast.info("Listen Mode captures external calls — use Zoom, Meet, etc.");
-      return;
-    }
-    setCalledContactIds(prev => new Set(prev).add(pdCurrentContact.id));
-    if (callingMode === "voice") {
-      setAgentStatus("dialing");
-      toast.info(`AI Voice Agent calling ${pdCurrentContact.name}...`);
-      // Simulate agent status progression
-      setTimeout(() => setAgentStatus("connected"), 2000);
-      setTimeout(() => setAgentStatus("handling_objection"), 6000);
-      setTimeout(() => setAgentStatus("booking"), 9000);
-      setTimeout(() => {
-        setAgentStatus("complete");
-        setTimeout(() => setAgentStatus(null), 1000);
-      }, 12000);
-    }
-    callState.startCall({
-      id: pdCurrentContact.id,
-      name: pdCurrentContact.name,
-      phone: pdCurrentContact.phone,
-      address: pdCurrentContact.address,
-    }, "inline");
-  };
-
   const handleSelectScript = (scriptId: string) => {
-    externalSelectScript(scriptId === selectedScriptId ? "" : scriptId);
+    setSelectedScriptId(prev => prev === scriptId ? null : scriptId);
     const script = MOCK_CALL_SCRIPTS.find(s => s.id === scriptId);
     if (script) {
       toast.info(`Script selected: ${script.name}`);
@@ -1281,13 +1622,8 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
 
   const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
 
-  const modeForStats = callingMode === "voice" ? "voice" as const : callingMode === "listen" ? "listen" as const : "start" as const;
-
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
-      {/* A) Top KPI Strip */}
-      <DialerStatsBar mode={modeForStats} calledCount={calledContactIds.size} />
-
       {/* Auto-advance banner */}
       {showAutoAdvance && (
         <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
@@ -1311,15 +1647,15 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
           <button
             onClick={handleStartPowerDial}
-            disabled={callState.isCallActive || dialerContacts.length === 0 || pdActive}
+            disabled={callState.isCallActive || dialerContacts.length === 0}
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
-              callState.isCallActive || dialerContacts.length === 0 || pdActive
+              callState.isCallActive || dialerContacts.length === 0
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
                 : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
-            {pdActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
+            {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
           </button>
         </div>
         <div className="flex gap-3">
@@ -1349,87 +1685,6 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
         </div>
       </div>
 
-      {/* Power Dial HUD */}
-      {pdActive && pdCurrentContact && (
-        <div className="p-4 bg-muted/30 rounded-xl border border-border flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-md bg-primary flex items-center justify-center text-[11px] font-bold text-primary-foreground">
-                {pdCurrentContact.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
-              </div>
-              <div>
-                <div className="text-[13px] font-semibold text-foreground">{pdCurrentContact.name}</div>
-                <div className="text-[11px] text-muted-foreground">{pdCurrentContact.address || pdCurrentContact.phone}</div>
-              </div>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold">
-              {pdIndex + 1} of {dialerContacts.length}
-            </span>
-            {callingMode === "voice" && agentStatus && (
-              <span className={cn(
-                "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                agentStatus === "dialing" && "bg-amber-500/10 text-amber-600",
-                agentStatus === "connected" && "bg-emerald-500/10 text-emerald-600",
-                agentStatus === "handling_objection" && "bg-destructive/10 text-destructive",
-                agentStatus === "booking" && "bg-violet-500/10 text-violet-600",
-                agentStatus === "complete" && "bg-primary/10 text-primary",
-              )}>
-                {agentStatus.replace("_", " ")}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground mr-2">
-              <input
-                type="checkbox"
-                checked={autoAdvance}
-                onChange={e => setAutoAdvance(e.target.checked)}
-                className="rounded border-border"
-              />
-              Auto-advance
-            </label>
-            {callingMode === "listen" ? (
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <button className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground/50 cursor-not-allowed">
-                    <Phone className="h-3.5 w-3.5 inline mr-1" /> Call
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="bg-background text-foreground border border-border text-[11px]">
-                  Listen Mode captures external calls
-                </TooltipContent>
-              </Tooltip>
-            ) : (
-              <button
-                onClick={handleCallCurrentPd}
-                disabled={callState.isCallActive}
-                className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors",
-                  callState.isCallActive
-                    ? "border border-border text-muted-foreground/50 cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-              >
-                <Phone className="h-3.5 w-3.5 inline mr-1" />
-                {callingMode === "voice" ? "Start AI Call" : "Call"}
-              </button>
-            )}
-            <button
-              onClick={handlePdSkip}
-              className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Skip
-            </button>
-            <button
-              onClick={handlePdEnd}
-              className="px-3 py-1.5 rounded-lg border border-destructive/30 text-xs font-semibold text-destructive hover:bg-destructive/5 transition-colors"
-            >
-              End Session
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="flex gap-5">
         {/* Left column: Dialing List + Import */}
         <div className="flex-1 flex flex-col gap-5">
@@ -1437,7 +1692,7 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
             <div className="flex justify-between items-center mb-3.5">
               <div className="text-[13px] font-semibold text-foreground">
-                Today's Queue
+                My Dialing List
                 <span className="ml-2 text-xs text-muted-foreground font-normal">({dialerContacts.length} contacts)</span>
               </div>
               <div className="flex items-center gap-2">
@@ -1589,13 +1844,11 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
                     return (
                       <div
                         key={item.id}
-                        onClick={() => onSelectDialerContact({ id: item.id, name: item.name, phone: item.phone, address: item.address, type: item.type })}
                         className={cn(
-                          "flex items-center gap-3 py-3 cursor-pointer hover:bg-muted/50 transition-colors",
+                          "flex items-center gap-3 py-3",
                           i < dialerContacts.length - 1 && "border-b border-border/50",
                           isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
-                          isCalledInQueue && !isCurrentInQueue && "opacity-50",
-                          selectedDialerContact?.id === item.id && !isCurrentInQueue && "bg-muted/60 -mx-2 px-2 rounded-lg"
+                          isCalledInQueue && !isCurrentInQueue && "opacity-50"
                         )}
                       >
                         <div className={cn(
@@ -1712,83 +1965,6 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           </div>
         </div>
       </div>
-
-      {/* Wrap-up Modal */}
-      <Dialog open={showWrapUp} onOpenChange={setShowWrapUp}>
-        <DialogContent className="sm:max-w-[420px]">
-          <DialogHeader>
-            <DialogTitle className="text-[15px]">Call Wrap-Up</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-2">
-            <div>
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Outcome</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
-                {[
-                  { key: "no_answer", label: "No Answer" },
-                  { key: "left_vm", label: "Left VM" },
-                  { key: "spoke", label: "Spoke" },
-                  { key: "appointment", label: "Appointment Set" },
-                  { key: "not_interested", label: "Not Interested" },
-                ].map(opt => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setWrapUpOutcome(opt.key)}
-                    className={cn(
-                      "px-3 py-2 rounded-lg border text-[12px] font-medium transition-colors",
-                      wrapUpOutcome === opt.key
-                        ? "border-primary bg-primary/5 text-primary"
-                        : "border-border text-muted-foreground hover:border-primary/30"
-                    )}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Notes</Label>
-              <textarea
-                value={wrapUpNotes}
-                onChange={e => setWrapUpNotes(e.target.value)}
-                placeholder="Quick notes about the call..."
-                rows={3}
-                className="w-full mt-1.5 px-3 py-2 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none"
-              />
-            </div>
-            <div>
-              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Next Step</Label>
-              <div className="flex gap-2 mt-1.5">
-                <button
-                  onClick={() => { setShowWrapUp(false); onOpenSms(); }}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
-                >
-                  <MessageCircle className="h-3 w-3" /> Send SMS
-                </button>
-                <button
-                  onClick={() => { setShowWrapUp(false); onOpenEmail(); }}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
-                >
-                  <Mail className="h-3 w-3" /> Send Email
-                </button>
-                <button
-                  onClick={() => { toast.info("Follow-up scheduled"); setShowWrapUp(false); }}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
-                >
-                  <Calendar className="h-3 w-3" /> Follow-up
-                </button>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" size="sm" onClick={() => { setShowWrapUp(false); if (autoAdvance) handlePdNext(); }}>
-              Skip
-            </Button>
-            <Button size="sm" onClick={handleWrapUpSubmit}>
-              Save & {autoAdvance ? "Next" : "Done"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
@@ -1800,14 +1976,7 @@ export default function Communications() {
   const callState = useCallState();
   const navigate = useNavigate();
   const { data: dbContacts = [], isLoading: isLoadingContacts } = useDealSources();
-  const updateDealSource = useUpdateDealSource();
-  const deleteDealSource = useDeleteDealSource();
-  const [activeView, setActiveView] = useState<"activity" | "dialer">("activity");
-  const [dialerCallingMode, setDialerCallingMode] = useState("start");
-  const [selectedDialerContact, setSelectedDialerContact] = useState<DialerContact | null>(null);
-  const [dialerScriptId, setDialerScriptId] = useState<string | null>(null);
-  const [showDialerSms, setShowDialerSms] = useState(false);
-  const [showDialerEmail, setShowDialerEmail] = useState(false);
+  const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
@@ -1816,11 +1985,7 @@ export default function Communications() {
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
-  
-  // Edit/Delete state
-  const [editingContact, setEditingContact] = useState<Contact | null>(null);
-  const [editForm, setEditForm] = useState({ name: "", phone: "", email: "", address: "", company: "" });
-  const [deletingContactId, setDeletingContactId] = useState<string | null>(null);
+  const [operatingMode, setOperatingMode] = useState<OperatingMode>("human");
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -1926,82 +2091,13 @@ export default function Communications() {
 
   const handleQuickReply = useCallback((text: string) => {
     setMessageInput(text);
-    setSendChannel("sms");
     toast.info("Quick reply loaded — press Enter to send");
   }, []);
-
-  // Save call summary to All Activity when a call ends
-  const prevCallActiveRef = React.useRef(callState.isCallActive);
-  React.useEffect(() => {
-    if (prevCallActiveRef.current && !callState.isCallActive && callState.callStatus === "ended" && callState.currentContact) {
-      const contact = callState.currentContact;
-      const now = new Date();
-      const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-      const mins = Math.floor(callState.callDuration / 60);
-      const secs = callState.callDuration % 60;
-      const durStr = `${mins}:${secs.toString().padStart(2, "0")}`;
-      const modeStr = dialerCallingMode === "voice" ? "Voice Agent" : dialerCallingMode === "listen" ? "Listen Mode" : "Human";
-      
-      const callSummary: Activity = {
-        id: `call_${Date.now()}`,
-        channel: "call",
-        direction: "outbound",
-        timestamp: timeStr,
-        content: `${modeStr} call — ${durStr} duration. Follow up recommended.`,
-        sentiment: "neutral",
-      };
-
-      setLocalActivities(prev => ({
-        ...prev,
-        [contact.id]: [...(prev[contact.id] || contacts.find(c => c.id === contact.id)?.activities || []), callSummary],
-      }));
-    }
-    prevCallActiveRef.current = callState.isCallActive;
-  }, [callState.isCallActive, callState.callStatus]);
 
   const handleSelectContact = useCallback((id: string) => {
     setSelectedContactId(id);
     setMessageInput("");
   }, []);
-
-  const handleEditContact = useCallback((contact: Contact) => {
-    setEditForm({
-      name: contact.name,
-      phone: contact.phone || "",
-      email: contact.email || "",
-      address: contact.address || "",
-      company: contact.company || "",
-    });
-    setEditingContact(contact);
-  }, []);
-
-  const handleSaveEdit = useCallback(() => {
-    if (!editingContact?.dbId) return;
-    updateDealSource.mutate({
-      id: editingContact.dbId,
-      updates: {
-        name: editForm.name,
-        phone: editForm.phone || null,
-        email: editForm.email || null,
-        address: editForm.address || null,
-        company: editForm.company || null,
-      },
-    }, {
-      onSuccess: () => {
-        setEditingContact(null);
-      },
-    });
-  }, [editingContact, editForm, updateDealSource]);
-
-  const handleDeleteContact = useCallback(() => {
-    if (!deletingContactId) return;
-    deleteDealSource.mutate(deletingContactId, {
-      onSuccess: () => {
-        if (selectedContactId === deletingContactId) setSelectedContactId(null);
-        setDeletingContactId(null);
-      },
-    });
-  }, [deletingContactId, deleteDealSource, selectedContactId]);
 
   return (
     <AppLayout fullWidth>
@@ -2017,24 +2113,53 @@ export default function Communications() {
               Communications
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
-            {callState.isCallActive && activeView === "dialer" && (
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 text-xs font-bold">
+            {callState.isCallActive && (
+              <div className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse border",
+                MODE_CONFIG[operatingMode].badgeClass
+              )}>
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
+                    operatingMode === "human" ? "bg-emerald-400" : operatingMode === "hybrid" ? "bg-violet-400" : "bg-blue-400"
+                  )} />
+                  <span className={cn("relative inline-flex rounded-full h-2 w-2",
+                    operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500"
+                  )} />
                 </span>
-                LIVE · {dialerCallingMode === "voice" ? "AI Agent" : dialerCallingMode === "listen" ? "Listen" : "Human"}
-              </button>
-            )}
-            {callState.isCallActive && activeView === "activity" && (
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold animate-pulse">
-                <span className="w-2 h-2 rounded-full bg-white" />
-                LIVE
-              </button>
+                LIVE · {MODE_CONFIG[operatingMode].label}
+              </div>
             )}
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Mode Selector */}
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-muted border border-border">
+              {(Object.entries(MODE_CONFIG) as [OperatingMode, typeof MODE_CONFIG[OperatingMode]][]).map(([key, cfg]) => {
+                const Icon = cfg.icon;
+                return (
+                  <Tooltip key={key}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => {
+                          setOperatingMode(key);
+                          toast.info(`${cfg.label} Mode — ${cfg.desc}`);
+                        }}
+                        className={cn(
+                          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all",
+                          operatingMode === key
+                            ? cn("bg-background shadow-sm border border-border", cfg.accentClass)
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {cfg.label}
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>{cfg.desc}</TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
               <Search className="h-3.5 w-3.5 text-muted-foreground" />
               <input
@@ -2054,33 +2179,57 @@ export default function Communications() {
               {/* Left: Contact List */}
               <div className={cn(
                 "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
-                leftPanelOpen ? "w-[420px]" : "w-0"
+                leftPanelOpen 
+                  ? callState.isCallActive ? "w-[220px]" : "w-[420px]"
+                  : "w-0"
               )}>
                 {leftPanelOpen && (
                   <>
-                    <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
-                      <div className="flex items-center justify-between">
-                        <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => setLeftPanelOpen(false)}
-                              className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Minimize Panel</TooltipContent>
-                        </Tooltip>
+                    {!callState.isCallActive && (
+                      <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
+                        <div className="flex items-center justify-between">
+                          <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setLeftPanelOpen(false)}
+                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                              >
+                                <ChevronLeft className="h-4 w-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Minimize Panel</TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
                       </div>
-                      <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
-                    </div>
+                    )}
+                    {callState.isCallActive && (
+                      <div className="px-3 py-2.5 border-b border-border flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setLeftPanelOpen(false)}
+                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                              >
+                                <ChevronLeft className="h-3.5 w-3.5" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Minimize</TooltipContent>
+                          </Tooltip>
+                        </div>
+                        <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
+                      </div>
+                    )}
                     <div className="flex-1 overflow-auto">
                       {filteredContacts.map(contact => (
                         <ContactListItem
                           key={contact.id}
                           contact={contact}
                           isActive={selectedContactId === contact.id}
+                          condensed={callState.isCallActive}
                           onClick={() => handleSelectContact(contact.id)}
                           onCall={() => {
                             handleSelectContact(contact.id);
@@ -2100,8 +2249,6 @@ export default function Communications() {
                             navigator.clipboard.writeText(contact.phone || "");
                             toast.success(`Phone number copied for ${contact.name}`);
                           }}
-                          onEdit={() => handleEditContact(contact)}
-                          onDelete={() => setDeletingContactId(contact.dbId || null)}
                         />
                       ))}
                       {filteredContacts.length === 0 && (
@@ -2131,10 +2278,7 @@ export default function Communications() {
 
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
-                <LiveCallInline
-                  onOpenSms={() => setShowDialerSms(true)}
-                  onOpenEmail={() => setShowDialerEmail(true)}
-                />
+                <LiveCallCenter contact={selectedContact} operatingMode={operatingMode} onQuickReply={handleQuickReply} />
               ) : (
                 <ConversationThread
                   contact={selectedContact}
@@ -2144,130 +2288,22 @@ export default function Communications() {
                   onMessageInputChange={setMessageInput}
                   sendChannel={sendChannel}
                   onSendChannelChange={setSendChannel}
-                  onEdit={() => { if (selectedContact) { setEditingContact(selectedContact); setEditForm({ name: selectedContact.name, phone: selectedContact.phone || "", email: selectedContact.email || "", address: selectedContact.address, company: selectedContact.company || "" }); } }}
-                  onDelete={() => { if (selectedContact) setDeletingContactId(selectedContact.id); }}
+                  operatingMode={operatingMode}
                 />
               )}
 
               {/* Right: AI Co-Pilot */}
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} operatingMode={operatingMode} />
             </>
-          ) : callState.isCallActive ? (
-            <DialerLiveMode callingMode={dialerCallingMode} onMessageSent={(data) => {
-              const now = new Date();
-              const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-              const activity: Activity = {
-                id: `${data.channel}_${Date.now()}`,
-                channel: data.channel,
-                direction: "outbound",
-                timestamp: timeStr,
-                content: data.channel === "email" ? `Subject: ${data.subject}\n${data.body}` : data.body,
-                sentiment: "neutral",
-              };
-              setLocalActivities(prev => ({
-                ...prev,
-                [data.contactId]: [...(prev[data.contactId] || contacts.find(c => c.id === data.contactId)?.activities || []), activity],
-              }));
-            }} />
           ) : (
             <>
-              <DialerView
-                callingMode={dialerCallingMode}
-                setCallingMode={setDialerCallingMode}
-                selectedDialerContact={selectedDialerContact}
-                onSelectDialerContact={setSelectedDialerContact}
-                selectedScriptId={dialerScriptId}
-                onSelectScript={setDialerScriptId}
-                onOpenSms={() => setShowDialerSms(true)}
-                onOpenEmail={() => setShowDialerEmail(true)}
-              />
-              <DialerCoPilotPanel
-                contact={selectedDialerContact}
-                callingMode={dialerCallingMode === "voice" ? "voice" : dialerCallingMode === "listen" ? "listen" : "start"}
-                callActive={callState.isCallActive}
-                scripts={MOCK_CALL_SCRIPTS.map(s => ({ id: s.id, name: s.name }))}
-                selectedScriptId={dialerScriptId}
-                selectedScriptDetail={dialerScriptId ? (() => {
-                  const s = MOCK_CALL_SCRIPTS.find(x => x.id === dialerScriptId);
-                  return s ? { id: s.id, name: s.name, opening: s.opening, questions: s.questions, objections: s.objections, closing: s.closing } : null;
-                })() : null}
-                onSelectScript={setDialerScriptId}
-                onManageScripts={() => navigate("/dialer/scripts")}
-                onSms={() => setShowDialerSms(true)}
-                onEmail={() => setShowDialerEmail(true)}
-              />
+              <DialerView />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} operatingMode={operatingMode} />
             </>
           )}
         </div>
       </div>
       </TooltipProvider>
-
-      {/* Edit Contact Dialog */}
-      <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Edit Contact</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div>
-              <Label className="text-xs">Name</Label>
-              <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
-            </div>
-            <div>
-              <Label className="text-xs">Phone</Label>
-              <Input value={editForm.phone} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} />
-            </div>
-            <div>
-              <Label className="text-xs">Email</Label>
-              <Input value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
-            </div>
-            <div>
-              <Label className="text-xs">Address</Label>
-              <Input value={editForm.address} onChange={e => setEditForm(f => ({ ...f, address: e.target.value }))} />
-            </div>
-            <div>
-              <Label className="text-xs">Company</Label>
-              <Input value={editForm.company} onChange={e => setEditForm(f => ({ ...f, company: e.target.value }))} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingContact(null)}>Cancel</Button>
-            <Button onClick={handleSaveEdit} disabled={updateDealSource.isPending}>
-              {updateDealSource.isPending ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation */}
-      <AlertDialog open={!!deletingContactId} onOpenChange={(open) => { if (!open) setDeletingContactId(null); }}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Contact</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete this contact from both Communications and Contacts. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteContact} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              {deleteDealSource.isPending ? "Deleting..." : "Delete"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Dialer-only SMS & Email modals */}
-      <DialerSmsModal
-        open={showDialerSms}
-        onOpenChange={setShowDialerSms}
-        contact={selectedDialerContact}
-      />
-      <DialerEmailModal
-        open={showDialerEmail}
-        onOpenChange={setShowDialerEmail}
-        contact={selectedDialerContact}
-      />
     </AppLayout>
   );
 }
