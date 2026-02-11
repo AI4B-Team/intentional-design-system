@@ -36,6 +36,7 @@ import {
   Copy,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // ============================================================================
 // CHANNEL CONFIG
@@ -295,29 +296,43 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
             {contact.name}
           </span>
           {/* Hover actions - far right */}
-          <div className="flex items-center gap-0.5 flex-shrink-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={e => { e.stopPropagation(); onCall?.(); }}
-              className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-              title="Call"
-            >
-              <Phone className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); onSms?.(); }}
-              className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-              title="SMS"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-            </button>
-            <button
-              onClick={e => { e.stopPropagation(); onCopy?.(); }}
-              className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-              title="Copy phone"
-            >
-              <FileText className="h-3.5 w-3.5" />
-            </button>
-          </div>
+          <TooltipProvider delayDuration={0}>
+            <div className="flex items-center gap-0.5 flex-shrink-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={e => { e.stopPropagation(); onCall?.(); }}
+                    className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Call</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={e => { e.stopPropagation(); onSms?.(); }}
+                    className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>SMS</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={e => { e.stopPropagation(); onCopy?.(); }}
+                    className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <FileText className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>Copy Phone</TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
           {/* Timestamp (hidden on hover) */}
           <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:hidden">
             {contact.lastActivity}
@@ -1311,6 +1326,7 @@ export default function Communications() {
 
   return (
     <AppLayout fullWidth>
+      <TooltipProvider delayDuration={0}>
       <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
         {/* Top Bar */}
         <div className="px-6 py-3.5 border-b border-border flex items-center justify-between bg-background">
@@ -1357,13 +1373,17 @@ export default function Communications() {
                     <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
                       <div className="flex items-center justify-between">
                         <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
-                        <button
-                          onClick={() => setLeftPanelOpen(false)}
-                          className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                          title="Minimize panel"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </button>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setLeftPanelOpen(false)}
+                              className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Minimize Panel</TooltipContent>
+                        </Tooltip>
                       </div>
                       <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
                     </div>
@@ -1406,13 +1426,17 @@ export default function Communications() {
 
               {/* Expand button when collapsed */}
               {!leftPanelOpen && (
-                <button
-                  onClick={() => setLeftPanelOpen(true)}
-                  className="flex items-center justify-center w-6 border-r border-border bg-background hover:bg-muted/50 transition-colors"
-                  title="Expand panel"
-                >
-                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setLeftPanelOpen(true)}
+                      className="flex items-center justify-center w-6 border-r border-border bg-background hover:bg-muted/50 transition-colors"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Expand Panel</TooltipContent>
+                </Tooltip>
               )}
 
               {/* Center: Thread or Live Call */}
@@ -1441,6 +1465,7 @@ export default function Communications() {
           )}
         </div>
       </div>
+      </TooltipProvider>
     </AppLayout>
   );
 }
