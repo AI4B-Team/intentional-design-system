@@ -402,7 +402,7 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
 // ============================================================================
 function CoPilotPanel({ contact, activeView }: { contact: Contact | null; activeView: string }) {
   return (
-    <div className="w-[340px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+    <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center gap-2">
         <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
