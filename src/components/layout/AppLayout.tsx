@@ -22,7 +22,7 @@ const collapsedByDefaultPrefixes = ["/properties/", "/d4d/properties/", "/market
 
 export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) {
   const location = useLocation();
-  const lockViewportHeight = fullWidth && location.pathname.startsWith("/marketplace/deal/");
+  const lockViewportHeight = fullWidth && (location.pathname.startsWith("/marketplace/deal/") || location.pathname.startsWith("/communications"));
   const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname) ||
     collapsedByDefaultPrefixes.some(prefix => location.pathname.startsWith(prefix));
   
