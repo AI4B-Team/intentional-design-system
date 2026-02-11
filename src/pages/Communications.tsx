@@ -530,7 +530,11 @@ function CoPilotPanel({
             {/* Quick Replies */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Quick Replies</div>
-              {["Acknowledge their concern & pivot to value", "Ask about their timeline and motivation", "Send a follow-up with comparable sales data"].map((reply, i) => (
+              {[
+                `Hi ${contact.name.split(" ")[0]}, I completely understand your concerns. I want to make sure this works for you — can we chat briefly to go over the details?`,
+                `Hey ${contact.name.split(" ")[0]}, just following up on our last conversation. What does your timeline look like? I'd love to find a solution that fits your schedule.`,
+                `Hi ${contact.name.split(" ")[0]}, I pulled some recent sales data for your area that I think you'll find helpful. Would you like me to send it over?`,
+              ].map((reply, i) => (
                 <button
                   key={i}
                   onClick={() => onQuickReply(reply)}
