@@ -775,7 +775,7 @@ function CoPilotPanel({
           <div>
             <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
             <div className={cn("text-[11px] transition-colors duration-300", isLiveCall ? theme.accent : "text-muted-foreground")}>
-              {isLiveCall ? `${theme.label} · Live intelligence active` : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing"}
+              {isLiveCall ? "LIVE: AI Agent" : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing"}
             </div>
           </div>
         </div>
