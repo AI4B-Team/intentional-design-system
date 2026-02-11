@@ -418,7 +418,7 @@ function ConversationThread({
           <div className="flex items-center gap-2 text-xs">
             <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
             <span className="text-muted-foreground">Property:</span>
-            <span className="font-medium text-foreground">{contact.address}</span>
+            <span className="font-medium text-foreground">{contact.address}, Houston, TX 77001</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -435,11 +435,6 @@ function ConversationThread({
             <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
               <Copy className="h-3 w-3 text-muted-foreground" />
             </button>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">City/State:</span>
-            <span className="font-medium text-foreground">Houston, TX 77001</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
             <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
