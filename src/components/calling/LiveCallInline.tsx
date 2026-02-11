@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
@@ -336,7 +336,36 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
 
         {/* SAY THIS NEXT — Horizontal suggestion cards anchored at bottom */}
         {aiSuggestions.length > 0 && (
-          <div className="border-t border-border bg-muted/20 px-5 py-3 flex-shrink-0">
+          <div className="border-t border-border bg-muted/20 px-5 py-3 flex-shrink-0 space-y-3">
+            {/* AI Status Bar */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Bot className="h-4 w-4" />
+                <span className="font-medium text-foreground">AI Agent Active</span>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => toast.info("Opening strategy panel...")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <RefreshCw className="h-3 w-3" />
+                  Strategy
+                </button>
+                <button
+                  onClick={() => toast.info("Opening offer builder...")}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <BarChart3 className="h-3 w-3" />
+                  Offer
+                </button>
+              </div>
+            </div>
+
+            {/* Say This Next */}
             <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
               <MessageSquareDashed className="h-3.5 w-3.5 text-muted-foreground" /> Say This Next
             </div>
