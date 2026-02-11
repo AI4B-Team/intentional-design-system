@@ -382,6 +382,7 @@ function ConversationThread({
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
 }) {
+  const callState = useCallState();
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
 
   if (!contact) {
@@ -416,14 +417,24 @@ function ConversationThread({
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+          <button
+            onClick={onCall}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              callState.isCallActive
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+            )}
+          >
             <Phone className="h-3.5 w-3.5" /> Call
           </button>
           <button
             onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+              sendChannel === "sms"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
             )}
           >
             <MessageCircle className="h-3.5 w-3.5" /> SMS
@@ -432,7 +443,9 @@ function ConversationThread({
             onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+              sendChannel === "email"
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
             )}
           >
             <Mail className="h-3.5 w-3.5" /> Email
