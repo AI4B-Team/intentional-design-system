@@ -25,7 +25,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
       <button
         onClick={toggleMute}
         className={cn(
-          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold transition-colors",
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors",
           isMuted
             ? "border-primary bg-primary/10 text-primary"
             : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
@@ -36,7 +36,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
       <button
         onClick={toggleHold}
         className={cn(
-          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold transition-colors",
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors",
           isOnHold
             ? "border-primary bg-primary/10 text-primary"
             : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
@@ -46,7 +46,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
       </button>
       <button
         onClick={endCall}
-        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-destructive text-white text-xs font-semibold hover:bg-destructive/90 transition-colors"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-destructive text-white text-xs font-semibold hover:bg-destructive/90 transition-colors"
       >
         <PhoneOff className="h-3.5 w-3.5" /> End
       </button>
