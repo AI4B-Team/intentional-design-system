@@ -1687,7 +1687,14 @@ export default function Communications() {
 
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
-                <LiveCallInline />
+                <LiveCallInline
+                  onSmsClick={() => { setSendChannel("sms"); toast.info("Channel set to SMS"); }}
+                  onEmailClick={() => { setSendChannel("email"); toast.info("Channel set to Email"); }}
+                  onMoreClick={() => {
+                    if (selectedContact?.dbId) navigate(`/contacts/${selectedContact.dbId}`);
+                    else toast.error("No linked contact to edit");
+                  }}
+                />
               ) : (
                 <ConversationThread
                   contact={selectedContact}
