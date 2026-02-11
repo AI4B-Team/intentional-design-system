@@ -225,7 +225,8 @@ interface Contact {
 const INITIAL_CONTACTS: Contact[] = [
   {
     id: "c1", name: "Marcus Williams", address: "1847 Maple Street",
-    tag: "Motivated Seller", avatar: "MW", sentiment: "neutral",
+    phone: "(813) 555-0147", email: "marcus.williams@gmail.com", city: "Tampa", state: "FL", zip: "33602",
+    tag: "Motivated Seller", avatar: "MW", sentiment: "neutral", contactType: "seller",
     lastActivity: "2 min ago", unread: true, starred: true,
     activities: [
       { id: "a0v", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 4:15 PM", duration: "1:12", content: "Hi, this is Marcus Williams calling about 1847 Maple Street. I got your letter and I'm interested in hearing what you'd offer. The house needs work and I'm looking to move quickly. Please call me back at your earliest convenience. Thanks.", sentiment: "positive", aiSuggestion: "⚡ HIGH INTENT — Call back now. Lead with empathy on property condition, emphasize your ability to close in 14 days. Do not wait past 1 hour." },
@@ -239,7 +240,8 @@ const INITIAL_CONTACTS: Contact[] = [
   },
   {
     id: "c2", name: "John Smith", address: "123 Main St",
-    tag: "Seller", avatar: "JS", sentiment: "positive",
+    phone: "(727) 555-0238", email: "john.smith@outlook.com", city: "St. Petersburg", state: "FL", zip: "33701",
+    tag: "Seller", avatar: "JS", sentiment: "positive", contactType: "seller",
     lastActivity: "1 hr ago", unread: true, starred: false,
     activities: [
       { id: "a4", channel: "email", direction: "inbound", timestamp: "Today 9:15 AM", subject: "Re: Cash Offer for 123 Main St", content: "Thank you for your offer. I've reviewed the terms and I'm interested in discussing further. When would be a good time to connect?", sentiment: "positive", aiSuggestion: "🔥 HOT — Book a call NOW. Reply with available times within 15 minutes. Every hour of delay drops conversion 12%." },
@@ -247,7 +249,8 @@ const INITIAL_CONTACTS: Contact[] = [
   },
   {
     id: "c3", name: "Sarah Johnson", address: "456 Oak Ave",
-    tag: "Agent", avatar: "SJ", sentiment: "neutral",
+    phone: "(813) 555-0391", email: "sarah.johnson@kw.com", city: "Tampa", state: "FL", zip: "33609",
+    tag: "Agent", avatar: "SJ", sentiment: "neutral", contactType: "agent",
     lastActivity: "3 hrs ago", unread: false, starred: true,
     activities: [
       { id: "a5", channel: "sms", direction: "inbound", timestamp: "Today 7:30 AM", content: "Hi, my client received your offer and wants to counter at $285k. Let me know if you're interested.", sentiment: "neutral", aiSuggestion: "📊 Counter at $270k. Pair with flexible 30-day close to offset price gap. $285k is 8% above MAO — do not accept." },
@@ -256,7 +259,8 @@ const INITIAL_CONTACTS: Contact[] = [
   },
   {
     id: "c4", name: "Lisa Chen", address: "321 Pine Dr",
-    tag: "Agent", avatar: "LC", sentiment: "positive",
+    phone: "(941) 555-0462", email: "lisa.chen@compass.com", city: "Sarasota", state: "FL", zip: "34236",
+    tag: "Agent", avatar: "LC", sentiment: "positive", contactType: "agent",
     lastActivity: "1 day ago", unread: false, starred: true,
     activities: [
       { id: "a7", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 2:30 PM", duration: "0:45", content: "Left voicemail at 2:30pm. Client is very motivated and wants to discuss the offer ASAP.", sentiment: "positive", aiSuggestion: "🚨 URGENT — Call back immediately. Motivated seller via agent = fastest close path. Lock appointment today." },
@@ -265,7 +269,8 @@ const INITIAL_CONTACTS: Contact[] = [
   },
   {
     id: "c5", name: "Mike Williams", address: "789 Elm Blvd",
-    tag: "Seller", avatar: "MW2", sentiment: "neutral",
+    phone: "(352) 555-0573", email: "mike.w@yahoo.com", city: "Ocala", state: "FL", zip: "34471",
+    tag: "Seller", avatar: "MW2", sentiment: "neutral", contactType: "seller",
     lastActivity: "6 hrs ago", unread: false, starred: false,
     activities: [
       { id: "a9", channel: "sms", direction: "inbound", timestamp: "Today 4:22 AM", content: "I saw you mentioned a 14-day close. Is there any flexibility on that? I need at least 30 days to find a new place.", sentiment: "neutral", aiSuggestion: "✅ Grant 30-day close — costs you nothing, wins the deal. Reply now: 'Absolutely, 30 days works. Let's lock this in.'" },
@@ -273,7 +278,8 @@ const INITIAL_CONTACTS: Contact[] = [
   },
   {
     id: "c6", name: "Robert Davis", address: "555 Maple Ct",
-    tag: "Seller", avatar: "RD", sentiment: "neutral",
+    phone: "(407) 555-0684", email: "rdavis88@gmail.com", city: "Orlando", state: "FL", zip: "32801",
+    tag: "Seller", avatar: "RD", sentiment: "neutral", contactType: "seller",
     lastActivity: "2 days ago", unread: false, starred: false,
     activities: [
       { id: "a10", channel: "email", direction: "inbound", timestamp: "2 days ago", subject: "Response to Direct Mail - 555 Maple Ct", content: "Received your letter. I'm interested but have questions about the as-is condition clause. What exactly does that cover?", sentiment: "neutral", aiSuggestion: "📩 Direct mail conversion. Reply with as-is explainer + schedule walkthrough this week. Use template: 'As-Is Benefits for Sellers'." },
