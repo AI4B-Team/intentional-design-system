@@ -146,9 +146,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[15px] font-semibold text-foreground">{currentContact?.name}</span>
-              <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider", mc.badgeBg, mc.badgeText)}>
-                {mc.label}
-              </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className={cn("font-mono font-bold transition-colors", mc.accent)}>{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
