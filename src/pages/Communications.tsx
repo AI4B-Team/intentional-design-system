@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DialerLiveMode } from "@/components/dialer/live-mode";
+import { DialerStatsBar } from "@/components/dialer/live-mode/DialerStatsBar";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -1159,57 +1160,12 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: string; setC
 
   const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
 
-  const getModeKpis = () => {
-    switch (callingMode) {
-      case "voice":
-        return [
-          { label: "AI Calls Placed", value: calledContactIds.size.toString() },
-          { label: "Conversations Started", value: Math.max(0, calledContactIds.size - 1).toString() },
-          { label: "Qualified Leads", value: "3" },
-          { label: "Appointments Booked", value: "1" },
-          { label: "Avg Handle Time", value: "2:48" },
-        ];
-      case "listen":
-        return [
-          { label: "Sessions Captured", value: calledContactIds.size.toString() },
-          { label: "Key Moments Flagged", value: "7" },
-          { label: "Follow-ups Created", value: "4" },
-          { label: "Objections Detected", value: "3" },
-          { label: "Avg Session Length", value: "12:35" },
-        ];
-      default: // start (human)
-        return [
-          { label: "Calls Made", value: calledContactIds.size.toString() },
-          { label: "Contacts Reached", value: Math.max(0, calledContactIds.size - 1).toString() },
-          { label: "Appointments Set", value: "2" },
-          { label: "Talk Time", value: "18:42" },
-          { label: "Calls/Hour", value: calledContactIds.size > 0 ? "14.2" : "0" },
-        ];
-    }
-  };
-
-  const kpiStats = getModeKpis();
-  const modeLabel = callingMode === "voice" ? "Voice Agent" : callingMode === "listen" ? "Listen Mode" : "Start Call";
+  const modeForStats = callingMode === "voice" ? "voice" as const : callingMode === "listen" ? "listen" as const : "start" as const;
 
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
       {/* A) Top KPI Strip */}
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-2 px-1">
-          <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">MODE:</span>
-          <span className="text-[10px] font-bold tracking-widest uppercase text-primary">{modeLabel}</span>
-        </div>
-        <div className="flex gap-3">
-          {kpiStats.map((stat) => (
-            <div key={stat.label} className="flex-1 px-4 py-3 rounded-lg border border-border bg-muted/30">
-              <div className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">{stat.label}</div>
-              <div className="mt-1">
-                <span className="text-xl font-bold text-foreground tabular-nums">{stat.value}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <DialerStatsBar mode={modeForStats} calledCount={calledContactIds.size} />
 
       {/* Auto-advance banner */}
       {showAutoAdvance && (
