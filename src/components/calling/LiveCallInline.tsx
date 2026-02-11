@@ -1,10 +1,12 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { CallControls, formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 
 interface LiveCallInlineProps {
   className?: string;
@@ -13,30 +15,79 @@ interface LiveCallInlineProps {
   onMoreClick?: () => void;
 }
 
+const AI_STATUS_CYCLE = [
+  { label: "Listening…", dot: "bg-emerald-500", text: "text-emerald-600" },
+  { label: "Analyzing…", dot: "bg-blue-500", text: "text-blue-500" },
+  { label: "Strategy Shift Detected…", dot: "bg-violet-500", text: "text-violet-500" },
+];
+
 export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClick }: LiveCallInlineProps) {
   const {
     isCallActive, callStatus, currentContact, callDuration, transcript,
     sentiment, sentimentScore, currentCallPhase, aiSuggestions,
-    setDisplayMode,
+    setDisplayMode, addTranscriptEntry,
   } = useCallState();
+
+  const [smsComposerOpen, setSmsComposerOpen] = useState(false);
+  const [emailComposerOpen, setEmailComposerOpen] = useState(false);
+  const [composerText, setComposerText] = useState("");
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
+  const [aiStatusIdx, setAiStatusIdx] = useState(0);
+
+  // Cycle AI status indicator
+  useEffect(() => {
+    if (!isCallActive || callStatus !== "connected") return;
+    const interval = setInterval(() => {
+      setAiStatusIdx(prev => (prev + 1) % AI_STATUS_CYCLE.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isCallActive, callStatus]);
+
+  // Pre-fill SMS composer with AI draft
+  const handleSmsOpen = () => {
+    setSmsComposerOpen(true);
+    setEmailComposerOpen(false);
+    setComposerText(`${currentContact?.name?.split(" ")[0] || "Hi"}, as discussed, I'll send you the offer range shortly. Let me know if you have any questions.`);
+    onSmsClick?.();
+  };
+
+  // Pre-fill Email composer
+  const handleEmailOpen = () => {
+    setEmailComposerOpen(true);
+    setSmsComposerOpen(false);
+    setEmailSubject(`Follow-up on ${currentContact?.address || "your property"}`);
+    setEmailBody(`Hi ${currentContact?.name?.split(" ")[0] || "there"},\n\nThank you for taking the time to speak with me today. Based on our conversation, I'd like to follow up with some numbers that I think will work for both of us.\n\nI'll have a formal offer ready for you shortly.\n\nBest regards`);
+    onEmailClick?.();
+  };
 
   if (!isCallActive) return null;
 
   const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
   const phaseIdx = PHASES.indexOf(currentCallPhase);
+  const aiStatus = AI_STATUS_CYCLE[aiStatusIdx];
+
+  const handleUseSuggestion = (text: string) => {
+    addTranscriptEntry({ speaker: "user", text });
+    toast.success("Suggestion applied to conversation");
+  };
 
   return (
     <div className={cn("flex-1 flex flex-col overflow-hidden bg-background", className)}>
       {/* Header */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-primary/5">
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-primary/[0.03]">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg bg-primary flex items-center justify-center">
+          <div className="relative w-11 h-11 rounded-lg bg-primary flex items-center justify-center">
             <PhoneCall className={cn("h-5 w-5 text-primary-foreground", callStatus === "ringing" && "animate-pulse")} />
+            {/* Subtle pulse ring during live call */}
+            {callStatus === "connected" && (
+              <span className="absolute inset-0 rounded-lg border-2 border-primary/30 animate-ping" style={{ animationDuration: "2s" }} />
+            )}
           </div>
           <div>
             <div className="text-[15px] font-semibold text-foreground">{currentContact?.name}</div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-mono">{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
+              <span className="font-mono font-bold text-primary">{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
                 {currentCallPhase}
               </span>
@@ -44,29 +95,27 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* Channel buttons */}
           <div className="flex gap-2 mr-2">
-            <button
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold"
-            >
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold">
               <Phone className="h-3.5 w-3.5" /> Call
             </button>
-            <button
-              onClick={onSmsClick}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 text-xs font-semibold transition-colors"
-            >
+            <button onClick={handleSmsOpen} className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              smsComposerOpen
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+            )}>
               <MessageCircle className="h-3.5 w-3.5" /> SMS
             </button>
-            <button
-              onClick={onEmailClick}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 text-xs font-semibold transition-colors"
-            >
+            <button onClick={handleEmailOpen} className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              emailComposerOpen
+                ? "bg-primary text-primary-foreground border-primary"
+                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+            )}>
               <Mail className="h-3.5 w-3.5" /> Email
             </button>
-            <button
-              onClick={onMoreClick}
-              className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors"
-            >
+            <button onClick={onMoreClick} className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors">
               <MoreVertical className="h-4 w-4" />
             </button>
           </div>
@@ -77,28 +126,37 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Transcript */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Call Structure */}
-          <div className="px-5 py-3 border-b border-border">
-            <div className="flex gap-1">
-              {PHASES.map((phase, i) => (
-                <div key={phase} className="flex-1">
-                  <div className={cn(
-                    "h-1.5 rounded-full transition-all",
-                    i <= phaseIdx ? "bg-primary" : "bg-muted"
-                  )} />
-                  <span className={cn(
-                    "text-[9px] mt-1 block text-center",
-                    i <= phaseIdx ? "text-primary font-semibold" : "text-muted-foreground"
-                  )}>{phase}</span>
-                </div>
-              ))}
+      {/* Stage Progress Bar - Auto-advancing with pulse */}
+      <div className="px-5 py-3 border-b border-border">
+        <div className="flex gap-1">
+          {PHASES.map((phase, i) => (
+            <div key={phase} className="flex-1">
+              <div className={cn(
+                "h-1.5 rounded-full transition-all duration-500",
+                i < phaseIdx ? "bg-primary/40" :
+                i === phaseIdx ? "bg-primary animate-pulse" :
+                "bg-muted"
+              )} />
+              <span className={cn(
+                "text-[9px] mt-1 block text-center transition-all",
+                i < phaseIdx ? "text-muted-foreground/50 line-through" :
+                i === phaseIdx ? "text-primary font-bold" :
+                "text-muted-foreground"
+              )}>{phase}</span>
             </div>
-          </div>
+          ))}
+        </div>
+        {/* Current Strategy */}
+        <div className="mt-2 flex items-center gap-1.5 text-[10px] text-primary/80 font-medium">
+          <Zap className="h-3 w-3" />
+          <span>Strategy: Empathy → Value Framing → Anchor at $175K</span>
+        </div>
+      </div>
 
+      {/* Content - Focused Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Live Transcript - Clean, focused */}
+        <div className="flex-1 flex flex-col overflow-hidden">
           <ScrollArea className="flex-1 p-5">
             <div className="space-y-3">
               {transcript.map(entry => (
@@ -107,7 +165,7 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
                   entry.speaker === "user" ? "justify-end" : "justify-start"
                 )}>
                   <div className={cn(
-                    "max-w-[80%] px-3.5 py-2 rounded-lg text-[13px]",
+                    "max-w-[80%] px-3.5 py-2.5 rounded-lg text-[13px] leading-relaxed",
                     entry.speaker === "user"
                       ? "bg-primary text-primary-foreground"
                       : entry.speaker === "ai"
@@ -119,53 +177,135 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
                 </div>
               ))}
               {callStatus === "connected" && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <div className="flex gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-                  </div>
-                  AI is listening...
+                <div className="flex items-center gap-2 text-xs">
+                  <span className={cn("relative flex h-2 w-2")}>
+                    <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", aiStatus.dot)} />
+                    <span className={cn("relative inline-flex rounded-full h-2 w-2", aiStatus.dot)} />
+                  </span>
+                  <span className={cn("font-medium transition-colors duration-300", aiStatus.text)}>{aiStatus.label}</span>
                 </div>
               )}
             </div>
           </ScrollArea>
+
+          {/* SMS Slide-Up Composer */}
+          {smsComposerOpen && (
+            <div className="border-t border-border bg-muted/30 p-4 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                  <MessageCircle className="h-3 w-3 text-blue-500" /> SMS Draft
+                </span>
+                <button onClick={() => setSmsComposerOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <textarea
+                value={composerText}
+                onChange={e => setComposerText(e.target.value)}
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none"
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <button onClick={() => { toast.success("SMS sent"); setSmsComposerOpen(false); }} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+                  Send
+                </button>
+                <button onClick={() => {
+                  toast.info("Rewriting...");
+                  setTimeout(() => {
+                    setComposerText(composerText + " — I'd love to lock this down for you today.");
+                    toast.success("Enhanced");
+                  }, 600);
+                }} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Rewrite
+                </button>
+                <button onClick={() => toast.info("Scheduling...")} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  Schedule
+                </button>
+                <button onClick={() => {
+                  setComposerText(composerText + "\n\nOffer range: $165k–$180k based on comparable sales.");
+                  toast.info("Offer range added");
+                }} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <FileText className="h-3 w-3" /> Add Offer
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Email Slide-Up Composer */}
+          {emailComposerOpen && (
+            <div className="border-t border-border bg-muted/30 p-4 animate-fade-in">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 text-amber-500" /> Email Draft
+                </span>
+                <button onClick={() => setEmailComposerOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <input
+                value={emailSubject}
+                onChange={e => setEmailSubject(e.target.value)}
+                placeholder="Subject"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 mb-2"
+              />
+              <textarea
+                value={emailBody}
+                onChange={e => setEmailBody(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none"
+              />
+              <div className="flex items-center gap-2 mt-2">
+                <button onClick={() => { toast.success("Email sent"); setEmailComposerOpen(false); }} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+                  Send
+                </button>
+                <button onClick={() => toast.info("Adjusting tone...")} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Edit Tone
+                </button>
+                <button onClick={() => {
+                  setEmailBody(emailBody + "\n\nOffer Summary:\n• Cash offer: $165k–$180k\n• Close in 14–21 days\n• No repairs needed");
+                  toast.info("Offer summary added");
+                }} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                  <FileText className="h-3 w-3" /> Add Offer
+                </button>
+                <button onClick={() => toast.info("Attaching comps PDF...")} className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                  Attach Comps
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* AI Suggestions sidebar */}
-        <div className="w-[260px] border-l border-border p-4 overflow-auto bg-muted/30">
+        {/* AI Suggestion Stack - Interactive action cards */}
+        <div className="w-[280px] border-l border-border p-4 overflow-auto bg-muted/20">
           <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3 text-primary" /> Suggestions
+            <Sparkles className="h-3 w-3 text-primary" /> AI Suggestions
           </div>
           <div className="space-y-2.5">
             {aiSuggestions.map(s => (
-              <div key={s.id} className="p-2.5 bg-muted/50 rounded-lg border border-border/50 text-xs">
-                <div className="flex items-center justify-between mb-1">
+              <div key={s.id} className="p-3 bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all group">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className={cn(
-                    "px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase",
-                    s.type === "question" ? "bg-blue-500/10 text-blue-500" :
+                    "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
+                    s.type === "question" ? "bg-blue-500/10 text-blue-600" :
                     s.type === "response" ? "bg-primary/10 text-primary" :
-                    "bg-muted text-muted-foreground"
+                    "bg-amber-500/10 text-amber-600"
                   )}>{s.type}</span>
-                  <span className="text-[10px] text-muted-foreground">{s.confidence}%</span>
+                  <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">{s.text}</p>
+                <p className="text-xs text-foreground leading-relaxed mb-2.5">{s.text}</p>
+                <button
+                  onClick={() => handleUseSuggestion(s.text)}
+                  className={cn(
+                    "w-full px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border",
+                    s.type === "coach"
+                      ? "border-amber-500/20 text-amber-600 hover:bg-amber-500/5"
+                      : "border-primary/20 text-primary hover:bg-primary/5"
+                  )}
+                >
+                  {s.type === "coach" ? "Apply Strategy" : "Use This"}
+                </button>
               </div>
             ))}
-          </div>
-
-          {/* Sentiment */}
-          <div className="mt-4 p-2.5 bg-muted/50 rounded-lg border border-border/50">
-            <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-2">Sentiment</div>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                  style={{ width: `${sentimentScore}%` }}
-                />
-              </div>
-              <span className="text-[10px] font-semibold capitalize text-muted-foreground">{sentiment}</span>
-            </div>
           </div>
         </div>
       </div>
