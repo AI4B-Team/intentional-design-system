@@ -994,6 +994,26 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Power Dial state
+  const [pdActive, setPdActive] = useState(false);
+  const [pdIndex, setPdIndex] = useState(0);
+  const [autoAdvance, setAutoAdvance] = useState(true);
+  const [showWrapUp, setShowWrapUp] = useState(false);
+  const [wrapUpOutcome, setWrapUpOutcome] = useState("no_answer");
+  const [wrapUpNotes, setWrapUpNotes] = useState("");
+  const [agentStatus, setAgentStatus] = useState<string | null>(null);
+  const prevCallActive = React.useRef(false);
+
+  // Track call end for wrap-up
+  React.useEffect(() => {
+    if (prevCallActive.current && !callState.isCallActive && pdActive) {
+      setShowWrapUp(true);
+    }
+    prevCallActive.current = callState.isCallActive;
+  }, [callState.isCallActive, pdActive]);
+
+  const pdCurrentContact = pdActive ? dialerContacts[pdIndex] : null;
+
   const modes = [
     { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
     { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
@@ -1017,13 +1037,20 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
   };
 
   const handleStartPowerDial = () => {
+    if (dialerContacts.length === 0) return;
+    setPdActive(true);
+    setPdIndex(0);
+    setCalledContactIds(new Set());
+    const first = dialerContacts[0];
+    onSelectDialerContact({ id: first.id, name: first.name, phone: first.phone, address: first.address, type: first.type });
     if (callingMode === "listen") {
       toast.info("Listen Mode activated — ready to capture external calls");
-      return;
-    }
-    if (callingMode === "voice") {
+    } else if (callingMode === "voice") {
       toast.success(`AI Voice Agent session starting with ${dialerContacts.length} contacts...`);
+    } else {
+      toast.success(`Power Dial started — ${dialerContacts.length} contacts`);
     }
+    // Also set up CallContext queue
     const queueContacts = dialerContacts.map(item => ({
       id: item.id,
       name: item.name,
@@ -1043,6 +1070,64 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
       }
     }
     callState.startDialerSession();
+  };
+
+  const handlePdNext = () => {
+    const nextIdx = pdIndex + 1;
+    if (nextIdx >= dialerContacts.length) {
+      setPdActive(false);
+      toast.success("Power Dial session complete!");
+      return;
+    }
+    setPdIndex(nextIdx);
+    const next = dialerContacts[nextIdx];
+    onSelectDialerContact({ id: next.id, name: next.name, phone: next.phone, address: next.address, type: next.type });
+  };
+
+  const handlePdSkip = () => {
+    handlePdNext();
+  };
+
+  const handlePdEnd = () => {
+    setPdActive(false);
+    toast.info("Power Dial session ended");
+  };
+
+  const handleWrapUpSubmit = () => {
+    toast.success(`Outcome saved: ${wrapUpOutcome.replace("_", " ")}`);
+    setShowWrapUp(false);
+    setWrapUpNotes("");
+    setWrapUpOutcome("no_answer");
+    if (autoAdvance) {
+      handlePdNext();
+    }
+  };
+
+  const handleCallCurrentPd = () => {
+    if (!pdCurrentContact) return;
+    if (callingMode === "listen") {
+      toast.info("Listen Mode captures external calls — use Zoom, Meet, etc.");
+      return;
+    }
+    setCalledContactIds(prev => new Set(prev).add(pdCurrentContact.id));
+    if (callingMode === "voice") {
+      setAgentStatus("dialing");
+      toast.info(`AI Voice Agent calling ${pdCurrentContact.name}...`);
+      // Simulate agent status progression
+      setTimeout(() => setAgentStatus("connected"), 2000);
+      setTimeout(() => setAgentStatus("handling_objection"), 6000);
+      setTimeout(() => setAgentStatus("booking"), 9000);
+      setTimeout(() => {
+        setAgentStatus("complete");
+        setTimeout(() => setAgentStatus(null), 1000);
+      }, 12000);
+    }
+    callState.startCall({
+      id: pdCurrentContact.id,
+      name: pdCurrentContact.name,
+      phone: pdCurrentContact.phone,
+      address: pdCurrentContact.address,
+    }, "inline");
   };
 
   const handleSelectScript = (scriptId: string) => {
@@ -1199,15 +1284,15 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
           <button
             onClick={handleStartPowerDial}
-            disabled={callState.isCallActive || dialerContacts.length === 0}
+            disabled={callState.isCallActive || dialerContacts.length === 0 || pdActive}
             className={cn(
               "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
-              callState.isCallActive || dialerContacts.length === 0
+              callState.isCallActive || dialerContacts.length === 0 || pdActive
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
                 : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
           >
-            {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
+            {pdActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
           </button>
         </div>
         <div className="flex gap-3">
@@ -1236,6 +1321,87 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           ))}
         </div>
       </div>
+
+      {/* Power Dial HUD */}
+      {pdActive && pdCurrentContact && (
+        <div className="p-4 bg-muted/30 rounded-xl border border-border flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-md bg-primary flex items-center justify-center text-[11px] font-bold text-primary-foreground">
+                {pdCurrentContact.name.split(" ").map(n => n[0]).join("").slice(0, 2)}
+              </div>
+              <div>
+                <div className="text-[13px] font-semibold text-foreground">{pdCurrentContact.name}</div>
+                <div className="text-[11px] text-muted-foreground">{pdCurrentContact.address || pdCurrentContact.phone}</div>
+              </div>
+            </div>
+            <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-bold">
+              {pdIndex + 1} of {dialerContacts.length}
+            </span>
+            {callingMode === "voice" && agentStatus && (
+              <span className={cn(
+                "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                agentStatus === "dialing" && "bg-amber-500/10 text-amber-600",
+                agentStatus === "connected" && "bg-emerald-500/10 text-emerald-600",
+                agentStatus === "handling_objection" && "bg-destructive/10 text-destructive",
+                agentStatus === "booking" && "bg-violet-500/10 text-violet-600",
+                agentStatus === "complete" && "bg-primary/10 text-primary",
+              )}>
+                {agentStatus.replace("_", " ")}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground mr-2">
+              <input
+                type="checkbox"
+                checked={autoAdvance}
+                onChange={e => setAutoAdvance(e.target.checked)}
+                className="rounded border-border"
+              />
+              Auto-advance
+            </label>
+            {callingMode === "listen" ? (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground/50 cursor-not-allowed">
+                    <Phone className="h-3.5 w-3.5 inline mr-1" /> Call
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="bg-background text-foreground border border-border text-[11px]">
+                  Listen Mode captures external calls
+                </TooltipContent>
+              </Tooltip>
+            ) : (
+              <button
+                onClick={handleCallCurrentPd}
+                disabled={callState.isCallActive}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors",
+                  callState.isCallActive
+                    ? "border border-border text-muted-foreground/50 cursor-not-allowed"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                <Phone className="h-3.5 w-3.5 inline mr-1" />
+                {callingMode === "voice" ? "Start AI Call" : "Call"}
+              </button>
+            )}
+            <button
+              onClick={handlePdSkip}
+              className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Skip
+            </button>
+            <button
+              onClick={handlePdEnd}
+              className="px-3 py-1.5 rounded-lg border border-destructive/30 text-xs font-semibold text-destructive hover:bg-destructive/5 transition-colors"
+            >
+              End Session
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-5">
         {/* Left column: Dialing List + Import */}
@@ -1519,6 +1685,83 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
           </div>
         </div>
       </div>
+
+      {/* Wrap-up Modal */}
+      <Dialog open={showWrapUp} onOpenChange={setShowWrapUp}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle className="text-[15px]">Call Wrap-Up</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Outcome</Label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {[
+                  { key: "no_answer", label: "No Answer" },
+                  { key: "left_vm", label: "Left VM" },
+                  { key: "spoke", label: "Spoke" },
+                  { key: "appointment", label: "Appointment Set" },
+                  { key: "not_interested", label: "Not Interested" },
+                ].map(opt => (
+                  <button
+                    key={opt.key}
+                    onClick={() => setWrapUpOutcome(opt.key)}
+                    className={cn(
+                      "px-3 py-2 rounded-lg border text-[12px] font-medium transition-colors",
+                      wrapUpOutcome === opt.key
+                        ? "border-primary bg-primary/5 text-primary"
+                        : "border-border text-muted-foreground hover:border-primary/30"
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Notes</Label>
+              <textarea
+                value={wrapUpNotes}
+                onChange={e => setWrapUpNotes(e.target.value)}
+                placeholder="Quick notes about the call..."
+                rows={3}
+                className="w-full mt-1.5 px-3 py-2 rounded-lg border border-border bg-background text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none"
+              />
+            </div>
+            <div>
+              <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Next Step</Label>
+              <div className="flex gap-2 mt-1.5">
+                <button
+                  onClick={() => { toast.info("SMS composer opening..."); setShowWrapUp(false); }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                >
+                  <MessageCircle className="h-3 w-3" /> Send SMS
+                </button>
+                <button
+                  onClick={() => { toast.info("Email composer opening..."); setShowWrapUp(false); }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                >
+                  <Mail className="h-3 w-3" /> Send Email
+                </button>
+                <button
+                  onClick={() => { toast.info("Follow-up scheduled"); setShowWrapUp(false); }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+                >
+                  <Calendar className="h-3 w-3" /> Follow-up
+                </button>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" size="sm" onClick={() => { setShowWrapUp(false); if (autoAdvance) handlePdNext(); }}>
+              Skip
+            </Button>
+            <Button size="sm" onClick={handleWrapUpSubmit}>
+              Save & {autoAdvance ? "Next" : "Done"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
