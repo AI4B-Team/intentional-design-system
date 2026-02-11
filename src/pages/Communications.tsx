@@ -567,8 +567,8 @@ function ConversationThread({
                   {act.content || act.summary}
                 </div>
                 {act.aiSuggestion && (
-                   <div className="mt-2.5 p-2.5 bg-emerald-50 border border-emerald-200 rounded-md flex gap-2 items-start">
-                    <Sparkles className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                   <div className="mt-2.5 p-3 bg-emerald-50/60 border border-emerald-100 border-l-[3px] border-l-emerald-400 rounded-md flex gap-2 items-start">
+                    <Sparkles className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
                     <span className="text-xs text-foreground leading-relaxed font-medium">{act.aiSuggestion}</span>
                   </div>
                 )}
