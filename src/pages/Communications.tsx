@@ -14,6 +14,7 @@ import {
   Search,
   Star,
   Sparkles,
+  Sparkle,
   Send,
   ChevronRight,
   ChevronDown,
@@ -1793,7 +1794,7 @@ export default function Communications() {
               >
                 {key === "start" && <Play className="h-3 w-3" />}
                 {key === "listen" && <Sparkles className="h-3 w-3" />}
-                {key === "voice" && <Sparkles className="h-3 w-3" />}
+                {key === "voice" && <Sparkle className="h-3 w-3" />}
                 {theme.label === "Human Mode" ? "Human" : theme.label === "Hybrid Mode" ? "Hybrid" : "AI Agent"}
               </button>
             ))}
