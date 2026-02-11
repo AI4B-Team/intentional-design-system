@@ -13,26 +13,44 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
   const { user, loading: authLoading } = useAuth();
   const { organization, loading: orgLoading } = useOrganization();
   const location = useLocation();
-  const hadUserRef = React.useRef(false);
+  
+  // Check localStorage for previous session — survives page refreshes unlike refs
+  const hadPreviousSession = React.useRef(
+    typeof window !== "undefined" && localStorage.getItem("df_had_session") === "true"
+  );
   const [graceExpired, setGraceExpired] = React.useState(false);
 
-  // Track if we ever had a user (to distinguish fresh visit vs refresh)
+  // Persist session indicator to localStorage so it survives full page refreshes
   React.useEffect(() => {
-    if (user) hadUserRef.current = true;
+    if (user) {
+      localStorage.setItem("df_had_session", "true");
+      hadPreviousSession.current = true;
+    }
   }, [user]);
 
-  // Grace period: if user was logged in but session momentarily drops (token refresh race),
-  // wait briefly before redirecting to login
+  // Clear session indicator on explicit sign-out (user becomes null after having been set)
   React.useEffect(() => {
-    if (!authLoading && !user && hadUserRef.current && !graceExpired) {
-      const timer = setTimeout(() => setGraceExpired(true), 1500);
+    if (!authLoading && !user && !hadPreviousSession.current) {
+      localStorage.removeItem("df_had_session");
+    }
+  }, [authLoading, user]);
+
+  // Grace period: if we had a session (this page load or previous), wait for token refresh
+  // before redirecting to login. 3s is enough for even slow token refreshes.
+  React.useEffect(() => {
+    if (!authLoading && !user && hadPreviousSession.current && !graceExpired) {
+      const timer = setTimeout(() => {
+        setGraceExpired(true);
+        // If still no user after grace, clear the indicator so next visit goes straight to login
+        localStorage.removeItem("df_had_session");
+      }, 3000);
       return () => clearTimeout(timer);
     }
     if (user) setGraceExpired(false);
   }, [authLoading, user, graceExpired]);
 
-  // During auth loading on refresh, render children (layout + sidebar stay visible)
-  if (authLoading || (!user && hadUserRef.current && !graceExpired)) {
+  // During auth loading or grace period, render children at reduced opacity (sidebar stays visible)
+  if (authLoading || (!user && hadPreviousSession.current && !graceExpired)) {
     return <div className="opacity-50 pointer-events-none transition-opacity duration-200">{children}</div>;
   }
 
