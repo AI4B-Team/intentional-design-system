@@ -1,12 +1,29 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2 } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, MessageSquare, Mail, MoreVertical } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { CallControls, formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-export function LiveCallInline({ className }: { className?: string }) {
+interface LiveCallInlineProps {
+  className?: string;
+  onOpenSms?: () => void;
+  onOpenEmail?: () => void;
+}
+
+export function LiveCallInline({ className, onOpenSms, onOpenEmail }: LiveCallInlineProps) {
   const {
     isCallActive, callStatus, currentContact, callDuration, transcript,
     sentiment, sentimentScore, currentCallPhase, aiSuggestions,
@@ -36,7 +53,39 @@ export function LiveCallInline({ className }: { className?: string }) {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          {/* Communication toggles */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onOpenSms}>
+                <MessageSquare className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">SMS</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="ghost" className="h-8 w-8" onClick={onOpenEmail}>
+                <Mail className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Email</TooltipContent>
+          </Tooltip>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" variant="ghost" className="h-8 w-8">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onOpenSms}>Send SMS</DropdownMenuItem>
+              <DropdownMenuItem onClick={onOpenEmail}>Send Email</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <div className="w-px h-6 bg-border mx-1" />
+
+          {/* Call controls */}
           <CallControls compact />
           <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDisplayMode("mini")}>
             <Minimize2 className="h-4 w-4" />
