@@ -230,6 +230,9 @@ export function DialerCoPilotPanel({
               </div>
             </div>
 
+            {/* 1b) Top AI Insight */}
+            <TopInsightCard contact={contact} />
+
             {/* 2) Script in Use */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="flex items-center justify-between mb-2">
@@ -522,6 +525,58 @@ function ListenModePanel({ contact }: { contact: DialerContact }) {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// TOP INSIGHT CARD — surfaces one key AI insight in the Command Center
+// ============================================================================
+function getTopInsight(contact: DialerContact): { label: string; text: string; type: 'opportunity' | 'warning' | 'info' } {
+  const score = contact.leadScore ?? 50;
+  if (score >= 70) {
+    return {
+      label: 'High-Value Lead',
+      text: `${contact.name.split(' ')[0]} shows strong motivation signals. Lead directly with your best offer and emphasize speed-to-close.`,
+      type: 'opportunity',
+    };
+  }
+  if (contact.tags?.includes('Expired') || contact.tags?.includes('Pre-foreclosure')) {
+    return {
+      label: 'Time-Sensitive',
+      text: `This is a distress signal — approach with empathy first. Ask about their timeline before discussing price.`,
+      type: 'warning',
+    };
+  }
+  if (contact.type === 'Absentee Owner') {
+    return {
+      label: 'Absentee Owner',
+      text: `Remote owners often prioritize convenience over price. Highlight your ability to handle everything remotely.`,
+      type: 'info',
+    };
+  }
+  return {
+    label: 'Suggested Approach',
+    text: `Build rapport first — ${contact.name.split(' ')[0]} hasn't been contacted recently. A warm, consultative opener will work best.`,
+    type: 'info',
+  };
+}
+
+function TopInsightCard({ contact }: { contact: DialerContact }) {
+  const insight = getTopInsight(contact);
+  const colors = {
+    opportunity: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-700',
+    warning: 'bg-amber-500/10 border-amber-500/20 text-amber-700',
+    info: 'bg-primary/5 border-primary/20 text-primary',
+  };
+
+  return (
+    <div className={cn('p-3 rounded-lg border', colors[insight.type])}>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <Sparkles className="h-3 w-3" />
+        <span className="text-[10px] font-semibold uppercase tracking-wider">{insight.label}</span>
+      </div>
+      <p className="text-[12px] leading-relaxed text-foreground/80">{insight.text}</p>
     </div>
   );
 }
