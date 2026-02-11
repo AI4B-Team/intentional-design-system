@@ -436,12 +436,62 @@ function ConversationThread({
   onDelete?: () => void;
 }) {
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
+  const [emailComposeOpen, setEmailComposeOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
   const composerInputRef = React.useRef<HTMLInputElement>(null);
 
-  const focusComposer = React.useCallback((channel?: string) => {
-    if (channel) onSendChannelChange(channel);
+  // Draft storage keyed by contactId+channel
+  const draftsRef = React.useRef<Record<string, string>>({});
+
+  // Save current input as draft when channel or contact changes
+  const saveDraft = React.useCallback(() => {
+    if (contact && messageInput.trim()) {
+      draftsRef.current[`${contact.id}_${sendChannel}`] = messageInput;
+    }
+  }, [contact, messageInput, sendChannel]);
+
+  const loadDraft = React.useCallback((contactId: string, channel: string) => {
+    const draft = draftsRef.current[`${contactId}_${channel}`] || "";
+    onMessageInputChange(draft);
+  }, [onMessageInputChange]);
+
+  const focusComposer = React.useCallback((channel: string) => {
+    if (!contact) return;
+    // Save current draft before switching
+    saveDraft();
+    onSendChannelChange(channel);
+    // Load draft for new channel
+    loadDraft(contact.id, channel);
     setTimeout(() => composerInputRef.current?.focus(), 50);
-  }, [onSendChannelChange]);
+  }, [onSendChannelChange, contact, saveDraft, loadDraft]);
+
+  const handleSmsClick = React.useCallback(() => {
+    focusComposer("sms");
+  }, [focusComposer]);
+
+  const handleEmailClick = React.useCallback(() => {
+    if (!contact) return;
+    const hasEmailThread = contact.activities.some(a => a.channel === "email");
+    if (hasEmailThread) {
+      focusComposer("email");
+    } else {
+      // No email thread — open lightweight compose overlay
+      setEmailSubject(`Re: ${contact.address || contact.name}`);
+      setEmailBody("");
+      setEmailComposeOpen(true);
+    }
+  }, [contact, focusComposer]);
+
+  const handleSendEmail = React.useCallback(() => {
+    if (!emailSubject.trim() && !emailBody.trim()) return;
+    // Insert the email body into the composer and send
+    onSendChannelChange("email");
+    onMessageInputChange(emailBody.trim());
+    setEmailComposeOpen(false);
+    toast.success("Email composed — press Send to deliver");
+    setTimeout(() => composerInputRef.current?.focus(), 50);
+  }, [emailSubject, emailBody, onSendChannelChange, onMessageInputChange]);
 
   if (!contact) {
     return (
@@ -460,7 +510,7 @@ function ConversationThread({
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden relative">
       {/* Thread Header - Fixed */}
       <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -479,7 +529,7 @@ function ConversationThread({
             <Phone className="h-3.5 w-3.5" /> Call
           </button>
           <button
-            onClick={() => focusComposer("sms")}
+            onClick={handleSmsClick}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
@@ -488,7 +538,7 @@ function ConversationThread({
             <MessageCircle className="h-3.5 w-3.5" /> SMS
           </button>
           <button
-            onClick={() => focusComposer("email")}
+            onClick={handleEmailClick}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
@@ -620,7 +670,7 @@ function ConversationThread({
         })}
       </div>
 
-      {/* Quick Reply */}
+      {/* Sticky Composer */}
       <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
         <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
           <input
@@ -633,9 +683,10 @@ function ConversationThread({
           />
           <button
             onClick={() => {
-              const channels = ["sms", "email"];
-              const idx = channels.indexOf(sendChannel);
-              onSendChannelChange(channels[(idx + 1) % channels.length]);
+              saveDraft();
+              const next = sendChannel === "sms" ? "email" : "sms";
+              onSendChannelChange(next);
+              if (contact) loadDraft(contact.id, next);
             }}
             className={cn(
               "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
@@ -653,6 +704,66 @@ function ConversationThread({
           <Send className="h-4 w-4" />
         </button>
       </div>
+
+      {/* Email Compose Overlay */}
+      {emailComposeOpen && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="w-full max-w-md mx-4 bg-background border border-border rounded-lg shadow-lg">
+            <div className="px-5 py-3.5 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Mail className="h-4 w-4 text-primary" />
+                <span className="text-[14px] font-semibold text-foreground">Compose Email</span>
+              </div>
+              <button
+                onClick={() => setEmailComposeOpen(false)}
+                className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="p-5 space-y-3">
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">To</label>
+                <div className="text-[13px] text-foreground font-medium">{contact.email || contact.name}</div>
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Subject</label>
+                <input
+                  value={emailSubject}
+                  onChange={e => setEmailSubject(e.target.value)}
+                  placeholder="Email subject..."
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 text-foreground text-[13px] outline-none focus:border-primary/50 placeholder:text-muted-foreground"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 block">Body</label>
+                <textarea
+                  value={emailBody}
+                  onChange={e => setEmailBody(e.target.value)}
+                  placeholder="Write your email..."
+                  rows={5}
+                  className="w-full px-3 py-2 rounded-lg border border-border bg-muted/30 text-foreground text-[13px] outline-none focus:border-primary/50 resize-none placeholder:text-muted-foreground"
+                />
+              </div>
+            </div>
+            <div className="px-5 py-3.5 border-t border-border flex items-center justify-end gap-2">
+              <button
+                onClick={() => setEmailComposeOpen(false)}
+                className="px-4 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendEmail}
+                disabled={!emailBody.trim()}
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                <span className="flex items-center gap-1.5"><Send className="h-3.5 w-3.5" /> Send Email</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
