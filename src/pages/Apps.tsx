@@ -238,7 +238,7 @@ export default function Apps() {
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+                  "px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors",
                   activeCategory === cat.id
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
