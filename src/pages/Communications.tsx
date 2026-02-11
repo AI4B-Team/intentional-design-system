@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useDealSources, type DealSource } from "@/hooks/useDealSources";
+import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
   Phone,
   MessageCircle,
@@ -36,9 +36,27 @@ import {
   Home,
   Calendar,
   Copy,
+  MoreVertical,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ============================================================================
 // CHANNEL CONFIG
@@ -375,6 +393,8 @@ function ConversationThread({
   onSendChannelChange,
   autoSelectedReason,
   onDismissAutoSelect,
+  onEditContact,
+  onDeleteContact,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -385,6 +405,8 @@ function ConversationThread({
   onSendChannelChange: (ch: string) => void;
   autoSelectedReason?: string | null;
   onDismissAutoSelect?: () => void;
+  onEditContact?: () => void;
+  onDeleteContact?: () => void;
 }) {
   const callState = useCallState();
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
@@ -420,7 +442,7 @@ function ConversationThread({
             <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             onClick={onCall}
             className={cn(
@@ -454,6 +476,21 @@ function ConversationThread({
           >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors">
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onEditContact}>
+                <Pencil className="h-3.5 w-3.5 mr-2" /> Edit Contact
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDeleteContact} className="text-destructive focus:text-destructive">
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete Contact
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -1307,6 +1344,8 @@ export default function Communications() {
   const callState = useCallState();
   const navigate = useNavigate();
   const { data: dbContacts = [], isLoading: isLoadingContacts } = useDealSources();
+  const updateMutation = useUpdateDealSource();
+  const deleteMutation = useDeleteDealSource();
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -1317,6 +1356,7 @@ export default function Communications() {
   const [sendChannel, setSendChannel] = useState("");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
@@ -1467,6 +1507,37 @@ export default function Communications() {
     setMessageInput(text);
     toast.info("Quick reply loaded — press Enter to send");
   }, []);
+
+  const handleEditContact = useCallback(() => {
+    if (!selectedContact?.dbId) {
+      toast.error("This contact cannot be edited (no database link)");
+      return;
+    }
+    navigate(`/contacts/${selectedContact.dbId}`);
+  }, [selectedContact, navigate]);
+
+  const handleDeleteContact = useCallback(() => {
+    if (!selectedContact?.dbId) {
+      toast.error("This contact cannot be deleted (no database link)");
+      return;
+    }
+    setDeleteConfirmOpen(true);
+  }, [selectedContact]);
+
+  const confirmDeleteContact = useCallback(() => {
+    if (!selectedContact?.dbId) return;
+    deleteMutation.mutate(selectedContact.dbId, {
+      onSuccess: () => {
+        toast.success(`${selectedContact.name} deleted`);
+        setSelectedContactId(null);
+        setDeleteConfirmOpen(false);
+      },
+      onError: () => {
+        toast.error("Failed to delete contact");
+        setDeleteConfirmOpen(false);
+      },
+    });
+  }, [selectedContact, deleteMutation]);
 
   const handleSelectContact = useCallback((id: string) => {
     userInteractedRef.current = true;
@@ -1628,6 +1699,8 @@ export default function Communications() {
                   onSendChannelChange={setSendChannel}
                   autoSelectedReason={autoSelectedReason}
                   onDismissAutoSelect={handleDismissAutoSelect}
+                  onEditContact={handleEditContact}
+                  onDeleteContact={handleDeleteContact}
                 />
               )}
 
@@ -1643,6 +1716,24 @@ export default function Communications() {
         </div>
       </div>
       </TooltipProvider>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedContact?.name}? This will permanently remove them from your contacts. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteContact} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
