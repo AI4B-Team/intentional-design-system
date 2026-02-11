@@ -197,7 +197,7 @@ function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFi
           key={key}
           onClick={() => onFilter(key)}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
             activeFilter === key
               ? (bgClass || "bg-primary/10 border-primary/30 text-primary")
               : "bg-muted/50 border-border text-muted-foreground hover:text-foreground"
@@ -228,7 +228,7 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
           key={key}
           onClick={() => onFilter(key)}
           className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
             activeStatus === key
               ? "bg-muted text-foreground"
               : "text-muted-foreground hover:text-foreground"
