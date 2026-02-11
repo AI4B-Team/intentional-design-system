@@ -1775,7 +1775,7 @@ export default function Communications() {
                   </span>
                   <span className={modeTheme.badgeText}>LIVE · {modeTheme.label}</span>
                 </div>
-                <span className="text-sm font-mono font-bold text-foreground tabular-nums">
+                <span className="text-lg font-mono font-bold text-foreground tabular-nums">
                   {String(Math.floor(callState.callDuration / 60)).padStart(2, "0")}:{String(callState.callDuration % 60).padStart(2, "0")}
                 </span>
               </div>
