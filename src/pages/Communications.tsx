@@ -156,16 +156,16 @@ function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onSwitch: 
     { key: "dialer", label: "Dialer", icon: Phone },
   ];
   return (
-    <div className="flex gap-1 p-1 bg-muted rounded-lg">
+    <div className="flex gap-2">
       {views.map(({ key, label, icon: Icon }) => (
         <button
           key={key}
           onClick={() => onSwitch(key)}
           className={cn(
-            "flex items-center gap-1.5 px-4 py-2 rounded-md text-[13px] font-semibold transition-all",
+            "flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all border",
             activeView === key
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+              ? "bg-primary text-primary-foreground border-primary shadow-sm"
+              : "bg-background text-muted-foreground border-border hover:text-foreground hover:border-foreground/20"
           )}
         >
           <Icon className="h-4 w-4" />
