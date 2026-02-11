@@ -90,13 +90,13 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Motivated Seller", avatar: "MW", sentiment: "neutral",
     lastActivity: "2 min ago", unread: true, starred: true,
     activities: [
-      { id: "a0v", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 4:15 PM", duration: "1:12", content: "Hi, this is Marcus Williams calling about 1847 Maple Street. I got your letter and I'm interested in hearing what you'd offer. The house needs work and I'm looking to move quickly. Please call me back at your earliest convenience. Thanks.", sentiment: "positive", aiSuggestion: "Inbound voicemail from motivated seller — high intent signal. Call back within 1 hour. Lead with empathy about the property condition and emphasize your ability to close fast." },
-      { id: "a0e", channel: "email", direction: "outbound", timestamp: "Yesterday 5:30 PM", subject: "Re: Your Property at 1847 Maple Street", content: "Hi Marcus, thanks for reaching out about your property. I'd love to learn more about your situation and timeline. I specialize in buying homes as-is, so no repairs needed on your end. Would tomorrow morning work for a quick call?", sentiment: "positive", aiSuggestion: "Good follow-up cadence. You replied within 75 minutes of his voicemail — this builds trust and urgency." },
-      { id: "a0ei", channel: "email", direction: "inbound", timestamp: "Today 8:15 AM", subject: "Re: Your Property at 1847 Maple Street", content: "Morning works. I'm free between 10-11. Just so you know, I've had two other investors reach out but nobody's given me a straight answer yet. I appreciate you being upfront.", sentiment: "neutral", aiSuggestion: "Competitor pressure detected but also frustration with other investors. Differentiate by being transparent with your numbers. Present a clear offer range on the call." },
-      { id: "a1", channel: "call", direction: "outbound", timestamp: "Today 10:32 AM", duration: "5:19", summary: "Cold call — seller confirmed interest but frustrated with timeline. Property been sitting 8 months. Foundation issues and roof needs replacement. Seller relocating for work in 60 days. Open to creative terms if price is right. ARV estimated $285k, repairs ~$45k.", sentiment: "neutral", aiSuggestion: "Seller shows frustration = motivation. 60-day relocation deadline is your leverage. Follow up within 24hrs with concrete offer range. Consider subject-to or seller financing to maximize deal structure." },
+      { id: "a0v", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 4:15 PM", duration: "1:12", content: "Hi, this is Marcus Williams calling about 1847 Maple Street. I got your letter and I'm interested in hearing what you'd offer. The house needs work and I'm looking to move quickly. Please call me back at your earliest convenience. Thanks.", sentiment: "positive", aiSuggestion: "⚡ HIGH INTENT — Call back now. Lead with empathy on property condition, emphasize your ability to close in 14 days. Do not wait past 1 hour." },
+      { id: "a0e", channel: "email", direction: "outbound", timestamp: "Yesterday 5:30 PM", subject: "Re: Your Property at 1847 Maple Street", content: "Hi Marcus, thanks for reaching out about your property. I'd love to learn more about your situation and timeline. I specialize in buying homes as-is, so no repairs needed on your end. Would tomorrow morning work for a quick call?", sentiment: "positive", aiSuggestion: "✓ 75-min response time. Trust score rising. Maintain this cadence." },
+      { id: "a0ei", channel: "email", direction: "inbound", timestamp: "Today 8:15 AM", subject: "Re: Your Property at 1847 Maple Street", content: "Morning works. I'm free between 10-11. Just so you know, I've had two other investors reach out but nobody's given me a straight answer yet. I appreciate you being upfront.", sentiment: "neutral", aiSuggestion: "⚠ Competitor pressure + frustration with vagueness. Present a clear offer range on the 10 AM call. Be the first investor to give him real numbers." },
+      { id: "a1", channel: "call", direction: "outbound", timestamp: "Today 10:32 AM", duration: "5:19", summary: "Cold call — seller confirmed interest but frustrated with timeline. Property been sitting 8 months. Foundation issues and roof needs replacement. Seller relocating for work in 60 days. Open to creative terms if price is right. ARV estimated $285k, repairs ~$45k.", sentiment: "neutral", aiSuggestion: "🎯 ACTION: Send offer range ($165k–$180k cash or subject-to) by tomorrow 9 AM. 60-day relocation deadline = your leverage. Pitch seller financing to maximize structure." },
       { id: "a2", channel: "sms", direction: "outbound", timestamp: "Today 10:45 AM", content: "Hey Marcus, great chatting. As discussed, I'll have some numbers for you by tomorrow. Talk soon!", sentiment: "positive" },
-      { id: "a3", channel: "sms", direction: "inbound", timestamp: "Today 11:02 AM", content: "Sounds good. Just don't lowball me like the last guy. I know what the place is worth.", sentiment: "negative", aiSuggestion: "Price sensitivity detected. Lead with value and creative terms, not just a low cash offer. Reference the repair costs objectively and show your math — transparency builds trust with this seller profile." },
-      { id: "a3v", channel: "voicemail", direction: "outbound", timestamp: "Today 2:30 PM", duration: "0:38", content: "Left voicemail: Hey Marcus, it's me following up. I've run the numbers and I think we can put together something that works for both of us. Give me a call back when you get a chance — I'll walk you through everything.", sentiment: "positive", aiSuggestion: "Good persistence. You've now touched this lead across 4 channels in 24 hours (voicemail, email, call, SMS). Next step: if no response by tomorrow 10 AM, send a follow-up SMS with a specific offer range to create urgency." },
+      { id: "a3", channel: "sms", direction: "inbound", timestamp: "Today 11:02 AM", content: "Sounds good. Just don't lowball me like the last guy. I know what the place is worth.", sentiment: "negative", aiSuggestion: "⚠ Price sensitivity triggered. Do NOT lead with a low cash number. Show your math: ARV $285k → repairs $45k → your offer $180k. Transparency wins this seller." },
+      { id: "a3v", channel: "voicemail", direction: "outbound", timestamp: "Today 2:30 PM", duration: "0:38", content: "Left voicemail: Hey Marcus, it's me following up. I've run the numbers and I think we can put together something that works for both of us. Give me a call back when you get a chance — I'll walk you through everything.", sentiment: "positive", aiSuggestion: "📋 4 channels touched in 24hrs — strong cadence. NEXT: Send follow-up SMS at 10 AM tomorrow with specific offer range ($165k–$180k). Create urgency." },
     ],
   },
   {
@@ -104,7 +104,7 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Seller", avatar: "JS", sentiment: "positive",
     lastActivity: "1 hr ago", unread: true, starred: false,
     activities: [
-      { id: "a4", channel: "email", direction: "inbound", timestamp: "Today 9:15 AM", subject: "Re: Cash Offer for 123 Main St", content: "Thank you for your offer. I've reviewed the terms and I'm interested in discussing further. When would be a good time to connect?", sentiment: "positive", aiSuggestion: "Hot lead — wants to talk. Book a call within the hour before they cool off." },
+      { id: "a4", channel: "email", direction: "inbound", timestamp: "Today 9:15 AM", subject: "Re: Cash Offer for 123 Main St", content: "Thank you for your offer. I've reviewed the terms and I'm interested in discussing further. When would be a good time to connect?", sentiment: "positive", aiSuggestion: "🔥 HOT — Book a call NOW. Reply with available times within 15 minutes. Every hour of delay drops conversion 12%." },
     ],
   },
   {
@@ -112,7 +112,7 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Agent", avatar: "SJ", sentiment: "neutral",
     lastActivity: "3 hrs ago", unread: false, starred: true,
     activities: [
-      { id: "a5", channel: "sms", direction: "inbound", timestamp: "Today 7:30 AM", content: "Hi, my client received your offer and wants to counter at $285k. Let me know if you're interested.", sentiment: "neutral", aiSuggestion: "Counter is 8% above your MAO. Consider countering at $270k with flexible closing timeline as leverage." },
+      { id: "a5", channel: "sms", direction: "inbound", timestamp: "Today 7:30 AM", content: "Hi, my client received your offer and wants to counter at $285k. Let me know if you're interested.", sentiment: "neutral", aiSuggestion: "📊 Counter at $270k. Pair with flexible 30-day close to offset price gap. $285k is 8% above MAO — do not accept." },
       { id: "a6", channel: "email", direction: "inbound", timestamp: "Yesterday 4:12 PM", subject: "(No subject)", content: "Forwarding the seller's disclosure docs. Let me know if you have questions.", sentiment: "neutral" },
     ],
   },
@@ -121,7 +121,7 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Agent", avatar: "LC", sentiment: "positive",
     lastActivity: "1 day ago", unread: false, starred: true,
     activities: [
-      { id: "a7", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 2:30 PM", duration: "0:45", content: "Left voicemail at 2:30pm. Client is very motivated and wants to discuss the offer ASAP.", sentiment: "positive", aiSuggestion: "Urgent callback needed. Motivated seller through agent = path of least resistance. Call back immediately." },
+      { id: "a7", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 2:30 PM", duration: "0:45", content: "Left voicemail at 2:30pm. Client is very motivated and wants to discuss the offer ASAP.", sentiment: "positive", aiSuggestion: "🚨 URGENT — Call back immediately. Motivated seller via agent = fastest close path. Lock appointment today." },
       { id: "a8", channel: "call", direction: "outbound", timestamp: "Yesterday 3:15 PM", duration: "12:40", summary: "Discussed seller's timeline — they need to close within 45 days due to relocation. Price flexible if we can guarantee close.", sentiment: "positive" },
     ],
   },
@@ -130,7 +130,7 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Seller", avatar: "MW2", sentiment: "neutral",
     lastActivity: "6 hrs ago", unread: false, starred: false,
     activities: [
-      { id: "a9", channel: "sms", direction: "inbound", timestamp: "Today 4:22 AM", content: "I saw you mentioned a 14-day close. Is there any flexibility on that? I need at least 30 days to find a new place.", sentiment: "neutral", aiSuggestion: "Timeline concern, not price objection. Offering 30 days costs you nothing but could win the deal." },
+      { id: "a9", channel: "sms", direction: "inbound", timestamp: "Today 4:22 AM", content: "I saw you mentioned a 14-day close. Is there any flexibility on that? I need at least 30 days to find a new place.", sentiment: "neutral", aiSuggestion: "✅ Grant 30-day close — costs you nothing, wins the deal. Reply now: 'Absolutely, 30 days works. Let's lock this in.'" },
     ],
   },
   {
@@ -138,7 +138,7 @@ const INITIAL_CONTACTS: Contact[] = [
     tag: "Seller", avatar: "RD", sentiment: "neutral",
     lastActivity: "2 days ago", unread: false, starred: false,
     activities: [
-      { id: "a10", channel: "email", direction: "inbound", timestamp: "2 days ago", subject: "Response to Direct Mail - 555 Maple Ct", content: "Received your letter. I'm interested but have questions about the as-is condition clause. What exactly does that cover?", sentiment: "neutral", aiSuggestion: "Warm lead from direct mail. Explain as-is benefits (no repair costs for seller) and offer a quick walkthrough." },
+      { id: "a10", channel: "email", direction: "inbound", timestamp: "2 days ago", subject: "Response to Direct Mail - 555 Maple Ct", content: "Received your letter. I'm interested but have questions about the as-is condition clause. What exactly does that cover?", sentiment: "neutral", aiSuggestion: "📩 Direct mail conversion. Reply with as-is explainer + schedule walkthrough this week. Use template: 'As-Is Benefits for Sellers'." },
     ],
   },
 ];
@@ -405,9 +405,9 @@ function ConversationThread({
                   {act.content || act.summary}
                 </div>
                 {act.aiSuggestion && (
-                  <div className="mt-2.5 p-2.5 bg-primary/5 border border-primary/20 rounded-md flex gap-2 items-start">
+                  <div className="mt-2.5 p-2.5 bg-primary/8 border border-primary/25 rounded-md flex gap-2 items-start">
                     <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
-                    <span className="text-xs text-primary leading-relaxed">{act.aiSuggestion}</span>
+                    <span className="text-xs text-foreground leading-relaxed font-medium">{act.aiSuggestion}</span>
                   </div>
                 )}
               </div>
@@ -467,16 +467,27 @@ function CoPilotPanel({
   return (
     <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center gap-2">
-        <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
-          <Sparkles className="h-3.5 w-3.5 text-primary" />
-        </div>
-        <div>
-          <div className="text-[13px] font-semibold text-foreground">AI Co-Pilot</div>
-          <div className="text-[11px] text-muted-foreground">
-            {activeView === "dialer" ? "Call guidance & scripts" : "Real-time suggestions"}
+      <div className="p-4 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <div>
+            <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
+            <div className="text-[11px] text-muted-foreground">
+              {activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
+            </div>
           </div>
         </div>
+        {contact && (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">AI Active</span>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-auto p-4">
@@ -509,10 +520,10 @@ function CoPilotPanel({
             {/* Next Best Action */}
             <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
               <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Next Best Action
+                <Sparkles className="h-3 w-3" /> Directive
               </div>
-              <div className="text-xs text-muted-foreground leading-relaxed">
-                {contact.activities[contact.activities.length - 1]?.aiSuggestion || "Continue the conversation based on your last interaction."}
+              <div className="text-xs text-foreground leading-relaxed font-medium">
+                {contact.activities[contact.activities.length - 1]?.aiSuggestion || "Awaiting data to generate directive."}
               </div>
             </div>
 
