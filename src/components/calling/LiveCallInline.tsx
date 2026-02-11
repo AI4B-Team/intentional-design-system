@@ -1,13 +1,60 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
-import { CallControls, formatCallDuration } from "./CallControls";
+import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import type { CallingModeKey } from "@/pages/Communications";
+
+function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
+  const { isMuted, isOnHold, toggleMute, toggleHold, endCall } = useCallState();
+
+  return (
+    <div className="flex items-center gap-2">
+      {callingMode !== "start" && (
+        <button
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-amber-400 bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100 transition-colors"
+          onClick={() => toast.info("Taking over call...")}
+        >
+          <Hand className="h-3.5 w-3.5" /> Take Over
+        </button>
+      )}
+      <button
+        onClick={toggleMute}
+        className={cn(
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold transition-colors",
+          isMuted
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
+        )}
+      >
+        <Mic className="h-3.5 w-3.5" /> Mute
+      </button>
+      <button
+        onClick={toggleHold}
+        className={cn(
+          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-xs font-semibold transition-colors",
+          isOnHold
+            ? "border-primary bg-primary/10 text-primary"
+            : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
+        )}
+      >
+        <Pause className="h-3.5 w-3.5" /> Pause
+      </button>
+      <button
+        onClick={endCall}
+        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-destructive text-white text-xs font-semibold hover:bg-destructive/90 transition-colors"
+      >
+        <PhoneOff className="h-3.5 w-3.5" /> End
+      </button>
+    </div>
+  );
+}
+
+
 
 // Mode-specific accent colors
 const MODE_COLORS: Record<CallingModeKey, {
@@ -112,10 +159,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <CallControls compact />
-          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDisplayMode("mini")}>
-            <Minimize2 className="h-4 w-4" />
-          </Button>
+          <CallControlButtons callingMode={callingMode} />
           <div className="w-px h-6 bg-border mx-1" />
           <div className="flex gap-2">
             <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold">
