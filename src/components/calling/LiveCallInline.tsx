@@ -152,6 +152,9 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold", mc.badgeBg, mc.accent)}>
                 {currentCallPhase}
               </span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-muted text-muted-foreground">
+                {sentimentScore}%
+              </span>
             </div>
           </div>
         </div>

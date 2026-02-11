@@ -1929,69 +1929,110 @@ export default function Communications() {
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {activeView === "activity" ? (
             <>
-              {/* Left: Contact List */}
-              <div className={cn(
-                "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
-                leftPanelOpen ? "w-[420px]" : "w-0"
-              )}>
-                {leftPanelOpen && (
-                  <>
-                    <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
-                      <div className="flex items-center justify-between">
-                        <ChannelFilters activeFilter={channelFilter} onFilter={handleChannelFilter} />
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => setLeftPanelOpen(false)}
-                              className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                            >
-                              <ChevronLeft className="h-4 w-4" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Minimize Panel</TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <StatusFilters activeStatus={statusFilter} onFilter={handleStatusFilter} />
-                    </div>
-                    <div className="flex-1 overflow-auto">
-                      {filteredContacts.map(contact => (
-                        <ContactListItem
-                          key={contact.id}
-                          contact={contact}
-                          isActive={selectedContactId === contact.id}
-                          onClick={() => handleSelectContact(contact.id)}
-                          onCall={() => {
-                            handleSelectContact(contact.id);
-                            callState.startCall({
-                              id: contact.id,
-                              name: contact.name,
-                              phone: contact.phone || "No phone",
-                              address: contact.address,
-                            }, "inline");
-                          }}
-                          onSms={() => {
-                            handleSelectContact(contact.id);
-                            setSendChannel("sms");
-                            toast.info(`SMS to ${contact.name} — type your message`);
-                          }}
-                          onCopy={() => {
-                            navigator.clipboard.writeText(contact.phone || "");
-                            toast.success(`Phone number copied for ${contact.name}`);
-                          }}
-                        />
-                      ))}
-                      {filteredContacts.length === 0 && (
-                        <div className="py-10 px-5 text-center text-muted-foreground text-[13px]">
-                          No conversations match your filters
+              {/* Left: Contact List — compact mode during calls */}
+              {callState.isCallActive && callState.displayMode === "inline" ? (
+                <div className="border-r border-border flex flex-col overflow-hidden bg-background w-[56px] transition-all duration-300">
+                  <div className="flex-1 overflow-auto py-1.5">
+                    {filteredContacts.map(contact => (
+                      <Tooltip key={contact.id}>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => handleSelectContact(contact.id)}
+                            className={cn(
+                              "relative w-full flex items-center justify-center py-2 transition-all",
+                              selectedContactId === contact.id
+                                ? "bg-primary/10"
+                                : "hover:bg-muted/60"
+                            )}
+                          >
+                            <div className={cn(
+                              "relative w-9 h-9 rounded-lg flex items-center justify-center text-[11px] font-bold transition-all",
+                              selectedContactId === contact.id
+                                ? "bg-primary text-primary-foreground ring-2 ring-primary/30"
+                                : "bg-muted text-muted-foreground"
+                            )}>
+                              {contact.avatar}
+                            </div>
+                            {contact.unread && (
+                              <span className="absolute top-1.5 right-2 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
+                            )}
+                            {contact.starred && (
+                              <Star className="absolute bottom-1 right-1.5 h-2.5 w-2.5 fill-amber-500 text-amber-500" />
+                            )}
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="text-xs">
+                          <div className="font-semibold">{contact.name}</div>
+                          <div className="text-muted-foreground">{contact.address}</div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className={cn(
+                  "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
+                  leftPanelOpen ? "w-[420px]" : "w-0"
+                )}>
+                  {leftPanelOpen && (
+                    <>
+                      <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
+                        <div className="flex items-center justify-between">
+                          <ChannelFilters activeFilter={channelFilter} onFilter={handleChannelFilter} />
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setLeftPanelOpen(false)}
+                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                              >
+                                <ChevronLeft className="h-4 w-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Minimize Panel</TooltipContent>
+                          </Tooltip>
                         </div>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
+                        <StatusFilters activeStatus={statusFilter} onFilter={handleStatusFilter} />
+                      </div>
+                      <div className="flex-1 overflow-auto">
+                        {filteredContacts.map(contact => (
+                          <ContactListItem
+                            key={contact.id}
+                            contact={contact}
+                            isActive={selectedContactId === contact.id}
+                            onClick={() => handleSelectContact(contact.id)}
+                            onCall={() => {
+                              handleSelectContact(contact.id);
+                              callState.startCall({
+                                id: contact.id,
+                                name: contact.name,
+                                phone: contact.phone || "No phone",
+                                address: contact.address,
+                              }, "inline");
+                            }}
+                            onSms={() => {
+                              handleSelectContact(contact.id);
+                              setSendChannel("sms");
+                              toast.info(`SMS to ${contact.name} — type your message`);
+                            }}
+                            onCopy={() => {
+                              navigator.clipboard.writeText(contact.phone || "");
+                              toast.success(`Phone number copied for ${contact.name}`);
+                            }}
+                          />
+                        ))}
+                        {filteredContacts.length === 0 && (
+                          <div className="py-10 px-5 text-center text-muted-foreground text-[13px]">
+                            No conversations match your filters
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
-              {/* Expand button when collapsed */}
-              {!leftPanelOpen && (
+              {/* Expand button when collapsed (not during call — compact panel shows instead) */}
+              {!leftPanelOpen && !(callState.isCallActive && callState.displayMode === "inline") && (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
