@@ -494,20 +494,6 @@ function ConversationThread({
         </div>
       </div>
 
-      {/* Auto-select banner */}
-      {autoSelectedReason && (
-        <div className="px-5 py-1.5 border-b border-border bg-muted/20 flex items-center justify-between flex-shrink-0">
-          <span className="text-[11px] text-muted-foreground">
-            Opened: <span className="font-medium text-foreground">{autoSelectedReason}</span>
-          </span>
-          <button
-            onClick={onDismissAutoSelect}
-            className="text-[11px] text-primary hover:underline font-medium"
-          >
-            Change
-          </button>
-        </div>
-      )}
 
       {/* Contact Info Card - Collapsible */}
       <div className="border-b border-border bg-muted/30 flex-shrink-0">
