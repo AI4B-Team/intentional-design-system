@@ -77,7 +77,7 @@ const MODE_THEME: Record<CallingModeKey, {
   headerBg: string;      // header background
 }> = {
   start: {
-    label: "AI Active",
+    label: "LIVE: Human",
     accent: "text-emerald-600",
     bg: "bg-emerald-500/[0.03]",
     border: "border-emerald-500/20",
@@ -87,7 +87,7 @@ const MODE_THEME: Record<CallingModeKey, {
     headerBg: "bg-emerald-500/[0.04]",
   },
   voice: {
-    label: "AI Active",
+    label: "LIVE: AI Agent",
     accent: "text-blue-600",
     bg: "bg-blue-500/[0.03]",
     border: "border-blue-500/20",
@@ -97,7 +97,7 @@ const MODE_THEME: Record<CallingModeKey, {
     headerBg: "bg-blue-500/[0.04]",
   },
   listen: {
-    label: "AI Active",
+    label: "LIVE: Hybrid",
     accent: "text-violet-600",
     bg: "bg-violet-500/[0.03]",
     border: "border-violet-500/20",
@@ -793,7 +793,7 @@ function CoPilotPanel({
               <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
             </span>
             <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
-              {isLiveCall ? "LIVE: AI Agent" : "AI ACTIVE"}
+              {isLiveCall ? theme.label : "AI ACTIVE"}
             </span>
           </div>
         )}
@@ -1775,7 +1775,7 @@ export default function Communications() {
                     <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", modeTheme.dot)} />
                     <span className={cn("relative inline-flex rounded-full h-2 w-2", modeTheme.dot)} />
                   </span>
-                  <span className={modeTheme.badgeText}>LIVE: AI Agent</span>
+                  <span className={modeTheme.badgeText}>{modeTheme.label}</span>
                 </div>
                 <span className="text-lg font-mono font-bold text-foreground tabular-nums">
                   {String(Math.floor(callState.callDuration / 60)).padStart(2, "0")}:{String(callState.callDuration % 60).padStart(2, "0")}
