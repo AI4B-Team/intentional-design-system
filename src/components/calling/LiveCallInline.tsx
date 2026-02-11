@@ -16,10 +16,10 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
     <div className="flex items-center gap-2">
       {callingMode !== "start" && (
         <button
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-amber-400 bg-amber-50 text-amber-700 text-xs font-semibold hover:bg-amber-100 transition-colors"
+          className="flex items-center gap-2 px-5 py-2 rounded-lg border border-amber-300 bg-amber-50/80 text-amber-700 text-sm font-semibold hover:bg-amber-100 transition-colors"
           onClick={() => toast.info("Taking over call...")}
         >
-          <Hand className="h-3.5 w-3.5" /> Take Over
+          <Hand className="h-4 w-4" /> Take Over Call
         </button>
       )}
       <button
