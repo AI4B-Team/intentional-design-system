@@ -7,9 +7,20 @@ import { CallControls, formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import type { CallingModeKey } from "@/pages/Communications";
+
+// Mode-specific accent colors
+const MODE_COLORS: Record<CallingModeKey, {
+  iconBg: string; pulseBorder: string; headerBg: string; accent: string; badgeBg: string; badgeText: string; dot: string; label: string;
+}> = {
+  start: { iconBg: "bg-emerald-600", pulseBorder: "border-emerald-500/30", headerBg: "bg-emerald-500/[0.04]", accent: "text-emerald-600", badgeBg: "bg-emerald-500/10", badgeText: "text-emerald-600", dot: "bg-emerald-500", label: "Human Mode" },
+  voice: { iconBg: "bg-blue-600", pulseBorder: "border-blue-500/30", headerBg: "bg-blue-500/[0.04]", accent: "text-blue-600", badgeBg: "bg-blue-500/10", badgeText: "text-blue-600", dot: "bg-blue-500", label: "AI Autonomous" },
+  listen: { iconBg: "bg-violet-600", pulseBorder: "border-violet-500/30", headerBg: "bg-violet-500/[0.04]", accent: "text-violet-600", badgeBg: "bg-violet-500/10", badgeText: "text-violet-600", dot: "bg-violet-500", label: "Hybrid Mode" },
+};
 
 interface LiveCallInlineProps {
   className?: string;
+  callingMode?: CallingModeKey;
   onSmsClick?: () => void;
   onEmailClick?: () => void;
   onMoreClick?: () => void;
@@ -21,12 +32,14 @@ const AI_STATUS_CYCLE = [
   { label: "Strategy Shift Detected…", dot: "bg-violet-500", text: "text-violet-500" },
 ];
 
-export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClick }: LiveCallInlineProps) {
+export function LiveCallInline({ className, callingMode = "start", onSmsClick, onEmailClick, onMoreClick }: LiveCallInlineProps) {
   const {
     isCallActive, callStatus, currentContact, callDuration, transcript,
     sentiment, sentimentScore, currentCallPhase, aiSuggestions,
     setDisplayMode, addTranscriptEntry,
   } = useCallState();
+
+  const mc = MODE_COLORS[callingMode];
 
   const [smsComposerOpen, setSmsComposerOpen] = useState(false);
   const [emailComposerOpen, setEmailComposerOpen] = useState(false);
@@ -73,22 +86,26 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
   };
 
   return (
-    <div className={cn("flex-1 flex flex-col overflow-hidden bg-background", className)}>
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between bg-primary/[0.03]">
+    <div className={cn("flex-1 flex flex-col overflow-hidden bg-background transition-colors duration-300", className)}>
+      {/* Header — mode-tinted */}
+      <div className={cn("px-5 py-4 border-b border-border flex items-center justify-between transition-colors duration-300", mc.headerBg)}>
         <div className="flex items-center gap-3">
-          <div className="relative w-11 h-11 rounded-lg bg-primary flex items-center justify-center">
-            <PhoneCall className={cn("h-5 w-5 text-primary-foreground", callStatus === "ringing" && "animate-pulse")} />
-            {/* Subtle pulse ring during live call */}
+          <div className={cn("relative w-11 h-11 rounded-lg flex items-center justify-center transition-colors duration-300", mc.iconBg)}>
+            <PhoneCall className={cn("h-5 w-5 text-white", callStatus === "ringing" && "animate-pulse")} />
             {callStatus === "connected" && (
-              <span className="absolute inset-0 rounded-lg border-2 border-primary/30 animate-ping" style={{ animationDuration: "2s" }} />
+              <span className={cn("absolute inset-0 rounded-lg border-2 animate-ping", mc.pulseBorder)} style={{ animationDuration: "2s" }} />
             )}
           </div>
           <div>
-            <div className="text-[15px] font-semibold text-foreground">{currentContact?.name}</div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-foreground">{currentContact?.name}</span>
+              <span className={cn("px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider", mc.badgeBg, mc.badgeText)}>
+                {mc.label}
+              </span>
+            </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <span className="font-mono font-bold text-primary">{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
+              <span className={cn("font-mono font-bold transition-colors", mc.accent)}>{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
+              <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold", mc.badgeBg, mc.accent)}>
                 {currentCallPhase}
               </span>
             </div>
@@ -133,21 +150,21 @@ export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClic
             <div key={phase} className="flex-1">
               <div className={cn(
                 "h-1.5 rounded-full transition-all duration-500",
-                i < phaseIdx ? "bg-primary/40" :
-                i === phaseIdx ? "bg-primary animate-pulse" :
+                i < phaseIdx ? cn(mc.dot, "opacity-40") :
+                i === phaseIdx ? cn(mc.dot, "animate-pulse") :
                 "bg-muted"
               )} />
               <span className={cn(
                 "text-[9px] mt-1 block text-center transition-all",
                 i < phaseIdx ? "text-muted-foreground/50 line-through" :
-                i === phaseIdx ? "text-primary font-bold" :
+                i === phaseIdx ? cn(mc.accent, "font-bold") :
                 "text-muted-foreground"
               )}>{phase}</span>
             </div>
           ))}
         </div>
         {/* Current Strategy */}
-        <div className="mt-2 flex items-center gap-1.5 text-[10px] text-primary/80 font-medium">
+        <div className={cn("mt-2 flex items-center gap-1.5 text-[10px] font-medium", mc.accent)}>
           <Zap className="h-3 w-3" />
           <span>Strategy: Empathy → Value Framing → Anchor at $175K</span>
         </div>
