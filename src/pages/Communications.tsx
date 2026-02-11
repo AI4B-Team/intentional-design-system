@@ -1375,6 +1375,7 @@ export default function Communications() {
 
   const handleCall = useCallback(() => {
     if (!selectedContact) return;
+    setLeftPanelOpen(false);
     callState.startCall({
       id: selectedContact.id,
       name: selectedContact.name,
