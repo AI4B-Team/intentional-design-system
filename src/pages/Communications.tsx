@@ -15,6 +15,7 @@ import {
   Sparkles,
   Send,
   ChevronRight,
+  ChevronDown,
   ChevronLeft,
   Play, 
   Mic,
@@ -371,6 +372,8 @@ function ConversationThread({
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
 }) {
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
+
   if (!contact) {
     return (
       <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
@@ -427,46 +430,61 @@ function ConversationThread({
         </div>
       </div>
 
-      {/* Contact Info Card - Fixed */}
-      <div className="px-5 py-3 border-b border-border bg-muted/30 flex-shrink-0">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-          <div className="flex items-center gap-2 text-xs">
-            <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Property:</span>
-            <span className="font-medium text-foreground">{contact.address}</span>
+      {/* Contact Info Card - Collapsible */}
+      <div className="border-b border-border bg-muted/30 flex-shrink-0">
+        <button
+          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
+          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span>Contact Details</span>
+          {contactDetailsOpen ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5" />
+          )}
+        </button>
+        {contactDetailsOpen && (
+          <div className="px-5 pb-3">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+              <div className="flex items-center gap-2 text-xs">
+                <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">Property:</span>
+                <span className="font-medium text-foreground">{contact.address}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">City/State:</span>
+                <span className="font-medium text-foreground">Houston, TX 77001</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">Phone:</span>
+                <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">(555) 000-0000</button>
+                <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+                  <Copy className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">Email:</span>
+                <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
+                <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+                  <Copy className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">Last Contact:</span>
+                <span className="font-medium text-foreground">{contact.lastActivity}</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs">
+                <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                <span className="text-muted-foreground">Lead Score:</span>
+                <span className="font-medium text-primary">Hot</span>
+              </div>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">City/State:</span>
-            <span className="font-medium text-foreground">Houston, TX 77001</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Phone:</span>
-            <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">(555) 000-0000</button>
-            <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-              <Copy className="h-3 w-3 text-muted-foreground" />
-            </button>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Email:</span>
-            <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
-            <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-              <Copy className="h-3 w-3 text-muted-foreground" />
-            </button>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Last Contact:</span>
-            <span className="font-medium text-foreground">{contact.lastActivity}</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-            <span className="text-muted-foreground">Lead Score:</span>
-            <span className="font-medium text-primary">Hot</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Activity Timeline */}
