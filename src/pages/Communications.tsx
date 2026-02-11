@@ -372,8 +372,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, on
                 <TooltipContent>Copy Phone</TooltipContent>
               </Tooltip>
               {/* 3-dot menu */}
-              {contact.dbId && (
-                <DropdownMenu>
+              <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
                       onClick={e => e.stopPropagation()}
@@ -391,7 +390,6 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, on
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-              )}
             </div>
           </TooltipProvider>
           {/* Timestamp (hidden on hover) */}
