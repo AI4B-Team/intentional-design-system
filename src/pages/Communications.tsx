@@ -1314,7 +1314,7 @@ export default function Communications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [localActivities, setLocalActivities] = useState<Record<string, Activity[]>>({});
   const [messageInput, setMessageInput] = useState("");
-  const [sendChannel, setSendChannel] = useState("sms");
+  const [sendChannel, setSendChannel] = useState("");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
   const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
