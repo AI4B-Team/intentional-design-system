@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
@@ -213,7 +213,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
       </div>
 
       {/* Content - Focused Layout */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Live Transcript - Clean, focused */}
         <div className="flex-1 flex flex-col overflow-hidden">
           <ScrollArea className="flex-1 p-5">
@@ -334,39 +334,45 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           )}
         </div>
 
-        {/* AI Suggestion Stack - Interactive action cards */}
-        <div className="w-[280px] border-l border-border p-4 overflow-auto bg-muted/20">
-          <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3 text-primary" /> AI Suggestions
-          </div>
-          <div className="space-y-2.5">
-            {aiSuggestions.map(s => (
-              <div key={s.id} className="p-3 bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all group">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className={cn(
-                    "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
-                    s.type === "question" ? "bg-blue-500/10 text-blue-600" :
-                    s.type === "response" ? "bg-primary/10 text-primary" :
-                    "bg-amber-500/10 text-amber-600"
-                  )}>{s.type}</span>
-                  <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
+        {/* SAY THIS NEXT — Horizontal suggestion cards anchored at bottom */}
+        {aiSuggestions.length > 0 && (
+          <div className="border-t border-border bg-muted/20 px-5 py-3 flex-shrink-0">
+            <div className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+              <MessageSquareDashed className="h-3.5 w-3.5 text-muted-foreground" /> Say This Next
+            </div>
+            <div className="flex gap-3">
+              {aiSuggestions.slice(0, 3).map(s => (
+                <div key={s.id} className="flex-1 flex flex-col bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all overflow-hidden">
+                  <div className="p-3 flex-1 flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
+                        s.type === "question" ? "bg-blue-500/10 text-blue-600" :
+                        s.type === "response" ? "bg-emerald-500/10 text-emerald-600" :
+                        "bg-muted text-muted-foreground"
+                      )}>{s.type}</span>
+                      <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
+                    </div>
+                    <p className="text-xs text-foreground leading-relaxed flex-1">{s.text}</p>
+                  </div>
+                  <button
+                    onClick={() => handleUseSuggestion(s.text)}
+                    className={cn(
+                      "w-full px-2.5 py-2 text-[11px] font-semibold transition-all border-t uppercase tracking-wide",
+                      s.type === "coach"
+                        ? "border-border text-muted-foreground hover:bg-muted/50"
+                        : s.type === "response"
+                          ? "border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5"
+                          : "border-primary/20 text-primary hover:bg-primary/5"
+                    )}
+                  >
+                    {s.type === "coach" ? "Apply" : "Use"}
+                  </button>
                 </div>
-                <p className="text-xs text-foreground leading-relaxed mb-2.5">{s.text}</p>
-                <button
-                  onClick={() => handleUseSuggestion(s.text)}
-                  className={cn(
-                    "w-full px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all border",
-                    s.type === "coach"
-                      ? "border-amber-500/20 text-amber-600 hover:bg-amber-500/5"
-                      : "border-primary/20 text-primary hover:bg-primary/5"
-                  )}
-                >
-                  {s.type === "coach" ? "Apply Strategy" : "Use This"}
-                </button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
