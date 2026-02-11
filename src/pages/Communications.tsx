@@ -6,6 +6,7 @@ import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DialerLiveMode } from "@/components/dialer/live-mode";
 import { DialerStatsBar } from "@/components/dialer/live-mode/DialerStatsBar";
+import { DialerCoPilotPanel, type DialerContact } from "@/components/dialer/live-mode/DialerCoPilotPanel";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -973,10 +974,17 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView({ callingMode, setCallingMode }: { callingMode: string; setCallingMode: (m: string) => void }) {
+function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSelectDialerContact, selectedScriptId: externalScriptId, onSelectScript: externalSelectScript }: {
+  callingMode: string;
+  setCallingMode: (m: string) => void;
+  selectedDialerContact: DialerContact | null;
+  onSelectDialerContact: (c: DialerContact | null) => void;
+  selectedScriptId: string | null;
+  onSelectScript: (id: string) => void;
+}) {
   const callState = useCallState();
   const navigate = useNavigate();
-  const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
+  const selectedScriptId = externalScriptId;
   const [dialerContacts, setDialerContacts] = useState(MOCK_DIALER_QUEUE);
   const [calledContactIds, setCalledContactIds] = useState<Set<string>>(new Set());
   const [showManualEntry, setShowManualEntry] = useState(false);
@@ -994,6 +1002,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: string; setC
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
     setCalledContactIds(prev => new Set(prev).add(item.id));
+    onSelectDialerContact({ id: item.id, name: item.name, phone: item.phone, address: item.address, type: item.type });
     if (callingMode === "voice") {
       toast.info(`AI Voice Agent calling ${item.name}...`, { duration: 3000 });
     } else if (callingMode === "listen") {
@@ -1037,7 +1046,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: string; setC
   };
 
   const handleSelectScript = (scriptId: string) => {
-    setSelectedScriptId(prev => prev === scriptId ? null : scriptId);
+    externalSelectScript(scriptId === selectedScriptId ? "" : scriptId);
     const script = MOCK_CALL_SCRIPTS.find(s => s.id === scriptId);
     if (script) {
       toast.info(`Script selected: ${script.name}`);
@@ -1387,11 +1396,13 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: string; setC
                     return (
                       <div
                         key={item.id}
+                        onClick={() => onSelectDialerContact({ id: item.id, name: item.name, phone: item.phone, address: item.address, type: item.type })}
                         className={cn(
-                          "flex items-center gap-3 py-3",
+                          "flex items-center gap-3 py-3 cursor-pointer hover:bg-muted/50 transition-colors",
                           i < dialerContacts.length - 1 && "border-b border-border/50",
                           isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
-                          isCalledInQueue && !isCurrentInQueue && "opacity-50"
+                          isCalledInQueue && !isCurrentInQueue && "opacity-50",
+                          selectedDialerContact?.id === item.id && !isCurrentInQueue && "bg-muted/60 -mx-2 px-2 rounded-lg"
                         )}
                       >
                         <div className={cn(
@@ -1523,6 +1534,8 @@ export default function Communications() {
   const deleteDealSource = useDeleteDealSource();
   const [activeView, setActiveView] = useState<"activity" | "dialer">("activity");
   const [dialerCallingMode, setDialerCallingMode] = useState("start");
+  const [selectedDialerContact, setSelectedDialerContact] = useState<DialerContact | null>(null);
+  const [dialerScriptId, setDialerScriptId] = useState<string | null>(null);
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
@@ -1874,8 +1887,28 @@ export default function Communications() {
             }} />
           ) : (
             <>
-              <DialerView callingMode={dialerCallingMode} setCallingMode={setDialerCallingMode} />
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
+              <DialerView
+                callingMode={dialerCallingMode}
+                setCallingMode={setDialerCallingMode}
+                selectedDialerContact={selectedDialerContact}
+                onSelectDialerContact={setSelectedDialerContact}
+                selectedScriptId={dialerScriptId}
+                onSelectScript={setDialerScriptId}
+              />
+              <DialerCoPilotPanel
+                contact={selectedDialerContact}
+                callingMode={dialerCallingMode === "voice" ? "voice" : dialerCallingMode === "listen" ? "listen" : "start"}
+                callActive={callState.isCallActive}
+                scripts={[
+                  { id: "s1", name: "Motivated Seller" },
+                  { id: "s2", name: "Follow-up Close" },
+                  { id: "s3", name: "Agent Intro" },
+                ]}
+                selectedScriptId={dialerScriptId}
+                onSelectScript={setDialerScriptId}
+                onSms={() => toast.info("SMS composer — coming soon")}
+                onEmail={() => toast.info("Email composer — coming soon")}
+              />
             </>
           )}
         </div>
