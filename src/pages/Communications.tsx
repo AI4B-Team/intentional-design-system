@@ -921,10 +921,10 @@ export default function Communications() {
                         <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
                         <button
                           onClick={() => setLeftPanelOpen(false)}
-                          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                           title="Minimize panel"
                         >
-                          <PanelLeftClose className="h-4 w-4" />
+                          <ChevronLeft className="h-4 w-4" />
                         </button>
                       </div>
                       <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
@@ -952,10 +952,10 @@ export default function Communications() {
               {!leftPanelOpen && (
                 <button
                   onClick={() => setLeftPanelOpen(true)}
-                  className="flex items-center justify-center w-8 border-r border-border bg-background hover:bg-muted transition-colors"
+                  className="flex items-center justify-center w-6 border-r border-border bg-background hover:bg-muted/50 transition-colors"
                   title="Expand panel"
                 >
-                  <PanelLeftOpen className="h-4 w-4 text-muted-foreground" />
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
                 </button>
               )}
 
