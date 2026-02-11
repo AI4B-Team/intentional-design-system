@@ -31,7 +31,7 @@ const CHANNEL_CONFIG: Record<string, { icon: React.ElementType; label: string; c
   call: { icon: Phone, label: "Call", colorClass: "text-violet-500", bgClass: "bg-violet-500/10" },
   sms: { icon: MessageCircle, label: "SMS", colorClass: "text-blue-500", bgClass: "bg-blue-500/10" },
   email: { icon: Mail, label: "Email", colorClass: "text-amber-500", bgClass: "bg-amber-500/10" },
-  voicemail: { icon: Voicemail, label: "Voicemail", colorClass: "text-pink-500", bgClass: "bg-pink-500/10" },
+  voicemail: { icon: Voicemail, label: "Voicemail", colorClass: "text-red-500", bgClass: "bg-red-500/10" },
 };
 
 function ChannelBadge({ channel }: { channel: string }) {
@@ -195,7 +195,7 @@ function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFi
     { key: "call", label: "Calls", icon: Phone, colorClass: "text-violet-500", bgClass: "bg-violet-500/10 border-violet-500/30" },
     { key: "sms", label: "SMS", icon: MessageCircle, colorClass: "text-blue-500", bgClass: "bg-blue-500/10 border-blue-500/30" },
     { key: "email", label: "Email", icon: Mail, colorClass: "text-amber-500", bgClass: "bg-amber-500/10 border-amber-500/30" },
-    { key: "voicemail", label: "Voicemail", icon: Voicemail, colorClass: "text-pink-500", bgClass: "bg-pink-500/10 border-pink-500/30" },
+    { key: "voicemail", label: "Voicemail", icon: Voicemail, colorClass: "text-red-500", bgClass: "bg-red-500/10 border-red-500/30" },
   ];
   return (
     <div className="flex gap-1.5">
