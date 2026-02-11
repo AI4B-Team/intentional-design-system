@@ -71,6 +71,7 @@ import MailTemplateEditor from "./pages/MailTemplateEditor";
 import MailSuppression from "./pages/MailSuppression";
 import AIVA from "./pages/AIVA";
 import UnifiedInbox from "./pages/UnifiedInbox";
+import Communications from "./pages/Communications";
 import Pipeline from "./pages/Pipeline";
 import MarketplaceDeals from "./pages/MarketplaceDeals";
 import MarketplaceDealDetail from "./pages/MarketplaceDealDetail";
@@ -230,9 +231,13 @@ const App = () => (
             />
             <Route
               path="/inbox"
+              element={<Navigate to="/communications" replace />}
+            />
+            <Route
+              path="/communications"
               element={
                 <ProtectedRoute>
-                  <UnifiedInbox />
+                  <Communications />
                 </ProtectedRoute>
               }
             />
@@ -995,11 +1000,7 @@ const App = () => (
 
             <Route
               path="/dialer"
-              element={
-                <ProtectedRoute>
-                  <Dialer />
-                </ProtectedRoute>
-              }
+              element={<Navigate to="/communications" replace />}
             />
             <Route
               path="/dialer/session"
