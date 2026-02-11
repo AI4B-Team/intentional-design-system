@@ -260,7 +260,10 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
 // ============================================================================
 // CONTACT LIST ITEM
 // ============================================================================
-function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isActive: boolean; onClick: () => void }) {
+function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: { 
+  contact: Contact; isActive: boolean; onClick: () => void;
+  onCall?: () => void; onSms?: () => void; onCopy?: () => void;
+}) {
   const lastAct = contact.activities[contact.activities.length - 1];
   const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
   const channelColorClass = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.colorClass : "";
@@ -269,7 +272,7 @@ function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isA
     <div
       onClick={onClick}
       className={cn(
-        "flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-all border-b border-border/50",
+        "group flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-all border-b border-border/50 relative",
         isActive ? "bg-muted/80 border-l-[3px] border-l-primary" : "border-l-[3px] border-l-transparent hover:bg-muted/40"
       )}
     >
@@ -286,7 +289,32 @@ function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isA
           <span className={cn("text-[13px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
             {contact.name}
           </span>
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0">
+          {/* Hover actions */}
+          <div className="hidden group-hover:flex items-center gap-0.5 flex-shrink-0">
+            <button
+              onClick={e => { e.stopPropagation(); onCall?.(); }}
+              className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+              title="Call"
+            >
+              <Phone className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={e => { e.stopPropagation(); onSms?.(); }}
+              className="p-1.5 rounded-md hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-colors"
+              title="SMS"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={e => { e.stopPropagation(); onCopy?.(); }}
+              className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+              title="Copy phone"
+            >
+              <FileText className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          {/* Timestamp (hidden on hover) */}
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:hidden">
             {contact.lastActivity}
           </span>
         </div>
@@ -350,6 +378,15 @@ function ConversationThread({
           <div>
             <div className="text-[15px] font-semibold text-foreground">{contact.name}</div>
             <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+              <button
+                onClick={onCall}
+                className="text-primary hover:underline cursor-pointer font-medium flex items-center gap-1"
+                title="Click to call"
+              >
+                <Phone className="h-2.5 w-2.5" />
+                (555) 000-0000
+              </button>
+              <span className="text-muted-foreground/40">·</span>
               <span>{contact.address}</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
                 {contact.tag}
@@ -547,6 +584,33 @@ function CoPilotPanel({
                     <span className="text-muted-foreground">{count} {count === 1 ? "interaction" : "interactions"}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Related Conversations */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Related Conversations</div>
+              <div className="space-y-1.5">
+                {[...contact.activities].reverse().slice(0, 5).map((act) => {
+                  const config = CHANNEL_CONFIG[act.channel];
+                  const Icon = config?.icon || MessageCircle;
+                  return (
+                    <div key={act.id} className="flex items-center gap-2.5 py-1.5">
+                      <div className={cn("w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0", config?.bgClass)}>
+                        <Icon className={cn("h-2.5 w-2.5", config?.colorClass)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[11px] text-foreground truncate font-medium">
+                          {act.channel === "call" ? `${act.direction === "inbound" ? "Inbound" : "Outbound"} call · ${act.duration}` :
+                           act.channel === "voicemail" ? `Voicemail · ${act.duration}` :
+                           act.channel === "email" ? (act.subject || "Email") :
+                           (act.content?.slice(0, 40) + (act.content && act.content.length > 40 ? "..." : ""))}
+                        </div>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground whitespace-nowrap flex-shrink-0">{act.timestamp.replace("Today ", "").replace("Yesterday ", "Yest ")}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -1247,6 +1311,24 @@ export default function Communications() {
                           contact={contact}
                           isActive={selectedContactId === contact.id}
                           onClick={() => handleSelectContact(contact.id)}
+                          onCall={() => {
+                            handleSelectContact(contact.id);
+                            callState.startCall({
+                              id: contact.id,
+                              name: contact.name,
+                              phone: "(555) 000-0000",
+                              address: contact.address,
+                            }, "inline");
+                          }}
+                          onSms={() => {
+                            handleSelectContact(contact.id);
+                            setSendChannel("sms");
+                            toast.info(`SMS to ${contact.name} — type your message`);
+                          }}
+                          onCopy={() => {
+                            navigator.clipboard.writeText("(555) 000-0000");
+                            toast.success(`Phone number copied for ${contact.name}`);
+                          }}
                         />
                       ))}
                       {filteredContacts.length === 0 && (
