@@ -905,19 +905,7 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Call Progress - Compact */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Duration</span>
-                <span className="text-sm font-mono font-bold text-primary">
-                  {Math.floor(callState.callDuration / 60)}:{(callState.callDuration % 60).toString().padStart(2, '0')}
-                </span>
-              </div>
-              <div className="flex items-center justify-between mt-1.5">
-                <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Phase</span>
-                <span className="text-xs font-bold text-primary">{callState.currentCallPhase}</span>
-              </div>
-            </div>
+
 
             {/* Take Over Button */}
             <button
