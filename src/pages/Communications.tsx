@@ -39,6 +39,7 @@ import {
   Copy,
   MoreVertical,
   Pencil,
+  Hand,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -866,11 +867,11 @@ function CoPilotPanel({
 
             {/* Take Over Button */}
             <button
-              onClick={() => toast.info("AI taking over the conversation...")}
-              className="w-full py-3 rounded-lg border-2 border-primary/20 bg-primary/5 text-primary font-semibold text-sm hover:bg-primary/10 hover:border-primary/40 transition-all flex items-center justify-center gap-2"
+              onClick={() => toast.info("Taking over call...")}
+              className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
             >
-              <Sparkles className="h-4 w-4" />
-              AI Take Over
+              <Hand className="h-4 w-4" />
+              Take Over Call
             </button>
           </div>
         ) : (
