@@ -376,8 +376,13 @@ function ConversationThread({
             {contact.avatar}
           </div>
           <div>
-            <div className="text-[15px] font-semibold text-foreground">{contact.name}</div>
-            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
+              <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-primary/10 text-primary">
+                {contact.tag}
+              </span>
+            </div>
+            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
               <button
                 onClick={onCall}
                 className="text-primary hover:underline cursor-pointer font-medium flex items-center gap-1"
@@ -388,9 +393,6 @@ function ConversationThread({
               </button>
               <span className="text-muted-foreground/40">·</span>
               <span>{contact.address}</span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
-                {contact.tag}
-              </span>
             </div>
           </div>
         </div>
