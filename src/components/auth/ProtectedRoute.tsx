@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
@@ -12,10 +13,26 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
   const { user, loading: authLoading } = useAuth();
   const { organization, loading: orgLoading } = useOrganization();
   const location = useLocation();
+  const hadUserRef = React.useRef(false);
+  const [graceExpired, setGraceExpired] = React.useState(false);
+
+  // Track if we ever had a user (to distinguish fresh visit vs refresh)
+  React.useEffect(() => {
+    if (user) hadUserRef.current = true;
+  }, [user]);
+
+  // Grace period: if user was logged in but session momentarily drops (token refresh race),
+  // wait briefly before redirecting to login
+  React.useEffect(() => {
+    if (!authLoading && !user && hadUserRef.current && !graceExpired) {
+      const timer = setTimeout(() => setGraceExpired(true), 1500);
+      return () => clearTimeout(timer);
+    }
+    if (user) setGraceExpired(false);
+  }, [authLoading, user, graceExpired]);
 
   // During auth loading on refresh, render children (layout + sidebar stay visible)
-  // with an opacity transition so there's no jarring flash
-  if (authLoading) {
+  if (authLoading || (!user && hadUserRef.current && !graceExpired)) {
     return <div className="opacity-50 pointer-events-none transition-opacity duration-200">{children}</div>;
   }
 
