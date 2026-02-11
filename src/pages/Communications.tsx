@@ -559,9 +559,9 @@ function DialerView() {
   const [callingMode, setCallingMode] = useState("start");
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const modes = [
-    { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground" },
-    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", beta: true },
-    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white" },
+    { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
+    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
+    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white", inactiveClass: "bg-blue-500/5 text-foreground border-blue-500/20" },
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
@@ -643,7 +643,7 @@ function DialerView() {
           </button>
         </div>
         <div className="flex gap-3">
-          {modes.map(({ key, label, desc, icon: Icon, colorClass, beta }) => (
+          {modes.map(({ key, label, desc, icon: Icon, colorClass, inactiveClass, beta }) => (
             <button
               key={key}
               onClick={() => setCallingMode(key)}
@@ -651,7 +651,7 @@ function DialerView() {
                 "flex-1 p-6 rounded-lg text-center transition-all relative border-2",
                 callingMode === key
                   ? cn(colorClass, "border-transparent shadow-sm")
-                  : "bg-muted/50 text-muted-foreground border-transparent hover:border-border"
+                  : cn(inactiveClass, "hover:opacity-80")
               )}
             >
               {beta && (
