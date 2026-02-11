@@ -214,8 +214,8 @@ const MOCK_CALL_SCRIPTS = [
 // ============================================================================
 // VIEW SWITCHER
 // ============================================================================
-function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onSwitch: (v: string) => void }) {
-  const views = [
+function ViewSwitcher({ activeView, onSwitch }: { activeView: "activity" | "dialer"; onSwitch: (v: "activity" | "dialer") => void }) {
+  const views: Array<{ key: "activity" | "dialer"; label: string; icon: typeof MessageCircle }> = [
     { key: "activity", label: "All Activity", icon: MessageCircle },
     { key: "dialer", label: "Dialer", icon: Phone },
   ];
@@ -777,7 +777,7 @@ function CoPilotPanel({
   onQuickReply,
 }: {
   contact: Contact | null;
-  activeView: string;
+  activeView: "activity" | "dialer";
   onQuickReply: (text: string) => void;
 }) {
   return (
@@ -791,7 +791,7 @@ function CoPilotPanel({
           <div>
             <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
             <div className="text-[11px] text-muted-foreground">
-              {activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
+              {activeView === "dialer" ? "Call coaching & live insights" : "Multi-channel insights & actions"}
             </div>
           </div>
         </div>
@@ -812,7 +812,67 @@ function CoPilotPanel({
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
           </div>
+        ) : activeView === "dialer" ? (
+          /* ===== DIALER MODE: Call Coaching Content ===== */
+          <div className="space-y-3">
+            {/* Call Readiness */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Call Coaching
+              </div>
+              <div className="text-xs text-foreground leading-relaxed font-medium">
+                Open with empathy about their property timeline. Mirror their frustration before transitioning to your value prop. Avoid leading with price — let them anchor first.
+              </div>
+            </div>
+
+            {/* Objection Playbook */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Objection Playbook</div>
+              <div className="space-y-2">
+                {[
+                  { objection: '"I need to think about it"', response: 'Totally fair. What specifically would help you feel more confident?' },
+                  { objection: '"Your offer is too low"', response: 'I hear you. Let me walk through how we arrived at that number — it might make more sense with context.' },
+                  { objection: '"I\'m working with someone else"', response: 'No problem at all. Are they able to close on your timeline?' },
+                ].map((item, i) => (
+                  <div key={i} className="p-2.5 bg-background rounded-md border border-border/50">
+                    <div className="text-[11px] font-semibold text-destructive/80 mb-1">{item.objection}</div>
+                    <div className="text-[11px] text-muted-foreground leading-relaxed">{item.response}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact Intel */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Intel</div>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between"><span className="text-muted-foreground">Sentiment</span><span className={cn("font-semibold capitalize", contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-destructive" : "text-amber-500")}>{contact.sentiment}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Total Touches</span><span className="font-semibold text-foreground">{contact.activities.length}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Last Channel</span><span className="font-semibold text-foreground capitalize">{contact.activities[contact.activities.length - 1]?.channel || "—"}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">Priority</span><span className="font-semibold text-foreground">{contact.unread ? "High" : "Normal"}</span></div>
+              </div>
+            </div>
+
+            {/* Script Tips */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Script Tips</div>
+              <div className="space-y-1.5">
+                {[
+                  "Use their first name early and often",
+                  "Pause after asking questions — let silence work",
+                  "Confirm their timeline before discussing numbers",
+                  "End with a clear next step, not an open question",
+                ].map((tip, i) => (
+                  <div key={i} className="flex items-start gap-2 text-[11px] text-muted-foreground">
+                    <span className="text-primary font-bold mt-0.5">•</span>
+                    <span>{tip}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         ) : (
+          /* ===== ALL ACTIVITY MODE: Multi-channel insights ===== */
           <div className="space-y-3">
             {/* Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
@@ -826,7 +886,7 @@ function CoPilotPanel({
                 </div>
                 <span className={cn(
                   "text-xs font-semibold capitalize",
-                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-destructive" : "text-amber-500"
                 )}>
                   {contact.sentiment}
                 </span>
@@ -1505,7 +1565,7 @@ export default function Communications() {
   const { data: dbContacts = [], isLoading: isLoadingContacts } = useDealSources();
   const updateDealSource = useUpdateDealSource();
   const deleteDealSource = useDeleteDealSource();
-  const [activeView, setActiveView] = useState("activity");
+  const [activeView, setActiveView] = useState<"activity" | "dialer">("activity");
   const [dialerCallingMode, setDialerCallingMode] = useState("start");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
