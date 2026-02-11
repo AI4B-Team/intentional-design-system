@@ -112,7 +112,11 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex gap-2 mr-2">
+          <CallControls compact />
+          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDisplayMode("mini")}>
+            <Minimize2 className="h-4 w-4" />
+          </Button>
+          <div className="flex gap-2 ml-2">
             <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold">
               <Phone className="h-3.5 w-3.5" /> Call
             </button>
@@ -136,10 +140,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               <MoreVertical className="h-4 w-4" />
             </button>
           </div>
-          <CallControls compact />
-          <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDisplayMode("mini")}>
-            <Minimize2 className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
