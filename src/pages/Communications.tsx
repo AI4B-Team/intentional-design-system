@@ -385,7 +385,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, on
                     <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
                       <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete?.(); }} className="text-destructive focus:text-destructive">
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete?.(); }} className="text-destructive focus:text-destructive focus:bg-destructive/90 focus:text-white">
                       <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -499,7 +499,7 @@ function ConversationThread({
               <DropdownMenuItem onClick={() => onEdit?.()}>
                 <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onDelete?.()} className="text-destructive focus:text-destructive">
+              <DropdownMenuItem onClick={() => onDelete?.()} className="text-destructive focus:text-destructive focus:bg-destructive/90 focus:text-white">
                 <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
