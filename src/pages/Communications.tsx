@@ -370,8 +370,8 @@ function ConversationThread({
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Thread Header */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+      {/* Thread Header - Fixed */}
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
             {contact.avatar}
@@ -465,7 +465,7 @@ function ConversationThread({
       </div>
 
       {/* Quick Reply */}
-      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center">
+      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
         <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
           <input
             placeholder="Type a message..."
