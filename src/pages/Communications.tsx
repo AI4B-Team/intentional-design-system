@@ -290,12 +290,12 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
           <span className={cn("text-[13px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
             {contact.name}
           </span>
-          {/* Hover actions */}
-          <div className="flex items-center gap-0.5 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Hover actions - far right */}
+          <div className="flex items-center gap-0.5 flex-shrink-0 ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={e => { e.stopPropagation(); onCall?.(); }}
               className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
@@ -305,7 +305,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
             </button>
             <button
               onClick={e => { e.stopPropagation(); onSms?.(); }}
-              className="p-1.5 rounded-md hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500 transition-colors"
+              className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
               title="SMS"
             >
               <MessageCircle className="h-3.5 w-3.5" />
@@ -319,7 +319,7 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
             </button>
           </div>
           {/* Timestamp (hidden on hover) */}
-          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:opacity-0 transition-opacity">
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0 group-hover:hidden">
             {contact.lastActivity}
           </span>
         </div>
