@@ -2122,7 +2122,10 @@ export default function Communications() {
 
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
-                <LiveCallInline />
+                <LiveCallInline
+                  onOpenSms={() => setShowDialerSms(true)}
+                  onOpenEmail={() => setShowDialerEmail(true)}
+                />
               ) : (
                 <ConversationThread
                   contact={selectedContact}
