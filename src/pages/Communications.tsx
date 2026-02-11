@@ -77,7 +77,7 @@ const MODE_THEME: Record<CallingModeKey, {
   headerBg: string;      // header background
 }> = {
   start: {
-    label: "Human Mode",
+    label: "Live Intelligence Active",
     accent: "text-emerald-600",
     bg: "bg-emerald-500/[0.03]",
     border: "border-emerald-500/20",
@@ -87,7 +87,7 @@ const MODE_THEME: Record<CallingModeKey, {
     headerBg: "bg-emerald-500/[0.04]",
   },
   voice: {
-    label: "AI Agent",
+    label: "Live Intelligence Active",
     accent: "text-blue-600",
     bg: "bg-blue-500/[0.03]",
     border: "border-blue-500/20",
@@ -97,7 +97,7 @@ const MODE_THEME: Record<CallingModeKey, {
     headerBg: "bg-blue-500/[0.04]",
   },
   listen: {
-    label: "Hybrid Mode",
+    label: "Live Intelligence Active",
     accent: "text-violet-600",
     bg: "bg-violet-500/[0.03]",
     border: "border-violet-500/20",
@@ -1802,7 +1802,7 @@ export default function Communications() {
                 {key === "start" && <Play className="h-3 w-3" />}
                 {key === "listen" && <Sparkles className="h-3 w-3" />}
                 {key === "voice" && <Bot className="h-3 w-3" />}
-                {theme.label === "Human Mode" ? "Human" : theme.label === "Hybrid Mode" ? "Hybrid" : "AI Agent"}
+                {key === "start" ? "Human" : key === "listen" ? "Hybrid" : "AI Agent"}
               </button>
             ))}
 
