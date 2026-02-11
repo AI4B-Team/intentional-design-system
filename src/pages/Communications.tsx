@@ -30,6 +30,10 @@ import {
   UserPlus,
   X,
   FileText,
+  MapPin,
+  Home,
+  Calendar,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -371,9 +375,9 @@ function ConversationThread({
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Thread Header - Fixed */}
-      <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-shrink-0">
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
             {contact.avatar}
           </div>
           <div>
@@ -383,18 +387,7 @@ function ConversationThread({
                 {contact.tag}
               </span>
             </div>
-            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-1">
-              <button
-                onClick={onCall}
-                className="text-primary hover:underline cursor-pointer font-medium flex items-center gap-1"
-                title="Click to call"
-              >
-                <Phone className="h-2.5 w-2.5" />
-                (555) 000-0000
-              </button>
-              <span className="text-muted-foreground/40">·</span>
-              <span>{contact.address}</span>
-            </div>
+            <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
         </div>
         <div className="flex gap-2">
@@ -419,6 +412,48 @@ function ConversationThread({
           >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
+        </div>
+      </div>
+
+      {/* Contact Info Card - Fixed */}
+      <div className="px-5 py-3 border-b border-border bg-muted/30 flex-shrink-0">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+          <div className="flex items-center gap-2 text-xs">
+            <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Property:</span>
+            <span className="font-medium text-foreground">{contact.address}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Phone:</span>
+            <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">(555) 000-0000</button>
+            <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+              <Copy className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Email:</span>
+            <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
+            <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+              <Copy className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">City/State:</span>
+            <span className="font-medium text-foreground">Houston, TX 77001</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Last Contact:</span>
+            <span className="font-medium text-foreground">{contact.lastActivity}</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs">
+            <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+            <span className="text-muted-foreground">Lead Score:</span>
+            <span className="font-medium text-primary">Hot</span>
+          </div>
         </div>
       </div>
 
