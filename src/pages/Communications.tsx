@@ -14,10 +14,13 @@ import {
   Sparkles,
   Send,
   ChevronRight,
+  ChevronLeft,
   Play,
   Mic,
   ArrowDownLeft,
   ArrowUpRight,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -792,6 +795,7 @@ export default function Communications() {
   const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS);
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
+  const [leftPanelOpen, setLeftPanelOpen] = useState(true);
 
   const selectedContact = useMemo(() => contacts.find(c => c.id === selectedContactId) || null, [contacts, selectedContactId]);
 
@@ -902,27 +906,54 @@ export default function Communications() {
           {activeView === "activity" ? (
             <>
               {/* Left: Contact List */}
-              <div className="w-[420px] border-r border-border flex flex-col overflow-hidden bg-background">
-                <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
-                  <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
-                  <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
-                </div>
-                <div className="flex-1 overflow-auto">
-                  {filteredContacts.map(contact => (
-                    <ContactListItem
-                      key={contact.id}
-                      contact={contact}
-                      isActive={selectedContactId === contact.id}
-                      onClick={() => handleSelectContact(contact.id)}
-                    />
-                  ))}
-                  {filteredContacts.length === 0 && (
-                    <div className="py-10 px-5 text-center text-muted-foreground text-[13px]">
-                      No conversations match your filters
+              <div className={cn(
+                "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
+                leftPanelOpen ? "w-[420px]" : "w-0"
+              )}>
+                {leftPanelOpen && (
+                  <>
+                    <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between">
+                        <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
+                        <button
+                          onClick={() => setLeftPanelOpen(false)}
+                          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          title="Minimize panel"
+                        >
+                          <PanelLeftClose className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
                     </div>
-                  )}
-                </div>
+                    <div className="flex-1 overflow-auto">
+                      {filteredContacts.map(contact => (
+                        <ContactListItem
+                          key={contact.id}
+                          contact={contact}
+                          isActive={selectedContactId === contact.id}
+                          onClick={() => handleSelectContact(contact.id)}
+                        />
+                      ))}
+                      {filteredContacts.length === 0 && (
+                        <div className="py-10 px-5 text-center text-muted-foreground text-[13px]">
+                          No conversations match your filters
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
+
+              {/* Expand button when collapsed */}
+              {!leftPanelOpen && (
+                <button
+                  onClick={() => setLeftPanelOpen(true)}
+                  className="flex items-center justify-center w-8 border-r border-border bg-background hover:bg-muted transition-colors"
+                  title="Expand panel"
+                >
+                  <PanelLeftOpen className="h-4 w-4 text-muted-foreground" />
+                </button>
+              )}
 
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
