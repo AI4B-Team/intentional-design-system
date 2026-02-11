@@ -615,37 +615,85 @@ function ConversationThread({
         })}
       </div>
 
-      {/* Quick Reply */}
-      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
-        <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
-          <input
-            placeholder="Type a message..."
-            value={messageInput}
-            onChange={e => onMessageInputChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
-          />
+      {/* Command Surface */}
+      <div className="border-t border-border flex-shrink-0">
+        {/* Power tools row */}
+        <div className="px-5 py-2 flex items-center gap-2 border-b border-border/50">
           <button
             onClick={() => {
-              const channels = ["sms", "email"];
-              const idx = channels.indexOf(sendChannel);
-              onSendChannelChange(channels[(idx + 1) % channels.length]);
+              const lastAi = [...contact.activities].reverse().find(a => a.aiSuggestion);
+              if (lastAi?.aiSuggestion) {
+                const actionText = lastAi.aiSuggestion.replace(/^[^\w]*/, '').slice(0, 100);
+                onMessageInputChange(actionText);
+                toast.info("AI directive loaded");
+              } else {
+                toast.info("No active directive");
+              }
             }}
-            className={cn(
-              "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
-              sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"
-            )}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-primary bg-primary/5 border border-primary/15 hover:bg-primary/10 transition-colors"
           >
-            {sendChannel.toUpperCase()}
+            <Sparkles className="h-3 w-3" /> Follow Directive
+          </button>
+          <button
+            onClick={() => {
+              if (messageInput.trim()) {
+                toast.info("Rewriting with AI...");
+                setTimeout(() => {
+                  onMessageInputChange(messageInput.trim() + " — I'd love to discuss this further and find a solution that works for your timeline.");
+                  toast.success("Message enhanced");
+                }, 800);
+              } else {
+                toast.info("Type a message first");
+              }
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 transition-colors"
+          >
+            <Sparkles className="h-3 w-3" /> Rewrite
+          </button>
+          <button
+            onClick={() => {
+              onMessageInputChange("Based on comparable sales in the area, I'm looking at an offer range of $165k–$180k. Let me walk you through the numbers.");
+              toast.info("Offer range template inserted");
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 transition-colors"
+          >
+            <FileText className="h-3 w-3" /> Insert Offer
           </button>
         </div>
-        <button
-          onClick={onSendMessage}
-          disabled={!messageInput.trim()}
-          className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send className="h-4 w-4" />
-        </button>
+        {/* Input row */}
+        <div className="px-5 py-3.5 flex gap-2.5 items-center">
+          <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
+            <input
+              placeholder="Type a message..."
+              value={messageInput}
+              onChange={e => onMessageInputChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
+            />
+            <button
+              onClick={() => {
+                const channels = ["sms", "email"];
+                const idx = channels.indexOf(sendChannel);
+                onSendChannelChange(channels[(idx + 1) % channels.length]);
+              }}
+              className={cn(
+                "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
+                sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" :
+                sendChannel === "email" ? "bg-amber-500/10 text-amber-500" :
+                "bg-muted text-muted-foreground"
+              )}
+            >
+              {sendChannel ? sendChannel.toUpperCase() : "SMS"}
+            </button>
+          </div>
+          <button
+            onClick={onSendMessage}
+            disabled={!messageInput.trim()}
+            className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -663,10 +711,13 @@ function CoPilotPanel({
   activeView: string;
   onQuickReply: (text: string) => void;
 }) {
+  const callState = useCallState();
+  const isLiveCall = callState.isCallActive && callState.callStatus === "connected";
+
   return (
-    <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+    <div className="w-[400px] border-l-2 border-primary/20 flex flex-col overflow-hidden bg-gradient-to-b from-primary/[0.03] to-background shadow-[-4px_0_20px_-5px_hsl(var(--primary)/0.08)]">
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between">
+      <div className="p-4 border-b border-primary/10 flex items-center justify-between bg-primary/[0.04]">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -674,7 +725,7 @@ function CoPilotPanel({
           <div>
             <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
             <div className="text-[11px] text-muted-foreground">
-              {activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
+              {isLiveCall ? "Live call intelligence active" : activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
             </div>
           </div>
         </div>
@@ -684,7 +735,9 @@ function CoPilotPanel({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">AI Active</span>
+            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">
+              {isLiveCall ? "LIVE" : "AI Active"}
+            </span>
           </div>
         )}
       </div>
@@ -695,7 +748,96 @@ function CoPilotPanel({
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
           </div>
+        ) : isLiveCall ? (
+          /* ===== LIVE CALL MODE ===== */
+          <div className="space-y-3">
+            {/* Live Sentiment */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
+              <div className="flex items-center gap-2.5">
+                <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                    style={{ width: `${callState.sentimentScore}%` }}
+                  />
+                </div>
+                <span className={cn(
+                  "text-xs font-semibold capitalize",
+                  callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                )}>
+                  {callState.sentiment}
+                </span>
+              </div>
+            </div>
+
+            {/* Objection Detection */}
+            <div className="p-3.5 bg-red-50/50 rounded-lg border border-red-200/30">
+              <div className="text-[11px] text-red-600 font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                ⚠ Objection Detector
+              </div>
+              <div className="text-xs text-foreground leading-relaxed">
+                {callState.transcript.length > 1
+                  ? "Monitoring for objections... Stay on script and lead with value."
+                  : "Listening for objection patterns..."}
+              </div>
+            </div>
+
+            {/* Say This Next */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Say This Next
+              </div>
+              {callState.aiSuggestions.slice(0, 2).map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => onQuickReply(s.text)}
+                  className="w-full text-left px-2.5 py-2 mb-1.5 bg-primary/5 border border-primary/15 rounded text-xs text-foreground hover:bg-primary/10 transition-all cursor-pointer"
+                >
+                  <span className={cn(
+                    "inline-block px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase mr-1.5",
+                    s.type === "question" ? "bg-blue-500/10 text-blue-500" :
+                    s.type === "response" ? "bg-primary/10 text-primary" :
+                    "bg-muted text-muted-foreground"
+                  )}>{s.type}</span>
+                  {s.text}
+                </button>
+              ))}
+            </div>
+
+            {/* Call Coaching */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Live Coaching</div>
+              <div className="space-y-2">
+                {callState.aiSuggestions.filter(s => s.type === "coach").map(s => (
+                  <div key={s.id} className="flex items-start gap-2 text-xs text-muted-foreground">
+                    <span className="text-amber-500 mt-0.5">💡</span>
+                    <span>{s.text}</span>
+                  </div>
+                ))}
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <span className="text-emerald-500 mt-0.5">✓</span>
+                  <span>Pace is good. Keep asking open-ended questions.</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Timer */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Call Progress</div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-foreground">Duration</span>
+                <span className="text-sm font-mono font-bold text-primary">
+                  {Math.floor(callState.callDuration / 60)}:{(callState.callDuration % 60).toString().padStart(2, '0')}
+                </span>
+              </div>
+              <div className="flex items-center justify-between mt-1.5">
+                <span className="text-xs font-medium text-foreground">Phase</span>
+                <span className="text-xs font-semibold text-primary">{callState.currentCallPhase}</span>
+              </div>
+            </div>
+          </div>
         ) : (
+          /* ===== STATIC MODE (NOT ON CALL) ===== */
           <div className="space-y-3">
             {/* Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
