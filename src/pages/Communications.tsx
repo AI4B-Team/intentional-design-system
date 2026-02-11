@@ -540,9 +540,6 @@ function ConversationThread({
             <div className="flex items-center gap-2">
               <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
             </div>
-            {contact.phone && (
-              <div className="text-[12px] text-muted-foreground font-medium">{contact.phone}</div>
-            )}
             <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
         </div>
