@@ -421,6 +421,8 @@ function ConversationThread({
   onMessageInputChange,
   sendChannel,
   onSendChannelChange,
+  onEdit,
+  onDelete,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -429,6 +431,8 @@ function ConversationThread({
   onMessageInputChange: (val: string) => void;
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
 
@@ -485,6 +489,21 @@ function ConversationThread({
           >
             <Mail className="h-3.5 w-3.5" /> Email
           </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                <MoreVertical className="h-4 w-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-36">
+              <DropdownMenuItem onClick={() => onEdit?.()}>
+                <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onDelete?.()} className="text-destructive focus:text-destructive">
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -1620,6 +1639,8 @@ export default function Communications() {
                   onMessageInputChange={setMessageInput}
                   sendChannel={sendChannel}
                   onSendChannelChange={setSendChannel}
+                  onEdit={() => { if (selectedContact) { setEditingContact(selectedContact); setEditForm({ name: selectedContact.name, phone: selectedContact.phone || "", email: selectedContact.email || "", address: selectedContact.address, company: selectedContact.company || "" }); } }}
+                  onDelete={() => { if (selectedContact) setDeletingContactId(selectedContact.id); }}
                 />
               )}
 
