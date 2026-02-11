@@ -208,9 +208,33 @@ const MOCK_DIALER_QUEUE = [
 ];
 
 const MOCK_CALL_SCRIPTS = [
-  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68 },
-  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42 },
-  { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15 },
+  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68,
+    opening: "Hi {{name}}, I know you weren't expecting my call — got 30 seconds for me to explain why I'm reaching out about {{address}}?",
+    questions: ["What's your timeline for making a decision?", "Have you explored any other options?", "What would an ideal outcome look like?"],
+    objections: [
+      { objection: '"I need to think about it"', response: 'Acknowledge, then ask what specifically they need to think through.' },
+      { objection: '"Your offer is too low"', response: 'Ask what number they had in mind — let them anchor first.' },
+    ],
+    closing: "Based on everything we discussed, I'd love to put together a no-obligation offer. Can I send that over by end of day?"
+  },
+  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42,
+    opening: "Hey {{name}}, we spoke last week about {{address}} — just wanted to circle back and see if anything's changed on your end.",
+    questions: ["Have you had time to think about the offer?", "Are there any concerns I can address?", "Has your timeline shifted at all?"],
+    objections: [
+      { objection: '"I\'m talking to other buyers"', response: 'Great — competition validates the property. Ask what matters most to them beyond price.' },
+      { objection: '"I changed my mind"', response: 'Understand what changed. Was it price, timing, or personal circumstances?' },
+    ],
+    closing: "I want to make this as easy as possible for you. If we can agree on terms today, I can have paperwork ready by tomorrow."
+  },
+  { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15,
+    opening: "Hi, I'm reaching out about {{address}}. I work with cash buyers who can close quickly — is the seller open to off-market offers?",
+    questions: ["What's the seller's primary motivation?", "Is there flexibility on the list price?", "What's the ideal closing timeline for your client?"],
+    objections: [
+      { objection: '"We already have offers"', response: 'Understood — our buyers can often close faster with fewer contingencies. Worth a conversation?' },
+      { objection: '"The seller wants full price"', response: 'We respect that. Can I send a competitive offer for consideration alongside others?' },
+    ],
+    closing: "I'll send over a clean cash offer within 24 hours. What's the best email to reach you?"
+  },
 ];
 
 // ============================================================================
@@ -2142,13 +2166,14 @@ export default function Communications() {
                 contact={selectedDialerContact}
                 callingMode={dialerCallingMode === "voice" ? "voice" : dialerCallingMode === "listen" ? "listen" : "start"}
                 callActive={callState.isCallActive}
-                scripts={[
-                  { id: "s1", name: "Motivated Seller" },
-                  { id: "s2", name: "Follow-up Close" },
-                  { id: "s3", name: "Agent Intro" },
-                ]}
+                scripts={MOCK_CALL_SCRIPTS.map(s => ({ id: s.id, name: s.name }))}
                 selectedScriptId={dialerScriptId}
+                selectedScriptDetail={dialerScriptId ? (() => {
+                  const s = MOCK_CALL_SCRIPTS.find(x => x.id === dialerScriptId);
+                  return s ? { id: s.id, name: s.name, opening: s.opening, questions: s.questions, objections: s.objections, closing: s.closing } : null;
+                })() : null}
                 onSelectScript={setDialerScriptId}
+                onManageScripts={() => navigate("/dialer/scripts")}
                 onSms={() => toast.info("SMS composer — coming soon")}
                 onEmail={() => toast.info("Email composer — coming soon")}
               />
