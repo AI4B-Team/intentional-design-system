@@ -44,7 +44,9 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
   // If organization check is required, wait for org loading
   if (requireOrganization) {
     if (orgLoading) {
-      return <LoadingPage message="Loading organization..." />;
+      // Render children (layout + sidebar) at reduced opacity while org loads,
+      // instead of replacing the entire layout with a loading spinner
+      return <div className="opacity-50 pointer-events-none transition-opacity duration-200">{children}</div>;
     }
 
     // User is authenticated but has no organization - redirect to signup flow
