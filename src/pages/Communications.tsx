@@ -18,8 +18,6 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
-  MoreVertical,
-  Pencil,
   Play, 
   Mic,
   ArrowDownLeft,
@@ -38,39 +36,9 @@ import {
   Home,
   Calendar,
   Copy,
-  Zap,
-  BarChart3,
-  Wand2,
-  StickyNote,
-  Shield,
-  Clock,
-  TrendingUp,
-  AlertTriangle,
-  Target,
-  Bot,
-  Eye,
-  Gauge,
-  Hand,
-  Pause,
-  SkipForward,
-  RefreshCw,
-  Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-
-// ============================================================================
-// OPERATING MODE
-// ============================================================================
-type OperatingMode = "human" | "hybrid" | "ai_agent";
-
-const MODE_CONFIG: Record<OperatingMode, { label: string; desc: string; icon: React.ElementType; accentClass: string; bgTint: string; badgeClass: string }> = {
-  human: { label: "Human", desc: "You talk, AI guides", icon: Play, accentClass: "text-emerald-600", bgTint: "bg-emerald-500/[0.03]", badgeClass: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
-  hybrid: { label: "Hybrid", desc: "AI talks with oversight", icon: Eye, accentClass: "text-violet-600", bgTint: "bg-violet-500/[0.03]", badgeClass: "bg-violet-500/10 text-violet-600 border-violet-500/20" },
-  ai_agent: { label: "AI Agent", desc: "Fully autonomous", icon: Bot, accentClass: "text-blue-600", bgTint: "bg-blue-500/[0.03]", badgeClass: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
-};
-
-const STRATEGY_STEPS = ["Empathy", "Value Framing", "Anchor at $175K", "Close on Timeline"];
 
 // ============================================================================
 // CHANNEL CONFIG
@@ -309,39 +277,13 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
 // ============================================================================
 // CONTACT LIST ITEM
 // ============================================================================
-function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, condensed }: { 
+function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: { 
   contact: Contact; isActive: boolean; onClick: () => void;
   onCall?: () => void; onSms?: () => void; onCopy?: () => void;
-  condensed?: boolean;
 }) {
   const lastAct = contact.activities[contact.activities.length - 1];
   const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
   const channelColorClass = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.colorClass : "";
-
-  if (condensed) {
-    return (
-      <div
-        onClick={onClick}
-        className={cn(
-          "group flex items-center gap-2.5 px-3 py-2 cursor-pointer transition-all border-b border-border/30",
-          isActive ? "bg-muted/80 border-l-[3px] border-l-primary" : "border-l-[3px] border-l-transparent hover:bg-muted/40"
-        )}
-      >
-        <div className="relative flex-shrink-0">
-          <div className="w-7 h-7 rounded-md bg-primary flex items-center justify-center text-[10px] font-bold text-primary-foreground">
-            {contact.avatar}
-          </div>
-          {contact.unread && (
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 border border-background" />
-          )}
-        </div>
-        <span className={cn("text-[12px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
-          {contact.name}
-        </span>
-        {contact.starred && <Star className="h-2.5 w-2.5 fill-amber-500 text-amber-500 flex-shrink-0 ml-auto" />}
-      </div>
-    );
-  }
 
   return (
     <div
@@ -431,7 +373,6 @@ function ConversationThread({
   onMessageInputChange,
   sendChannel,
   onSendChannelChange,
-  operatingMode,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -440,14 +381,8 @@ function ConversationThread({
   onMessageInputChange: (val: string) => void;
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
-  operatingMode: OperatingMode;
 }) {
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
-  const [composerType, setComposerType] = useState<"sms" | "email">("sms");
-  const [emailSubject, setEmailSubject] = useState("");
-  const { isCallActive, currentCallPhase } = useCallState();
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
 
   if (!contact) {
     return (
@@ -465,112 +400,61 @@ function ConversationThread({
     }
   };
 
-  const openComposer = (type: "sms" | "email") => {
-    setComposerType(type);
-    onSendChannelChange(type);
-    setComposerOpen(true);
-    if (type === "email") {
-      setEmailSubject(`Follow-up on ${contact.address}`);
-      if (!messageInput.trim()) {
-        onMessageInputChange(`Hi ${contact.name.split(" ")[0]},\n\nThank you for our recent conversation about ${contact.address}. I wanted to follow up with the details we discussed.\n\nPlease let me know if you have any questions.\n\nBest regards`);
-      }
-    } else {
-      if (!messageInput.trim()) {
-        onMessageInputChange(`Hey ${contact.name.split(" ")[0]}, just following up on our conversation about ${contact.address}. When works best to chat?`);
-      }
-    }
-  };
-
-  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
-  const phaseIdx = PHASES.indexOf(currentCallPhase);
-
-  const modeConfig = MODE_CONFIG[operatingMode];
-
   return (
-    <div className={cn("flex-1 flex flex-col min-h-0 overflow-hidden", isCallActive && modeConfig.bgTint)}>
-      {/* Thread Header */}
-      <div className="border-b border-border flex-shrink-0">
-        <div className="px-5 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
-              {contact.avatar}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
-              </div>
-              <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
-            </div>
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      {/* Thread Header - Fixed */}
+      <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+            {contact.avatar}
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                contactDetailsOpen
-                  ? "border-primary text-primary bg-primary/5"
-                  : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {contactDetailsOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
-              Details
-            </button>
-            <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-              <Phone className="h-3.5 w-3.5" /> Call
-            </button>
-            <button
-              onClick={() => openComposer("sms")}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                composerOpen && composerType === "sms" ? "border-blue-500 text-blue-600 bg-blue-500/5" : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <MessageCircle className="h-3.5 w-3.5" /> SMS
-            </button>
-            <button
-              onClick={() => openComposer("email")}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-                composerOpen && composerType === "email" ? "border-amber-500 text-amber-600 bg-amber-500/5" : "border-border text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Mail className="h-3.5 w-3.5" /> Email
-            </button>
-
-            {/* 3-dot menu */}
-            <div className="relative">
-              <button
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                <MoreVertical className="h-4 w-4" />
-              </button>
-              {menuOpen && (
-                <>
-                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-popover border border-border rounded-lg shadow-lg py-1">
-                    <button
-                      onClick={() => { setMenuOpen(false); toast.info("Edit contact coming soon"); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Edit Contact
-                    </button>
-                    <button
-                      onClick={() => { setMenuOpen(false); toast.info("Delete contact coming soon"); }}
-                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" /> Delete Contact
-                    </button>
-                  </div>
-                </>
-              )}
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
             </div>
+            <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
         </div>
+        <div className="flex gap-2">
+          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+            <Phone className="h-3.5 w-3.5" /> Call
+          </button>
+          <button
+            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <MessageCircle className="h-3.5 w-3.5" /> SMS
+          </button>
+          <button
+            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+            className={cn(
+              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Mail className="h-3.5 w-3.5" /> Email
+          </button>
+        </div>
+      </div>
 
-        {/* Contact Details - Expandable */}
+      {/* Contact Info Card - Collapsible */}
+      <div className="border-b border-border bg-muted/30 flex-shrink-0">
+        <button
+          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
+          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span>Contact Details</span>
+          {contactDetailsOpen ? (
+            <ChevronDown className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronRight className="h-3.5 w-3.5" />
+          )}
+        </button>
         {contactDetailsOpen && (
-          <div className="px-5 pb-3 border-t border-border/50 pt-3 bg-muted/30">
+          <div className="px-5 pb-3">
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2 text-xs">
                 <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -620,28 +504,6 @@ function ConversationThread({
         )}
       </div>
 
-      {/* Strategy Strip — visible during live calls */}
-      {isCallActive && (
-        <div className={cn("px-5 py-2 border-b border-border/50 flex items-center gap-3 flex-shrink-0", modeConfig.bgTint)}>
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Strategy:</span>
-          <div className="flex items-center gap-1">
-            {STRATEGY_STEPS.map((step, i) => (
-              <React.Fragment key={step}>
-                {i > 0 && <span className="text-[10px] text-muted-foreground/50">→</span>}
-                <span className={cn(
-                  "text-[11px] font-semibold px-2 py-0.5 rounded-full transition-all",
-                  i <= phaseIdx
-                    ? cn(modeConfig.badgeClass, "border")
-                    : "text-muted-foreground/60"
-                )}>
-                  {step}
-                </span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Activity Timeline */}
       <div className="flex-1 min-h-0 overflow-auto p-5">
         {[...contact.activities].reverse().map((act, i) => {
@@ -684,463 +546,37 @@ function ConversationThread({
         })}
       </div>
 
-      {/* SMS/Email Composer Slide-Up */}
-      {composerOpen && (
-        <div className="border-t border-border bg-muted/30 flex-shrink-0 animate-fade-in">
-          <div className="px-5 py-3">
-            <div className="flex items-center justify-between mb-2.5">
-              <div className="flex items-center gap-2">
-                {composerType === "email" ? (
-                  <Mail className="h-4 w-4 text-amber-500" />
-                ) : (
-                  <MessageCircle className="h-4 w-4 text-blue-500" />
-                )}
-                <span className="text-[13px] font-semibold text-foreground">
-                  {composerType === "email" ? "Compose Email" : "Send SMS"}
-                </span>
-                <span className="text-[10px] text-muted-foreground">to {contact.name}</span>
-              </div>
-              <button onClick={() => setComposerOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </div>
-
-            {composerType === "email" && (
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[11px] text-muted-foreground font-medium">Subject:</span>
-                <input
-                  value={emailSubject}
-                  onChange={e => setEmailSubject(e.target.value)}
-                  className="flex-1 bg-background border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground outline-none focus:border-primary/50"
-                />
-              </div>
-            )}
-
-            <textarea
-              value={messageInput}
-              onChange={e => onMessageInputChange(e.target.value)}
-              rows={composerType === "email" ? 5 : 2}
-              className="w-full bg-background border border-border rounded-lg px-3.5 py-2.5 text-[13px] text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 resize-none mb-2.5"
-              placeholder={composerType === "email" ? "Compose your email..." : "Type your message..."}
-            />
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={() => toast.success("AI rewrite applied")}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all border border-primary/20"
-                >
-                  <Wand2 className="h-3 w-3" /> Rewrite
-                </button>
-                <button
-                  onClick={() => onMessageInputChange(messageInput + "\n\n[Offer Range: $165,000 - $180,000]")}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
-                >
-                  <BarChart3 className="h-3 w-3" /> Add Offer
-                </button>
-                {composerType === "email" && (
-                  <button
-                    onClick={() => toast.info("Attach comps PDF coming soon")}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
-                  >
-                    <Paperclip className="h-3 w-3" /> Attach
-                  </button>
-                )}
-                <button
-                  onClick={() => toast.info("Scheduled send coming soon")}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all border border-border"
-                >
-                  <Clock className="h-3 w-3" /> Schedule
-                </button>
-              </div>
-              <button
-                onClick={() => { onSendMessage(); setComposerOpen(false); }}
-                disabled={!messageInput.trim()}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
-                <Send className="h-3.5 w-3.5" /> Send {composerType === "email" ? "Email" : "SMS"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Command Surface Input — Mode Aware */}
-      {!composerOpen && (
-        operatingMode === "ai_agent" && isCallActive ? (
-          /* AI Agent Mode — Control Surface */
-          <div className="border-t border-border flex-shrink-0 px-5 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Bot className="h-4 w-4 text-blue-500" />
-                <span className="text-[13px] font-bold text-foreground">AI Agent Active</span>
-                <span className="relative flex h-2 w-2 ml-1">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => toast.info("Taking over call...")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-semibold hover:bg-amber-500/20 transition-colors">
-                  <Hand className="h-3.5 w-3.5" /> Take Over
-                </button>
-                <button onClick={() => toast.info("Agent paused")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                  <Pause className="h-3.5 w-3.5" /> Pause
-                </button>
-                <button onClick={() => toast.info("Strategy changed")} className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                  <RefreshCw className="h-3.5 w-3.5" /> Change Strategy
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          /* Human / Hybrid — Message Input */
-          <div className="border-t border-border flex-shrink-0">
-            <div className="px-5 pt-2.5 pb-1 flex items-center gap-1">
-              {[
-                { key: "sms", label: "SMS", icon: MessageCircle, color: "text-blue-500 bg-blue-500/10" },
-                { key: "email", label: "Email", icon: Mail, color: "text-amber-500 bg-amber-500/10" },
-                { key: "note", label: "Note", icon: StickyNote, color: "text-muted-foreground bg-muted" },
-              ].map(ch => (
-                <button
-                  key={ch.key}
-                  onClick={() => onSendChannelChange(ch.key)}
-                  className={cn(
-                    "inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold transition-all",
-                    sendChannel === ch.key
-                      ? cn(ch.color, "ring-1 ring-current/20")
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                  )}
-                >
-                  <ch.icon className="h-3 w-3" />
-                  {ch.label}
-                </button>
-              ))}
-
-              <div className="h-4 w-px bg-border mx-1" />
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => {
-                      if (!messageInput.trim()) { toast.info("Type a message first"); return; }
-                      toast.success("AI rewrite applied");
-                    }}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <Wand2 className="h-3 w-3" /> Rewrite
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>Rewrite with AI</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => onMessageInputChange(messageInput + " [Offer Range: $165K - $180K]")}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
-                  >
-                    <BarChart3 className="h-3 w-3" /> Offer
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>Insert offer range</TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => {
-                      const directive = contact.activities[contact.activities.length - 1]?.aiSuggestion;
-                      if (directive) { onMessageInputChange(directive); toast.success("AI directive loaded"); }
-                      else toast.info("No active directive available");
-                    }}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold text-primary hover:bg-primary/10 transition-all"
-                  >
-                    <Zap className="h-3 w-3" /> Directive
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>Follow AI directive</TooltipContent>
-              </Tooltip>
-            </div>
-
-            <div className="px-5 pb-3 pt-1 flex gap-2.5 items-center">
-              <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
-                <input
-                  placeholder={sendChannel === "note" ? "Add internal note..." : sendChannel === "email" ? "Compose email..." : "Type a message..."}
-                  value={messageInput}
-                  onChange={e => onMessageInputChange(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
-                />
-              </div>
-              <button
-                onClick={onSendMessage}
-                disabled={!messageInput.trim()}
-                className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Send className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-        )
-      )}
-    </div>
-  );
-}
-// ============================================================================
-// LIVE CALL CENTER (Negotiation Command Center)
-// ============================================================================
-function LiveCallCenter({
-  contact,
-  operatingMode,
-  onQuickReply,
-}: {
-  contact: Contact | null;
-  operatingMode: OperatingMode;
-  onQuickReply: (text: string) => void;
-}) {
-  const {
-    isCallActive, callStatus, callDuration, transcript,
-    sentiment, sentimentScore, currentCallPhase, aiSuggestions,
-    isMuted, toggleMute, endCall,
-  } = useCallState();
-
-  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
-  const phaseIdx = PHASES.indexOf(currentCallPhase);
-  const modeConfig = MODE_CONFIG[operatingMode];
-
-  const formatTimer = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-  };
-
-  // Dynamic AI status
-  const getAIStatus = (): { text: string; color: string } => {
-    if (callStatus === "ringing") return { text: "Connecting...", color: "text-amber-500" };
-    if (transcript.length < 2) return { text: "🟢 Listening", color: "text-emerald-500" };
-    if (transcript.length < 4) return { text: "🔵 Analyzing", color: "text-blue-500" };
-    if (transcript.length < 6) return { text: "🟡 Objection Detected", color: "text-amber-500" };
-    return { text: "🟣 Strategy Shift", color: "text-violet-500" };
-  };
-
-  const aiStatus = getAIStatus();
-
-  if (!contact || !isCallActive) return null;
-
-  return (
-    <div className={cn("flex-1 flex flex-col min-h-0 overflow-hidden", modeConfig.bgTint)}>
-      {/* ── Live Call Header ── */}
-      <div className={cn("px-5 py-3 border-b flex items-center justify-between flex-shrink-0",
-        operatingMode === "human" ? "border-b-emerald-500/20 bg-emerald-500/[0.04]" :
-        operatingMode === "hybrid" ? "border-b-violet-500/20 bg-violet-500/[0.04]" :
-        "border-b-blue-500/20 bg-blue-500/[0.04]"
-      )}>
-        <div className="flex items-center gap-3">
-          <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-primary-foreground",
-            operatingMode === "human" ? "bg-emerald-600" : operatingMode === "hybrid" ? "bg-violet-600" : "bg-blue-600"
-          )}>
-            {contact.avatar}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-bold text-foreground">{contact.name}</span>
-              <span className="text-xl font-mono font-bold text-foreground tracking-tight">{formatTimer(callDuration)}</span>
-            </div>
-            <div className="flex items-center gap-2.5 mt-0.5">
-              <span className={cn("text-[11px] font-semibold", aiStatus.color)}>{aiStatus.text}</span>
-              <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border", modeConfig.badgeClass)}>
-                {currentCallPhase}
-              </span>
-              <span className="text-[11px] text-muted-foreground font-mono">Confidence: <span className={cn("font-bold", modeConfig.accentClass)}>82%</span></span>
-            </div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {operatingMode !== "human" && (
-            <button
-              onClick={() => toast.info("Taking over call...")}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-semibold hover:bg-amber-500/20 transition-colors"
-            >
-              <Hand className="h-3.5 w-3.5" /> Take Over
-            </button>
-          )}
+      {/* Quick Reply */}
+      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center flex-shrink-0">
+        <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
+          <input
+            placeholder="Type a message..."
+            value={messageInput}
+            onChange={e => onMessageInputChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
+          />
           <button
-            onClick={toggleMute}
-            className={cn("flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              isMuted ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "border-border text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              const channels = ["sms", "email"];
+              const idx = channels.indexOf(sendChannel);
+              onSendChannelChange(channels[(idx + 1) % channels.length]);
+            }}
+            className={cn(
+              "px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors",
+              sendChannel === "sms" ? "bg-blue-500/10 text-blue-500" : "bg-amber-500/10 text-amber-500"
             )}
           >
-            <Mic className="h-3.5 w-3.5" /> {isMuted ? "Unmute" : "Mute"}
-          </button>
-          <button
-            onClick={() => toast.info("Agent paused")}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <Pause className="h-3.5 w-3.5" /> Pause
-          </button>
-          <button
-            onClick={endCall}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors"
-          >
-            <Phone className="h-3.5 w-3.5" /> End
+            {sendChannel.toUpperCase()}
           </button>
         </div>
-      </div>
-
-      {/* ── Stage Progress Bar ── */}
-      <div className={cn("px-5 py-2.5 border-b border-border/50 flex-shrink-0", modeConfig.bgTint)}>
-        <div className="flex gap-1">
-          {PHASES.map((phase, i) => (
-            <div key={phase} className="flex-1">
-              <div className={cn(
-                "h-2 rounded-full transition-all duration-500",
-                i < phaseIdx ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") :
-                i === phaseIdx ? cn(
-                  operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500",
-                  "animate-pulse shadow-sm",
-                  operatingMode === "human" ? "shadow-emerald-500/30" : operatingMode === "hybrid" ? "shadow-violet-500/30" : "shadow-blue-500/30"
-                ) :
-                "bg-muted"
-              )} />
-              <span className={cn(
-                "text-[9px] mt-1 block text-center font-medium",
-                i < phaseIdx ? "text-muted-foreground" :
-                i === phaseIdx ? cn(modeConfig.accentClass, "font-bold") :
-                "text-muted-foreground/50"
-              )}>{phase}</span>
-            </div>
-          ))}
-        </div>
-        {/* Strategy Strip */}
-        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-border/30">
-          <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Strategy:</span>
-          {STRATEGY_STEPS.map((step, i) => (
-            <React.Fragment key={step}>
-              {i > 0 && <span className="text-[9px] text-muted-foreground/40">→</span>}
-              <span className={cn(
-                "text-[10px] font-semibold",
-                i <= Math.min(phaseIdx, STRATEGY_STEPS.length - 1) ? modeConfig.accentClass : "text-muted-foreground/50"
-              )}>{step}</span>
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Live Transcript ── */}
-      <div className="flex-1 min-h-0 overflow-auto px-5 py-4">
-        <div className="space-y-3">
-          {transcript.map(entry => {
-            const isUser = entry.speaker === "user";
-            const isAI = entry.speaker === "ai";
-            return (
-              <div key={entry.id} className="group">
-                <div className={cn("flex gap-2", isUser ? "justify-end" : "justify-start")}>
-                  <div className={cn(
-                    "max-w-[75%] px-3.5 py-2.5 rounded-lg text-[13px] leading-relaxed",
-                    isUser
-                      ? "bg-primary text-primary-foreground"
-                      : isAI
-                        ? cn("border", modeConfig.badgeClass)
-                        : "bg-muted text-foreground"
-                  )}>
-                    {!isUser && (
-                      <span className="text-[10px] font-bold uppercase tracking-wider block mb-1 opacity-60">
-                        {isAI ? "AI" : contact.name.split(" ")[0]}
-                      </span>
-                    )}
-                    {entry.text}
-                  </div>
-                </div>
-                {/* AI Tags — subtle analysis under each prospect message */}
-                {!isUser && !isAI && transcript.length > 2 && (
-                  <div className="flex items-center gap-2 mt-1 ml-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 font-semibold">Objection: Price</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 font-semibold">Tone: Defensive</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 font-semibold">Intent: Medium</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          {callStatus === "connected" && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-              <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-              <span className={cn("font-medium", aiStatus.color)}>{aiStatus.text}</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Sticky Suggestion Stack ── */}
-      <div className={cn("border-t flex-shrink-0 px-5 py-3",
-        operatingMode === "human" ? "border-t-emerald-500/20 bg-emerald-500/[0.03]" :
-        operatingMode === "hybrid" ? "border-t-violet-500/20 bg-violet-500/[0.03]" :
-        "border-t-blue-500/20 bg-blue-500/[0.03]"
-      )}>
-        <div className="text-[10px] font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5 text-muted-foreground">
-          <Target className="h-3 w-3" /> Say This Next
-        </div>
-        <div className="flex gap-2">
-          {aiSuggestions.slice(0, 3).map(s => (
-            <div key={s.id} className={cn(
-              "flex-1 p-2.5 rounded-lg border text-xs leading-relaxed transition-all hover:shadow-sm cursor-pointer",
-              s.type === "question" ? "border-blue-500/20 bg-blue-500/[0.04] hover:border-blue-500/40" :
-              s.type === "response" ? cn("border-primary/20 bg-primary/[0.04] hover:border-primary/40") :
-              "border-border bg-muted/50 hover:border-foreground/20"
-            )}>
-              <div className="flex items-center justify-between mb-1.5">
-                <span className={cn(
-                  "px-1.5 py-0.5 rounded text-[9px] font-bold uppercase",
-                  s.type === "question" ? "bg-blue-500/10 text-blue-500" :
-                  s.type === "response" ? "bg-primary/10 text-primary" :
-                  "bg-muted text-muted-foreground"
-                )}>{s.type}</span>
-                <span className="text-[10px] text-muted-foreground font-mono">{s.confidence}%</span>
-              </div>
-              <div className="text-foreground mb-2 line-clamp-2">{s.text}</div>
-              <button
-                onClick={() => onQuickReply(s.text)}
-                className={cn(
-                  "w-full py-1.5 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all border",
-                  s.type === "coach"
-                    ? "bg-muted/80 text-foreground border-border hover:bg-muted"
-                    : cn(modeConfig.badgeClass, "hover:opacity-80")
-                )}
-              >
-                {s.type === "coach" ? "Apply" : "Use"}
-              </button>
-            </div>
-          ))}
-          {aiSuggestions.length === 0 && (
-            <div className="text-xs text-muted-foreground italic py-2">Generating suggestions...</div>
-          )}
-        </div>
-
-        {/* AI Agent control surface */}
-        {operatingMode === "ai_agent" && (
-          <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
-            <div className="flex items-center gap-2">
-              <Bot className="h-4 w-4 text-blue-500" />
-              <span className="text-[12px] font-bold text-foreground">AI Agent Active</span>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button onClick={() => toast.info("Strategy changed")} className="px-2.5 py-1.5 rounded-md border border-border text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                <RefreshCw className="h-3 w-3 inline mr-1" />Strategy
-              </button>
-              <button onClick={() => toast.info("Adjusting offer range...")} className="px-2.5 py-1.5 rounded-md border border-border text-[10px] font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                <BarChart3 className="h-3 w-3 inline mr-1" />Offer
-              </button>
-            </div>
-          </div>
-        )}
+        <button
+          onClick={onSendMessage}
+          disabled={!messageInput.trim()}
+          className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Send className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
@@ -1153,81 +589,33 @@ function CoPilotPanel({
   contact,
   activeView,
   onQuickReply,
-  operatingMode,
 }: {
   contact: Contact | null;
   activeView: string;
   onQuickReply: (text: string) => void;
-  operatingMode: OperatingMode;
 }) {
-  const { isCallActive, callDuration, transcript, sentiment, sentimentScore, currentCallPhase, aiSuggestions } = useCallState();
-
-  const formatTimer = (s: number) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-  };
-
-  const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
-  const phaseIdx = PHASES.indexOf(currentCallPhase);
-  const modeConfig = MODE_CONFIG[operatingMode];
-
-  // Dynamic AI status text
-  const getAIStatusText = () => {
-    if (!isCallActive) return activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions";
-    if (transcript.length < 2) return "🟢 Listening...";
-    if (transcript.length < 5) return "🔵 Analyzing...";
-    return "🟣 Strategy Shift Detected...";
-  };
-
   return (
-    <div className={cn(
-      "w-[400px] border-l flex flex-col overflow-hidden shadow-[-2px_0_12px_-4px_hsl(var(--primary)/0.08)]",
-      isCallActive ? cn("border-l-2", modeConfig.bgTint, 
-        operatingMode === "human" ? "border-l-emerald-500/30" : 
-        operatingMode === "hybrid" ? "border-l-violet-500/30" : "border-l-blue-500/30"
-      ) : "border-primary/10 bg-gradient-to-b from-primary/[0.03] to-muted/40"
-    )}>
+    <div className="w-[400px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
       {/* Header */}
-      <div className={cn("p-4 border-b flex items-center justify-between", 
-        isCallActive ? cn("bg-gradient-to-r", 
-          operatingMode === "human" ? "from-emerald-500/[0.06] border-emerald-500/10" :
-          operatingMode === "hybrid" ? "from-violet-500/[0.06] border-violet-500/10" :
-          "from-blue-500/[0.06] border-blue-500/10"
-        ) : "border-primary/10 bg-primary/[0.04]"
-      )}>
+      <div className="p-4 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shadow-sm",
-            isCallActive ? (
-              operatingMode === "human" ? "bg-emerald-500/15" :
-              operatingMode === "hybrid" ? "bg-violet-500/15" : "bg-blue-500/15"
-            ) : "bg-primary/15"
-          )}>
-            <Sparkles className={cn("h-4 w-4", isCallActive ? modeConfig.accentClass : "text-primary")} />
+          <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
           </div>
           <div>
-            <div className="text-[13px] font-bold text-foreground tracking-tight">AI Command Center</div>
-            <div className="text-[10px] text-muted-foreground">{getAIStatusText()}</div>
+            <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
+            <div className="text-[11px] text-muted-foreground">
+              {activeView === "dialer" ? "Directing call strategy" : "Analyzing & directing actions"}
+            </div>
           </div>
         </div>
         {contact && (
-          <div className={cn(
-            "flex items-center gap-1.5 px-2.5 py-1 rounded-full border",
-            isCallActive ? modeConfig.badgeClass : "bg-emerald-500/10 border-emerald-500/20"
-          )}>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
             <span className="relative flex h-2 w-2">
-              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                isCallActive ? (operatingMode === "human" ? "bg-emerald-400" : operatingMode === "hybrid" ? "bg-violet-400" : "bg-blue-400") : "bg-emerald-400"
-              )} />
-              <span className={cn("relative inline-flex rounded-full h-2 w-2",
-                isCallActive ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") : "bg-emerald-500"
-              )} />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className={cn("text-[10px] font-bold tracking-wider uppercase",
-              isCallActive ? modeConfig.accentClass : "text-emerald-600"
-            )}>
-              {isCallActive ? (operatingMode === "ai_agent" ? "AI ACTIVE" : "LIVE") : "AI Active"}
-            </span>
+            <span className="text-[10px] font-bold text-emerald-600 tracking-wider uppercase">AI Active</span>
           </div>
         )}
       </div>
@@ -1238,99 +626,7 @@ function CoPilotPanel({
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
           </div>
-        ) : isCallActive ? (
-          /* ============== LIVE CALL MODE — STRATEGY ONLY ============== */
-          <div className="space-y-3">
-            {/* Live Timer & Phase */}
-            <div className={cn("p-3.5 rounded-lg border",
-              operatingMode === "human" ? "border-emerald-500/20 bg-emerald-500/[0.06]" :
-              operatingMode === "hybrid" ? "border-violet-500/20 bg-violet-500/[0.06]" :
-              "border-blue-500/20 bg-blue-500/[0.06]"
-            )}>
-              <div className="flex items-center justify-between mb-2.5">
-                <div className="flex items-center gap-2">
-                  <Clock className={cn("h-3.5 w-3.5", modeConfig.accentClass)} />
-                  <span className="text-xl font-mono font-bold text-foreground tracking-tight">{formatTimer(callDuration)}</span>
-                </div>
-                <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider", modeConfig.badgeClass, "border")}>
-                  {currentCallPhase}
-                </span>
-              </div>
-              {/* Phase Progress */}
-              <div className="flex gap-0.5">
-                {PHASES.map((phase, i) => (
-                  <div key={phase} className="flex-1">
-                    <div className={cn(
-                      "h-1.5 rounded-full transition-all",
-                      i < phaseIdx ? (operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500") :
-                      i === phaseIdx ? cn(operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500", "animate-pulse") :
-                      "bg-muted"
-                    )} />
-                    <span className={cn(
-                      "text-[8px] mt-0.5 block text-center leading-tight",
-                      i <= phaseIdx ? cn(modeConfig.accentClass, "font-semibold") : "text-muted-foreground"
-                    )}>{phase.split(" ")[0]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Live Sentiment */}
-            <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Live Sentiment</span>
-                <span className={cn(
-                  "text-[11px] font-bold capitalize",
-                  sentiment === "positive" ? "text-emerald-600" : sentiment === "negative" ? "text-red-500" : "text-amber-500"
-                )}>{sentiment}</span>
-              </div>
-              <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                <div
-                  className={cn("h-full rounded-full transition-all duration-700",
-                    sentiment === "positive" ? "bg-emerald-500" : sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
-                  )}
-                  style={{ width: `${sentimentScore}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Deal Probability */}
-            <div className="p-3 bg-muted/50 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Deal Probability</span>
-                <div className="flex items-center gap-1.5">
-                  <Gauge className={cn("h-3.5 w-3.5", modeConfig.accentClass)} />
-                  <span className={cn("text-lg font-bold", modeConfig.accentClass)}>67%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Directive — compact during live */}
-            <div className={cn("p-3.5 rounded-lg border",
-              operatingMode === "human" ? "border-emerald-500/20 bg-emerald-500/[0.06]" :
-              operatingMode === "hybrid" ? "border-violet-500/20 bg-violet-500/[0.06]" :
-              "border-blue-500/20 bg-blue-500/[0.06]"
-            )}>
-              <div className={cn("text-[11px] font-bold tracking-wider uppercase mb-2 flex items-center gap-1.5", modeConfig.accentClass)}>
-                <Sparkles className="h-3 w-3" /> Directive
-              </div>
-              <div className="text-xs text-foreground leading-relaxed font-medium">
-                {contact.activities[contact.activities.length - 1]?.aiSuggestion?.slice(0, 120) || "Awaiting data..."}
-              </div>
-            </div>
-
-            {/* Take Over button for hybrid/ai modes */}
-            {operatingMode !== "human" && (
-              <button
-                onClick={() => toast.info("Taking over call...")}
-                className="w-full py-3 rounded-lg bg-amber-500/10 text-amber-600 border border-amber-500/20 text-xs font-bold hover:bg-amber-500/20 transition-colors flex items-center justify-center gap-2"
-              >
-                <Hand className="h-4 w-4" /> Take Over Call
-              </button>
-            )}
-          </div>
         ) : (
-          /* ============== PASSIVE / NO-CALL MODE ============== */
           <div className="space-y-3">
             {/* Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
@@ -1345,13 +641,15 @@ function CoPilotPanel({
                 <span className={cn(
                   "text-xs font-semibold capitalize",
                   contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
-                )}>{contact.sentiment}</span>
+                )}>
+                  {contact.sentiment}
+                </span>
               </div>
             </div>
 
-            {/* Directive */}
-            <div className="p-3.5 bg-primary/[0.06] rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-bold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+            {/* Next Best Action */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Directive
               </div>
               <div className="text-xs text-foreground leading-relaxed font-medium">
@@ -1424,6 +722,7 @@ function CoPilotPanel({
     </div>
   );
 }
+
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
@@ -1985,7 +1284,6 @@ export default function Communications() {
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
-  const [operatingMode, setOperatingMode] = useState<OperatingMode>("human");
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -2114,52 +1412,14 @@ export default function Communications() {
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
             {callState.isCallActive && (
-              <div className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse border",
-                MODE_CONFIG[operatingMode].badgeClass
-              )}>
-                <span className="relative flex h-2 w-2">
-                  <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75",
-                    operatingMode === "human" ? "bg-emerald-400" : operatingMode === "hybrid" ? "bg-violet-400" : "bg-blue-400"
-                  )} />
-                  <span className={cn("relative inline-flex rounded-full h-2 w-2",
-                    operatingMode === "human" ? "bg-emerald-500" : operatingMode === "hybrid" ? "bg-violet-500" : "bg-blue-500"
-                  )} />
-                </span>
-                LIVE · {MODE_CONFIG[operatingMode].label}
-              </div>
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-white" />
+                LIVE
+              </button>
             )}
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Mode Selector */}
-            <div className="flex items-center gap-1 p-1 rounded-lg bg-muted border border-border">
-              {(Object.entries(MODE_CONFIG) as [OperatingMode, typeof MODE_CONFIG[OperatingMode]][]).map(([key, cfg]) => {
-                const Icon = cfg.icon;
-                return (
-                  <Tooltip key={key}>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => {
-                          setOperatingMode(key);
-                          toast.info(`${cfg.label} Mode — ${cfg.desc}`);
-                        }}
-                        className={cn(
-                          "flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-all",
-                          operatingMode === key
-                            ? cn("bg-background shadow-sm border border-border", cfg.accentClass)
-                            : "text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        {cfg.label}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>{cfg.desc}</TooltipContent>
-                  </Tooltip>
-                );
-              })}
-            </div>
-
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
               <Search className="h-3.5 w-3.5 text-muted-foreground" />
               <input
@@ -2179,54 +1439,33 @@ export default function Communications() {
               {/* Left: Contact List */}
               <div className={cn(
                 "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
-                leftPanelOpen 
-                  ? callState.isCallActive ? "w-[220px]" : "w-[420px]"
-                  : "w-0"
+                leftPanelOpen ? "w-[420px]" : "w-0"
               )}>
                 {leftPanelOpen && (
                   <>
-                    {!callState.isCallActive && (
-                      <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
-                        <div className="flex items-center justify-between">
-                          <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => setLeftPanelOpen(false)}
-                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                              >
-                                <ChevronLeft className="h-4 w-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Minimize Panel</TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
-                      </div>
-                    )}
-                    {callState.isCallActive && (
-                      <div className="px-3 py-2.5 border-b border-border flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Contacts</span>
+                    <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
+                      <div className="flex items-center justify-between">
+                        <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
                               onClick={() => setLeftPanelOpen(false)}
                               className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                             >
-                              <ChevronLeft className="h-3.5 w-3.5" />
+                              <ChevronLeft className="h-4 w-4" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent>Minimize</TooltipContent>
+                          <TooltipContent>Minimize Panel</TooltipContent>
                         </Tooltip>
                       </div>
-                    )}
+                      <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
+                    </div>
                     <div className="flex-1 overflow-auto">
                       {filteredContacts.map(contact => (
                         <ContactListItem
                           key={contact.id}
                           contact={contact}
                           isActive={selectedContactId === contact.id}
-                          condensed={callState.isCallActive}
                           onClick={() => handleSelectContact(contact.id)}
                           onCall={() => {
                             handleSelectContact(contact.id);
@@ -2275,7 +1514,7 @@ export default function Communications() {
 
               {/* Center: Thread or Live Call */}
               {callState.isCallActive && callState.displayMode === "inline" ? (
-                <LiveCallCenter contact={selectedContact} operatingMode={operatingMode} onQuickReply={handleQuickReply} />
+                <LiveCallInline />
               ) : (
                 <ConversationThread
                   contact={selectedContact}
@@ -2285,17 +1524,16 @@ export default function Communications() {
                   onMessageInputChange={setMessageInput}
                   sendChannel={sendChannel}
                   onSendChannelChange={setSendChannel}
-                  operatingMode={operatingMode}
                 />
               )}
 
               {/* Right: AI Co-Pilot */}
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} operatingMode={operatingMode} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           ) : (
             <>
               <DialerView />
-              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} operatingMode={operatingMode} />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           )}
         </div>
