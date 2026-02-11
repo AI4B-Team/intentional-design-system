@@ -1311,7 +1311,7 @@ export default function Communications() {
 
   return (
     <AppLayout fullWidth>
-      <div className="flex flex-col h-full overflow-hidden bg-background">
+      <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
         {/* Top Bar */}
         <div className="px-6 py-3.5 border-b border-border flex items-center justify-between bg-background">
           <div className="flex items-center gap-5">
@@ -1344,7 +1344,7 @@ export default function Communications() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex min-h-0 overflow-hidden">
           {activeView === "activity" ? (
             <>
               {/* Left: Contact List */}
