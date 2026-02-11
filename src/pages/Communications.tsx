@@ -1107,8 +1107,31 @@ function DialerView() {
 
   const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
 
+  const kpiStats = [
+    { label: "Calls Today", value: calledContactIds.size.toString(), delta: "+3 vs avg" },
+    { label: "Connect Rate", value: "34%", delta: "+5%" },
+    { label: "Avg Talk Time", value: "4:22", delta: "" },
+    { label: "Appointments", value: "2", delta: "+1 today" },
+    { label: "Queue Left", value: (dialerContacts.length - calledContactIds.size).toString(), delta: "" },
+  ];
+
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+      {/* A) Top KPI Strip */}
+      <div className="flex gap-3">
+        {kpiStats.map((stat) => (
+          <div key={stat.label} className="flex-1 px-4 py-3 rounded-lg border border-border bg-muted/30">
+            <div className="text-[10px] text-muted-foreground font-semibold tracking-wider uppercase">{stat.label}</div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-xl font-bold text-foreground tabular-nums">{stat.value}</span>
+              {stat.delta && (
+                <span className="text-[10px] font-semibold text-emerald-600">{stat.delta}</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Auto-advance banner */}
       {showAutoAdvance && (
         <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
@@ -1177,7 +1200,7 @@ function DialerView() {
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
             <div className="flex justify-between items-center mb-3.5">
               <div className="text-[13px] font-semibold text-foreground">
-                My Dialing List
+                Today's Queue
                 <span className="ml-2 text-xs text-muted-foreground font-normal">({dialerContacts.length} contacts)</span>
               </div>
               <div className="flex items-center gap-2">
