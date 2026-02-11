@@ -1,0 +1,713 @@
+import * as React from "react";
+import { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
+import { AppLayout } from "@/components/layout/AppLayout";
+import {
+  Phone,
+  MessageCircle,
+  Mail,
+  Voicemail,
+  Search,
+  Star,
+  Sparkles,
+  Send,
+  ChevronRight,
+  Play,
+  Mic,
+  ArrowDownLeft,
+  ArrowUpRight,
+} from "lucide-react";
+
+// ============================================================================
+// CHANNEL CONFIG
+// ============================================================================
+const CHANNEL_CONFIG: Record<string, { icon: React.ElementType; label: string; colorClass: string; bgClass: string }> = {
+  call: { icon: Phone, label: "Call", colorClass: "text-violet-500", bgClass: "bg-violet-500/10" },
+  sms: { icon: MessageCircle, label: "SMS", colorClass: "text-blue-500", bgClass: "bg-blue-500/10" },
+  email: { icon: Mail, label: "Email", colorClass: "text-amber-500", bgClass: "bg-amber-500/10" },
+  voicemail: { icon: Voicemail, label: "Voicemail", colorClass: "text-pink-500", bgClass: "bg-pink-500/10" },
+};
+
+function ChannelBadge({ channel }: { channel: string }) {
+  const config = CHANNEL_CONFIG[channel];
+  if (!config) return null;
+  const Icon = config.icon;
+  return (
+    <span className={cn("inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold", config.bgClass, config.colorClass)}>
+      <Icon className="h-3 w-3" />
+      {config.label}
+    </span>
+  );
+}
+
+function DirectionBadge({ direction }: { direction: string }) {
+  return (
+    <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium", direction === "inbound" ? "text-emerald-600" : "text-muted-foreground")}>
+      {direction === "inbound" ? <ArrowDownLeft className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
+      {direction === "inbound" ? "In" : "Out"}
+    </span>
+  );
+}
+
+// ============================================================================
+// MOCK DATA
+// ============================================================================
+interface Activity {
+  id: string;
+  channel: string;
+  direction: string;
+  timestamp: string;
+  duration?: string;
+  summary?: string;
+  content?: string;
+  subject?: string;
+  sentiment?: string;
+  aiSuggestion?: string;
+}
+
+interface Contact {
+  id: string;
+  name: string;
+  address: string;
+  tag: string;
+  avatar: string;
+  sentiment: string;
+  lastActivity: string;
+  unread: boolean;
+  starred: boolean;
+  activities: Activity[];
+}
+
+const MOCK_CONTACTS: Contact[] = [
+  {
+    id: "c1", name: "Marcus Williams", address: "1847 Maple Street",
+    tag: "Motivated Seller", avatar: "MW", sentiment: "neutral",
+    lastActivity: "2 min ago", unread: true, starred: true,
+    activities: [
+      { id: "a1", channel: "call", direction: "outbound", timestamp: "Today 10:32 AM", duration: "5:19", summary: "Cold call — seller confirmed interest but frustrated with timeline. Property been sitting. Open to offers.", sentiment: "neutral", aiSuggestion: "Seller shows frustration = motivation. Follow up within 24hrs with concrete offer range." },
+      { id: "a2", channel: "sms", direction: "outbound", timestamp: "Today 10:45 AM", content: "Hey Marcus, great chatting. As discussed, I'll have some numbers for you by tomorrow. Talk soon!", sentiment: "positive" },
+      { id: "a3", channel: "sms", direction: "inbound", timestamp: "Today 11:02 AM", content: "Sounds good. Just don't lowball me like the last guy. I know what the place is worth.", sentiment: "negative", aiSuggestion: "Price sensitivity detected. Lead with value and creative terms, not just a low cash offer." },
+    ],
+  },
+  {
+    id: "c2", name: "John Smith", address: "123 Main St",
+    tag: "Seller", avatar: "JS", sentiment: "positive",
+    lastActivity: "1 hr ago", unread: true, starred: false,
+    activities: [
+      { id: "a4", channel: "email", direction: "inbound", timestamp: "Today 9:15 AM", subject: "Re: Cash Offer for 123 Main St", content: "Thank you for your offer. I've reviewed the terms and I'm interested in discussing further. When would be a good time to connect?", sentiment: "positive", aiSuggestion: "Hot lead — wants to talk. Book a call within the hour before they cool off." },
+    ],
+  },
+  {
+    id: "c3", name: "Sarah Johnson", address: "456 Oak Ave",
+    tag: "Agent", avatar: "SJ", sentiment: "neutral",
+    lastActivity: "3 hrs ago", unread: false, starred: true,
+    activities: [
+      { id: "a5", channel: "sms", direction: "inbound", timestamp: "Today 7:30 AM", content: "Hi, my client received your offer and wants to counter at $285k. Let me know if you're interested.", sentiment: "neutral", aiSuggestion: "Counter is 8% above your MAO. Consider countering at $270k with flexible closing timeline as leverage." },
+      { id: "a6", channel: "email", direction: "inbound", timestamp: "Yesterday 4:12 PM", subject: "(No subject)", content: "Forwarding the seller's disclosure docs. Let me know if you have questions.", sentiment: "neutral" },
+    ],
+  },
+  {
+    id: "c4", name: "Lisa Chen", address: "321 Pine Dr",
+    tag: "Agent", avatar: "LC", sentiment: "positive",
+    lastActivity: "1 day ago", unread: false, starred: true,
+    activities: [
+      { id: "a7", channel: "voicemail", direction: "inbound", timestamp: "Yesterday 2:30 PM", duration: "0:45", content: "Left voicemail at 2:30pm. Client is very motivated and wants to discuss the offer ASAP.", sentiment: "positive", aiSuggestion: "Urgent callback needed. Motivated seller through agent = path of least resistance. Call back immediately." },
+      { id: "a8", channel: "call", direction: "outbound", timestamp: "Yesterday 3:15 PM", duration: "12:40", summary: "Discussed seller's timeline — they need to close within 45 days due to relocation. Price flexible if we can guarantee close.", sentiment: "positive" },
+    ],
+  },
+  {
+    id: "c5", name: "Mike Williams", address: "789 Elm Blvd",
+    tag: "Seller", avatar: "MW2", sentiment: "neutral",
+    lastActivity: "6 hrs ago", unread: false, starred: false,
+    activities: [
+      { id: "a9", channel: "sms", direction: "inbound", timestamp: "Today 4:22 AM", content: "I saw you mentioned a 14-day close. Is there any flexibility on that? I need at least 30 days to find a new place.", sentiment: "neutral", aiSuggestion: "Timeline concern, not price objection. Offering 30 days costs you nothing but could win the deal." },
+    ],
+  },
+  {
+    id: "c6", name: "Robert Davis", address: "555 Maple Ct",
+    tag: "Seller", avatar: "RD", sentiment: "neutral",
+    lastActivity: "2 days ago", unread: false, starred: false,
+    activities: [
+      { id: "a10", channel: "email", direction: "inbound", timestamp: "2 days ago", subject: "Response to Direct Mail - 555 Maple Ct", content: "Received your letter. I'm interested but have questions about the as-is condition clause. What exactly does that cover?", sentiment: "neutral", aiSuggestion: "Warm lead from direct mail. Explain as-is benefits (no repair costs for seller) and offer a quick walkthrough." },
+    ],
+  },
+];
+
+const MOCK_DIALER_QUEUE = [
+  { id: "d1", name: "Robert Martinez", address: "234 Elm Drive", time: "10:30 AM", type: "Follow-up", phone: "(555) 123-4567" },
+  { id: "d2", name: "Jennifer Lee", address: "567 Cedar Lane", time: "11:00 AM", type: "Callback", phone: "(555) 234-5678" },
+  { id: "d3", name: "David Park", address: "890 Birch St", time: "11:30 AM", type: "Cold Call", phone: "(555) 345-6789" },
+  { id: "d4", name: "Angela Torres", address: "112 Walnut Way", time: "12:00 PM", type: "Follow-up", phone: "(555) 456-7890" },
+  { id: "d5", name: "Tom Bradley", address: "445 Spruce Ave", time: "1:00 PM", type: "Cold Call", phone: "(555) 567-8901" },
+];
+
+const MOCK_CALL_SCRIPTS = [
+  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68 },
+  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42 },
+  { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15 },
+];
+
+// ============================================================================
+// VIEW SWITCHER
+// ============================================================================
+function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onSwitch: (v: string) => void }) {
+  const views = [
+    { key: "activity", label: "All Activity", icon: MessageCircle },
+    { key: "dialer", label: "Dialer", icon: Phone },
+  ];
+  return (
+    <div className="flex gap-1 p-1 bg-muted rounded-lg">
+      {views.map(({ key, label, icon: Icon }) => (
+        <button
+          key={key}
+          onClick={() => onSwitch(key)}
+          className={cn(
+            "flex items-center gap-1.5 px-4 py-2 rounded-md text-[13px] font-semibold transition-all",
+            activeView === key
+              ? "bg-primary text-primary-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Icon className="h-4 w-4" />
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// CHANNEL FILTERS
+// ============================================================================
+function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFilter: (f: string) => void }) {
+  const filters = [
+    { key: "all", label: "All" },
+    { key: "call", label: "Calls", icon: Phone, colorClass: "text-violet-500", bgClass: "bg-violet-500/10 border-violet-500/30" },
+    { key: "sms", label: "SMS", icon: MessageCircle, colorClass: "text-blue-500", bgClass: "bg-blue-500/10 border-blue-500/30" },
+    { key: "email", label: "Email", icon: Mail, colorClass: "text-amber-500", bgClass: "bg-amber-500/10 border-amber-500/30" },
+    { key: "voicemail", label: "Voicemail", icon: Voicemail, colorClass: "text-pink-500", bgClass: "bg-pink-500/10 border-pink-500/30" },
+  ];
+  return (
+    <div className="flex gap-1.5 flex-wrap">
+      {filters.map(({ key, label, icon: Icon, colorClass, bgClass }) => (
+        <button
+          key={key}
+          onClick={() => onFilter(key)}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+            activeFilter === key
+              ? (bgClass || "bg-primary/10 border-primary/30 text-primary")
+              : "bg-muted/50 border-border text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {Icon && <Icon className="h-3 w-3" />}
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// STATUS FILTERS
+// ============================================================================
+function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFilter: (s: string) => void }) {
+  const statuses = [
+    { key: "all", label: "All" },
+    { key: "unread", label: "Unread", dotClass: "bg-emerald-500" },
+    { key: "starred", label: "Starred", dotClass: "bg-amber-500" },
+    { key: "needs_response", label: "Needs Response", dotClass: "bg-violet-500" },
+  ];
+  return (
+    <div className="flex gap-1.5">
+      {statuses.map(({ key, label, dotClass }) => (
+        <button
+          key={key}
+          onClick={() => onFilter(key)}
+          className={cn(
+            "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all",
+            activeStatus === key
+              ? "bg-muted text-foreground"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {dotClass && <span className={cn("w-1.5 h-1.5 rounded-full", dotClass)} />}
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// CONTACT LIST ITEM
+// ============================================================================
+function ContactListItem({ contact, isActive, onClick }: { contact: Contact; isActive: boolean; onClick: () => void }) {
+  const lastAct = contact.activities[0];
+  const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
+  const channelColorClass = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.colorClass : "";
+
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "flex items-start gap-3 px-4 py-3.5 cursor-pointer transition-all border-b border-border/50",
+        isActive ? "bg-muted/80 border-l-[3px] border-l-primary" : "border-l-[3px] border-l-transparent hover:bg-muted/40"
+      )}
+    >
+      {/* Avatar */}
+      <div className="relative flex-shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-[13px] font-bold text-primary-foreground">
+          {contact.avatar}
+        </div>
+        {contact.unread && (
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-background" />
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between gap-2">
+          <span className={cn("text-[13px] truncate", contact.unread ? "font-bold text-foreground" : "font-medium text-foreground")}>
+            {contact.name}
+          </span>
+          <span className="text-[11px] text-muted-foreground whitespace-nowrap flex-shrink-0">
+            {contact.lastActivity}
+          </span>
+        </div>
+        <div className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1.5">
+          <span>{contact.address}</span>
+          {contact.starred && <Star className="h-3 w-3 fill-amber-500 text-amber-500" />}
+        </div>
+        <div className="text-xs text-muted-foreground mt-1.5 flex items-center gap-1.5 truncate">
+          {ChannelIcon && <ChannelIcon className={cn("h-3 w-3 flex-shrink-0", channelColorClass)} />}
+          <span className="truncate">{lastAct?.content || lastAct?.summary || lastAct?.subject || "Call ended"}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// CONVERSATION THREAD
+// ============================================================================
+function ConversationThread({ contact, onCall }: { contact: Contact | null; onCall: () => void }) {
+  if (!contact) {
+    return (
+      <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
+        <MessageCircle className="h-12 w-12 opacity-30" />
+        <span className="text-sm">Select a conversation</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Thread Header */}
+      <div className="px-5 py-4 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+            {contact.avatar}
+          </div>
+          <div>
+            <div className="text-[15px] font-semibold text-foreground">{contact.name}</div>
+            <div className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
+              <span>{contact.address}</span>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary/10 text-primary">
+                {contact.tag}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+            <Phone className="h-3.5 w-3.5" /> Call
+          </button>
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground text-xs font-semibold hover:text-foreground transition-colors">
+            <MessageCircle className="h-3.5 w-3.5" /> SMS
+          </button>
+          <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground text-xs font-semibold hover:text-foreground transition-colors">
+            <Mail className="h-3.5 w-3.5" /> Email
+          </button>
+        </div>
+      </div>
+
+      {/* Activity Timeline */}
+      <div className="flex-1 overflow-auto p-5">
+        {[...contact.activities].reverse().map((act, i) => {
+          const config = CHANNEL_CONFIG[act.channel];
+          const Icon = config?.icon || MessageCircle;
+          return (
+            <div key={act.id} className="flex gap-3.5 mb-5">
+              {/* Timeline icon */}
+              <div className="flex flex-col items-center w-8 flex-shrink-0">
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center", config?.bgClass)}>
+                  <Icon className={cn("h-3.5 w-3.5", config?.colorClass)} />
+                </div>
+                {i < contact.activities.length - 1 && (
+                  <div className="w-px flex-1 bg-border mt-1" />
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 bg-muted/50 rounded-lg p-3.5 border border-border/50">
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  <ChannelBadge channel={act.channel} />
+                  <DirectionBadge direction={act.direction} />
+                  {act.duration && (
+                    <span className="text-[11px] text-muted-foreground font-mono">{act.duration}</span>
+                  )}
+                  <span className="text-[11px] text-muted-foreground ml-auto">{act.timestamp}</span>
+                </div>
+
+                {act.subject && (
+                  <div className="text-[13px] font-semibold text-foreground mb-1.5">{act.subject}</div>
+                )}
+
+                <div className="text-[13px] text-muted-foreground leading-relaxed">
+                  {act.content || act.summary}
+                </div>
+
+                {act.aiSuggestion && (
+                  <div className="mt-2.5 p-2.5 bg-primary/5 border border-primary/20 rounded-md flex gap-2 items-start">
+                    <Sparkles className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-primary leading-relaxed">{act.aiSuggestion}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Quick Reply */}
+      <div className="px-5 py-3.5 border-t border-border flex gap-2.5 items-center">
+        <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
+          <input
+            placeholder="Type a message..."
+            className="flex-1 bg-transparent border-none outline-none text-foreground text-[13px] placeholder:text-muted-foreground"
+          />
+          <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-500/10 text-blue-500">SMS</span>
+        </div>
+        <button className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors">
+          <Send className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// AI CO-PILOT PANEL
+// ============================================================================
+function CoPilotPanel({ contact, activeView }: { contact: Contact | null; activeView: string }) {
+  return (
+    <div className="w-[300px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+      {/* Header */}
+      <div className="p-4 border-b border-border flex items-center gap-2">
+        <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
+          <Sparkles className="h-3.5 w-3.5 text-primary" />
+        </div>
+        <div>
+          <div className="text-[13px] font-semibold text-foreground">AI Co-Pilot</div>
+          <div className="text-[11px] text-muted-foreground">
+            {activeView === "dialer" ? "Call guidance & scripts" : "Real-time suggestions"}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto p-4">
+        {!contact ? (
+          <div className="text-center py-10 text-muted-foreground">
+            <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
+            <p className="text-[13px]">Select a contact to get AI-powered insights</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {/* Sentiment */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
+              <div className="flex items-center gap-2.5">
+                <div className="h-1.5 flex-1 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-red-400 via-amber-400 to-emerald-400 transition-all duration-500"
+                    style={{ width: contact.sentiment === "positive" ? "75%" : contact.sentiment === "neutral" ? "50%" : "25%" }}
+                  />
+                </div>
+                <span className={cn(
+                  "text-xs font-semibold capitalize",
+                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                )}>
+                  {contact.sentiment}
+                </span>
+              </div>
+            </div>
+
+            {/* Next Best Action */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Next Best Action
+              </div>
+              <div className="text-xs text-muted-foreground leading-relaxed">
+                {contact.activities[0]?.aiSuggestion || "Continue the conversation based on your last interaction."}
+              </div>
+            </div>
+
+            {/* Communication Summary */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Communication Summary</div>
+              <div className="space-y-2">
+                {Object.entries(
+                  contact.activities.reduce<Record<string, number>>((acc, a) => { acc[a.channel] = (acc[a.channel] || 0) + 1; return acc; }, {})
+                ).map(([ch, count]) => (
+                  <div key={ch} className="flex items-center justify-between text-xs">
+                    <ChannelBadge channel={ch} />
+                    <span className="text-muted-foreground">{count} {count === 1 ? "interaction" : "interactions"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Replies */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Quick Replies</div>
+              {["Acknowledge their concern & pivot to value", "Ask about their timeline and motivation", "Send a follow-up with comparable sales data"].map((reply, i) => (
+                <button
+                  key={i}
+                  className="w-full text-left px-2.5 py-2 mb-1.5 bg-muted/80 border border-border/50 rounded text-xs text-muted-foreground hover:border-primary/30 hover:text-primary transition-all"
+                >
+                  {reply}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// DIALER VIEW
+// ============================================================================
+function DialerView() {
+  const [callingMode, setCallingMode] = useState("start");
+  const modes = [
+    { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground" },
+    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", beta: true },
+    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white" },
+  ];
+
+  return (
+    <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+      {/* Calling Mode */}
+      <div className="p-5 bg-muted/30 rounded-xl border border-border">
+        <div className="text-[13px] font-semibold text-foreground mb-3.5">Select Calling Mode</div>
+        <div className="flex gap-3">
+          {modes.map(({ key, label, desc, icon: Icon, colorClass, beta }) => (
+            <button
+              key={key}
+              onClick={() => setCallingMode(key)}
+              className={cn(
+                "flex-1 p-6 rounded-lg text-center transition-all relative border-2",
+                callingMode === key
+                  ? cn(colorClass, "border-transparent shadow-sm")
+                  : "bg-muted/50 text-muted-foreground border-transparent hover:border-border"
+              )}
+            >
+              {beta && (
+                <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-bold tracking-wider">BETA</span>
+              )}
+              <Icon className="h-6 w-6 mx-auto mb-2.5" />
+              <div className="text-sm font-semibold">{label}</div>
+              <div className="text-[10px] mt-1 opacity-70 tracking-wide">{desc}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex gap-5">
+        {/* Call Queue */}
+        <div className="flex-1 p-5 bg-muted/30 rounded-xl border border-border">
+          <div className="flex justify-between items-center mb-3.5">
+            <div className="text-[13px] font-semibold text-foreground">Today's Queue</div>
+            <span className="text-xs text-primary cursor-pointer font-medium">View Calendar</span>
+          </div>
+          {MOCK_DIALER_QUEUE.map((item, i) => (
+            <div
+              key={item.id}
+              className={cn("flex items-center gap-3 py-3", i < MOCK_DIALER_QUEUE.length - 1 && "border-b border-border/50")}
+            >
+              <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground">
+                {item.name.split(" ").map(n => n[0]).join("")}
+              </div>
+              <div className="flex-1">
+                <div className="text-[13px] font-medium text-foreground">{item.name}</div>
+                <div className="text-[11px] text-muted-foreground">{item.address}</div>
+              </div>
+              <div className="flex items-center gap-2.5 text-right">
+                <span className="text-xs text-muted-foreground">{item.time}</span>
+                <span className={cn(
+                  "px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                  item.type === "Follow-up" ? "bg-emerald-500/10 text-emerald-600" :
+                  item.type === "Callback" ? "bg-violet-500/10 text-violet-500" :
+                  "bg-blue-500/10 text-blue-500"
+                )}>
+                  {item.type}
+                </span>
+                <button className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-medium hover:text-foreground transition-colors">
+                  <Phone className="h-3 w-3" /> Call
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Call Scripts */}
+        <div className="w-[280px] p-5 bg-muted/30 rounded-xl border border-border">
+          <div className="flex justify-between items-center mb-3.5">
+            <div className="text-[13px] font-semibold text-foreground">Call Scripts</div>
+            <span className="text-xs text-primary cursor-pointer font-medium">Manage</span>
+          </div>
+          {MOCK_CALL_SCRIPTS.map((script) => (
+            <div
+              key={script.id}
+              className="p-3.5 bg-muted/50 rounded-lg mb-2.5 border border-border/50 cursor-pointer hover:border-primary/30 transition-all"
+            >
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="text-[13px] font-semibold text-foreground">{script.name}</div>
+                  <div className="text-[10px] font-semibold text-muted-foreground tracking-wider mt-0.5">{script.type}</div>
+                  <div className="text-[11px] text-muted-foreground mt-1">{script.desc}</div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div className="mt-2.5 flex items-center gap-2">
+                <div className="flex-1 h-1 rounded-full bg-muted overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${script.progress}%` }} />
+                </div>
+                <span className="text-[11px] font-semibold text-primary font-mono">{script.progress}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* AI Insights */}
+      <div className="p-5 bg-muted/30 rounded-xl border border-border">
+        <div className="text-[13px] font-semibold text-foreground mb-3.5 flex items-center gap-2">
+          <Sparkles className="h-4 w-4 text-primary" /> AI Insights
+        </div>
+        <div className="space-y-2.5">
+          {[
+            { icon: "🕐", text: "Best calling hours today: 10 AM - 12 PM based on your success patterns" },
+            { icon: "⚡", text: "5 hot leads haven't been contacted in 3+ days. Consider prioritizing them." },
+            { icon: "💡", text: "Your close rate improves 23% when you mention creative financing options" },
+          ].map((insight, i) => (
+            <div key={i} className="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/50 rounded-md">
+              <span className="text-base">{insight.icon}</span>
+              <span className="text-xs text-muted-foreground">{insight.text}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// MAIN COMMUNICATIONS HUB
+// ============================================================================
+export default function Communications() {
+  const [activeView, setActiveView] = useState("activity");
+  const [channelFilter, setChannelFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredContacts = useMemo(() => {
+    let result = MOCK_CONTACTS;
+    if (channelFilter !== "all") {
+      result = result.filter(c => c.activities.some(a => a.channel === channelFilter));
+    }
+    if (statusFilter === "unread") result = result.filter(c => c.unread);
+    if (statusFilter === "starred") result = result.filter(c => c.starred);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(c => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q));
+    }
+    return result;
+  }, [channelFilter, statusFilter, searchQuery]);
+
+  return (
+    <AppLayout fullWidth>
+      <div className="flex flex-col h-full overflow-hidden bg-background">
+        {/* Top Bar */}
+        <div className="px-6 py-3.5 border-b border-border flex items-center justify-between bg-background">
+          <div className="flex items-center gap-5">
+            <h1 className="text-lg font-bold text-foreground flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
+                <MessageCircle className="h-4 w-4 text-primary-foreground" />
+              </div>
+              Communications
+            </h1>
+            <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
+              <Search className="h-3.5 w-3.5 text-muted-foreground" />
+              <input
+                placeholder="Search contacts, messages..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="bg-transparent border-none outline-none text-foreground text-[13px] w-[200px] placeholder:text-muted-foreground"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {activeView === "activity" ? (
+            <>
+              {/* Left: Contact List */}
+              <div className="w-[360px] border-r border-border flex flex-col overflow-hidden bg-background">
+                <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
+                  <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
+                  <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
+                </div>
+                <div className="flex-1 overflow-auto">
+                  {filteredContacts.map(contact => (
+                    <ContactListItem
+                      key={contact.id}
+                      contact={contact}
+                      isActive={selectedContact?.id === contact.id}
+                      onClick={() => setSelectedContact(contact)}
+                    />
+                  ))}
+                  {filteredContacts.length === 0 && (
+                    <div className="py-10 px-5 text-center text-muted-foreground text-[13px]">
+                      No conversations match your filters
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Center: Thread */}
+              <ConversationThread contact={selectedContact} onCall={() => {}} />
+
+              {/* Right: AI Co-Pilot */}
+              <CoPilotPanel contact={selectedContact} activeView={activeView} />
+            </>
+          ) : (
+            <>
+              <DialerView />
+              <CoPilotPanel contact={selectedContact} activeView={activeView} />
+            </>
+          )}
+        </div>
+      </div>
+    </AppLayout>
+  );
+}

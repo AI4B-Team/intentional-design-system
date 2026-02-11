@@ -68,8 +68,7 @@ const topNavItems: NavItem[] = [
   { label: "Marketplace", href: "/marketplace", icon: Store },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Transactions", href: "/transactions", icon: Handshake },
-  { label: "Inbox", href: "/inbox", icon: Inbox },
-  { label: "Dialer", href: "/dialer", icon: Phone },
+  { label: "Communications", href: "/communications", icon: Phone },
 ];
 
 // Items after divider - before Contacts
