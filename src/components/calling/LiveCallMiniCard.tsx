@@ -18,22 +18,29 @@ export function LiveCallMiniCard({ className }: { className?: string }) {
 
   if (callStatus === "ended") {
     return (
-      <div className={cn("p-3 bg-muted/50 border border-border rounded-lg", className)}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-              <PhoneCall className="h-4 w-4 text-muted-foreground" />
+      <TooltipProvider delayDuration={200}>
+        <div className={cn("p-3 bg-muted/50 border border-border rounded-lg", className)}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                <PhoneCall className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Call Ended</p>
+                <p className="text-xs text-muted-foreground">{currentContact?.name} · {formatCallDuration(callDuration)}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium">Call Ended</p>
-              <p className="text-xs text-muted-foreground">{currentContact?.name} · {formatCallDuration(callDuration)}</p>
-            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" variant="ghost" className="h-7 w-7" onClick={dismissCall}>
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">Dismiss</TooltipContent>
+            </Tooltip>
           </div>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={dismissCall}>
-            <X className="h-3.5 w-3.5" />
-          </Button>
         </div>
-      </div>
+      </TooltipProvider>
     );
   }
 
