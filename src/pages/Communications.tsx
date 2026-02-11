@@ -1,6 +1,8 @@
 import * as React from "react";
 import { useState, useMemo, useCallback } from "react";
 import { cn } from "@/lib/utils";
+import { useCallState } from "@/contexts/CallContext";
+import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { AppLayout } from "@/components/layout/AppLayout";
 import {
   Phone,
@@ -545,19 +547,94 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView({ onCallContact }: { onCallContact: (name: string, phone: string) => void }) {
+function DialerView() {
+  const callState = useCallState();
   const [callingMode, setCallingMode] = useState("start");
+  const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
   const modes = [
     { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground" },
     { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", beta: true },
     { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white" },
   ];
 
+  const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
+    callState.startCall({
+      id: item.id,
+      name: item.name,
+      phone: item.phone,
+      address: item.address,
+    }, "dialer");
+  };
+
+  const handleStartPowerDial = () => {
+    const queueContacts = MOCK_DIALER_QUEUE.map(item => ({
+      id: item.id,
+      name: item.name,
+      phone: item.phone,
+      address: item.address,
+    }));
+    callState.setDialerQueue(queueContacts);
+    if (selectedScriptId) {
+      const script = MOCK_CALL_SCRIPTS.find(s => s.id === selectedScriptId);
+      if (script) {
+        callState.setSelectedScript({
+          id: script.id,
+          name: script.name,
+          type: script.type,
+          phases: ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"],
+        });
+      }
+    }
+    callState.startDialerSession();
+  };
+
+  const handleSelectScript = (scriptId: string) => {
+    setSelectedScriptId(prev => prev === scriptId ? null : scriptId);
+    const script = MOCK_CALL_SCRIPTS.find(s => s.id === scriptId);
+    if (script) {
+      toast.info(`Script selected: ${script.name}`);
+    }
+  };
+
+  // Show auto-advance countdown
+  const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
+
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+      {/* Auto-advance banner */}
+      {showAutoAdvance && (
+        <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
+          <p className="text-sm text-foreground">
+            Auto-dialing next contact in <span className="font-bold text-primary">{callState.autoAdvanceCountdown}s</span>
+          </p>
+          <div className="flex gap-2">
+            <button onClick={callState.cancelAutoAdvance} className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+              Pause
+            </button>
+            <button onClick={callState.advanceDialerQueue} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+              Skip to Next
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Calling Mode */}
       <div className="p-5 bg-muted/30 rounded-xl border border-border">
-        <div className="text-[13px] font-semibold text-foreground mb-3.5">Select Calling Mode</div>
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
+          <button
+            onClick={handleStartPowerDial}
+            disabled={callState.isCallActive}
+            className={cn(
+              "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
+              callState.isCallActive
+                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
+            )}
+          >
+            {callState.isDialerSessionActive ? "Session Active" : "Start Power Dial"}
+          </button>
+        </div>
         <div className="flex gap-3">
           {modes.map(({ key, label, desc, icon: Icon, colorClass, beta }) => (
             <button
@@ -588,37 +665,55 @@ function DialerView({ onCallContact }: { onCallContact: (name: string, phone: st
             <div className="text-[13px] font-semibold text-foreground">Today's Queue</div>
             <span className="text-xs text-primary cursor-pointer font-medium">View Calendar</span>
           </div>
-          {MOCK_DIALER_QUEUE.map((item, i) => (
-            <div
-              key={item.id}
-              className={cn("flex items-center gap-3 py-3", i < MOCK_DIALER_QUEUE.length - 1 && "border-b border-border/50")}
-            >
-              <div className="w-9 h-9 rounded-md bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground">
-                {item.name.split(" ").map(n => n[0]).join("")}
-              </div>
-              <div className="flex-1">
-                <div className="text-[13px] font-medium text-foreground">{item.name}</div>
-                <div className="text-[11px] text-muted-foreground">{item.address}</div>
-              </div>
-              <div className="flex items-center gap-2.5 text-right">
-                <span className="text-xs text-muted-foreground">{item.time}</span>
-                <span className={cn(
-                  "px-2 py-0.5 rounded-full text-[10px] font-semibold",
-                  item.type === "Follow-up" ? "bg-emerald-500/10 text-emerald-600" :
-                  item.type === "Callback" ? "bg-violet-500/10 text-violet-500" :
-                  "bg-blue-500/10 text-blue-500"
+          {MOCK_DIALER_QUEUE.map((item, i) => {
+            const isCurrentInQueue = callState.isDialerSessionActive && callState.dialerQueue[callState.dialerQueueIndex]?.id === item.id;
+            const isCalledInQueue = callState.isDialerSessionActive && i < callState.dialerQueueIndex;
+            return (
+              <div
+                key={item.id}
+                className={cn(
+                  "flex items-center gap-3 py-3",
+                  i < MOCK_DIALER_QUEUE.length - 1 && "border-b border-border/50",
+                  isCurrentInQueue && "bg-primary/5 -mx-2 px-2 rounded-lg",
+                  isCalledInQueue && "opacity-50"
+                )}
+              >
+                <div className={cn(
+                  "w-9 h-9 rounded-md flex items-center justify-center text-[11px] font-semibold",
+                  isCurrentInQueue ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                 )}>
-                  {item.type}
-                </span>
-                <button
-                  onClick={() => onCallContact(item.name, item.phone)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded border border-border text-muted-foreground text-[11px] font-medium hover:text-foreground hover:border-primary/50 transition-colors"
-                >
-                  <Phone className="h-3 w-3" /> Call
-                </button>
+                  {item.name.split(" ").map(n => n[0]).join("")}
+                </div>
+                <div className="flex-1">
+                  <div className="text-[13px] font-medium text-foreground">{item.name}</div>
+                  <div className="text-[11px] text-muted-foreground">{item.address}</div>
+                </div>
+                <div className="flex items-center gap-2.5 text-right">
+                  <span className="text-xs text-muted-foreground">{item.time}</span>
+                  <span className={cn(
+                    "px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                    item.type === "Follow-up" ? "bg-emerald-500/10 text-emerald-600" :
+                    item.type === "Callback" ? "bg-violet-500/10 text-violet-500" :
+                    "bg-blue-500/10 text-blue-500"
+                  )}>
+                    {isCalledInQueue ? "Called" : item.type}
+                  </span>
+                  <button
+                    onClick={() => handleCallFromQueue(item)}
+                    disabled={callState.isCallActive}
+                    className={cn(
+                      "flex items-center gap-1 px-2.5 py-1.5 rounded border text-[11px] font-medium transition-colors",
+                      callState.isCallActive
+                        ? "border-border text-muted-foreground/50 cursor-not-allowed"
+                        : "border-border text-muted-foreground hover:text-foreground hover:border-primary/50"
+                    )}
+                  >
+                    <Phone className="h-3 w-3" /> Call
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Call Scripts */}
@@ -630,12 +725,22 @@ function DialerView({ onCallContact }: { onCallContact: (name: string, phone: st
           {MOCK_CALL_SCRIPTS.map((script) => (
             <div
               key={script.id}
-              className="p-3.5 bg-muted/50 rounded-lg mb-2.5 border border-border/50 cursor-pointer hover:border-primary/30 transition-all"
-              onClick={() => toast.info(`Loaded script: ${script.name}`)}
+              className={cn(
+                "p-3.5 rounded-lg mb-2.5 border cursor-pointer transition-all",
+                selectedScriptId === script.id
+                  ? "bg-primary/5 border-primary/30"
+                  : "bg-muted/50 border-border/50 hover:border-primary/30"
+              )}
+              onClick={() => handleSelectScript(script.id)}
             >
               <div className="flex justify-between items-start">
                 <div>
-                  <div className="text-[13px] font-semibold text-foreground">{script.name}</div>
+                  <div className="text-[13px] font-semibold text-foreground flex items-center gap-1.5">
+                    {script.name}
+                    {selectedScriptId === script.id && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary text-primary-foreground font-bold">SELECTED</span>
+                    )}
+                  </div>
                   <div className="text-[10px] font-semibold text-muted-foreground tracking-wider mt-0.5">{script.type}</div>
                   <div className="text-[11px] text-muted-foreground mt-1">{script.desc}</div>
                 </div>
@@ -678,6 +783,7 @@ function DialerView({ onCallContact }: { onCallContact: (name: string, phone: st
 // MAIN COMMUNICATIONS HUB
 // ============================================================================
 export default function Communications() {
+  const callState = useCallState();
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -739,25 +845,13 @@ export default function Communications() {
 
   const handleCall = useCallback(() => {
     if (!selectedContact) return;
-    toast.info(`Calling ${selectedContact.name}...`, { duration: 3000 });
-
-    const now = new Date();
-    const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
-    const newActivity: Activity = {
-      id: `a_${Date.now()}`,
-      channel: "call",
-      direction: "outbound",
-      timestamp: timeStr,
-      duration: "0:00",
-      summary: `Outbound call initiated to ${selectedContact.name}.`,
-      sentiment: "neutral",
-    };
-
-    setContacts(prev => prev.map(c => {
-      if (c.id !== selectedContact.id) return c;
-      return { ...c, activities: [...c.activities, newActivity], lastActivity: "Just now" };
-    }));
-  }, [selectedContact]);
+    callState.startCall({
+      id: selectedContact.id,
+      name: selectedContact.name,
+      phone: "(555) 000-0000",
+      address: selectedContact.address,
+    }, "inline");
+  }, [selectedContact, callState]);
 
   const handleDialerCall = useCallback((name: string, phone: string) => {
     toast.info(`Calling ${name} at ${phone}...`, { duration: 3000 });
@@ -830,23 +924,27 @@ export default function Communications() {
                 </div>
               </div>
 
-              {/* Center: Thread */}
-              <ConversationThread
-                contact={selectedContact}
-                onCall={handleCall}
-                onSendMessage={handleSendMessage}
-                messageInput={messageInput}
-                onMessageInputChange={setMessageInput}
-                sendChannel={sendChannel}
-                onSendChannelChange={setSendChannel}
-              />
+              {/* Center: Thread or Live Call */}
+              {callState.isCallActive && callState.displayMode === "inline" ? (
+                <LiveCallInline />
+              ) : (
+                <ConversationThread
+                  contact={selectedContact}
+                  onCall={handleCall}
+                  onSendMessage={handleSendMessage}
+                  messageInput={messageInput}
+                  onMessageInputChange={setMessageInput}
+                  sendChannel={sendChannel}
+                  onSendChannelChange={setSendChannel}
+                />
+              )}
 
               {/* Right: AI Co-Pilot */}
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           ) : (
             <>
-              <DialerView onCallContact={handleDialerCall} />
+              <DialerView />
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           )}
