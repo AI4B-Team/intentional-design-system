@@ -355,19 +355,21 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                     </div>
                     <p className="text-xs text-foreground leading-relaxed flex-1">{s.text}</p>
                   </div>
-                  <button
-                    onClick={() => handleUseSuggestion(s.text)}
-                    className={cn(
-                      "w-full px-2.5 py-2 text-[11px] font-semibold transition-all border-t uppercase tracking-wide",
-                      s.type === "coach"
-                        ? "border-border text-muted-foreground hover:bg-muted/50"
-                        : s.type === "response"
-                          ? "border-emerald-500/20 text-emerald-600 hover:bg-emerald-500/5"
-                          : "border-primary/20 text-primary hover:bg-primary/5"
-                    )}
-                  >
-                    {s.type === "coach" ? "Apply" : "Use"}
-                  </button>
+                  <div className="px-3 pb-3">
+                    <button
+                      onClick={() => handleUseSuggestion(s.text)}
+                      className={cn(
+                        "w-full py-2 rounded-lg text-xs font-semibold transition-all",
+                        s.type === "coach"
+                          ? "bg-muted text-foreground hover:bg-muted/80"
+                          : s.type === "response"
+                            ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                      )}
+                    >
+                      {s.type === "coach" ? "Apply" : "Use"}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
