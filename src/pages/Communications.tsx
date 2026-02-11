@@ -7,6 +7,7 @@ import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DialerLiveMode } from "@/components/dialer/live-mode";
 import { DialerStatsBar } from "@/components/dialer/live-mode/DialerStatsBar";
 import { DialerCoPilotPanel, type DialerContact } from "@/components/dialer/live-mode/DialerCoPilotPanel";
+import { DialerSmsModal, DialerEmailModal } from "@/components/dialer/live-mode/DialerQuickSendModals";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -998,13 +999,15 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSelectDialerContact, selectedScriptId: externalScriptId, onSelectScript: externalSelectScript }: {
+function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSelectDialerContact, selectedScriptId: externalScriptId, onSelectScript: externalSelectScript, onOpenSms, onOpenEmail }: {
   callingMode: string;
   setCallingMode: (m: string) => void;
   selectedDialerContact: DialerContact | null;
   onSelectDialerContact: (c: DialerContact | null) => void;
   selectedScriptId: string | null;
   onSelectScript: (id: string) => void;
+  onOpenSms: () => void;
+  onOpenEmail: () => void;
 }) {
   const callState = useCallState();
   const navigate = useNavigate();
@@ -1756,13 +1759,13 @@ function DialerView({ callingMode, setCallingMode, selectedDialerContact, onSele
               <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Next Step</Label>
               <div className="flex gap-2 mt-1.5">
                 <button
-                  onClick={() => { toast.info("SMS composer opening..."); setShowWrapUp(false); }}
+                  onClick={() => { setShowWrapUp(false); onOpenSms(); }}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                 >
                   <MessageCircle className="h-3 w-3" /> Send SMS
                 </button>
                 <button
-                  onClick={() => { toast.info("Email composer opening..."); setShowWrapUp(false); }}
+                  onClick={() => { setShowWrapUp(false); onOpenEmail(); }}
                   className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
                 >
                   <Mail className="h-3 w-3" /> Send Email
@@ -1803,6 +1806,8 @@ export default function Communications() {
   const [dialerCallingMode, setDialerCallingMode] = useState("start");
   const [selectedDialerContact, setSelectedDialerContact] = useState<DialerContact | null>(null);
   const [dialerScriptId, setDialerScriptId] = useState<string | null>(null);
+  const [showDialerSms, setShowDialerSms] = useState(false);
+  const [showDialerEmail, setShowDialerEmail] = useState(false);
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
@@ -2161,6 +2166,8 @@ export default function Communications() {
                 onSelectDialerContact={setSelectedDialerContact}
                 selectedScriptId={dialerScriptId}
                 onSelectScript={setDialerScriptId}
+                onOpenSms={() => setShowDialerSms(true)}
+                onOpenEmail={() => setShowDialerEmail(true)}
               />
               <DialerCoPilotPanel
                 contact={selectedDialerContact}
@@ -2174,8 +2181,8 @@ export default function Communications() {
                 })() : null}
                 onSelectScript={setDialerScriptId}
                 onManageScripts={() => navigate("/dialer/scripts")}
-                onSms={() => toast.info("SMS composer — coming soon")}
-                onEmail={() => toast.info("Email composer — coming soon")}
+                onSms={() => setShowDialerSms(true)}
+                onEmail={() => setShowDialerEmail(true)}
               />
             </>
           )}
@@ -2237,6 +2244,18 @@ export default function Communications() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Dialer-only SMS & Email modals */}
+      <DialerSmsModal
+        open={showDialerSms}
+        onOpenChange={setShowDialerSms}
+        contact={selectedDialerContact}
+      />
+      <DialerEmailModal
+        open={showDialerEmail}
+        onOpenChange={setShowDialerEmail}
+        contact={selectedDialerContact}
+      />
     </AppLayout>
   );
 }
