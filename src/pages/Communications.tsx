@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
+import { DialerLiveMode } from "@/components/dialer/live-mode";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -830,7 +831,7 @@ function DialerView() {
       name: item.name,
       phone: item.phone,
       address: item.address,
-    }, "dialer");
+    }, "inline");
   };
 
   const handleStartPowerDial = () => {
@@ -1647,6 +1648,8 @@ export default function Communications() {
               {/* Right: AI Co-Pilot */}
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
+          ) : callState.isCallActive ? (
+            <DialerLiveMode />
           ) : (
             <>
               <DialerView />
