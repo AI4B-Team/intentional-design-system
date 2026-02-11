@@ -793,7 +793,7 @@ function CoPilotPanel({
               <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
             </span>
             <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
-              {isLiveCall ? theme.label : "AI ACTIVE"}
+              {isLiveCall ? "LIVE: AI Agent" : "AI ACTIVE"}
             </span>
           </div>
         )}
@@ -1775,7 +1775,7 @@ export default function Communications() {
                     <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75", modeTheme.dot)} />
                     <span className={cn("relative inline-flex rounded-full h-2 w-2", modeTheme.dot)} />
                   </span>
-                  <span className={modeTheme.badgeText}>LIVE · {modeTheme.label}</span>
+                  <span className={modeTheme.badgeText}>LIVE: AI Agent</span>
                 </div>
                 <span className="text-lg font-mono font-bold text-foreground tabular-nums">
                   {String(Math.floor(callState.callDuration / 60)).padStart(2, "0")}:{String(callState.callDuration % 60).padStart(2, "0")}
