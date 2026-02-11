@@ -373,7 +373,7 @@ function ConversationThread({
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Thread Header - Fixed */}
       <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -458,7 +458,7 @@ function ConversationThread({
       </div>
 
       {/* Activity Timeline */}
-      <div className="flex-1 overflow-auto p-5">
+      <div className="flex-1 min-h-0 overflow-auto p-5">
         {[...contact.activities].reverse().map((act, i) => {
           const config = CHANNEL_CONFIG[act.channel];
           const Icon = config?.icon || MessageCircle;
