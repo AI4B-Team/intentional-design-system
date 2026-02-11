@@ -188,7 +188,7 @@ function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFi
     { key: "voicemail", label: "Voicemail", icon: Voicemail, colorClass: "text-pink-500", bgClass: "bg-pink-500/10 border-pink-500/30" },
   ];
   return (
-    <div className="flex gap-1.5 flex-wrap">
+    <div className="flex gap-1.5">
       {filters.map(({ key, label, icon: Icon, colorClass, bgClass }) => (
         <button
           key={key}
@@ -216,7 +216,7 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
     { key: "all", label: "All" },
     { key: "unread", label: "Unread", dotClass: "bg-emerald-500" },
     { key: "starred", label: "Starred", dotClass: "bg-amber-500" },
-    { key: "needs_response", label: "Needs Response", dotClass: "bg-violet-500" },
+    { key: "needs_response", label: "Pending", dotClass: "bg-violet-500" },
   ];
   return (
     <div className="flex gap-1.5">
@@ -402,7 +402,7 @@ function ConversationThread({ contact, onCall }: { contact: Contact | null; onCa
 // ============================================================================
 function CoPilotPanel({ contact, activeView }: { contact: Contact | null; activeView: string }) {
   return (
-    <div className="w-[300px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
+    <div className="w-[340px] border-l border-border flex flex-col overflow-hidden bg-muted/30">
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center gap-2">
         <div className="w-7 h-7 rounded-md bg-primary/10 flex items-center justify-center">
@@ -672,7 +672,7 @@ export default function Communications() {
           {activeView === "activity" ? (
             <>
               {/* Left: Contact List */}
-              <div className="w-[360px] border-r border-border flex flex-col overflow-hidden bg-background">
+              <div className="w-[420px] border-r border-border flex flex-col overflow-hidden bg-background">
                 <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
                   <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
                   <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
