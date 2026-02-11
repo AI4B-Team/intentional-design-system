@@ -928,6 +928,41 @@ function CoPilotPanel({
               Take Over Call
             </button>
 
+            {/* Contact Details */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Details</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Property:</span>
+                  <span className="font-medium text-foreground">{contact.address}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Location:</span>
+                  <span className="font-medium text-foreground">
+                    {[contact.city, contact.state].filter(Boolean).join(", ") || "—"}
+                    {contact.zip ? ` ${contact.zip}` : ""}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Phone:</span>
+                  <span className="font-medium text-foreground">{contact.phone || "—"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Email:</span>
+                  <span className="font-medium text-foreground">{contact.email || "—"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Type:</span>
+                  <span className="font-medium text-primary">{contact.tag}</span>
+                </div>
+              </div>
+            </div>
+
             {/* AI Call Summary */}
             <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
               <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
