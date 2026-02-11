@@ -34,6 +34,15 @@ export interface DialerContact {
   leadScore?: number;
 }
 
+export interface ScriptDetail {
+  id: string;
+  name: string;
+  opening?: string;
+  questions?: string[];
+  objections?: Array<{ objection: string; response: string }>;
+  closing?: string;
+}
+
 type CallingMode = 'start' | 'voice' | 'listen';
 type CallStatus = 'idle' | 'active';
 
@@ -44,7 +53,9 @@ interface DialerCoPilotPanelProps {
   selectedScriptName?: string;
   scripts: Array<{ id: string; name: string }>;
   selectedScriptId: string | null;
+  selectedScriptDetail?: ScriptDetail | null;
   onSelectScript: (id: string) => void;
+  onManageScripts?: () => void;
   onSms: () => void;
   onEmail: () => void;
 }
@@ -52,8 +63,19 @@ interface DialerCoPilotPanelProps {
 // ============================================================================
 // MOCK GUIDANCE DATA
 // ============================================================================
-function getPrepGuidance(contact: DialerContact) {
+function getPrepGuidance(contact: DialerContact, script?: ScriptDetail | null) {
   const firstName = contact.name.split(' ')[0];
+  if (script) {
+    return {
+      opening: script.opening
+        ?.replace(/\{\{name\}\}/g, firstName)
+        .replace(/\{\{address\}\}/g, contact.address || 'your property') 
+        || `"Hi ${firstName}, got a moment?"`,
+      discoveryQuestions: script.questions || ["What's your timeline?", "Have you explored other options?", "What does an ideal outcome look like?"],
+      likelyObjections: script.objections || [],
+      closing: script.closing?.replace(/\{\{name\}\}/g, firstName) || null,
+    };
+  }
   return {
     opening: `"Hi ${firstName}, I know you weren't expecting my call — got 30 seconds for me to explain why I'm reaching out about ${contact.address || 'your property'}?"`,
     discoveryQuestions: [
@@ -65,6 +87,7 @@ function getPrepGuidance(contact: DialerContact) {
       { objection: '"I need to think about it"', response: 'Acknowledge, then ask what specifically they need to think through.' },
       { objection: '"Your offer is too low"', response: 'Ask what number they had in mind — let them anchor first.' },
     ],
+    closing: null,
   };
 }
 
@@ -120,7 +143,9 @@ export function DialerCoPilotPanel({
   callActive,
   scripts,
   selectedScriptId,
+  selectedScriptDetail,
   onSelectScript,
+  onManageScripts,
   onSms,
   onEmail,
 }: DialerCoPilotPanelProps) {
@@ -207,7 +232,14 @@ export function DialerCoPilotPanel({
 
             {/* 2) Script in Use */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Script In Use</div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase">Script In Use</div>
+                {onManageScripts && (
+                  <button onClick={onManageScripts} className="text-[11px] text-primary font-medium hover:underline">
+                    Manage
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <button
                   onClick={() => setShowScriptDropdown(!showScriptDropdown)}
@@ -244,7 +276,7 @@ export function DialerCoPilotPanel({
 
             {/* 3) Live Guidance Panel — content changes by mode + call state */}
             {callingMode === 'start' && !callActive && (
-              <PrepGuidance contact={contact} />
+              <PrepGuidance contact={contact} script={selectedScriptDetail} />
             )}
             {callingMode === 'start' && callActive && (
               <LiveSuggestionsPanel contact={contact} />
@@ -302,8 +334,8 @@ export function DialerCoPilotPanel({
 // ============================================================================
 
 /** Before call in Start Call mode */
-function PrepGuidance({ contact }: { contact: DialerContact }) {
-  const guidance = getPrepGuidance(contact);
+function PrepGuidance({ contact, script }: { contact: DialerContact; script?: ScriptDetail | null }) {
+  const guidance = getPrepGuidance(contact, script);
   return (
     <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20 space-y-3">
       <div className="text-[11px] text-primary font-semibold tracking-wider uppercase flex items-center gap-1.5">
@@ -318,7 +350,7 @@ function PrepGuidance({ contact }: { contact: DialerContact }) {
       </div>
 
       <div>
-        <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">Discovery Questions</div>
+        <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">Key Questions</div>
         <div className="space-y-1.5">
           {guidance.discoveryQuestions.map((q, i) => (
             <div key={i} className="flex items-start gap-2 text-[11px] text-foreground">
@@ -329,17 +361,28 @@ function PrepGuidance({ contact }: { contact: DialerContact }) {
         </div>
       </div>
 
-      <div>
-        <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">Likely Objections</div>
-        <div className="space-y-1.5">
-          {guidance.likelyObjections.map((obj, i) => (
-            <div key={i} className="p-2 bg-background rounded-md border border-border/50">
-              <div className="text-[11px] font-semibold text-destructive/80 mb-0.5">{obj.objection}</div>
-              <div className="text-[11px] text-muted-foreground">{obj.response}</div>
-            </div>
-          ))}
+      {guidance.likelyObjections.length > 0 && (
+        <div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1.5">Objection Handlers</div>
+          <div className="space-y-1.5">
+            {guidance.likelyObjections.map((obj, i) => (
+              <div key={i} className="p-2 bg-background rounded-md border border-border/50">
+                <div className="text-[11px] font-semibold text-destructive/80 mb-0.5">{obj.objection}</div>
+                <div className="text-[11px] text-muted-foreground">{obj.response}</div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+
+      {guidance.closing && (
+        <div>
+          <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">Closing Line</div>
+          <div className="text-xs text-foreground leading-relaxed italic bg-background/60 rounded-md p-2.5 border border-border/30">
+            {guidance.closing}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
