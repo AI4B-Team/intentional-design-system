@@ -5,7 +5,33 @@ import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useDealSources, type DealSource } from "@/hooks/useDealSources";
+import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Phone,
   MessageCircle,
@@ -36,6 +62,8 @@ import {
   Home,
   Calendar,
   Copy,
+  MoreVertical,
+  Edit,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -277,9 +305,10 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
 // ============================================================================
 // CONTACT LIST ITEM
 // ============================================================================
-function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: { 
+function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, onEdit, onDelete }: { 
   contact: Contact; isActive: boolean; onClick: () => void;
   onCall?: () => void; onSms?: () => void; onCopy?: () => void;
+  onEdit?: () => void; onDelete?: () => void;
 }) {
   const lastAct = contact.activities[contact.activities.length - 1];
   const ChannelIcon = lastAct ? CHANNEL_CONFIG[lastAct.channel]?.icon : null;
@@ -342,6 +371,27 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy }: 
                 </TooltipTrigger>
                 <TooltipContent>Copy Phone</TooltipContent>
               </Tooltip>
+              {/* 3-dot menu */}
+              {contact.dbId && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      onClick={e => e.stopPropagation()}
+                      className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <MoreVertical className="h-3.5 w-3.5" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-36">
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit?.(); }}>
+                      <Edit className="h-3.5 w-3.5 mr-2" /> Edit Contact
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete?.(); }} className="text-destructive focus:text-destructive">
+                      <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </TooltipProvider>
           {/* Timestamp (hidden on hover) */}
@@ -1275,6 +1325,8 @@ export default function Communications() {
   const callState = useCallState();
   const navigate = useNavigate();
   const { data: dbContacts = [], isLoading: isLoadingContacts } = useDealSources();
+  const updateDealSource = useUpdateDealSource();
+  const deleteDealSource = useDeleteDealSource();
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -1284,6 +1336,11 @@ export default function Communications() {
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  
+  // Edit/Delete state
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [editForm, setEditForm] = useState({ name: "", phone: "", email: "", address: "", company: "" });
+  const [deletingContactId, setDeletingContactId] = useState<string | null>(null);
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -1397,6 +1454,45 @@ export default function Communications() {
     setMessageInput("");
   }, []);
 
+  const handleEditContact = useCallback((contact: Contact) => {
+    setEditForm({
+      name: contact.name,
+      phone: contact.phone || "",
+      email: contact.email || "",
+      address: contact.address || "",
+      company: contact.company || "",
+    });
+    setEditingContact(contact);
+  }, []);
+
+  const handleSaveEdit = useCallback(() => {
+    if (!editingContact?.dbId) return;
+    updateDealSource.mutate({
+      id: editingContact.dbId,
+      updates: {
+        name: editForm.name,
+        phone: editForm.phone || null,
+        email: editForm.email || null,
+        address: editForm.address || null,
+        company: editForm.company || null,
+      },
+    }, {
+      onSuccess: () => {
+        setEditingContact(null);
+      },
+    });
+  }, [editingContact, editForm, updateDealSource]);
+
+  const handleDeleteContact = useCallback(() => {
+    if (!deletingContactId) return;
+    deleteDealSource.mutate(deletingContactId, {
+      onSuccess: () => {
+        if (selectedContactId === deletingContactId) setSelectedContactId(null);
+        setDeletingContactId(null);
+      },
+    });
+  }, [deletingContactId, deleteDealSource, selectedContactId]);
+
   return (
     <AppLayout fullWidth>
       <TooltipProvider delayDuration={0}>
@@ -1485,6 +1581,8 @@ export default function Communications() {
                             navigator.clipboard.writeText(contact.phone || "");
                             toast.success(`Phone number copied for ${contact.name}`);
                           }}
+                          onEdit={() => handleEditContact(contact)}
+                          onDelete={() => setDeletingContactId(contact.dbId || null)}
                         />
                       ))}
                       {filteredContacts.length === 0 && (
@@ -1539,6 +1637,61 @@ export default function Communications() {
         </div>
       </div>
       </TooltipProvider>
+
+      {/* Edit Contact Dialog */}
+      <Dialog open={!!editingContact} onOpenChange={(open) => { if (!open) setEditingContact(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit Contact</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div>
+              <Label className="text-xs">Name</Label>
+              <Input value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Phone</Label>
+              <Input value={editForm.phone} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Email</Label>
+              <Input value={editForm.email} onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Address</Label>
+              <Input value={editForm.address} onChange={e => setEditForm(f => ({ ...f, address: e.target.value }))} />
+            </div>
+            <div>
+              <Label className="text-xs">Company</Label>
+              <Input value={editForm.company} onChange={e => setEditForm(f => ({ ...f, company: e.target.value }))} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingContact(null)}>Cancel</Button>
+            <Button onClick={handleSaveEdit} disabled={updateDealSource.isPending}>
+              {updateDealSource.isPending ? "Saving..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deletingContactId} onOpenChange={(open) => { if (!open) setDeletingContactId(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Contact</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this contact from both Communications and Contacts. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteContact} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              {deleteDealSource.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 }
