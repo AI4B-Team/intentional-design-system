@@ -19,7 +19,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
           className="flex items-center gap-2 px-5 py-2 rounded-lg border border-amber-300 bg-amber-50/80 text-amber-700 text-sm font-semibold hover:bg-amber-100 transition-colors"
           onClick={() => toast.info("Taking over call...")}
         >
-          <Hand className="h-4 w-4" /> Take Over Call
+          <Hand className="h-4 w-4" /> Take Over
         </button>
       )}
       <button
