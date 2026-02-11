@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
@@ -373,6 +373,8 @@ function ConversationThread({
   onMessageInputChange,
   sendChannel,
   onSendChannelChange,
+  autoSelectedReason,
+  onDismissAutoSelect,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -381,6 +383,8 @@ function ConversationThread({
   onMessageInputChange: (val: string) => void;
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
+  autoSelectedReason?: string | null;
+  onDismissAutoSelect?: () => void;
 }) {
   const callState = useCallState();
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
@@ -452,6 +456,21 @@ function ConversationThread({
           </button>
         </div>
       </div>
+
+      {/* Auto-select banner */}
+      {autoSelectedReason && (
+        <div className="px-5 py-1.5 border-b border-border bg-muted/20 flex items-center justify-between flex-shrink-0">
+          <span className="text-[11px] text-muted-foreground">
+            Opened: <span className="font-medium text-foreground">{autoSelectedReason}</span>
+          </span>
+          <button
+            onClick={onDismissAutoSelect}
+            className="text-[11px] text-primary hover:underline font-medium"
+          >
+            Change
+          </button>
+        </div>
+      )}
 
       {/* Contact Info Card - Collapsible */}
       <div className="border-b border-border bg-muted/30 flex-shrink-0">
@@ -1297,6 +1316,8 @@ export default function Communications() {
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+  const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
+  const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -1363,6 +1384,47 @@ export default function Communications() {
     return result;
   }, [contacts, channelFilter, statusFilter, searchQuery]);
 
+  // Auto-select the most relevant conversation on load
+  const autoSelectedRef = React.useRef(false);
+  useEffect(() => {
+    // Don't auto-select if: user already interacted, already selected, no contacts, or user filtered/searched
+    if (autoSelectedRef.current || selectedContactId || contacts.length === 0 || userInteractedRef.current) return;
+
+    let picked: Contact | null = null;
+    let reason = "";
+
+    // Priority 1: Needs Attention (last activity is inbound)
+    const needsAttention = contacts.find(c => {
+      const last = c.activities[c.activities.length - 1];
+      return last && last.direction === "inbound";
+    });
+    if (needsAttention) {
+      picked = needsAttention;
+      reason = "Needs attention";
+    }
+
+    // Priority 2: Unread
+    if (!picked) {
+      const unread = contacts.find(c => c.unread);
+      if (unread) {
+        picked = unread;
+        reason = "Unread conversation";
+      }
+    }
+
+    // Priority 3: Most recent interaction (first in list)
+    if (!picked && contacts.length > 0) {
+      picked = contacts[0];
+      reason = "Most recent conversation";
+    }
+
+    if (picked) {
+      autoSelectedRef.current = true;
+      setSelectedContactId(picked.id);
+      setAutoSelectedReason(reason);
+    }
+  }, [contacts, selectedContactId]);
+
   const handleSendMessage = useCallback(() => {
     if (!messageInput.trim() || !selectedContactId) return;
 
@@ -1407,8 +1469,34 @@ export default function Communications() {
   }, []);
 
   const handleSelectContact = useCallback((id: string) => {
+    userInteractedRef.current = true;
     setSelectedContactId(id);
+    setAutoSelectedReason(null);
     setMessageInput("");
+  }, []);
+
+  // Mark user interaction when they use filters or search
+  const handleChannelFilter = useCallback((filter: string) => {
+    userInteractedRef.current = true;
+    setChannelFilter(filter);
+    setAutoSelectedReason(null);
+  }, []);
+
+  const handleStatusFilter = useCallback((filter: string) => {
+    userInteractedRef.current = true;
+    setStatusFilter(filter);
+    setAutoSelectedReason(null);
+  }, []);
+
+  const handleSearchChange = useCallback((q: string) => {
+    if (q) userInteractedRef.current = true;
+    setSearchQuery(q);
+    setAutoSelectedReason(null);
+  }, []);
+
+  const handleDismissAutoSelect = useCallback(() => {
+    setAutoSelectedReason(null);
+    setSelectedContactId(null);
   }, []);
 
   return (
@@ -1439,7 +1527,7 @@ export default function Communications() {
               <input
                 placeholder="Search contacts, messages..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
+                onChange={e => handleSearchChange(e.target.value)}
                 className="bg-transparent border-none outline-none text-foreground text-[13px] w-[200px] placeholder:text-muted-foreground"
               />
             </div>
@@ -1459,7 +1547,7 @@ export default function Communications() {
                   <>
                     <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
                       <div className="flex items-center justify-between">
-                        <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
+                        <ChannelFilters activeFilter={channelFilter} onFilter={handleChannelFilter} />
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
@@ -1472,7 +1560,7 @@ export default function Communications() {
                           <TooltipContent>Minimize Panel</TooltipContent>
                         </Tooltip>
                       </div>
-                      <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
+                      <StatusFilters activeStatus={statusFilter} onFilter={handleStatusFilter} />
                     </div>
                     <div className="flex-1 overflow-auto">
                       {filteredContacts.map(contact => (
@@ -1538,6 +1626,8 @@ export default function Communications() {
                   onMessageInputChange={setMessageInput}
                   sendChannel={sendChannel}
                   onSendChannelChange={setSendChannel}
+                  autoSelectedReason={autoSelectedReason}
+                  onDismissAutoSelect={handleDismissAutoSelect}
                 />
               )}
 
