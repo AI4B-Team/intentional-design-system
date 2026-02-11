@@ -216,7 +216,7 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
     { key: "all", label: "All" },
     { key: "unread", label: "Unread", dotClass: "bg-emerald-500" },
     { key: "starred", label: "Starred", dotClass: "bg-amber-500" },
-    { key: "needs_response", label: "Pending", dotClass: "bg-violet-500" },
+    { key: "needs_response", label: "Needs Attention", dotClass: "bg-violet-500" },
   ];
   return (
     <div className="flex gap-1.5">
