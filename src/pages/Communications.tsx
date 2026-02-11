@@ -18,6 +18,8 @@ import {
   ChevronRight,
   ChevronDown,
   ChevronLeft,
+  MoreVertical,
+  Pencil,
   Play, 
   Mic,
   ArrowDownLeft,
@@ -391,7 +393,8 @@ function ConversationThread({
   sendChannel: string;
   onSendChannelChange: (ch: string) => void;
 }) {
-  const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
+  const [contactDetailsOpen, setContactDetailsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (!contact) {
     return (
@@ -412,58 +415,88 @@ function ConversationThread({
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       {/* Thread Header - Fixed */}
-      <div className="px-5 py-3 border-b border-border flex items-center justify-between flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
-            {contact.avatar}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
+      <div className="border-b border-border flex-shrink-0">
+        <div className="px-5 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-sm font-bold text-primary-foreground">
+              {contact.avatar}
             </div>
-            <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
+              </div>
+              <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                contactDetailsOpen
+                  ? "border-primary text-primary bg-primary/5"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {contactDetailsOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+              Details
+            </button>
+            <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+              <Phone className="h-3.5 w-3.5" /> Call
+            </button>
+            <button
+              onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <MessageCircle className="h-3.5 w-3.5" /> SMS
+            </button>
+            <button
+              onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Mail className="h-3.5 w-3.5" /> Email
+            </button>
+
+            {/* 3-dot menu */}
+            <div className="relative">
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                className="p-2 rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                <MoreVertical className="h-4 w-4" />
+              </button>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-popover border border-border rounded-lg shadow-lg py-1">
+                    <button
+                      onClick={() => { setMenuOpen(false); toast.info("Edit contact coming soon"); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+                    >
+                      <Pencil className="h-3.5 w-3.5" /> Edit Contact
+                    </button>
+                    <button
+                      onClick={() => { setMenuOpen(false); toast.info("Delete contact coming soon"); }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Delete Contact
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button onClick={onCall} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-            <Phone className="h-3.5 w-3.5" /> Call
-          </button>
-          <button
-            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "sms" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <MessageCircle className="h-3.5 w-3.5" /> SMS
-          </button>
-          <button
-            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              sendChannel === "email" ? "border-primary text-primary bg-primary/5" : "border-border text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Mail className="h-3.5 w-3.5" /> Email
-          </button>
-        </div>
-      </div>
 
-      {/* Contact Info Card - Collapsible */}
-      <div className="border-b border-border bg-muted/30 flex-shrink-0">
-        <button
-          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
-          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span>Contact Details</span>
-          {contactDetailsOpen ? (
-            <ChevronDown className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
-          )}
-        </button>
+        {/* Contact Details - Expandable */}
         {contactDetailsOpen && (
-          <div className="px-5 pb-3">
+          <div className="px-5 pb-3 border-t border-border/50 pt-3 bg-muted/30">
             <div className="grid grid-cols-2 gap-x-6 gap-y-2">
               <div className="flex items-center gap-2 text-xs">
                 <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
