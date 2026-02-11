@@ -149,7 +149,7 @@ function CallNotesSection({ contactName }: { contactName: string }) {
       <textarea
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
-        placeholder={`Add notes about ${contactName.split(" ")[0]}'s situation, property details, motivation, timeline...`}
+        placeholder="No Notes Yet"
         className="w-full min-h-[80px] max-h-[160px] resize-y rounded-md border border-border bg-background px-2.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all"
       />
       <div className="flex items-center justify-between mt-2">
