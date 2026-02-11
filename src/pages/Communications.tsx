@@ -1840,7 +1840,22 @@ export default function Communications() {
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} />
             </>
           ) : callState.isCallActive ? (
-            <DialerLiveMode callingMode={dialerCallingMode} />
+            <DialerLiveMode callingMode={dialerCallingMode} onMessageSent={(data) => {
+              const now = new Date();
+              const timeStr = `Today ${now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+              const activity: Activity = {
+                id: `${data.channel}_${Date.now()}`,
+                channel: data.channel,
+                direction: "outbound",
+                timestamp: timeStr,
+                content: data.channel === "email" ? `Subject: ${data.subject}\n${data.body}` : data.body,
+                sentiment: "neutral",
+              };
+              setLocalActivities(prev => ({
+                ...prev,
+                [data.contactId]: [...(prev[data.contactId] || contacts.find(c => c.id === data.contactId)?.activities || []), activity],
+              }));
+            }} />
           ) : (
             <>
               <DialerView callingMode={dialerCallingMode} setCallingMode={setDialerCallingMode} />
