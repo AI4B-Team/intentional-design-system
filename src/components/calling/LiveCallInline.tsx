@@ -1,12 +1,19 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2 } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { CallControls, formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function LiveCallInline({ className }: { className?: string }) {
+interface LiveCallInlineProps {
+  className?: string;
+  onSmsClick?: () => void;
+  onEmailClick?: () => void;
+  onMoreClick?: () => void;
+}
+
+export function LiveCallInline({ className, onSmsClick, onEmailClick, onMoreClick }: LiveCallInlineProps) {
   const {
     isCallActive, callStatus, currentContact, callDuration, transcript,
     sentiment, sentimentScore, currentCallPhase, aiSuggestions,
@@ -37,6 +44,32 @@ export function LiveCallInline({ className }: { className?: string }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          {/* Channel buttons */}
+          <div className="flex gap-2 mr-2">
+            <button
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary bg-primary text-primary-foreground text-xs font-semibold"
+            >
+              <Phone className="h-3.5 w-3.5" /> Call
+            </button>
+            <button
+              onClick={onSmsClick}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 text-xs font-semibold transition-colors"
+            >
+              <MessageCircle className="h-3.5 w-3.5" /> SMS
+            </button>
+            <button
+              onClick={onEmailClick}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 text-xs font-semibold transition-colors"
+            >
+              <Mail className="h-3.5 w-3.5" /> Email
+            </button>
+            <button
+              onClick={onMoreClick}
+              className="p-2 rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors"
+            >
+              <MoreVertical className="h-4 w-4" />
+            </button>
+          </div>
           <CallControls compact />
           <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setDisplayMode("mini")}>
             <Minimize2 className="h-4 w-4" />
