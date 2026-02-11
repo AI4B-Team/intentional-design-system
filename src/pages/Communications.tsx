@@ -830,7 +830,7 @@ function CoPilotPanel({
             {/* Directive - Primary focus */}
             <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
               <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Active Directive
+                <Sparkles className="h-3 w-3" /> Directive
               </div>
               <div className="text-xs text-foreground leading-relaxed font-medium">
                 {contact.activities[contact.activities.length - 1]?.aiSuggestion?.replace(/^[^\w]*/, '').slice(0, 120) || "Listening for patterns..."}
