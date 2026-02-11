@@ -890,6 +890,12 @@ export default function Communications() {
               Communications
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
+            {callState.isCallActive && (
+              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-bold animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-white" />
+                LIVE
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-3">
