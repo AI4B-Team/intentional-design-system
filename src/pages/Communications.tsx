@@ -383,9 +383,6 @@ function ConversationThread({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[15px] font-semibold text-foreground">{contact.name}</span>
-              <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-primary/10 text-primary">
-                {contact.tag}
-              </span>
             </div>
             <span className="text-[11px] text-muted-foreground">{contact.lastActivity}</span>
           </div>
