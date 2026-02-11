@@ -4,6 +4,7 @@ import { useCallState } from '@/contexts/CallContext';
 import {
   Phone,
   PhoneOff,
+  PhoneCall,
   Mic,
   MicOff,
   Pause,
@@ -22,8 +23,18 @@ import {
   X,
   RefreshCw,
   AlertTriangle,
+  ChevronLeft,
+  ChevronRight,
+  MoreVertical,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { DialerComposerDrawer } from './DialerComposerDrawer';
 
 // ============================================================================
@@ -39,7 +50,7 @@ interface QueueItem {
 }
 
 type AIState = 'listening' | 'analyzing' | 'strategy_shift' | 'objection_detected' | 'high_intent';
-type CallMode = 'human' | 'ai_agent';
+type CallMode = 'human' | 'hybrid' | 'ai_agent';
 
 interface TranscriptMsg {
   id: string;
@@ -117,12 +128,62 @@ function formatDuration(seconds: number): string {
 // ============================================================================
 // QUEUE SIDEBAR (Left 25%)
 // ============================================================================
-function QueueSidebar({ queue, activeId }: { queue: QueueItem[]; activeId?: string }) {
+function QueueSidebar({ queue, activeId, collapsed, onToggleCollapse }: { queue: QueueItem[]; activeId?: string; collapsed?: boolean; onToggleCollapse?: () => void }) {
+  if (collapsed) {
+    return (
+      <div className="w-[56px] border-r border-border flex flex-col bg-background flex-shrink-0">
+        <div className="px-2 py-3 border-b border-border flex justify-center">
+          <button onClick={onToggleCollapse} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="flex-1 overflow-auto">
+          {queue.map((item) => {
+            const isActive = item.id === activeId;
+            const initials = item.name.split(' ').map(n => n[0]).join('').slice(0, 2);
+            return (
+              <Tooltip key={item.id}>
+                <TooltipTrigger asChild>
+                  <div className={cn(
+                    'flex items-center justify-center py-3 border-b border-border/30 cursor-pointer transition-colors',
+                    isActive ? 'bg-primary/5 border-l-2 border-l-primary' : 'hover:bg-muted/40 border-l-2 border-l-transparent',
+                    item.status === 'completed' && 'opacity-40'
+                  )}>
+                    <div className="relative">
+                      <div className={cn(
+                        'w-8 h-8 rounded-md flex items-center justify-center text-[11px] font-bold',
+                        isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                      )}>
+                        {initials}
+                      </div>
+                      <span className={cn(
+                        'absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-background',
+                        isActive ? 'bg-emerald-500' : item.status === 'completed' ? 'bg-muted-foreground' : 'bg-amber-400'
+                      )} />
+                    </div>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="text-xs">{item.name}</TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-[240px] border-r border-border flex flex-col bg-background flex-shrink-0">
-      <div className="px-4 py-3 border-b border-border">
-        <div className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Queue</div>
-        <div className="text-[11px] text-muted-foreground mt-0.5">{queue.length} contacts</div>
+      <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+        <div>
+          <div className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">Queue</div>
+          <div className="text-[11px] text-muted-foreground mt-0.5">{queue.length} contacts</div>
+        </div>
+        {onToggleCollapse && (
+          <button onClick={onToggleCollapse} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+        )}
       </div>
       <div className="flex-1 overflow-auto">
         {queue.map((item) => {
@@ -567,11 +628,12 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
   const [composerOpen, setComposerOpen] = React.useState(false);
   const [composerChannel, setComposerChannel] = React.useState<'sms' | 'email'>('sms');
   const [sayThisText, setSayThisText] = React.useState<string | null>(null);
+  const [queueCollapsed, setQueueCollapsed] = React.useState(true);
 
   const contactName = callState.currentContact?.name || 'Unknown';
   const isHumanMode = callMode === 'human';
-  const modeBadgeLabel = callMode === 'ai_agent' ? 'Voice Agent' : externalMode === 'listen' ? 'Listen Mode' : 'Human Call';
-  const modeBadgeColor = callMode === 'ai_agent' ? 'bg-violet-500/10 text-violet-600' : externalMode === 'listen' ? 'bg-blue-500/10 text-blue-600' : 'bg-emerald-500/10 text-emerald-600';
+  const modeBadgeLabel = callMode === 'ai_agent' ? 'AI Agent' : callMode === 'hybrid' ? 'Hybrid' : externalMode === 'listen' ? 'Listen Mode' : 'Human';
+  const modeBadgeColor = callMode === 'ai_agent' ? 'bg-violet-500/10 text-violet-600' : callMode === 'hybrid' ? 'bg-violet-500/10 text-violet-600' : externalMode === 'listen' ? 'bg-blue-500/10 text-blue-600' : 'bg-emerald-500/10 text-emerald-600';
 
   // Sync external mode on mount
   React.useEffect(() => {
@@ -591,7 +653,7 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
   }, []);
 
   const handleUseSuggestion = (text: string) => {
-    if (isHumanMode) {
+    if (callMode === 'human' || callMode === 'hybrid') {
       setSayThisText(text);
       toast.success('Loaded into teleprompter — say this to the prospect');
     } else {
@@ -628,16 +690,47 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
 
   return (
     <div className="flex-1 flex min-h-0 overflow-hidden">
-      {/* Left: Queue */}
-      <QueueSidebar queue={MOCK_QUEUE} activeId="q1" />
+      {/* Left: Queue (collapsible) */}
+      <QueueSidebar queue={MOCK_QUEUE} activeId="q1" collapsed={queueCollapsed} onToggleCollapse={() => setQueueCollapsed(!queueCollapsed)} />
 
       {/* Center: Call View */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        {/* Mode Badge Bar */}
+        {/* Mode Badge Bar with Call/SMS/Email + Mode Switcher */}
         <div className="px-5 py-2 border-b border-border/50 flex items-center justify-between flex-shrink-0 bg-muted/20">
           <div className="flex items-center gap-3">
+            {/* Communication type buttons */}
+            <button className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium" disabled>
+              <PhoneCall className="h-4 w-4" /> Call
+            </button>
+            <button
+              onClick={handleOpenSms}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-primary/30 text-primary text-sm font-medium hover:bg-primary/5 transition-colors"
+            >
+              <MessageSquare className="h-4 w-4" /> SMS
+            </button>
+            <button
+              onClick={handleOpenEmail}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-foreground text-sm font-medium hover:bg-muted/50 transition-colors"
+            >
+              <Mail className="h-4 w-4" /> Email
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="h-9 w-9 flex items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-muted/50 transition-colors">
+                  <MoreVertical className="h-4 w-4" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleOpenSms}>Send SMS</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleOpenEmail}>Send Email</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <div className="w-px h-6 bg-border mx-1" />
+
+            {/* LIVE badge */}
             <span className={cn('px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider', modeBadgeColor)}>
-              {modeBadgeLabel.toUpperCase()}
+              ● LIVE · {modeBadgeLabel.toUpperCase()}
             </span>
             {callState.currentContact?.address && (
               <span className="text-[11px] text-muted-foreground">
@@ -645,7 +738,37 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1.5">
+
+          <div className="flex items-center gap-2">
+            {/* Mode Switcher: Human | Hybrid | AI Agent */}
+            <div className="flex items-center rounded-lg border border-border overflow-hidden">
+              {[
+                { key: 'human' as CallMode, label: 'Human', icon: Phone },
+                { key: 'hybrid' as CallMode, label: 'Hybrid', icon: Sparkles },
+                { key: 'ai_agent' as CallMode, label: 'AI Agent', icon: Bot },
+              ].map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setCallMode(key);
+                    toast.info(`Switched to ${label} mode`);
+                  }}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold transition-colors',
+                    callMode === key
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  )}
+                >
+                  <Icon className="h-3 w-3" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-px h-6 bg-border mx-1" />
+
+            {/* Hold / Record controls */}
             <button
               onClick={callState.toggleHold}
               className={cn(
@@ -669,8 +792,8 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
           </div>
         </div>
 
-        {/* AI Agent header (shown in AI mode) */}
-        {callMode === 'ai_agent' && (
+        {/* AI Agent header (shown in AI or Hybrid mode) */}
+        {(callMode === 'ai_agent' || callMode === 'hybrid') && (
           <AIAgentHeader
             scriptName="Motivated Seller v2"
             currentStep="Value Anchor"
@@ -702,8 +825,8 @@ export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { c
           onSmsSend={() => {}}
         />
 
-        {/* "Say This" Teleprompter Bar (Human Mode) */}
-        {sayThisText && isHumanMode && (
+        {/* "Say This" Teleprompter Bar (Human/Hybrid Mode) */}
+        {sayThisText && (callMode === 'human' || callMode === 'hybrid') && (
           <div className="border-t border-primary/20 bg-primary/5 px-5 py-3 flex-shrink-0 flex items-center gap-3 animate-in slide-in-from-bottom-2 duration-200">
             <div className="flex items-center gap-2 flex-shrink-0">
               <span className="text-[10px] font-bold tracking-wider uppercase text-primary">SAY THIS</span>
