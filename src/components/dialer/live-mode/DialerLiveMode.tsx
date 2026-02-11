@@ -24,6 +24,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { DialerComposerDrawer } from './DialerComposerDrawer';
 
 // ============================================================================
 // TYPES
@@ -559,13 +560,12 @@ function AIAgentHeader({
 // ============================================================================
 // MAIN EXPORT: DialerLiveMode
 // ============================================================================
-export function DialerLiveMode({ callingMode: externalMode }: { callingMode?: string }) {
+export function DialerLiveMode({ callingMode: externalMode, onMessageSent }: { callingMode?: string; onMessageSent?: (data: { contactId: string; contactName: string; channel: 'sms' | 'email'; subject?: string; body: string }) => void }) {
   const callState = useCallState();
   const [aiState, setAiState] = React.useState<AIState>('listening');
   const [callMode, setCallMode] = React.useState<CallMode>(externalMode === 'voice' ? 'ai_agent' : 'human');
-  const [smsComposerOpen, setSmsComposerOpen] = React.useState(false);
-  const [smsMessage, setSmsMessage] = React.useState('');
-  const [emailComposerOpen, setEmailComposerOpen] = React.useState(false);
+  const [composerOpen, setComposerOpen] = React.useState(false);
+  const [composerChannel, setComposerChannel] = React.useState<'sms' | 'email'>('sms');
   const [sayThisText, setSayThisText] = React.useState<string | null>(null);
 
   const contactName = callState.currentContact?.name || 'Unknown';
@@ -599,16 +599,22 @@ export function DialerLiveMode({ callingMode: externalMode }: { callingMode?: st
     }
   };
 
-  const handleSmsSend = () => {
-    if (!smsMessage.trim()) return;
-    toast.success(`SMS sent to ${contactName.split(' ')[0]}`);
-    setSmsMessage('');
-    setSmsComposerOpen(false);
+  const handleOpenSms = () => {
+    setComposerChannel('sms');
+    setComposerOpen(true);
   };
 
-  const handleEmailClick = () => {
-    toast.info('Email composer opening...');
-    setEmailComposerOpen(true);
+  const handleOpenEmail = () => {
+    setComposerChannel('email');
+    setComposerOpen(true);
+  };
+
+  const handleComposerSend = (data: { channel: 'sms' | 'email'; subject?: string; body: string }) => {
+    onMessageSent?.({
+      contactId: callState.currentContact?.id || '',
+      contactName,
+      ...data,
+    });
   };
 
   const handleEndCall = () => {
@@ -689,11 +695,11 @@ export function DialerLiveMode({ callingMode: externalMode }: { callingMode?: st
           onEndCall={handleEndCall}
           onAITakeOver={handleAITakeOver}
           onUseSuggestion={handleUseSuggestion}
-          smsComposerOpen={smsComposerOpen}
-          onSmsComposerToggle={() => setSmsComposerOpen(!smsComposerOpen)}
-          smsMessage={smsMessage}
-          onSmsChange={setSmsMessage}
-          onSmsSend={handleSmsSend}
+          smsComposerOpen={false}
+          onSmsComposerToggle={() => {}}
+          smsMessage=""
+          onSmsChange={() => {}}
+          onSmsSend={() => {}}
         />
 
         {/* "Say This" Teleprompter Bar (Human Mode) */}
@@ -721,16 +727,29 @@ export function DialerLiveMode({ callingMode: externalMode }: { callingMode?: st
         )}
       </div>
 
-      {/* Right: Strategy Panel */}
-      <StrategyPanel
-        sentiment="neutral"
-        sentimentScore={45}
-        dealProbability={62}
-        directive="Lead with empathy on property condition frustration. Mention your ability to close in 14 days with no repairs needed. Present offer range $165K–$180K only after establishing rapport."
-        contactName={contactName}
-        onSmsClick={() => setSmsComposerOpen(true)}
-        onEmailClick={handleEmailClick}
-      />
+      {/* Right: Strategy Panel OR Composer Drawer */}
+      {composerOpen ? (
+        <DialerComposerDrawer
+          open={composerOpen}
+          channel={composerChannel}
+          onClose={() => setComposerOpen(false)}
+          onChannelChange={setComposerChannel}
+          contactName={contactName}
+          contactPhone={callState.currentContact?.phone}
+          propertyAddress={callState.currentContact?.address}
+          onSend={handleComposerSend}
+        />
+      ) : (
+        <StrategyPanel
+          sentiment="neutral"
+          sentimentScore={45}
+          dealProbability={62}
+          directive="Lead with empathy on property condition frustration. Mention your ability to close in 14 days with no repairs needed. Present offer range $165K–$180K only after establishing rapport."
+          contactName={contactName}
+          onSmsClick={handleOpenSms}
+          onEmailClick={handleOpenEmail}
+        />
+      )}
     </div>
   );
 }
