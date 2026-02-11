@@ -60,9 +60,9 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
 const MODE_COLORS: Record<CallingModeKey, {
   iconBg: string; pulseBorder: string; headerBg: string; accent: string; badgeBg: string; badgeText: string; dot: string; label: string;
 }> = {
-  start: { iconBg: "bg-emerald-600", pulseBorder: "border-emerald-500/30", headerBg: "bg-emerald-500/[0.04]", accent: "text-emerald-600", badgeBg: "bg-emerald-500/10", badgeText: "text-emerald-600", dot: "bg-emerald-500", label: "Human Mode" },
-  voice: { iconBg: "bg-blue-600", pulseBorder: "border-blue-500/30", headerBg: "bg-blue-500/[0.04]", accent: "text-blue-600", badgeBg: "bg-blue-500/10", badgeText: "text-blue-600", dot: "bg-blue-500", label: "AI Agent" },
-  listen: { iconBg: "bg-violet-600", pulseBorder: "border-violet-500/30", headerBg: "bg-violet-500/[0.04]", accent: "text-violet-600", badgeBg: "bg-violet-500/10", badgeText: "text-violet-600", dot: "bg-violet-500", label: "Hybrid Mode" },
+  start: { iconBg: "bg-emerald-600", pulseBorder: "border-emerald-500/30", headerBg: "bg-emerald-500/[0.04]", accent: "text-emerald-600", badgeBg: "bg-emerald-500/10", badgeText: "text-emerald-600", dot: "bg-emerald-500", label: "Live Intelligence Active" },
+  voice: { iconBg: "bg-blue-600", pulseBorder: "border-blue-500/30", headerBg: "bg-blue-500/[0.04]", accent: "text-blue-600", badgeBg: "bg-blue-500/10", badgeText: "text-blue-600", dot: "bg-blue-500", label: "Live Intelligence Active" },
+  listen: { iconBg: "bg-violet-600", pulseBorder: "border-violet-500/30", headerBg: "bg-violet-500/[0.04]", accent: "text-violet-600", badgeBg: "bg-violet-500/10", badgeText: "text-violet-600", dot: "bg-violet-500", label: "Live Intelligence Active" },
 };
 
 interface LiveCallInlineProps {
