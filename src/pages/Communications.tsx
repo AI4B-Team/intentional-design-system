@@ -130,6 +130,51 @@ function ChannelBadge({ channel }: { channel: string }) {
   );
 }
 
+// Notes & Summary section for the Strategy Panel
+function CallNotesSection({ contactName }: { contactName: string }) {
+  const [notes, setNotes] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    setSaved(true);
+    toast.success("Notes saved");
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+      <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5 flex items-center gap-1.5">
+        <FileText className="h-3 w-3" /> Call Notes
+      </div>
+      <textarea
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
+        placeholder={`Add notes about ${contactName.split(" ")[0]}'s situation, property details, motivation, timeline...`}
+        className="w-full min-h-[80px] max-h-[160px] resize-y rounded-md border border-border bg-background px-2.5 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary/40 transition-all"
+      />
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-[10px] text-muted-foreground">
+          {notes.length > 0 ? `${notes.length} chars` : "No notes yet"}
+        </span>
+        <button
+          onClick={handleSave}
+          disabled={notes.length === 0}
+          className={cn(
+            "px-3 py-1 rounded text-[11px] font-semibold transition-all",
+            saved
+              ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+              : notes.length > 0
+                ? "bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20"
+                : "bg-muted text-muted-foreground/50 border border-border/50 cursor-not-allowed"
+          )}
+        >
+          {saved ? "✓ Saved" : "Save Notes"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function DirectionBadge({ direction }: { direction: string }) {
   return (
     <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium", direction === "inbound" ? "text-emerald-600" : "text-muted-foreground")}>
@@ -876,6 +921,34 @@ function CoPilotPanel({
               <Hand className="h-4 w-4" />
               Take Over Call
             </button>
+
+            {/* AI Call Summary */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> AI Call Summary
+              </div>
+              <div className="text-xs text-foreground leading-relaxed space-y-1.5">
+                <div className="flex items-start gap-1.5">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span>Seller confirmed ownership of property</span>
+                </div>
+                <div className="flex items-start gap-1.5">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span>Motivated — behind on payments 2 months</span>
+                </div>
+                <div className="flex items-start gap-1.5">
+                  <span className="text-primary mt-0.5">•</span>
+                  <span>Timeline: wants to close within 30 days</span>
+                </div>
+                <div className="flex items-start gap-1.5">
+                  <span className="text-muted-foreground mt-0.5 animate-pulse">•</span>
+                  <span className="text-muted-foreground italic">Listening for more details...</span>
+                </div>
+              </div>
+            </div>
+
+            {/* User Notes */}
+            <CallNotesSection contactName={contact.name} />
           </div>
         ) : (
           /* ===== STATIC MODE (NOT ON CALL) ===== */
@@ -968,6 +1041,9 @@ function CoPilotPanel({
                 </button>
               ))}
             </div>
+
+            {/* User Notes */}
+            <CallNotesSection contactName={contact.name} />
           </div>
         )}
       </div>
