@@ -2205,22 +2205,19 @@ export default function Communications() {
                       </div>
                     )}
                     {callState.isCallActive && (
-                      <div className="px-3 py-2.5 border-b border-border flex flex-col gap-2">
-                        <div className="flex items-center justify-between">
-                          <ChannelFilters activeFilter={channelFilter} onFilter={setChannelFilter} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => setLeftPanelOpen(false)}
-                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                              >
-                                <ChevronLeft className="h-3.5 w-3.5" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Minimize</TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <StatusFilters activeStatus={statusFilter} onFilter={setStatusFilter} />
+                      <div className="px-3 py-2.5 border-b border-border flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Contacts</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setLeftPanelOpen(false)}
+                              className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                            >
+                              <ChevronLeft className="h-3.5 w-3.5" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Minimize</TooltipContent>
+                        </Tooltip>
                       </div>
                     )}
                     <div className="flex-1 overflow-auto">
