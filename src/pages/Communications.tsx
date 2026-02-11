@@ -366,10 +366,10 @@ function ContactListItem({ contact, isActive, onClick, onCall, onSms, onCopy, on
                     onClick={e => { e.stopPropagation(); onCopy?.(); }}
                     className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    <FileText className="h-3.5 w-3.5" />
+                    <Mail className="h-3.5 w-3.5" />
                   </button>
                 </TooltipTrigger>
-                <TooltipContent>Copy Phone</TooltipContent>
+                <TooltipContent>Email</TooltipContent>
               </Tooltip>
               {/* 3-dot menu */}
               <DropdownMenu>
