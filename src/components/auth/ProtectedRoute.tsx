@@ -13,9 +13,10 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
   const { organization, loading: orgLoading } = useOrganization();
   const location = useLocation();
 
-  // Show loading while checking auth
+  // During auth loading on refresh, render children (layout + sidebar stay visible)
+  // with an opacity transition so there's no jarring flash
   if (authLoading) {
-    return <LoadingPage message="Loading..." />;
+    return <div className="opacity-50 pointer-events-none transition-opacity duration-200">{children}</div>;
   }
 
   // Not authenticated - redirect to login
