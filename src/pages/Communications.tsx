@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useDealSources, type DealSource } from "@/hooks/useDealSources";
 import {
   Phone,
   MessageCircle,
@@ -97,6 +98,15 @@ interface Contact {
   unread: boolean;
   starred: boolean;
   activities: Activity[];
+  // DB-linked fields from deal_sources
+  dbId?: string; // deal_sources.id for linking
+  phone?: string;
+  email?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  company?: string;
+  contactType?: string;
 }
 
 const INITIAL_CONTACTS: Contact[] = [
@@ -454,23 +464,30 @@ function ConversationThread({
               <div className="flex items-center gap-2 text-xs">
                 <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 <span className="text-muted-foreground">City/State:</span>
-                <span className="font-medium text-foreground">Houston, TX 77001</span>
+                <span className="font-medium text-foreground">
+                  {[contact.city, contact.state].filter(Boolean).join(", ") || "—"}
+                  {contact.zip ? ` ${contact.zip}` : ""}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 <span className="text-muted-foreground">Phone:</span>
-                <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">(555) 000-0000</button>
-                <button onClick={() => { navigator.clipboard.writeText("5550000000"); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-                  <Copy className="h-3 w-3 text-muted-foreground" />
-                </button>
+                <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">{contact.phone || "—"}</button>
+                {contact.phone && (
+                  <button onClick={() => { navigator.clipboard.writeText(contact.phone || ""); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+                    <Copy className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                 <span className="text-muted-foreground">Email:</span>
-                <span className="font-medium text-foreground">{contact.name.toLowerCase().replace(' ', '.')}@email.com</span>
-                <button onClick={() => { navigator.clipboard.writeText(`${contact.name.toLowerCase().replace(' ', '.')}@email.com`); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-                  <Copy className="h-3 w-3 text-muted-foreground" />
-                </button>
+                <span className="font-medium text-foreground">{contact.email || "—"}</span>
+                {contact.email && (
+                  <button onClick={() => { navigator.clipboard.writeText(contact.email || ""); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
+                    <Copy className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                )}
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -479,8 +496,8 @@ function ConversationThread({
               </div>
               <div className="flex items-center gap-2 text-xs">
                 <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Lead Score:</span>
-                <span className="font-medium text-primary">Hot</span>
+                <span className="text-muted-foreground">Type:</span>
+                <span className="font-medium text-primary">{contact.tag}</span>
               </div>
             </div>
           </div>
@@ -1256,15 +1273,60 @@ function DialerView() {
 // ============================================================================
 export default function Communications() {
   const callState = useCallState();
+  const navigate = useNavigate();
+  const { data: dbContacts = [], isLoading: isLoadingContacts } = useDealSources();
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [contacts, setContacts] = useState<Contact[]>(INITIAL_CONTACTS);
+  const [localActivities, setLocalActivities] = useState<Record<string, Activity[]>>({});
   const [messageInput, setMessageInput] = useState("");
   const [sendChannel, setSendChannel] = useState("sms");
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
+
+  // Convert deal_sources to Contact format, merging with mock activities for demo
+  const contacts: Contact[] = useMemo(() => {
+    if (dbContacts.length === 0) return INITIAL_CONTACTS;
+
+    return dbContacts.map((ds, i) => {
+      const initials = ds.name
+        .split(" ")
+        .map(n => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2);
+      
+      // Use mock activities from INITIAL_CONTACTS for demo purposes (cycling through them)
+      const mockContact = INITIAL_CONTACTS[i % INITIAL_CONTACTS.length];
+      const activities = localActivities[ds.id] || mockContact?.activities || [];
+
+      return {
+        id: ds.id,
+        dbId: ds.id,
+        name: ds.name,
+        address: ds.address || "No address",
+        tag: ds.type ? ds.type.charAt(0).toUpperCase() + ds.type.slice(1) : "Contact",
+        avatar: initials,
+        sentiment: "neutral",
+        lastActivity: ds.last_contact_date 
+          ? new Date(ds.last_contact_date).toLocaleDateString() 
+          : ds.updated_at 
+            ? new Date(ds.updated_at).toLocaleDateString()
+            : "—",
+        unread: false,
+        starred: false,
+        activities,
+        phone: ds.phone || undefined,
+        email: ds.email || undefined,
+        city: ds.city || undefined,
+        state: ds.state || undefined,
+        zip: ds.zip || undefined,
+        company: ds.company || undefined,
+        contactType: ds.type,
+      };
+    });
+  }, [dbContacts, localActivities]);
 
   const selectedContact = useMemo(() => contacts.find(c => c.id === selectedContactId) || null, [contacts, selectedContactId]);
 
@@ -1302,14 +1364,9 @@ export default function Communications() {
       sentiment: "neutral",
     };
 
-    setContacts(prev => prev.map(c => {
-      if (c.id !== selectedContactId) return c;
-      return {
-        ...c,
-        activities: [...c.activities, newActivity],
-        lastActivity: "Just now",
-        unread: false,
-      };
+    setLocalActivities(prev => ({
+      ...prev,
+      [selectedContactId]: [...(prev[selectedContactId] || selectedContact?.activities || []), newActivity],
     }));
 
     toast.success(`${sendChannel.toUpperCase()} sent to ${selectedContact?.name}`);
@@ -1321,7 +1378,7 @@ export default function Communications() {
     callState.startCall({
       id: selectedContact.id,
       name: selectedContact.name,
-      phone: "(555) 000-0000",
+      phone: selectedContact.phone || "No phone",
       address: selectedContact.address,
     }, "inline");
   }, [selectedContact, callState]);
@@ -1337,8 +1394,6 @@ export default function Communications() {
 
   const handleSelectContact = useCallback((id: string) => {
     setSelectedContactId(id);
-    // Mark as read
-    setContacts(prev => prev.map(c => c.id === id ? { ...c, unread: false } : c));
     setMessageInput("");
   }, []);
 
@@ -1417,7 +1472,7 @@ export default function Communications() {
                             callState.startCall({
                               id: contact.id,
                               name: contact.name,
-                              phone: "(555) 000-0000",
+                              phone: contact.phone || "No phone",
                               address: contact.address,
                             }, "inline");
                           }}
@@ -1427,7 +1482,7 @@ export default function Communications() {
                             toast.info(`SMS to ${contact.name} — type your message`);
                           }}
                           onCopy={() => {
-                            navigator.clipboard.writeText("(555) 000-0000");
+                            navigator.clipboard.writeText(contact.phone || "");
                             toast.success(`Phone number copied for ${contact.name}`);
                           }}
                         />
