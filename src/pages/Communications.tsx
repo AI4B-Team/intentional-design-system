@@ -1775,6 +1775,29 @@ export default function Communications() {
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Mode Buttons */}
+            {(Object.entries(MODE_THEME) as [CallingModeKey, typeof MODE_THEME[CallingModeKey]][]).map(([key, theme]) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setCallingMode(key);
+                  if (key === "voice") toast.info("AI Agent mode — AI handles calls autonomously");
+                  if (key === "listen") toast.info("Hybrid mode — AI assists during your calls");
+                }}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+                  callingMode === key
+                    ? cn(theme.badge, theme.border, theme.badgeText)
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                {key === "start" && <Play className="h-3 w-3" />}
+                {key === "listen" && <Sparkles className="h-3 w-3" />}
+                {key === "voice" && <Sparkles className="h-3 w-3" />}
+                {theme.label === "Human Mode" ? "Human" : theme.label === "Hybrid Mode" ? "Hybrid" : "AI Agent"}
+              </button>
+            ))}
+
             <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
               <Search className="h-3.5 w-3.5 text-muted-foreground" />
               <input
