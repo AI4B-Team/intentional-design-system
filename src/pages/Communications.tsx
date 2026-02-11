@@ -15,7 +15,7 @@ import {
   Send,
   ChevronRight,
   ChevronLeft,
-  Play,
+  Play, 
   Mic,
   ArrowDownLeft,
   ArrowUpRight,
