@@ -73,7 +73,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
           >
             <Circle className="h-5 w-5" />
             {isRecording && (
-              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse" />
+              <span className="absolute inset-0 m-auto h-2 w-2 rounded-full bg-destructive animate-pulse" />
             )}
           </button>
         </TooltipTrigger>
