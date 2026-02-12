@@ -478,7 +478,7 @@ function ChannelToolset({ channel }: { channel: string }) {
           <ArrowUpRight className="h-3 w-3" /> Outbound
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-500/25 transition-colors">
-          <Calendar className="h-3 w-3" /> Follow-ups
+          <Calendar className="h-3 w-3" /> Follow-Ups
         </button>
       </div>
     );
