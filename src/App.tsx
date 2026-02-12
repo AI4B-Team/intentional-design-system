@@ -8,6 +8,7 @@ import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { AIVAProvider } from "@/contexts/AIVAContext";
 import { CallProvider } from "@/contexts/CallContext";
 import { LiveCallOverlay } from "@/components/calling/LiveCallOverlay";
+import { FloatingCallBanner } from "@/components/calling/FloatingCallBanner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PWAProvider } from "@/components/pwa";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -152,6 +153,7 @@ const App = () => (
                 <Sonner />
                 <BrowserRouter>
                   <LiveCallOverlay />
+                  <FloatingCallBanner />
                   <AIVAPanelWrapper />
                   <div className="flex flex-col min-h-screen overflow-visible">
                   <Routes>
