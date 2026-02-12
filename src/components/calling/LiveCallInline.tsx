@@ -6,6 +6,7 @@ import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import type { CallingModeKey } from "@/pages/Communications";
 
@@ -145,7 +146,14 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[15px] font-semibold text-foreground">{currentContact?.name}</span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-[15px] font-semibold text-foreground truncate max-w-[180px] block">{currentContact?.name}</span>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground border-border">
+                  {currentContact?.name}
+                </TooltipContent>
+              </Tooltip>
             </div>
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className={cn("font-mono font-bold transition-colors", mc.accent)}>{callStatus === "ringing" ? "Ringing..." : formatCallDuration(callDuration)}</span>
