@@ -67,14 +67,11 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
             className={cn(
               "relative flex items-center justify-center h-10 w-10 rounded-lg transition-colors",
               isRecording
-                ? "text-muted-foreground"
+                ? "bg-destructive/10 animate-[pulse_3s_ease-in-out_infinite]"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >
-            <Circle className="h-5 w-5" />
-            {isRecording && (
-              <span className="absolute inset-0 m-auto h-2 w-2 rounded-full bg-destructive animate-pulse" />
-            )}
+            <Circle className={cn("h-5 w-5", isRecording ? "text-destructive fill-destructive" : "")} />
           </button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">{isRecording ? "Stop Recording" : "Record"}</TooltipContent>
