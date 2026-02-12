@@ -175,41 +175,66 @@ function CallNotesSection({ contactName }: { contactName: string }) {
   );
 }
 
-// Collapsible AI Call Summary — collapsed by default
-function LiveCallSummaryCollapsible() {
-  const [open, setOpen] = useState(false);
+// Reusable collapsible panel for right-panel sections
+function CollapsiblePanel({
+  title,
+  icon,
+  defaultOpen = true,
+  iconClassName,
+  headerClassName,
+  children,
+}: {
+  title: string;
+  icon?: React.ReactNode;
+  defaultOpen?: boolean;
+  iconClassName?: string;
+  headerClassName?: string;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="rounded-lg border border-border/50 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3.5 py-2.5 text-[11px] font-semibold tracking-wider uppercase text-muted-foreground hover:bg-muted/30 transition-colors"
+        className={cn(
+          "w-full flex items-center justify-between px-3.5 py-2.5 text-[11px] font-semibold tracking-wider uppercase text-muted-foreground hover:bg-muted/30 transition-colors",
+          headerClassName
+        )}
       >
         <span className="flex items-center gap-1.5">
-          <Sparkles className="h-3 w-3" /> AI Call Summary
+          {icon}
+          {title}
         </span>
-        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform duration-200", open && "rotate-180")} />
       </button>
-      {open && (
-        <div className="px-3.5 pb-3 text-xs text-foreground leading-relaxed space-y-1.5">
-          <div className="flex items-start gap-1.5">
-            <span className="text-primary mt-0.5">•</span>
-            <span>Seller confirmed ownership of property</span>
-          </div>
-          <div className="flex items-start gap-1.5">
-            <span className="text-primary mt-0.5">•</span>
-            <span>Motivated — behind on payments 2 months</span>
-          </div>
-          <div className="flex items-start gap-1.5">
-            <span className="text-primary mt-0.5">•</span>
-            <span>Timeline: wants to close within 30 days</span>
-          </div>
-          <div className="flex items-start gap-1.5">
-            <span className="text-muted-foreground mt-0.5 animate-pulse">•</span>
-            <span className="text-muted-foreground italic">Listening for more details...</span>
-          </div>
-        </div>
-      )}
+      {open && <div className="px-3.5 pb-3">{children}</div>}
     </div>
+  );
+}
+
+// Collapsible AI Call Summary — collapsed by default
+function LiveCallSummaryCollapsible() {
+  return (
+    <CollapsiblePanel title="AI Call Summary" icon={<Sparkles className="h-3 w-3" />} defaultOpen={false}>
+      <div className="text-xs text-foreground leading-relaxed space-y-1.5">
+        <div className="flex items-start gap-1.5">
+          <span className="text-primary mt-0.5">•</span>
+          <span>Seller confirmed ownership of property</span>
+        </div>
+        <div className="flex items-start gap-1.5">
+          <span className="text-primary mt-0.5">•</span>
+          <span>Motivated — behind on payments 2 months</span>
+        </div>
+        <div className="flex items-start gap-1.5">
+          <span className="text-primary mt-0.5">•</span>
+          <span>Timeline: wants to close within 30 days</span>
+        </div>
+        <div className="flex items-start gap-1.5">
+          <span className="text-muted-foreground mt-0.5 animate-pulse">•</span>
+          <span className="text-muted-foreground italic">Listening for more details...</span>
+        </div>
+      </div>
+    </CollapsiblePanel>
   );
 }
 
@@ -898,8 +923,7 @@ function CoPilotPanel({
           /* ===== LIVE MODE — Focused & Urgent ===== */
           <div className="space-y-3">
             {/* 1. Contact Details — Always Top */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Details</div>
+            <CollapsiblePanel title="Contact Details" icon={<Home className="h-3 w-3" />} defaultOpen={true}>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs">
                   <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -930,51 +954,49 @@ function CoPilotPanel({
                   <span className="font-medium text-primary">{contact.tag}</span>
                 </div>
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 2. Live Sentiment + Deal Probability */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Live Sentiment</div>
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full transition-all duration-500",
-                      callState.sentiment === "positive" ? "bg-emerald-500" :
-                      callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
-                    )}
-                    style={{ width: `${callState.sentimentScore}%` }}
-                  />
-                </div>
-                <span className={cn(
-                  "text-xs font-bold capitalize",
-                  callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
-                )}>
-                  {callState.sentiment}
-                </span>
-              </div>
-              <div className="border-t border-border/50 pt-3">
-                <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <div className="h-2 rounded-full bg-border overflow-hidden">
-                      <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
-                    </div>
-                    <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
+            <CollapsiblePanel title="Live Sentiment" defaultOpen={true}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full transition-all duration-500",
+                        callState.sentiment === "positive" ? "bg-emerald-500" :
+                        callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                      )}
+                      style={{ width: `${callState.sentimentScore}%` }}
+                    />
                   </div>
-                  <div className="text-2xl font-bold text-primary font-mono">72%</div>
+                  <span className={cn(
+                    "text-xs font-bold capitalize",
+                    callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                  )}>
+                    {callState.sentiment}
+                  </span>
+                </div>
+                <div className="border-t border-border/50 pt-3">
+                  <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="h-2 rounded-full bg-border overflow-hidden">
+                        <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
+                    </div>
+                    <div className="text-2xl font-bold text-primary font-mono">72%</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 3. Directive */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Directive
-              </div>
+            <CollapsiblePanel title="Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
               <div className="text-xs text-foreground leading-relaxed font-medium">
                 {contact.activities[contact.activities.length - 1]?.aiSuggestion?.replace(/^[^\w]*/, '').slice(0, 120) || "Listening for patterns..."}
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 4. Take Over Call (only when AI Agent or Hybrid active) */}
             {callingMode !== "start" && (
@@ -997,8 +1019,7 @@ function CoPilotPanel({
           /* ===== STATIC MODE (NOT ON CALL) ===== */
           <div className="space-y-3">
             {/* 1. Contact Details */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Details</div>
+            <CollapsiblePanel title="Contact Details" icon={<Home className="h-3 w-3" />} defaultOpen={true}>
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs">
                   <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -1029,11 +1050,10 @@ function CoPilotPanel({
                   <span className="font-medium text-primary">{contact.tag}</span>
                 </div>
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 2. Prospect Sentiment */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
+            <CollapsiblePanel title="Prospect Sentiment" defaultOpen={true}>
               <div className="flex items-center gap-2.5">
                 <div className="h-1.5 flex-1 rounded-full bg-border overflow-hidden">
                   <div
@@ -1048,21 +1068,17 @@ function CoPilotPanel({
                   {contact.sentiment}
                 </span>
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 3. Directive */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Directive
-              </div>
+            <CollapsiblePanel title="Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
               <div className="text-xs text-foreground leading-relaxed font-medium">
                 {contact.activities[contact.activities.length - 1]?.aiSuggestion || "Awaiting data to generate directive."}
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 4. Communication Summary */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Communication Summary</div>
+            <CollapsiblePanel title="Communication Summary" defaultOpen={true}>
               <div className="space-y-2">
                 {Object.entries(
                   contact.activities.reduce<Record<string, number>>((acc, a) => { acc[a.channel] = (acc[a.channel] || 0) + 1; return acc; }, {})
@@ -1073,11 +1089,10 @@ function CoPilotPanel({
                   </div>
                 ))}
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 5. Related Conversations */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Related Conversations</div>
+            <CollapsiblePanel title="Related Conversations" defaultOpen={false}>
               <div className="space-y-1.5">
                 {[...contact.activities].reverse().slice(0, 5).map((act) => {
                   const config = CHANNEL_CONFIG[act.channel];
@@ -1100,7 +1115,7 @@ function CoPilotPanel({
                   );
                 })}
               </div>
-            </div>
+            </CollapsiblePanel>
 
             {/* 6. Notes */}
             <CallNotesSection contactName={contact.name} />
