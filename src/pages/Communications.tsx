@@ -723,6 +723,15 @@ function ConversationThread({
           </button>
           <button
             onClick={() => {
+              onMessageInputChange("Based on comparable sales in the area, I'm looking at an offer range of $165k–$180k. Let me walk you through the numbers.");
+              toast.info("Offer range template inserted");
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 transition-colors"
+          >
+            <FileText className="h-3 w-3" /> Insert Offer
+          </button>
+          <button
+            onClick={() => {
               if (messageInput.trim()) {
                 toast.info("Rewriting with AI...");
                 setTimeout(() => {
@@ -736,15 +745,6 @@ function ConversationThread({
             className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 transition-colors"
           >
             <Sparkles className="h-3 w-3" /> Rewrite
-          </button>
-          <button
-            onClick={() => {
-              onMessageInputChange("Based on comparable sales in the area, I'm looking at an offer range of $165k–$180k. Let me walk you through the numbers.");
-              toast.info("Offer range template inserted");
-            }}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-border/50 transition-colors"
-          >
-            <FileText className="h-3 w-3" /> Insert Offer
           </button>
         </div>
         {/* Input row */}
