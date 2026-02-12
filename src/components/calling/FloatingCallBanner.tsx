@@ -4,6 +4,7 @@ import { PhoneCall, Mic, MicOff, Pause, Play, PhoneOff, Maximize2, Circle } from
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "react-router-dom";
 import {
   Tooltip,
   TooltipContent,
@@ -27,9 +28,14 @@ export function FloatingCallBanner() {
     setDisplayMode,
   } = useCallState();
 
-  // Only show when there's an active call and the user isn't already viewing it fullscreen
+  const location = useLocation();
+
+  const isOnDialerPage = location.pathname.startsWith("/dialer") || location.pathname.startsWith("/communications");
+
+  // Only show when there's an active call and the user has navigated away from the dialer
   if (!isCallActive) return null;
   if (displayMode === "fullscreen") return null;
+  if (isOnDialerPage) return null;
 
   return (
     <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] animate-in slide-in-from-bottom-4 fade-in-0 duration-300">
