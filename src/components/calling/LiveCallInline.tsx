@@ -67,7 +67,7 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
             className={cn(
               "relative flex items-center justify-center h-10 w-10 rounded-lg transition-colors",
               isRecording
-                ? "bg-destructive/10 animate-[pulse_3s_ease-in-out_infinite]"
+                ? "bg-destructive/10 animate-pulse-slow"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
             )}
           >

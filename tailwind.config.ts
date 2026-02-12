@@ -216,6 +216,10 @@ export default {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.7" },
         },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -229,6 +233,7 @@ export default {
         "shimmer": "shimmer 1.5s infinite",
         "spin": "spin 1s linear infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
+        "pulse-slow": "pulse-slow 3s ease-in-out infinite",
       },
     },
   },

@@ -100,7 +100,7 @@ export function FloatingCallBanner() {
               <Button
                 size="icon"
                 variant="ghost"
-                className={cn("h-8 w-8 hover:bg-background/10", isRecording && "bg-destructive/20 animate-[pulse_3s_ease-in-out_infinite]")}
+                className={cn("h-8 w-8 hover:bg-background/10", isRecording && "bg-destructive/20 animate-pulse-slow")}
                 onClick={toggleRecording}
               >
                 <Circle className={cn("h-4 w-4", isRecording ? "text-destructive fill-destructive" : "text-background/80")} />
