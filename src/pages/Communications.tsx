@@ -434,9 +434,9 @@ function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFi
 function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFilter: (s: string) => void }) {
   const statuses = [
     { key: "all", label: "All" },
-    { key: "unread", label: "Unread", dotClass: "bg-emerald-500" },
+    { key: "unread", label: "New", dotClass: "bg-emerald-500" },
     { key: "starred", label: "Starred", dotClass: "bg-amber-500" },
-    { key: "needs_response", label: "Needs Attention", dotClass: "bg-violet-500" },
+    { key: "needs_response", label: "Needs Action", dotClass: "bg-violet-500" },
   ];
   return (
     <div className="flex gap-1.5">
