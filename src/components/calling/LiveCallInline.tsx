@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw, Megaphone } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
   const {
     isCallActive, callStatus, currentContact, callDuration, transcript,
     sentiment, sentimentScore, currentCallPhase, aiSuggestions,
-    setDisplayMode, addTranscriptEntry,
+    setDisplayMode, addTranscriptEntry, incrementGoal,
   } = useCallState();
 
   const mc = MODE_COLORS[callingMode];
@@ -95,6 +95,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
   const [aiStatusIdx, setAiStatusIdx] = useState(0);
+  const [offerPanelOpen, setOfferPanelOpen] = useState(false);
 
   // Cycle AI status indicator
   useEffect(() => {
@@ -160,6 +161,12 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold", mc.badgeBg, mc.accent)}>
                 {currentCallPhase}
               </span>
+              {currentContact?.campaignName && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                  <Megaphone className="h-2.5 w-2.5" />
+                  {currentContact.campaignName}
+                </span>
+              )}
               <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-muted text-muted-foreground">
                 {sentimentScore}%
               </span>
@@ -377,14 +384,70 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                   Strategy
                 </button>
                 <button
-                  onClick={() => toast.info("Opening offer builder...")}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  onClick={() => {
+                    setOfferPanelOpen(!offerPanelOpen);
+                    if (!offerPanelOpen) {
+                      toast.info("Pulling ARV, rehab estimate & margin rules...");
+                      incrementGoal("offersSent");
+                    }
+                  }}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors",
+                    offerPanelOpen
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground hover:text-foreground hover:bg-muted"
+                  )}
                 >
                   <BarChart3 className="h-3 w-3" />
-                  Offer
+                  Insert Offer
                 </button>
               </div>
             </div>
+
+            {/* Offer Insert Panel */}
+            {offerPanelOpen && (
+              <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                    <FileText className="h-3 w-3 text-amber-500" /> Quick Offer Builder
+                  </span>
+                  <button onClick={() => setOfferPanelOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground"><X className="h-3 w-3" /></button>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">ARV</div>
+                    <div className="text-sm font-bold text-foreground">$285k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">Repairs</div>
+                    <div className="text-sm font-bold text-foreground">$45k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">MAO (70%)</div>
+                    <div className="text-sm font-bold text-primary">$154k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">Suggested</div>
+                    <div className="text-sm font-bold text-emerald-600">$165k–$180k</div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => {
+                    addTranscriptEntry({ speaker: "user", text: "Based on my analysis, I can offer between $165,000 and $180,000 cash, close in 14 days, no repairs needed on your end." });
+                    toast.success("Offer script inserted into conversation");
+                    setOfferPanelOpen(false);
+                  }} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+                    Use Offer Script
+                  </button>
+                  <button onClick={() => {
+                    toast.success("Offer logged to deal pipeline");
+                    setOfferPanelOpen(false);
+                  }} className="px-4 py-2 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Log Offer
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="flex gap-3">
               {aiSuggestions.slice(0, 3).map(s => (
                 <div key={s.id} className="flex-1 flex flex-col bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all overflow-hidden">

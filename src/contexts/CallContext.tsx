@@ -12,6 +12,15 @@ export interface CallContact {
   address?: string;
   tag?: string;
   avatar?: string;
+  // Campaign & Pipeline integration
+  campaignId?: string;
+  campaignName?: string;
+  propertyId?: string;
+  listPrice?: number;
+  arv?: number;
+  repairEstimate?: number;
+  pipelineStage?: string;
+  leadScore?: number;
 }
 
 export type CallMode = "quick" | "dialer" | "inline";
@@ -37,6 +46,25 @@ export interface CallScript {
   name: string;
   type: string;
   phases: string[];
+}
+
+export interface PostCallAction {
+  id: string;
+  type: "follow_up_task" | "sms_draft" | "email_summary" | "reminder" | "pipeline_update" | "offer_logged";
+  label: string;
+  detail: string;
+  completed: boolean;
+}
+
+export interface DailyGoals {
+  callsTarget: number;
+  callsMade: number;
+  connectionsTarget: number;
+  connectionsMade: number;
+  appointmentsTarget: number;
+  appointmentsSet: number;
+  offersTarget: number;
+  offersSent: number;
 }
 
 export interface CallState {
@@ -67,6 +95,10 @@ export interface CallState {
   currentCallPhase: string;
   aiSuggestions: AISuggestion[];
 
+  // Post-call automation
+  postCallActions: PostCallAction[];
+  dailyGoals: DailyGoals;
+
   // Actions
   startCall: (contact: CallContact, mode: CallMode) => void;
   endCall: () => void;
@@ -82,6 +114,7 @@ export interface CallState {
   setSelectedScript: (script: CallScript | null) => void;
   addTranscriptEntry: (entry: Omit<TranscriptEntry, "id" | "timestamp">) => void;
   dismissCall: () => void;
+  incrementGoal: (key: "callsMade" | "connectionsMade" | "appointmentsSet" | "offersSent") => void;
 }
 
 // ============================================================================
@@ -131,6 +164,13 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const [sentimentScore, setSentimentScore] = useState(50);
   const [currentCallPhase, setCurrentCallPhase] = useState(CALL_PHASES[0]);
   const [aiSuggestions, setAiSuggestions] = useState<AISuggestion[]>([]);
+  const [postCallActions, setPostCallActions] = useState<PostCallAction[]>([]);
+  const [dailyGoals, setDailyGoals] = useState<DailyGoals>({
+    callsTarget: 50, callsMade: 0,
+    connectionsTarget: 15, connectionsMade: 0,
+    appointmentsTarget: 5, appointmentsSet: 0,
+    offersTarget: 3, offersSent: 0,
+  });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const autoAdvanceRef = useRef<NodeJS.Timeout | null>(null);
@@ -218,6 +258,20 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     const contactName = currentContact?.name || "Unknown";
     setCallStatus("ended");
     setIsCallActive(false);
+    
+    // Increment daily goals
+    setDailyGoals(prev => ({ ...prev, callsMade: prev.callsMade + 1 }));
+    
+    // Generate post-call automation actions
+    const actions: PostCallAction[] = [
+      { id: "pca1", type: "follow_up_task", label: "Follow-up Task Created", detail: `Call ${contactName} back in 2 days`, completed: true },
+      { id: "pca2", type: "sms_draft", label: "SMS Follow-up Drafted", detail: `"Thanks for chatting, ${contactName.split(" ")[0]}. I'll have numbers for you shortly."`, completed: true },
+      { id: "pca3", type: "email_summary", label: "Email Summary Sent", detail: `Call summary sent to CRM timeline`, completed: true },
+      { id: "pca4", type: "pipeline_update", label: "Pipeline Updated", detail: `Lead moved to "Warm" stage`, completed: true },
+      { id: "pca5", type: "reminder", label: "Reminder Set", detail: `Follow-up reminder in 48 hours`, completed: true },
+    ];
+    setPostCallActions(actions);
+
     toast.info(`Call with ${contactName} ended — ${formatDuration(callDuration)}`);
 
     // If in dialer session, start auto-advance
@@ -284,6 +338,10 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     setAutoAdvanceCountdown(null);
   }, []);
 
+  const incrementGoal = useCallback((key: "callsMade" | "connectionsMade" | "appointmentsSet" | "offersSent") => {
+    setDailyGoals(prev => ({ ...prev, [key]: prev[key] + 1 }));
+  }, []);
+
   const addTranscriptEntry = useCallback((entry: Omit<TranscriptEntry, "id" | "timestamp">) => {
     setTranscript(prev => [...prev, { ...entry, id: `t_${Date.now()}`, timestamp: Date.now() }]);
   }, []);
@@ -308,6 +366,8 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     sentimentScore,
     currentCallPhase,
     aiSuggestions,
+    postCallActions,
+    dailyGoals,
     startCall,
     endCall,
     toggleMute,
@@ -322,6 +382,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     setSelectedScript,
     addTranscriptEntry,
     dismissCall,
+    incrementGoal,
   };
 
   return <CallContext.Provider value={value}>{children}</CallContext.Provider>;
