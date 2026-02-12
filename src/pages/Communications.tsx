@@ -175,6 +175,44 @@ function CallNotesSection({ contactName }: { contactName: string }) {
   );
 }
 
+// Collapsible AI Call Summary — collapsed by default
+function LiveCallSummaryCollapsible() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-lg border border-border/50 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-3.5 py-2.5 text-[11px] font-semibold tracking-wider uppercase text-muted-foreground hover:bg-muted/30 transition-colors"
+      >
+        <span className="flex items-center gap-1.5">
+          <Sparkles className="h-3 w-3" /> AI Call Summary
+        </span>
+        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="px-3.5 pb-3 text-xs text-foreground leading-relaxed space-y-1.5">
+          <div className="flex items-start gap-1.5">
+            <span className="text-primary mt-0.5">•</span>
+            <span>Seller confirmed ownership of property</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-primary mt-0.5">•</span>
+            <span>Motivated — behind on payments 2 months</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-primary mt-0.5">•</span>
+            <span>Timeline: wants to close within 30 days</span>
+          </div>
+          <div className="flex items-start gap-1.5">
+            <span className="text-muted-foreground mt-0.5 animate-pulse">•</span>
+            <span className="text-muted-foreground italic">Listening for more details...</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DirectionBadge({ direction }: { direction: string }) {
   return (
     <span className={cn("inline-flex items-center gap-1 text-[11px] font-medium", direction === "inbound" ? "text-emerald-600" : "text-muted-foreground")}>
@@ -859,64 +897,7 @@ function CoPilotPanel({
         ) : isLiveCall ? (
           /* ===== LIVE MODE — Focused & Urgent ===== */
           <div className="space-y-3">
-            {/* Sentiment - Compact */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
-              <div className="flex items-center gap-2.5">
-                <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
-                  <div
-                    className={cn("h-full rounded-full transition-all duration-500",
-                      callState.sentiment === "positive" ? "bg-emerald-500" :
-                      callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
-                    )}
-                    style={{ width: `${callState.sentimentScore}%` }}
-                  />
-                </div>
-                <span className={cn(
-                  "text-xs font-bold capitalize",
-                  callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
-                )}>
-                  {callState.sentiment}
-                </span>
-              </div>
-            </div>
-
-            {/* Directive - Primary focus */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> Directive
-              </div>
-              <div className="text-xs text-foreground leading-relaxed font-medium">
-                {contact.activities[contact.activities.length - 1]?.aiSuggestion?.replace(/^[^\w]*/, '').slice(0, 120) || "Listening for patterns..."}
-              </div>
-            </div>
-
-            {/* Deal Probability */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
-                  <div className="h-2 rounded-full bg-border overflow-hidden">
-                    <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
-                  </div>
-                  <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
-                </div>
-                <div className="text-2xl font-bold text-primary font-mono">72%</div>
-              </div>
-            </div>
-
-
-
-            {/* Take Over Button */}
-            <button
-              onClick={() => toast.info("Taking over call...")}
-              className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
-            >
-              <Hand className="h-4 w-4" />
-              Take Over Call
-            </button>
-
-            {/* Contact Details */}
+            {/* 1. Contact Details — Always Top */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Details</div>
               <div className="space-y-2">
@@ -951,38 +932,104 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* AI Call Summary */}
-            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
-              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
-                <Sparkles className="h-3 w-3" /> AI Call Summary
+            {/* 2. Live Sentiment + Deal Probability */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Live Sentiment</div>
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
+                  <div
+                    className={cn("h-full rounded-full transition-all duration-500",
+                      callState.sentiment === "positive" ? "bg-emerald-500" :
+                      callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                    )}
+                    style={{ width: `${callState.sentimentScore}%` }}
+                  />
+                </div>
+                <span className={cn(
+                  "text-xs font-bold capitalize",
+                  callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                )}>
+                  {callState.sentiment}
+                </span>
               </div>
-              <div className="text-xs text-foreground leading-relaxed space-y-1.5">
-                <div className="flex items-start gap-1.5">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Seller confirmed ownership of property</span>
-                </div>
-                <div className="flex items-start gap-1.5">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Motivated — behind on payments 2 months</span>
-                </div>
-                <div className="flex items-start gap-1.5">
-                  <span className="text-primary mt-0.5">•</span>
-                  <span>Timeline: wants to close within 30 days</span>
-                </div>
-                <div className="flex items-start gap-1.5">
-                  <span className="text-muted-foreground mt-0.5 animate-pulse">•</span>
-                  <span className="text-muted-foreground italic">Listening for more details...</span>
+              <div className="border-t border-border/50 pt-3">
+                <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <div className="h-2 rounded-full bg-border overflow-hidden">
+                      <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
+                    </div>
+                    <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
+                  </div>
+                  <div className="text-2xl font-bold text-primary font-mono">72%</div>
                 </div>
               </div>
             </div>
 
-            {/* User Notes */}
+            {/* 3. Directive */}
+            <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
+              <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
+                <Sparkles className="h-3 w-3" /> Directive
+              </div>
+              <div className="text-xs text-foreground leading-relaxed font-medium">
+                {contact.activities[contact.activities.length - 1]?.aiSuggestion?.replace(/^[^\w]*/, '').slice(0, 120) || "Listening for patterns..."}
+              </div>
+            </div>
+
+            {/* 4. Take Over Call (only when AI active) */}
+            <button
+              onClick={() => toast.info("Taking over call...")}
+              className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
+            >
+              <Hand className="h-4 w-4" />
+              Take Over Call
+            </button>
+
+            {/* 5. Call Notes (auto-filled + editable) */}
             <CallNotesSection contactName={contact.name} />
+
+            {/* 6. AI Call Summary (collapsed by default) */}
+            <LiveCallSummaryCollapsible />
           </div>
         ) : (
           /* ===== STATIC MODE (NOT ON CALL) ===== */
           <div className="space-y-3">
-            {/* Sentiment */}
+            {/* 1. Contact Details */}
+            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
+              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Contact Details</div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Property:</span>
+                  <span className="font-medium text-foreground">{contact.address}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Location:</span>
+                  <span className="font-medium text-foreground">
+                    {[contact.city, contact.state].filter(Boolean).join(", ") || "—"}
+                    {contact.zip ? ` ${contact.zip}` : ""}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Phone:</span>
+                  <span className="font-medium text-foreground">{contact.phone || "—"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Email:</span>
+                  <span className="font-medium text-foreground">{contact.email || "—"}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                  <span className="text-muted-foreground">Type:</span>
+                  <span className="font-medium text-primary">{contact.tag}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Prospect Sentiment */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Prospect Sentiment</div>
               <div className="flex items-center gap-2.5">
@@ -1001,7 +1048,7 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Next Best Action */}
+            {/* 3. Directive */}
             <div className="p-3.5 bg-primary/5 rounded-lg border border-primary/20">
               <div className="text-[11px] text-primary font-semibold tracking-wider uppercase mb-2 flex items-center gap-1.5">
                 <Sparkles className="h-3 w-3" /> Directive
@@ -1011,7 +1058,7 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Communication Summary */}
+            {/* 4. Communication Summary */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Communication Summary</div>
               <div className="space-y-2">
@@ -1026,7 +1073,7 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Related Conversations */}
+            {/* 5. Related Conversations */}
             <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
               <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Related Conversations</div>
               <div className="space-y-1.5">
@@ -1053,26 +1100,11 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* Quick Replies */}
-            <div className="p-3.5 bg-muted/50 rounded-lg border border-border/50">
-              <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2.5">Quick Replies</div>
-              {[
-                `Hi ${contact.name.split(" ")[0]}, I completely understand your concerns. I want to make sure this works for you — can we chat briefly to go over the details?`,
-                `Hey ${contact.name.split(" ")[0]}, just following up on our last conversation. What does your timeline look like? I'd love to find a solution that fits your schedule.`,
-                `Hi ${contact.name.split(" ")[0]}, I pulled some recent sales data for your area that I think you'll find helpful. Would you like me to send it over?`,
-              ].map((reply, i) => (
-                <button
-                  key={i}
-                  onClick={() => onQuickReply(reply)}
-                  className="w-full text-left px-2.5 py-2 mb-1.5 bg-muted/80 border border-border/50 rounded text-xs text-muted-foreground hover:border-primary/30 hover:text-primary transition-all"
-                >
-                  {reply}
-                </button>
-              ))}
-            </div>
-
-            {/* User Notes */}
+            {/* 6. Notes */}
             <CallNotesSection contactName={contact.name} />
+
+            {/* 7. AI Summary (collapsed) */}
+            <LiveCallSummaryCollapsible />
           </div>
         )}
       </div>
