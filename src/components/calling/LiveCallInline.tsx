@@ -16,41 +16,61 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
   return (
     <div className="flex items-center gap-2">
       {callingMode !== "start" && (
-        <button
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-amber-300 bg-amber-50/80 text-amber-700 text-xs font-semibold hover:bg-amber-100 transition-colors"
-          onClick={() => toast.info("Taking over call...")}
-        >
-          <Hand className="h-4 w-4" /> Take Over
-        </button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              className="flex items-center justify-center h-10 w-10 rounded-lg border border-amber-300 bg-amber-50/80 text-amber-700 hover:bg-amber-100 transition-colors"
+              onClick={() => toast.info("Taking over call...")}
+            >
+              <Hand className="h-5 w-5" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="text-xs">Take Over</TooltipContent>
+        </Tooltip>
       )}
-      <button
-        onClick={toggleMute}
-        className={cn(
-          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors",
-          isMuted
-            ? "border-primary bg-primary/10 text-primary"
-            : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
-        )}
-      >
-        <Mic className="h-3.5 w-3.5" /> Mute
-      </button>
-      <button
-        onClick={toggleHold}
-        className={cn(
-          "flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-xs font-semibold transition-colors",
-          isOnHold
-            ? "border-primary bg-primary/10 text-primary"
-            : "border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
-        )}
-      >
-        <Pause className="h-3.5 w-3.5" /> Pause
-      </button>
-      <button
-        onClick={endCall}
-        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-destructive text-white text-xs font-semibold hover:bg-destructive/90 transition-colors"
-      >
-        <PhoneOff className="h-3.5 w-3.5" /> End
-      </button>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={toggleMute}
+            className={cn(
+              "flex items-center justify-center h-10 w-10 rounded-lg transition-colors",
+              isMuted
+                ? "bg-destructive/10 text-destructive"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Mic className="h-5 w-5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">{isMuted ? "Unmute" : "Mute"}</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={toggleHold}
+            className={cn(
+              "flex items-center justify-center h-10 w-10 rounded-lg transition-colors",
+              isOnHold
+                ? "bg-warning/10 text-warning"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Pause className="h-5 w-5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">{isOnHold ? "Resume" : "Hold"}</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={endCall}
+            className="flex items-center justify-center h-10 w-10 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+          >
+            <PhoneOff className="h-5 w-5" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">End Call</TooltipContent>
+      </Tooltip>
     </div>
   );
 }
