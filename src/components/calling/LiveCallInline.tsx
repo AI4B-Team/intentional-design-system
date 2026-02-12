@@ -9,6 +9,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import type { CallingModeKey } from "@/pages/Communications";
+import { CampaignContextStrip } from "@/components/dialer/campaign-context-strip";
+import { RevenueStrip } from "@/components/dialer/revenue-strip";
+import { OfferCalculator } from "@/components/dialer/offer-calculator";
 
 function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
   const { isMuted, isOnHold, toggleMute, toggleHold, endCall } = useCallState();
@@ -171,6 +174,15 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                 {sentimentScore}%
               </span>
             </div>
+            {/* Campaign Context Strip */}
+            <CampaignContextStrip
+              context={{
+                campaignName: currentContact?.campaignName || "Q1 Tampa Absentee Sellers",
+                listName: "High Equity + Vacant",
+                objective: "30-Day Close",
+                source: "Marketplace Search",
+              }}
+            />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -210,6 +222,9 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
           </div>
         </div>
       </div>
+
+      {/* Revenue Strip */}
+      <RevenueStrip className="mx-5 mt-3" />
 
       {/* Stage Progress Bar - Auto-advancing with pulse */}
       <div className="px-5 py-3 border-b border-border">
@@ -404,49 +419,21 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               </div>
             </div>
 
-            {/* Offer Insert Panel */}
+            {/* Offer Engine */}
             {offerPanelOpen && (
-              <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
-                    <FileText className="h-3 w-3 text-amber-500" /> Quick Offer Builder
-                  </span>
-                  <button onClick={() => setOfferPanelOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground"><X className="h-3 w-3" /></button>
-                </div>
-                <div className="grid grid-cols-4 gap-2 text-center">
-                  <div className="p-2 bg-background rounded-md border border-border">
-                    <div className="text-[10px] text-muted-foreground">ARV</div>
-                    <div className="text-sm font-bold text-foreground">$285k</div>
-                  </div>
-                  <div className="p-2 bg-background rounded-md border border-border">
-                    <div className="text-[10px] text-muted-foreground">Repairs</div>
-                    <div className="text-sm font-bold text-foreground">$45k</div>
-                  </div>
-                  <div className="p-2 bg-background rounded-md border border-border">
-                    <div className="text-[10px] text-muted-foreground">MAO (70%)</div>
-                    <div className="text-sm font-bold text-primary">$154k</div>
-                  </div>
-                  <div className="p-2 bg-background rounded-md border border-border">
-                    <div className="text-[10px] text-muted-foreground">Suggested</div>
-                    <div className="text-sm font-bold text-emerald-600">$165k–$180k</div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => {
-                    addTranscriptEntry({ speaker: "user", text: "Based on my analysis, I can offer between $165,000 and $180,000 cash, close in 14 days, no repairs needed on your end." });
-                    toast.success("Offer script inserted into conversation");
-                    setOfferPanelOpen(false);
-                  }} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
-                    Use Offer Script
-                  </button>
-                  <button onClick={() => {
-                    toast.success("Offer logged to deal pipeline");
-                    setOfferPanelOpen(false);
-                  }} className="px-4 py-2 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    Log Offer
-                  </button>
-                </div>
-              </div>
+              <OfferCalculator
+                arv={currentContact?.arv || 285000}
+                rehabEstimate={currentContact?.repairEstimate || 45000}
+                onInsertScript={(text) => {
+                  addTranscriptEntry({ speaker: "user", text });
+                  setOfferPanelOpen(false);
+                }}
+                onLogOffer={() => {
+                  incrementGoal("offersSent");
+                  setOfferPanelOpen(false);
+                }}
+                onClose={() => setOfferPanelOpen(false)}
+              />
             )}
             <div className="flex gap-3">
               {aiSuggestions.slice(0, 3).map(s => (
