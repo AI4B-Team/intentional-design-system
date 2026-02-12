@@ -758,3 +758,17 @@
     opacity: 1;
   }
 }
+
+/* Slow pulse for record buttons */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 5s ease-in-out infinite !important;
+}
