@@ -233,7 +233,7 @@ export default {
         "shimmer": "shimmer 1.5s infinite",
         "spin": "spin 1s linear infinite",
         "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
-        "pulse-slow": "pulse-slow 3s ease-in-out infinite",
+        "pulse-slow": "pulse-slow 5s ease-in-out infinite",
       },
     },
   },
