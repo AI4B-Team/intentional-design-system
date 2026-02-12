@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw, Megaphone } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw, Megaphone, Circle } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import type { CallingModeKey } from "@/pages/Communications";
 
 function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
-  const { isMuted, isOnHold, toggleMute, toggleHold, endCall } = useCallState();
+  const { isMuted, isOnHold, isRecording, toggleMute, toggleHold, toggleRecording, endCall } = useCallState();
 
   return (
     <div className="flex items-center gap-2">
@@ -59,6 +59,25 @@ function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
           </button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">{isOnHold ? "Resume" : "Hold"}</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={toggleRecording}
+            className={cn(
+              "relative flex items-center justify-center h-10 w-10 rounded-lg transition-colors",
+              isRecording
+                ? "text-muted-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <Circle className="h-5 w-5" />
+            {isRecording && (
+              <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive animate-pulse" />
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="text-xs">{isRecording ? "Stop Recording" : "Record"}</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
