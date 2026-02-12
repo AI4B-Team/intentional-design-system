@@ -3,7 +3,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Phone, PhoneOff, Mic, MicOff, Volume2, ArrowRight } from 'lucide-react';
+import { Phone, PhoneOff, Mic, MicOff, Pause, Circle, Minimize2 } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface LiveCallHeaderProps {
   contactName: string;
@@ -106,37 +111,75 @@ export function LiveCallHeader({
 
       {/* Bottom Row - Controls & Sentiment */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant={isMuted ? 'secondary' : 'outline'}
-            size="sm"
-            onClick={onMuteToggle}
-            className={cn(
-              'gap-2',
-              isMuted && 'bg-destructive/10 text-destructive hover:bg-destructive/20'
-            )}
-          >
-            {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-            {isMuted ? 'Unmute' : 'Mute'}
-          </Button>
-          <Button
-            variant={isSpeakerOn ? 'secondary' : 'outline'}
-            size="sm"
-            onClick={onSpeakerToggle}
-            className="gap-2"
-          >
-            <Volume2 className="h-4 w-4" />
-            Speaker {isSpeakerOn ? 'On' : 'Off'}
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            onClick={onTransfer}
-            className="gap-2 bg-primary hover:bg-primary/90"
-          >
-            <ArrowRight className="h-4 w-4" />
-            Transfer
-          </Button>
+        <div className="flex items-center gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onMuteToggle}
+                className={cn('h-10 w-10', isMuted && 'bg-destructive/10')}
+              >
+                {isMuted ? <MicOff className="h-5 w-5 text-destructive" /> : <Mic className="h-5 w-5 text-muted-foreground" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">{isMuted ? 'Unmute' : 'Mute'}</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onSpeakerToggle}
+                className="h-10 w-10"
+              >
+                <Pause className="h-5 w-5 text-muted-foreground" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Hold</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10"
+              >
+                <Circle className="h-5 w-5 text-muted-foreground" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Record</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onEndCall}
+                className="h-10 w-10 bg-destructive/10"
+              >
+                <PhoneOff className="h-5 w-5 text-destructive" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">End Call</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onTransfer}
+                className="h-10 w-10"
+              >
+                <Minimize2 className="h-5 w-5 text-muted-foreground" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="text-xs">Minimize</TooltipContent>
+          </Tooltip>
         </div>
 
         {sentiment && (
