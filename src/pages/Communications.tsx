@@ -469,16 +469,16 @@ function ChannelToolset({ channel }: { channel: string }) {
     return (
       <div className="px-4 py-2 border-b border-border bg-violet-50/50 dark:bg-violet-500/5 flex flex-wrap gap-1.5">
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-500/25 transition-colors">
-          <Phone className="h-3 w-3" /> Missed Calls
+          <Phone className="h-3 w-3" /> Missed
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-500/25 transition-colors">
-          <ArrowDownLeft className="h-3 w-3" /> Inbound Only
+          <ArrowDownLeft className="h-3 w-3" /> Inbound
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-500/25 transition-colors">
-          <ArrowUpRight className="h-3 w-3" /> Outbound Only
+          <ArrowUpRight className="h-3 w-3" /> Outbound
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-500/25 transition-colors">
-          <Calendar className="h-3 w-3" /> Follow-ups Due
+          <Calendar className="h-3 w-3" /> Follow-ups
         </button>
       </div>
     );
@@ -491,13 +491,13 @@ function ChannelToolset({ channel }: { channel: string }) {
           <FileText className="h-3 w-3" /> Templates
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/25 transition-colors">
-          <Sparkles className="h-3 w-3" /> AI Drip
+          <Sparkles className="h-3 w-3" /> Drip
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/25 transition-colors">
-          <Send className="h-3 w-3" /> Bulk Send
+          <Send className="h-3 w-3" /> Broadcast
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/25 transition-colors">
-          <Bot className="h-3 w-3" /> Auto-Reply
+          <Bot className="h-3 w-3" /> Auto-reply
         </button>
       </div>
     );
@@ -510,7 +510,7 @@ function ChannelToolset({ channel }: { channel: string }) {
           <FileText className="h-3 w-3" /> Templates
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-500/25 transition-colors">
-          <Sparkles className="h-3 w-3" /> AI Compose
+          <Sparkles className="h-3 w-3" /> Compose
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-500/25 transition-colors">
           <Send className="h-3 w-3" /> Campaigns
@@ -523,13 +523,13 @@ function ChannelToolset({ channel }: { channel: string }) {
     return (
       <div className="px-4 py-2 border-b border-border bg-red-50/50 dark:bg-red-500/5 flex flex-wrap gap-1.5">
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/25 transition-colors">
-          <FileText className="h-3 w-3" /> Transcribe All
+          <FileText className="h-3 w-3" /> Transcribe
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/25 transition-colors">
-          <Sparkles className="h-3 w-3" /> AI Summary
+          <Sparkles className="h-3 w-3" /> Summary
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-500/25 transition-colors">
-          <Phone className="h-3 w-3" /> Callback Queue
+          <Phone className="h-3 w-3" /> Callback
         </button>
       </div>
     );
