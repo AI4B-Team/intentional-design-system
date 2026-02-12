@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
+import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
+import { PostCallActions } from "@/components/dialer/post-call-actions";
+import { CampaignBadge } from "@/components/dialer/campaign-badge";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -351,11 +354,11 @@ const INITIAL_CONTACTS: Contact[] = [
 ];
 
 const MOCK_DIALER_QUEUE = [
-  { id: "d1", name: "Robert Martinez", address: "234 Elm Drive", time: "10:30 AM", type: "Follow-up", phone: "(555) 123-4567" },
-  { id: "d2", name: "Jennifer Lee", address: "567 Cedar Lane", time: "11:00 AM", type: "Callback", phone: "(555) 234-5678" },
-  { id: "d3", name: "David Park", address: "890 Birch St", time: "11:30 AM", type: "Cold Call", phone: "(555) 345-6789" },
-  { id: "d4", name: "Angela Torres", address: "112 Walnut Way", time: "12:00 PM", type: "Follow-up", phone: "(555) 456-7890" },
-  { id: "d5", name: "Tom Bradley", address: "445 Spruce Ave", time: "1:00 PM", type: "Cold Call", phone: "(555) 567-8901" },
+  { id: "d1", name: "Robert Martinez", address: "234 Elm Drive", time: "10:30 AM", type: "Follow-up", phone: "(555) 123-4567", campaign: "Q1 Tampa Absentee Sellers" },
+  { id: "d2", name: "Jennifer Lee", address: "567 Cedar Lane", time: "11:00 AM", type: "Callback", phone: "(555) 234-5678", campaign: "Q1 Tampa Absentee Sellers" },
+  { id: "d3", name: "David Park", address: "890 Birch St", time: "11:30 AM", type: "Cold Call", phone: "(555) 345-6789", campaign: "Expired Listings Feb" },
+  { id: "d4", name: "Angela Torres", address: "112 Walnut Way", time: "12:00 PM", type: "Follow-up", phone: "(555) 456-7890", campaign: "Expired Listings Feb" },
+  { id: "d5", name: "Tom Bradley", address: "445 Spruce Ave", time: "1:00 PM", type: "Cold Call", phone: "(555) 567-8901", campaign: "Pre-Foreclosure Outreach" },
 ];
 
 const MOCK_CALL_SCRIPTS = [
@@ -1168,6 +1171,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
       name: item.name,
       phone: item.phone,
       address: item.address,
+      campaignName: item.campaign || undefined,
     }, "dialer");
   };
 
@@ -1239,6 +1243,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
         address: addressIdx >= 0 ? cols[addressIdx] || "" : "",
         time: "",
         type: "Imported",
+        campaign: "",
       });
     }
 
@@ -1294,6 +1299,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
       address: manualAddress.trim(),
       time: "",
       type: "Manual" as const,
+      campaign: "",
     };
     setDialerContacts(prev => [...prev, newContact]);
     setManualName("");
@@ -1328,6 +1334,12 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
 
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+      {/* Daily Goals Tracker */}
+      <DailyGoalsTracker />
+
+      {/* Post-Call Automation Actions */}
+      <PostCallActions />
+
       {/* Auto-advance banner */}
       {showAutoAdvance && (
         <div className="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between">
@@ -1563,7 +1575,10 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="text-[13px] font-medium text-foreground truncate">{item.name}</div>
-                          <div className="text-[11px] text-muted-foreground truncate">{item.address || item.phone}</div>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] text-muted-foreground truncate">{item.address || item.phone}</span>
+                            {item.campaign && <CampaignBadge campaignName={item.campaign} />}
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span className={cn(
