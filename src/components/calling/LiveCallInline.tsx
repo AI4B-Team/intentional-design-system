@@ -507,8 +507,8 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                         s.type === "coach"
                           ? "bg-muted text-foreground hover:bg-muted/80"
                           : s.type === "response"
-                            ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                            : "bg-blue-500 text-white hover:bg-blue-600"
+                            ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
+                            : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                       )}
                     >
                       {s.type === "coach" ? "Apply" : "Use"}
