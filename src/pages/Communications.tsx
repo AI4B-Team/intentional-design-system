@@ -497,7 +497,7 @@ function ChannelToolset({ channel }: { channel: string }) {
           <Send className="h-3 w-3" /> Broadcast
         </button>
         <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-500/25 transition-colors">
-          <Bot className="h-3 w-3" /> Auto-reply
+          <Bot className="h-3 w-3" /> Auto-Reply
         </button>
       </div>
     );
