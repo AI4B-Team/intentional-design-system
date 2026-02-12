@@ -44,6 +44,12 @@ import {
   Pencil,
   Hand,
   Bot,
+  Zap,
+  PhoneOff,
+  PhoneCall,
+  Flame,
+  ListChecks,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -455,6 +461,93 @@ function StatusFilters({ activeStatus, onFilter }: { activeStatus: string; onFil
           {label}
         </button>
       ))}
+    </div>
+  );
+}
+
+// ============================================================================
+// ACTIVITY SUB-NAV (Inbox mode filters)
+// ============================================================================
+function ActivitySubNav({
+  channelFilter,
+  statusFilter,
+  onChannelFilter,
+  onStatusFilter,
+}: {
+  channelFilter: string;
+  statusFilter: string;
+  onChannelFilter: (f: string) => void;
+  onStatusFilter: (s: string) => void;
+}) {
+  return (
+    <div className="px-6 py-2.5 border-b border-border bg-muted/20 flex flex-col gap-2">
+      <ChannelFilters activeFilter={channelFilter} onFilter={onChannelFilter} />
+      <StatusFilters activeStatus={statusFilter} onFilter={onStatusFilter} />
+    </div>
+  );
+}
+
+// ============================================================================
+// DIALER SUB-NAV (War mode action tools)
+// ============================================================================
+function DialerSubNav({
+  activeTab,
+  onTabChange,
+}: {
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+}) {
+  const primaryTools = [
+    { key: "dial_list", label: "My Dial List", icon: ListChecks },
+    { key: "power_dial", label: "Power Dial", icon: Zap },
+    { key: "scripts", label: "Call Scripts", icon: FileText },
+  ];
+
+  const secondaryTools = [
+    { key: "followup", label: "Follow-up Queue", icon: Clock },
+    { key: "missed", label: "Missed Calls", icon: PhoneOff },
+    { key: "callbacks", label: "Callbacks", icon: PhoneCall },
+    { key: "hot_leads", label: "Hot Leads", icon: Flame },
+  ];
+
+  return (
+    <div className="px-6 py-2.5 border-b border-border bg-muted/20 flex flex-col gap-2">
+      {/* Primary action tools */}
+      <div className="flex gap-1.5">
+        {primaryTools.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => onTabChange(key)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
+              activeTab === key
+                ? "bg-primary/10 border-primary/30 text-primary"
+                : "bg-muted/50 border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3 w-3" />
+            {label}
+          </button>
+        ))}
+      </div>
+      {/* Secondary filters */}
+      <div className="flex gap-1.5">
+        {secondaryTools.map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => onTabChange(key)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+              activeTab === key
+                ? "bg-muted text-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Icon className="h-3 w-3" />
+            {label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1700,6 +1793,7 @@ export default function Communications() {
   const [activeView, setActiveView] = useState("activity");
   const [channelFilter, setChannelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [dialerSubTab, setDialerSubTab] = useState("dial_list");
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [localActivities, setLocalActivities] = useState<Record<string, Activity[]>>({});
@@ -1989,6 +2083,18 @@ export default function Communications() {
           </div>
         </div>
 
+        {/* Contextual Sub-Navigation */}
+        {activeView === "activity" ? (
+          <ActivitySubNav
+            channelFilter={channelFilter}
+            statusFilter={statusFilter}
+            onChannelFilter={handleChannelFilter}
+            onStatusFilter={handleStatusFilter}
+          />
+        ) : (
+          <DialerSubNav activeTab={dialerSubTab} onTabChange={setDialerSubTab} />
+        )}
+
         {/* Main Content */}
         <div className="flex-1 flex min-h-0 overflow-hidden">
           {activeView === "activity" ? (
@@ -2040,22 +2146,19 @@ export default function Communications() {
                 )}>
                   {leftPanelOpen && (
                     <>
-                      <div className="px-4 py-3.5 border-b border-border flex flex-col gap-2.5">
-                        <div className="flex items-center justify-between">
-                          <ChannelFilters activeFilter={channelFilter} onFilter={handleChannelFilter} />
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <button
-                                onClick={() => setLeftPanelOpen(false)}
-                                className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-                              >
-                                <ChevronLeft className="h-4 w-4" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent>Minimize Panel</TooltipContent>
-                          </Tooltip>
-                        </div>
-                        <StatusFilters activeStatus={statusFilter} onFilter={handleStatusFilter} />
+                      <div className="px-4 py-2.5 border-b border-border flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Conversations</span>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => setLeftPanelOpen(false)}
+                              className="p-1 rounded text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                            >
+                              <ChevronLeft className="h-4 w-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Minimize Panel</TooltipContent>
+                        </Tooltip>
                       </div>
                       <div className="flex-1 overflow-auto">
                         {filteredContacts.map(contact => (
