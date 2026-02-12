@@ -66,7 +66,7 @@ export function CallControls({ compact = false, className }: CallControlsProps) 
       <ControlButton
         tooltip={isRecording ? "Stop Recording" : "Record"}
         onClick={toggleRecording}
-        className={cn(btnSize, isRecording && "bg-destructive/10 animate-[pulse_3s_ease-in-out_infinite]")}
+        className={cn(btnSize, isRecording && "bg-destructive/10 animate-pulse-slow")}
       >
         <Circle className={cn(iconSize, isRecording ? "text-destructive fill-destructive" : "text-muted-foreground")} />
       </ControlButton>
