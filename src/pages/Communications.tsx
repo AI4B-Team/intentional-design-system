@@ -976,14 +976,16 @@ function CoPilotPanel({
               </div>
             </div>
 
-            {/* 4. Take Over Call (only when AI active) */}
-            <button
-              onClick={() => toast.info("Taking over call...")}
-              className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
-            >
-              <Hand className="h-4 w-4" />
-              Take Over Call
-            </button>
+            {/* 4. Take Over Call (only when AI Agent or Hybrid active) */}
+            {callingMode !== "start" && (
+              <button
+                onClick={() => toast.info("Taking over call...")}
+                className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
+              >
+                <Hand className="h-4 w-4" />
+                Take Over Call
+              </button>
+            )}
 
             {/* 5. Call Notes (auto-filled + editable) */}
             <CallNotesSection contactName={contact.name} />
