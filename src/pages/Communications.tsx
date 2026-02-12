@@ -7,6 +7,8 @@ import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
 import { PostCallActions } from "@/components/dialer/post-call-actions";
 import { CampaignBadge } from "@/components/dialer/campaign-badge";
+import { AICallSummary } from "@/components/dialer/ai-call-summary";
+import { PowerDialSessionReport } from "@/components/dialer/power-dial-session-report";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -1015,8 +1017,11 @@ function CoPilotPanel({
             {/* 5. Call Notes (auto-filled + editable) */}
             <CallNotesSection contactName={contact.name} />
 
-            {/* 6. AI Call Summary (collapsed by default) */}
-            <LiveCallSummaryCollapsible />
+            {/* 6. AI Call Summary (live, auto-syncing) */}
+            <AICallSummary />
+
+            {/* 7. Power Dial Session Report */}
+            <PowerDialSessionReport />
           </div>
         ) : (
           /* ===== STATIC MODE (NOT ON CALL) ===== */
@@ -1123,8 +1128,8 @@ function CoPilotPanel({
             {/* 6. Notes */}
             <CallNotesSection contactName={contact.name} />
 
-            {/* 7. AI Summary (collapsed) */}
-            <LiveCallSummaryCollapsible />
+            {/* 7. AI Summary */}
+            <AICallSummary />
           </div>
         )}
       </div>
