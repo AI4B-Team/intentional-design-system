@@ -6,12 +6,7 @@ import { useCallState } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
 import { PostCallActions } from "@/components/dialer/post-call-actions";
-import { AICallSummary } from "@/components/dialer/ai-call-summary";
-import { PowerDialSessionReport } from "@/components/dialer/power-dial-session-report";
-import { EmotionalStateLayer } from "@/components/dialer/emotional-state-layer";
-import { ConditionalPostCall } from "@/components/dialer/conditional-post-call";
-import { RepIntelligenceScore, ScriptPerformance, ModeComparison, PredictiveRevenue } from "@/components/dialer/rep-intelligence";
-import { ModeBehaviorCard } from "@/components/dialer/mode-transition-banner";
+import { CampaignBadge } from "@/components/dialer/campaign-badge";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -964,8 +959,40 @@ function CoPilotPanel({
               </div>
             </CollapsiblePanel>
 
-            {/* 2. Emotional State + Momentum */}
-            <EmotionalStateLayer />
+            {/* 2. Live Sentiment + Deal Probability */}
+            <CollapsiblePanel title="Live Sentiment" defaultOpen={true}>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
+                    <div
+                      className={cn("h-full rounded-full transition-all duration-500",
+                        callState.sentiment === "positive" ? "bg-emerald-500" :
+                        callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                      )}
+                      style={{ width: `${callState.sentimentScore}%` }}
+                    />
+                  </div>
+                  <span className={cn(
+                    "text-xs font-bold capitalize",
+                    callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                  )}>
+                    {callState.sentiment}
+                  </span>
+                </div>
+                <div className="border-t border-border/50 pt-3">
+                  <div className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mb-2">Deal Probability</div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <div className="h-2 rounded-full bg-border overflow-hidden">
+                        <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: "72%" }} />
+                      </div>
+                      <span className="text-[10px] text-muted-foreground mt-1 block">Based on sentiment + stage + engagement</span>
+                    </div>
+                    <div className="text-2xl font-bold text-primary font-mono">72%</div>
+                  </div>
+                </div>
+              </div>
+            </CollapsiblePanel>
 
             {/* 3. Directive */}
             <CollapsiblePanel title="Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
@@ -974,12 +1001,7 @@ function CoPilotPanel({
               </div>
             </CollapsiblePanel>
 
-            {/* 4. Mode Behavior */}
-            <CollapsiblePanel title="Active Mode" defaultOpen={false}>
-              <ModeBehaviorCard mode={callingMode} isActive={true} />
-            </CollapsiblePanel>
-
-            {/* 5. Take Over Call (only when AI Agent or Hybrid active) */}
+            {/* 4. Take Over Call (only when AI Agent or Hybrid active) */}
             {callingMode !== "start" && (
               <button
                 onClick={() => toast.info("Taking over call...")}
@@ -990,22 +1012,11 @@ function CoPilotPanel({
               </button>
             )}
 
-            {/* 6. Call Notes (auto-filled + editable) */}
+            {/* 5. Call Notes (auto-filled + editable) */}
             <CallNotesSection contactName={contact.name} />
 
-            {/* 7. AI Call Summary (live, auto-syncing) */}
-            <AICallSummary />
-
-            {/* 8. Power Dial Session Report */}
-            <PowerDialSessionReport />
-
-            {/* 9. Conditional Post-Call Automation */}
-            <ConditionalPostCall />
-
-            {/* 10. Rep Intelligence */}
-            <CollapsiblePanel title="Rep Intelligence" defaultOpen={false}>
-              <RepIntelligenceScore />
-            </CollapsiblePanel>
+            {/* 6. AI Call Summary (collapsed by default) */}
+            <LiveCallSummaryCollapsible />
           </div>
         ) : (
           /* ===== STATIC MODE (NOT ON CALL) ===== */
@@ -1112,23 +1123,8 @@ function CoPilotPanel({
             {/* 6. Notes */}
             <CallNotesSection contactName={contact.name} />
 
-            {/* 7. AI Summary */}
-            <AICallSummary />
-
-            {/* 8. Script Performance */}
-            <CollapsiblePanel title="Script Performance" defaultOpen={false}>
-              <ScriptPerformance />
-            </CollapsiblePanel>
-
-            {/* 9. Mode Comparison */}
-            <CollapsiblePanel title="Mode Comparison" defaultOpen={false}>
-              <ModeComparison />
-            </CollapsiblePanel>
-
-            {/* 10. Predictive Revenue */}
-            <CollapsiblePanel title="Predictive Revenue" defaultOpen={false}>
-              <PredictiveRevenue />
-            </CollapsiblePanel>
+            {/* 7. AI Summary (collapsed) */}
+            <LiveCallSummaryCollapsible />
           </div>
         )}
       </div>
@@ -1581,7 +1577,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
                           <div className="text-[13px] font-medium text-foreground truncate">{item.name}</div>
                           <div className="flex items-center gap-1.5">
                             <span className="text-[11px] text-muted-foreground truncate">{item.address || item.phone}</span>
-                            {item.campaign && <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-500/10 text-amber-600">{item.campaign}</span>}
+                            {item.campaign && <CampaignBadge campaignName={item.campaign} />}
                           </div>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw, Megaphone, ShieldAlert, RotateCcw, Target, DoorOpen } from "lucide-react";
+import { PhoneCall, Sparkles, Minimize2, Phone, MessageCircle, Mail, MoreVertical, Send, FileText, X, Zap, Mic, Pause, PhoneOff, Hand, MessageSquareDashed, Bot, BarChart3, RefreshCw, Megaphone } from "lucide-react";
 import { useCallState } from "@/contexts/CallContext";
 import { formatCallDuration } from "./CallControls";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import type { CallingModeKey } from "@/pages/Communications";
-import { CampaignContextStrip } from "@/components/dialer/campaign-context-strip";
-import { RevenueStrip } from "@/components/dialer/revenue-strip";
-import { OfferCalculator } from "@/components/dialer/offer-calculator";
-import { EmotionalStateLayer } from "@/components/dialer/emotional-state-layer";
-import { ModeTransitionBanner } from "@/components/dialer/mode-transition-banner";
 
 function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
   const { isMuted, isOnHold, toggleMute, toggleHold, endCall } = useCallState();
@@ -101,16 +96,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
   const [emailBody, setEmailBody] = useState("");
   const [aiStatusIdx, setAiStatusIdx] = useState(0);
   const [offerPanelOpen, setOfferPanelOpen] = useState(false);
-  const [prevMode, setPrevMode] = useState(callingMode);
-  const [showModeTransition, setShowModeTransition] = useState(false);
-
-  // Detect mode switches mid-call
-  useEffect(() => {
-    if (callingMode !== prevMode && isCallActive) {
-      setShowModeTransition(true);
-      setPrevMode(callingMode);
-    }
-  }, [callingMode, prevMode, isCallActive]);
 
   // Cycle AI status indicator
   useEffect(() => {
@@ -141,21 +126,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
   if (!isCallActive) return null;
 
   const PHASES = ["Pattern Interrupt", "Permission", "Value Prop", "Qualification", "Close"];
-
-  // Dynamic suggestion types based on emotional state
-  const dynamicSuggestions = aiSuggestions.map((s, i) => {
-    const types = ["question", "reframe", "close_attempt", "soft_exit"] as const;
-    const labels = ["Advance", "Reframe", "Close Test", "Soft Exit"];
-    const icons = [Target, RotateCcw, Target, DoorOpen];
-    const colors = [
-      { badge: "bg-blue-500/10 text-blue-600", btn: "bg-blue-500 text-white hover:bg-blue-600" },
-      { badge: "bg-amber-500/10 text-amber-600", btn: "bg-amber-500 text-white hover:bg-amber-600" },
-      { badge: "bg-emerald-500/10 text-emerald-600", btn: "bg-emerald-500 text-white hover:bg-emerald-600" },
-      { badge: "bg-muted text-muted-foreground", btn: "bg-muted text-foreground hover:bg-muted/80" },
-    ];
-    const idx = i % 4;
-    return { ...s, dynamicType: types[idx], dynamicLabel: labels[idx], dynamicColor: colors[idx] };
-  });
   const phaseIdx = PHASES.indexOf(currentCallPhase);
   const aiStatus = AI_STATUS_CYCLE[aiStatusIdx];
 
@@ -201,15 +171,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                 {sentimentScore}%
               </span>
             </div>
-            {/* Campaign Context Strip */}
-            <CampaignContextStrip
-              context={{
-                campaignName: currentContact?.campaignName || "Q1 Tampa Absentee Sellers",
-                listName: "High Equity + Vacant",
-                objective: "30-Day Close",
-                source: "Marketplace Search",
-              }}
-            />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -248,20 +209,6 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Mode Transition Banner */}
-      <ModeTransitionBanner
-        fromMode={prevMode}
-        toMode={callingMode}
-        isVisible={showModeTransition}
-        onDismiss={() => setShowModeTransition(false)}
-      />
-
-      {/* Emotional State + Revenue Strip */}
-      <div className="mx-5 mt-3 space-y-2">
-        <EmotionalStateLayer compact />
-        <RevenueStrip />
       </div>
 
       {/* Stage Progress Bar - Auto-advancing with pulse */}
@@ -457,58 +404,82 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               </div>
             </div>
 
-            {/* Offer Engine */}
+            {/* Offer Insert Panel */}
             {offerPanelOpen && (
-              <OfferCalculator
-                arv={currentContact?.arv || 285000}
-                rehabEstimate={currentContact?.repairEstimate || 45000}
-                onInsertScript={(text) => {
-                  addTranscriptEntry({ speaker: "user", text });
-                  setOfferPanelOpen(false);
-                }}
-                onLogOffer={() => {
-                  incrementGoal("offersSent");
-                  setOfferPanelOpen(false);
-                }}
-                onClose={() => setOfferPanelOpen(false)}
-              />
+              <div className="p-3 bg-amber-500/5 border border-amber-500/20 rounded-lg space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-semibold text-foreground flex items-center gap-1.5">
+                    <FileText className="h-3 w-3 text-amber-500" /> Quick Offer Builder
+                  </span>
+                  <button onClick={() => setOfferPanelOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground"><X className="h-3 w-3" /></button>
+                </div>
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">ARV</div>
+                    <div className="text-sm font-bold text-foreground">$285k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">Repairs</div>
+                    <div className="text-sm font-bold text-foreground">$45k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">MAO (70%)</div>
+                    <div className="text-sm font-bold text-primary">$154k</div>
+                  </div>
+                  <div className="p-2 bg-background rounded-md border border-border">
+                    <div className="text-[10px] text-muted-foreground">Suggested</div>
+                    <div className="text-sm font-bold text-emerald-600">$165k–$180k</div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => {
+                    addTranscriptEntry({ speaker: "user", text: "Based on my analysis, I can offer between $165,000 and $180,000 cash, close in 14 days, no repairs needed on your end." });
+                    toast.success("Offer script inserted into conversation");
+                    setOfferPanelOpen(false);
+                  }} className="flex-1 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors">
+                    Use Offer Script
+                  </button>
+                  <button onClick={() => {
+                    toast.success("Offer logged to deal pipeline");
+                    setOfferPanelOpen(false);
+                  }} className="px-4 py-2 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
+                    Log Offer
+                  </button>
+                </div>
+              </div>
             )}
             <div className="flex gap-3">
-              {aiSuggestions.slice(0, 4).map((s, idx) => {
-                const typeLabels = ["Advance", "Reframe", "Close Test", "Soft Exit"];
-                const typeColors = [
-                  { badge: "bg-blue-500/10 text-blue-600", btn: "bg-blue-500 text-white hover:bg-blue-600" },
-                  { badge: "bg-amber-500/10 text-amber-600", btn: "bg-amber-500 text-white hover:bg-amber-600" },
-                  { badge: "bg-emerald-500/10 text-emerald-600", btn: "bg-emerald-500 text-white hover:bg-emerald-600" },
-                  { badge: "bg-muted text-muted-foreground", btn: "bg-muted text-foreground hover:bg-muted/80" },
-                ];
-                const dynIdx = idx % 4;
-                const dynamicLabel = typeLabels[dynIdx];
-                const dynamicColor = typeColors[dynIdx];
-
-                return (
-                  <div key={s.id} className="flex-1 flex flex-col bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all overflow-hidden">
-                    <div className="p-3 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={cn(
-                          "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
-                          dynamicColor.badge
-                        )}>{dynamicLabel}</span>
-                        <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
-                      </div>
-                      <p className="text-xs text-foreground leading-relaxed flex-1">{s.text}</p>
+              {aiSuggestions.slice(0, 3).map(s => (
+                <div key={s.id} className="flex-1 flex flex-col bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all overflow-hidden">
+                  <div className="p-3 flex-1 flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide",
+                        s.type === "question" ? "bg-blue-500/10 text-blue-600" :
+                        s.type === "response" ? "bg-emerald-500/10 text-emerald-600" :
+                        "bg-muted text-muted-foreground"
+                      )}>{s.type}</span>
+                      <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
                     </div>
-                    <div className="px-3 pb-3">
-                      <button
-                        onClick={() => handleUseSuggestion(s.text)}
-                        className={cn("w-full py-2 rounded-lg text-xs font-semibold transition-all", dynamicColor.btn)}
-                      >
-                        {dynamicLabel === "Soft Exit" ? "Exit Gracefully" : dynamicLabel === "Close Test" ? "Test Close" : "Use"}
-                      </button>
-                    </div>
+                    <p className="text-xs text-foreground leading-relaxed flex-1">{s.text}</p>
                   </div>
-                );
-              })}
+                  <div className="px-3 pb-3">
+                    <button
+                      onClick={() => handleUseSuggestion(s.text)}
+                      className={cn(
+                        "w-full py-2 rounded-lg text-xs font-semibold transition-all",
+                        s.type === "coach"
+                          ? "bg-muted text-foreground hover:bg-muted/80"
+                          : s.type === "response"
+                            ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                      )}
+                    >
+                      {s.type === "coach" ? "Apply" : "Use"}
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
