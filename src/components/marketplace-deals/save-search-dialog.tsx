@@ -320,15 +320,16 @@ export function SaveSearchDialog({
                             className="shrink-0 h-9 w-9"
                             onClick={() => {
                               const parts: string[] = [];
-                              if (filters.city) parts.push(String(filters.city));
-                              else if (filters.state) parts.push(String(filters.state));
-                              else if (filters.market) parts.push(String(filters.market));
-                              if (filters.propertyType) parts.push(String(filters.propertyType));
-                              if (filters.minEquity || filters.equity_min) parts.push("High Equity");
-                              if (filters.listingStatus) parts.push(String(filters.listingStatus));
-                              if (filters.minPrice && filters.maxPrice) parts.push(`$${Number(filters.minPrice)/1000}K-$${Number(filters.maxPrice)/1000}K`);
-                              else if (filters.maxPrice) parts.push(`Under $${Number(filters.maxPrice)/1000}K`);
-                              if (parts.length === 0) parts.push("My Search");
+                              if (filters.address) parts.push(String(filters.address));
+                              if (filters.leadType && filters.leadType !== "all") {
+                                parts.push(String(filters.leadType).replace(/-/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()));
+                              }
+                              if (filters.homeTypes?.length === 1) parts.push(String(filters.homeTypes[0]).replace(/\b\w/g, (c: string) => c.toUpperCase()));
+                              if (filters.listingStatus && filters.listingStatus !== "all") parts.push(String(filters.listingStatus).replace(/\b\w/g, (c: string) => c.toUpperCase()));
+                              if (filters.priceRange && filters.priceRange !== "any") parts.push(String(filters.priceRange));
+                              if (filters.bedsMin) parts.push(`${filters.bedsMin}+ Bed`);
+                              if (filters.bathsMin) parts.push(`${filters.bathsMin}+ Bath`);
+                              if (parts.length === 0) parts.push("All Properties");
                               setSearchName(parts.join(" ") + " Deals");
                             }}
                           >
