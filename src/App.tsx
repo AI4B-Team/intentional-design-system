@@ -240,6 +240,10 @@ const App = () => (
               element={<Navigate to="/communications" replace />}
             />
             <Route
+              path="/communication"
+              element={<Navigate to="/communications" replace />}
+            />
+            <Route
               path="/communications"
               element={
                 <ProtectedRoute>
