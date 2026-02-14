@@ -295,13 +295,38 @@ export function SaveSearchDialog({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="search-name">Search Name</Label>
-                  <Input
-                    id="search-name"
-                    placeholder="e.g., Tampa High Equity Deals"
-                    value={searchName}
-                    onChange={(e) => setSearchName(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
-                  />
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="search-name"
+                      placeholder="e.g., Tampa High Equity Deals"
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="shrink-0 h-9 w-9"
+                      title="Generate name from filters"
+                      onClick={() => {
+                        const parts: string[] = [];
+                        if (filters.city) parts.push(String(filters.city));
+                        else if (filters.state) parts.push(String(filters.state));
+                        else if (filters.market) parts.push(String(filters.market));
+                        if (filters.propertyType) parts.push(String(filters.propertyType));
+                        if (filters.minEquity || filters.equity_min) parts.push("High Equity");
+                        if (filters.listingStatus) parts.push(String(filters.listingStatus));
+                        if (filters.minPrice && filters.maxPrice) parts.push(`$${Number(filters.minPrice)/1000}K-$${Number(filters.maxPrice)/1000}K`);
+                        else if (filters.maxPrice) parts.push(`Under $${Number(filters.maxPrice)/1000}K`);
+                        if (parts.length === 0) parts.push("My Search");
+                        setSearchName(parts.join(" ") + " Deals");
+                      }}
+                    >
+                      <Sparkles className="h-4 w-4 text-primary" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* Deal Alerts Toggle */}
