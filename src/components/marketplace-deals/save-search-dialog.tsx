@@ -336,7 +336,7 @@ export function SaveSearchDialog({
                             <Sparkles className="h-4 w-4 text-primary" />
                           </Button>
                         </TooltipTrigger>
-                        <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                        <TooltipContent side="top" className="bg-white text-slate-900 border-slate-200 z-[200]">
                           Generate Name
                         </TooltipContent>
                       </Tooltip>
