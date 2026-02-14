@@ -39,6 +39,12 @@ import {
   Copy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -304,28 +310,36 @@ export function SaveSearchDialog({
                       onKeyDown={(e) => e.key === "Enter" && handleSaveSearch()}
                       className="flex-1"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      className="shrink-0 h-9 w-9"
-                      title="Generate name from filters"
-                      onClick={() => {
-                        const parts: string[] = [];
-                        if (filters.city) parts.push(String(filters.city));
-                        else if (filters.state) parts.push(String(filters.state));
-                        else if (filters.market) parts.push(String(filters.market));
-                        if (filters.propertyType) parts.push(String(filters.propertyType));
-                        if (filters.minEquity || filters.equity_min) parts.push("High Equity");
-                        if (filters.listingStatus) parts.push(String(filters.listingStatus));
-                        if (filters.minPrice && filters.maxPrice) parts.push(`$${Number(filters.minPrice)/1000}K-$${Number(filters.maxPrice)/1000}K`);
-                        else if (filters.maxPrice) parts.push(`Under $${Number(filters.maxPrice)/1000}K`);
-                        if (parts.length === 0) parts.push("My Search");
-                        setSearchName(parts.join(" ") + " Deals");
-                      }}
-                    >
-                      <Sparkles className="h-4 w-4 text-primary" />
-                    </Button>
+                    <TooltipProvider delayDuration={0}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0 h-9 w-9"
+                            onClick={() => {
+                              const parts: string[] = [];
+                              if (filters.city) parts.push(String(filters.city));
+                              else if (filters.state) parts.push(String(filters.state));
+                              else if (filters.market) parts.push(String(filters.market));
+                              if (filters.propertyType) parts.push(String(filters.propertyType));
+                              if (filters.minEquity || filters.equity_min) parts.push("High Equity");
+                              if (filters.listingStatus) parts.push(String(filters.listingStatus));
+                              if (filters.minPrice && filters.maxPrice) parts.push(`$${Number(filters.minPrice)/1000}K-$${Number(filters.maxPrice)/1000}K`);
+                              else if (filters.maxPrice) parts.push(`Under $${Number(filters.maxPrice)/1000}K`);
+                              if (parts.length === 0) parts.push("My Search");
+                              setSearchName(parts.join(" ") + " Deals");
+                            }}
+                          >
+                            <Sparkles className="h-4 w-4 text-primary" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                          Generate Name
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
 
