@@ -1,8 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { AppSidebar, MobileSidebar, MobileTabBar } from "./app-sidebar";
-import { Header } from "./header";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { AppLayout } from "./AppLayout";
 
 interface BreadcrumbItem {
   label: string;
@@ -26,7 +24,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({
   children,
-  user = { name: "John Doe", email: "john@example.com" },
+  user,
   title,
   breadcrumbs,
   showSearch = true,
@@ -34,66 +32,12 @@ export function DashboardLayout({
   className,
   fullWidth = false,
 }: DashboardLayoutProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const isMobile = useIsMobile();
-
-  // Close mobile menu when switching to desktop
-  React.useEffect(() => {
-    if (!isMobile) {
-      setMobileMenuOpen(false);
-    }
-  }, [isMobile]);
-
   return (
-    <div className={cn("min-h-screen w-full bg-white", className)}>
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
-        <AppSidebar
-          collapsed={sidebarCollapsed}
-          onCollapsedChange={setSidebarCollapsed}
-          user={user}
-        />
+    <AppLayout breadcrumbs={breadcrumbs} fullWidth={fullWidth}>
+      <div className={cn(className)}>
+        {children}
       </div>
-
-      {/* Mobile Sidebar */}
-      <MobileSidebar
-        open={mobileMenuOpen}
-        onOpenChange={setMobileMenuOpen}
-        user={user}
-      />
-
-      {/* Main Content Area */}
-      <div
-        className={cn(
-          "min-h-screen transition-all duration-200 ease-out",
-          "lg:ml-[260px]",
-          sidebarCollapsed && "lg:ml-[72px]"
-        )}
-      >
-        {/* Header */}
-        <Header
-          user={user}
-          title={title}
-          breadcrumbs={breadcrumbs}
-          showSearch={showSearch}
-          showMenuButton={true}
-          onMenuClick={() => setMobileMenuOpen(true)}
-          actions={headerActions}
-        />
-
-        {/* Page Content */}
-        <main className={cn(
-          "min-h-[calc(var(--app-viewport-height)-64px)]",
-          fullWidth ? "p-0 pb-20 lg:pb-0" : "p-md pb-24 lg:p-lg lg:pb-lg"
-        )}>
-          <div className={cn(!fullWidth && "mx-auto max-w-[1400px]")}>{children}</div>
-        </main>
-      </div>
-
-      {/* Mobile Tab Bar */}
-      <MobileTabBar />
-    </div>
+    </AppLayout>
   );
 }
 
