@@ -196,9 +196,9 @@ export function AppSidebar({
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] py-4 px-2">
+      <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch] scrollbar-hide py-3 px-2">
         <TooltipProvider delayDuration={0}>
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {/* AIVA Button - Opens Panel */}
             <li>
               <Tooltip>
@@ -209,7 +209,7 @@ export function AppSidebar({
                       onMobileClose();
                     }}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 w-full",
+                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full",
                       "text-slate-300 hover:text-white hover:bg-slate-700/50",
                       aivaOpen && "bg-gradient-to-r from-primary to-primary/60 text-white font-medium",
                       collapsed && "justify-center"
@@ -249,7 +249,7 @@ export function AppSidebar({
                         to={item.href}
                         onClick={onMobileClose}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                           "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                           "text-slate-300 hover:text-white hover:bg-slate-700/50",
                           isActive && "bg-brand-accent text-white font-medium",
                           collapsed && "justify-center"
@@ -294,7 +294,7 @@ export function AppSidebar({
                     to={campaignsNavItem.href}
                     onClick={onMobileClose}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                       "text-slate-300 hover:text-white hover:bg-slate-700/50",
                       isCampaignsActive && "bg-brand-accent text-white font-medium",
                       collapsed && "justify-center"
@@ -320,7 +320,7 @@ export function AppSidebar({
                     to={contactsNavItem.href}
                     onClick={onMobileClose}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                       "text-slate-300 hover:text-white hover:bg-slate-700/50",
                       isContactsActive && "bg-brand-accent text-white font-medium",
                       collapsed && "justify-center"
@@ -353,7 +353,7 @@ export function AppSidebar({
                         to={item.href}
                         onClick={onMobileClose}
                         className={cn(
-                          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                           "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                           "text-slate-300 hover:text-white hover:bg-slate-700/50",
                           isActive && "bg-brand-accent text-white font-medium",
                           collapsed && "justify-center"
@@ -381,7 +381,7 @@ export function AppSidebar({
                     to={documentsNavItem.href}
                     onClick={onMobileClose}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                       "text-slate-300 hover:text-white hover:bg-slate-700/50",
                       location.pathname.startsWith(documentsNavItem.href) && "bg-brand-accent text-white font-medium",
                       collapsed && "justify-center"
@@ -407,7 +407,7 @@ export function AppSidebar({
                     to={appsNavItem.href}
                     onClick={onMobileClose}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150",
+                      "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
                       "text-slate-300 hover:text-white hover:bg-slate-700/50",
                       isAppsActive && "bg-brand-accent text-white font-medium",
                       collapsed && "justify-center"
