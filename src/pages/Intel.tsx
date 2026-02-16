@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "@/components/intel/InfoTooltip";
 import { ActivityTrendsTab } from "@/components/intel/ActivityTrendsTab";
 import { RentalBuyBoxTab } from "@/components/intel/RentalBuyBoxTab";
 import { CampaignLauncherTab } from "@/components/intel/CampaignLauncherTab";
@@ -86,14 +87,17 @@ function ScoreGauge({ score, label, icon: Icon, color, large = false }: {
 }
 
 // ---------- Metric Card ----------
-function MetricCard({ label, value, change, prefix = "", suffix = "", icon: Icon, color = "hsl(var(--primary))" }: {
+function MetricCard({ label, value, change, prefix = "", suffix = "", icon: Icon, color = "hsl(var(--primary))", info }: {
   label: string; value: string | number; change?: number; prefix?: string; suffix?: string;
-  icon?: React.ElementType; color?: string;
+  icon?: React.ElementType; color?: string; info?: string;
 }) {
   return (
     <div className="bg-card border border-border rounded-xl p-3">
       <div className="flex items-center justify-between mb-1">
-        <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{label}</span>
+        <span className="flex items-center gap-1 text-muted-foreground text-[10px] uppercase tracking-wider">
+          {label}
+          {info && <InfoTooltip text={info} size={11} />}
+        </span>
         {Icon && <Icon size={13} style={{ color }} />}
       </div>
       <div className="flex items-end gap-1.5">
@@ -245,31 +249,37 @@ export default function Intel() {
         {activeTab === "overview" && (
           <>
             {/* Scores */}
-            <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-around flex-wrap gap-4">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="flex items-center gap-1.5 mb-3">
+                <h3 className="text-[13px] font-bold text-foreground">Market Scores</h3>
+                <InfoTooltip text="Composite scores (0-100) measuring market attractiveness for each investment strategy. Based on transaction volume, pricing trends, cash buyer activity, and rental yields." />
+              </div>
+              <div className="flex items-center justify-around flex-wrap gap-4">
               <ScoreGauge score={D.scores.market} label="Market" icon={BarChart3} color={COLORS.primary} large />
               <div className="w-px h-11 bg-border hidden sm:block" />
               <ScoreGauge score={D.scores.cash} label="Cash Buyer" icon={DollarSign} color={COLORS.cyan} />
               <ScoreGauge score={D.scores.wholesale} label="Wholesale" icon={Zap} color={COLORS.primary} />
               <ScoreGauge score={D.scores.flip} label="Flip" icon={Home} color={COLORS.warning} />
               <ScoreGauge score={D.scores.rental} label="Rental" icon={Building} color={COLORS.accent} />
+              </div>
             </div>
 
             {/* Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
-              <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} />
-              <MetricCard label="Total Sales" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} />
-              <MetricCard label="Cash %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} />
-              <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} />
-              <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} />
-              <MetricCard label="Avg Rent" value={D.summary.rent} prefix="$" suffix="/mo" change={D.summary.rentGrowth} icon={Home} />
-              <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} />
+              <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
+              <MetricCard label="Total Sales" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
+              <MetricCard label="Cash %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were all-cash purchases — higher means more investor activity." />
+              <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} info="Average Days on Market before a property sells. Lower = faster-moving market." />
+              <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} info="Capitalization rate — annual net rental income divided by property price. Higher = better rental returns." />
+              <MetricCard label="Avg Rent" value={D.summary.rent} prefix="$" suffix="/mo" change={D.summary.rentGrowth} icon={Home} info="Average monthly rent for properties in this market." />
+              <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} info="Number of currently active listings. Lower inventory often means stronger seller position." />
             </div>
 
             {/* Zip Code Table */}
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="text-[15px] font-bold text-foreground">Top Zip Codes by Investor Activity</h3>
+                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, cash buyer ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                 </div>
                 <div className="flex gap-2">

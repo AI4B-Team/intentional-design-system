@@ -8,6 +8,7 @@ import {
   AlertTriangle, ChevronDown, ChevronUp, Target, Award,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./InfoTooltip";
 
 const COLORS = {
   primary: "#10B981", cyan: "#06B6D4", warning: "#F59E0B",
@@ -133,7 +134,7 @@ export function RentalBuyBoxTab() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-3">Cap Rate by Zip Code</h3>
+              <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Cap Rate by Zip Code <InfoTooltip text="Capitalization rate per zip. Higher cap rates indicate better rental returns relative to purchase price." /></h3>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={ZIPS}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -147,7 +148,7 @@ export function RentalBuyBoxTab() {
               </ResponsiveContainer>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-3">Avg Rent Trend (12mo)</h3>
+              <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Avg Rent Trend (12mo) <InfoTooltip text="How average monthly rents have changed over the past year. Rising rents improve cashflow projections." /></h3>
               <ResponsiveContainer width="100%" height={240}>
                 <AreaChart data={RENT_TREND}>
                   <defs><linearGradient id="rf" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.cyan} stopOpacity={0.3} /><stop offset="95%" stopColor={COLORS.cyan} stopOpacity={0} /></linearGradient></defs>
@@ -163,7 +164,7 @@ export function RentalBuyBoxTab() {
 
           {/* Cashflow Table */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-1">Cashflow Estimates by Zip</h3>
+            <h3 className="text-sm font-bold text-foreground mb-1 flex items-center gap-1.5">Cashflow Estimates by Zip <InfoTooltip text="Projected monthly cashflow after mortgage and expenses. Grade A = $400+/mo, B = $200+, C = $0+, D = negative cashflow." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Based on 80% LTV @ 7.2% rate, 35% expense ratio</p>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs">

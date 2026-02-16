@@ -9,6 +9,7 @@ import {
   Repeat, Clock, Percent,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./InfoTooltip";
 
 // ─── Buyer Activity Data ───
 const ZIPS = [
@@ -149,7 +150,7 @@ export function BuyerActivityTab() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             {/* Cash Buyer Concentration */}
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Cash Buyer Concentration</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Cash Buyer Concentration <InfoTooltip text="Number of cash purchases per zip code. Higher bars indicate zip codes where investors are most actively buying." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Higher bars = more investor activity</p>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={[...ZIPS].sort((a, b) => b.cs - a.cs)} barGap={2}>
@@ -168,7 +169,7 @@ export function BuyerActivityTab() {
 
             {/* Competition Index */}
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Buyer Competition Index</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Buyer Competition Index <InfoTooltip text="Measures how competitive each zip code is for deals. Higher score = more buyers competing, potentially harder to get deals under contract." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Higher = more competition for deals</p>
               <div className="space-y-0">
                 {[...ZIPS].sort((a, b) => b.compIdx - a.compIdx).map((z, i) => (
@@ -192,7 +193,7 @@ export function BuyerActivityTab() {
 
           {/* DOM Cash vs Retail */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5">Days on Market: Cash vs Retail</h3>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Days on Market: Cash vs Retail <InfoTooltip text="Compares how quickly cash buyers close vs traditional financed buyers. The gap shows the speed advantage of cash offers." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Cash buyers close significantly faster</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={ZIPS} barGap={4}>
@@ -214,7 +215,7 @@ export function BuyerActivityTab() {
         <div className="space-y-3.5">
           {/* Cash Heatmap */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5">🔥 Cash Buyer Activity Heatmap</h3>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">🔥 Cash Buyer Activity Heatmap <InfoTooltip text="Shows where cash buyers are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Cash transactions by price range × zip code</p>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
@@ -245,7 +246,7 @@ export function BuyerActivityTab() {
 
           {/* Retail Heatmap */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5">Retail Buyer Activity Heatmap</h3>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Retail Buyer Activity Heatmap <InfoTooltip text="Shows where traditional buyers are purchasing. These areas are your best exit markets for fix & flip resales." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Where retail buyers are active — best flip exit markets</p>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
@@ -309,7 +310,7 @@ export function BuyerActivityTab() {
         <div className="space-y-3.5">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Monthly Transaction Volume</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Monthly Transaction Volume <InfoTooltip text="Monthly count of cash and retail closings. Track seasonality and momentum in buyer activity." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Cash vs retail closings per month</p>
               <ResponsiveContainer width="100%" height={260}>
                 <ComposedChart data={VELOCITY}>
@@ -326,7 +327,7 @@ export function BuyerActivityTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Avg Cash Offer Price Trend</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Avg Cash Offer Price Trend <InfoTooltip text="Tracks the average price cash buyers are paying over time. Rising prices may mean increased competition." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">What investors are actually paying</p>
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={VELOCITY}>
@@ -348,7 +349,7 @@ export function BuyerActivityTab() {
 
           {/* Absorption Rate */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5">Absorption Rate by Zip</h3>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Absorption Rate by Zip <InfoTooltip text="Number of sales per month in each zip. Higher absorption = faster-moving market with quicker deal cycles." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Sales per month — higher = hotter market</p>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={[...ZIPS].sort((a, b) => b.absRate - a.absRate)}>
@@ -367,7 +368,7 @@ export function BuyerActivityTab() {
 
           {/* List-to-Sale */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5">List-to-Sale Price Ratio</h3>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">List-to-Sale Price Ratio <InfoTooltip text="Percentage of asking price that sellers actually receive. Lower ratios mean more negotiation room for investors." /></h3>
             <p className="text-[11px] text-muted-foreground mb-3">Lower = more negotiation room for investors</p>
             <div className="space-y-0">
               {[...ZIPS].sort((a, b) => a.listToSale - b.listToSale).map((z, i) => (
@@ -406,7 +407,7 @@ export function BuyerActivityTab() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Flip Activity by Zip</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Flip Activity by Zip <InfoTooltip text="Properties that were bought and resold within 12 months — indicates active flipping in that area." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Properties sold twice within 12 months</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={[...FLIP_DATA].sort((a, b) => b.flips - a.flips)}>

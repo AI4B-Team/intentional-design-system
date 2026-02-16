@@ -6,6 +6,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./InfoTooltip";
 
 const COLORS = {
   primary: "#10B981", cyan: "#06B6D4", warning: "#F59E0B",
@@ -62,7 +63,7 @@ export function CampaignLauncherTab() {
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-[15px] font-bold text-foreground">Target Zip Codes</h3>
+            <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">Target Zip Codes <InfoTooltip text="Select zip codes to target in your campaign. Higher scores indicate stronger investor markets with more deal flow." /></h3>
             <p className="text-[11px] text-muted-foreground mt-0.5">Select zips to include in campaign</p>
           </div>
           <Button variant="secondary" size="sm" onClick={autoSel} icon={<Sparkles className="h-3 w-3" />}>
@@ -115,7 +116,7 @@ export function CampaignLauncherTab() {
       <div className="space-y-3.5">
         {/* Channel Select */}
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-[15px] font-bold text-foreground mb-3">Campaign Type</h3>
+          <h3 className="text-[15px] font-bold text-foreground mb-3 flex items-center gap-1.5">Campaign Type <InfoTooltip text="Choose how to reach leads. Multi-channel (All) typically gets the highest response rates." /></h3>
           <div className="grid grid-cols-2 gap-2">
             {CHANNELS.map((c) => (
               <div key={c.id} onClick={() => setCh(c.id)}
