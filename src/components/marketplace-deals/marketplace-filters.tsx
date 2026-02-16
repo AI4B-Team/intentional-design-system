@@ -224,31 +224,28 @@ export function MarketplaceFilters({
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Address Search with Dropdown */}
           <Popover open={addressDropdownOpen} onOpenChange={setAddressDropdownOpen}>
-            <div className="relative flex-shrink-0">
-              <Input
-                type="text"
-                placeholder="Address, City, County, State, or Zip"
-                value={filters.address}
-                onChange={(e) => handleChange("address", e.target.value)}
-                onFocus={() => setAddressDropdownOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && filters.address.trim().length >= 2) {
-                    addRecentSearch(filters.address);
-                    setRecentSearches(getRecentSearches());
-                    setAddressDropdownOpen(false);
-                  }
-                }}
-                className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
-              />
-              <PopoverTrigger asChild>
-                <button 
-                  type="button"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
-                >
+            <PopoverTrigger asChild>
+              <div className="relative flex-shrink-0 cursor-pointer">
+                <Input
+                  type="text"
+                  placeholder="Address, City, County, State, or Zip"
+                  value={filters.address}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                  onFocus={() => setAddressDropdownOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && filters.address.trim().length >= 2) {
+                      addRecentSearch(filters.address);
+                      setRecentSearches(getRecentSearches());
+                      setAddressDropdownOpen(false);
+                    }
+                  }}
+                  className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors">
                   <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform", addressDropdownOpen && "rotate-180")} />
-                </button>
-              </PopoverTrigger>
-            </div>
+                </div>
+              </div>
+            </PopoverTrigger>
             <PopoverContent 
               className="w-[320px] p-0 bg-white border border-border shadow-lg z-[200]" 
               align="start" 
