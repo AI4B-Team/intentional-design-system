@@ -78,55 +78,55 @@ export function BuyerIntelTab() {
       {/* ═══ STEP 1: BUYER ACTIVITY + ZIP SELECTION ═══ */}
       {step === 1 && (
         <div className="space-y-4">
-          {/* Buyer Activity Content */}
-          <BuyerActivityTab />
-
-          {/* Zip Selection Bar - moved below activity cards */}
-          <div className="bg-card border border-border rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <div>
-                <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">
-                  Top Zip Codes
-                  <InfoTooltip text="These are the top zip codes ranked by investor buyer activity, including cash purchases, flip volume, and overall deal velocity. Higher scores indicate stronger wholesale and investment potential. Use these insights to focus your outreach on the most active markets." />
-                </h3>
-                <p className="text-[11px] text-muted-foreground mt-0.5">Choose zips for your campaign, then explore buyer data below</p>
+          {/* Buyer Activity Content with Zip Selection inserted between stat cards and charts */}
+          <BuyerActivityTab>
+            {/* Top Zip Codes */}
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <div>
+                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">
+                    Top Zip Codes
+                    <InfoTooltip text="These are the top zip codes ranked by investor buyer activity, including cash purchases, flip volume, and overall deal velocity. Higher scores indicate stronger wholesale and investment potential. Use these insights to focus your outreach on the most active markets." />
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Choose zips for your campaign, then explore buyer data below</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" onClick={autoSelectTop} icon={<Sparkles className="h-3 w-3" />}>
+                    Auto-Select 85+
+                  </Button>
+                  {sel.length > 0 && (
+                    <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear All</Button>
+                  )}
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="secondary" size="sm" onClick={autoSelectTop} icon={<Sparkles className="h-3 w-3" />}>
-                  Auto-Select 85+
-                </Button>
-                {sel.length > 0 && (
-                  <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear All</Button>
-                )}
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                {ZIPS.map((z) => {
+                  const s = sel.includes(z.zip);
+                  return (
+                    <div key={z.zip} onClick={() => tog(z.zip)}
+                      className={cn("flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all border",
+                        s ? "bg-emerald-500/10 border-emerald-600" : "border-border hover:bg-muted/50")}>
+                      <div className={cn("w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0",
+                        s ? "border-emerald-500 bg-emerald-500" : "border-muted-foreground/40")}>
+                        {s && <Check size={10} className="text-white" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1">
+                          <span className="font-bold text-[12px] text-emerald-500">{z.zip}</span>
+                          <span className="text-[10px] text-muted-foreground truncate">{z.name}</span>
+                        </div>
+                        <div className="flex gap-2 mt-0.5">
+                          <span className="text-[9px] text-muted-foreground">{z.leads} leads</span>
+                          <span className={cn("text-[9px]", z.score >= 90 ? "text-emerald-500" : "text-amber-500")}>{z.score}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-              {ZIPS.map((z) => {
-                const s = sel.includes(z.zip);
-                return (
-                  <div key={z.zip} onClick={() => tog(z.zip)}
-                    className={cn("flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all border",
-                      s ? "bg-emerald-500/10 border-emerald-600" : "border-border hover:bg-muted/50")}>
-                    <div className={cn("w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0",
-                      s ? "border-emerald-500 bg-emerald-500" : "border-muted-foreground/40")}>
-                      {s && <Check size={10} className="text-white" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1">
-                        <span className="font-bold text-[12px] text-emerald-500">{z.zip}</span>
-                        <span className="text-[10px] text-muted-foreground truncate">{z.name}</span>
-                      </div>
-                      <div className="flex gap-2 mt-0.5">
-                        <span className="text-[9px] text-muted-foreground">{z.leads} leads</span>
-                        <span className={cn("text-[9px]", z.score >= 90 ? "text-emerald-500" : "text-amber-500")}>{z.score}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          </BuyerActivityTab>
 
           {/* Selected Summary */}
           {sel.length > 0 && (
