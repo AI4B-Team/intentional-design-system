@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { MarketplaceFilters } from "@/components/marketplace-deals/marketplace-filters";
 import { MarketplaceMap } from "@/components/marketplace-deals/marketplace-map";
 import { MarketplaceListings } from "@/components/marketplace-deals/marketplace-listings";
+import { LeadTypeBadges } from "@/components/marketplace-deals/lead-type-badges";
 import { useMockDeals } from "@/hooks/useMockDeals";
 import { useSavedDeals } from "@/hooks/useSavedDeals";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
@@ -93,6 +94,23 @@ export default function MarketplaceDeals() {
 
   const totalCount = showSavedOnly ? deals.length : allTotalCount;
 
+  // Compute lead type counts from all filtered deals (before pagination)
+  const leadTypeCounts = useMemo(() => {
+    if (!filters.address || filters.address.trim().length < 2) return [];
+    
+    // Count occurrences of each tag across all filtered deals
+    const tagCounts: Record<string, number> = {};
+    allDeals.forEach((deal) => {
+      deal.tags.forEach((tag) => {
+        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+      });
+    });
+
+    // Sort by count descending
+    return Object.entries(tagCounts)
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [allDeals, filters.address]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
@@ -128,6 +146,9 @@ export default function MarketplaceDeals() {
           savedCount={savedCount}
           totalCount={totalCount}
         />
+
+        {/* Lead Type Badges - shown when location is searched */}
+        <LeadTypeBadges counts={leadTypeCounts} />
 
         {/* Main Content - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
