@@ -140,7 +140,7 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
       {view === "overview" && (
         <div className="space-y-3.5">
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-            <StatCard label="Cash Transactions" value={totalCash} sub={`${((totalCash / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
+            <StatCard label="Investor Transactions" value={totalCash} sub={`${((totalCash / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
             <StatCard label="Retail Transactions" value={totalRetail} sub={`${((totalRetail / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
             <StatCard label="Flip Activity" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
             <StatCard label="Avg Velocity" value={`${avgVelocity}/mo`} sub="Sales per month per zip" icon={Activity} color={COLORS.primary} change={3.1} />
@@ -150,9 +150,9 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
           {children}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-            {/* Cash Buyer Concentration */}
+            {/* Investor Concentration */}
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Cash Buyer Concentration <InfoTooltip text="Number of cash purchases per zip code. Higher bars indicate zip codes where investors are most actively buying." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Concentration <InfoTooltip text="Number of investor purchases per zip code. Higher bars indicate zip codes where investors are most actively buying." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Higher bars = more investor activity</p>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={[...ZIPS].sort((a, b) => b.cs - a.cs)} barGap={2}>
@@ -160,7 +160,7 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                   <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="cs" name="Cash Sales" radius={[4, 4, 0, 0]}>
+                  <Bar dataKey="cs" name="Investor Sales" radius={[4, 4, 0, 0]}>
                     {[...ZIPS].sort((a, b) => b.cs - a.cs).map((z, i) => (
                       <Cell key={i} fill={z.cr > 80 ? COLORS.cyan : z.cr > 50 ? COLORS.accent : "#334155"} />
                     ))}
@@ -193,10 +193,10 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
             </div>
           </div>
 
-          {/* DOM Cash vs Retail */}
+          {/* DOM Investor vs Retail */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Cash vs Retail <InfoTooltip text="Compares how quickly cash buyers close vs traditional financed buyers. The gap shows the speed advantage of cash offers." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Cash buyers close significantly faster</p>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Investor vs Retail <InfoTooltip text="Compares how quickly investors close vs traditional financed buyers. The gap shows the speed advantage of investor offers." /></h3>
+            <p className="text-[11px] text-muted-foreground mb-3">Investors close significantly faster</p>
             <ResponsiveContainer width="100%" height={260}>
               <BarChart data={ZIPS} barGap={4}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -204,16 +204,16 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                 <Tooltip content={<ChartTip />} />
                 <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="domCash" name="Cash Buyer DOM" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="domCash" name="Investor DOM" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
                 <Bar dataKey="domRetail" name="Retail Buyer DOM" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* What Cash Buyers Are Paying + Cash Vs Retail Price Gap */}
+          {/* What Investors Are Paying + Investor Vs Retail Price Gap */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Cash Buyers Are Paying <InfoTooltip text="Average acquisition price cash buyers are paying in each zip code. Lower averages may indicate stronger wholesale discount opportunities." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Investors Are Paying <InfoTooltip text="Average acquisition price investors are paying in each zip code. Lower averages may indicate stronger wholesale discount opportunities." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={[...ZIPS].sort((a, b) => a.mp - b.mp)} barGap={2}>
@@ -221,13 +221,13 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                   <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="mp" name="Avg Cash Price" fill="#334155" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="mp" name="Avg Investor Price" fill="#334155" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Cash Vs Retail Price Gap <InfoTooltip text="Compares average cash buyer price vs retail price per zip. The spread represents your potential margin opportunity as a wholesaler or flipper." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Vs Retail Price Gap <InfoTooltip text="Compares average investor price vs retail price per zip. The spread represents your potential margin opportunity as a wholesaler or flipper." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={ZIPS} barGap={4}>
@@ -236,7 +236,7 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
                   <Tooltip content={<ChartTip />} />
                   <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="mp" name="Cash Avg" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="mp" name="Investor Avg" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
                   <Bar dataKey="retailAvg" name="Retail Avg" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -248,10 +248,10 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
       {/* ═══ HOT SPOTS ═══ */}
       {view === "hotspots" && (
         <div className="space-y-3.5">
-          {/* Cash Heatmap */}
+          {/* Investor Heatmap */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🔥 Cash Buyer Activity Heatmap <InfoTooltip text="Shows where cash buyers are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Cash transactions by price range × zip code</p>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🔥 Investor Activity Heatmap <InfoTooltip text="Shows where investors are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
+            <p className="text-[11px] text-muted-foreground mb-3">Investor transactions by price range × zip code</p>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
                 <thead>
@@ -320,7 +320,7 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
               <div className="bg-background/50 rounded-lg p-3.5">
                 <div className="text-[10px] text-muted-foreground uppercase mb-1">🎯 Wholesale Sweet Spot</div>
                 <div className="text-lg font-bold text-cyan-500">Under $50K</div>
-                <div className="text-xs text-muted-foreground mt-1">233 cash sales (42% of all transactions)</div>
+                <div className="text-xs text-muted-foreground mt-1">233 investor sales (42% of all transactions)</div>
                 <div className="text-[11px] text-emerald-500 mt-0.5">Highest volume, fastest closings</div>
               </div>
               <div className="bg-background/50 rounded-lg p-3.5">
@@ -346,7 +346,7 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
               <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Monthly Transaction Volume <InfoTooltip text="Monthly count of cash and retail closings. Track seasonality and momentum in buyer activity." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Cash vs retail closings per month</p>
+              <p className="text-[11px] text-muted-foreground mb-3">Investor vs retail closings per month</p>
               <ResponsiveContainer width="100%" height={260}>
                 <ComposedChart data={VELOCITY}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -354,15 +354,15 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip content={<ChartTip />} />
                   <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="cashTx" name="Cash Closings" fill={COLORS.cyan} radius={[4, 4, 0, 0]} opacity={0.7} />
+                  <Bar dataKey="cashTx" name="Investor Closings" fill={COLORS.cyan} radius={[4, 4, 0, 0]} opacity={0.7} />
                   <Bar dataKey="retailTx" name="Retail Closings" fill={COLORS.warning} radius={[4, 4, 0, 0]} opacity={0.7} />
-                  <Line type="monotone" dataKey="cashTx" name="Cash Trend" stroke={COLORS.cyan} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="cashTx" name="Investor Trend" stroke={COLORS.cyan} strokeWidth={2} dot={false} />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Avg Cash Offer Price Trend <InfoTooltip text="Tracks the average price cash buyers are paying over time. Rising prices may mean increased competition." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Avg Investor Offer Price Trend <InfoTooltip text="Tracks the average price investors are paying over time. Rising prices may mean increased competition." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">What investors are actually paying</p>
               <ResponsiveContainer width="100%" height={260}>
                 <AreaChart data={VELOCITY}>

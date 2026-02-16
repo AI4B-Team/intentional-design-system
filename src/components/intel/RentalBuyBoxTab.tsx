@@ -224,12 +224,12 @@ export function RentalBuyBoxTab() {
               { label: "Property Types", value: "SFH, Townhomes, Small Multi" },
               { label: "Condition", value: "Distressed, Needs Rehab, Vacant" },
               { label: "Max DOM for Comps", value: "83 days" },
-              { label: "Min Cash Buyer Activity", value: "61%+ in zip", color: COLORS.primary },
+              { label: "Min Investor Activity", value: "61%+ in zip", color: COLORS.primary },
               { label: "Ideal Bed/Bath", value: "3/2 or 3/1" },
               { label: "Equity Threshold", value: "30%+ estimated", color: COLORS.primary },
             ]}
-            insight="This market has an exceptional Wholesale Score of 94. Five zip codes show 75%+ cash buyer ratios, with 34668 at 96.5% — indicating extremely active investor demand. The sub-$50K segment (233 sales) is the sweet spot. Focus on 34668 and 34691 for highest volume and fastest turns (66–77 DOM)."
-            risk="Heavy competition in the sub-$100K segment. The 233 cash sales under $50K suggest a crowded wholesale market. Differentiate with speed-to-close and direct-to-seller marketing. Watch for thin margins in 34653 where prices have risen 4.2% QoQ."
+            insight="This market has an exceptional Wholesale Score of 94. Five zip codes show 75%+ investor ratios, with 34668 at 96.5% — indicating extremely active investor demand. The sub-$50K segment (233 sales) is the sweet spot. Focus on 34668 and 34691 for highest volume and fastest turns (66–77 DOM)."
+            risk="Heavy competition in the sub-$100K segment. The 233 investor sales under $50K suggest a crowded wholesale market. Differentiate with speed-to-close and direct-to-seller marketing. Watch for thin margins in 34653 where prices have risen 4.2% QoQ."
           />
 
           <BuyBoxCard title="Fix & Flip Buy Box" icon={Target} color={COLORS.warning}

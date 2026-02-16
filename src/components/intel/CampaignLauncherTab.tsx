@@ -36,7 +36,7 @@ const FILTERS = ["All Distressed", "Pre-Foreclosure", "Absentee Owners", "High E
 
 const MSG_TEMPLATES: Record<string, { subject?: string; body: string }> = {
   email: {
-    subject: "Cash Offer for {{property_address}}",
+    subject: "Offer for {{property_address}}",
     body: `Hi {{first_name}},\n\nI noticed your property at {{property_address}} in {{city}} and wanted to reach out. I'm a local investor actively purchasing homes in your area.\n\nI can make a competitive cash offer with a quick close — no repairs needed, no agent commissions, and we cover all closing costs.\n\nWould you be open to a brief conversation about selling? I'd love to discuss what a fair offer looks like for your situation.\n\nBest regards,\n[Your Name]\n[Your Company]`,
   },
   sms: { body: `Hi {{first_name}}, I'm interested in buying your property at {{property_address}} in {{city}}. I buy houses for cash and can close quickly. Would you consider an offer? Reply YES and I'll send details. - [Your Name]` },
@@ -87,9 +87,9 @@ export function CampaignLauncherTab() {
                   <span className="text-[11px] text-muted-foreground">{z.name}</span>
                 </div>
                 <div className="flex gap-3 mt-0.5">
-                  <span className="text-[10px] text-muted-foreground">{z.cs} cash sales</span>
+                  <span className="text-[10px] text-muted-foreground">{z.cs} investor sales</span>
                   <span className="text-[10px] text-muted-foreground">{z.leads} leads</span>
-                  <span className={cn("text-[10px]", z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-muted-foreground")}>{z.cr}% cash</span>
+                  <span className={cn("text-[10px]", z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-muted-foreground")}>{z.cr}% investor</span>
                 </div>
               </div>
               <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-bold",
