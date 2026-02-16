@@ -35,7 +35,7 @@ export default function Renovations() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight">
             Virtual Renovation Studio
           </h1>
           <p className="text-muted-foreground mt-1">
