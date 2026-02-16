@@ -441,7 +441,15 @@ export function MarketplaceFilters({
             <Heart className={cn("h-4 w-4", showSavedOnly && "fill-current")} />
             Saved
             {savedCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
+              <Badge 
+                variant="secondary" 
+                className={cn(
+                  "ml-1 h-5 px-1.5 text-xs font-bold transition-colors",
+                  showSavedOnly 
+                    ? "bg-white text-brand hover:bg-white" 
+                    : "bg-muted text-muted-foreground"
+                )}
+              >
                 {savedCount}
               </Badge>
             )}
