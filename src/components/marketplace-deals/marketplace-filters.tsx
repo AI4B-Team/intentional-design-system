@@ -248,7 +248,7 @@ export function MarketplaceFilters({
               </div>
             </PopoverTrigger>
             <PopoverContent 
-              className="w-[420px] p-0 bg-white border border-border shadow-lg z-[200]" 
+              className="w-[420px] p-0 bg-white border-2 border-border shadow-xl z-[200] rounded-lg" 
               align="start" 
               sideOffset={4}
               onOpenAutoFocus={(e) => e.preventDefault()}
