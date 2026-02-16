@@ -7,7 +7,7 @@ import {
 import {
   Search, MapPin, DollarSign, Home, Clock, Users, Zap, Check,
   Download, Star, ArrowUpRight, ArrowDownRight, BarChart3, Activity,
-  Building, Percent, Rocket, TrendingUp, Brain, Megaphone,
+  Building, Percent, Rocket, TrendingUp, Brain, Megaphone, Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import { ActivityTrendsTab } from "@/components/intel/ActivityTrendsTab";
 import { RentalBuyBoxTab } from "@/components/intel/RentalBuyBoxTab";
 import { CampaignLauncherTab } from "@/components/intel/CampaignLauncherTab";
 import { BuyerActivityTab } from "@/components/intel/BuyerActivityTab";
+import { BuyerCampaignTab } from "@/components/intel/BuyerCampaignTab";
 
 // ---------- Sample Data (Phase 1 static) ----------
 const MARKET_DATA = {
@@ -142,6 +143,7 @@ const TABS = [
   { key: "overview", label: "Overview", icon: BarChart3 },
   { key: "activity", label: "Activity & Trends", icon: Activity },
   { key: "buyers", label: "Buyer Activity", icon: Users },
+  { key: "buyercampaign", label: "Buyer Campaign", icon: Target },
   { key: "rental", label: "Rental & Buy Box", icon: Home },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
 ] as const;
@@ -395,6 +397,7 @@ export default function Intel() {
 
         {activeTab === "activity" && <ActivityTrendsTab />}
         {activeTab === "buyers" && <BuyerActivityTab />}
+        {activeTab === "buyercampaign" && <BuyerCampaignTab />}
         {activeTab === "rental" && <RentalBuyBoxTab />}
         {activeTab === "campaign" && <CampaignLauncherTab />}
       </div>
