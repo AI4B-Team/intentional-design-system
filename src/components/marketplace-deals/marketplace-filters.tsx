@@ -369,24 +369,22 @@ export function MarketplaceFilters({
                   </div>
                 )}
 
-                {addressTab === "popular" && (
-                  <div className="p-3">
-                    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Popular Markets</div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {[
-                        "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
-                        "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
-                      ].map((market) => (
-                        <button
-                          key={market}
-                          type="button"
-                          className="px-2.5 py-1 text-xs rounded-full border border-border bg-background hover:bg-muted hover:border-primary/30 transition-colors"
-                          onClick={() => handleSelectAddress(market.split(",")[0].trim())}
-                        >
-                          {market}
-                        </button>
-                      ))}
-                    </div>
+{addressTab === "popular" && (
+                  <div className="py-1">
+                    {[
+                      "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
+                      "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
+                    ].map((market) => (
+                      <button
+                        key={market}
+                        type="button"
+                        className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                        onClick={() => handleSelectAddress(market.split(",")[0].trim())}
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        {market}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
