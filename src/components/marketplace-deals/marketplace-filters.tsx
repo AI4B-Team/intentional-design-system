@@ -248,12 +248,13 @@ export function MarketplaceFilters({
                   <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform", addressDropdownOpen && "rotate-180")} />
                 </button>
               </PopoverTrigger>
-               <PopoverContent 
-                className="w-[320px] p-0 bg-white border border-border shadow-lg z-50" 
-                align="start" 
-                sideOffset={4}
-                onOpenAutoFocus={(e) => e.preventDefault()}
-              >
+            </div>
+            <PopoverContent 
+              className="w-[320px] p-0 bg-white border border-border shadow-lg z-[200]" 
+              align="start" 
+              sideOffset={4}
+              onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <div className="py-1 max-h-[420px] overflow-y-auto">
                   {/* Saved Searches */}
                   <div className="flex items-center justify-between px-3 py-2">
@@ -357,8 +358,7 @@ export function MarketplaceFilters({
                     ))}
                   </div>
                 </div>
-              </PopoverContent>
-            </div>
+            </PopoverContent>
           </Popover>
 
           {/* All Listings */}
