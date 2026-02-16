@@ -18,6 +18,7 @@ import { ActivityTrendsTab } from "@/components/intel/ActivityTrendsTab";
 import { RentalBuyBoxTab } from "@/components/intel/RentalBuyBoxTab";
 import { CampaignLauncherTab } from "@/components/intel/CampaignLauncherTab";
 import { BuyerIntelTab } from "@/components/intel/BuyerIntelTab";
+import { MarketCompareTab } from "@/components/intel/MarketCompareTab";
 
 // ---------- Sample Data (Phase 1 static) ----------
 const MARKET_DATA = {
@@ -147,6 +148,7 @@ const TABS = [
   { key: "overview", label: "Overview", icon: BarChart3 },
   { key: "activity", label: "Activity & Trends", icon: Activity },
   { key: "buyers", label: "Buyer Activity", icon: Users },
+  { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "rental", label: "Rental & Buy Box", icon: Home },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
 ] as const;
@@ -409,6 +411,7 @@ export default function Intel() {
 
         {activeTab === "activity" && <ActivityTrendsTab />}
         {activeTab === "buyers" && <BuyerIntelTab />}
+        {activeTab === "compare" && <MarketCompareTab />}
         {activeTab === "rental" && <RentalBuyBoxTab />}
         {activeTab === "campaign" && <CampaignLauncherTab />}
       </div>
