@@ -115,6 +115,7 @@ export function MarketplaceFilters({
   const [bedsPopoverOpen, setBedsPopoverOpen] = useState(false);
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
+  const [addressDropdownOpen, setAddressDropdownOpen] = useState(false);
 
   const handleChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value });
@@ -177,17 +178,59 @@ export function MarketplaceFilters({
       <div className="relative flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters - uniform gap-3 for equal spacing */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          {/* Address Search */}
-          <div className="relative flex-shrink-0">
-            <Input
-              type="text"
-              placeholder="Address, City, County, State, or Zip"
-              value={filters.address}
-              onChange={(e) => handleChange("address", e.target.value)}
-              className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
-            />
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
-          </div>
+          {/* Address Search with Dropdown */}
+          <Popover open={addressDropdownOpen} onOpenChange={setAddressDropdownOpen}>
+            <div className="relative flex-shrink-0">
+              <Input
+                type="text"
+                placeholder="Address, City, County, State, or Zip"
+                value={filters.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+                onFocus={() => setAddressDropdownOpen(true)}
+                className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
+              />
+              <PopoverTrigger asChild>
+                <button 
+                  type="button"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
+                >
+                  <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform", addressDropdownOpen && "rotate-180")} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent 
+                className="w-[320px] p-0 bg-white border border-border shadow-lg z-50" 
+                align="start" 
+                sideOffset={4}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <div className="py-1">
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Markets</div>
+                  {[
+                    { label: "Tampa, FL", value: "Tampa" },
+                    { label: "Houston, TX", value: "Houston" },
+                    { label: "Atlanta, GA", value: "Atlanta" },
+                    { label: "Phoenix, AZ", value: "Phoenix" },
+                    { label: "Jacksonville, FL", value: "Jacksonville" },
+                    { label: "Dallas, TX", value: "Dallas" },
+                    { label: "Orlando, FL", value: "Orlando" },
+                    { label: "Charlotte, NC", value: "Charlotte" },
+                  ].map((market) => (
+                    <button
+                      key={market.value}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
+                      onClick={() => {
+                        handleChange("address", market.value);
+                        setAddressDropdownOpen(false);
+                      }}
+                    >
+                      {market.label}
+                    </button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </div>
+          </Popover>
 
           {/* All Listings */}
           <Select 
