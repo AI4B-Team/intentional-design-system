@@ -29,6 +29,10 @@ import {
   Heart,
   Clock,
   X,
+  Star,
+  Zap,
+  MapPin,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
@@ -250,7 +254,38 @@ export function MarketplaceFilters({
                 sideOffset={4}
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
-                <div className="py-1 max-h-[360px] overflow-y-auto">
+                <div className="py-1 max-h-[420px] overflow-y-auto">
+                  {/* Saved Searches */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Searches</span>
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                      onClick={() => { setAddressDropdownOpen(false); setSaveSearchOpen(true); }}
+                    >
+                      + New
+                    </button>
+                  </div>
+                  {[
+                    { name: "Tampa Distressed Under $200K", icon: Star, count: 43, color: "text-amber-500" },
+                    { name: "Atlanta High Equity 3+ Beds", icon: Star, count: 127, color: "text-amber-500" },
+                    { name: "Orlando Vacant Lots", icon: Star, count: 18, color: "text-amber-500" },
+                  ].map((saved) => (
+                    <button
+                      key={saved.name}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2 group"
+                      onClick={() => handleSelectAddress(saved.name)}
+                    >
+                      <saved.icon className={cn("h-3.5 w-3.5 flex-shrink-0 fill-current", saved.color)} />
+                      <span className="flex-1 truncate">{saved.name}</span>
+                      <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                        {saved.count}
+                      </Badge>
+                    </button>
+                  ))}
+                  <div className="border-t border-border my-1" />
+
                   {/* Recent Searches */}
                   <div className="flex items-center justify-between px-3 py-2">
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
@@ -264,44 +299,63 @@ export function MarketplaceFilters({
                       </button>
                     )}
                   </div>
-                  {recentSearches.length > 0 ? (
-                    recentSearches.map((search) => (
-                      <button
-                        key={search}
-                        type="button"
-                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
-                        onClick={() => handleSelectAddress(search)}
-                      >
-                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                        {search}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="px-3 py-2 text-sm text-muted-foreground italic">No recent searches</div>
-                  )}
+                  {(recentSearches.length > 0 ? recentSearches : [
+                    "Jacksonville, FL",
+                    "28205",
+                    "Harris County, TX",
+                  ]).map((search) => (
+                    <button
+                      key={search}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                      onClick={() => handleSelectAddress(search)}
+                    >
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      {search}
+                    </button>
+                  ))}
+                  <div className="border-t border-border my-1" />
+
+                  {/* Quick Searches */}
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Quick Searches</div>
+                  {[
+                    { label: "Foreclosures Near Me", icon: Zap, desc: "Pre-foreclosure & REO" },
+                    { label: "Vacant Properties", icon: Zap, desc: "Unoccupied homes" },
+                    { label: "High Equity Leads", icon: TrendingUp, desc: "60%+ equity owners" },
+                    { label: "Absentee Owners", icon: MapPin, desc: "Out-of-state landlords" },
+                  ].map((quick) => (
+                    <button
+                      key={quick.label}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2.5"
+                      onClick={() => handleSelectAddress(quick.label)}
+                    >
+                      <quick.icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-foreground">{quick.label}</div>
+                        <div className="text-[11px] text-muted-foreground">{quick.desc}</div>
+                      </div>
+                    </button>
+                  ))}
                   <div className="border-t border-border my-1" />
 
                   {/* Popular Markets */}
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Markets</div>
-                  {[
-                    { label: "Tampa, FL", value: "Tampa" },
-                    { label: "Houston, TX", value: "Houston" },
-                    { label: "Atlanta, GA", value: "Atlanta" },
-                    { label: "Phoenix, AZ", value: "Phoenix" },
-                    { label: "Jacksonville, FL", value: "Jacksonville" },
-                    { label: "Dallas, TX", value: "Dallas" },
-                    { label: "Orlando, FL", value: "Orlando" },
-                    { label: "Charlotte, NC", value: "Charlotte" },
-                  ].map((market) => (
-                    <button
-                      key={market.value}
-                      type="button"
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
-                      onClick={() => handleSelectAddress(market.value)}
-                    >
-                      {market.label}
-                    </button>
-                  ))}
+                  <div className="px-3 pb-2 flex flex-wrap gap-1.5">
+                    {[
+                      "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
+                      "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
+                    ].map((market) => (
+                      <button
+                        key={market}
+                        type="button"
+                        className="px-2.5 py-1 text-xs rounded-full border border-border bg-background hover:bg-muted hover:border-primary/30 transition-colors"
+                        onClick={() => handleSelectAddress(market.split(",")[0].trim())}
+                      >
+                        {market}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </PopoverContent>
             </div>
