@@ -59,7 +59,7 @@ export default function CampaignsHub() {
     <PageLayout title="Campaigns">
       <div className="space-y-6">
         <div className="-mt-4">
-          <h1 className="text-3xl font-bold text-foreground">Campaigns</h1>
+          <h1 className="text-2xl font-bold text-foreground">Campaigns</h1>
           <p className="text-muted-foreground">
             All your marketing channels in one place — track leads, run campaigns, and grow your pipeline
           </p>
