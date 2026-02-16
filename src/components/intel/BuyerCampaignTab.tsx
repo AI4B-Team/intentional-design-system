@@ -419,16 +419,24 @@ export function BuyerCampaignTab() {
           {/* Right: Config */}
           <div className="space-y-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize">Channel</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Campaign Type <InfoTooltip text="Choose how to reach leads. Multi-channel (All) typically gets the highest response rates." /></h3>
               <div className="grid grid-cols-2 gap-2">
-                {CHANNELS.map((c) => (
-                  <div key={c.id} onClick={() => setCh(c.id)}
-                    className={cn("flex items-center gap-1.5 px-3 py-2.5 rounded-lg cursor-pointer border transition-colors",
-                      ch === c.id ? `border-${c.color}-500 bg-${c.color}-500/10` : "border-border hover:border-muted-foreground/40")}>
-                    <c.icon size={14} className={cn(ch === c.id ? `text-${c.color}-500` : "text-muted-foreground")} />
-                    <span className={cn("text-xs font-semibold", ch === c.id ? `text-${c.color}-500` : "text-muted-foreground")}>{c.label}</span>
-                  </div>
-                ))}
+                {CHANNELS.map((c) => {
+                  const colorMap: Record<string, string> = { emerald: "#10B981", blue: "#3B82F6", cyan: "#06B6D4", amber: "#F59E0B" };
+                  const hex = colorMap[c.color] || "#10B981";
+                  return (
+                    <div key={c.id} onClick={() => setCh(c.id)}
+                      className={cn("px-3.5 py-3 rounded-lg cursor-pointer border transition-all",
+                        ch === c.id ? "border-current" : "border-border hover:border-muted-foreground/30")}
+                      style={ch === c.id ? { borderColor: hex, background: `${hex}10` } : {}}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <c.icon size={16} style={{ color: ch === c.id ? hex : "hsl(var(--muted-foreground))" }} />
+                        <span className="text-xs font-semibold" style={{ color: ch === c.id ? hex : "hsl(var(--muted-foreground))" }}>{c.label}</span>
+                      </div>
+                      <span className="text-[10px] text-muted-foreground">{c.desc}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
