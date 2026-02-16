@@ -281,7 +281,7 @@ export default function Intel() {
                   {selectedZips.length > 0 && (
                     <>
                       <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
-                        onClick={() => navigate(`/campaigns?tab=leads&zips=${selectedZips.join(",")}`)}>
+                        onClick={() => navigate(`/marketplace?zips=${selectedZips.join(",")}`)}>
                         View Listings ({selectedZips.length})
                       </Button>
                       <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" icon={<Rocket className="h-3 w-3" />}
