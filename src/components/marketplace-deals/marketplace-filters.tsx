@@ -372,17 +372,26 @@ export function MarketplaceFilters({
 {addressTab === "popular" && (
                   <div className="py-1">
                     {[
-                      "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
-                      "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
+                      { name: "Tampa, FL", listings: 342, buyers: 128 },
+                      { name: "Houston, TX", listings: 518, buyers: 203 },
+                      { name: "Atlanta, GA", listings: 425, buyers: 176 },
+                      { name: "Phoenix, AZ", listings: 389, buyers: 154 },
+                      { name: "Jacksonville, FL", listings: 267, buyers: 98 },
+                      { name: "Dallas, TX", listings: 471, buyers: 189 },
+                      { name: "Orlando, FL", listings: 312, buyers: 134 },
+                      { name: "Charlotte, NC", listings: 198, buyers: 87 },
                     ].map((market) => (
                       <button
-                        key={market}
+                        key={market.name}
                         type="button"
-                        className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2"
-                        onClick={() => handleSelectAddress(market.split(",")[0].trim())}
+                        className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-3"
+                        onClick={() => handleSelectAddress(market.name.split(",")[0].trim())}
                       >
                         <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                        {market}
+                        <span className="flex-1 font-medium">{market.name}</span>
+                        <span className="text-xs text-muted-foreground whitespace-nowrap">
+                          {market.listings} listings · {market.buyers} buyers
+                        </span>
                       </button>
                     ))}
                   </div>
