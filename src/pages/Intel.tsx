@@ -245,12 +245,12 @@ export default function Intel() {
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-1.5 mb-3">
                 <h3 className="text-[13px] font-bold text-foreground capitalize">Market Scores</h3>
-                <InfoTooltip text="Composite scores (0-100) measuring market attractiveness for each investment strategy. Based on transaction volume, pricing trends, cash buyer activity, and rental yields." />
+                <InfoTooltip text="Composite scores (0-100) measuring market attractiveness for each investment strategy. Based on transaction volume, pricing trends, investor activity, and rental yields." />
               </div>
               <div className="flex items-center justify-around flex-wrap gap-4">
               <ScoreGauge score={D.scores.market} label="Market" icon={BarChart3} color={COLORS.primary} large />
               <div className="w-px h-11 bg-border hidden sm:block" />
-              <ScoreGauge score={D.scores.cash} label="Cash Buyer" icon={DollarSign} color={COLORS.cyan} />
+              <ScoreGauge score={D.scores.cash} label="Investor" icon={DollarSign} color={COLORS.cyan} />
               <ScoreGauge score={D.scores.wholesale} label="Wholesale" icon={Zap} color={COLORS.primary} />
               <ScoreGauge score={D.scores.flip} label="Flip" icon={Home} color={COLORS.warning} />
               <ScoreGauge score={D.scores.rental} label="Rental" icon={Building} color={COLORS.accent} />
@@ -261,7 +261,7 @@ export default function Intel() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
               <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
               <MetricCard label="Total Sales" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
-              <MetricCard label="Cash %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were all-cash purchases — higher means more investor activity." />
+              <MetricCard label="Investor %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were investor purchases — higher means more investor activity." />
               <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} info="Average Days on Market before a property sells. Lower = faster-moving market." />
               <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} info="Capitalization rate — annual net rental income divided by property price. Higher = better rental returns." />
               <MetricCard label="Avg Rent" value={D.summary.rent} prefix="$" suffix="/mo" change={D.summary.rentGrowth} icon={Home} info="Average monthly rent for properties in this market." />
@@ -272,7 +272,7 @@ export default function Intel() {
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, cash buyer ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
+                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                 </div>
                 <div className="flex gap-2">
@@ -283,7 +283,7 @@ export default function Intel() {
                   )}
                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
                     className="bg-background border border-border rounded-md text-muted-foreground text-[10px] px-2 py-1.5">
-                    <option value="cr">Sort: Cash %</option>
+                    <option value="cr">Sort: Investor %</option>
                     <option value="ts">Sort: Sales</option>
                     <option value="score">Sort: Score</option>
                     <option value="cap">Sort: Cap Rate</option>
@@ -294,7 +294,7 @@ export default function Intel() {
                 <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-border">
-                      {["", "ZIP", "AREA", "SALES", "CASH", "RETAIL", "CASH %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
+                      {["", "ZIP", "AREA", "SALES", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
                         <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
                           i < 3 ? "text-left" : i === 11 ? "text-center" : "text-right")}>{h}</th>
                       ))}
@@ -360,7 +360,7 @@ export default function Intel() {
                     <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
                     <RechartsTooltip content={<ChartTooltip />} />
                     <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="cash" name="Cash Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="cash" name="Investor Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
                     <Bar dataKey="retail" name="Retail Sales" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -382,7 +382,7 @@ export default function Intel() {
                   </ResponsiveContainer>
                   <div className="flex-1 flex flex-col gap-2.5">
                     <div className="bg-cyan-500/10 rounded-lg p-3">
-                      <div className="text-[10px] text-muted-foreground">Cash Buyers</div>
+                      <div className="text-[10px] text-muted-foreground">Investors</div>
                       <div className="text-xl font-bold text-cyan-500">{D.summary.cashSales}</div>
                       <div className="text-[11px] text-cyan-500">{D.summary.cashRate}% of market</div>
                     </div>

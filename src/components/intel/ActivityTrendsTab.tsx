@@ -86,7 +86,7 @@ export function ActivityTrendsTab() {
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                 <RechartsTooltip content={<ChartTooltip />} />
                 <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="cs" name="Cash Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cs" name="Investor Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
                 <Bar dataKey="rs" name="Retail Sales" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

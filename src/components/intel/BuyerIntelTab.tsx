@@ -134,7 +134,7 @@ export function BuyerIntelTab() {
               <div className="flex gap-5">
                 <div><div className="text-[10px] text-muted-foreground">Selected Zips</div><div className="text-xl font-bold text-emerald-500">{sel.length}</div></div>
                 <div><div className="text-[10px] text-muted-foreground">Est. Leads</div><div className="text-xl font-bold text-cyan-500">~{totalLeads.toLocaleString()}</div></div>
-                <div><div className="text-[10px] text-muted-foreground">Avg Cash Buyer Paid</div><div className="text-xl font-bold text-amber-500">${avgCashPaid.toLocaleString()}</div></div>
+                <div><div className="text-[10px] text-muted-foreground">Avg Investor Paid</div><div className="text-xl font-bold text-amber-500">${avgCashPaid.toLocaleString()}</div></div>
               </div>
               <Button onClick={() => setStep(2)} className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold gap-2">
                 Set Offer Prices <ArrowRight size={16} />
@@ -152,7 +152,7 @@ export function BuyerIntelTab() {
             <p className="text-xs text-muted-foreground mb-3">We'll auto-calculate based on real buyer data from your selected zips</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
               {[
-                { id: "buyer_avg", title: "Based on Buyer Activity", desc: "Offer a % of what cash buyers are actually paying", icon: Users, color: "#06B6D4", rec: true },
+                { id: "buyer_avg", title: "Based on Buyer Activity", desc: "Offer a % of what investors are actually paying", icon: Users, color: "#06B6D4", rec: true },
                 { id: "pct_arv", title: "% of ARV", desc: "Classic wholesale formula — 55-70% of after-repair value", icon: Target, color: "#F59E0B" },
                 { id: "buybox", title: "AI Buy Box Match", desc: "Use AI buy box criteria to auto-price each zip", icon: Brain, color: "#8B5CF6" },
               ].map((m) => (
@@ -171,7 +171,7 @@ export function BuyerIntelTab() {
 
           {offerMode === "buyer_avg" && (
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-0.5 capitalize">Offer As % Of Avg Cash Buyer Price</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-0.5 capitalize">Offer As % Of Avg Investor Price</h3>
               <p className="text-xs text-muted-foreground mb-3">Adjust how aggressive your offers are</p>
               <div className="flex items-center gap-4 mb-3">
                 <span className="text-[11px] text-muted-foreground">More Aggressive</span>
@@ -182,7 +182,7 @@ export function BuyerIntelTab() {
               <div className="text-center mb-2">
                 <span className={cn("text-3xl font-bold",
                   pctOfAvg < 75 ? "text-emerald-500" : pctOfAvg < 90 ? "text-cyan-500" : "text-amber-500")}>{pctOfAvg}%</span>
-                <span className="text-sm text-muted-foreground ml-2">of avg cash buyer price</span>
+                <span className="text-sm text-muted-foreground ml-2">of avg investor price</span>
               </div>
               <div className="flex justify-center gap-3 text-[11px] text-muted-foreground">
                 <span>60-74% = Deep discount</span>
@@ -199,7 +199,7 @@ export function BuyerIntelTab() {
               <table className="w-full border-collapse text-xs">
                 <thead>
                   <tr className="border-b-2 border-border">
-                    {["ZIP", "AREA", "CASH BUYERS PAY", "YOUR OFFER", "SAVINGS VS MARKET", "SWEET SPOT RANGE", "CASH DOM"].map((h, i) => (
+                    {["ZIP", "AREA", "INVESTORS PAY", "YOUR OFFER", "SAVINGS VS MARKET", "SWEET SPOT RANGE", "INVESTOR DOM"].map((h, i) => (
                       <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold", i < 2 ? "text-left" : "text-right")}>{h}</th>
                     ))}
                   </tr>
@@ -232,10 +232,10 @@ export function BuyerIntelTab() {
             <div className="flex items-center gap-2 mb-2"><Brain size={16} className="text-blue-500" /><span className="text-[13px] font-bold text-blue-500">AI Offer Insight</span></div>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {offerMode === "buyer_avg"
-                ? `At ${pctOfAvg}% of average cash buyer price, your offers will be ${pctOfAvg < 80 ? "significantly below" : "near"} market. Cash buyers in your selected ${sel.length} zips are paying an average of $${avgCashPaid.toLocaleString()}. Your suggested max offer of $${suggestedOffer.toLocaleString()} gives you ${pctOfAvg < 80 ? "strong margin for wholesale assignments" : "room for buy-and-hold or light rehab plays"}.`
+                ? `At ${pctOfAvg}% of average investor price, your offers will be ${pctOfAvg < 80 ? "significantly below" : "near"} market. Investors in your selected ${sel.length} zips are paying an average of $${avgCashPaid.toLocaleString()}. Your suggested max offer of $${suggestedOffer.toLocaleString()} gives you ${pctOfAvg < 80 ? "strong margin for wholesale assignments" : "room for buy-and-hold or light rehab plays"}.`
                 : offerMode === "pct_arv"
                 ? "Using 65% of ARV formula across selected zips. This works best in areas with strong retail comps (34655, 34667). Verify ARV with recent retail sales before sending offers."
-                : "AI Buy Box is targeting distressed properties with 30%+ equity in high cash-buyer concentration zips. Offers calibrated to 80% of cash buyer average."}
+                : "AI Buy Box is targeting distressed properties with 30%+ equity in high investor concentration zips. Offers calibrated to 80% of investor average."}
             </p>
           </div>
 
