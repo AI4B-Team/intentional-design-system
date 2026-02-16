@@ -54,9 +54,9 @@ export function BuyerIntelTab() {
       {/* Workflow Steps */}
       <div className="grid grid-cols-3 gap-1.5">
         {[
-          { n: 1, label: "Select Zips", icon: MapPin },
-          { n: 2, label: "Set Offers", icon: DollarSign },
-          { n: 3, label: "Launch Campaign", icon: Rocket },
+          { n: 1, label: "Select Zips", icon: MapPin, tip: "Browse top zip codes ranked by investor activity and select the markets you want to target." },
+          { n: 2, label: "Set Offers", icon: DollarSign, tip: "Configure your offer pricing strategy — choose a fixed discount or percentage of ARV for selected zips." },
+          { n: 3, label: "Launch Campaign", icon: Rocket, tip: "Review your selections and launch multi-channel outreach via email, SMS, or phone to targeted leads." },
         ].map((s) => (
           <button key={s.n} onClick={() => s.n <= (sel.length > 0 ? 3 : 1) && setStep(s.n)}
             className={cn("flex items-center justify-center gap-2 py-2.5 rounded-lg border transition-colors",
@@ -67,6 +67,7 @@ export function BuyerIntelTab() {
             </div>
             <s.icon size={14} className={cn(step === s.n ? "text-emerald-500" : step > s.n ? "text-emerald-700" : "text-muted-foreground")} />
             <span className={cn("text-xs font-semibold", step === s.n ? "text-emerald-500" : step > s.n ? "text-emerald-700" : "text-muted-foreground")}>{s.label}</span>
+            <InfoTooltip text={s.tip} />
             {s.n === 1 && sel.length > 0 && (
               <span className="bg-emerald-500 text-white px-1.5 py-0.5 rounded-full text-[10px] font-bold">{sel.length}</span>
             )}
