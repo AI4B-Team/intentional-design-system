@@ -252,8 +252,8 @@ export default function Intel() {
               <div className="flex items-center justify-around flex-wrap gap-4">
               <ScoreGauge score={D.scores.market} label="Market" icon={BarChart3} color={COLORS.primary} large />
               <div className="w-px h-11 bg-border hidden sm:block" />
-              <ScoreGauge score={D.scores.cash} label="Investor" icon={DollarSign} color={COLORS.cyan} />
-              <ScoreGauge score={D.scores.wholesale} label="Wholesale" icon={Zap} color={COLORS.primary} />
+              <ScoreGauge score={D.scores.cash} label="Inventory" icon={DollarSign} color={COLORS.cyan} />
+              <ScoreGauge score={D.scores.wholesale} label="Days On Market" icon={Zap} color={COLORS.primary} />
               <ScoreGauge score={D.scores.flip} label="Flip" icon={Home} color={COLORS.warning} />
               <ScoreGauge score={D.scores.rental} label="Rental" icon={Building} color={COLORS.accent} />
               </div>
