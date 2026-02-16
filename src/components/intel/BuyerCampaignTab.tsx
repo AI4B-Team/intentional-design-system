@@ -10,6 +10,7 @@ import {
   AlertTriangle, Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { InfoTooltip } from "./InfoTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -225,7 +226,7 @@ export function BuyerCampaignTab() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">What Cash Buyers Are Paying</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">What Cash Buyers Are Paying <InfoTooltip text="Average price that cash buyers actually paid in each zip. Use this to calibrate your offer prices to be competitive." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={[...ZIPS].sort((a, b) => a.cashAvgPaid - b.cashAvgPaid)}>
@@ -242,7 +243,7 @@ export function BuyerCampaignTab() {
               </ResponsiveContainer>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5">Cash vs Retail Price Gap</h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Cash vs Retail Price Gap <InfoTooltip text="The difference between cash buyer and retail buyer prices. A larger spread means more margin opportunity for wholesalers and flippers." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={ZIPS} barGap={2}>
