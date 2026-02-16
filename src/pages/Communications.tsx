@@ -2009,10 +2009,7 @@ export default function Communications() {
         {/* Top Bar */}
         <div className="px-6 py-3.5 border-b border-border flex items-center justify-between bg-background">
           <div className="flex items-center gap-5">
-            <h1 className="text-lg font-bold text-foreground flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center">
-                <MessageCircle className="h-4 w-4 text-primary-foreground" />
-              </div>
+            <h1 className="text-lg font-bold text-foreground">
               Communications
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />

@@ -176,14 +176,9 @@ export default function Intel() {
         {/* Header */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
-                <p className="text-[11px] text-muted-foreground">Real-time investor analytics & campaign launcher</p>
-              </div>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
+              <p className="text-[11px] text-muted-foreground">Real-time investor analytics & campaign launcher</p>
             </div>
             <div className="flex items-center gap-2 w-full lg:w-auto">
               <div className="relative flex-1 lg:w-[340px]">
