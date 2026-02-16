@@ -122,7 +122,7 @@ const BuyBox: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingBuyBox, setEditingBuyBox] = useState<BuyBoxType | null>(null);
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("list");
 
   const filteredBuyBoxes = buyBoxes.filter(
     (bb) =>
@@ -226,11 +226,11 @@ const BuyBox: React.FC = () => {
           onValueChange={(v) => v && setViewMode(v as "grid" | "list")}
           className="border rounded-lg p-1"
         >
-          <ToggleGroupItem value="grid" aria-label="Grid view" className="h-8 w-8 p-0">
-            <LayoutGrid className="h-4 w-4" />
-          </ToggleGroupItem>
           <ToggleGroupItem value="list" aria-label="List view" className="h-8 w-8 p-0">
             <List className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="grid" aria-label="Grid view" className="h-8 w-8 p-0">
+            <LayoutGrid className="h-4 w-4" />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
