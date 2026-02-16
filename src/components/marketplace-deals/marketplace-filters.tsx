@@ -147,7 +147,6 @@ export function MarketplaceFilters({
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
   const [addressDropdownOpen, setAddressDropdownOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
-  const [addressTab, setAddressTab] = useState<"saved" | "recent" | "quick" | "popular">("saved");
 
   const handleChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value });
@@ -249,159 +248,114 @@ export function MarketplaceFilters({
                   <ChevronDown className={cn("h-4 w-4 opacity-50 transition-transform", addressDropdownOpen && "rotate-180")} />
                 </button>
               </PopoverTrigger>
-              <PopoverContent 
-                className="w-[560px] p-0 bg-white border border-border shadow-lg z-50" 
+               <PopoverContent 
+                className="w-[320px] p-0 bg-white border border-border shadow-lg z-50" 
                 align="start" 
                 sideOffset={4}
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
-                {/* Tabs */}
-                <div className="flex border-b border-border">
-                  {([
-                    { key: "saved" as const, label: "Saved Searches", icon: Star },
-                    { key: "recent" as const, label: "Recent", icon: Clock },
-                    { key: "quick" as const, label: "Quick Searches", icon: Zap },
-                    { key: "popular" as const, label: "Popular Markets", icon: TrendingUp },
-                  ]).map((tab) => (
+                <div className="py-1 max-h-[420px] overflow-y-auto">
+                  {/* Saved Searches */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Searches</span>
                     <button
-                      key={tab.key}
                       type="button"
-                      onClick={() => setAddressTab(tab.key)}
-                      className={cn(
-                        "flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-medium transition-colors whitespace-nowrap",
-                        addressTab === tab.key
-                          ? "text-primary border-b-2 border-primary bg-primary/5"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                      )}
+                      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                      onClick={() => { setAddressDropdownOpen(false); setSaveSearchOpen(true); }}
                     >
-                      <tab.icon className="h-3.5 w-3.5" />
-                      {tab.label}
+                      + New
+                    </button>
+                  </div>
+                  {[
+                    { name: "Tampa Distressed Under $200K", count: 43 },
+                    { name: "Atlanta High Equity 3+ Beds", count: 127 },
+                    { name: "Orlando Vacant Lots", count: 18 },
+                  ].map((saved) => (
+                    <button
+                      key={saved.name}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                      onClick={() => handleSelectAddress(saved.name)}
+                    >
+                      <Star className="h-3.5 w-3.5 flex-shrink-0 fill-amber-400 text-amber-400" />
+                      <span className="flex-1 truncate">{saved.name}</span>
+                      <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                        {saved.count}
+                      </Badge>
                     </button>
                   ))}
-                </div>
+                  <div className="border-t border-border my-1" />
 
-                {/* Tab Content */}
-                <div className="p-2 min-h-[200px]">
-                  {addressTab === "saved" && (
-                    <div>
-                      <div className="flex items-center justify-between px-2 py-1.5 mb-1">
-                        <span className="text-xs text-muted-foreground">Your saved filter sets</span>
-                        <button
-                          type="button"
-                          className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
-                          onClick={() => { setAddressDropdownOpen(false); setSaveSearchOpen(true); }}
-                        >
-                          + New
-                        </button>
-                      </div>
-                      {[
-                        { name: "Tampa Distressed Under $200K", count: 43 },
-                        { name: "Atlanta High Equity 3+ Beds", count: 127 },
-                        { name: "Orlando Vacant Lots", count: 18 },
-                        { name: "Charlotte Pre-Foreclosures", count: 64 },
-                      ].map((saved) => (
-                        <button
-                          key={saved.name}
-                          type="button"
-                          className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted rounded-md transition-colors flex items-center gap-2.5"
-                          onClick={() => handleSelectAddress(saved.name)}
-                        >
-                          <Star className="h-3.5 w-3.5 flex-shrink-0 fill-amber-400 text-amber-400" />
-                          <span className="flex-1 truncate">{saved.name}</span>
-                          <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground">
-                            {saved.count}
-                          </Badge>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {/* Recent Searches */}
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
+                    {recentSearches.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleClearRecent}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  {(recentSearches.length > 0 ? recentSearches : [
+                    "Jacksonville, FL",
+                    "28205",
+                    "Harris County, TX",
+                  ]).map((search) => (
+                    <button
+                      key={search}
+                      type="button"
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                      onClick={() => handleSelectAddress(search)}
+                    >
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      {search}
+                    </button>
+                  ))}
+                  <div className="border-t border-border my-1" />
 
-                  {addressTab === "recent" && (
-                    <div>
-                      <div className="flex items-center justify-between px-2 py-1.5 mb-1">
-                        <span className="text-xs text-muted-foreground">Your recent lookups</span>
-                        {recentSearches.length > 0 && (
-                          <button
-                            type="button"
-                            onClick={handleClearRecent}
-                            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            Clear All
-                          </button>
-                        )}
+                  {/* Quick Searches */}
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Quick Searches</div>
+                  {[
+                    { label: "Foreclosures Near Me", icon: Zap, desc: "Pre-foreclosure & REO" },
+                    { label: "Vacant Properties", icon: MapPin, desc: "Unoccupied homes" },
+                    { label: "High Equity Leads", icon: TrendingUp, desc: "60%+ equity owners" },
+                    { label: "Absentee Owners", icon: MapPin, desc: "Out-of-state landlords" },
+                  ].map((quick) => (
+                    <button
+                      key={quick.label}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2.5"
+                      onClick={() => handleSelectAddress(quick.label)}
+                    >
+                      <quick.icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-foreground">{quick.label}</div>
+                        <div className="text-[11px] text-muted-foreground">{quick.desc}</div>
                       </div>
-                      {(recentSearches.length > 0 ? recentSearches : [
-                        "Jacksonville, FL",
-                        "28205",
-                        "Harris County, TX",
-                        "Miami-Dade, FL",
-                        "30318",
-                      ]).map((search) => (
-                        <button
-                          key={search}
-                          type="button"
-                          className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted rounded-md transition-colors flex items-center gap-2.5"
-                          onClick={() => handleSelectAddress(search)}
-                        >
-                          <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                          <span>{search}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                    </button>
+                  ))}
+                  <div className="border-t border-border my-1" />
 
-                  {addressTab === "quick" && (
-                    <div>
-                      <div className="px-2 py-1.5 mb-1">
-                        <span className="text-xs text-muted-foreground">Jump to a lead type instantly</span>
-                      </div>
-                      {[
-                        { label: "Foreclosures Near Me", icon: Zap, desc: "Pre-foreclosure & REO properties" },
-                        { label: "Vacant Properties", icon: MapPin, desc: "Unoccupied homes ready for offers" },
-                        { label: "High Equity Leads", icon: TrendingUp, desc: "Owners with 60%+ equity" },
-                        { label: "Absentee Owners", icon: MapPin, desc: "Out-of-state landlords" },
-                        { label: "Tax Delinquent", icon: Zap, desc: "Behind on property taxes" },
-                        { label: "Expired Listings", icon: Clock, desc: "Recently expired MLS listings" },
-                      ].map((quick) => (
-                        <button
-                          key={quick.label}
-                          type="button"
-                          className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted rounded-md transition-colors flex items-center gap-2.5"
-                          onClick={() => handleSelectAddress(quick.label)}
-                        >
-                          <quick.icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                          <div className="min-w-0 flex-1">
-                            <div className="font-medium text-foreground">{quick.label}</div>
-                            <div className="text-[11px] text-muted-foreground">{quick.desc}</div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  {addressTab === "popular" && (
-                    <div>
-                      <div className="px-2 py-1.5 mb-2">
-                        <span className="text-xs text-muted-foreground">Trending investor markets</span>
-                      </div>
-                      <div className="px-2 flex flex-wrap gap-2">
-                        {[
-                          "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
-                          "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
-                          "San Antonio, TX", "Memphis, TN", "Nashville, TN", "Indianapolis, IN",
-                        ].map((market) => (
-                          <button
-                            key={market}
-                            type="button"
-                            className="px-3 py-1.5 text-sm rounded-full border border-border bg-background hover:bg-muted hover:border-primary/30 transition-colors"
-                            onClick={() => handleSelectAddress(market.split(",")[0].trim())}
-                          >
-                            {market}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                  {/* Popular Markets */}
+                  <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Markets</div>
+                  <div className="px-3 pb-2 flex flex-wrap gap-1.5">
+                    {[
+                      "Tampa, FL", "Houston, TX", "Atlanta, GA", "Phoenix, AZ",
+                      "Jacksonville, FL", "Dallas, TX", "Orlando, FL", "Charlotte, NC",
+                    ].map((market) => (
+                      <button
+                        key={market}
+                        type="button"
+                        className="px-2.5 py-1 text-xs rounded-full border border-border bg-background hover:bg-muted hover:border-primary/30 transition-colors"
+                        onClick={() => handleSelectAddress(market.split(",")[0].trim())}
+                      >
+                        {market}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </PopoverContent>
             </div>
