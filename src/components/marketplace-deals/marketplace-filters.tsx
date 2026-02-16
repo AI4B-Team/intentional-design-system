@@ -252,32 +252,34 @@ export function MarketplaceFilters({
               >
                 <div className="py-1 max-h-[360px] overflow-y-auto">
                   {/* Recent Searches */}
-                  {recentSearches.length > 0 && (
-                    <>
-                      <div className="flex items-center justify-between px-3 py-2">
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
-                        <button
-                          type="button"
-                          onClick={handleClearRecent}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          Clear
-                        </button>
-                      </div>
-                      {recentSearches.map((search) => (
-                        <button
-                          key={search}
-                          type="button"
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
-                          onClick={() => handleSelectAddress(search)}
-                        >
-                          <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                          {search}
-                        </button>
-                      ))}
-                      <div className="border-t border-border my-1" />
-                    </>
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
+                    {recentSearches.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleClearRecent}
+                        className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  {recentSearches.length > 0 ? (
+                    recentSearches.map((search) => (
+                      <button
+                        key={search}
+                        type="button"
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                        onClick={() => handleSelectAddress(search)}
+                      >
+                        <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                        {search}
+                      </button>
+                    ))
+                  ) : (
+                    <div className="px-3 py-2 text-sm text-muted-foreground italic">No recent searches</div>
                   )}
+                  <div className="border-t border-border my-1" />
 
                   {/* Popular Markets */}
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Markets</div>
