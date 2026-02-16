@@ -474,7 +474,7 @@ export function BuyerCampaignTab() {
             <div className="flex gap-2.5">
               <Button variant="outline" onClick={() => setStep(2)} className="flex-1">Back</Button>
               <Button className="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-bold gap-2 shadow-lg">
-                <Rocket size={18} /> Launch Campaign to ~{totalLeads.toLocaleString()} Leads
+                <Rocket size={18} /> Launch Campaign To ~{totalLeads.toLocaleString()} Leads
               </Button>
             </div>
           </div>
