@@ -200,7 +200,7 @@ export default function Intel() {
               </Button>
             </div>
             <div className="flex gap-0.5 bg-muted rounded-lg p-0.5">
-              {["1M", "3M", "6M", "1Y", "3Y"].map((t) => (
+              {["1M", "3M", "6M", "1Y"].map((t) => (
                 <button key={t} onClick={() => setTimeRange(t)}
                   className={cn("px-2 py-1 rounded-md text-[10px] font-semibold transition-colors",
                     timeRange === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
