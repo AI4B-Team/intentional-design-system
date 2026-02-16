@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@/components/layout/page-layout";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -7,7 +8,7 @@ import {
 import {
   Search, MapPin, DollarSign, Home, Clock, Users, Zap, Check,
   Download, Star, ArrowUpRight, ArrowDownRight, BarChart3, Activity,
-  Building, Percent, Rocket, TrendingUp, Brain, Megaphone,
+  Building, Percent, Rocket, TrendingUp, Brain, Megaphone, Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -154,6 +155,7 @@ type TabKey = typeof TABS[number]["key"];
 
 // ---------- Main Component ----------
 export default function Intel() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedZips, setSelectedZips] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>("cr");
@@ -277,9 +279,16 @@ export default function Intel() {
                 </div>
                 <div className="flex gap-2">
                   {selectedZips.length > 0 && (
-                    <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" icon={<Rocket className="h-3 w-3" />}>
-                      Launch ({selectedZips.length})
-                    </Button>
+                    <>
+                      <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
+                        onClick={() => navigate(`/campaigns?tab=leads&zips=${selectedZips.join(",")}`)}>
+                        View Listings ({selectedZips.length})
+                      </Button>
+                      <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" icon={<Rocket className="h-3 w-3" />}
+                        onClick={() => setActiveTab("campaign")}>
+                        Launch Campaign ({selectedZips.length})
+                      </Button>
+                    </>
                   )}
                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
                     className="bg-background border border-border rounded-md text-muted-foreground text-[10px] px-2 py-1.5">
