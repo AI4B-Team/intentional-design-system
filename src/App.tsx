@@ -83,6 +83,7 @@ import TransactionsDashboard from "./pages/TransactionsDashboard";
 import TransactionRoadmapPage from "./pages/TransactionRoadmapPage";
 import DealAnalyzer from "./pages/DealAnalyzer";
 import MarketAnalyzer from "./pages/MarketAnalyzer";
+import Intel from "./pages/Intel";
 import DealAnalysisDetail from "./pages/DealAnalysisDetail";
 import OfferBlaster from "./pages/OfferBlaster";
 import OfferTemplates from "./pages/OfferTemplates";
@@ -344,6 +345,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Marketplace />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/intel"
+              element={
+                <ProtectedRoute>
+                  <Intel />
                 </ProtectedRoute>
               }
             />
