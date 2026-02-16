@@ -178,7 +178,7 @@ export default function Intel() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
             <div>
               <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
-              <p className="text-[11px] text-muted-foreground">Real-time investor analytics & campaign launcher</p>
+              <p className="text-muted-foreground">Real-time investor analytics</p>
             </div>
             <div className="flex items-center gap-2 w-full lg:w-auto">
               <div className="relative flex-1 lg:w-[340px]">
