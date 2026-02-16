@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +27,8 @@ import {
   Map,
   Columns,
   Heart,
+  Clock,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoreFiltersDialog, AdvancedFilters, defaultFilters } from "./more-filters-dialog";
@@ -96,6 +98,30 @@ const priceRangeOptions = [
 const bedsOptions = ["Any", "1+", "2+", "3+", "4+", "5+"];
 const bathsOptions = ["Any", "1+", "1.5+", "2+", "3+", "4+"];
 
+const RECENT_SEARCHES_KEY = "marketplace-recent-searches";
+const MAX_RECENT_SEARCHES = 5;
+
+function getRecentSearches(): string[] {
+  try {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch {
+    return [];
+  }
+}
+
+function addRecentSearch(value: string) {
+  if (!value || value.trim().length < 2) return;
+  const trimmed = value.trim();
+  const existing = getRecentSearches();
+  const updated = [trimmed, ...existing.filter(s => s.toLowerCase() !== trimmed.toLowerCase())].slice(0, MAX_RECENT_SEARCHES);
+  localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+}
+
+function clearRecentSearches() {
+  localStorage.removeItem(RECENT_SEARCHES_KEY);
+}
+
 export function MarketplaceFilters({ 
   filters, 
   onFiltersChange,
@@ -116,9 +142,23 @@ export function MarketplaceFilters({
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
   const [addressDropdownOpen, setAddressDropdownOpen] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
 
   const handleChange = (key: string, value: any) => {
     onFiltersChange({ ...filters, [key]: value });
+  };
+
+  const handleSelectAddress = (value: string) => {
+    handleChange("address", value);
+    addRecentSearch(value);
+    setRecentSearches(getRecentSearches());
+    setAddressDropdownOpen(false);
+  };
+
+  const handleClearRecent = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    clearRecentSearches();
+    setRecentSearches([]);
   };
 
   const toggleHomeType = (typeId: string) => {
@@ -187,6 +227,13 @@ export function MarketplaceFilters({
                 value={filters.address}
                 onChange={(e) => handleChange("address", e.target.value)}
                 onFocus={() => setAddressDropdownOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && filters.address.trim().length >= 2) {
+                    addRecentSearch(filters.address);
+                    setRecentSearches(getRecentSearches());
+                    setAddressDropdownOpen(false);
+                  }
+                }}
                 className="h-10 w-[320px] bg-background text-sm pr-10 rounded-full border-border"
               />
               <PopoverTrigger asChild>
@@ -203,7 +250,36 @@ export function MarketplaceFilters({
                 sideOffset={4}
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
-                <div className="py-1">
+                <div className="py-1 max-h-[360px] overflow-y-auto">
+                  {/* Recent Searches */}
+                  {recentSearches.length > 0 && (
+                    <>
+                      <div className="flex items-center justify-between px-3 py-2">
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
+                        <button
+                          type="button"
+                          onClick={handleClearRecent}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                      {recentSearches.map((search) => (
+                        <button
+                          key={search}
+                          type="button"
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                          onClick={() => handleSelectAddress(search)}
+                        >
+                          <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                          {search}
+                        </button>
+                      ))}
+                      <div className="border-t border-border my-1" />
+                    </>
+                  )}
+
+                  {/* Popular Markets */}
                   <div className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Popular Markets</div>
                   {[
                     { label: "Tampa, FL", value: "Tampa" },
@@ -219,10 +295,7 @@ export function MarketplaceFilters({
                       key={market.value}
                       type="button"
                       className="w-full text-left px-3 py-2 text-sm hover:bg-muted transition-colors"
-                      onClick={() => {
-                        handleChange("address", market.value);
-                        setAddressDropdownOpen(false);
-                      }}
+                      onClick={() => handleSelectAddress(market.value)}
                     >
                       {market.label}
                     </button>
