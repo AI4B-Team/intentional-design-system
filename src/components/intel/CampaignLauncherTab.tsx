@@ -63,7 +63,7 @@ export function CampaignLauncherTab() {
       <div className="bg-card border border-border rounded-xl p-4">
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">Target Zip Codes <InfoTooltip text="Select zip codes to target in your campaign. Higher scores indicate stronger investor markets with more deal flow." /></h3>
+            <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Target Zip Codes <InfoTooltip text="Select zip codes to target in your campaign. Higher scores indicate stronger investor markets with more deal flow." /></h3>
             <p className="text-[11px] text-muted-foreground mt-0.5">Select zips to include in campaign</p>
           </div>
           <Button variant="secondary" size="sm" onClick={autoSel} icon={<Sparkles className="h-3 w-3" />}>
@@ -116,7 +116,7 @@ export function CampaignLauncherTab() {
       <div className="space-y-3.5">
         {/* Channel Select */}
         <div className="bg-card border border-border rounded-xl p-4">
-          <h3 className="text-[15px] font-bold text-foreground mb-3 flex items-center gap-1.5">Campaign Type <InfoTooltip text="Choose how to reach leads. Multi-channel (All) typically gets the highest response rates." /></h3>
+          <h3 className="text-[15px] font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Campaign Type <InfoTooltip text="Choose how to reach leads. Multi-channel (All) typically gets the highest response rates." /></h3>
           <div className="grid grid-cols-2 gap-2">
             {CHANNELS.map((c) => (
               <div key={c.id} onClick={() => setCh(c.id)}
@@ -135,7 +135,7 @@ export function CampaignLauncherTab() {
 
         {/* Config */}
         <div className="bg-card border border-border rounded-xl p-4 space-y-2.5">
-          <h3 className="text-[15px] font-bold text-foreground mb-1">Configuration</h3>
+          <h3 className="text-[15px] font-bold text-foreground mb-1 capitalize">Configuration</h3>
           <div>
             <label className="text-[11px] text-muted-foreground block mb-1">Campaign Name</label>
             <Input value={name} onChange={(e) => setName(e.target.value)} className="h-9 text-sm" />
@@ -170,7 +170,7 @@ export function CampaignLauncherTab() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-blue-500" />
-              <h3 className="text-[15px] font-bold text-foreground">AI-Generated Message</h3>
+              <h3 className="text-[15px] font-bold text-foreground capitalize">AI-Generated Message</h3>
             </div>
             <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{msgType === "email" ? "Email" : "SMS/Script"}</span>
           </div>

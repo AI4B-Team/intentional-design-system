@@ -251,7 +251,7 @@ export default function Intel() {
             {/* Scores */}
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center gap-1.5 mb-3">
-                <h3 className="text-[13px] font-bold text-foreground">Market Scores</h3>
+                <h3 className="text-[13px] font-bold text-foreground capitalize">Market Scores</h3>
                 <InfoTooltip text="Composite scores (0-100) measuring market attractiveness for each investment strategy. Based on transaction volume, pricing trends, cash buyer activity, and rental yields." />
               </div>
               <div className="flex items-center justify-around flex-wrap gap-4">
@@ -279,7 +279,7 @@ export default function Intel() {
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, cash buyer ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
+                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, cash buyer ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                 </div>
                 <div className="flex gap-2">
@@ -359,7 +359,7 @@ export default function Intel() {
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
               <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3">Sales by Price Range</h3>
+                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Sales by Price Range</h3>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={D.priceRanges} barGap={2}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -373,7 +373,7 @@ export default function Intel() {
                 </ResponsiveContainer>
               </div>
               <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3">Market Composition</h3>
+                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Market Composition</h3>
                 <div className="flex items-center gap-5">
                   <ResponsiveContainer width="50%" height={180}>
                     <PieChart>

@@ -226,7 +226,7 @@ export function BuyerCampaignTab() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">What Cash Buyers Are Paying <InfoTooltip text="Average price that cash buyers actually paid in each zip. Use this to calibrate your offer prices to be competitive." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Cash Buyers Are Paying <InfoTooltip text="Average price that cash buyers actually paid in each zip. Use this to calibrate your offer prices to be competitive." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={[...ZIPS].sort((a, b) => a.cashAvgPaid - b.cashAvgPaid)}>
@@ -243,7 +243,7 @@ export function BuyerCampaignTab() {
               </ResponsiveContainer>
             </div>
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5">Cash vs Retail Price Gap <InfoTooltip text="The difference between cash buyer and retail buyer prices. A larger spread means more margin opportunity for wholesalers and flippers." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Cash vs Retail Price Gap <InfoTooltip text="The difference between cash buyer and retail buyer prices. A larger spread means more margin opportunity for wholesalers and flippers." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={ZIPS} barGap={2}>
@@ -280,7 +280,7 @@ export function BuyerCampaignTab() {
         <div className="space-y-3.5">
           {/* Offer Mode */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-[15px] font-bold text-foreground mb-0.5">How do you want to price your offers?</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-0.5 capitalize">How Do You Want to Price Your Offers?</h3>
             <p className="text-xs text-muted-foreground mb-3">We'll auto-calculate based on real buyer data from your selected zips</p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
               {[
@@ -303,7 +303,7 @@ export function BuyerCampaignTab() {
           {/* Slider */}
           {offerMode === "buyer_avg" && (
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-0.5">Offer as % of Avg Cash Buyer Price</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-0.5 capitalize">Offer as % of Avg Cash Buyer Price</h3>
               <p className="text-xs text-muted-foreground mb-3">Adjust how aggressive your offers are</p>
               <div className="flex items-center gap-4 mb-3">
                 <span className="text-[11px] text-muted-foreground">More Aggressive</span>
@@ -326,7 +326,7 @@ export function BuyerCampaignTab() {
 
           {/* Per-Zip Offers */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-[15px] font-bold text-foreground mb-0.5">Offer Price by Zip Code</h3>
+            <h3 className="text-[15px] font-bold text-foreground mb-0.5 capitalize">Offer Price by Zip Code</h3>
             <p className="text-xs text-muted-foreground mb-3">Auto-calculated based on actual buyer data</p>
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-xs">
@@ -389,7 +389,7 @@ export function BuyerCampaignTab() {
           {/* Left: Summary */}
           <div className="space-y-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-3">Campaign Targets</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize">Campaign Targets</h3>
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-muted rounded-lg p-2.5"><div className="text-[10px] text-muted-foreground">Zips</div><div className="text-sm font-bold text-emerald-500">{sel.join(", ")}</div></div>
                 <div className="bg-muted rounded-lg p-2.5"><div className="text-[10px] text-muted-foreground">Est. Leads</div><div className="text-sm font-bold text-cyan-500">~{totalLeads.toLocaleString()}</div></div>
@@ -399,7 +399,7 @@ export function BuyerCampaignTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-3">Per-Zip Offer Prices</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize">Per-Zip Offer Prices</h3>
               {selZips.map((z) => {
                 const offer = offerMode === "buyer_avg" ? Math.round(z.cashAvgPaid * (pctOfAvg / 100)) : offerMode === "pct_arv" ? Math.round(z.retailAvgPaid * 0.65) : Math.round(z.cashAvgPaid * 0.80);
                 return (
@@ -419,7 +419,7 @@ export function BuyerCampaignTab() {
           {/* Right: Config */}
           <div className="space-y-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-2.5">Channel</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize">Channel</h3>
               <div className="grid grid-cols-2 gap-2">
                 {CHANNELS.map((c) => (
                   <div key={c.id} onClick={() => setCh(c.id)}
@@ -433,7 +433,7 @@ export function BuyerCampaignTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-2.5">Details</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize">Details</h3>
               <div className="space-y-2.5">
                 <div>
                   <label className="text-[11px] text-muted-foreground block mb-1">Campaign Name</label>
@@ -450,7 +450,7 @@ export function BuyerCampaignTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-blue-500" /><h3 className="text-[15px] font-bold text-foreground">AI Message</h3></div>
+              <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-blue-500" /><h3 className="text-[15px] font-bold text-foreground capitalize">AI Message</h3></div>
               <div className="bg-muted rounded-lg p-3.5 text-xs text-muted-foreground leading-relaxed">
                 Hi {"{{first_name}}"},<br /><br />
                 I'm a local investor buying homes in {"{{city}}"} and noticed your property at {"{{property_address}}"}. I can make a <span className="text-emerald-500 font-semibold">cash offer up to ${suggestedOffer.toLocaleString()}</span> based on current market activity in your area.<br /><br />

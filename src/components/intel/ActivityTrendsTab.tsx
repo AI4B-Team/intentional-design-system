@@ -78,7 +78,7 @@ export function ActivityTrendsTab() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
           {/* Cash vs Retail */}
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Cash vs Retail Activity by Zip Code <InfoTooltip text="Compares the number of cash purchases vs traditional financed (retail) sales in each zip code. High cash activity signals strong investor demand." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Cash vs Retail Activity by Zip Code <InfoTooltip text="Compares the number of cash purchases vs traditional financed (retail) sales in each zip code. High cash activity signals strong investor demand." /></h3>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={ZIPS} barGap={2}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -94,7 +94,7 @@ export function ActivityTrendsTab() {
 
           {/* DOM by Zip */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Days on Market by Zip <InfoTooltip text="Average number of days properties stay on market before selling. Green = fast (<80d), Yellow = moderate, Red = slow (>100d)." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Days on Market by Zip <InfoTooltip text="Average number of days properties stay on market before selling. Green = fast (<80d), Yellow = moderate, Red = slow (>100d)." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={ZIPS} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -110,7 +110,7 @@ export function ActivityTrendsTab() {
 
           {/* Price/SqFt */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Price per SqFt by Zip <InfoTooltip text="Average cost per square foot. Lower $/sqft areas may offer better wholesale and rental margins." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Price per SqFt by Zip <InfoTooltip text="Average cost per square foot. Lower $/sqft areas may offer better wholesale and rental margins." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <BarChart data={ZIPS}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -124,7 +124,7 @@ export function ActivityTrendsTab() {
 
           {/* Score Ranking */}
           <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Investor Score Ranking <InfoTooltip text="Composite score (0-100) ranking zip codes by overall investment attractiveness including cash activity, DOM, pricing, and volume." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Investor Score Ranking <InfoTooltip text="Composite score (0-100) ranking zip codes by overall investment attractiveness including cash activity, DOM, pricing, and volume." /></h3>
             {ranked.map((z, i) => (
               <div key={z.zip} className={cn("flex items-center gap-3.5 py-2", i < ranked.length - 1 && "border-b border-border")}>
                 <span className={cn("w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold border",
@@ -144,7 +144,7 @@ export function ActivityTrendsTab() {
       {subtab === "trends" && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Median Price Trend <InfoTooltip text="12-month trend of median sale prices. Rising prices may indicate appreciation; falling prices may signal buying opportunities." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Median Price Trend <InfoTooltip text="12-month trend of median sale prices. Rising prices may indicate appreciation; falling prices may signal buying opportunities." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={TRENDS}>
                 <defs><linearGradient id="pf" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.3} /><stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} /></linearGradient></defs>
@@ -157,7 +157,7 @@ export function ActivityTrendsTab() {
             </ResponsiveContainer>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Sales Volume <InfoTooltip text="Monthly total and cash-only transaction counts. Increasing volume signals growing market activity." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Sales Volume <InfoTooltip text="Monthly total and cash-only transaction counts. Increasing volume signals growing market activity." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <ComposedChart data={TRENDS}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -171,7 +171,7 @@ export function ActivityTrendsTab() {
             </ResponsiveContainer>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">DOM Trend <InfoTooltip text="How average Days on Market has changed over 12 months. Declining DOM means properties are selling faster." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">DOM Trend <InfoTooltip text="How average Days on Market has changed over 12 months. Declining DOM means properties are selling faster." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={TRENDS}>
                 <defs><linearGradient id="df" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.warning} stopOpacity={0.3} /><stop offset="95%" stopColor={COLORS.warning} stopOpacity={0} /></linearGradient></defs>
@@ -184,7 +184,7 @@ export function ActivityTrendsTab() {
             </ResponsiveContainer>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5">Inventory Levels <InfoTooltip text="Active listings count over time. Declining inventory typically means increased competition and potential price appreciation." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Inventory Levels <InfoTooltip text="Active listings count over time. Declining inventory typically means increased competition and potential price appreciation." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <AreaChart data={TRENDS}>
                 <defs><linearGradient id="ivf" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={COLORS.purple} stopOpacity={0.3} /><stop offset="95%" stopColor={COLORS.purple} stopOpacity={0} /></linearGradient></defs>
