@@ -77,13 +77,16 @@ export function BuyerIntelTab() {
       {/* ═══ STEP 1: BUYER ACTIVITY + ZIP SELECTION ═══ */}
       {step === 1 && (
         <div className="space-y-4">
-          {/* Zip Selection Bar */}
+          {/* Buyer Activity Content */}
+          <BuyerActivityTab />
+
+          {/* Zip Selection Bar - moved below activity cards */}
           <div className="bg-card border border-border rounded-xl p-4">
             <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
               <div>
                 <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">
-                  Select Target Zip Codes
-                  <InfoTooltip text="Select zip codes to target in your campaign. Higher scores indicate stronger investor markets. Use the activity views below to analyze each zip before selecting." />
+                  Top Zip Codes
+                  <InfoTooltip text="These are the top zip codes ranked by investor buyer activity, including cash purchases, flip volume, and overall deal velocity. Higher scores indicate stronger wholesale and investment potential. Use these insights to focus your outreach on the most active markets." />
                 </h3>
                 <p className="text-[11px] text-muted-foreground mt-0.5">Choose zips for your campaign, then explore buyer data below</p>
               </div>
@@ -137,9 +140,6 @@ export function BuyerIntelTab() {
               </Button>
             </div>
           )}
-
-          {/* Buyer Activity Content */}
-          <BuyerActivityTab />
         </div>
       )}
 
