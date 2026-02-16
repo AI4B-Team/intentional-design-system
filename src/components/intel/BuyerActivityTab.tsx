@@ -13,14 +13,14 @@ import { InfoTooltip } from "./InfoTooltip";
 
 // ─── Buyer Activity Data ───
 const ZIPS = [
-  { zip: "34668", name: "Port Richey", ts: 144, cs: 139, rs: 5, mp: 44900, dom: 77, cr: 96.5, score: 98, listToSale: 0.92, absRate: 18.0, flips: 8, compIdx: 94, velocity: 12.0, domCash: 54, domRetail: 122 },
-  { zip: "34691", name: "Holiday", ts: 73, cs: 67, rs: 6, mp: 41000, dom: 66, cr: 91.8, score: 95, listToSale: 0.95, absRate: 9.1, flips: 3, compIdx: 78, velocity: 6.1, domCash: 42, domRetail: 105 },
-  { zip: "34653", name: "New Port Richey", ts: 56, cs: 49, rs: 7, mp: 57500, dom: 57, cr: 87.5, score: 93, listToSale: 0.93, absRate: 7.0, flips: 4, compIdx: 72, velocity: 4.7, domCash: 38, domRetail: 89 },
-  { zip: "34652", name: "Port Richey", ts: 73, cs: 55, rs: 18, mp: 45750, dom: 104, cr: 75.3, score: 91, listToSale: 0.88, absRate: 9.1, flips: 6, compIdx: 68, velocity: 6.1, domCash: 72, domRetail: 134 },
-  { zip: "34690", name: "Holiday", ts: 41, cs: 38, rs: 3, mp: 49000, dom: 91, cr: 92.7, score: 90, listToSale: 0.92, absRate: 5.1, flips: 2, compIdx: 65, velocity: 3.4, domCash: 61, domRetail: 148 },
-  { zip: "34655", name: "New Port Richey", ts: 74, cs: 30, rs: 44, mp: 135000, dom: 78, cr: 40.5, score: 82, listToSale: 0.95, absRate: 9.3, flips: 12, compIdx: 58, velocity: 6.2, domCash: 52, domRetail: 96 },
-  { zip: "34667", name: "Hudson", ts: 66, cs: 32, rs: 34, mp: 100000, dom: 99, cr: 48.5, score: 78, listToSale: 0.95, absRate: 8.3, flips: 9, compIdx: 52, velocity: 5.5, domCash: 64, domRetail: 118 },
-  { zip: "34654", name: "New Port Richey", ts: 27, cs: 12, rs: 15, mp: 105000, dom: 129, cr: 44.4, score: 72, listToSale: 0.94, absRate: 3.4, flips: 5, compIdx: 42, velocity: 2.3, domCash: 88, domRetail: 156 },
+  { zip: "34668", name: "Port Richey", ts: 144, cs: 139, rs: 5, mp: 44900, retailAvg: 89000, dom: 77, cr: 96.5, score: 98, listToSale: 0.92, absRate: 18.0, flips: 8, compIdx: 94, velocity: 12.0, domCash: 54, domRetail: 122 },
+  { zip: "34691", name: "Holiday", ts: 73, cs: 67, rs: 6, mp: 41000, retailAvg: 78000, dom: 66, cr: 91.8, score: 95, listToSale: 0.95, absRate: 9.1, flips: 3, compIdx: 78, velocity: 6.1, domCash: 42, domRetail: 105 },
+  { zip: "34653", name: "New Port Richey", ts: 56, cs: 49, rs: 7, mp: 57500, retailAvg: 112000, dom: 57, cr: 87.5, score: 93, listToSale: 0.93, absRate: 7.0, flips: 4, compIdx: 72, velocity: 4.7, domCash: 38, domRetail: 89 },
+  { zip: "34652", name: "Port Richey", ts: 73, cs: 55, rs: 18, mp: 45750, retailAvg: 95000, dom: 104, cr: 75.3, score: 91, listToSale: 0.88, absRate: 9.1, flips: 6, compIdx: 68, velocity: 6.1, domCash: 72, domRetail: 134 },
+  { zip: "34690", name: "Holiday", ts: 41, cs: 38, rs: 3, mp: 49000, retailAvg: 82000, dom: 91, cr: 92.7, score: 90, listToSale: 0.92, absRate: 5.1, flips: 2, compIdx: 65, velocity: 3.4, domCash: 61, domRetail: 148 },
+  { zip: "34655", name: "New Port Richey", ts: 74, cs: 30, rs: 44, mp: 135000, retailAvg: 185000, dom: 78, cr: 40.5, score: 82, listToSale: 0.95, absRate: 9.3, flips: 12, compIdx: 58, velocity: 6.2, domCash: 52, domRetail: 96 },
+  { zip: "34667", name: "Hudson", ts: 66, cs: 32, rs: 34, mp: 100000, retailAvg: 155000, dom: 99, cr: 48.5, score: 78, listToSale: 0.95, absRate: 8.3, flips: 9, compIdx: 52, velocity: 5.5, domCash: 64, domRetail: 118 },
+  { zip: "34654", name: "New Port Richey", ts: 27, cs: 12, rs: 15, mp: 105000, retailAvg: 162000, dom: 129, cr: 44.4, score: 72, listToSale: 0.94, absRate: 3.4, flips: 5, compIdx: 42, velocity: 2.3, domCash: 88, domRetail: 156 },
 ];
 
 const PRICE_MATRIX = [
@@ -208,6 +208,39 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                 <Bar dataKey="domRetail" name="Retail Buyer DOM" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          </div>
+
+          {/* What Cash Buyers Are Paying + Cash Vs Retail Price Gap */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Cash Buyers Are Paying <InfoTooltip text="Average acquisition price cash buyers are paying in each zip code. Lower averages may indicate stronger wholesale discount opportunities." /></h3>
+              <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={[...ZIPS].sort((a, b) => a.mp - b.mp)} barGap={2}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+                  <Tooltip content={<ChartTip />} />
+                  <Bar dataKey="mp" name="Avg Cash Price" fill="#334155" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-4">
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Cash Vs Retail Price Gap <InfoTooltip text="Compares average cash buyer price vs retail price per zip. The spread represents your potential margin opportunity as a wholesaler or flipper." /></h3>
+              <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
+              <ResponsiveContainer width="100%" height={260}>
+                <BarChart data={ZIPS} barGap={4}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                  <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+                  <Tooltip content={<ChartTip />} />
+                  <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="mp" name="Cash Avg" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="retailAvg" name="Retail Avg" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       )}
