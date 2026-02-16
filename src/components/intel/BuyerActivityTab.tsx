@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer, AreaChart, Area, ComposedChart, Line, Cell,
@@ -116,7 +116,7 @@ const SUB_VIEWS = [
   { id: "flips", label: "Flip Tracker", icon: Repeat },
 ] as const;
 
-export function BuyerActivityTab() {
+export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
   const [view, setView] = useState<string>("overview");
   const totalCash = ZIPS.reduce((s, z) => s + z.cs, 0);
   const totalRetail = ZIPS.reduce((s, z) => s + z.rs, 0);
@@ -146,6 +146,8 @@ export function BuyerActivityTab() {
             <StatCard label="Avg Velocity" value={`${avgVelocity}/mo`} sub="Sales per month per zip" icon={Activity} color={COLORS.primary} change={3.1} />
             <StatCard label="Avg List-to-Sale" value="93%" sub="Price achievement ratio" icon={Target} color={COLORS.accent} />
           </div>
+
+          {children}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
             {/* Cash Buyer Concentration */}
