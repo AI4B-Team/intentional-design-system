@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { MarketplaceFilters } from "@/components/marketplace-deals/marketplace-filters";
 import { MarketplaceMap } from "@/components/marketplace-deals/marketplace-map";
@@ -29,6 +30,9 @@ function setStoredGlobalViewMode(mode: CardViewMode) {
 }
 
 export default function MarketplaceDeals() {
+  const [searchParams] = useSearchParams();
+  const zipsFromIntel = searchParams.get("zips");
+
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("cards");
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
@@ -52,8 +56,8 @@ export default function MarketplaceDeals() {
   // All home types selected by default
   const allHomeTypes = ["houses", "townhomes", "multi-family", "condos", "lots-land", "apartments", "manufactured"];
   
-  const [filters, setFilters] = useState({
-    address: "",
+  const [filters, setFilters] = useState(() => ({
+    address: zipsFromIntel ? zipsFromIntel.split(",").join(", ") : "",
     listingStatus: "all",
     leadType: "all",
     homeTypes: allHomeTypes,
@@ -61,7 +65,7 @@ export default function MarketplaceDeals() {
     bedsMin: "",
     bathsMin: "",
     exactMatch: false,
-  });
+  }));
 
   // Advanced filters state
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(defaultFilters);
