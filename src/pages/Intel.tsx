@@ -439,6 +439,71 @@ export default function Intel() {
                     </div>
                   </div>
                 </div>
+
+                {/* Investor Concentration & Price Gap */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Concentration <InfoTooltip text="Number of investor purchases per zip code. Higher bars indicate zip codes where investors are most actively buying." /></h3>
+                    <p className="text-[11px] text-muted-foreground mb-3">Higher bars = more investor activity</p>
+                    <ResponsiveContainer width="100%" height={260}>
+                      <BarChart data={[...MARKET_DATA.zips].sort((a, b) => b.cs - a.cs)} barGap={2}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                        <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                        <RechartsTooltip content={<ChartTooltip />} />
+                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                        <Bar dataKey="cs" name="Investor" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="rs" name="Retail" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Vs Retail Price Gap <InfoTooltip text="Compares average investor price vs retail price per zip. The spread represents your potential margin opportunity." /></h3>
+                    <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
+                    <ResponsiveContainer width="100%" height={260}>
+                      <BarChart data={MARKET_DATA.zips} barGap={4}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                        <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+                        <RechartsTooltip content={<ChartTooltip />} />
+                        <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                        <Bar dataKey="mp" name="Investor Avg" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="rent" name="Retail Avg" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* DOM Investor vs Retail */}
+                <div className="bg-card border border-border rounded-xl p-4">
+                  <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Investor vs Retail <InfoTooltip text="Compares how quickly investors close vs traditional financed buyers." /></h3>
+                  <p className="text-[11px] text-muted-foreground mb-3">Investors close significantly faster</p>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={MARKET_DATA.zips} barGap={4}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                      <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                      <RechartsTooltip content={<ChartTooltip />} />
+                      <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                      <Bar dataKey="dom" name="Avg DOM" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* What Investors Are Paying */}
+                <div className="bg-card border border-border rounded-xl p-4">
+                  <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Investors Are Paying <InfoTooltip text="Average acquisition price investors are paying in each zip code." /></h3>
+                  <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={[...MARKET_DATA.zips].sort((a, b) => a.mp - b.mp)} barGap={2}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                      <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+                      <RechartsTooltip content={<ChartTooltip />} />
+                      <Bar dataKey="mp" name="Avg Investor Price" fill="#334155" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </>
             )}
 
