@@ -126,11 +126,11 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
   return (
     <div className="space-y-4">
       {/* Sub-nav */}
-      <div className="flex gap-1 bg-muted rounded-lg p-0.5 w-fit">
+      <div className="flex gap-1.5">
         {SUB_VIEWS.map((t) => (
           <button key={t.id} onClick={() => setView(t.id)}
-            className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors",
-              view === t.id ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+            className={cn("flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors border",
+              view === t.id ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:text-foreground border-border hover:border-foreground/20")}>
             <t.icon size={12} />{t.label}
           </button>
         ))}
