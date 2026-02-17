@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
   ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
@@ -185,6 +185,21 @@ function CompareMetricRow({ label, icon: Icon, markets, getValue, getRaw, info, 
   );
 }
 
+function PickerDropdown({ showPicker, setShowPicker, children }: { showPicker: boolean; setShowPicker: (v: boolean) => void; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!showPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showPicker, setShowPicker]);
+  return <div className="relative" ref={ref}>{children}</div>;
+}
+
 export function MarketCompareTab() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>(["port-richey", "holiday"]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -257,7 +272,7 @@ export function MarketCompareTab() {
             </div>
           ))}
           {selectedMarkets.length < 4 && (
-            <div className="relative">
+            <PickerDropdown showPicker={showPicker} setShowPicker={setShowPicker}>
               <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setShowPicker(!showPicker)}>
                 <Plus size={12} /> Add Market
               </Button>
@@ -286,7 +301,7 @@ export function MarketCompareTab() {
                   </div>
                 </div>
               )}
-            </div>
+            </PickerDropdown>
           )}
         </div>
       </div>
