@@ -393,7 +393,7 @@ export default function Intel() {
                   </ResponsiveContainer>
                   <div className="flex-1 flex flex-col gap-2.5">
                     <div className="bg-cyan-500/10 rounded-lg p-3">
-                      <div className="text-[10px] text-muted-foreground">Investors</div>
+                      <div className="text-[10px] text-muted-foreground">Investor Buyers</div>
                       <div className="text-xl font-bold text-cyan-500">{D.summary.cashSales}</div>
                       <div className="text-[11px] text-cyan-500">{D.summary.cashRate}% of market</div>
                     </div>
