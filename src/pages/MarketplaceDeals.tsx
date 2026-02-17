@@ -32,6 +32,7 @@ function setStoredGlobalViewMode(mode: CardViewMode) {
 export default function MarketplaceDeals() {
   const [searchParams] = useSearchParams();
   const zipsFromIntel = searchParams.get("zips");
+  const leadTypeFromIntel = searchParams.get("leadType");
 
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("cards");
@@ -59,7 +60,7 @@ export default function MarketplaceDeals() {
   const [filters, setFilters] = useState(() => ({
     address: zipsFromIntel ? zipsFromIntel.split(",").join(", ") : "",
     listingStatus: "all",
-    leadType: "all",
+    leadType: leadTypeFromIntel || "all",
     homeTypes: allHomeTypes,
     priceRange: "any",
     bedsMin: "",

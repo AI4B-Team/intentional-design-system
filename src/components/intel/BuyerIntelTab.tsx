@@ -111,7 +111,12 @@ export function BuyerIntelTab() {
                   {sel.length > 0 && (
                     <>
                       <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
-                        onClick={() => navigate(`/marketplace?zips=${sel.join(",")}`)}>
+                        onClick={() => {
+                          const params = new URLSearchParams();
+                          params.set("zips", sel.join(","));
+                          if (filt && filt !== "All Distressed") params.set("leadType", filt.toLowerCase().replace(/ /g, "-"));
+                          navigate(`/marketplace?${params.toString()}`);
+                        }}>
                         View Listings ({sel.length})
                       </Button>
                       <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear All</Button>
