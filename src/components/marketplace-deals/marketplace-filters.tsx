@@ -510,7 +510,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-72 p-4" align="start">
+            <PopoverContent className="w-72 p-4 z-[200]" align="start">
               <div className="space-y-4">
                 {/* Bedrooms */}
                 <div className="space-y-2">
