@@ -72,6 +72,8 @@ export function BuyerCampaignTab() {
   const [ch, setCh] = useState("all");
   const [filt, setFilt] = useState("All Distressed");
   const [campName, setCampName] = useState("Port Richey - Buyer Data Campaign");
+  const [offerStrategy, setOfferStrategy] = useState("ai_buy_box");
+  const [maxOfferPrice, setMaxOfferPrice] = useState("");
 
   const tog = (z: string) => setSel((p) => p.includes(z) ? p.filter((x) => x !== z) : [...p, z]);
 
@@ -441,19 +443,48 @@ export function BuyerCampaignTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize">Details</h3>
-              <div className="space-y-2.5">
+              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize">Configuration</h3>
+              <div className="space-y-3">
                 <div>
                   <label className="text-[11px] text-muted-foreground block mb-1">Campaign Name</label>
                   <Input value={campName} onChange={(e) => setCampName(e.target.value)} className="text-sm" />
                 </div>
-                <div>
-                  <label className="text-[11px] text-muted-foreground block mb-1">Lead Filter</label>
-                  <select value={filt} onChange={(e) => setFilt(e.target.value)}
-                    className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs">
-                    {LEAD_FILTERS.map((f) => <option key={f} value={f}>{f}</option>)}
-                  </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground block mb-1">Offer Strategy</label>
+                    <select value={offerStrategy} onChange={(e) => setOfferStrategy(e.target.value)}
+                      className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs">
+                      <option value="ai_buy_box">AI Buy Box Criteria</option>
+                      <option value="pct_arv">% of ARV</option>
+                      <option value="pct_median">% of Median</option>
+                      <option value="fixed">Fixed Amount</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground block mb-1">Lead Filters</label>
+                    <select value={filt} onChange={(e) => setFilt(e.target.value)}
+                      className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs">
+                      {LEAD_FILTERS.map((f) => <option key={f} value={f}>{f}</option>)}
+                    </select>
+                  </div>
                 </div>
+                {(offerStrategy === "pct_median" || offerStrategy === "fixed") && (
+                  <div>
+                    <label className="text-[11px] text-muted-foreground block mb-1">
+                      Max Offer Price {offerStrategy === "pct_median" ? "(auto: 65% of median)" : ""}
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">$</span>
+                      <Input
+                        type="number"
+                        value={maxOfferPrice || (offerStrategy === "pct_median" ? Math.round(avgCashPaid * 0.65) : "")}
+                        onChange={(e) => setMaxOfferPrice(e.target.value)}
+                        className="text-sm pl-7"
+                        placeholder="Enter max price"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
