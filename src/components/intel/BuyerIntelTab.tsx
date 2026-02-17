@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Check, Rocket, Mail, MessageSquare, Phone, Zap,
   Users, DollarSign, MapPin, ArrowRight, Sparkles,
@@ -38,6 +39,7 @@ const COLORS = {
 };
 
 export function BuyerIntelTab() {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [sel, setSel] = useState<string[]>([]);
   const [offerMode, setOfferMode] = useState("buyer_avg");
@@ -101,7 +103,13 @@ export function BuyerIntelTab() {
                     Auto-Select 85+
                   </Button>
                   {sel.length > 0 && (
-                    <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear All</Button>
+                    <>
+                      <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
+                        onClick={() => navigate(`/marketplace?zips=${sel.join(",")}`)}>
+                        View Listings ({sel.length})
+                      </Button>
+                      <Button variant="secondary" size="sm" onClick={() => setSel([])}>Clear All</Button>
+                    </>
                   )}
                 </div>
               </div>
