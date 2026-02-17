@@ -907,7 +907,7 @@ export default function Pipeline() {
       />
 
       {/* Search Bar */}
-      <div className="mb-4 -mt-4">
+      <div className="mb-4">
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -921,7 +921,7 @@ export default function Pipeline() {
 
       {/* Pipeline Value Cards - Collapsible */}
       {isKpiExpanded && (
-        <div className="mb-4 -mt-4">
+        <div className="mb-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
               <PipelineValueCard
                 title="Leads"
