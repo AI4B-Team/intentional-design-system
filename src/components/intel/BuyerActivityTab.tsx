@@ -65,13 +65,16 @@ function ChartTip({ active, payload, label }: any) {
 }
 
 // ─── Stat Card ───
-function StatCard({ label, value, sub, icon: Icon, color, change }: {
-  label: string; value: string | number; sub: string; icon: React.ElementType; color: string; change?: number;
+function StatCard({ label, value, sub, icon: Icon, color, change, tooltip }: {
+  label: string; value: string | number; sub: string; icon: React.ElementType; color: string; change?: number; tooltip?: string;
 }) {
   return (
     <div className="bg-card border border-border rounded-xl p-3.5">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-muted-foreground text-[10px] uppercase tracking-wider">{label}</span>
+        <span className="flex items-center gap-1 text-muted-foreground text-[10px] uppercase tracking-wider">
+          {label}
+          {tooltip && <InfoTooltip text={tooltip} />}
+        </span>
         <Icon size={14} style={{ color }} />
       </div>
       <div className="text-xl font-bold" style={{ color }}>{value}</div>
@@ -120,10 +123,10 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
 
       <div className="space-y-3.5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <StatCard label="Total Transactions" value={totalAll} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
-            <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
-            <StatCard label="Landlords" value={totalLandlords} sub={`${((totalLandlords / totalAll) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} />
-            <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / totalAll) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
+            <StatCard label="Total Transactions" value={totalAll} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} tooltip="Total investor and retail transactions recorded in the selected market and time period." />
+            <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} tooltip="Properties sold twice within 12 months, indicating fix-and-flip activity." />
+            <StatCard label="Landlords" value={totalLandlords} sub={`${((totalLandlords / totalAll) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} tooltip="Investor transactions minus flippers — buyers likely holding as rentals." />
+            <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / totalAll) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} tooltip="Non-investor transactions — traditional homebuyer purchases." />
           </div>
 
           {children}
