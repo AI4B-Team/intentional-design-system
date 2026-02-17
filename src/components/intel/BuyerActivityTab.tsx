@@ -6,7 +6,7 @@ import {
 import {
   Users, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight,
   Flame, Target, Zap, Eye, BarChart3, Activity, Award, AlertTriangle,
-  Repeat, Clock, Percent,
+  Repeat, Clock, Percent, Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "./InfoTooltip";
@@ -139,12 +139,13 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
       {/* ═══ OVERVIEW ═══ */}
       {view === "overview" && (
         <div className="space-y-3.5">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-            <StatCard label="Investor Transactions" value={totalCash} sub={`${((totalCash / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
-            <StatCard label="Retail Transactions" value={totalRetail} sub={`${((totalRetail / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
-            <StatCard label="Flip Activity" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
-            <StatCard label="Avg Velocity" value={`${avgVelocity}/mo`} sub="Sales per month per zip" icon={Activity} color={COLORS.primary} change={3.1} />
-            <StatCard label="Avg List-to-Sale" value="93%" sub="Price achievement ratio" icon={Target} color={COLORS.accent} />
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+            <StatCard label="Total Transactions" value={totalCash + totalRetail} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
+            <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
+            <StatCard label="Landlords" value={Math.round(totalCash * 0.45)} sub={`${((totalCash * 0.45 / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} />
+            <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
+            <StatCard label="Wholesalers" value={Math.round(totalCash * 0.25)} sub="Assigned within 30 days" icon={Activity} color={COLORS.accent} change={5.6} />
+            <StatCard label="New Entrants" value={Math.round(totalCash * 0.12)} sub="First purchase in market" icon={Target} color="#F472B6" change={8.3} />
           </div>
 
           {children}
