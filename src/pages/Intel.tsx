@@ -164,7 +164,7 @@ const OVERVIEW_SUBTABS = [
   { key: "summary", label: "Summary" },
   { key: "hotspots", label: "Hot Spots" },
   { key: "velocity", label: "Velocity" },
-  { key: "flips", label: "Flip Tracker" },
+  { key: "flips", label: "Flip Intel" },
   { key: "rental", label: "Rental Intel" },
   { key: "buybox", label: "AI Buy Box" },
 ] as const;
