@@ -148,8 +148,8 @@ const TABS = [
   { key: "overview", label: "Overview", icon: BarChart3 },
   { key: "activity", label: "Activity & Trends", icon: Activity },
   { key: "buyers", label: "Buyer Activity", icon: Users },
-  { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "rental", label: "Rental Activity", icon: Home },
+  { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
 ] as const;
 
