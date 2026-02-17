@@ -38,68 +38,6 @@ function HeatCell({ val, max }: { val: number; max: number }) {
 export function HotSpotsView() {
   return (
     <div className="space-y-3.5">
-      {/* Investor Heatmap */}
-      <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🔥 Investor Activity Heatmap <InfoTooltip text="Shows where investors are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
-        <p className="text-[11px] text-muted-foreground mb-3">Investor transactions by price range × zip code</p>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
-            <thead>
-              <tr>
-                <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
-                {["34668", "34691", "34653", "34652"].map((z) => (
-                  <th key={z} className="px-2 py-2 text-center text-cyan-500 text-[10px]">{z}</th>
-                ))}
-                <th className="px-2.5 py-2 text-center text-foreground text-[10px] font-bold">TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {PRICE_MATRIX.map((r) => (
-                <tr key={r.range}>
-                  <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
-                  <HeatCell val={r.z68_c} max={81} />
-                  <HeatCell val={r.z91_c} max={81} />
-                  <HeatCell val={r.z53_c} max={81} />
-                  <HeatCell val={r.z52_c} max={81} />
-                  <td className="px-2.5 py-1.5 text-center text-xs font-bold text-cyan-500 bg-cyan-500/10 rounded">{r.total_c}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Retail Heatmap */}
-      <div className="bg-card border border-border rounded-xl p-4">
-        <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Retail Buyer Activity Heatmap <InfoTooltip text="Shows where traditional buyers are purchasing. These areas are your best exit markets for fix & flip resales." /></h3>
-        <p className="text-[11px] text-muted-foreground mb-3">Where retail buyers are active — best flip exit markets</p>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
-            <thead>
-              <tr>
-                <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
-                {["34668", "34691", "34653", "34652"].map((z) => (
-                  <th key={z} className="px-2 py-2 text-center text-amber-500 text-[10px]">{z}</th>
-                ))}
-                <th className="px-2.5 py-2 text-center text-foreground text-[10px] font-bold">TOTAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              {PRICE_MATRIX.map((r) => (
-                <tr key={r.range}>
-                  <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
-                  <HeatCell val={r.z68_r} max={6} />
-                  <HeatCell val={r.z91_r} max={6} />
-                  <HeatCell val={r.z53_r} max={6} />
-                  <HeatCell val={r.z52_r} max={6} />
-                  <td className="px-2.5 py-1.5 text-center text-xs font-bold text-amber-500 bg-amber-500/10 rounded">{r.total_r}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
       {/* Sweet Spot */}
       <div className="bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-500/20 rounded-xl p-4">
         <div className="flex items-center gap-2 mb-3">
@@ -125,6 +63,68 @@ export function HotSpotsView() {
             <div className="text-xs text-muted-foreground mt-1">Only 16 total sales in this range</div>
             <div className="text-[11px] text-red-500 mt-0.5">Low demand, high risk, avoid</div>
           </div>
+        </div>
+      </div>
+
+      {/* Investor Heatmap */}
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🔥 Investor Activity Heatmap <InfoTooltip text="Shows where investors are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
+        <p className="text-[11px] text-muted-foreground mb-3">Investor transactions by price range × zip code</p>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
+            <thead>
+              <tr>
+                <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
+                {["34668", "34691", "34653", "34652"].map((z) => (
+                  <th key={z} className="px-2.5 py-2 text-center text-emerald-500 text-[10px] font-bold">{z}</th>
+                ))}
+                <th className="px-2.5 py-2 text-center text-cyan-500 text-[10px] font-bold">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRICE_MATRIX.map((r) => (
+                <tr key={r.range}>
+                  <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
+                  <HeatCell val={r.z68_c} max={81} />
+                  <HeatCell val={r.z91_c} max={81} />
+                  <HeatCell val={r.z53_c} max={81} />
+                  <HeatCell val={r.z52_c} max={81} />
+                  <td className="px-2.5 py-1.5 text-center text-xs font-bold text-cyan-500 bg-cyan-500/10 rounded">{r.total_c}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Retail Heatmap */}
+      <div className="bg-card border border-border rounded-xl p-4">
+        <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🏷️ Retail Buyer Heatmap <InfoTooltip text="Shows where retail buyers (non-investors) are purchasing by price range. Use this to identify the best exit market for flips." /></h3>
+        <p className="text-[11px] text-muted-foreground mb-3">Retail transactions by price range — find your flip exit market</p>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
+            <thead>
+              <tr>
+                <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
+                {["34668", "34691", "34653", "34652"].map((z) => (
+                  <th key={z} className="px-2.5 py-2 text-center text-emerald-500 text-[10px] font-bold">{z}</th>
+                ))}
+                <th className="px-2.5 py-2 text-center text-amber-500 text-[10px] font-bold">TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PRICE_MATRIX.map((r) => (
+                <tr key={r.range}>
+                  <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
+                  <HeatCell val={r.z68_r} max={6} />
+                  <HeatCell val={r.z91_r} max={6} />
+                  <HeatCell val={r.z53_r} max={6} />
+                  <HeatCell val={r.z52_r} max={6} />
+                  <td className="px-2.5 py-1.5 text-center text-xs font-bold text-amber-500 bg-amber-500/10 rounded">{r.total_r}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
