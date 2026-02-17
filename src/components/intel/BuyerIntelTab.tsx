@@ -12,14 +12,14 @@ import { BuyerActivityTab } from "./BuyerActivityTab";
 
 // ─── Campaign Data ───
 const ZIPS = [
-  { zip: "34668", name: "Port Richey", cs: 139, score: 98, leads: 312, cr: 96.5, cashAvgPaid: 38200, retailAvgPaid: 127500, domCash: 54, topRange: "$20K-$50K" },
-  { zip: "34691", name: "Holiday", cs: 67, score: 95, leads: 189, cr: 91.8, cashAvgPaid: 35800, retailAvgPaid: 118000, domCash: 42, topRange: "$25K-$48K" },
-  { zip: "34653", name: "New Port Richey", cs: 49, score: 93, leads: 156, cr: 87.5, cashAvgPaid: 48200, retailAvgPaid: 142000, domCash: 38, topRange: "$35K-$65K" },
-  { zip: "34652", name: "Port Richey", cs: 55, score: 91, leads: 201, cr: 75.3, cashAvgPaid: 39400, retailAvgPaid: 135000, domCash: 72, topRange: "$22K-$52K" },
-  { zip: "34690", name: "Holiday", cs: 38, score: 90, leads: 134, cr: 92.7, cashAvgPaid: 42100, retailAvgPaid: 131000, domCash: 61, topRange: "$28K-$54K" },
-  { zip: "34655", name: "New Port Richey", cs: 30, score: 82, leads: 247, cr: 40.5, cashAvgPaid: 112000, retailAvgPaid: 148000, domCash: 52, topRange: "$90K-$150K" },
-  { zip: "34667", name: "Hudson", cs: 32, score: 78, leads: 218, cr: 48.5, cashAvgPaid: 82000, retailAvgPaid: 128000, domCash: 64, topRange: "$55K-$110K" },
-  { zip: "34654", name: "New Port Richey", cs: 12, score: 72, leads: 98, cr: 44.4, cashAvgPaid: 88000, retailAvgPaid: 138000, domCash: 88, topRange: "$70K-$115K" },
+  { zip: "34668", name: "Port Richey", ts: 144, cs: 139, rs: 5, mp: 44900, dom: 77, cr: 96.5, score: 98, leads: 312, cashAvgPaid: 38200, retailAvgPaid: 127500, domCash: 54, topRange: "$20K-$50K", rent: 1150, cap: 8.2 },
+  { zip: "34691", name: "Holiday", ts: 73, cs: 67, rs: 6, mp: 41000, dom: 66, cr: 91.8, score: 95, leads: 189, cashAvgPaid: 35800, retailAvgPaid: 118000, domCash: 42, topRange: "$25K-$48K", rent: 1050, cap: 8.8 },
+  { zip: "34653", name: "New Port Richey", ts: 56, cs: 49, rs: 7, mp: 57500, dom: 57, cr: 87.5, score: 93, leads: 156, cashAvgPaid: 48200, retailAvgPaid: 142000, domCash: 38, topRange: "$35K-$65K", rent: 1200, cap: 7.9 },
+  { zip: "34652", name: "Port Richey", ts: 73, cs: 55, rs: 18, mp: 45750, dom: 104, cr: 75.3, score: 91, leads: 201, cashAvgPaid: 39400, retailAvgPaid: 135000, domCash: 72, topRange: "$22K-$52K", rent: 1100, cap: 7.6 },
+  { zip: "34690", name: "Holiday", ts: 41, cs: 38, rs: 3, mp: 49000, dom: 91, cr: 92.7, score: 90, leads: 134, cashAvgPaid: 42100, retailAvgPaid: 131000, domCash: 61, topRange: "$28K-$54K", rent: 1100, cap: 8.1 },
+  { zip: "34655", name: "New Port Richey", ts: 74, cs: 30, rs: 44, mp: 135000, dom: 78, cr: 40.5, score: 82, leads: 247, cashAvgPaid: 112000, retailAvgPaid: 148000, domCash: 52, topRange: "$90K-$150K", rent: 1450, cap: 5.8 },
+  { zip: "34667", name: "Hudson", ts: 66, cs: 32, rs: 34, mp: 100000, dom: 99, cr: 48.5, score: 78, leads: 218, cashAvgPaid: 82000, retailAvgPaid: 128000, domCash: 64, topRange: "$55K-$110K", rent: 1300, cap: 6.4 },
+  { zip: "34654", name: "New Port Richey", ts: 27, cs: 12, rs: 15, mp: 105000, dom: 129, cr: 44.4, score: 72, leads: 98, cashAvgPaid: 88000, retailAvgPaid: 138000, domCash: 88, topRange: "$70K-$115K", rent: 1350, cap: 5.5 },
 ];
 
 const CHANNELS = [
@@ -30,6 +30,12 @@ const CHANNELS = [
 ];
 
 const LEAD_FILTERS = ["All Distressed", "Pre-Foreclosure", "Absentee Owners", "High Equity 30%+", "Vacant Properties", "Tax Delinquent", "Probate", "Code Violations"];
+
+const COLORS = {
+  primary: "hsl(var(--primary))",
+  cyan: "#06B6D4",
+  warning: "#F59E0B",
+};
 
 export function BuyerIntelTab() {
   const [step, setStep] = useState(1);
@@ -85,10 +91,10 @@ export function BuyerIntelTab() {
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
                   <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">
-                    Top Zip Codes
-                    <InfoTooltip text="These are the top zip codes ranked by investor buyer activity, including cash purchases, flip volume, and overall deal velocity. Higher scores indicate stronger wholesale and investment potential. Use these insights to focus your outreach on the most active markets." />
+                    Top Zip Codes By Buyer Activity
+                    <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." />
                   </h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Choose zips for your campaign, then explore buyer data below</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="secondary" size="sm" onClick={autoSelectTop} icon={<Sparkles className="h-3 w-3" />}>
@@ -100,30 +106,62 @@ export function BuyerIntelTab() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                {ZIPS.map((z) => {
-                  const s = sel.includes(z.zip);
-                  return (
-                    <div key={z.zip} onClick={() => tog(z.zip)}
-                      className={cn("flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-all border",
-                        s ? "bg-emerald-500/10 border-emerald-600" : "border-border hover:bg-muted/50")}>
-                      <div className={cn("w-4 h-4 rounded flex items-center justify-center border-2 flex-shrink-0",
-                        s ? "border-emerald-500 bg-emerald-500" : "border-muted-foreground/40")}>
-                        {s && <Check size={10} className="text-white" />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1">
-                          <span className="font-bold text-[12px] text-emerald-500">{z.zip}</span>
-                          <span className="text-[10px] text-muted-foreground truncate">{z.name}</span>
-                        </div>
-                        <div className="flex gap-2 mt-0.5">
-                          <span className="text-[9px] text-muted-foreground">{z.leads} leads</span>
-                          <span className={cn("text-[9px]", z.score >= 90 ? "text-emerald-500" : "text-amber-500")}>{z.score}</span>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-border">
+                      {["", "ZIP", "AREA", "TRANSACTIONS", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
+                        <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
+                          i < 3 ? "text-left" : (i >= 3 && i <= 5) || i === 11 ? "text-center" : "text-right")}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {ZIPS.map((z) => {
+                      const selected = sel.includes(z.zip);
+                      return (
+                        <tr key={z.zip} onClick={() => tog(z.zip)}
+                          className={cn("border-b border-border cursor-pointer transition-colors",
+                            selected ? "bg-emerald-500/10" : "hover:bg-muted/50")}>
+                          <td className="px-2.5 py-2">
+                            <div className={cn("w-[18px] h-[18px] rounded flex items-center justify-center border-2",
+                              selected ? "border-emerald-500 bg-emerald-500" : "border-slate-500")}>
+                              {selected && <Check size={11} className="text-white" />}
+                            </div>
+                          </td>
+                          <td className="px-2.5 py-2 font-bold text-emerald-500">{z.zip}</td>
+                          <td className="px-2.5 py-2 text-muted-foreground">{z.name}</td>
+                          <td className="px-2.5 py-2 text-center font-semibold">{z.ts}</td>
+                          <td className="px-2.5 py-2 text-center font-semibold text-cyan-500">{z.cs}</td>
+                          <td className="px-2.5 py-2 text-center text-amber-500">{z.rs}</td>
+                          <td className="px-2.5 py-2 text-right">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <div className="w-10 h-[5px] rounded-full bg-border overflow-hidden">
+                                <div className="h-full rounded-full" style={{
+                                  width: `${z.cr}%`,
+                                  background: z.cr > 80 ? COLORS.primary : z.cr > 50 ? COLORS.warning : "#EF4444",
+                                }} />
+                              </div>
+                              <span className={cn("font-semibold text-[11px]",
+                                z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-red-500")}>{z.cr}%</span>
+                            </div>
+                          </td>
+                          <td className="px-2.5 py-2 text-right">${z.mp.toLocaleString()}</td>
+                          <td className={cn("px-2.5 py-2 text-right",
+                            z.dom < 80 ? "text-emerald-500" : z.dom < 100 ? "text-amber-500" : "text-red-500")}>{z.dom}d</td>
+                          <td className={cn("px-2.5 py-2 text-right", z.cap > 7 ? "text-emerald-500" : "text-muted-foreground")}>{z.cap}%</td>
+                          <td className="px-2.5 py-2 text-right">${z.rent}</td>
+                          <td className="px-2.5 py-2 text-center">
+                            <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-bold",
+                              z.score >= 90 ? "bg-emerald-500/15 text-emerald-500" :
+                              z.score >= 75 ? "bg-amber-500/15 text-amber-500" :
+                              "bg-red-500/15 text-red-500")}>{z.score}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
           </BuyerActivityTab>
