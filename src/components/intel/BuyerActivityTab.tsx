@@ -1,12 +1,12 @@
-import React, { useState, useMemo } from "react";
+import React from "react";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, AreaChart, Area, ComposedChart, Line, Cell,
+  ResponsiveContainer,
 } from "recharts";
 import {
-  Users, DollarSign, TrendingUp, ArrowUpRight, ArrowDownRight,
-  Flame, Target, Zap, Eye, BarChart3, Activity, Award, AlertTriangle,
-  Repeat, Clock, Percent, Home,
+  Users, DollarSign, ArrowUpRight, ArrowDownRight,
+  Target, Activity,
+  Repeat, Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "./InfoTooltip";
@@ -109,15 +109,7 @@ const COLORS = {
   danger: "#EF4444",
 };
 
-const SUB_VIEWS = [
-  { id: "overview", label: "Overview", icon: BarChart3 },
-  { id: "hotspots", label: "Hot Spots", icon: Flame },
-  { id: "velocity", label: "Velocity", icon: Activity },
-  { id: "flips", label: "Flip Tracker", icon: Repeat },
-] as const;
-
 export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
-  const [view, setView] = useState<string>("overview");
   const totalCash = ZIPS.reduce((s, z) => s + z.cs, 0);
   const totalRetail = ZIPS.reduce((s, z) => s + z.rs, 0);
   const totalFlips = ZIPS.reduce((s, z) => s + z.flips, 0);
@@ -125,20 +117,8 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
 
   return (
     <div className="space-y-4">
-      {/* Sub-nav */}
-      <div className="flex gap-1.5">
-        {SUB_VIEWS.map((t) => (
-          <button key={t.id} onClick={() => setView(t.id)}
-            className={cn("flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors border",
-              view === t.id ? "bg-primary text-primary-foreground border-primary" : "bg-card text-muted-foreground hover:text-foreground border-border hover:border-foreground/20")}>
-            <t.icon size={12} />{t.label}
-          </button>
-        ))}
-      </div>
 
-      {/* ═══ OVERVIEW ═══ */}
-      {view === "overview" && (
-        <div className="space-y-3.5">
+      <div className="space-y-3.5">
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
             <StatCard label="Total Transactions" value={totalCash + totalRetail} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
             <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
@@ -161,74 +141,16 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
                   <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                   <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="cs" name="Investor Sales" radius={[4, 4, 0, 0]}>
-                    {[...ZIPS].sort((a, b) => b.cs - a.cs).map((z, i) => (
-                      <Cell key={i} fill={z.cr > 80 ? COLORS.cyan : z.cr > 50 ? COLORS.accent : "#334155"} />
-                    ))}
-                  </Bar>
+                  <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="cs" name="Investor" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="rs" name="Retail" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Competition Index */}
+            {/* Investor Vs Retail Price Gap */}
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Buyer Competition Index <InfoTooltip text="Measures how competitive each zip code is for deals. Higher score = more buyers competing, potentially harder to get deals under contract." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Higher = more competition for deals</p>
-              <div className="space-y-0">
-                {[...ZIPS].sort((a, b) => b.compIdx - a.compIdx).map((z, i) => (
-                  <div key={z.zip} className={cn("flex items-center gap-2.5 py-2", i < ZIPS.length - 1 && "border-b border-border")}>
-                    <span className="font-bold w-12 text-xs text-emerald-500">{z.zip}</span>
-                    <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-                      <div className="h-full rounded-full transition-all duration-1000" style={{
-                        width: `${z.compIdx}%`,
-                        background: z.compIdx > 80 ? COLORS.danger : z.compIdx > 60 ? COLORS.warning : COLORS.primary,
-                      }} />
-                    </div>
-                    <span className="font-bold w-8 text-right text-xs" style={{
-                      color: z.compIdx > 80 ? COLORS.danger : z.compIdx > 60 ? COLORS.warning : COLORS.primary,
-                    }}>{z.compIdx}</span>
-                    <span className="text-[10px] text-muted-foreground w-14">{z.compIdx > 80 ? "🔥 Hot" : z.compIdx > 60 ? "⚡ Active" : "✅ Open"}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* DOM Investor vs Retail */}
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Investor vs Retail <InfoTooltip text="Compares how quickly investors close vs traditional financed buyers. The gap shows the speed advantage of investor offers." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Investors close significantly faster</p>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={ZIPS} barGap={4}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                <Tooltip content={<ChartTip />} />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="domCash" name="Investor DOM" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
-                <Bar dataKey="domRetail" name="Retail Buyer DOM" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* What Investors Are Paying + Investor Vs Retail Price Gap */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Investors Are Paying <InfoTooltip text="Average acquisition price investors are paying in each zip code. Lower averages may indicate stronger wholesale discount opportunities." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
-              <ResponsiveContainer width="100%" height={260}>
-                <BarChart data={[...ZIPS].sort((a, b) => a.mp - b.mp)} barGap={2}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="mp" name="Avg Investor Price" fill="#334155" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Vs Retail Price Gap <InfoTooltip text="Compares average investor price vs retail price per zip. The spread represents your potential margin opportunity as a wholesaler or flipper." /></h3>
+              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Vs Retail Price Gap <InfoTooltip text="Compares average investor price vs retail price per zip. The spread represents your potential margin opportunity." /></h3>
               <p className="text-[11px] text-muted-foreground mb-3">The spread = your margin opportunity</p>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={ZIPS} barGap={4}>
@@ -243,282 +165,39 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
               </ResponsiveContainer>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* ═══ HOT SPOTS ═══ */}
-      {view === "hotspots" && (
-        <div className="space-y-3.5">
-          {/* Investor Heatmap */}
+          {/* DOM Investor vs Retail */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">🔥 Investor Activity Heatmap <InfoTooltip text="Shows where investors are buying by price range and zip code. Darker cells = more transactions. Use this to find your target price range." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Investor transactions by price range × zip code</p>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
-                <thead>
-                  <tr>
-                    <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
-                    {["34668", "34691", "34653", "34652"].map((z) => (
-                      <th key={z} className="px-2 py-2 text-center text-cyan-500 text-[10px]">{z}</th>
-                    ))}
-                    <th className="px-2.5 py-2 text-center text-foreground text-[10px] font-bold">TOTAL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PRICE_MATRIX.map((r) => (
-                    <tr key={r.range}>
-                      <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
-                      <HeatCell val={r.z68_c} max={81} />
-                      <HeatCell val={r.z91_c} max={81} />
-                      <HeatCell val={r.z53_c} max={81} />
-                      <HeatCell val={r.z52_c} max={81} />
-                      <td className="px-2.5 py-1.5 text-center text-xs font-bold text-cyan-500 bg-cyan-500/10 rounded">{r.total_c}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Retail Heatmap */}
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Retail Buyer Activity Heatmap <InfoTooltip text="Shows where traditional buyers are purchasing. These areas are your best exit markets for fix & flip resales." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Where retail buyers are active — best flip exit markets</p>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-[11px]" style={{ borderSpacing: 3 }}>
-                <thead>
-                  <tr>
-                    <th className="px-2.5 py-2 text-left text-muted-foreground text-[10px]">PRICE RANGE</th>
-                    {["34668", "34691", "34653", "34652"].map((z) => (
-                      <th key={z} className="px-2 py-2 text-center text-amber-500 text-[10px]">{z}</th>
-                    ))}
-                    <th className="px-2.5 py-2 text-center text-foreground text-[10px] font-bold">TOTAL</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {PRICE_MATRIX.map((r) => (
-                    <tr key={r.range}>
-                      <td className="px-2.5 py-1.5 font-semibold text-muted-foreground text-[11px]">{r.range}</td>
-                      <HeatCell val={r.z68_r} max={6} />
-                      <HeatCell val={r.z91_r} max={6} />
-                      <HeatCell val={r.z53_r} max={6} />
-                      <HeatCell val={r.z52_r} max={6} />
-                      <td className="px-2.5 py-1.5 text-center text-xs font-bold text-amber-500 bg-amber-500/10 rounded">{r.total_r}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Sweet Spot */}
-          <div className="bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-500/20 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Target size={18} className="text-cyan-500" />
-              <h3 className="text-[15px] font-bold text-foreground">Price Sweet Spot Analysis</h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="bg-background/50 rounded-lg p-3.5">
-                <div className="text-[10px] text-muted-foreground uppercase mb-1">🎯 Wholesale Sweet Spot</div>
-                <div className="text-lg font-bold text-cyan-500">Under $50K</div>
-                <div className="text-xs text-muted-foreground mt-1">233 investor sales (42% of all transactions)</div>
-                <div className="text-[11px] text-emerald-500 mt-0.5">Highest volume, fastest closings</div>
-              </div>
-              <div className="bg-background/50 rounded-lg p-3.5">
-                <div className="text-[10px] text-muted-foreground uppercase mb-1">🏠 Flip Sweet Spot</div>
-                <div className="text-lg font-bold text-amber-500">$100K – $200K</div>
-                <div className="text-xs text-muted-foreground mt-1">68 retail sales with strong buyer demand</div>
-                <div className="text-[11px] text-emerald-500 mt-0.5">Best exit market for rehabbed properties</div>
-              </div>
-              <div className="bg-background/50 rounded-lg p-3.5">
-                <div className="text-[10px] text-muted-foreground uppercase mb-1">⚠️ Dead Zone</div>
-                <div className="text-lg font-bold text-red-500">$300K+</div>
-                <div className="text-xs text-muted-foreground mt-1">Only 16 total sales in this range</div>
-                <div className="text-[11px] text-red-500 mt-0.5">Low demand, high risk, avoid</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ═══ VELOCITY ═══ */}
-      {view === "velocity" && (
-        <div className="space-y-3.5">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Monthly Transaction Volume <InfoTooltip text="Monthly count of cash and retail closings. Track seasonality and momentum in buyer activity." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Investor vs retail closings per month</p>
-              <ResponsiveContainer width="100%" height={260}>
-                <ComposedChart data={VELOCITY}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <Tooltip content={<ChartTip />} />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                  <Bar dataKey="cashTx" name="Investor Closings" fill={COLORS.cyan} radius={[4, 4, 0, 0]} opacity={0.7} />
-                  <Bar dataKey="retailTx" name="Retail Closings" fill={COLORS.warning} radius={[4, 4, 0, 0]} opacity={0.7} />
-                  <Line type="monotone" dataKey="cashTx" name="Investor Trend" stroke={COLORS.cyan} strokeWidth={2} dot={false} />
-                </ComposedChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Avg Investor Offer Price Trend <InfoTooltip text="Tracks the average price investors are paying over time. Rising prices may mean increased competition." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">What investors are actually paying</p>
-              <ResponsiveContainer width="100%" height={260}>
-                <AreaChart data={VELOCITY}>
-                  <defs>
-                    <linearGradient id="offerGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.3} />
-                      <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip content={<ChartTip />} />
-                  <Area type="monotone" dataKey="avgOffer" name="Avg Offer $" stroke={COLORS.primary} fill="url(#offerGrad)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Absorption Rate */}
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Absorption Rate by Zip <InfoTooltip text="Number of sales per month in each zip. Higher absorption = faster-moving market with quicker deal cycles." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Sales per month — higher = hotter market</p>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={[...ZIPS].sort((a, b) => b.absRate - a.absRate)}>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Investor vs Retail <InfoTooltip text="Compares how quickly investors close vs traditional financed buyers." /></h3>
+            <p className="text-[11px] text-muted-foreground mb-3">Investors close significantly faster</p>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={ZIPS} barGap={4}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                 <Tooltip content={<ChartTip />} />
-                <Bar dataKey="absRate" name="Sales/Month" radius={[4, 4, 0, 0]}>
-                  {[...ZIPS].sort((a, b) => b.absRate - a.absRate).map((z, i) => (
-                    <Cell key={i} fill={z.absRate > 10 ? COLORS.primary : z.absRate > 6 ? COLORS.cyan : COLORS.accent} />
-                  ))}
-                </Bar>
+                <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                <Bar dataKey="domCash" name="Investor DOM" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="domRetail" name="Retail Buyer DOM" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
 
-          {/* List-to-Sale */}
+          {/* What Investors Are Paying */}
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">List-to-Sale Price Ratio <InfoTooltip text="Percentage of asking price that sellers actually receive. Lower ratios mean more negotiation room for investors." /></h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Lower = more negotiation room for investors</p>
-            <div className="space-y-0">
-              {[...ZIPS].sort((a, b) => a.listToSale - b.listToSale).map((z, i) => (
-                <div key={z.zip} className={cn("flex items-center gap-3 py-2", i < ZIPS.length - 1 && "border-b border-border")}>
-                  <span className="font-bold w-12 text-xs text-emerald-500">{z.zip}</span>
-                  <div className="flex-1 relative h-6 bg-muted rounded-md overflow-hidden">
-                    <div className="absolute left-0 top-0 h-full rounded-md" style={{
-                      width: `${z.listToSale * 100}%`,
-                      background: z.listToSale < 0.92
-                        ? `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.cyan})`
-                        : z.listToSale < 0.95
-                        ? `linear-gradient(90deg, ${COLORS.cyan}, ${COLORS.accent})`
-                        : `linear-gradient(90deg, ${COLORS.warning}, ${COLORS.danger})`,
-                    }} />
-                    <span className="absolute right-2 top-1 text-[11px] font-semibold text-foreground">{(z.listToSale * 100).toFixed(0)}%</span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground w-16 text-right">
-                    {z.listToSale < 0.92 ? "🎯 Room" : z.listToSale < 0.95 ? "Fair" : "💰 Tight"}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Investors Are Paying <InfoTooltip text="Average acquisition price investors are paying in each zip code." /></h3>
+            <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={[...ZIPS].sort((a, b) => a.mp - b.mp)} barGap={2}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
+                <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v: number) => `$${(v / 1000).toFixed(0)}K`} />
+                <Tooltip content={<ChartTip />} />
+                <Bar dataKey="mp" name="Avg Investor Price" fill="#334155" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      )}
-
-      {/* ═══ FLIP TRACKER ═══ */}
-      {view === "flips" && (
-        <div className="space-y-3.5">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <StatCard label="Active Flips Detected" value={totalFlips} sub="Properties sold 2x in 12mo" icon={Repeat} color={COLORS.purple} />
-            <StatCard label="Avg Flip Profit" value={`$${Math.round(FLIP_DATA.reduce((s, f) => s + f.avgProfit, 0) / FLIP_DATA.length).toLocaleString()}`} sub="Estimated gross margin" icon={DollarSign} color={COLORS.primary} />
-            <StatCard label="Avg Hold Period" value={`${Math.round(FLIP_DATA.reduce((s, f) => s + f.avgHold, 0) / FLIP_DATA.length)} days`} sub="From purchase to resale" icon={Clock} color={COLORS.warning} />
-            <StatCard label="Flip-to-Sale Ratio" value={`${((totalFlips / (totalCash + totalRetail)) * 100).toFixed(1)}%`} sub="Of all transactions are flips" icon={Percent} color={COLORS.cyan} />
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Flip Activity by Zip <InfoTooltip text="Properties that were bought and resold within 12 months — indicates active flipping in that area." /></h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Properties sold twice within 12 months</p>
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={[...FLIP_DATA].sort((a, b) => b.flips - a.flips)}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="flips" name="Flip Deals" radius={[4, 4, 0, 0]}>
-                    {[...FLIP_DATA].sort((a, b) => b.flips - a.flips).map((f, i) => (
-                      <Cell key={i} fill={f.flips > 8 ? COLORS.purple : f.flips > 4 ? COLORS.accent : "#334155"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-bold text-foreground mb-0.5 capitalize">Estimated Flip Margins</h3>
-              <p className="text-[11px] text-muted-foreground mb-3">Gross profit per flip by zip</p>
-              <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={[...FLIP_DATA].sort((a, b) => b.avgProfit - a.avgProfit)}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                  <XAxis dataKey="zip" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} tickFormatter={(v) => `$${(v / 1000).toFixed(0)}K`} />
-                  <Tooltip content={<ChartTip />} />
-                  <Bar dataKey="avgProfit" name="Avg Profit $" radius={[4, 4, 0, 0]}>
-                    {[...FLIP_DATA].sort((a, b) => b.avgProfit - a.avgProfit).map((f, i) => (
-                      <Cell key={i} fill={i < 3 ? COLORS.primary : i < 5 ? COLORS.cyan : COLORS.accent} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Flip Intel Table */}
-          <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Flip Intelligence Summary</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-border">
-                    {["ZIP", "AREA", "FLIPS", "AVG PROFIT", "AVG HOLD", "% OF SALES", "OPPORTUNITY"].map((h, i) => (
-                      <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold", i < 2 ? "text-left" : "text-right")}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...FLIP_DATA].sort((a, b) => b.flips - a.flips).map((f) => {
-                    const z = ZIPS.find((z) => z.zip === f.zip);
-                    const pctOfSales = ((f.flips / f.ts) * 100).toFixed(1);
-                    const opp = f.flips > 8 ? "High" : f.flips > 4 ? "Medium" : "Low";
-                    return (
-                      <tr key={f.zip} className="border-b border-border">
-                        <td className="px-2.5 py-2 font-bold text-emerald-500">{f.zip}</td>
-                        <td className="px-2.5 py-2 text-muted-foreground">{z?.name}</td>
-                        <td className="px-2.5 py-2 text-right font-semibold text-purple-500">{f.flips}</td>
-                        <td className="px-2.5 py-2 text-right font-semibold text-emerald-500">${f.avgProfit.toLocaleString()}</td>
-                        <td className={cn("px-2.5 py-2 text-right", f.avgHold < 90 ? "text-emerald-500" : "text-amber-500")}>{f.avgHold}d</td>
-                        <td className="px-2.5 py-2 text-right">{pctOfSales}%</td>
-                        <td className="px-2.5 py-2 text-right">
-                          <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-semibold",
-                            opp === "High" ? "bg-emerald-500/15 text-emerald-500" :
-                            opp === "Medium" ? "bg-amber-500/15 text-amber-500" :
-                            "bg-blue-500/15 text-blue-500")}>{opp}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

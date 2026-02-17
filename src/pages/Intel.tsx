@@ -15,10 +15,15 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "@/components/intel/InfoTooltip";
 import { ActivityTrendsTab } from "@/components/intel/ActivityTrendsTab";
-import { RentalBuyBoxTab } from "@/components/intel/RentalBuyBoxTab";
 import { CampaignLauncherTab } from "@/components/intel/CampaignLauncherTab";
 import { BuyerIntelTab } from "@/components/intel/BuyerIntelTab";
 import { MarketCompareTab } from "@/components/intel/MarketCompareTab";
+import { HotSpotsView } from "@/components/intel/HotSpotsView";
+import { VelocityView } from "@/components/intel/VelocityView";
+import { FlipTrackerView } from "@/components/intel/FlipTrackerView";
+import { RentalIntelView } from "@/components/intel/RentalIntelView";
+import { AIBuyBoxView } from "@/components/intel/AIBuyBoxView";
+import { Flame, Repeat } from "lucide-react";
 
 // ---------- Sample Data (Phase 1 static) ----------
 const MARKET_DATA = {
@@ -149,7 +154,11 @@ const TABS = [
   { key: "overview", label: "Overview", icon: BarChart3 },
   { key: "activity", label: "Activity & Trends", icon: Activity },
   { key: "buyers", label: "Buyer Activity", icon: Users },
-  { key: "rental", label: "Rental Activity", icon: Home },
+  { key: "hotspots", label: "Hot Spots", icon: Flame },
+  { key: "velocity", label: "Velocity", icon: Zap },
+  { key: "flips", label: "Flip Tracker", icon: Repeat },
+  { key: "rental", label: "Rental Intel", icon: Home },
+  { key: "buybox", label: "AI Buy Box", icon: Brain },
   { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
 ] as const;
@@ -412,8 +421,12 @@ export default function Intel() {
 
         {activeTab === "activity" && <ActivityTrendsTab />}
         {activeTab === "buyers" && <BuyerIntelTab />}
+        {activeTab === "hotspots" && <HotSpotsView />}
+        {activeTab === "velocity" && <VelocityView />}
+        {activeTab === "flips" && <FlipTrackerView />}
+        {activeTab === "rental" && <RentalIntelView />}
+        {activeTab === "buybox" && <AIBuyBoxView />}
         {activeTab === "compare" && <MarketCompareTab />}
-        {activeTab === "rental" && <RentalBuyBoxTab />}
         {activeTab === "campaign" && <CampaignLauncherTab />}
       </div>
     </PageLayout>
