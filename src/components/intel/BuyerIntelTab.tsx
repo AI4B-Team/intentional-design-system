@@ -306,7 +306,7 @@ export function BuyerIntelTab() {
           {/* Left: Summary */}
           <div className="space-y-3.5">
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize">Campaign Targets</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize flex items-center gap-1.5">Campaign Targets <InfoTooltip text="Summary of your selected zip codes, estimated leads, offer strategy, and average offer price." /></h3>
               <div className="grid grid-cols-2 gap-2">
                 <div className="bg-muted rounded-lg p-2.5"><div className="text-[10px] text-muted-foreground">Zips</div><div className="text-sm font-bold text-emerald-500">{sel.join(", ")}</div></div>
                 <div className="bg-muted rounded-lg p-2.5"><div className="text-[10px] text-muted-foreground">Est. Leads</div><div className="text-sm font-bold text-cyan-500">~{totalLeads.toLocaleString()}</div></div>
@@ -316,7 +316,7 @@ export function BuyerIntelTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize">Per-Zip Offer Prices</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-3 capitalize flex items-center gap-1.5">Per-Zip Offer Prices <InfoTooltip text="Offer prices calculated per zip code based on what investors are currently paying and your selected offer strategy." /></h3>
               {selZips.map((z) => {
                 const offer = offerMode === "buyer_avg" ? Math.round(z.cashAvgPaid * (pctOfAvg / 100)) : offerMode === "pct_arv" ? Math.round(z.retailAvgPaid * 0.65) : Math.round(z.cashAvgPaid * 0.80);
                 return (
@@ -354,7 +354,7 @@ export function BuyerIntelTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize">Details</h3>
+              <h3 className="text-[15px] font-bold text-foreground mb-2.5 capitalize flex items-center gap-1.5">Details <InfoTooltip text="Configure your campaign name, offer strategy, and lead filters before launching." /></h3>
               <div className="space-y-2.5">
                 <div>
                   <label className="text-[11px] text-muted-foreground block mb-1">Campaign Name</label>
@@ -426,7 +426,7 @@ export function BuyerIntelTab() {
             </div>
 
             <div className="bg-card border border-border rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-blue-500" /><h3 className="text-[15px] font-bold text-foreground capitalize">AI Message</h3></div>
+              <div className="flex items-center gap-2 mb-2.5"><Sparkles size={14} className="text-blue-500" /><h3 className="text-[15px] font-bold text-foreground capitalize">AI Message</h3><InfoTooltip text="Auto-generated message template personalized with property and offer data. Merge fields are replaced when the campaign sends." /></div>
               <div className="bg-muted rounded-lg p-3.5 text-xs text-muted-foreground leading-relaxed">
                 Hi {"{{first_name}}"},<br /><br />
                 I'm a local investor buying homes in {"{{city}}"} and noticed your property at {"{{property_address}}"}. I can make a <span className="text-emerald-500 font-semibold">cash offer up to ${suggestedOffer.toLocaleString()}</span> based on current market activity in your area.<br /><br />
