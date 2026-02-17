@@ -87,7 +87,7 @@ export function CampaignLauncherTab() {
                   <span className="text-[11px] text-muted-foreground">{z.name}</span>
                 </div>
                 <div className="flex gap-3 mt-0.5">
-                  <span className="text-[10px] text-muted-foreground">{z.cs} investor sales</span>
+                  <span className="text-[10px] text-muted-foreground">{z.cs} investor transactions</span>
                   <span className="text-[10px] text-muted-foreground">{z.leads} leads</span>
                   <span className={cn("text-[10px]", z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-muted-foreground")}>{z.cr}% investor</span>
                 </div>

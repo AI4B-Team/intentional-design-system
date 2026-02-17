@@ -265,7 +265,7 @@ export default function Intel() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
               <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} info="Number of currently active listings. Lower inventory often means stronger seller position." />
               <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
-              <MetricCard label="Total Sales" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
+              <MetricCard label="Total Transactions" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
               <MetricCard label="Investor %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were investor purchases — higher means more investor activity." />
               <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} info="Average Days on Market before a property sells. Lower = faster-moving market." />
               <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} info="Capitalization rate — annual net rental income divided by property price. Higher = better rental returns." />
@@ -276,7 +276,7 @@ export default function Intel() {
             <div className="bg-card border border-border rounded-xl p-4">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes by Investor Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
+                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes By Buyer Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
                   <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                 </div>
                 <div className="flex gap-2">
@@ -295,7 +295,7 @@ export default function Intel() {
                   <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
                     className="bg-background border border-border rounded-md text-muted-foreground text-[10px] px-2 py-1.5">
                     <option value="cr">Sort: Investor %</option>
-                    <option value="ts">Sort: Sales</option>
+                    <option value="ts">Sort: Transactions</option>
                     <option value="score">Sort: Score</option>
                     <option value="cap">Sort: Cap Rate</option>
                   </select>
@@ -305,7 +305,7 @@ export default function Intel() {
                 <table className="w-full border-collapse text-xs">
                   <thead>
                     <tr className="border-b border-border">
-                      {["", "ZIP", "AREA", "SALES", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
+                      {["", "ZIP", "AREA", "TRANSACTIONS", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
                         <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
                           i < 3 ? "text-left" : i === 11 ? "text-center" : "text-right")}>{h}</th>
                       ))}
@@ -363,7 +363,7 @@ export default function Intel() {
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
               <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Sales by Price Range</h3>
+                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Transactions By Price Range</h3>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart data={D.priceRanges} barGap={2}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -371,8 +371,8 @@ export default function Intel() {
                     <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
                     <RechartsTooltip content={<ChartTooltip />} />
                     <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="cash" name="Investor Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="retail" name="Retail Sales" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="cash" name="Investor Transactions" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="retail" name="Retail Transactions" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
