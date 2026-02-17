@@ -5,7 +5,6 @@ import {
 } from "recharts";
 import {
   Users, DollarSign, ArrowUpRight, ArrowDownRight,
-  Target, Activity,
   Repeat, Home,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -119,13 +118,11 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
     <div className="space-y-4">
 
       <div className="space-y-3.5">
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <StatCard label="Total Transactions" value={totalCash + totalRetail} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
             <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
             <StatCard label="Landlords" value={Math.round(totalCash * 0.45)} sub={`${((totalCash * 0.45 / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} />
             <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
-            <StatCard label="Wholesalers" value={Math.round(totalCash * 0.25)} sub="Assigned within 30 days" icon={Activity} color={COLORS.accent} change={5.6} />
-            <StatCard label="New Entrants" value={Math.round(totalCash * 0.12)} sub="First purchase in market" icon={Target} color="#F472B6" change={8.3} />
           </div>
 
           {children}
