@@ -139,6 +139,7 @@ const COLORS = {
   primary: "hsl(var(--primary))",
   cyan: "#06B6D4",
   warning: "#F59E0B",
+  danger: "#EF4444",
   accent: "#3B82F6",
   purple: "#8B5CF6",
 };
@@ -255,7 +256,7 @@ export default function Intel() {
               <ScoreGauge score={D.scores.market} label="Market" icon={BarChart3} color={COLORS.primary} large />
               <div className="w-px h-11 bg-border hidden sm:block" />
               <ScoreGauge score={D.scores.cash} label="Inventory" icon={DollarSign} color={COLORS.cyan} />
-              <ScoreGauge score={D.scores.wholesale} label="Days On Market" icon={Zap} color={COLORS.primary} />
+              <ScoreGauge score={D.scores.wholesale} label="Days On Market" icon={Zap} color={D.summary.dom <= 30 ? COLORS.primary : D.summary.dom <= 60 ? COLORS.warning : COLORS.danger} />
               <ScoreGauge score={D.scores.flip} label="Flippers" icon={Home} color={COLORS.warning} />
               <ScoreGauge score={D.scores.rental} label="Landlords" icon={Building} color={COLORS.accent} />
               </div>
