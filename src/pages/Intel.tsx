@@ -340,7 +340,7 @@ export default function Intel() {
                         <tr className="border-b border-border">
                           {["", "ZIP", "AREA", "TRANSACTIONS", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
                             <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
-                              i < 3 ? "text-left" : i === 11 ? "text-center" : "text-right")}>{h}</th>
+                              i < 3 ? "text-left" : (i >= 3 && i <= 5) || i === 11 ? "text-center" : "text-right")}>{h}</th>
                           ))}
                         </tr>
                       </thead>
@@ -359,9 +359,9 @@ export default function Intel() {
                               </td>
                               <td className="px-2.5 py-2 font-bold text-emerald-500">{z.zip}</td>
                               <td className="px-2.5 py-2 text-muted-foreground">{z.name}</td>
-                              <td className="px-2.5 py-2 text-right font-semibold">{z.ts}</td>
-                              <td className="px-2.5 py-2 text-right font-semibold text-cyan-500">{z.cs}</td>
-                              <td className="px-2.5 py-2 text-right text-amber-500">{z.rs}</td>
+                              <td className="px-2.5 py-2 text-center font-semibold">{z.ts}</td>
+                              <td className="px-2.5 py-2 text-center font-semibold text-cyan-500">{z.cs}</td>
+                              <td className="px-2.5 py-2 text-center text-amber-500">{z.rs}</td>
                               <td className="px-2.5 py-2 text-right">
                                 <div className="flex items-center justify-end gap-1.5">
                                   <div className="w-10 h-[5px] rounded-full bg-border overflow-hidden">
