@@ -86,8 +86,8 @@ export function ActivityTrendsTab() {
                 <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10 }} />
                 <RechartsTooltip content={<ChartTooltip />} />
                 <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
-                <Bar dataKey="cs" name="Investor Sales" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
-                <Bar dataKey="rs" name="Retail Sales" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="cs" name="Investor Transactions" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                <Bar dataKey="rs" name="Retail Transactions" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -157,7 +157,7 @@ export function ActivityTrendsTab() {
             </ResponsiveContainer>
           </div>
           <div className="bg-card border border-border rounded-xl p-4">
-            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Sales Volume <InfoTooltip text="Monthly total and cash-only transaction counts. Increasing volume signals growing market activity." /></h3>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-1.5 capitalize">Transaction Volume <InfoTooltip text="Monthly total and cash-only transaction counts. Increasing volume signals growing market activity." /></h3>
             <ResponsiveContainer width="100%" height={240}>
               <ComposedChart data={TRENDS}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
