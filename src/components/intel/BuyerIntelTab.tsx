@@ -32,6 +32,11 @@ const CHANNELS = [
 ];
 
 const LEAD_FILTERS = ["All Distressed", "Pre-Foreclosure", "Absentee Owners", "High Equity 30%+", "Vacant Properties", "Tax Delinquent", "Probate", "Code Violations"];
+const OFFER_STRATEGIES = [
+  { id: "buyer_avg", label: "% of Buyer Avg" },
+  { id: "pct_arv", label: "65% of ARV" },
+  { id: "ai_buy_box", label: "AI Buy Box Criteria" },
+];
 
 const COLORS = {
   primary: "hsl(var(--primary))",
@@ -355,35 +360,67 @@ export function BuyerIntelTab() {
                   <label className="text-[11px] text-muted-foreground block mb-1">Campaign Name</label>
                   <Input value={campName} onChange={(e) => setCampName(e.target.value)} className="text-sm" />
                 </div>
-                <div>
-                  <label className="text-[11px] text-muted-foreground block mb-1">Lead Filter</label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between text-xs font-normal h-9">
-                        {filt}
-                        <ChevronDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-2 z-[200]" align="start">
-                      <div className="space-y-0.5">
-                        {LEAD_FILTERS.map((f) => (
-                          <button
-                            key={f}
-                            onClick={() => setFilt(f)}
-                            className={cn(
-                              "w-full text-left px-3 py-2 rounded-md text-xs flex items-center gap-2 transition-colors",
-                              filt === f
-                                ? "bg-muted font-medium text-foreground"
-                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                            )}
-                          >
-                            {filt === f && <Check className="h-3.5 w-3.5 shrink-0" />}
-                            {f}
-                          </button>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="text-[11px] text-muted-foreground block mb-1">Offer Strategy</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between text-xs font-normal h-9">
+                          {OFFER_STRATEGIES.find(s => s.id === offerMode)?.label ?? offerMode}
+                          <ChevronDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-2 z-[200]" align="start">
+                        <div className="space-y-0.5">
+                          {OFFER_STRATEGIES.map((s) => (
+                            <button
+                              key={s.id}
+                              onClick={() => setOfferMode(s.id)}
+                              className={cn(
+                                "w-full text-left px-3 py-2 rounded-md text-xs flex items-center gap-2 transition-colors",
+                                offerMode === s.id
+                                  ? "bg-muted font-medium text-foreground"
+                                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                              )}
+                            >
+                              {offerMode === s.id && <Check className="h-3.5 w-3.5 shrink-0" />}
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div>
+                    <label className="text-[11px] text-muted-foreground block mb-1">Lead Filter</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" className="w-full justify-between text-xs font-normal h-9">
+                          {filt}
+                          <ChevronDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-2 z-[200]" align="start">
+                        <div className="space-y-0.5">
+                          {LEAD_FILTERS.map((f) => (
+                            <button
+                              key={f}
+                              onClick={() => setFilt(f)}
+                              className={cn(
+                                "w-full text-left px-3 py-2 rounded-md text-xs flex items-center gap-2 transition-colors",
+                                filt === f
+                                  ? "bg-muted font-medium text-foreground"
+                                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                              )}
+                            >
+                              {filt === f && <Check className="h-3.5 w-3.5 shrink-0" />}
+                              {f}
+                            </button>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                 </div>
               </div>
             </div>
