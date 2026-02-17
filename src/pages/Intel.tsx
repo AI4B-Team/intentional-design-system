@@ -154,16 +154,22 @@ const TABS = [
   { key: "overview", label: "Overview", icon: BarChart3 },
   { key: "activity", label: "Activity & Trends", icon: Activity },
   { key: "buyers", label: "Buyer Activity", icon: Users },
-  { key: "hotspots", label: "Hot Spots", icon: Flame },
-  { key: "velocity", label: "Velocity", icon: Zap },
-  { key: "flips", label: "Flip Tracker", icon: Repeat },
-  { key: "rental", label: "Rental Intel", icon: Home },
-  { key: "buybox", label: "AI Buy Box", icon: Brain },
   { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
 ] as const;
 
 type TabKey = typeof TABS[number]["key"];
+
+const OVERVIEW_SUBTABS = [
+  { key: "summary", label: "Summary" },
+  { key: "hotspots", label: "Hot Spots" },
+  { key: "velocity", label: "Velocity" },
+  { key: "flips", label: "Flip Tracker" },
+  { key: "rental", label: "Rental Intel" },
+  { key: "buybox", label: "AI Buy Box" },
+] as const;
+
+type OverviewSubTab = typeof OVERVIEW_SUBTABS[number]["key"];
 
 // ---------- Main Component ----------
 export default function Intel() {
@@ -173,6 +179,8 @@ export default function Intel() {
   const [sortBy, setSortBy] = useState<string>("cr");
   const [timeRange, setTimeRange] = useState("6M");
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+
+  const [overviewSubTab, setOverviewSubTab] = useState<OverviewSubTab>("summary");
 
   const toggleZip = (zip: string) =>
     setSelectedZips((prev) => prev.includes(zip) ? prev.filter((z) => z !== zip) : [...prev, zip]);
@@ -271,161 +279,179 @@ export default function Intel() {
               </div>
             </div>
 
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
-              <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} info="Number of currently active listings. Lower inventory often means stronger seller position." />
-              <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
-              <MetricCard label="Total Transactions" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
-              <MetricCard label="Investor %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were investor purchases — higher means more investor activity." />
-              <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} info="Average Days on Market before a property sells. Lower = faster-moving market." />
-              <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} info="Capitalization rate — annual net rental income divided by property price. Higher = better rental returns." />
-              <MetricCard label="Avg Rent" value={D.summary.rent} prefix="$" suffix="/mo" change={D.summary.rentGrowth} icon={Home} info="Average monthly rent for properties in this market." />
+            {/* Overview Sub-tabs */}
+            <div className="flex gap-1.5 overflow-x-auto">
+              {OVERVIEW_SUBTABS.map((st) => (
+                <button key={st.key} onClick={() => setOverviewSubTab(st.key)}
+                  className={cn("px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border",
+                    overviewSubTab === st.key
+                      ? "border-emerald-500 bg-emerald-500/10 text-emerald-500"
+                      : "border-border text-muted-foreground hover:text-foreground hover:border-foreground/20")}>
+                  {st.label}
+                </button>
+              ))}
             </div>
 
-            {/* Zip Code Table */}
-            <div className="bg-card border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <div>
-                  <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes By Buyer Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
+            {overviewSubTab === "summary" && (
+              <>
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+                  <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} info="Number of currently active listings. Lower inventory often means stronger seller position." />
+                  <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
+                  <MetricCard label="Total Transactions" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
+                  <MetricCard label="Investor %" value={`${D.summary.cashRate}%`} icon={Users} color={COLORS.cyan} info="Percentage of transactions that were investor purchases — higher means more investor activity." />
+                  <MetricCard label="Avg DOM" value={D.summary.dom} suffix=" days" change={-5.2} icon={Clock} color={COLORS.warning} info="Average Days on Market before a property sells. Lower = faster-moving market." />
+                  <MetricCard label="Cap Rate" value={`${D.summary.capRate}%`} change={0.3} icon={Percent} color={COLORS.purple} info="Capitalization rate — annual net rental income divided by property price. Higher = better rental returns." />
+                  <MetricCard label="Avg Rent" value={D.summary.rent} prefix="$" suffix="/mo" change={D.summary.rentGrowth} icon={Home} info="Average monthly rent for properties in this market." />
                 </div>
-                <div className="flex gap-2">
-                  {selectedZips.length > 0 && (
-                    <>
-                      <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
-                        onClick={() => navigate(`/marketplace?zips=${selectedZips.join(",")}`)}>
-                        View Listings ({selectedZips.length})
-                      </Button>
-                      <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" icon={<Rocket className="h-3 w-3" />}
-                        onClick={() => setActiveTab("campaign")}>
-                        Launch Campaign ({selectedZips.length})
-                      </Button>
-                    </>
-                  )}
-                  <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                    className="bg-background border border-border rounded-md text-muted-foreground text-[10px] px-2 py-1.5">
-                    <option value="cr">Sort: Investor %</option>
-                    <option value="ts">Sort: Transactions</option>
-                    <option value="score">Sort: Score</option>
-                    <option value="cap">Sort: Cap Rate</option>
-                  </select>
-                </div>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-border">
-                      {["", "ZIP", "AREA", "TRANSACTIONS", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
-                        <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
-                          i < 3 ? "text-left" : i === 11 ? "text-center" : "text-right")}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedZips.map((z) => {
-                      const selected = selectedZips.includes(z.zip);
-                      return (
-                        <tr key={z.zip} onClick={() => toggleZip(z.zip)}
-                          className={cn("border-b border-border cursor-pointer transition-colors",
-                            selected ? "bg-emerald-500/10" : "hover:bg-muted/50")}>
-                          <td className="px-2.5 py-2">
-                            <div className={cn("w-[18px] h-[18px] rounded flex items-center justify-center border-2",
-                              selected ? "border-emerald-500 bg-emerald-500" : "border-slate-500")}>
-                              {selected && <Check size={11} className="text-white" />}
-                            </div>
-                          </td>
-                          <td className="px-2.5 py-2 font-bold text-emerald-500">{z.zip}</td>
-                          <td className="px-2.5 py-2 text-muted-foreground">{z.name}</td>
-                          <td className="px-2.5 py-2 text-right font-semibold">{z.ts}</td>
-                          <td className="px-2.5 py-2 text-right font-semibold text-cyan-500">{z.cs}</td>
-                          <td className="px-2.5 py-2 text-right text-amber-500">{z.rs}</td>
-                          <td className="px-2.5 py-2 text-right">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <div className="w-10 h-[5px] rounded-full bg-border overflow-hidden">
-                                <div className="h-full rounded-full" style={{
-                                  width: `${z.cr}%`,
-                                  background: z.cr > 80 ? COLORS.primary : z.cr > 50 ? COLORS.warning : "#EF4444",
-                                }} />
-                              </div>
-                              <span className={cn("font-semibold text-[11px]",
-                                z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-red-500")}>{z.cr}%</span>
-                            </div>
-                          </td>
-                          <td className="px-2.5 py-2 text-right">${z.mp.toLocaleString()}</td>
-                          <td className={cn("px-2.5 py-2 text-right",
-                            z.dom < 80 ? "text-emerald-500" : z.dom < 100 ? "text-amber-500" : "text-red-500")}>{z.dom}d</td>
-                          <td className={cn("px-2.5 py-2 text-right", z.cap > 7 ? "text-emerald-500" : "text-muted-foreground")}>{z.cap}%</td>
-                          <td className="px-2.5 py-2 text-right">${z.rent}</td>
-                          <td className="px-2.5 py-2 text-center">
-                            <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-bold",
-                              z.score >= 90 ? "bg-emerald-500/15 text-emerald-500" :
-                              z.score >= 75 ? "bg-amber-500/15 text-amber-500" :
-                              "bg-red-500/15 text-red-500")}>{z.score}</span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
-              <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Transactions By Price Range</h3>
-                <ResponsiveContainer width="100%" height={260}>
-                  <BarChart data={D.priceRanges} barGap={2}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="range" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} angle={-25} textAnchor="end" height={45} />
-                    <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
-                    <RechartsTooltip content={<ChartTooltip />} />
-                    <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
-                    <Bar dataKey="cash" name="Investor Transactions" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="retail" name="Retail Transactions" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Market Composition</h3>
-                <div className="flex items-center gap-5">
-                  <ResponsiveContainer width="50%" height={180}>
-                    <PieChart>
-                      <Pie data={[
-                        { name: "Cash", value: D.summary.cashSales },
-                        { name: "Retail", value: D.summary.retailSales },
-                      ]} cx="50%" cy="50%" innerRadius={45} outerRadius={72} paddingAngle={4} dataKey="value">
-                        <Cell fill={COLORS.cyan} />
-                        <Cell fill={COLORS.warning} />
-                      </Pie>
-                      <RechartsTooltip content={<ChartTooltip />} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div className="flex-1 flex flex-col gap-2.5">
-                    <div className="bg-cyan-500/10 rounded-lg p-3">
-                      <div className="text-[10px] text-muted-foreground">Investor Buyers</div>
-                      <div className="text-xl font-bold text-cyan-500">{D.summary.cashSales}</div>
-                      <div className="text-[11px] text-cyan-500">{D.summary.cashRate}% of market</div>
+                {/* Zip Code Table */}
+                <div className="bg-card border border-border rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                    <div>
+                      <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes By Buyer Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">Click rows to select for campaigns</p>
                     </div>
-                    <div className="bg-amber-500/10 rounded-lg p-3">
-                      <div className="text-[10px] text-muted-foreground">Retail Buyers</div>
-                      <div className="text-xl font-bold text-amber-500">{D.summary.retailSales}</div>
-                      <div className="text-[11px] text-amber-500">{(100 - D.summary.cashRate).toFixed(1)}%</div>
+                    <div className="flex gap-2">
+                      {selectedZips.length > 0 && (
+                        <>
+                          <Button size="sm" variant="outline" className="border-cyan-500/40 text-cyan-500 hover:bg-cyan-500/10" icon={<Eye className="h-3 w-3" />}
+                            onClick={() => navigate(`/marketplace?zips=${selectedZips.join(",")}`)}>
+                            View Listings ({selectedZips.length})
+                          </Button>
+                          <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white" icon={<Rocket className="h-3 w-3" />}
+                            onClick={() => setActiveTab("campaign")}>
+                            Launch Campaign ({selectedZips.length})
+                          </Button>
+                        </>
+                      )}
+                      <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
+                        className="bg-background border border-border rounded-md text-muted-foreground text-[10px] px-2 py-1.5">
+                        <option value="cr">Sort: Investor %</option>
+                        <option value="ts">Sort: Transactions</option>
+                        <option value="score">Sort: Score</option>
+                        <option value="cap">Sort: Cap Rate</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse text-xs">
+                      <thead>
+                        <tr className="border-b border-border">
+                          {["", "ZIP", "AREA", "TRANSACTIONS", "INVESTOR", "RETAIL", "INV %", "MEDIAN", "DOM", "CAP", "RENT", "SCORE"].map((h, i) => (
+                            <th key={i} className={cn("px-2.5 py-2 text-muted-foreground text-[10px] font-semibold",
+                              i < 3 ? "text-left" : i === 11 ? "text-center" : "text-right")}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedZips.map((z) => {
+                          const selected = selectedZips.includes(z.zip);
+                          return (
+                            <tr key={z.zip} onClick={() => toggleZip(z.zip)}
+                              className={cn("border-b border-border cursor-pointer transition-colors",
+                                selected ? "bg-emerald-500/10" : "hover:bg-muted/50")}>
+                              <td className="px-2.5 py-2">
+                                <div className={cn("w-[18px] h-[18px] rounded flex items-center justify-center border-2",
+                                  selected ? "border-emerald-500 bg-emerald-500" : "border-slate-500")}>
+                                  {selected && <Check size={11} className="text-white" />}
+                                </div>
+                              </td>
+                              <td className="px-2.5 py-2 font-bold text-emerald-500">{z.zip}</td>
+                              <td className="px-2.5 py-2 text-muted-foreground">{z.name}</td>
+                              <td className="px-2.5 py-2 text-right font-semibold">{z.ts}</td>
+                              <td className="px-2.5 py-2 text-right font-semibold text-cyan-500">{z.cs}</td>
+                              <td className="px-2.5 py-2 text-right text-amber-500">{z.rs}</td>
+                              <td className="px-2.5 py-2 text-right">
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <div className="w-10 h-[5px] rounded-full bg-border overflow-hidden">
+                                    <div className="h-full rounded-full" style={{
+                                      width: `${z.cr}%`,
+                                      background: z.cr > 80 ? COLORS.primary : z.cr > 50 ? COLORS.warning : "#EF4444",
+                                    }} />
+                                  </div>
+                                  <span className={cn("font-semibold text-[11px]",
+                                    z.cr > 80 ? "text-emerald-500" : z.cr > 50 ? "text-amber-500" : "text-red-500")}>{z.cr}%</span>
+                                </div>
+                              </td>
+                              <td className="px-2.5 py-2 text-right">${z.mp.toLocaleString()}</td>
+                              <td className={cn("px-2.5 py-2 text-right",
+                                z.dom < 80 ? "text-emerald-500" : z.dom < 100 ? "text-amber-500" : "text-red-500")}>{z.dom}d</td>
+                              <td className={cn("px-2.5 py-2 text-right", z.cap > 7 ? "text-emerald-500" : "text-muted-foreground")}>{z.cap}%</td>
+                              <td className="px-2.5 py-2 text-right">${z.rent}</td>
+                              <td className="px-2.5 py-2 text-center">
+                                <span className={cn("px-2 py-0.5 rounded-full text-[11px] font-bold",
+                                  z.score >= 90 ? "bg-emerald-500/15 text-emerald-500" :
+                                  z.score >= 75 ? "bg-amber-500/15 text-amber-500" :
+                                  "bg-red-500/15 text-red-500")}>{z.score}</span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5">
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Transactions By Price Range</h3>
+                    <ResponsiveContainer width="100%" height={260}>
+                      <BarChart data={D.priceRanges} barGap={2}>
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="range" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} angle={-25} textAnchor="end" height={45} />
+                        <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 9 }} />
+                        <RechartsTooltip content={<ChartTooltip />} />
+                        <Legend iconSize={7} wrapperStyle={{ fontSize: 10 }} />
+                        <Bar dataKey="cash" name="Investor Transactions" fill={COLORS.cyan} radius={[4, 4, 0, 0]} />
+                        <Bar dataKey="retail" name="Retail Transactions" fill={COLORS.warning} radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="bg-card border border-border rounded-xl p-4">
+                    <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Market Composition</h3>
+                    <div className="flex items-center gap-5">
+                      <ResponsiveContainer width="50%" height={180}>
+                        <PieChart>
+                          <Pie data={[
+                            { name: "Cash", value: D.summary.cashSales },
+                            { name: "Retail", value: D.summary.retailSales },
+                          ]} cx="50%" cy="50%" innerRadius={45} outerRadius={72} paddingAngle={4} dataKey="value">
+                            <Cell fill={COLORS.cyan} />
+                            <Cell fill={COLORS.warning} />
+                          </Pie>
+                          <RechartsTooltip content={<ChartTooltip />} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="flex-1 flex flex-col gap-2.5">
+                        <div className="bg-cyan-500/10 rounded-lg p-3">
+                          <div className="text-[10px] text-muted-foreground">Investor Buyers</div>
+                          <div className="text-xl font-bold text-cyan-500">{D.summary.cashSales}</div>
+                          <div className="text-[11px] text-cyan-500">{D.summary.cashRate}% of market</div>
+                        </div>
+                        <div className="bg-amber-500/10 rounded-lg p-3">
+                          <div className="text-[10px] text-muted-foreground">Retail Buyers</div>
+                          <div className="text-xl font-bold text-amber-500">{D.summary.retailSales}</div>
+                          <div className="text-[11px] text-amber-500">{(100 - D.summary.cashRate).toFixed(1)}%</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
+
+            {overviewSubTab === "hotspots" && <HotSpotsView />}
+            {overviewSubTab === "velocity" && <VelocityView />}
+            {overviewSubTab === "flips" && <FlipTrackerView />}
+            {overviewSubTab === "rental" && <RentalIntelView />}
+            {overviewSubTab === "buybox" && <AIBuyBoxView />}
           </>
         )}
 
         {activeTab === "activity" && <ActivityTrendsTab />}
         {activeTab === "buyers" && <BuyerIntelTab />}
-        {activeTab === "hotspots" && <HotSpotsView />}
-        {activeTab === "velocity" && <VelocityView />}
-        {activeTab === "flips" && <FlipTrackerView />}
-        {activeTab === "rental" && <RentalIntelView />}
-        {activeTab === "buybox" && <AIBuyBoxView />}
         {activeTab === "compare" && <MarketCompareTab />}
         {activeTab === "campaign" && <CampaignLauncherTab />}
       </div>
