@@ -274,8 +274,8 @@ export default function Intel() {
               <div className="w-px h-11 bg-border hidden sm:block" />
               <ScoreGauge score={D.scores.cash} label="Inventory" icon={DollarSign} color={COLORS.cyan} />
               <ScoreGauge score={D.scores.wholesale} label="Days On Market" icon={Zap} color={D.summary.dom <= 30 ? COLORS.primary : D.summary.dom <= 60 ? COLORS.warning : COLORS.danger} />
-              <ScoreGauge score={D.scores.flip} label="Flippers" icon={Home} color={COLORS.warning} />
-              <ScoreGauge score={D.scores.rental} label="Landlords" icon={Building} color={COLORS.accent} />
+              <ScoreGauge score={D.scores.flip} label="Flippers" icon={Home} color="#10B981" />
+              <ScoreGauge score={D.scores.rental} label="Landlords" icon={Building} color={COLORS.warning} />
               </div>
             </div>
 
