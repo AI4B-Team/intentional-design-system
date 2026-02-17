@@ -112,17 +112,18 @@ export function BuyerActivityTab({ children }: { children?: React.ReactNode }) {
   const totalCash = ZIPS.reduce((s, z) => s + z.cs, 0);
   const totalRetail = ZIPS.reduce((s, z) => s + z.rs, 0);
   const totalFlips = ZIPS.reduce((s, z) => s + z.flips, 0);
-  const avgVelocity = (ZIPS.reduce((s, z) => s + z.velocity, 0) / ZIPS.length).toFixed(1);
+  const totalLandlords = totalCash - totalFlips;
+  const totalAll = totalCash + totalRetail;
 
   return (
     <div className="space-y-4">
 
       <div className="space-y-3.5">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <StatCard label="Total Transactions" value={totalCash + totalRetail} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
+            <StatCard label="Total Transactions" value={totalAll} sub={`${totalCash} investor + ${totalRetail} retail`} icon={DollarSign} color={COLORS.cyan} change={4.2} />
             <StatCard label="Flippers" value={`${totalFlips} deals`} sub="Sold 2x in 12 months" icon={Repeat} color={COLORS.purple} change={12.5} />
-            <StatCard label="Landlords" value={Math.round(totalCash * 0.45)} sub={`${((totalCash * 0.45 / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} />
-            <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / (totalCash + totalRetail)) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
+            <StatCard label="Landlords" value={totalLandlords} sub={`${((totalLandlords / totalAll) * 100).toFixed(1)}% of market`} icon={Home} color={COLORS.primary} change={3.1} />
+            <StatCard label="Retail" value={totalRetail} sub={`${((totalRetail / totalAll) * 100).toFixed(1)}% of market`} icon={Users} color={COLORS.warning} change={1.8} />
           </div>
 
           {children}
