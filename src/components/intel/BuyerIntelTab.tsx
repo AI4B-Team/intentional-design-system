@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import {
   Check, Rocket, Mail, MessageSquare, Phone, Zap,
   Users, DollarSign, MapPin, ArrowRight, Sparkles,
-  Target, Brain, Eye,
+  Target, Brain, Eye, ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { InfoTooltip } from "./InfoTooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { BuyerActivityTab } from "./BuyerActivityTab";
 
 // ─── Campaign Data ───
@@ -356,10 +357,33 @@ export function BuyerIntelTab() {
                 </div>
                 <div>
                   <label className="text-[11px] text-muted-foreground block mb-1">Lead Filter</label>
-                  <select value={filt} onChange={(e) => setFilt(e.target.value)}
-                    className="w-full bg-background border border-border rounded-md px-3 py-2 text-foreground text-xs">
-                    {LEAD_FILTERS.map((f) => <option key={f} value={f}>{f}</option>)}
-                  </select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-between text-xs font-normal h-9">
+                        {filt}
+                        <ChevronDown className="h-3.5 w-3.5 opacity-50 shrink-0" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[--radix-popover-trigger-width] p-2 z-[200]" align="start">
+                      <div className="space-y-0.5">
+                        {LEAD_FILTERS.map((f) => (
+                          <button
+                            key={f}
+                            onClick={() => setFilt(f)}
+                            className={cn(
+                              "w-full text-left px-3 py-2 rounded-md text-xs flex items-center gap-2 transition-colors",
+                              filt === f
+                                ? "bg-muted font-medium text-foreground"
+                                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                            )}
+                          >
+                            {filt === f && <Check className="h-3.5 w-3.5 shrink-0" />}
+                            {f}
+                          </button>
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </div>
