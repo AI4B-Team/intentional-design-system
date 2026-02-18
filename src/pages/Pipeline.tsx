@@ -845,6 +845,7 @@ export default function Pipeline() {
       <PageHeader
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
+        className="mb-3"
         actions={
             <div className="flex items-center gap-2">
               <Button variant="secondary" size="sm" icon={<RefreshCw />}>
