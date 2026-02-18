@@ -218,14 +218,14 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         {/* Header Toolbar */}
         <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/30">
           <div className="flex items-center gap-1">
-            <TooltipProvider>
+            <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg bg-muted">
                     <MessageSquare className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">Chat</TooltipContent>
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">Chat</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -238,7 +238,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <PenSquare className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">New Chat</TooltipContent>
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">New Chat</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -252,7 +252,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">Clear Chat</TooltipContent>
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">Clear Chat</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -268,7 +268,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <History className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">History</TooltipContent>
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">History</TooltipContent>
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -284,12 +284,12 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <Settings className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">Settings</TooltipContent>
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">Settings</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
           <div className="flex items-center gap-1">
-            <TooltipProvider>
+            <TooltipProvider delayDuration={0}>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
@@ -301,7 +301,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     <Maximize2 className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent className="bg-white text-gray-900 border shadow-md">
+                <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">
                   {isExpanded ? "Collapse" : "Expand"}
                 </TooltipContent>
               </Tooltip>
@@ -312,7 +312,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       <X className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white text-gray-900 border shadow-md">Close</TooltipContent>
+                  <TooltipContent side="bottom" className="bg-white text-gray-900 border shadow-md">Close</TooltipContent>
                 </Tooltip>
               )}
             </TooltipProvider>
