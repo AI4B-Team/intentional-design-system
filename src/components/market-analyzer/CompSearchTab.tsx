@@ -13,7 +13,7 @@ import {
   Search,
   Map as MapIcon,
   List,
-  Filter,
+  SlidersHorizontal,
   ArrowUpDown,
   Loader2,
   Home,

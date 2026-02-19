@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, Filter, X, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SegmentedControl } from "@/components/ui/segmented-control";
@@ -77,7 +77,7 @@ export function PropertyFilters({
         <Button
           variant="secondary"
           size="sm"
-          icon={<Filter />}
+          icon={<SlidersHorizontal />}
           onClick={onOpenFilters}
           className="border-0 bg-surface-secondary hover:bg-surface-tertiary"
         >

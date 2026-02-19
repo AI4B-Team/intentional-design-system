@@ -45,7 +45,7 @@ import {
   Edit,
   Trash2,
   Users,
-  Filter,
+  SlidersHorizontal,
   ArrowUpDown,
   X,
 } from "lucide-react";
@@ -197,7 +197,7 @@ export default function Contacts() {
               {/* Type Filter */}
               <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as DealSourceType | "all")}>
                 <SelectTrigger className="w-[140px]">
-                  <Filter className="h-4 w-4 mr-2" />
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent className="bg-background">

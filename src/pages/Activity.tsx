@@ -30,7 +30,7 @@ import {
   Activity,
   Download,
   Search,
-  Filter,
+  SlidersHorizontal,
   Calendar,
   User,
   Plus,
@@ -237,7 +237,7 @@ export default function ActivityPage() {
 
             <Select value={actionFilter} onValueChange={setActionFilter}>
               <SelectTrigger className="w-[160px]">
-                <Filter className="h-4 w-4 mr-2 text-content-tertiary" />
+                <SlidersHorizontal className="h-4 w-4 mr-2 text-content-tertiary" />
                 <SelectValue placeholder="Action" />
               </SelectTrigger>
               <SelectContent>

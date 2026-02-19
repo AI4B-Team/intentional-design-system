@@ -60,7 +60,6 @@ import {
   Kanban,
   Plus,
   Search,
-  Filter,
   SlidersHorizontal,
   MoreVertical,
   Building2,
@@ -898,7 +897,7 @@ export default function Pipeline() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
+                    <SlidersHorizontal className="h-4 w-4" />
                     Reset Filters
                   </DropdownMenuItem>
                 </DropdownMenuContent>
