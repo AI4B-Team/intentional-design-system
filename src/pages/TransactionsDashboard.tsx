@@ -388,22 +388,9 @@ export default function TransactionsDashboard() {
           </Card>
         </div>
 
-        {/* Filters */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by address..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <TabsList className="bg-transparent gap-2 p-0">
               <TabsTrigger value="active" className="gap-2 border border-border bg-background data-[state=active]:bg-muted rounded-lg">
                 <TrendingUp className="h-4 w-4" />
@@ -419,7 +406,16 @@ export default function TransactionsDashboard() {
               </TabsTrigger>
             </TabsList>
             
-            <div className="ml-auto">
+            <div className="flex items-center gap-3 ml-auto">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by address..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 w-[220px]"
+                />
+              </div>
               <Select value={stageFilter} onValueChange={setStageFilter}>
                 <SelectTrigger className="w-[180px]">
                   <Filter className="h-4 w-4 mr-2" />
@@ -429,7 +425,6 @@ export default function TransactionsDashboard() {
                   <SelectItem value="all">All Stages</SelectItem>
                   <SelectItem value="contract_signed">Contract Signed</SelectItem>
                   <SelectItem value="due_diligence">Due Diligence</SelectItem>
-                  <SelectItem value="title_escrow">Title & Escrow</SelectItem>
                   <SelectItem value="marketing">Marketing</SelectItem>
                   <SelectItem value="closing">Closing</SelectItem>
                 </SelectContent>
