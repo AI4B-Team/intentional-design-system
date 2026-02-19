@@ -60,8 +60,8 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
   const isIntelPage = location.pathname.startsWith("/intel");
 
-  // Determine default search mode based on current page
-  const defaultSearchMode = isIntelPage ? "intel" as const : "listings" as const;
+  // Always default to listings mode
+  const defaultSearchMode = "listings" as const;
 
   // Detect if input looks like a full address (starts with a number)
 
@@ -79,12 +79,8 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       return;
     }
 
-    // City/ZIP → route based on current page context
-    if (defaultSearchMode === "intel") {
-      navigate(`/intel?search=${encodeURIComponent(query)}`);
-    } else {
-      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
-    }
+    // City/ZIP → always go to marketplace listings
+    navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
     setSearchQuery("");
   };
 
