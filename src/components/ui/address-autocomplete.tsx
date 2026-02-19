@@ -98,7 +98,7 @@ export function AddressAutocomplete({
 
   // Fetch suggestions from Google Places API
   const fetchSuggestions = React.useCallback(async (query: string) => {
-    if (!query.trim() || query.length < 3 || !apiKey) {
+    if (!query.trim() || query.length < 2 || !apiKey) {
       setSuggestions([]);
       return;
     }
@@ -107,7 +107,7 @@ export function AddressAutocomplete({
 
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=address&components=country:us&key=${apiKey}`
+        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=geocode&components=country:us&key=${apiKey}`
       );
       
       // If CORS blocks the direct call, use the Places Service from the Maps JavaScript API
@@ -141,7 +141,7 @@ export function AddressAutocomplete({
         service.getPlacePredictions(
           {
             input: query,
-            types: ["address"],
+            types: ["geocode"],
             componentRestrictions: { country: "us" },
           },
           (predictions, status) => {
@@ -256,7 +256,7 @@ export function AddressAutocomplete({
           type="text"
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => value.length >= 3 && setShowSuggestions(true)}
+          onFocus={() => value.length >= 2 && setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn(
