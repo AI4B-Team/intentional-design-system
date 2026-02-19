@@ -1,6 +1,12 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, MapPin, Loader2, BarChart3, Store } from "lucide-react";
+import { Search, MapPin, Loader2, BarChart3, Store, ChevronDown, Star, Clock, Zap, TrendingUp } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 // Type declaration for Google Maps API on window
 declare global {
@@ -76,9 +82,17 @@ export function AddressAutocomplete({
   const [isLoading, setIsLoading] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const [savedDropdownOpen, setSavedDropdownOpen] = React.useState(false);
+  const [savedTab, setSavedTab] = React.useState<"saved" | "recent" | "quick" | "popular">("saved");
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const debounceRef = React.useRef<NodeJS.Timeout>();
+
+  const handleDropdownSelect = (text: string) => {
+    onChange(text);
+    onSelect(text);
+    setSavedDropdownOpen(false);
+  };
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -249,7 +263,7 @@ export function AddressAutocomplete({
             "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-6 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
-            showModeBadge ? "pr-24" : "pr-8",
+            showModeBadge ? "pr-[7.5rem]" : "pr-10",
             inputClassName
           )}
           autoComplete="off"
@@ -263,7 +277,8 @@ export function AddressAutocomplete({
               onModeSwitch(alt);
             }}
             className={cn(
-              "absolute right-8 top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium transition-colors",
+              "absolute top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium transition-colors",
+              "right-10",
               defaultMode === "listings"
                 ? "bg-primary/10 text-primary hover:bg-primary/20"
                 : "bg-accent/80 text-accent-foreground hover:bg-accent"
@@ -282,8 +297,160 @@ export function AddressAutocomplete({
             )}
           </button>
         )}
+        {/* Saved searches dropdown trigger */}
+        <Popover open={savedDropdownOpen} onOpenChange={setSavedDropdownOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full hover:bg-muted transition-colors z-10"
+            >
+              <ChevronDown className={cn("h-4 w-4 text-content-tertiary transition-transform", savedDropdownOpen && "rotate-180")} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-[400px] p-0 bg-white border-2 border-border shadow-xl z-[200] rounded-lg"
+            align="end"
+            sideOffset={6}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+          >
+            {/* Tab bar */}
+            <div className="flex border-b border-border">
+              {([
+                { key: "saved" as const, label: "Saved", icon: Star },
+                { key: "recent" as const, label: "Recent", icon: Clock },
+                { key: "quick" as const, label: "Quick", icon: Zap },
+                { key: "popular" as const, label: "Markets", icon: MapPin },
+              ]).map((tab) => (
+                <button
+                  key={tab.key}
+                  type="button"
+                  className={cn(
+                    "flex-1 flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs font-medium transition-colors",
+                    savedTab === tab.key
+                      ? "text-primary border-b-2 border-primary bg-primary/5"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  )}
+                  onClick={() => setSavedTab(tab.key)}
+                >
+                  <tab.icon className="h-3.5 w-3.5" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab content */}
+            <div className="max-h-[320px] overflow-y-auto">
+              {savedTab === "saved" && (
+                <div className="py-1">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Saved Searches</span>
+                    <button
+                      type="button"
+                      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                    >
+                      + New
+                    </button>
+                  </div>
+                  {[
+                    { name: "Tampa Distressed Under $200K", count: 43 },
+                    { name: "Atlanta High Equity 3+ Beds", count: 127 },
+                    { name: "Orlando Vacant Lots", count: 18 },
+                  ].map((saved) => (
+                    <button
+                      key={saved.name}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                      onClick={() => handleDropdownSelect(saved.name)}
+                    >
+                      <Star className="h-3.5 w-3.5 flex-shrink-0 fill-amber-400 text-amber-400" />
+                      <span className="flex-1 truncate">{saved.name}</span>
+                      <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground">
+                        {saved.count}
+                      </Badge>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {savedTab === "recent" && (
+                <div className="py-1">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Recent Searches</span>
+                  </div>
+                  {[
+                    "Jacksonville, FL",
+                    "28205",
+                    "Harris County, TX",
+                  ].map((search) => (
+                    <button
+                      key={search}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2"
+                      onClick={() => handleDropdownSelect(search)}
+                    >
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      {search}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {savedTab === "quick" && (
+                <div className="py-1">
+                  {[
+                    { label: "Foreclosures Near Me", icon: Zap, desc: "Pre-foreclosure & REO" },
+                    { label: "Vacant Properties", icon: MapPin, desc: "Unoccupied homes" },
+                    { label: "High Equity Leads", icon: TrendingUp, desc: "60%+ equity owners" },
+                    { label: "Absentee Owners", icon: MapPin, desc: "Out-of-state landlords" },
+                  ].map((quick) => (
+                    <button
+                      key={quick.label}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2.5"
+                      onClick={() => handleDropdownSelect(quick.label)}
+                    >
+                      <quick.icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="font-medium text-foreground">{quick.label}</div>
+                        <div className="text-[11px] text-muted-foreground">{quick.desc}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {savedTab === "popular" && (
+                <div className="py-1">
+                  {[
+                    { name: "Tampa, FL", listings: 342, buyers: 128 },
+                    { name: "Houston, TX", listings: 518, buyers: 203 },
+                    { name: "Atlanta, GA", listings: 425, buyers: 176 },
+                    { name: "Phoenix, AZ", listings: 389, buyers: 154 },
+                    { name: "Jacksonville, FL", listings: 267, buyers: 98 },
+                    { name: "Dallas, TX", listings: 471, buyers: 189 },
+                    { name: "Orlando, FL", listings: 312, buyers: 134 },
+                    { name: "Charlotte, NC", listings: 198, buyers: 87 },
+                  ].map((market) => (
+                    <button
+                      key={market.name}
+                      type="button"
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-3"
+                      onClick={() => handleDropdownSelect(market.name.split(",")[0].trim())}
+                    >
+                      <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+                      <span className="flex-1 font-medium">{market.name}</span>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {market.listings} listings · {market.buyers} buyers
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary animate-spin" />
+          <Loader2 className="absolute right-8 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary animate-spin" />
         )}
       </div>
 
