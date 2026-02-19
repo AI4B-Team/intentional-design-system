@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, MapPin, Loader2 } from "lucide-react";
+import { Search, MapPin, Loader2, BarChart3, Store } from "lucide-react";
 
 // Type declaration for Google Maps API on window
 declare global {
@@ -44,6 +44,8 @@ interface AddressSuggestion {
   secondaryText: string;
 }
 
+type SearchMode = "listings" | "intel";
+
 interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
@@ -51,15 +53,24 @@ interface AddressAutocompleteProps {
   placeholder?: string;
   className?: string;
   inputClassName?: string;
+  /** Current default mode based on page context */
+  defaultMode?: SearchMode;
+  /** Callback when user clicks the alternate mode badge */
+  onModeSwitch?: (mode: SearchMode) => void;
+  /** Whether to show the mode badge */
+  showModeBadge?: boolean;
 }
 
 export function AddressAutocomplete({
   value,
   onChange,
   onSelect,
-  placeholder = "Enter an address, city, or ZIP for insights",
+  placeholder = "Search address, city, or ZIP…",
   className,
   inputClassName,
+  defaultMode = "listings",
+  onModeSwitch,
+  showModeBadge = false,
 }: AddressAutocompleteProps) {
   const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -224,7 +235,7 @@ export function AddressAutocomplete({
 
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
-      <div className="relative">
+      <div className="relative flex items-center">
         <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
         <input
           ref={inputRef}
@@ -235,13 +246,42 @@ export function AddressAutocomplete({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn(
-            "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-6 pr-8 text-body transition-all duration-150",
+            "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-6 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
+            showModeBadge ? "pr-24" : "pr-8",
             inputClassName
           )}
           autoComplete="off"
         />
+        {/* Mode badge */}
+        {showModeBadge && onModeSwitch && (
+          <button
+            type="button"
+            onClick={() => {
+              const alt = defaultMode === "listings" ? "intel" : "listings";
+              onModeSwitch(alt);
+            }}
+            className={cn(
+              "absolute right-8 top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium transition-colors",
+              defaultMode === "listings"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-accent/80 text-accent-foreground hover:bg-accent"
+            )}
+          >
+            {defaultMode === "listings" ? (
+              <>
+                <BarChart3 className="h-3 w-3" />
+                Intel
+              </>
+            ) : (
+              <>
+                <Store className="h-3 w-3" />
+                Listings
+              </>
+            )}
+          </button>
+        )}
         {isLoading && (
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary animate-spin" />
         )}

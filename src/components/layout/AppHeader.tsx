@@ -1,7 +1,5 @@
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +23,7 @@ import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
 import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
 import { NotificationsDropdown } from "./NotificationsDropdown";
-import { useMockDeals } from "@/hooks/useMockDeals";
+
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
 
 interface Breadcrumb {
@@ -49,41 +47,49 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
 
   // Show marketplace-specific buttons only on /marketplace routes
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
+  const isIntelPage = location.pathname.startsWith("/intel");
 
-  // Get all deals for search matching
-  const { deals } = useMockDeals({
-    filters: { address: "", leadType: "all", homeTypes: [], priceMin: "", priceMax: "", bedsMin: "", bathsMin: "" },
-    sortBy: "newest",
-    page: 1,
-    perPage: 100,
-  });
+  // Determine default search mode based on current page
+  const defaultSearchMode = isIntelPage ? "intel" as const : "listings" as const;
+
+  // Detect if input looks like a full address (starts with a number)
+
+  // Detect if input looks like a full address (starts with a number)
+  const isFullAddress = (input: string) => /^\d+\s/.test(input.trim());
 
   const handleAddressSelect = (address: string, placeId?: string) => {
     if (!address.trim()) return;
-    
-    const query = address.trim().toLowerCase();
-    
-    // Find a matching deal by address, city, or zip
-    const matchedDeal = deals.find((deal) => {
-      const fullAddress = `${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`.toLowerCase();
-      return (
-        deal.address.toLowerCase().includes(query) ||
-        fullAddress.includes(query) ||
-        deal.city.toLowerCase().includes(query) ||
-        deal.zip.includes(query)
-      );
-    });
-    
-    if (matchedDeal) {
-      // Navigate to the property detail page
-      navigate(`/marketplace/deal/${matchedDeal.id}`);
+    const query = address.trim();
+
+    // Full address → property analysis
+    if (isFullAddress(query)) {
+      navigate(`/market-analyzer?tab=deals&address=${encodeURIComponent(query)}`);
       setSearchQuery("");
-    } else {
-      // Show toast if no match found
-      toast.info("No matching property found", {
-        description: "Try searching with a different address, city, or ZIP code.",
-      });
+      return;
     }
+
+    // City/ZIP → route based on current page context
+    if (defaultSearchMode === "intel") {
+      navigate(`/intel?search=${encodeURIComponent(query)}`);
+    } else {
+      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
+    }
+    setSearchQuery("");
+  };
+
+  const handleModeSwitch = (mode: "listings" | "intel") => {
+    const query = searchQuery.trim();
+    if (!query) {
+      // Just navigate to the page
+      navigate(mode === "intel" ? "/intel" : "/marketplace/deals");
+      return;
+    }
+    if (mode === "intel") {
+      navigate(`/intel?search=${encodeURIComponent(query)}`);
+    } else {
+      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
+    }
+    setSearchQuery("");
   };
 
   return (
@@ -102,6 +108,9 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         onChange={setSearchQuery}
         onSelect={handleAddressSelect}
         className="hidden md:block flex-1 max-w-md"
+        showModeBadge
+        defaultMode={defaultSearchMode}
+        onModeSwitch={handleModeSwitch}
       />
 
       {/* Breadcrumbs (only if provided and has multiple items) */}
