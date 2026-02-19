@@ -250,7 +250,7 @@ export function AddressAutocomplete({
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
       <div className="relative flex items-center">
-        <Search className="absolute left-1.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
         <input
           ref={inputRef}
           type="text"
@@ -260,7 +260,7 @@ export function AddressAutocomplete({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn(
-            "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-6 text-body transition-all duration-150",
+            "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
             showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
