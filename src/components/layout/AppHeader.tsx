@@ -41,7 +41,18 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = React.useState("");
+  // Sync search query from URL params
+  const searchParams = new URLSearchParams(location.search);
+  const urlQuery = searchParams.get("address") || searchParams.get("search") || "";
+  const [searchQuery, setSearchQuery] = React.useState(urlQuery);
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get("address") || params.get("search") || "";
+    if (q && q !== searchQuery) {
+      setSearchQuery(q);
+    }
+  }, [location.search]);
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
 
