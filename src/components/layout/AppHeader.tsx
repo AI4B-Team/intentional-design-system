@@ -84,18 +84,13 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
     setSearchQuery("");
   };
 
-  const handleModeSwitch = (mode: "listings" | "intel") => {
+  const handleModeSwitch = (_mode: "listings" | "intel") => {
     const query = searchQuery.trim();
     if (!query) {
-      // Just navigate to the page
-      navigate(mode === "intel" ? "/intel" : "/marketplace/deals");
+      navigate("/marketplace/deals");
       return;
     }
-    if (mode === "intel") {
-      navigate(`/intel?search=${encodeURIComponent(query)}`);
-    } else {
-      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
-    }
+    navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
     setSearchQuery("");
   };
 
