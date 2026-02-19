@@ -5,7 +5,7 @@ import {
 } from "recharts";
 import {
   Check, Rocket, Mail, MessageSquare, Phone, Zap, Users, DollarSign,
-  Home, TrendingUp, Sparkles, Eye, Filter, ChevronDown, ChevronUp,
+  Home, TrendingUp, Sparkles, Eye, SlidersHorizontal, ChevronDown, ChevronUp,
   Target, Shield, Brain, Send, MapPin, Building, ArrowRight, Repeat,
   AlertTriangle, Clock,
 } from "lucide-react";

@@ -31,7 +31,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Search,
-  Filter,
+  SlidersHorizontal,
   ChevronLeft,
   MoreVertical,
   RefreshCw,
@@ -178,7 +178,7 @@ export default function D4DProperties() {
                 size="icon"
                 onClick={() => setShowFilters(!showFilters)}
               >
-                <Filter className="h-5 w-5" />
+                <SlidersHorizontal className="h-5 w-5" />
               </Button>
             </div>
           </div>

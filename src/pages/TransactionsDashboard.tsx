@@ -39,7 +39,7 @@ import {
   Mail,
   Phone,
   MoreHorizontal,
-  Filter,
+  SlidersHorizontal,
   Sparkles,
   FileSignature,
   Scale,
@@ -418,7 +418,7 @@ export default function TransactionsDashboard() {
               </div>
               <Select value={stageFilter} onValueChange={setStageFilter}>
                 <SelectTrigger className="w-[180px]">
-                  <Filter className="h-4 w-4 mr-2" />
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="All Stages" />
                 </SelectTrigger>
                 <SelectContent>
