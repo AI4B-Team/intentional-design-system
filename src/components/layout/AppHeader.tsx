@@ -118,7 +118,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         value={searchQuery}
         onChange={setSearchQuery}
         onSelect={handleAddressSelect}
-        className="hidden md:block flex-1 max-w-md"
+        className="hidden md:block flex-1 max-w-xl"
         showModeBadge
         defaultMode={defaultSearchMode}
         onModeSwitch={handleModeSwitch}
