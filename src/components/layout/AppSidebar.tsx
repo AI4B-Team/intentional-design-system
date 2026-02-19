@@ -165,7 +165,7 @@ export function AppSidebar({
           </button>
           {!collapsed && (
             <span className="text-lg font-bold text-white whitespace-nowrap">
-              DealFlow
+              Real Elite
             </span>
           )}
         </div>

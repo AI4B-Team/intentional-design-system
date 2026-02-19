@@ -38,7 +38,7 @@ export default function OnboardingOrganization() {
               <Building2 className="h-7 w-7 text-content-inverse" />
             </div>
           </div>
-          <h1 className="text-h1 font-bold text-content mb-2">Welcome to DealFlow!</h1>
+          <h1 className="text-h1 font-bold text-content mb-2">Welcome to Real Elite!</h1>
           <p className="text-body text-content-secondary">
             Let's get you set up. Choose how you'd like to get started.
           </p>
