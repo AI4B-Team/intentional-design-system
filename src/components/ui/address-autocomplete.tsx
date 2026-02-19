@@ -263,13 +263,13 @@ export function AddressAutocomplete({
             "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-6 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
-            showModeBadge ? "pr-[7.5rem]" : "pr-10",
+            "pr-10",
             inputClassName
           )}
           autoComplete="off"
         />
-        {/* Mode badge */}
-        {showModeBadge && onModeSwitch && (
+        {/* Mode badge - only show for city/ZIP input (not full addresses starting with a number) */}
+        {showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim()) && (
           <button
             type="button"
             onClick={() => {
@@ -277,7 +277,7 @@ export function AddressAutocomplete({
               onModeSwitch(alt);
             }}
             className={cn(
-              "absolute top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full text-tiny font-medium transition-colors",
+              "absolute top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md text-tiny font-medium transition-colors",
               "right-10",
               defaultMode === "listings"
                 ? "bg-primary/10 text-primary hover:bg-primary/20"
