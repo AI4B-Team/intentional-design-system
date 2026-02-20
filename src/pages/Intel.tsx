@@ -270,7 +270,7 @@ export default function Intel() {
         </div>
 
         {/* Market Info Banner */}
-        <div className="bg-warning/10 border border-warning/30 rounded-xl px-5 py-3 flex items-center justify-between flex-wrap gap-3">
+        <div className="bg-[hsl(45,100%,95%)] border border-[hsl(40,90%,65%)] rounded-xl px-5 py-3 flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="flex items-center gap-2">
               <MapPin size={16} className="text-warning" />
