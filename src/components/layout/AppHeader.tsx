@@ -83,7 +83,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
     if (isIntelPage) {
       navigate(`/intel?address=${encodeURIComponent(query)}`);
     } else {
-      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
+      navigate(`/marketplace?address=${encodeURIComponent(query)}`);
     }
     setSearchQuery("");
   };
@@ -95,7 +95,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       navigate(query ? `/intel?address=${encodeURIComponent(query)}` : "/intel");
     } else {
       // Badge clicked to go to Listings
-      navigate(query ? `/marketplace/deals?address=${encodeURIComponent(query)}` : "/marketplace/deals");
+      navigate(query ? `/marketplace?address=${encodeURIComponent(query)}` : "/marketplace");
     }
     setSearchQuery("");
   };
