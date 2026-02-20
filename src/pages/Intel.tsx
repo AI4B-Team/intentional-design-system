@@ -8,7 +8,7 @@ import {
 import {
   Search, MapPin, DollarSign, Home, Clock, Users, Zap, Check,
   Download, Star, ArrowUpRight, ArrowDownRight, BarChart3, Activity,
-  Building, Percent, Rocket, TrendingUp, Brain, Megaphone, Eye,
+  Building, Percent, Rocket, TrendingUp, Brain, Megaphone, Eye, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -270,26 +270,29 @@ export default function Intel() {
         </div>
 
         {/* Market Info Banner */}
-        <div className="bg-warning/10 border border-warning/30 rounded-xl px-5 py-3 flex items-center justify-between flex-wrap gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <MapPin size={16} className="text-warning" />
-              <h2 className="text-base font-bold text-foreground">{displayMarket}</h2>
-              <span className="bg-warning/20 text-warning px-2 py-0.5 rounded-full text-[10px] font-semibold">Hot Market</span>
+        <div className="border border-warning/40 rounded-xl p-4">
+          <div className="bg-warning/10 rounded-xl px-5 py-4 flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
+                <Sparkles size={20} className="text-warning" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-amber-800">AI Market Alert</h2>
+                <p className="text-amber-900/80 text-sm">
+                  <span className="font-semibold">Hot Market</span> in {displayMarket}. MSA: {D.msa} · {D.summary.totalSales} transactions · Updated {D.updated}.
+                </p>
+              </div>
             </div>
-            <p className="text-muted-foreground text-xs mt-0.5">
-              MSA: {D.msa} · Updated {D.updated} · {D.summary.totalSales} transactions
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            {["1M", "3M", "6M", "1Y"].map((t) => (
-              <Button key={t} variant={timeRange === t ? "default" : "secondary"} size="sm"
-                onClick={() => setTimeRange(t)}>
-                {t}
-              </Button>
-            ))}
-            <Button variant="secondary" size="sm" icon={<Download className="h-3 w-3" />}>Export</Button>
-            <Button variant="secondary" size="sm" icon={<Star className="h-3 w-3" />}>Watchlist</Button>
+            <div className="flex items-center gap-2">
+              {["1M", "3M", "6M", "1Y"].map((t) => (
+                <Button key={t} variant={timeRange === t ? "default" : "secondary"} size="sm"
+                  onClick={() => setTimeRange(t)}>
+                  {t}
+                </Button>
+              ))}
+              <Button variant="outline" size="sm" className="border-warning/50 text-amber-800 hover:bg-warning/10" icon={<Download className="h-3 w-3" />}>Export</Button>
+              <Button variant="outline" size="sm" className="border-warning/50 text-amber-800 hover:bg-warning/10" icon={<Star className="h-3 w-3" />}>Watchlist</Button>
+            </div>
           </div>
         </div>
 
