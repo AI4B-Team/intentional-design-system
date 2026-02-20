@@ -284,7 +284,7 @@ export default function TransactionsDashboard() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Transaction Coordinator</h1>
+            <h1 className="text-2xl font-bold text-foreground">Transaction Coordinator</h1>
             <p className="text-muted-foreground">
               Manage deals under contract through closing
             </p>
