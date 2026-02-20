@@ -844,7 +844,7 @@ export default function Pipeline() {
       <PageHeader
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
-        className="mb-2 pb-2"
+        className="!mb-0 !pb-0 border-none"
       />
 
       {/* Search Bar + Action Buttons */}
