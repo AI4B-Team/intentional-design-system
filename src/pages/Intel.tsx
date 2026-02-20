@@ -216,15 +216,6 @@ export default function Intel() {
                 Analyze
               </Button>
             </div>
-            <div className="flex gap-0.5 bg-muted rounded-lg p-0.5">
-              {["1M", "3M", "6M", "1Y"].map((t) => (
-                <button key={t} onClick={() => setTimeRange(t)}
-                  className={cn("px-2 py-1 rounded-md text-[10px] font-semibold transition-colors",
-                    timeRange === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                  {t}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
@@ -240,7 +231,16 @@ export default function Intel() {
               MSA: {D.msa} · Updated {D.updated} · {D.summary.totalSales} transactions
             </p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex gap-0.5 bg-muted rounded-lg p-0.5">
+              {["1M", "3M", "6M", "1Y"].map((t) => (
+                <button key={t} onClick={() => setTimeRange(t)}
+                  className={cn("px-2 py-1 rounded-md text-[10px] font-semibold transition-colors",
+                    timeRange === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
+                  {t}
+                </button>
+              ))}
+            </div>
             <Button variant="secondary" size="sm" icon={<Download className="h-3 w-3" />}>Export</Button>
             <Button variant="secondary" size="sm" icon={<Star className="h-3 w-3" />}>Watchlist</Button>
           </div>
