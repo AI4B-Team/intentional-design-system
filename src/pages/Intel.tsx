@@ -203,7 +203,7 @@ export default function Intel() {
               <p className="text-muted-foreground">Real-time market analysis</p>
             </div>
             <div className="flex items-center gap-2 w-full lg:w-auto">
-              <div className="relative flex-1 lg:w-[340px]">
+              <div className="relative flex-1 lg:flex-none lg:w-[240px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={searchQuery}
