@@ -274,15 +274,20 @@ export function AddressAutocomplete({
         {showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim()) && (
           <button
             type="button"
-            onClick={() => onModeSwitch("listings")}
+            onClick={() => onModeSwitch(defaultMode === "intel" ? "listings" : "intel")}
             className={cn(
               "absolute top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2 py-0.5 rounded-md text-tiny font-medium transition-colors",
               "right-10",
-              "bg-primary/10 text-primary hover:bg-primary/20"
+              defaultMode === "intel"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-accent text-accent-foreground hover:bg-accent/80"
             )}
           >
-            <Store className="h-3 w-3" />
-            Listings
+            {defaultMode === "intel" ? (
+              <><Store className="h-3 w-3" />Listings</>
+            ) : (
+              <><BarChart3 className="h-3 w-3" />Intel</>
+            )}
           </button>
         )}
         {/* Saved searches dropdown trigger */}

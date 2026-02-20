@@ -60,8 +60,8 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
   const isIntelPage = location.pathname.startsWith("/intel");
 
-  // Always default to listings mode
-  const defaultSearchMode = "listings" as const;
+  // On intel page, show "Listings" badge; everywhere else show "Intel" badge
+  const defaultSearchMode = isIntelPage ? "intel" : "listings" as const;
 
   // Detect if input looks like a full address (starts with a number)
 
@@ -84,13 +84,15 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
     setSearchQuery("");
   };
 
-  const handleModeSwitch = (_mode: "listings" | "intel") => {
+  const handleModeSwitch = (mode: "listings" | "intel") => {
     const query = searchQuery.trim();
-    if (!query) {
-      navigate("/marketplace/deals");
-      return;
+    if (mode === "intel") {
+      // Badge clicked to go to Intel
+      navigate(query ? `/intel?address=${encodeURIComponent(query)}` : "/intel");
+    } else {
+      // Badge clicked to go to Listings
+      navigate(query ? `/marketplace/deals?address=${encodeURIComponent(query)}` : "/marketplace/deals");
     }
-    navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
     setSearchQuery("");
   };
 
