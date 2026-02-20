@@ -79,8 +79,12 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
       return;
     }
 
-    // City/ZIP → always go to marketplace listings
-    navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
+    // Context-aware routing: Intel page → intel results, everywhere else → marketplace listings
+    if (isIntelPage) {
+      navigate(`/intel?address=${encodeURIComponent(query)}`);
+    } else {
+      navigate(`/marketplace/deals?address=${encodeURIComponent(query)}`);
+    }
     setSearchQuery("");
   };
 
