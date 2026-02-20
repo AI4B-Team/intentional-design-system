@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { PageLayout } from "@/components/layout/page-layout";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -174,6 +174,8 @@ type OverviewSubTab = typeof OVERVIEW_SUBTABS[number]["key"];
 // ---------- Main Component ----------
 export default function Intel() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const addressParam = searchParams.get("address") || "";
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedZips, setSelectedZips] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>("cr");
@@ -181,6 +183,11 @@ export default function Intel() {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
 
   const [overviewSubTab, setOverviewSubTab] = useState<OverviewSubTab>("summary");
+
+  // Derive display market name from URL param, fallback to static data
+  const displayMarket = addressParam
+    ? addressParam.charAt(0).toUpperCase() + addressParam.slice(1)
+    : MARKET_DATA.market;
 
   const toggleZip = (zip: string) =>
     setSelectedZips((prev) => prev.includes(zip) ? prev.filter((z) => z !== zip) : [...prev, zip]);
@@ -210,7 +217,7 @@ export default function Intel() {
           <div>
             <div className="flex items-center gap-2">
               <MapPin size={16} className="text-emerald-500" />
-              <h2 className="text-xl font-bold text-foreground">{D.market}</h2>
+              <h2 className="text-xl font-bold text-foreground">{displayMarket}</h2>
               <span className="bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded-full text-[10px] font-semibold">Hot Market</span>
             </div>
             <p className="text-muted-foreground text-xs mt-0.5">
