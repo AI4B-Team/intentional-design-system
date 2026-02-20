@@ -265,7 +265,7 @@ export default function Intel() {
       <div className="space-y-4 p-4 lg:p-6">
         {/* Header */}
         <div>
-          <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
+          <h1 className="text-2xl font-bold text-foreground">Market Intelligence</h1>
           <p className="text-muted-foreground text-sm">Real-time market analysis</p>
         </div>
 
