@@ -264,22 +264,18 @@ export default function Intel() {
     <PageLayout fullWidth>
       <div className="space-y-4 p-4 lg:p-6">
         {/* Header */}
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
-              <p className="text-muted-foreground">Real-time market analysis</p>
-            </div>
-          </div>
+        <div>
+          <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
+          <p className="text-muted-foreground text-sm">Real-time market analysis</p>
         </div>
 
-        {/* Market Info */}
-        <div className="flex items-center justify-between flex-wrap gap-3">
+        {/* Market Info Banner */}
+        <div className="bg-warning/10 border border-warning/30 rounded-xl px-5 py-3 flex items-center justify-between flex-wrap gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <MapPin size={16} className="text-emerald-500" />
-              <h2 className="text-xl font-bold text-foreground">{displayMarket}</h2>
-              <span className="bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded-full text-[10px] font-semibold">Hot Market</span>
+              <MapPin size={16} className="text-warning" />
+              <h2 className="text-base font-bold text-foreground">{displayMarket}</h2>
+              <span className="bg-warning/20 text-warning px-2 py-0.5 rounded-full text-[10px] font-semibold">Hot Market</span>
             </div>
             <p className="text-muted-foreground text-xs mt-0.5">
               MSA: {D.msa} · Updated {D.updated} · {D.summary.totalSales} transactions
