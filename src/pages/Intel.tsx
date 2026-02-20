@@ -193,8 +193,8 @@ export default function Intel() {
   const D = MARKET_DATA;
 
   return (
-    <PageLayout>
-      <div className="space-y-4">
+    <PageLayout fullWidth>
+      <div className="space-y-4 p-4 lg:p-6">
         {/* Header */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
