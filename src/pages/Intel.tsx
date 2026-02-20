@@ -202,20 +202,6 @@ export default function Intel() {
               <h1 className="text-lg font-bold text-foreground">Market Intelligence</h1>
               <p className="text-muted-foreground">Real-time market analysis</p>
             </div>
-            <div className="flex items-center gap-2 w-full lg:w-auto">
-              <div className="relative flex-1 lg:flex-none lg:w-[240px]">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search city, zip, or MSA..."
-                  className="pl-9 h-9 text-sm"
-                />
-              </div>
-              <Button size="sm" className="bg-emerald-500 hover:bg-emerald-600 text-white">
-                Analyze
-              </Button>
-            </div>
           </div>
         </div>
 
