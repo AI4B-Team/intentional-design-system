@@ -25,39 +25,98 @@ import { RentalIntelView } from "@/components/intel/RentalIntelView";
 import { AIBuyBoxView } from "@/components/intel/AIBuyBoxView";
 import { Flame, Repeat } from "lucide-react";
 
-// ---------- Sample Data (Phase 1 static) ----------
-const MARKET_DATA = {
-  market: "Port Richey, FL",
-  msa: "Tampa-St. Pete-Clearwater",
-  updated: "Feb 16, 2026",
-  summary: {
-    totalSales: 554, cashSales: 422, retailSales: 132,
-    medianPrice: 55112, dom: 83, cashRate: 76.2,
-    inventory: 198, rent: 1210, capRate: 7.4,
-    priceGrowth: 3.2, rentGrowth: 5.1,
-  },
-  scores: { market: 74, cash: 92, flip: 61, rental: 78, wholesale: 94 },
-  zips: [
-    { zip: "34668", name: "Port Richey", ts: 144, cs: 139, rs: 5, mp: 44900, dom: 77, cr: 96.5, score: 98, rent: 1150, cap: 8.2 },
-    { zip: "34655", name: "New Port Richey", ts: 74, cs: 30, rs: 44, mp: 135000, dom: 78, cr: 40.5, score: 82, rent: 1450, cap: 5.8 },
-    { zip: "34652", name: "Port Richey", ts: 73, cs: 55, rs: 18, mp: 45750, dom: 104, cr: 75.3, score: 91, rent: 1100, cap: 7.6 },
-    { zip: "34691", name: "Holiday", ts: 73, cs: 67, rs: 6, mp: 41000, dom: 66, cr: 91.8, score: 95, rent: 1050, cap: 8.8 },
-    { zip: "34667", name: "Hudson", ts: 66, cs: 32, rs: 34, mp: 100000, dom: 99, cr: 48.5, score: 78, rent: 1300, cap: 6.4 },
-    { zip: "34653", name: "New Port Richey", ts: 56, cs: 49, rs: 7, mp: 57500, dom: 57, cr: 87.5, score: 93, rent: 1200, cap: 7.9 },
-    { zip: "34690", name: "Holiday", ts: 41, cs: 38, rs: 3, mp: 49000, dom: 91, cr: 92.7, score: 90, rent: 1100, cap: 8.1 },
-    { zip: "34654", name: "New Port Richey", ts: 27, cs: 12, rs: 15, mp: 105000, dom: 129, cr: 44.4, score: 72, rent: 1350, cap: 5.5 },
-  ],
-  priceRanges: [
-    { range: "Under $50K", cash: 233, retail: 0 },
-    { range: "$50-100K", cash: 147, retail: 42 },
-    { range: "$100-150K", cash: 18, retail: 40 },
-    { range: "$150-200K", cash: 5, retail: 28 },
-    { range: "$200-250K", cash: 2, retail: 14 },
-    { range: "$250-300K", cash: 1, retail: 8 },
-    { range: "$300-350K", cash: 0, retail: 8 },
-    { range: "$350K+", cash: 0, retail: 8 },
-  ],
-};
+// ---------- Seeded random for consistent per-market dummy data ----------
+function seededRandom(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  };
+}
+
+function generateMarketData(marketName: string) {
+  const rand = seededRandom(marketName.toLowerCase());
+  const r = (min: number, max: number) => Math.round(min + rand() * (max - min));
+  const rf = (min: number, max: number, dec = 1) => parseFloat((min + rand() * (max - min)).toFixed(dec));
+
+  const totalSales = r(200, 900);
+  const cashRate = rf(30, 85);
+  const cashSales = Math.round(totalSales * cashRate / 100);
+  const retailSales = totalSales - cashSales;
+  const medianPrice = r(40000, 350000);
+  const dom = r(20, 130);
+  const inventory = r(80, 500);
+  const rent = r(800, 2200);
+  const capRate = rf(4.0, 10.0);
+
+  // MSA lookup (simplified)
+  const msaMap: Record<string, string> = {
+    tampa: "Tampa-St. Pete-Clearwater", miami: "Miami-Fort Lauderdale-Pompano Beach",
+    orlando: "Orlando-Kissimmee-Sanford", jacksonville: "Jacksonville, FL",
+    atlanta: "Atlanta-Sandy Springs-Alpharetta", houston: "Houston-The Woodlands-Sugar Land",
+    dallas: "Dallas-Fort Worth-Arlington", phoenix: "Phoenix-Mesa-Chandler",
+    charlotte: "Charlotte-Concord-Gastonia", austin: "Austin-Round Rock-Georgetown",
+  };
+  const key = marketName.toLowerCase().split(",")[0].trim();
+  const msa = msaMap[key] || `${marketName} Metropolitan Area`;
+
+  // Generate zip codes
+  const baseZip = r(10000, 99000);
+  const neighborhoodNames = ["Downtown", "Midtown", "Westside", "Eastside", "North End", "Southport", "Lakewood", "Riverside"];
+  const zips = neighborhoodNames.map((name, i) => {
+    const ts = r(20, 180);
+    const cr = rf(30, 97);
+    const cs = Math.round(ts * cr / 100);
+    return {
+      zip: String(baseZip + i * r(1, 15)),
+      name,
+      ts, cs, rs: ts - cs,
+      mp: r(35000, 300000),
+      dom: r(15, 140),
+      cr,
+      score: r(55, 99),
+      rent: r(750, 2400),
+      cap: rf(4.0, 10.0),
+    };
+  });
+
+  const priceRanges = [
+    { range: "Under $50K", cash: r(0, 250), retail: r(0, 20) },
+    { range: "$50-100K", cash: r(20, 180), retail: r(10, 60) },
+    { range: "$100-150K", cash: r(10, 80), retail: r(15, 70) },
+    { range: "$150-200K", cash: r(5, 40), retail: r(15, 50) },
+    { range: "$200-250K", cash: r(2, 20), retail: r(10, 40) },
+    { range: "$250-300K", cash: r(0, 10), retail: r(5, 25) },
+    { range: "$300-350K", cash: r(0, 5), retail: r(3, 15) },
+    { range: "$350K+", cash: r(0, 3), retail: r(2, 20) },
+  ];
+
+  return {
+    market: marketName,
+    msa,
+    updated: "Feb 20, 2026",
+    summary: {
+      totalSales, cashSales, retailSales,
+      medianPrice, dom, cashRate,
+      inventory, rent, capRate,
+      priceGrowth: rf(-2, 8), rentGrowth: rf(0, 9),
+    },
+    scores: {
+      market: r(40, 95), cash: r(40, 98), flip: r(30, 90),
+      rental: r(40, 95), wholesale: r(40, 98),
+    },
+    zips,
+    priceRanges,
+  };
+}
+
+// Default fallback data
+const DEFAULT_MARKET = "Port Richey, FL";
 
 // ---------- Gauge Component ----------
 function ScoreGauge({ score, label, icon: Icon, color, large = false }: {
@@ -184,17 +243,19 @@ export default function Intel() {
 
   const [overviewSubTab, setOverviewSubTab] = useState<OverviewSubTab>("summary");
 
-  // Derive display market name from URL param, fallback to static data
+  // Generate market data based on search query
   const displayMarket = addressParam
     ? addressParam.charAt(0).toUpperCase() + addressParam.slice(1)
-    : MARKET_DATA.market;
+    : DEFAULT_MARKET;
+
+  const MARKET_DATA = useMemo(() => generateMarketData(displayMarket), [displayMarket]);
 
   const toggleZip = (zip: string) =>
     setSelectedZips((prev) => prev.includes(zip) ? prev.filter((z) => z !== zip) : [...prev, zip]);
 
   const sortedZips = useMemo(
     () => [...MARKET_DATA.zips].sort((a, b) => (b as any)[sortBy] - (a as any)[sortBy]),
-    [sortBy]
+    [sortBy, MARKET_DATA.zips]
   );
 
   const D = MARKET_DATA;
