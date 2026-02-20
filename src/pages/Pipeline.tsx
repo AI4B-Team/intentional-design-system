@@ -845,70 +845,11 @@ export default function Pipeline() {
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
         className="mb-3"
-        actions={
-            <div className="flex items-center gap-2">
-              <Button variant="secondary" size="sm" icon={<RefreshCw />}>
-                Sync
-              </Button>
-              <GoalSettingsDialog>
-                <Button variant="outline" size="sm" icon={<Target />}>
-                  Goals
-                </Button>
-              </GoalSettingsDialog>
-              <Button variant="primary" size="sm" icon={<Plus />} onClick={() => handleAddDeal("new")}>
-                Add Deal
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9">
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem 
-                    onClick={() => setIsKpiExpanded(!isKpiExpanded)}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <LayoutGrid className="h-4 w-4" />
-                      {isKpiExpanded ? "Hide KPI Cards" : "Show KPI Cards"}
-                    </span>
-                    {isKpiExpanded && <CheckCircle2 className="h-4 w-4 text-success" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowCompactCards(!showCompactCards)}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Columns className="h-4 w-4" />
-                      Compact Cards
-                    </span>
-                    {showCompactCards && <CheckCircle2 className="h-4 w-4 text-success" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => setShowDealCounts(!showDealCounts)}
-                    className="flex items-center justify-between"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Kanban className="h-4 w-4" />
-                      Show Deal Counts
-                    </span>
-                    {showDealCounts && <CheckCircle2 className="h-4 w-4 text-success" />}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="flex items-center gap-2">
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Reset Filters
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-        }
       />
 
-      {/* Search Bar */}
-      <div className="mb-4">
-        <div className="relative max-w-sm">
+      {/* Search Bar + Action Buttons */}
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by address, contact, or city..."
@@ -916,6 +857,47 @@ export default function Pipeline() {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
           />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" icon={<RefreshCw />}>
+            Sync
+          </Button>
+          <GoalSettingsDialog>
+            <Button variant="outline" size="sm" icon={<Target />}>
+              Goals
+            </Button>
+          </GoalSettingsDialog>
+          <Button variant="primary" size="sm" icon={<Plus />} onClick={() => handleAddDeal("new")}>
+            Add Deal
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem 
+                onClick={() => setIsKpiExpanded(!isKpiExpanded)}
+                className="flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <LayoutGrid className="h-4 w-4" />
+                  {isKpiExpanded ? "Hide KPI Cards" : "Show KPI Cards"}
+                </span>
+                {isKpiExpanded && <CheckCircle2 className="h-4 w-4 text-success" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={() => setShowCompactCards(!showCompactCards)}
+                className="flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <Kanban className="h-4 w-4" />
+                  {showCompactCards ? "Detailed Cards" : "Compact Cards"}
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
