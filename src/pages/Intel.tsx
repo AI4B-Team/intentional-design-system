@@ -218,15 +218,12 @@ export default function Intel() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="flex gap-0.5 bg-muted rounded-lg p-0.5">
-              {["1M", "3M", "6M", "1Y"].map((t) => (
-                <button key={t} onClick={() => setTimeRange(t)}
-                  className={cn("px-2 py-1 rounded-md text-[10px] font-semibold transition-colors",
-                    timeRange === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>
-                  {t}
-                </button>
-              ))}
-            </div>
+            {["1M", "3M", "6M", "1Y"].map((t) => (
+              <Button key={t} variant={timeRange === t ? "default" : "secondary"} size="sm"
+                onClick={() => setTimeRange(t)}>
+                {t}
+              </Button>
+            ))}
             <Button variant="secondary" size="sm" icon={<Download className="h-3 w-3" />}>Export</Button>
             <Button variant="secondary" size="sm" icon={<Star className="h-3 w-3" />}>Watchlist</Button>
           </div>
