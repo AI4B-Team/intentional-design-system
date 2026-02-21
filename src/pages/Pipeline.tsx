@@ -842,7 +842,8 @@ export default function Pipeline() {
   };
 
   return (
-    <PageLayout>
+    <PageLayout fullWidth>
+      <div className="px-4 lg:px-6 flex flex-col flex-1">
       <PageHeader
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
@@ -1050,7 +1051,7 @@ export default function Pipeline() {
 
       {/* List View */}
       {viewMode === "list" && (
-        <div className="rounded-lg border border-border-subtle overflow-hidden">
+        <div className="overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="sticky top-0 z-10 bg-surface-secondary shadow-sm">
@@ -1566,6 +1567,7 @@ export default function Pipeline() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </PageLayout>
   );
 }
