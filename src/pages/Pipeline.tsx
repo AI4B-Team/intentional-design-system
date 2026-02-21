@@ -851,7 +851,7 @@ export default function Pipeline() {
 
       {/* Search Bar + Action Buttons */}
       <div className="mb-4 flex items-center justify-between gap-3">
-        <div className="relative max-w-sm flex-1">
+        <div className="relative max-w-xs flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search by address, contact, or city..."
