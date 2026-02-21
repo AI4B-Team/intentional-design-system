@@ -65,7 +65,7 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
       
       {/* Image Indicators - Only show when multiple images */}
       {hasMultipleImages && (
-        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-1 z-10">
           {images.slice(0, 5).map((_, idx) => (
             <div
               key={idx}
