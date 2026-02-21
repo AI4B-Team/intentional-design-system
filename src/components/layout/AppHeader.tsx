@@ -18,6 +18,7 @@ import {
   Hammer,
   CheckSquare,
   Home,
+  Calendar,
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
