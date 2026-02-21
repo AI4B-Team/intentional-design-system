@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Kanban,
+  List,
   Plus,
   Search,
   SlidersHorizontal,
@@ -643,6 +644,7 @@ export default function Pipeline() {
   const [isKpiExpanded, setIsKpiExpanded] = React.useState(true);
   const [showCompactCards, setShowCompactCards] = React.useState(false);
   const [showDealCounts, setShowDealCounts] = React.useState(true);
+  const [viewMode, setViewMode] = React.useState<"kanban" | "list">("kanban");
   const [newDealForm, setNewDealForm] = React.useState({
     address: "",
     city: "",
@@ -859,6 +861,27 @@ export default function Pipeline() {
           />
         </div>
         <div className="flex items-center gap-2">
+          {/* View Toggle */}
+          <div className="inline-flex rounded-lg border border-border-subtle p-1 bg-muted/30">
+            <Button
+              variant={viewMode === "kanban" ? "secondary" : "ghost"}
+              size="sm"
+              className={cn("gap-1.5 px-3", viewMode === "kanban" && "bg-white shadow-sm")}
+              onClick={() => setViewMode("kanban")}
+            >
+              <Kanban className="h-4 w-4" />
+              <span className="hidden sm:inline">Kanban</span>
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "secondary" : "ghost"}
+              size="sm"
+              className={cn("gap-1.5 px-3", viewMode === "list" && "bg-white shadow-sm")}
+              onClick={() => setViewMode("list")}
+            >
+              <List className="h-4 w-4" />
+              <span className="hidden sm:inline">List</span>
+            </Button>
+          </div>
           <Button variant="secondary" size="sm" icon={<RefreshCw />}>
             Sync
           </Button>
@@ -983,46 +1006,163 @@ export default function Pipeline() {
       </div>
 
       {/* Kanban Board */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="flex gap-4 overflow-y-visible overflow-x-auto pb-4">
-          {PIPELINE_STAGES.map(stage => (
-            <StageColumn
-              key={stage.id}
-              stage={stage}
-              deals={dealsByStage[stage.id] || []}
-              allDeals={deals}
-              onViewDeal={handleViewDeal}
-              onMoveDeal={handleMoveDeal}
-              onAddDeal={handleAddDeal}
-              isDropTarget={overStageId === stage.id && activeDragId !== null}
-              activeDragId={activeDragId}
-            />
-          ))}
-        </div>
-        
-        {/* Drag Overlay for smooth dragging */}
-        <DragOverlay dropAnimation={{
-          duration: 200,
-          easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-        }}>
-          {activeDeal ? (
-            <div className="rotate-3 scale-105 opacity-90">
-              <PipelineDealCard
-                deal={activeDeal}
-                stageConfig={PIPELINE_STAGES.find(s => s.id === activeDeal.stage) || PIPELINE_STAGES[0]}
-                onView={() => {}}
-                onMove={() => {}}
+      {viewMode === "kanban" && (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex gap-4 overflow-y-visible overflow-x-auto pb-4">
+            {PIPELINE_STAGES.map(stage => (
+              <StageColumn
+                key={stage.id}
+                stage={stage}
+                deals={dealsByStage[stage.id] || []}
+                allDeals={deals}
+                onViewDeal={handleViewDeal}
+                onMoveDeal={handleMoveDeal}
+                onAddDeal={handleAddDeal}
+                isDropTarget={overStageId === stage.id && activeDragId !== null}
+                activeDragId={activeDragId}
               />
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+            ))}
+          </div>
+          
+          <DragOverlay dropAnimation={{
+            duration: 200,
+            easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+          }}>
+            {activeDeal ? (
+              <div className="rotate-3 scale-105 opacity-90">
+                <PipelineDealCard
+                  deal={activeDeal}
+                  stageConfig={PIPELINE_STAGES.find(s => s.id === activeDeal.stage) || PIPELINE_STAGES[0]}
+                  onView={() => {}}
+                  onMove={() => {}}
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      )}
+
+      {/* List View */}
+      {viewMode === "list" && (
+        <div className="rounded-lg border border-border-subtle overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="sticky top-0 z-10 bg-surface-secondary shadow-sm">
+                <tr>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Property</th>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Stage</th>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Contact</th>
+                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Asking</th>
+                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">ARV</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Score</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Equity</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Days</th>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Source</th>
+                  <th className="w-12 px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDeals.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="px-4 py-12 text-center text-muted-foreground">
+                      No deals found matching your filters.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredDeals.map((deal, index) => {
+                    const stageConfig = PIPELINE_STAGES.find(s => s.id === deal.stage);
+                    return (
+                      <tr
+                        key={deal.id}
+                        onClick={() => handleViewDeal(deal)}
+                        className={cn(
+                          "h-14 cursor-pointer transition-colors group",
+                          index % 2 === 0 ? "bg-white" : "bg-surface-secondary/50",
+                          "hover:bg-brand-accent/5"
+                        )}
+                      >
+                        <td className="px-4">
+                          <div>
+                            <div className="text-body font-medium text-content group-hover:text-brand-accent transition-colors">
+                              {deal.address}
+                            </div>
+                            <div className="flex items-center gap-1 text-small text-content-secondary">
+                              <MapPin className="h-3 w-3" />
+                              {deal.city}, {deal.state}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4">
+                          <Badge className={cn("text-white text-[10px]", stageConfig?.color)}>
+                            {stageConfig?.label}
+                          </Badge>
+                        </td>
+                        <td className="px-4">
+                          <div className="text-body">{deal.contact_name}</div>
+                          <div className="text-tiny text-content-secondary">{deal.contact_type}</div>
+                        </td>
+                        <td className="px-4 text-right text-body tabular-nums font-medium">
+                          ${deal.asking_price.toLocaleString()}
+                        </td>
+                        <td className="px-4 text-right text-body tabular-nums font-medium">
+                          ${deal.arv.toLocaleString()}
+                        </td>
+                        <td className="px-4 text-center">
+                          <span className={cn(
+                            "inline-flex items-center px-2 py-0.5 rounded-full text-small font-medium",
+                            deal.lead_score >= 80 ? "bg-success/10 text-success" :
+                            deal.lead_score >= 60 ? "bg-warning/10 text-warning" :
+                            "bg-destructive/10 text-destructive"
+                          )}>
+                            {deal.lead_score}
+                          </span>
+                        </td>
+                        <td className="px-4 text-center">
+                          <span className={cn(
+                            "text-body font-medium",
+                            deal.equity_percentage >= 25 ? "text-success" :
+                            deal.equity_percentage >= 15 ? "text-warning" :
+                            "text-destructive"
+                          )}>
+                            {deal.equity_percentage}%
+                          </span>
+                        </td>
+                        <td className="px-4 text-center text-body tabular-nums">
+                          {deal.days_in_stage}d
+                        </td>
+                        <td className="px-4 text-small text-content-secondary">
+                          {deal.source}
+                        </td>
+                        <td className="px-4">
+                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/properties/${deal.id}`);
+                              }}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Deal Detail Modal */}
       <Dialog open={!!selectedDeal} onOpenChange={(open) => !open && setSelectedDeal(null)}>
