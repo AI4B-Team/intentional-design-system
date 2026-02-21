@@ -21,6 +21,7 @@ const leadTypeColors: Record<string, string> = {
   "Vacant": "bg-purple-500/10 text-purple-700 border-purple-200",
   "Expired Listings": "bg-slate-500/10 text-slate-700 border-slate-200",
   "Auctions": "bg-cyan-500/10 text-cyan-700 border-cyan-200",
+  "Buyers": "bg-teal-500/10 text-teal-700 border-teal-200",
   "Probate": "bg-blue-500/10 text-blue-700 border-blue-200",
   "Divorce": "bg-pink-500/10 text-pink-700 border-pink-200",
   "Foreclosure": "bg-red-500/10 text-red-700 border-red-200",
