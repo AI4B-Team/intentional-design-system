@@ -112,6 +112,7 @@ export default function MarketplaceDeals() {
       { label: "Vacant", count: 312 },
       { label: "Expired Listings", count: 89 },
       { label: "Auctions", count: 42 },
+      { label: "Buyers", count: 196 },
       { label: "High Equity", count: 528 },
       { label: "Probate", count: 67 },
       { label: "Divorce", count: 51 },
