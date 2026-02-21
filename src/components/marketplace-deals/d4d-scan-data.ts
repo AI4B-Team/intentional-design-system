@@ -35,6 +35,27 @@ export interface D4DProperty {
   lastSaleDate: string;
   propertyType: string;
   thumbnailUrl: string;
+  // NEW: Street view & enhanced data
+  streetViewUrl: string;
+  ownerName: string;
+  ownerType: "individual" | "corporate" | "trust" | "estate";
+  mailingAddress: string;
+  mailStatus: "deliverable" | "vacant" | "returned" | "unknown";
+  phoneAvailable: boolean;
+  emailAvailable: boolean;
+  estimatedRehab: number;
+  neighborhoodRating: number; // 1-10
+  neighborhoodName: string;
+  daysVacant: number | null;
+  lastInspection: string | null;
+  waterShutoff: boolean;
+  permitActivity: boolean;
+  lotSqft: number;
+  zoning: string;
+  floodZone: boolean;
+  hoaFee: number | null;
+  arvEstimate: number;
+  wholesaleSpread: number;
 }
 
 // Seeded random for consistency
@@ -80,6 +101,25 @@ const THUMBNAIL_URLS = [
   "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=300&h=200&fit=crop",
 ];
 
+// Distressed house images for street view simulation
+const STREET_VIEW_URLS = [
+  "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1605146769289-440113cc3d00?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1494526585095-c41746248156?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1598228723793-52759bba239c?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=640&h=400&fit=crop",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=640&h=400&fit=crop",
+];
+
+const FIRST_NAMES = ["James", "Mary", "Robert", "Patricia", "John", "Jennifer", "Michael", "Linda", "David", "Elizabeth", "William", "Barbara", "Richard", "Susan", "Thomas", "Dorothy", "Charles", "Margaret", "Carlos", "Maria"];
+const LAST_NAMES = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "White", "Harris"];
+const NEIGHBORHOODS = ["Seminole Heights", "West Tampa", "College Park", "Riverside", "Avondale", "Old Northeast", "Shore Acres", "Historic Kenwood", "Palma Ceia", "Davis Islands", "Ybor City", "Oakwood", "Pine Hills", "Parramore", "Callahan"];
+const OWNER_TYPES: ("individual" | "corporate" | "trust" | "estate")[] = ["individual", "individual", "individual", "corporate", "trust", "estate"];
+const MAIL_STATUSES: ("deliverable" | "vacant" | "returned" | "unknown")[] = ["deliverable", "deliverable", "vacant", "returned", "unknown"];
+const ZONINGS = ["R-1", "R-2", "R-3", "RM-1", "PD", "C-1"];
+
 export function generateD4DProperties(
   centerLat: number,
   centerLng: number,
@@ -90,7 +130,6 @@ export function generateD4DProperties(
   const properties: D4DProperty[] = [];
 
   for (let i = 0; i < count; i++) {
-    // Spread properties around the center within ~30 miles
     const latOffset = (rand() - 0.5) * 0.8;
     const lngOffset = (rand() - 0.5) * 0.8;
     const lat = centerLat + latOffset;
@@ -142,6 +181,23 @@ export function generateD4DProperties(
     const estimatedValue = 80000 + Math.floor(rand() * 350000);
     const lastSalePrice = Math.floor(estimatedValue * (0.4 + rand() * 0.4));
     const lastSaleYear = 2005 + Math.floor(rand() * 15);
+    const lotSqft = sqft + Math.floor(rand() * 8000) + 2000;
+
+    // Enhanced data
+    const firstName = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
+    const lastName = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
+    const ownerType = OWNER_TYPES[Math.floor(rand() * OWNER_TYPES.length)];
+    const ownerName = ownerType === "corporate"
+      ? `${lastName} Properties LLC`
+      : ownerType === "trust"
+        ? `${lastName} Family Trust`
+        : ownerType === "estate"
+          ? `Estate of ${firstName} ${lastName}`
+          : `${firstName} ${lastName}`;
+
+    const estimatedRehab = 5000 + Math.floor(rand() * 80000);
+    const arvEstimate = estimatedValue + estimatedRehab + Math.floor(rand() * 40000);
+    const wholesaleSpread = Math.max(5000, arvEstimate * 0.7 - estimatedValue);
 
     properties.push({
       id: `d4d-${seed}-${i}`,
@@ -174,6 +230,27 @@ export function generateD4DProperties(
       lastSaleDate: `${lastSaleYear}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-15`,
       propertyType: PROPERTY_TYPES[Math.floor(rand() * PROPERTY_TYPES.length)],
       thumbnailUrl: THUMBNAIL_URLS[Math.floor(rand() * THUMBNAIL_URLS.length)],
+      // New fields
+      streetViewUrl: STREET_VIEW_URLS[Math.floor(rand() * STREET_VIEW_URLS.length)],
+      ownerName,
+      ownerType,
+      mailingAddress: `${100 + Math.floor(rand() * 9000)} ${STREET_NAMES[Math.floor(rand() * STREET_NAMES.length)]} ${STREET_TYPES[Math.floor(rand() * STREET_TYPES.length)]}, ${cityInfo.city}, FL`,
+      mailStatus: MAIL_STATUSES[Math.floor(rand() * MAIL_STATUSES.length)],
+      phoneAvailable: rand() < 0.65,
+      emailAvailable: rand() < 0.4,
+      estimatedRehab,
+      neighborhoodRating: Math.floor(rand() * 7) + 2,
+      neighborhoodName: NEIGHBORHOODS[Math.floor(rand() * NEIGHBORHOODS.length)],
+      daysVacant: vacant ? Math.floor(rand() * 365) + 30 : null,
+      lastInspection: rand() < 0.3 ? `${2023 + Math.floor(rand() * 3)}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rand() * 28) + 1).padStart(2, "0")}` : null,
+      waterShutoff: vacant && rand() < 0.4,
+      permitActivity: rand() < 0.15,
+      lotSqft,
+      zoning: ZONINGS[Math.floor(rand() * ZONINGS.length)],
+      floodZone: rand() < 0.12,
+      hoaFee: rand() < 0.25 ? Math.floor(rand() * 300) + 50 : null,
+      arvEstimate,
+      wholesaleSpread,
     });
   }
 
@@ -195,3 +272,18 @@ export function getDistressLabel(score: number): string {
   if (score >= 25) return "Mild";
   return "Low";
 }
+
+export interface ScanPhase {
+  label: string;
+  icon: string;
+  duration: number; // ms
+}
+
+export const SCAN_PHASES: ScanPhase[] = [
+  { label: "Analyzing satellite imagery...", icon: "🛰️", duration: 1200 },
+  { label: "Scanning property records...", icon: "📋", duration: 1000 },
+  { label: "Cross-referencing financial data...", icon: "💰", duration: 800 },
+  { label: "AI scoring distress signals...", icon: "🤖", duration: 1000 },
+  { label: "Generating street view analysis...", icon: "📸", duration: 800 },
+  { label: "Compiling results...", icon: "✅", duration: 600 },
+];
