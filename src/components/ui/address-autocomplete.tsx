@@ -307,8 +307,8 @@ export function AddressAutocomplete({
             autoComplete="off"
           />
         )}
-        {/* Mode badge - only show for city/ZIP input (not full addresses starting with a number) */}
-        {showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim()) && (
+        {/* Mode badge - show when typing 2+ chars OR when activeChip is present (not for full addresses) */}
+        {showModeBadge && onModeSwitch && ((value.trim().length >= 2 && !/^\d+\s/.test(value.trim())) || activeChip) && (
           <button
             type="button"
             onClick={() => onModeSwitch(defaultMode === "intel" ? "listings" : "intel")}
