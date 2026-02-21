@@ -135,7 +135,7 @@ export function generateD4DProperties(
     const lat = centerLat + latOffset;
     const lng = centerLng + lngOffset;
 
-    const cityInfo = CITIES_FL[Math.floor(rand() * CITIES_FL.length)];
+    const cityInfo = CITIES_FL[Math.floor(rand() * CITIES_FL.length) % CITIES_FL.length];
     const streetNum = 100 + Math.floor(rand() * 9900);
     const streetName = STREET_NAMES[Math.floor(rand() * STREET_NAMES.length)];
     const streetType = STREET_TYPES[Math.floor(rand() * STREET_TYPES.length)];
