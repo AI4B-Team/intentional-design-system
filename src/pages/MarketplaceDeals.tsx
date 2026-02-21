@@ -69,6 +69,18 @@ export default function MarketplaceDeals() {
     exactMatch: false,
   }));
 
+  // Sync URL params to filters when they change (e.g. user searches from header)
+  useEffect(() => {
+    const newAddress = zipsFromIntel ? zipsFromIntel.split(",").join(", ") : (addressFromSearch || "");
+    if (newAddress && newAddress !== filters.address) {
+      setFilters(prev => ({ ...prev, address: newAddress }));
+      setCurrentPage(1);
+    }
+    if (leadTypeFromIntel && leadTypeFromIntel !== filters.leadType) {
+      setFilters(prev => ({ ...prev, leadType: leadTypeFromIntel }));
+    }
+  }, [zipsFromIntel, addressFromSearch, leadTypeFromIntel]);
+
   // Advanced filters state
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(defaultFilters);
 
