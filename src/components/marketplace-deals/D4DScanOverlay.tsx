@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { SCAN_PHASES } from "./d4d-scan-data";
 import { cn } from "@/lib/utils";
-import { Pause, Play, Square, Satellite, FileSearch, Landmark, Brain, Camera, CheckCircle2, Check, X } from "lucide-react";
+import { Pause, Play, Square, Satellite, FileSearch, Landmark, Brain, Camera, CheckCircle2, Check, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface D4DScanOverlayProps {
@@ -14,6 +14,7 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
   const [progress, setProgress] = useState(0);
   const [propertiesFound, setPropertiesFound] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
   const isPausedRef = useRef(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseIdxRef = useRef(0);
@@ -43,7 +44,7 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
     if (!isRunningRef.current) return;
     const phaseIdx = phaseIdxRef.current;
     if (phaseIdx >= SCAN_PHASES.length) {
-      onComplete();
+      setIsComplete(true);
       return;
     }
     setCurrentPhase(phaseIdx);
@@ -125,8 +126,8 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
         </div>
 
         <div className="text-center">
-          <h3 className="font-bold text-sm">AI D4D Scanner {isPaused ? "Paused" : "Active"}</h3>
-          <p className="text-xs text-muted-foreground mt-1">{isPaused ? "Scan paused" : phase.label}</p>
+          <h3 className="font-bold text-sm">AI D4D Scanner {isComplete ? "Complete" : isPaused ? "Paused" : "Active"}</h3>
+          <p className="text-xs text-muted-foreground mt-1">{isComplete ? `Found ${propertiesFound.toLocaleString()} properties` : isPaused ? "Scan paused" : phase.label}</p>
         </div>
 
         {/* Progress bar */}
@@ -143,9 +144,13 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
           </div>
         </div>
 
-        {/* Pause / Resume / Stop controls */}
+        {/* Controls */}
         <div className="flex items-center justify-center gap-2">
-          {isPaused ? (
+          {isComplete ? (
+            <Button size="sm" className="gap-1.5 bg-success hover:bg-success/90 text-success-foreground" onClick={onComplete}>
+              <Eye className="h-3.5 w-3.5" /> View Results
+            </Button>
+          ) : isPaused ? (
             <Button size="sm" variant="outline" className="gap-1.5" onClick={handleResume}>
               <Play className="h-3.5 w-3.5" /> Resume
             </Button>
@@ -154,9 +159,11 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
               <Pause className="h-3.5 w-3.5" /> Pause
             </Button>
           )}
-          <Button size="sm" variant="destructive" className="gap-1.5" onClick={handleStop}>
-            <Square className="h-3.5 w-3.5" /> Stop
-          </Button>
+          {!isComplete && (
+            <Button size="sm" variant="destructive" className="gap-1.5" onClick={handleStop}>
+              <Square className="h-3.5 w-3.5" /> Stop
+            </Button>
+          )}
         </div>
 
         {/* Phase indicators */}
