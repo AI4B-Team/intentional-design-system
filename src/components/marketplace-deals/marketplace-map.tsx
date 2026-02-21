@@ -803,7 +803,10 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
       {/* D4D Scan Overlay */}
       {scanLoading && (
-        <D4DScanOverlay onComplete={handleScanComplete} />
+        <D4DScanOverlay
+          onComplete={handleScanComplete}
+          onStop={() => setScanLoading(false)}
+        />
       )}
 
 
