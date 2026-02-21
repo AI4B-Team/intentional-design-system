@@ -49,7 +49,9 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   React.useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("address") || params.get("search") || "";
-    if (q && q !== searchQuery) {
+    // Only sync from URL if not on marketplace/intel (where search is a filter, not the header field)
+    const isFilterPage = location.pathname.startsWith("/marketplace") || location.pathname.startsWith("/intel");
+    if (q && q !== searchQuery && !isFilterPage) {
       setSearchQuery(q);
     }
   }, [location.search]);
