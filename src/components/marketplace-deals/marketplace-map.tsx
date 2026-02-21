@@ -13,6 +13,7 @@ import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
 import { generateD4DProperties, getDistressColor, type D4DProperty } from "./d4d-scan-data";
 import { D4DScanPanel } from "./D4DScanPanel";
+import { D4DScanOverlay } from "./D4DScanOverlay";
 
 interface AnalysisResult {
   propertyCount: number;
@@ -339,16 +340,17 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
       return;
     }
     setScanLoading(true);
-    setTimeout(() => {
-      const center = mapInstanceRef.current?.map?.getCenter?.();
-      const lat = center?.lat ?? 27.9944;
-      const lng = center?.lng ?? -81.7603;
-      const properties = generateD4DProperties(lat, lng, 800);
-      setScanProperties(properties);
-      setScanActive(true);
-      setScanLoading(false);
-    }, 1500);
   }, [scanActive]);
+
+  const handleScanComplete = useCallback(() => {
+    const center = mapInstanceRef.current?.map?.getCenter?.();
+    const lat = center?.lat ?? 27.9944;
+    const lng = center?.lng ?? -81.7603;
+    const properties = generateD4DProperties(lat, lng, 800);
+    setScanProperties(properties);
+    setScanActive(true);
+    setScanLoading(false);
+  }, []);
 
   // Render scan markers on map
   useEffect(() => {
@@ -360,33 +362,54 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
     scanProperties.forEach(prop => {
       const color = getDistressColor(prop.distressScore);
-      const size = prop.distressScore >= 70 ? 14 : prop.distressScore >= 45 ? 11 : 8;
+      const isHigh = prop.distressScore >= 70;
+      const size = isHigh ? 16 : prop.distressScore >= 45 ? 12 : 8;
+      const pulseClass = isHigh ? "d4d-pulse" : "";
       const icon = L.divIcon({
         className: "d4d-marker",
-        html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);opacity:${prop.distressScore >= 45 ? 0.9 : 0.6};"></div>`,
+        html: `<div class="${pulseClass}" style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.35);opacity:${prop.distressScore >= 45 ? 0.95 : 0.6};"></div>`,
         iconSize: [size, size],
         iconAnchor: [size / 2, size / 2],
       });
       const marker = L.marker([prop.lat, prop.lng], { icon }).addTo(map);
       marker.bindPopup(`
-        <div style="min-width:200px;padding:4px;">
-          <div style="font-weight:700;font-size:13px;margin-bottom:2px;">${prop.address}</div>
-          <div style="font-size:12px;opacity:0.7;margin-bottom:6px;">${prop.city}, ${prop.state} ${prop.zip}</div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-            <span style="font-size:20px;font-weight:800;color:${color};">${prop.distressScore}</span>
-            <span style="font-size:11px;color:#666;">Distress Score</span>
-          </div>
-          <div style="font-size:12px;margin-bottom:2px;"><strong>$${prop.estimatedValue.toLocaleString()}</strong> est. value</div>
-          <div style="font-size:11px;opacity:0.7;">${prop.beds}bd / ${prop.baths}ba • ${prop.sqft.toLocaleString()} sqft • Built ${prop.yearBuilt}</div>
-          <div style="font-size:11px;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">
-            ${prop.vacant ? '<span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;">Vacant</span>' : ''}
-            ${prop.preForeclosure ? '<span style="background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:4px;">Pre-FC</span>' : ''}
-            ${prop.taxLien ? '<span style="background:#ffedd5;color:#9a3412;padding:1px 6px;border-radius:4px;">Tax Lien</span>' : ''}
-            ${prop.probate ? '<span style="background:#ede9fe;color:#5b21b6;padding:1px 6px;border-radius:4px;">Probate</span>' : ''}
-            ${prop.highEquity ? '<span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:4px;">' + prop.estimatedEquityPct + '% Equity</span>' : ''}
+        <div style="min-width:240px;padding:0;">
+          <img src="${prop.streetViewUrl}" alt="" style="width:100%;height:120px;object-fit:cover;border-radius:8px 8px 0 0;" />
+          <div style="padding:8px;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:${color}22;color:${color};font-weight:800;font-size:13px;">${prop.distressScore}</span>
+              <div>
+                <div style="font-weight:700;font-size:13px;">${prop.address}</div>
+                <div style="font-size:11px;opacity:0.6;">${prop.city}, ${prop.state} ${prop.zip}</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin:6px 0;">
+              <div style="text-align:center;background:#f3f4f6;border-radius:6px;padding:4px;">
+                <div style="font-size:10px;opacity:0.6;">Value</div>
+                <div style="font-weight:700;font-size:12px;">$${(prop.estimatedValue / 1000).toFixed(0)}K</div>
+              </div>
+              <div style="text-align:center;background:#f3f4f6;border-radius:6px;padding:4px;">
+                <div style="font-size:10px;opacity:0.6;">ARV</div>
+                <div style="font-weight:700;font-size:12px;">$${(prop.arvEstimate / 1000).toFixed(0)}K</div>
+              </div>
+              <div style="text-align:center;background:#ecfdf5;border-radius:6px;padding:4px;">
+                <div style="font-size:10px;color:#047857;">Spread</div>
+                <div style="font-weight:700;font-size:12px;color:#065f46;">$${(prop.wholesaleSpread / 1000).toFixed(0)}K</div>
+              </div>
+            </div>
+            <div style="font-size:11px;opacity:0.7;">${prop.beds}bd / ${prop.baths}ba • ${prop.sqft.toLocaleString()} sqft</div>
+            <div style="font-size:11px;margin-top:2px;opacity:0.7;">👤 ${prop.ownerName}</div>
+            <div style="font-size:11px;margin-top:4px;display:flex;flex-wrap:wrap;gap:3px;">
+              ${prop.vacant ? '<span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;font-size:10px;">Vacant</span>' : ''}
+              ${prop.preForeclosure ? '<span style="background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:4px;font-size:10px;">Pre-FC</span>' : ''}
+              ${prop.taxLien ? '<span style="background:#ffedd5;color:#9a3412;padding:1px 6px;border-radius:4px;font-size:10px;">Tax Lien</span>' : ''}
+              ${prop.probate ? '<span style="background:#ede9fe;color:#5b21b6;padding:1px 6px;border-radius:4px;font-size:10px;">Probate</span>' : ''}
+              ${prop.highEquity ? '<span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:4px;font-size:10px;">' + prop.estimatedEquityPct + '% Equity</span>' : ''}
+              ${prop.phoneAvailable ? '<span style="background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;font-size:10px;">📞 Phone</span>' : ''}
+            </div>
           </div>
         </div>
-      `);
+      `, { maxWidth: 280 });
       scanMarkersRef.current.push(marker);
     });
   }, [scanActive, scanProperties, isReady]);
@@ -778,6 +801,11 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </div>
       )}
 
+      {/* D4D Scan Overlay */}
+      {scanLoading && (
+        <D4DScanOverlay onComplete={handleScanComplete} />
+      )}
+
 
       {/* Custom CSS for price markers and zoom controls */}
       <style>{`
@@ -844,9 +872,17 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         .leaflet-popup-content-wrapper {
           border-radius: 12px;
           padding: 0;
+          overflow: hidden;
         }
         .leaflet-popup-content {
           margin: 0;
+        }
+        .d4d-pulse {
+          animation: d4d-pulse-anim 2s ease-in-out infinite;
+        }
+        @keyframes d4d-pulse-anim {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+          50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
         }
       `}</style>
     </div>
