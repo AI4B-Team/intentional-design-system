@@ -738,6 +738,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 step={5000}
                 onValueChange={(value) => setPriceRange(value as [number, number])}
                 className="w-full"
+                inverted
               />
             </div>
             
@@ -759,6 +760,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 step={100}
                 onValueChange={(value) => setSqftRange(value as [number, number])}
                 className="w-full"
+                inverted
               />
             </div>
             
@@ -780,6 +782,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
                 step={5}
                 onValueChange={(value) => setPricePerSqftRange(value as [number, number])}
                 className="w-full"
+                inverted
               />
             </div>
           </div>
