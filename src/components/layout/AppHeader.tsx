@@ -41,10 +41,9 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  // Sync search query from URL params (but not on filter pages where chips handle it)
+  // Sync search query from URL params
   const searchParams = new URLSearchParams(location.search);
-  const isFilterPageInit = location.pathname.startsWith("/marketplace") || location.pathname.startsWith("/intel");
-  const urlQuery = isFilterPageInit ? "" : (searchParams.get("address") || searchParams.get("search") || "");
+  const urlQuery = searchParams.get("address") || searchParams.get("search") || "";
   const [searchQuery, setSearchQuery] = React.useState(urlQuery);
 
   React.useEffect(() => {
@@ -62,18 +61,6 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   // Show marketplace-specific buttons only on /marketplace routes
   const isMarketplacePage = location.pathname.startsWith("/marketplace");
   const isIntelPage = location.pathname.startsWith("/intel");
-  const isFilterPage = isMarketplacePage || isIntelPage;
-
-  // Active address chip from URL (only on filter pages)
-  const activeAddress = isFilterPage ? (searchParams.get("address") || searchParams.get("search") || "") : "";
-
-  const handleClearChip = () => {
-    // Remove address from URL
-    const params = new URLSearchParams(location.search);
-    params.delete("address");
-    params.delete("search");
-    navigate(`${location.pathname}${params.toString() ? `?${params.toString()}` : ""}`);
-  };
 
   // On intel page, show "Listings" badge; everywhere else show "Intel" badge
   const defaultSearchMode = isIntelPage ? "intel" : "listings" as const;
@@ -134,8 +121,6 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         showModeBadge
         defaultMode={defaultSearchMode}
         onModeSwitch={handleModeSwitch}
-        activeChip={activeAddress || undefined}
-        onClearChip={activeAddress ? handleClearChip : undefined}
       />
 
       {/* Breadcrumbs (only if provided and has multiple items) */}
