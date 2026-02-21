@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { SCAN_PHASES } from "./d4d-scan-data";
 import { cn } from "@/lib/utils";
-import { Pause, Play, Square, Satellite, FileSearch, Landmark, Brain, Camera, CheckCircle2, Check } from "lucide-react";
+import { Pause, Play, Square, Satellite, FileSearch, Landmark, Brain, Camera, CheckCircle2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface D4DScanOverlayProps {
@@ -98,7 +98,14 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
 
   return (
     <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-card border rounded-2xl shadow-2xl p-6 w-[360px] space-y-4">
+      <div className="bg-card border rounded-2xl shadow-2xl p-6 w-[360px] space-y-4 relative">
+        {/* Close button */}
+        <button
+          onClick={handleStop}
+          className="absolute top-3 right-3 h-6 w-6 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
         {/* Radar animation */}
         <div className="flex justify-center">
           <div className="relative w-20 h-20">
