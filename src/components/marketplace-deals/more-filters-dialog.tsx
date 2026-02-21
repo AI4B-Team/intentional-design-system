@@ -222,12 +222,12 @@ export function MoreFiltersDialog({
     "Steel Frame",
     "Adobe",
     "Log",
-    "Manufactured/Mobile",
+    "Manufactured",
     "Modular",
     "SIP Panels",
     "ICF",
     "Timber Frame",
-    "Post and Beam",
+    "Post & Beam",
     "Mixed/Other",
   ];
 
