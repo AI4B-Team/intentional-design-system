@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { SCAN_PHASES } from "./d4d-scan-data";
 import { cn } from "@/lib/utils";
-import { Pause, Play, Square } from "lucide-react";
+import { Pause, Play, Square, Satellite, FileSearch, Landmark, Brain, Camera, CheckCircle2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface D4DScanOverlayProps {
@@ -85,6 +85,17 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
 
   const phase = SCAN_PHASES[currentPhase] || SCAN_PHASES[SCAN_PHASES.length - 1];
 
+  const PHASE_ICONS: Record<string, React.ElementType> = {
+    satellite: Satellite,
+    "file-search": FileSearch,
+    landmark: Landmark,
+    brain: Brain,
+    camera: Camera,
+    "check-circle": CheckCircle2,
+  };
+
+  const PhaseIcon = PHASE_ICONS[phase.icon] || CheckCircle2;
+
   return (
     <div className="absolute inset-0 z-20 bg-background/80 backdrop-blur-sm flex items-center justify-center">
       <div className="bg-card border rounded-2xl shadow-2xl p-6 w-[360px] space-y-4">
@@ -100,8 +111,8 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
                 isPaused ? "" : "animate-spin"
               )} style={{ animationDuration: "2s" }} />
             </div>
-            <div className="absolute inset-0 flex items-center justify-center text-2xl">
-              {phase.icon}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <PhaseIcon className="h-5 w-5 text-destructive" />
             </div>
           </div>
         </div>
@@ -143,24 +154,27 @@ export function D4DScanOverlay({ onComplete, onStop }: D4DScanOverlayProps) {
 
         {/* Phase indicators */}
         <div className="grid grid-cols-6 gap-1">
-          {SCAN_PHASES.map((p, idx) => (
-            <div key={idx} className="flex flex-col items-center gap-1">
-              <div
-                className={cn(
-                  "w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all",
-                  idx < currentPhase
-                    ? "bg-green-100 text-green-700"
-                    : idx === currentPhase
-                      ? isPaused
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-destructive/10 text-destructive animate-pulse"
-                      : "bg-muted text-muted-foreground"
-                )}
-              >
-                {idx < currentPhase ? "✓" : p.icon}
+          {SCAN_PHASES.map((p, idx) => {
+            const Icon = PHASE_ICONS[p.icon] || CheckCircle2;
+            return (
+              <div key={idx} className="flex flex-col items-center gap-1">
+                <div
+                  className={cn(
+                    "w-6 h-6 rounded-full flex items-center justify-center transition-all",
+                    idx < currentPhase
+                      ? "bg-success/15 text-success"
+                      : idx === currentPhase
+                        ? isPaused
+                          ? "bg-warning/15 text-warning"
+                          : "bg-destructive/10 text-destructive animate-pulse"
+                        : "bg-muted text-muted-foreground"
+                  )}
+                >
+                  {idx < currentPhase ? <Check className="h-3 w-3" /> : <Icon className="h-3 w-3" />}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
