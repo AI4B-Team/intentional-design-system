@@ -67,6 +67,12 @@ function seededRandom(seed: number) {
   };
 }
 
+// Safe array pick to prevent out-of-bounds
+function pick<T>(arr: T[], rand: () => number): T {
+  const idx = Math.min(Math.floor(rand() * arr.length), arr.length - 1);
+  return arr[idx];
+}
+
 const STREET_NAMES = [
   "Oak", "Pine", "Maple", "Cedar", "Elm", "Birch", "Walnut", "Cherry", "Magnolia", "Cypress",
   "Pecan", "Willow", "Hickory", "Palm", "Laurel", "Poplar", "Dogwood", "Holly", "Ash", "Spruce",
@@ -135,10 +141,10 @@ export function generateD4DProperties(
     const lat = centerLat + latOffset;
     const lng = centerLng + lngOffset;
 
-    const cityInfo = CITIES_FL[Math.floor(rand() * CITIES_FL.length) % CITIES_FL.length];
+    const cityInfo = pick(CITIES_FL, rand);
     const streetNum = 100 + Math.floor(rand() * 9900);
-    const streetName = STREET_NAMES[Math.floor(rand() * STREET_NAMES.length)];
-    const streetType = STREET_TYPES[Math.floor(rand() * STREET_TYPES.length)];
+    const streetName = pick(STREET_NAMES, rand);
+    const streetType = pick(STREET_TYPES, rand);
 
     // Physical distress signals
     const overgrown = rand() < 0.45;
@@ -184,9 +190,9 @@ export function generateD4DProperties(
     const lotSqft = sqft + Math.floor(rand() * 8000) + 2000;
 
     // Enhanced data
-    const firstName = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
-    const lastName = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
-    const ownerType = OWNER_TYPES[Math.floor(rand() * OWNER_TYPES.length)];
+    const firstName = pick(FIRST_NAMES, rand);
+    const lastName = pick(LAST_NAMES, rand);
+    const ownerType = pick(OWNER_TYPES, rand);
     const ownerName = ownerType === "corporate"
       ? `${lastName} Properties LLC`
       : ownerType === "trust"
@@ -228,25 +234,25 @@ export function generateD4DProperties(
       estimatedValue,
       lastSalePrice,
       lastSaleDate: `${lastSaleYear}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-15`,
-      propertyType: PROPERTY_TYPES[Math.floor(rand() * PROPERTY_TYPES.length)],
-      thumbnailUrl: THUMBNAIL_URLS[Math.floor(rand() * THUMBNAIL_URLS.length)],
+      propertyType: pick(PROPERTY_TYPES, rand),
+      thumbnailUrl: pick(THUMBNAIL_URLS, rand),
       // New fields
-      streetViewUrl: STREET_VIEW_URLS[Math.floor(rand() * STREET_VIEW_URLS.length)],
+      streetViewUrl: pick(STREET_VIEW_URLS, rand),
       ownerName,
       ownerType,
-      mailingAddress: `${100 + Math.floor(rand() * 9000)} ${STREET_NAMES[Math.floor(rand() * STREET_NAMES.length)]} ${STREET_TYPES[Math.floor(rand() * STREET_TYPES.length)]}, ${cityInfo.city}, FL`,
-      mailStatus: MAIL_STATUSES[Math.floor(rand() * MAIL_STATUSES.length)],
+      mailingAddress: `${100 + Math.floor(rand() * 9000)} ${pick(STREET_NAMES, rand)} ${pick(STREET_TYPES, rand)}, ${cityInfo.city}, FL`,
+      mailStatus: pick(MAIL_STATUSES, rand),
       phoneAvailable: rand() < 0.65,
       emailAvailable: rand() < 0.4,
       estimatedRehab,
       neighborhoodRating: Math.floor(rand() * 7) + 2,
-      neighborhoodName: NEIGHBORHOODS[Math.floor(rand() * NEIGHBORHOODS.length)],
+      neighborhoodName: pick(NEIGHBORHOODS, rand),
       daysVacant: vacant ? Math.floor(rand() * 365) + 30 : null,
       lastInspection: rand() < 0.3 ? `${2023 + Math.floor(rand() * 3)}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rand() * 28) + 1).padStart(2, "0")}` : null,
       waterShutoff: vacant && rand() < 0.4,
       permitActivity: rand() < 0.15,
       lotSqft,
-      zoning: ZONINGS[Math.floor(rand() * ZONINGS.length)],
+      zoning: pick(ZONINGS, rand),
       floodZone: rand() < 0.12,
       hoaFee: rand() < 0.25 ? Math.floor(rand() * 300) + 50 : null,
       arvEstimate,
