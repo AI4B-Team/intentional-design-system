@@ -454,30 +454,12 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  viewMode === "list" && layoutMode === "split" ? "bg-primary text-white" : "bg-background"
+                  layoutMode === "map" ? "bg-primary text-white" : "bg-background"
                 )}
-                onClick={() => {
-                  onViewModeChange("list");
-                  onLayoutModeChange("split");
-                }}
-                title="List view with map"
+                onClick={() => onLayoutModeChange("map")}
+                title="Map view"
               >
-                <List className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className={cn(
-                  "h-10 w-10 rounded-none border-0",
-                  viewMode === "grid" && layoutMode === "cards" ? "bg-primary text-white" : "bg-background"
-                )}
-                onClick={() => {
-                  onViewModeChange("grid");
-                  onLayoutModeChange("cards");
-                }}
-                title="Grid view (full width)"
-              >
-                <LayoutGrid className="h-4 w-4" />
+                <Map className="h-4 w-4" />
               </Button>
               <Button
                 variant="ghost"
@@ -499,12 +481,30 @@ export function MarketplaceFilters({
                 size="icon"
                 className={cn(
                   "h-10 w-10 rounded-none border-0",
-                  layoutMode === "map" ? "bg-primary text-white" : "bg-background"
+                  viewMode === "grid" && layoutMode === "cards" ? "bg-primary text-white" : "bg-background"
                 )}
-                onClick={() => onLayoutModeChange("map")}
-                title="Map view"
+                onClick={() => {
+                  onViewModeChange("grid");
+                  onLayoutModeChange("cards");
+                }}
+                title="Grid view (full width)"
               >
-                <Map className="h-4 w-4" />
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "h-10 w-10 rounded-none border-0",
+                  viewMode === "list" && layoutMode === "split" ? "bg-primary text-white" : "bg-background"
+                )}
+                onClick={() => {
+                  onViewModeChange("list");
+                  onLayoutModeChange("split");
+                }}
+                title="List view with map"
+              >
+                <List className="h-4 w-4" />
               </Button>
             </div>
           )}

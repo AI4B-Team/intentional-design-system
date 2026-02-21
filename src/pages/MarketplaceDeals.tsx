@@ -36,7 +36,7 @@ export default function MarketplaceDeals() {
   const leadTypeFromIntel = searchParams.get("leadType");
 
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>("cards");
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>("map");
   const [selectedDeals, setSelectedDeals] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("newest");
   const [resultsPerPage, setResultsPerPage] = useState(25);
