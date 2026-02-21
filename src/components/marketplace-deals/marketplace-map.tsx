@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, Ruler, SlidersHorizontal, ScanSearch } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, ScanSearch } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 import {
   Popover,
   PopoverContent,
@@ -695,99 +694,6 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </div>
       )}
 
-      {/* Map Filter Sliders */}
-      <div className="absolute bottom-3 left-3 right-3 z-10">
-        <Card className="p-3 shadow-lg">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4 text-primary" />
-              <span className="font-medium text-sm">Map Filters</span>
-              <span className="text-xs text-muted-foreground">
-                ({filteredDeals.length} of {deals.length} properties)
-              </span>
-            </div>
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 text-xs gap-1"
-                onClick={resetFilters}
-              >
-                <RotateCcw className="h-3 w-3" />
-                Reset
-              </Button>
-            )}
-          </div>
-          
-          <div className="grid grid-cols-3 gap-6">
-            {/* Purchase Price */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <DollarSign className="h-3 w-3" />
-                  Purchase Price
-                </Label>
-                <span className="text-xs font-medium">
-                  ${(priceRange[0] / 1000).toFixed(0)}K - ${(priceRange[1] / 1000).toFixed(0)}K
-                </span>
-              </div>
-              <Slider
-                value={priceRange}
-                min={filterBounds.minPrice}
-                max={filterBounds.maxPrice}
-                step={5000}
-                onValueChange={(value) => setPriceRange(value as [number, number])}
-                className="w-full"
-                inverted
-              />
-            </div>
-            
-            {/* Square Footage */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Ruler className="h-3 w-3" />
-                  Property SqFt
-                </Label>
-                <span className="text-xs font-medium">
-                  {sqftRange[0].toLocaleString()} - {sqftRange[1].toLocaleString()}
-                </span>
-              </div>
-              <Slider
-                value={sqftRange}
-                min={filterBounds.minSqft}
-                max={filterBounds.maxSqft}
-                step={100}
-                onValueChange={(value) => setSqftRange(value as [number, number])}
-                className="w-full"
-                inverted
-              />
-            </div>
-            
-            {/* Price Per SqFt */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <DollarSign className="h-3 w-3" />
-                  Price/SqFt
-                </Label>
-                <span className="text-xs font-medium">
-                  ${pricePerSqftRange[0]} - ${pricePerSqftRange[1]}
-                </span>
-              </div>
-              <Slider
-                value={pricePerSqftRange}
-                min={filterBounds.minPricePerSqft}
-                max={filterBounds.maxPricePerSqft}
-                step={5}
-                onValueChange={(value) => setPricePerSqftRange(value as [number, number])}
-                className="w-full"
-                inverted
-              />
-            </div>
-          </div>
-        </Card>
-      </div>
 
       {/* Custom CSS for price markers and zoom controls */}
       <style>{`
