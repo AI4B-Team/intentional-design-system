@@ -810,7 +810,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         /* Move zoom controls above the filter bar */
         .leaflet-top.leaflet-left {
           top: auto !important;
-          bottom: 110px !important;
+          bottom: 130px !important;
           left: auto !important;
           right: 10px !important;
         }
