@@ -223,6 +223,20 @@ export function MarketplaceFilters({
       <div className="relative flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters - uniform gap-3 for equal spacing */}
         <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Active Address Pill */}
+          {filters.address && filters.address.trim().length > 0 && (
+            <div className="flex items-center gap-1.5 h-10 px-4 bg-destructive text-white rounded-full text-sm font-medium flex-shrink-0">
+              <span>{filters.address}</span>
+              <button
+                type="button"
+                onClick={() => handleChange("address", "")}
+                className="ml-1 hover:bg-white/20 rounded-full p-0.5 transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+
           {/* All Listings */}
           <Select 
             value={filters.listingStatus || "all"} 
