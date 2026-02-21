@@ -25,6 +25,7 @@
   }
 
   /* Prevent Radix UI scroll-lock from causing layout shifts */
+  body,
   body[data-scroll-locked],
   body[style*="overflow"],
   body[style*="margin-right"],
@@ -35,9 +36,13 @@
     padding-right: 0 !important;
   }
 
-  html {
+  html,
+  html[style*="margin-right"],
+  html[style*="padding-right"] {
     overflow-y: scroll !important;
     scrollbar-gutter: stable;
+    margin-right: 0 !important;
+    padding-right: 0 !important;
   }
 
   #root {
