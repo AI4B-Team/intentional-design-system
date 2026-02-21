@@ -37,6 +37,7 @@ import {
   Phone,
   DollarSign,
   Store,
+  Search,
   Car,
   Wrench,
   Handshake,
@@ -66,7 +67,7 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Intel", href: "/intel", icon: Radar },
-  { label: "Search", href: "/marketplace", icon: Store },
+  { label: "Search", href: "/marketplace", icon: Search },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Transactions", href: "/transactions", icon: Handshake },
   { label: "Communications", href: "/communications", icon: Phone },
