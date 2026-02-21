@@ -343,13 +343,20 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   }, [scanActive]);
 
   const handleScanComplete = useCallback(() => {
-    const center = mapInstanceRef.current?.map?.getCenter?.();
-    const lat = center?.lat ?? 27.9944;
-    const lng = center?.lng ?? -81.7603;
-    const properties = generateD4DProperties(lat, lng, 800);
-    setScanProperties(properties);
-    setScanActive(true);
-    setScanLoading(false);
+    try {
+      const center = mapInstanceRef.current?.map?.getCenter?.();
+      const lat = center?.lat ?? 27.9944;
+      const lng = center?.lng ?? -81.7603;
+      console.log("[D4D] handleScanComplete called, center:", lat, lng);
+      const properties = generateD4DProperties(lat, lng, 800);
+      console.log("[D4D] Generated properties:", properties.length);
+      setScanProperties(properties);
+      setScanActive(true);
+      setScanLoading(false);
+    } catch (err) {
+      console.error("[D4D] Error generating properties:", err);
+      setScanLoading(false);
+    }
   }, []);
 
   // Render scan markers on map
