@@ -223,6 +223,16 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Calendar */}
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-9 w-9 text-content-secondary hover:text-content"
+        onClick={() => navigate("/calendar")}
+      >
+        <Calendar className="h-5 w-5" />
+      </Button>
+
       {/* Dialer Quick Access */}
       <DialerQuickAccess />
 
