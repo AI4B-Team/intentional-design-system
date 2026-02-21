@@ -257,40 +257,56 @@ export function AddressAutocomplete({
     <div ref={wrapperRef} className={cn("relative", className)}>
       <div className="relative flex items-center">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
-        {/* Active search chip */}
-        {activeChip && onClearChip && (
-          <div className="absolute left-8 top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2.5 py-1 bg-primary text-primary-foreground rounded-full text-xs font-medium max-w-[60%]">
-            <span className="truncate">{activeChip}</span>
-            <button
-              type="button"
-              onClick={onClearChip}
-              className="ml-0.5 hover:bg-white/20 rounded-full p-0.5 transition-colors flex-shrink-0"
-            >
-              <X className="h-3 w-3" />
-            </button>
+        {/* Active search chip - inline before input */}
+        {activeChip && onClearChip ? (
+          <div className="flex items-center h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 pr-10">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary/15 text-primary rounded-md text-xs font-medium">
+              <span className="truncate">{activeChip}</span>
+              <button
+                type="button"
+                onClick={onClearChip}
+                className="hover:bg-primary/20 rounded p-0.5 transition-colors flex-shrink-0"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+            <input
+              ref={inputRef}
+              type="text"
+              value={value}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onFocus={() => value.length >= 2 && setShowSuggestions(true)}
+              onKeyDown={handleKeyDown}
+              placeholder="Add location..."
+              className={cn(
+                "flex-1 h-full border-0 bg-transparent text-body outline-none ml-2",
+                "placeholder:text-content-tertiary",
+                inputClassName
+              )}
+              autoComplete="off"
+            />
           </div>
+        ) : (
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onFocus={() => value.length >= 2 && setShowSuggestions(true)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder}
+            className={cn(
+              "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 text-body transition-all duration-150",
+              "placeholder:text-content-tertiary",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
+              showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
+                ? "pr-[7.5rem]"
+                : "pr-10",
+              inputClassName
+            )}
+            autoComplete="off"
+          />
         )}
-        <input
-          ref={inputRef}
-          type="text"
-          value={value}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onFocus={() => value.length >= 2 && setShowSuggestions(true)}
-          onKeyDown={handleKeyDown}
-          placeholder={activeChip ? "Add another location..." : placeholder}
-          className={cn(
-            "flex h-9 w-full rounded-small border-0 bg-surface-secondary text-body transition-all duration-150",
-            "placeholder:text-content-tertiary",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
-            activeChip ? "pl-8" : "pl-8",
-            showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
-              ? "pr-[7.5rem]"
-              : "pr-10",
-            inputClassName
-          )}
-          style={activeChip ? { paddingLeft: `${activeChip.length * 6.5 + 68}px` } : undefined}
-          autoComplete="off"
-        />
         {/* Mode badge - only show for city/ZIP input (not full addresses starting with a number) */}
         {showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim()) && (
           <button
