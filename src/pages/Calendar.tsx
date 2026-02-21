@@ -47,12 +47,12 @@ interface CalendarEvent {
   meta?: Record<string, any>;
 }
 
-const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
-  appointment: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary" },
-  followup: { bg: "bg-warning/10", text: "text-warning", dot: "bg-warning" },
-  offer_deadline: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive" },
-  closing: { bg: "bg-accent/10", text: "text-accent", dot: "bg-accent" },
-  inspection: { bg: "bg-info/10", text: "text-info", dot: "bg-info" },
+const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; label: string }> = {
+  appointment: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Appointment" },
+  followup: { bg: "bg-warning/10", text: "text-warning", dot: "bg-warning", label: "Followup" },
+  offer_deadline: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive", label: "Overdue" },
+  closing: { bg: "bg-accent/10", text: "text-accent", dot: "bg-accent", label: "Closing" },
+  inspection: { bg: "bg-info/10", text: "text-info", dot: "bg-info", label: "Inspection" },
 };
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
@@ -367,7 +367,7 @@ export default function Calendar() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <Badge variant="outline" className={cn("text-[9px] border", colors.bg, colors.text)}>
-                          {evt.type.replace("_", " ")}
+                          {colors.label}
                         </Badge>
                         <Badge variant="outline" className="text-[9px]">
                           {evt.status}
@@ -386,7 +386,7 @@ export default function Calendar() {
                 {Object.entries(EVENT_COLORS).map(([type, colors]) => (
                   <div key={type} className="flex items-center gap-1.5">
                     <div className={cn("w-2 h-2 rounded-full", colors.dot)} />
-                    <span className="text-[10px] text-muted-foreground capitalize">{type.replace("_", " ")}</span>
+                    <span className="text-[10px] text-muted-foreground capitalize">{colors.label}</span>
                   </div>
                 ))}
               </div>
