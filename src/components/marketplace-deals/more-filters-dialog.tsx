@@ -305,7 +305,7 @@ export function MoreFiltersDialog({
               {/* Building Size & Lot Size */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-sm text-muted-foreground">Building Size (Sq. Ft.)</Label>
+                  <Label className="text-sm text-muted-foreground">Property Size (Sq. Ft.)</Label>
                   <div className="flex items-center gap-2">
                     <Input
                       placeholder="Min"
