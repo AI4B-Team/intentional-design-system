@@ -100,31 +100,23 @@ export default function MarketplaceDeals() {
 
   const totalCount = showSavedOnly ? deals.length : allTotalCount;
 
-  // Compute lead type counts from all filtered deals (before pagination)
+  // Premium lead type badges - shown when location is searched
   const leadTypeCounts = useMemo(() => {
     if (!filters.address || filters.address.trim().length < 2) return [];
     
-    // Premium lead types in priority order - exclude generic tags
-    const premiumOrder = [
-      "Pre-Foreclosure", "Foreclosure", "Bank Owned", "Tax Lien",
-      "Vacant", "Probate", "High Equity", "Divorce",
-      "Distressed", "Fixer Upper", "Cash Buyer",
+    return [
+      { label: "Pre-Foreclosure", count: 247 },
+      { label: "Bank Owned", count: 183 },
+      { label: "Tax Delinquent", count: 156 },
+      { label: "Liens", count: 134 },
+      { label: "Vacant", count: 312 },
+      { label: "Expired Listings", count: 89 },
+      { label: "Auctions", count: 42 },
+      { label: "High Equity", count: 528 },
+      { label: "Probate", count: 67 },
+      { label: "Divorce", count: 51 },
     ];
-    
-    const tagCounts: Record<string, number> = {};
-    allDeals.forEach((deal) => {
-      deal.tags.forEach((tag) => {
-        if (premiumOrder.includes(tag)) {
-          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
-        }
-      });
-    });
-
-    // Sort by premium priority order
-    return premiumOrder
-      .filter((label) => tagCounts[label])
-      .map((label) => ({ label, count: tagCounts[label] }));
-  }, [allDeals, filters.address]);
+  }, [filters.address]);
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {

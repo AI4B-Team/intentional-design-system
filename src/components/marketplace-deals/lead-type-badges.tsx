@@ -14,18 +14,19 @@ interface LeadTypeBadgesProps {
 
 const leadTypeColors: Record<string, string> = {
   "High Equity": "bg-emerald-500/10 text-emerald-700 border-emerald-200",
-  "Absentee Owner": "bg-blue-500/10 text-blue-700 border-blue-200",
-  "Foreclosure": "bg-red-500/10 text-red-700 border-red-200",
   "Pre-Foreclosure": "bg-orange-500/10 text-orange-700 border-orange-200",
-  "Vacant": "bg-purple-500/10 text-purple-700 border-purple-200",
-  "Tax Lien": "bg-amber-500/10 text-amber-700 border-amber-200",
-  "Probate": "bg-slate-500/10 text-slate-700 border-slate-200",
-  "Distressed": "bg-rose-500/10 text-rose-700 border-rose-200",
-  "Motivated Seller": "bg-teal-500/10 text-teal-700 border-teal-200",
-  "Cash Buyer": "bg-indigo-500/10 text-indigo-700 border-indigo-200",
-  "Divorce": "bg-pink-500/10 text-pink-700 border-pink-200",
   "Bank Owned": "bg-red-500/10 text-red-700 border-red-200",
-  "Fixer Upper": "bg-rose-500/10 text-rose-700 border-rose-200",
+  "Tax Delinquent": "bg-amber-500/10 text-amber-700 border-amber-200",
+  "Liens": "bg-rose-500/10 text-rose-700 border-rose-200",
+  "Vacant": "bg-purple-500/10 text-purple-700 border-purple-200",
+  "Expired Listings": "bg-slate-500/10 text-slate-700 border-slate-200",
+  "Auctions": "bg-cyan-500/10 text-cyan-700 border-cyan-200",
+  "Probate": "bg-blue-500/10 text-blue-700 border-blue-200",
+  "Divorce": "bg-pink-500/10 text-pink-700 border-pink-200",
+  "Foreclosure": "bg-red-500/10 text-red-700 border-red-200",
+  "Distressed": "bg-rose-500/10 text-rose-700 border-rose-200",
+  "Fixer Upper": "bg-yellow-500/10 text-yellow-700 border-yellow-200",
+  "Cash Buyer": "bg-indigo-500/10 text-indigo-700 border-indigo-200",
 };
 
 export function LeadTypeBadges({ counts, className }: LeadTypeBadgesProps) {
