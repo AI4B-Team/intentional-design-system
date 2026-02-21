@@ -104,18 +104,26 @@ export default function MarketplaceDeals() {
   const leadTypeCounts = useMemo(() => {
     if (!filters.address || filters.address.trim().length < 2) return [];
     
-    // Count occurrences of each tag across all filtered deals
+    // Premium lead types in priority order - exclude generic tags
+    const premiumOrder = [
+      "Pre-Foreclosure", "Foreclosure", "Bank Owned", "Tax Lien",
+      "Vacant", "Probate", "High Equity", "Divorce",
+      "Distressed", "Fixer Upper", "Cash Buyer",
+    ];
+    
     const tagCounts: Record<string, number> = {};
     allDeals.forEach((deal) => {
       deal.tags.forEach((tag) => {
-        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        if (premiumOrder.includes(tag)) {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        }
       });
     });
 
-    // Sort by count descending
-    return Object.entries(tagCounts)
-      .map(([label, count]) => ({ label, count }))
-      .sort((a, b) => b.count - a.count);
+    // Sort by premium priority order
+    return premiumOrder
+      .filter((label) => tagCounts[label])
+      .map((label) => ({ label, count: tagCounts[label] }));
   }, [allDeals, filters.address]);
 
   const handleSelectAll = (checked: boolean) => {
