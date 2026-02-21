@@ -1056,27 +1056,41 @@ export default function Pipeline() {
               <thead className="sticky top-0 z-10 bg-surface-secondary shadow-sm">
                 <tr>
                   <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Property</th>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Type</th>
                   <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Stage</th>
-                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Contact</th>
-                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Asking</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Beds/Baths</th>
+                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Sq Ft</th>
+                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Price</th>
                   <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">ARV</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Score</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Equity</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Days</th>
-                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Source</th>
-                  <th className="w-12 px-4 py-3"></th>
+                  <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Contact</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredDeals.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-12 text-center text-muted-foreground">
+                    <td colSpan={12} className="px-4 py-12 text-center text-muted-foreground">
                       No deals found matching your filters.
                     </td>
                   </tr>
                 ) : (
                   filteredDeals.map((deal, index) => {
                     const stageConfig = PIPELINE_STAGES.find(s => s.id === deal.stage);
+                    const canCall = !!deal.contact_phone;
+                    const canText = !!deal.contact_phone;
+                    const canEmail = !!deal.contact_email;
+                    const formatPhoneForTel = (phone?: string) => {
+                      if (!phone) return "";
+                      const digits = phone.replace(/[^\d+]/g, "");
+                      return digits.startsWith("+") ? digits : `+1${digits}`;
+                    };
+                    const homeTypeLabel = deal.property_type
+                      ?.replace(/_/g, " ")
+                      .replace(/\b\w/g, (c: string) => c.toUpperCase()) || "—";
+
                     return (
                       <tr
                         key={deal.id}
@@ -1087,6 +1101,7 @@ export default function Pipeline() {
                           "hover:bg-brand-accent/5"
                         )}
                       >
+                        {/* Property */}
                         <td className="px-4">
                           <div>
                             <div className="text-body font-medium text-content group-hover:text-brand-accent transition-colors">
@@ -1094,25 +1109,44 @@ export default function Pipeline() {
                             </div>
                             <div className="flex items-center gap-1 text-small text-content-secondary">
                               <MapPin className="h-3 w-3" />
-                              {deal.city}, {deal.state}
+                              {deal.city}, {deal.state} {deal.zip}
                             </div>
                           </div>
                         </td>
+                        {/* Home Type */}
+                        <td className="px-4">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-success/15 text-success border border-success/20">
+                            {homeTypeLabel}
+                          </span>
+                        </td>
+                        {/* Stage */}
                         <td className="px-4">
                           <Badge className={cn("text-white text-[10px]", stageConfig?.color)}>
                             {stageConfig?.label}
                           </Badge>
                         </td>
-                        <td className="px-4">
-                          <div className="text-body">{deal.contact_name}</div>
-                          <div className="text-tiny text-content-secondary">{deal.contact_type}</div>
+                        {/* Beds/Baths */}
+                        <td className="px-4 text-center text-body tabular-nums">
+                          <span className="flex items-center justify-center gap-2 text-muted-foreground">
+                            <span className="flex items-center gap-0.5"><Bed className="h-3 w-3" />{deal.beds}</span>
+                            <span className="flex items-center gap-0.5"><Bath className="h-3 w-3" />{deal.baths}</span>
+                          </span>
                         </td>
-                        <td className="px-4 text-right text-body tabular-nums font-medium">
-                          ${deal.asking_price.toLocaleString()}
+                        {/* Sq Ft */}
+                        <td className="px-4 text-right text-body tabular-nums">
+                          {deal.sqft?.toLocaleString() || "—"}
                         </td>
-                        <td className="px-4 text-right text-body tabular-nums font-medium">
+                        {/* Price */}
+                        <td className="px-4 text-right">
+                          <span className="text-body font-bold text-success tabular-nums">
+                            ${deal.asking_price.toLocaleString()}
+                          </span>
+                        </td>
+                        {/* ARV */}
+                        <td className="px-4 text-right text-body tabular-nums text-muted-foreground">
                           ${deal.arv.toLocaleString()}
                         </td>
+                        {/* Score */}
                         <td className="px-4 text-center">
                           <span className={cn(
                             "inline-flex items-center px-2 py-0.5 rounded-full text-small font-medium",
@@ -1123,6 +1157,7 @@ export default function Pipeline() {
                             {deal.lead_score}
                           </span>
                         </td>
+                        {/* Equity */}
                         <td className="px-4 text-center">
                           <span className={cn(
                             "text-body font-medium",
@@ -1133,25 +1168,108 @@ export default function Pipeline() {
                             {deal.equity_percentage}%
                           </span>
                         </td>
-                        <td className="px-4 text-center text-body tabular-nums">
-                          {deal.days_in_stage}d
+                        {/* Days in Stage */}
+                        <td className="px-4 text-center">
+                          <div className={cn(
+                            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-medium",
+                            deal.days_in_stage >= 3
+                              ? "bg-destructive/15 text-destructive"
+                              : deal.days_in_stage >= 2
+                                ? "bg-warning/15 text-warning"
+                                : "bg-muted text-muted-foreground"
+                          )}>
+                            <Clock className="h-3 w-3" />
+                            {deal.days_in_stage === 0 ? "Today" : `${deal.days_in_stage}D`}
+                          </div>
                         </td>
-                        <td className="px-4 text-small text-content-secondary">
-                          {deal.source}
-                        </td>
+                        {/* Contact */}
                         <td className="px-4">
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/properties/${deal.id}`);
-                              }}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+                          <div className="text-body font-medium">{deal.contact_name}</div>
+                          <div className="text-tiny text-content-secondary">{deal.contact_type}</div>
+                        </td>
+                        {/* Actions */}
+                        <td className="px-4">
+                          <div className="flex items-center justify-center gap-0.5">
+                            <TooltipProvider delayDuration={0}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (deal.contact_phone) {
+                                        window.open(`tel:${formatPhoneForTel(deal.contact_phone)}`);
+                                      }
+                                    }}
+                                  >
+                                    <Phone className="h-3.5 w-3.5" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                  <p>{canCall ? `Call ${deal.contact_phone}` : "No Phone"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (deal.contact_phone) {
+                                        window.open(`sms:${formatPhoneForTel(deal.contact_phone)}`);
+                                      }
+                                    }}
+                                  >
+                                    <MessageCircle className="h-3.5 w-3.5" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                  <p>{canText ? "Text Seller" : "No Phone"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (deal.contact_email) {
+                                        window.open(`mailto:${deal.contact_email}`);
+                                      }
+                                    }}
+                                  >
+                                    <Mail className="h-3.5 w-3.5" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                  <p>{canEmail ? `Email ${deal.contact_email}` : "No Email"}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      navigate(`/properties/${deal.id}`);
+                                    }}
+                                  >
+                                    <Eye className="h-3.5 w-3.5" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent side="top">
+                                  <p>View Details</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                         </td>
                       </tr>
