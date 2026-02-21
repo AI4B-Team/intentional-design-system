@@ -808,10 +808,10 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         .leaflet-control {
           z-index: 10 !important;
         }
-        /* Move zoom controls above the filter bar */
+        /* Move zoom controls to bottom right */
         .leaflet-top.leaflet-left {
           top: auto !important;
-          bottom: 130px !important;
+          bottom: 30px !important;
           left: auto !important;
           right: 10px !important;
         }
