@@ -39,18 +39,19 @@ function seededRandom(seed: string) {
   };
 }
 
-function generateMarketData(marketName: string) {
-  const rand = seededRandom(marketName.toLowerCase());
+function generateMarketData(marketName: string, timeRange: string = "6M") {
+  const rand = seededRandom(marketName.toLowerCase() + timeRange);
   const r = (min: number, max: number) => Math.round(min + rand() * (max - min));
   const rf = (min: number, max: number, dec = 1) => parseFloat((min + rand() * (max - min)).toFixed(dec));
+  const timeMultiplier = timeRange === "1M" ? 0.2 : timeRange === "3M" ? 0.5 : timeRange === "6M" ? 1 : 1.8;
 
-  const totalSales = r(200, 900);
+  const totalSales = Math.round(r(200, 900) * timeMultiplier);
   const cashRate = rf(30, 85);
   const cashSales = Math.round(totalSales * cashRate / 100);
   const retailSales = totalSales - cashSales;
   const medianPrice = r(40000, 350000);
   const dom = r(20, 130);
-  const inventory = r(80, 500);
+  const inventory = Math.round(r(80, 500) * timeMultiplier);
   const rent = r(800, 2200);
   const capRate = rf(4.0, 10.0);
 
@@ -248,7 +249,7 @@ export default function Intel() {
     ? addressParam.charAt(0).toUpperCase() + addressParam.slice(1)
     : DEFAULT_MARKET;
 
-  const MARKET_DATA = useMemo(() => generateMarketData(displayMarket), [displayMarket]);
+  const MARKET_DATA = useMemo(() => generateMarketData(displayMarket, timeRange), [displayMarket, timeRange]);
 
   const toggleZip = (zip: string) =>
     setSelectedZips((prev) => prev.includes(zip) ? prev.filter((z) => z !== zip) : [...prev, zip]);
