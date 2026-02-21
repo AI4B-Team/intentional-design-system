@@ -132,6 +132,7 @@ import DispoCampaignForm from "./pages/DispoCampaignForm";
 import DispoCampaignDetail from "./pages/DispoCampaignDetail";
 import DispoSettings from "./pages/DispoSettings";
 import Appointments from "./pages/Appointments";
+import Calendar from "./pages/Calendar";
 import LeadSources from "./pages/LeadSources";
 import Documents from "./pages/Documents";
 import Apps from "./pages/Apps";
@@ -518,6 +519,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Appointments />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/calendar"
+              element={
+                <ProtectedRoute>
+                  <Calendar />
                 </ProtectedRoute>
               }
             />
