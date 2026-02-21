@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, MapPin, Loader2, BarChart3, Store, ChevronDown, Star, Clock, Zap, TrendingUp } from "lucide-react";
+import { Search, MapPin, Loader2, BarChart3, Store, ChevronDown, Star, Clock, Zap, TrendingUp, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -65,6 +65,10 @@ interface AddressAutocompleteProps {
   onModeSwitch?: (mode: SearchMode) => void;
   /** Whether to show the mode badge */
   showModeBadge?: boolean;
+  /** Active search chip to display inside the field */
+  activeChip?: string;
+  /** Called when the chip's X is clicked */
+  onClearChip?: () => void;
 }
 
 export function AddressAutocomplete({
@@ -77,6 +81,8 @@ export function AddressAutocomplete({
   defaultMode = "listings",
   onModeSwitch,
   showModeBadge = false,
+  activeChip,
+  onClearChip,
 }: AddressAutocompleteProps) {
   const [suggestions, setSuggestions] = React.useState<AddressSuggestion[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -251,6 +257,19 @@ export function AddressAutocomplete({
     <div ref={wrapperRef} className={cn("relative", className)}>
       <div className="relative flex items-center">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
+        {/* Active search chip */}
+        {activeChip && onClearChip && (
+          <div className="absolute left-8 top-1/2 -translate-y-1/2 z-10 flex items-center gap-1 px-2.5 py-1 bg-primary text-primary-foreground rounded-full text-xs font-medium max-w-[60%]">
+            <span className="truncate">{activeChip}</span>
+            <button
+              type="button"
+              onClick={onClearChip}
+              className="ml-0.5 hover:bg-white/20 rounded-full p-0.5 transition-colors flex-shrink-0"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        )}
         <input
           ref={inputRef}
           type="text"
@@ -258,16 +277,18 @@ export function AddressAutocomplete({
           onChange={(e) => handleInputChange(e.target.value)}
           onFocus={() => value.length >= 2 && setShowSuggestions(true)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder}
+          placeholder={activeChip ? "Add another location..." : placeholder}
           className={cn(
-            "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 text-body transition-all duration-150",
+            "flex h-9 w-full rounded-small border-0 bg-surface-secondary text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
+            activeChip ? "pl-8" : "pl-8",
             showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
               ? "pr-[7.5rem]"
               : "pr-10",
             inputClassName
           )}
+          style={activeChip ? { paddingLeft: `${activeChip.length * 6.5 + 68}px` } : undefined}
           autoComplete="off"
         />
         {/* Mode badge - only show for city/ZIP input (not full addresses starting with a number) */}
