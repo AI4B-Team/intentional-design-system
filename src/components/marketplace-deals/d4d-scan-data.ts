@@ -275,15 +275,15 @@ export function getDistressLabel(score: number): string {
 
 export interface ScanPhase {
   label: string;
-  icon: string;
+  icon: string; // lucide icon name
   duration: number; // ms
 }
 
 export const SCAN_PHASES: ScanPhase[] = [
-  { label: "Analyzing satellite imagery...", icon: "🛰️", duration: 1200 },
-  { label: "Scanning property records...", icon: "📋", duration: 1000 },
-  { label: "Cross-referencing financial data...", icon: "💰", duration: 800 },
-  { label: "AI scoring distress signals...", icon: "🤖", duration: 1000 },
-  { label: "Generating street view analysis...", icon: "📸", duration: 800 },
-  { label: "Compiling results...", icon: "✅", duration: 600 },
+  { label: "Analyzing satellite imagery...", icon: "satellite", duration: 1200 },
+  { label: "Scanning property records...", icon: "file-search", duration: 1000 },
+  { label: "Cross-referencing financial data...", icon: "landmark", duration: 800 },
+  { label: "AI scoring distress signals...", icon: "brain", duration: 1000 },
+  { label: "Generating street view analysis...", icon: "camera", duration: 800 },
+  { label: "Compiling results...", icon: "check-circle", duration: 600 },
 ];
