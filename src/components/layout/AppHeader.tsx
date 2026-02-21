@@ -41,9 +41,10 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  // Sync search query from URL params
+  // Sync search query from URL params (but not on filter pages where chips handle it)
   const searchParams = new URLSearchParams(location.search);
-  const urlQuery = searchParams.get("address") || searchParams.get("search") || "";
+  const isFilterPageInit = location.pathname.startsWith("/marketplace") || location.pathname.startsWith("/intel");
+  const urlQuery = isFilterPageInit ? "" : (searchParams.get("address") || searchParams.get("search") || "");
   const [searchQuery, setSearchQuery] = React.useState(urlQuery);
 
   React.useEffect(() => {
