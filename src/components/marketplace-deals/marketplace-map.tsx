@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, Ruler, SlidersHorizontal } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, Ruler, SlidersHorizontal, ScanSearch } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -446,8 +446,16 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         </div>
       </div>
 
-      {/* Right side controls: Draw + Intel */}
+      {/* Right side controls: Scan + Draw + Intel */}
       <div className="absolute top-3 right-3 z-10 flex gap-2">
+        {/* Scan Button */}
+        <Button
+          variant="outline"
+          className="bg-white shadow-md gap-2"
+        >
+          <ScanSearch className="h-4 w-4" />
+          Scan
+        </Button>
         {/* Draw Button */}
         <Button
           variant={isDrawing ? "default" : "outline"}
