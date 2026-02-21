@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, ScanSearch } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, ScanSearch, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/popover";
 import { MarketplaceDeal } from "@/hooks/useMockDeals";
 import { cn } from "@/lib/utils";
+import { generateD4DProperties, getDistressColor, type D4DProperty } from "./d4d-scan-data";
+import { D4DScanPanel } from "./D4DScanPanel";
 
 interface AnalysisResult {
   propertyCount: number;
@@ -147,6 +149,12 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [showLocationOutline, setShowLocationOutline] = useState(true);
   const [showClusters, setShowClusters] = useState(true);
   
+  // D4D Scan states
+  const [scanActive, setScanActive] = useState(false);
+  const [scanLoading, setScanLoading] = useState(false);
+  const [scanProperties, setScanProperties] = useState<D4DProperty[]>([]);
+  const scanMarkersRef = useRef<any[]>([]);
+
   const loadedRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -319,6 +327,76 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
     });
   }, [filteredDeals, isReady]);
 
+  // D4D Scan handler
+  const handleScan = useCallback(() => {
+    if (scanActive) {
+      setScanActive(false);
+      setScanProperties([]);
+      if (mapInstanceRef.current) {
+        scanMarkersRef.current.forEach(m => mapInstanceRef.current.map.removeLayer(m));
+        scanMarkersRef.current = [];
+      }
+      return;
+    }
+    setScanLoading(true);
+    setTimeout(() => {
+      const center = mapInstanceRef.current?.map?.getCenter?.();
+      const lat = center?.lat ?? 27.9944;
+      const lng = center?.lng ?? -81.7603;
+      const properties = generateD4DProperties(lat, lng, 800);
+      setScanProperties(properties);
+      setScanActive(true);
+      setScanLoading(false);
+    }, 1500);
+  }, [scanActive]);
+
+  // Render scan markers on map
+  useEffect(() => {
+    if (!mapInstanceRef.current || !isReady) return;
+    const { map, L } = mapInstanceRef.current;
+    scanMarkersRef.current.forEach(m => map.removeLayer(m));
+    scanMarkersRef.current = [];
+    if (!scanActive || scanProperties.length === 0) return;
+
+    scanProperties.forEach(prop => {
+      const color = getDistressColor(prop.distressScore);
+      const size = prop.distressScore >= 70 ? 14 : prop.distressScore >= 45 ? 11 : 8;
+      const icon = L.divIcon({
+        className: "d4d-marker",
+        html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.3);opacity:${prop.distressScore >= 45 ? 0.9 : 0.6};"></div>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
+      });
+      const marker = L.marker([prop.lat, prop.lng], { icon }).addTo(map);
+      marker.bindPopup(`
+        <div style="min-width:200px;padding:4px;">
+          <div style="font-weight:700;font-size:13px;margin-bottom:2px;">${prop.address}</div>
+          <div style="font-size:12px;opacity:0.7;margin-bottom:6px;">${prop.city}, ${prop.state} ${prop.zip}</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <span style="font-size:20px;font-weight:800;color:${color};">${prop.distressScore}</span>
+            <span style="font-size:11px;color:#666;">Distress Score</span>
+          </div>
+          <div style="font-size:12px;margin-bottom:2px;"><strong>$${prop.estimatedValue.toLocaleString()}</strong> est. value</div>
+          <div style="font-size:11px;opacity:0.7;">${prop.beds}bd / ${prop.baths}ba • ${prop.sqft.toLocaleString()} sqft • Built ${prop.yearBuilt}</div>
+          <div style="font-size:11px;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">
+            ${prop.vacant ? '<span style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:4px;">Vacant</span>' : ''}
+            ${prop.preForeclosure ? '<span style="background:#fee2e2;color:#991b1b;padding:1px 6px;border-radius:4px;">Pre-FC</span>' : ''}
+            ${prop.taxLien ? '<span style="background:#ffedd5;color:#9a3412;padding:1px 6px;border-radius:4px;">Tax Lien</span>' : ''}
+            ${prop.probate ? '<span style="background:#ede9fe;color:#5b21b6;padding:1px 6px;border-radius:4px;">Probate</span>' : ''}
+            ${prop.highEquity ? '<span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:4px;">' + prop.estimatedEquityPct + '% Equity</span>' : ''}
+          </div>
+        </div>
+      `);
+      scanMarkersRef.current.push(marker);
+    });
+  }, [scanActive, scanProperties, isReady]);
+
+  const handleFocusScanProperty = useCallback((prop: D4DProperty) => {
+    if (mapInstanceRef.current?.map) {
+      mapInstanceRef.current.map.setView([prop.lat, prop.lng], 16, { animate: true });
+    }
+  }, []);
+
   // Update tile layer when map type changes
   useEffect(() => {
     if (!mapInstanceRef.current) return;
@@ -418,7 +496,8 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   }
 
   return (
-    <div className="relative h-full z-0">
+    <div className="flex h-full">
+    <div className="relative flex-1 z-0">
       {/* Map Type Toggle */}
       <div className="absolute top-3 left-3 z-10">
         <div className="bg-white rounded-lg shadow-md overflow-hidden flex">
@@ -449,11 +528,16 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
       <div className="absolute top-3 right-3 z-10 flex gap-2">
         {/* Scan Button */}
         <Button
-          variant="outline"
-          className="bg-white shadow-md gap-2"
+          variant={scanActive ? "default" : "outline"}
+          className={cn(
+            "shadow-md gap-2",
+            scanActive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "bg-white"
+          )}
+          onClick={handleScan}
+          disabled={scanLoading}
         >
-          <ScanSearch className="h-4 w-4" />
-          Scan
+          {scanLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
+          {scanLoading ? "Scanning..." : scanActive ? "Stop Scan" : "Scan"}
         </Button>
         {/* Draw Button */}
         <Button
@@ -765,6 +849,24 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
           margin: 0;
         }
       `}</style>
+    </div>
+
+    {/* D4D Scan Panel */}
+    {scanActive && (
+      <D4DScanPanel
+        properties={scanProperties}
+        onClose={() => {
+          setScanActive(false);
+          setScanProperties([]);
+          if (mapInstanceRef.current) {
+            scanMarkersRef.current.forEach(m => mapInstanceRef.current.map.removeLayer(m));
+            scanMarkersRef.current = [];
+          }
+        }}
+        onFocusProperty={handleFocusScanProperty}
+        totalScanned={scanProperties.length}
+      />
+    )}
     </div>
   );
 }
