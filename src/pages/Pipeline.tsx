@@ -1102,14 +1102,16 @@ export default function Pipeline() {
                         )}
                       >
                         {/* Property */}
-                        <td className="px-4">
-                          <div>
-                            <div className="text-body font-medium text-content group-hover:text-brand-accent transition-colors">
-                              {deal.address}
-                            </div>
-                            <div className="flex items-center gap-1 text-small text-content-secondary">
-                              <MapPin className="h-3 w-3" />
-                              {deal.city}, {deal.state} {deal.zip}
+                        <td className="px-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <div>
+                              <div className="text-body font-medium text-content group-hover:text-brand-accent transition-colors whitespace-nowrap">
+                                {deal.address}
+                              </div>
+                              <div className="flex items-center gap-1 text-small text-content-secondary whitespace-nowrap">
+                                <MapPin className="h-3 w-3 flex-shrink-0" />
+                                {deal.city}, {deal.state} {deal.zip}
+                              </div>
                             </div>
                           </div>
                         </td>
