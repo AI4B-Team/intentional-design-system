@@ -843,7 +843,7 @@ export default function Pipeline() {
 
   return (
     <PageLayout fullWidth>
-      <div className="px-4 lg:px-6 flex flex-col flex-1">
+      <div className="px-4 lg:px-6 pt-4 flex flex-col flex-1">
       <PageHeader
         title="Pipeline"
         description="Track and manage deals through your acquisition process"
