@@ -14,6 +14,7 @@ import {
   CheckCircle,
   Users,
   Clock,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -42,7 +43,7 @@ function navigateToEvent(navigate: ReturnType<typeof useNavigate>, event: Calend
 }
 
 // ─── Priority Focus Section ────────────────────────────────
-function PriorityFocus({ overdueCount, deadlineCount }: { overdueCount: number; deadlineCount: number }) {
+function PriorityFocus({ overdueCount, deadlineCount, hardDeadlineToday }: { overdueCount: number; deadlineCount: number; hardDeadlineToday: boolean }) {
   const hasUrgency = overdueCount > 0 || deadlineCount > 0;
 
   if (!hasUrgency) {
@@ -57,24 +58,34 @@ function PriorityFocus({ overdueCount, deadlineCount }: { overdueCount: number; 
     );
   }
 
+  // Red only for hard deadlines today, amber/orange for general risk
+  const isHardDeadline = hardDeadlineToday;
+
   return (
-    <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+    <div className={cn(
+      "rounded-lg border p-3",
+      isHardDeadline
+        ? "border-red-200 bg-red-50"
+        : "border-amber-200 bg-amber-50",
+    )}>
       <div className="flex items-center gap-1.5 mb-2">
-        <Flame className="h-3.5 w-3.5 text-red-600" />
-        <span className="text-xs font-bold text-red-800">Priority Focus</span>
+        <Flame className={cn("h-3.5 w-3.5", isHardDeadline ? "text-red-600" : "text-amber-600")} />
+        <span className={cn("text-xs font-bold", isHardDeadline ? "text-red-800" : "text-amber-800")}>Priority Focus</span>
       </div>
       <div className="space-y-1">
         {overdueCount > 0 && (
-          <p className="text-[11px] text-red-700">
+          <p className={cn("text-[11px]", isHardDeadline ? "text-red-700" : "text-amber-700")}>
             {overdueCount} overdue follow-up{overdueCount !== 1 ? "s" : ""} risking deal decay
           </p>
         )}
         {deadlineCount > 0 && (
-          <p className="text-[11px] text-red-700">
+          <p className={cn("text-[11px]", isHardDeadline ? "text-red-700" : "text-amber-700")}>
             {deadlineCount} contract deadline{deadlineCount !== 1 ? "s" : ""} in 24 hours
           </p>
         )}
-        <p className="text-[11px] text-red-600/70">Best call window: 10:00–12:00 PM</p>
+        <p className={cn("text-[11px] opacity-70", isHardDeadline ? "text-red-600" : "text-amber-600")}>
+          Best call window: 10:00–12:00 PM
+        </p>
       </div>
     </div>
   );
@@ -99,7 +110,7 @@ function CallsSection({ calls, navigate }: { calls: CalendarEvent[]; navigate: R
           >
             <div className={cn(
               "w-1.5 h-1.5 rounded-full shrink-0",
-              evt.isOverdue ? "bg-red-500" : "bg-amber-500",
+              evt.isOverdue ? "bg-amber-500" : "bg-muted-foreground/40",
             )} />
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-medium text-foreground truncate">
@@ -121,6 +132,7 @@ function CallsSection({ calls, navigate }: { calls: CalendarEvent[]; navigate: R
       >
         <Phone className="h-3 w-3 mr-1.5" />
         Start Dialing
+        <span className="text-[9px] font-normal opacity-70 ml-1">(Hybrid)</span>
       </Button>
     </div>
   );
@@ -187,7 +199,7 @@ function DealWatchSection({ deals, navigate }: { deals: CalendarEvent[]; navigat
           >
             <div className={cn(
               "w-1.5 h-1.5 rounded-full shrink-0",
-              evt.type === "closing" ? "bg-emerald-500" : evt.type === "inspection" ? "bg-blue-500" : "bg-red-500",
+              evt.type === "closing" ? "bg-emerald-500" : evt.type === "inspection" ? "bg-blue-500" : "bg-amber-500",
             )} />
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-medium text-foreground truncate">{evt.propertyAddress || evt.title}</p>
@@ -243,6 +255,23 @@ function AIRecommendation({ topPriority, navigate }: { topPriority: CalendarEven
   );
 }
 
+// ─── Power Hour Impact Strip ───────────────────────────────
+function PowerHourImpact({ callCount }: { callCount: number }) {
+  const estConversations = Math.max(1, Math.round(callCount * 0.4));
+  const lowRevenue = estConversations * 15;
+  const highRevenue = estConversations * 32;
+
+  return (
+    <div className="rounded-lg border border-border bg-muted/30 p-2.5 flex items-center gap-2">
+      <Target className="h-3.5 w-3.5 text-primary shrink-0" />
+      <p className="text-[10px] text-muted-foreground">
+        <span className="font-semibold text-foreground">Power Hour Impact (Est.):</span>{" "}
+        {callCount} calls · {estConversations} warm conversation{estConversations !== 1 ? "s" : ""} · ${lowRevenue}–{highRevenue}k potential pipeline
+      </p>
+    </div>
+  );
+}
+
 // ─── Main DailyAgenda Component ────────────────────────────
 export function DailyAgenda({ events, teamMode = false }: { events: CalendarEvent[]; teamMode?: boolean }) {
   const navigate = useNavigate();
@@ -256,6 +285,12 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
   const deadlines24h = events.filter((e) => {
     const hoursUntil = (e.date.getTime() - Date.now()) / (1000 * 60 * 60);
     return hoursUntil > 0 && hoursUntil <= 24 && (e.type === "offer_deadline" || e.type === "inspection");
+  });
+
+  // Hard deadlines today = deadlines expiring within 12h
+  const hardDeadlineToday = events.some((e) => {
+    const hoursUntil = (e.date.getTime() - Date.now()) / (1000 * 60 * 60);
+    return hoursUntil > 0 && hoursUntil <= 12 && e.type === "offer_deadline";
   });
 
   // AI recommendation: pick highest priority item
@@ -288,8 +323,8 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
 
       {!collapsed && (
         <div className="px-6 pb-4 space-y-4">
-          {/* Priority Focus — always visible */}
-          <PriorityFocus overdueCount={overdueFollowups.length} deadlineCount={deadlines24h.length} />
+          {/* Priority Focus — amber for risk, red only for hard deadlines */}
+          <PriorityFocus overdueCount={overdueFollowups.length} deadlineCount={deadlines24h.length} hardDeadlineToday={hardDeadlineToday} />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <CallsSection calls={callsToMake} navigate={navigate} />
@@ -316,15 +351,28 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
           {/* AI Recommendation */}
           {topPriority && <AIRecommendation topPriority={topPriority} navigate={navigate} />}
 
-          {/* Power Hour CTA */}
+          {/* Power Hour Impact Strip */}
+          {callsToMake.length > 0 && <PowerHourImpact callCount={callsToMake.length} />}
+
+          {/* Power Hour + Clear the Board CTAs */}
           {callsToMake.length > 0 && (
-            <Button
-              className="w-full h-10 gap-2"
-              onClick={() => navigate("/communications?channel=calls&filter=needs_action")}
-            >
-              <Phone className="h-4 w-4" />
-              Start Dialing
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                className="flex-1 h-10 gap-2"
+                onClick={() => navigate("/power-hour")}
+              >
+                <Zap className="h-4 w-4" />
+                Start Power Hour
+              </Button>
+              <Button
+                variant="secondary"
+                className="h-10 gap-2 text-xs"
+                onClick={() => navigate("/power-hour")}
+              >
+                <Target className="h-3.5 w-3.5" />
+                Clear Today's Board
+              </Button>
+            </div>
           )}
         </div>
       )}
