@@ -338,8 +338,8 @@ export default function Calendar() {
               Start Power Hour
             </Button>
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
-              <Users className="h-3 w-3" />
-              {teamMode ? "Team" : "Investor"}
+              <Phone className="h-3 w-3" />
+              {teamMode ? "Team" : "Calls to Make"}
             </Button>
             <TooltipProvider>
               <Tooltip>
