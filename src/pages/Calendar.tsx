@@ -432,7 +432,7 @@ export default function Calendar() {
               { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
               { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
               { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
-              { id: "grid" as CalendarViewTab, icon: LayoutGrid, label: "Grid" },
+              
             ]).map((tab) => (
               <Button
                 key={tab.id}
