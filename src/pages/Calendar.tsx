@@ -79,7 +79,7 @@ const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; labe
 };
 
 const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  low: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
+  low: { bg: "bg-muted/50", text: "text-muted-foreground", border: "border-border" },
   medium: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200" },
   high: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300" },
   critical: { bg: "bg-red-100", text: "text-red-800", border: "border-red-400" },
@@ -872,8 +872,8 @@ export default function Calendar() {
                                 onClick={() => navigate(getEventNavigation(evt))}
                                 className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer transition-all"
                               >
-                                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
-                                  <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
+                                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", evt.isOverdue ? "bg-red-50" : urgencyColor ? urgencyColor.bg : colors.bg)}>
+                                  <Icon className={cn("h-4 w-4", evt.isOverdue ? "text-red-600" : urgencyColor ? urgencyColor.text : colors.text)} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
@@ -891,7 +891,7 @@ export default function Calendar() {
                                   )}
                                   <Badge variant="outline" className={cn(
                                     "text-[9px] border rounded-md",
-                                    urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
+                                    evt.isOverdue ? "bg-red-50 text-red-700 border-red-200" : urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
                                   )}>
                                     {evt.isOverdue ? "Overdue" : colors.label}
                                   </Badge>
@@ -916,7 +916,7 @@ export default function Calendar() {
               const columns: { id: string; label: string; dotColor: string; emptyMsg: string; events: CalendarEvent[] }[] = [
                 {
                   id: "overdue",
-                  label: "🔥 Overdue",
+                  label: "Overdue",
                   dotColor: "bg-red-500",
                   emptyMsg: "No overdue — you're clean",
                   events: filteredEvents.filter((e) => e.isOverdue),
@@ -999,15 +999,15 @@ export default function Calendar() {
                                 key={evt.id}
                                 className={cn(
                                   "rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
-                                  urgencyColor && `border-l-[3px] ${urgencyColor.border}`,
+                                  evt.isOverdue ? "border-l-[3px] border-l-red-400" : urgencyColor && `border-l-[3px] ${urgencyColor.border}`,
                                 )}
                               >
                                 {/* Card content */}
                                 <div className="p-3" onClick={() => navigate(getEventNavigation(evt))}>
                                   {/* Who */}
                                   <div className="flex items-start gap-2">
-                                    <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
-                                      <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
+                                    <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", evt.isOverdue ? "bg-red-50" : urgencyColor ? urgencyColor.bg : colors.bg)}>
+                                      <Icon className={cn("h-3.5 w-3.5", evt.isOverdue ? "text-red-600" : urgencyColor ? urgencyColor.text : colors.text)} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-[11px] font-semibold text-foreground truncate">
@@ -1024,12 +1024,17 @@ export default function Calendar() {
 
                                   {/* Risk + Last touch */}
                                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                                    {urgencyColor && (
+                                    {evt.isOverdue && (
+                                      <Badge variant="outline" className="text-[8px] border rounded-md px-1.5 bg-red-50 text-red-700 border-red-200">
+                                        Overdue
+                                      </Badge>
+                                    )}
+                                    {!evt.isOverdue && urgencyColor && (
                                       <Badge variant="outline" className={cn(
                                         "text-[8px] border rounded-md px-1.5",
                                         urgencyColor.bg, urgencyColor.text, urgencyColor.border,
                                       )}>
-                                        {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High Risk" : "Medium"}
+                                        {evt.urgency === "critical" ? "Critical" : evt.urgency === "high" ? "High Risk" : "Medium"}
                                       </Badge>
                                     )}
                                     {evt.lastContactDays !== undefined && (
@@ -1238,7 +1243,7 @@ export default function Calendar() {
                                 URGENCY_COLORS[evt.urgency!].text,
                                 URGENCY_COLORS[evt.urgency!].border,
                               )}>
-                                {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
+                                {evt.urgency === "critical" ? "Critical" : evt.urgency === "high" ? "High" : "Medium"}
                               </Badge>
                               {evt.lastContactDays !== undefined && (
                                 <span className="text-[11px] text-muted-foreground">
