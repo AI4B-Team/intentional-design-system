@@ -652,7 +652,7 @@ export default function Calendar() {
                   ))}
                 </div>
                 {/* Month Grid */}
-                <div className="grid grid-cols-7 gap-px flex-1 bg-border/60 rounded-xl overflow-hidden shadow-sm">
+                <div className="grid grid-cols-7 gap-px flex-1 bg-border/60 rounded-xl shadow-sm overflow-visible">
                   {calendarDays.map((day) => {
                     const dateKey = format(day, "yyyy-MM-dd");
                     const dayEvents = filteredEventsByDate.get(dateKey) || [];
@@ -665,9 +665,9 @@ export default function Calendar() {
                         key={dateKey}
                         onClick={() => setSelectedDate(day)}
                         className={cn(
-                          "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col",
+                          "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col overflow-hidden",
                           !isCurrentMonth && "bg-muted/10",
-                          isSelected && "shadow-[inset_0_0_0_2px_hsl(var(--primary))] bg-primary/[0.02]",
+                          isSelected && "relative z-10 shadow-[0_0_0_2px_hsl(var(--primary))] rounded-md bg-primary/[0.02]",
                           hasOverdue && isCurrentDay && "bg-red-50/30",
                         )}
                       >
