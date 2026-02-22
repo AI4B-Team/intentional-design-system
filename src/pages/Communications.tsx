@@ -988,6 +988,29 @@ function CoPilotPanel({
                   <ScheduledCallbacks />
                 </CollapsiblePanel>
 
+                {/* AI Directive */}
+                <CollapsiblePanel title="AI Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
+                  <div className="text-xs text-foreground leading-relaxed font-medium">
+                    You have 1 overdue callback and 2 upcoming today. Prioritize David Park — he requested a callback yesterday and hasn't been reached.
+                  </div>
+                </CollapsiblePanel>
+
+                {/* AI Insights */}
+                <CollapsiblePanel title="AI Insights" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true}>
+                  <div className="space-y-2">
+                    {[
+                      { icon: "🕐", text: "Best calling hours today: 10 AM - 12 PM based on your success patterns" },
+                      { icon: "⚡", text: "5 hot leads haven't been contacted in 3+ days. Consider prioritizing them." },
+                      { icon: "💡", text: "Your close rate improves 23% when you mention creative financing options" },
+                    ].map((insight, i) => (
+                      <div key={i} className="flex items-start gap-2 px-3 py-2 bg-muted/40 rounded-md">
+                        <span className="text-sm mt-0.5">{insight.icon}</span>
+                        <span className="text-[11px] text-muted-foreground leading-relaxed">{insight.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CollapsiblePanel>
+
                 {/* Campaign Context */}
                 <CollapsiblePanel title="Campaign Context" icon={<Target className="h-3 w-3" />} defaultOpen={true}>
                   <CampaignContext />
@@ -996,13 +1019,6 @@ function CoPilotPanel({
                 {/* Recent Call Log (Last 5) */}
                 <CollapsiblePanel title="Recent Calls" icon={<Phone className="h-3 w-3" />} defaultOpen={true}>
                   <RecentCallLog />
-                </CollapsiblePanel>
-
-                {/* AI Directive */}
-                <CollapsiblePanel title="AI Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
-                  <div className="text-xs text-foreground leading-relaxed font-medium">
-                    You have 1 overdue callback and 2 upcoming today. Prioritize David Park — he requested a callback yesterday and hasn't been reached.
-                  </div>
                 </CollapsiblePanel>
               </>
             )}
@@ -1807,24 +1823,6 @@ function DialerView({ callingMode, setCallingMode, focusMode = false, isPowerHou
             ))}
           </div>
 
-          {/* AI Insights */}
-          <div className="p-5 bg-muted/30 rounded-xl border border-border">
-            <div className="text-[13px] font-semibold text-foreground mb-3.5 flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" /> AI Insights
-            </div>
-            <div className="space-y-2.5">
-              {[
-                { icon: "🕐", text: "Best calling hours today: 10 AM - 12 PM based on your success patterns" },
-                { icon: "⚡", text: "5 hot leads haven't been contacted in 3+ days. Consider prioritizing them." },
-                { icon: "💡", text: "Your close rate improves 23% when you mention creative financing options" },
-              ].map((insight, i) => (
-                <div key={i} className="flex items-center gap-2.5 px-3.5 py-2.5 bg-muted/50 rounded-md">
-                  <span className="text-base">{insight.icon}</span>
-                  <span className="text-xs text-muted-foreground">{insight.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>}
       </div>
     </div>
