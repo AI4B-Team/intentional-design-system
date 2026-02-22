@@ -188,6 +188,18 @@ const apps: AppItem[] = [
     href: "/property-scout",
     category: "data",
   },
+  // Documents & Templates
+  {
+    id: "templates",
+    name: "Templates",
+    description: "Create and manage reusable message, email, and document templates",
+    icon: FileText,
+    iconBg: "bg-fuchsia-100",
+    iconColor: "text-fuchsia-600",
+    href: "/apps/templates",
+    category: "documents",
+    isNew: true,
+  },
 ];
 
 const categories = [
