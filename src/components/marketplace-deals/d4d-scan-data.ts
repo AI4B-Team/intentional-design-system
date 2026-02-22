@@ -60,9 +60,9 @@ export interface D4DProperty {
 
 // Seeded random for consistency
 function seededRandom(seed: number) {
-  let s = seed;
+  let s = Math.abs(Math.round(seed)) % 2147483647 || 1;
   return () => {
-    s = (s * 16807 + 0) % 2147483647;
+    s = (s * 16807) % 2147483647;
     return (s - 1) / 2147483646;
   };
 }
