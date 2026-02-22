@@ -675,6 +675,7 @@ function ConversationThread({
 }) {
   const callState = useCallState();
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
+  const composeInputRef = React.useRef<HTMLInputElement>(null);
 
   if (!contact) {
     return (
@@ -720,7 +721,7 @@ function ConversationThread({
             <Phone className="h-3.5 w-3.5" /> Call
           </button>
           <button
-            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); }}
+            onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); setTimeout(() => composeInputRef.current?.focus(), 100); }}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "sms"
@@ -731,7 +732,7 @@ function ConversationThread({
             <MessageCircle className="h-3.5 w-3.5" /> SMS
           </button>
           <button
-            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); }}
+            onClick={() => { onSendChannelChange("email"); toast.info("Channel set to Email"); setTimeout(() => composeInputRef.current?.focus(), 100); }}
             className={cn(
               "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
               sendChannel === "email"
@@ -852,7 +853,8 @@ function ConversationThread({
         <div className="px-5 py-3.5 flex gap-2.5 items-center">
           <div className="flex-1 flex items-center gap-2 bg-muted rounded-lg px-3.5 py-2.5 border border-border">
             <input
-              placeholder="Type a message..."
+              ref={composeInputRef}
+              placeholder={sendChannel === "email" ? "Compose email..." : "Type a message..."}
               value={messageInput}
               onChange={e => onMessageInputChange(e.target.value)}
               onKeyDown={handleKeyDown}
