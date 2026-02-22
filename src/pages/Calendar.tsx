@@ -214,7 +214,7 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
 
   return (
     <TooltipProvider>
-      <div className="flex items-center gap-1 pt-1.5 border-t border-border mt-2">
+      <div className="flex items-center justify-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call"); }}>
