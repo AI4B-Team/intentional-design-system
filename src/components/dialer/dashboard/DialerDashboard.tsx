@@ -206,7 +206,7 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
                 <p className="text-small text-muted-foreground">AI-guided calls optimized for closings</p>
               </div>
             </div>
-            <Button onClick={() => navigate('/power-hour')} className="gap-2">
+            <Button onClick={() => navigate('/communications?mode=power-hour')} className="gap-2">
               <Zap className="h-4 w-4" />
               Launch
             </Button>

@@ -333,7 +333,7 @@ export default function Calendar() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => navigate("/power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
+            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
               <Zap className="h-3 w-3" />
               Start Power Hour
             </Button>

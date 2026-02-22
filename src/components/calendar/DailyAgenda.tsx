@@ -359,7 +359,7 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
             <div className="flex gap-2">
               <Button
                 className="flex-1 h-10 gap-2"
-                onClick={() => navigate("/power-hour")}
+                onClick={() => navigate("/communications?mode=power-hour")}
               >
                 <Zap className="h-4 w-4" />
                 Start Power Hour
@@ -367,7 +367,7 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
               <Button
                 variant="secondary"
                 className="h-10 gap-2 text-xs"
-                onClick={() => navigate("/power-hour")}
+                onClick={() => navigate("/communications?mode=power-hour")}
               >
                 <Target className="h-3.5 w-3.5" />
                 Clear Today's Board

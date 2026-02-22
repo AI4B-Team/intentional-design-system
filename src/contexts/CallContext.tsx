@@ -26,6 +26,7 @@ export interface CallContact {
 export type CallMode = "quick" | "dialer" | "inline";
 export type DisplayMode = "mini" | "inline" | "fullscreen";
 export type CallStatus = "idle" | "ringing" | "connected" | "on-hold" | "ended";
+export type ExecutionMode = "manual" | "power-hour" | "campaign" | "team";
 
 export interface TranscriptEntry {
   id: string;
@@ -81,6 +82,9 @@ export interface CallState {
   // Display mode
   displayMode: DisplayMode;
 
+  // Execution mode (manual, power-hour, campaign, team)
+  executionMode: ExecutionMode;
+
   // Power dialer session
   isDialerSessionActive: boolean;
   dialerQueue: CallContact[];
@@ -115,6 +119,7 @@ export interface CallState {
   addTranscriptEntry: (entry: Omit<TranscriptEntry, "id" | "timestamp">) => void;
   dismissCall: () => void;
   incrementGoal: (key: "callsMade" | "connectionsMade" | "appointmentsSet" | "offersSent") => void;
+  setExecutionMode: (mode: ExecutionMode) => void;
 }
 
 // ============================================================================
@@ -152,6 +157,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
   const [isOnHold, setIsOnHold] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [displayMode, setDisplayMode] = useState<DisplayMode>("mini");
+  const [executionMode, setExecutionMode] = useState<ExecutionMode>("manual");
 
   const [isDialerSessionActive, setIsDialerSessionActive] = useState(false);
   const [dialerQueue, setDialerQueue] = useState<CallContact[]>([]);
@@ -356,6 +362,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     isOnHold,
     isRecording,
     displayMode,
+    executionMode,
     isDialerSessionActive,
     dialerQueue,
     dialerQueueIndex,
@@ -383,6 +390,7 @@ export function CallProvider({ children }: { children: React.ReactNode }) {
     addTranscriptEntry,
     dismissCall,
     incrementGoal,
+    setExecutionMode,
   };
 
   return <CallContext.Provider value={value}>{children}</CallContext.Provider>;
