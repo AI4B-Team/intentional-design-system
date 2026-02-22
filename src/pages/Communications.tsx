@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useCallState } from "@/contexts/CallContext";
+import { useCallState, type ExecutionMode } from "@/contexts/CallContext";
 import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
 import { PostCallActions } from "@/components/dialer/post-call-actions";
@@ -44,6 +44,9 @@ import {
   Pencil,
   Hand,
   Bot,
+  Zap,
+  Target,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -109,6 +112,22 @@ const MODE_THEME: Record<CallingModeKey, {
     dot: "bg-violet-500",
     headerBg: "bg-violet-500/[0.04]",
   },
+};
+
+// ============================================================================
+// EXECUTION MODE THEME CONFIG
+// ============================================================================
+const EXECUTION_MODE_THEME: Record<ExecutionMode, {
+  label: string;
+  icon: React.ElementType;
+  bg: string;
+  text: string;
+  border: string;
+}> = {
+  manual: { label: "Manual", icon: Play, bg: "bg-muted", text: "text-muted-foreground", border: "border-border" },
+  "power-hour": { label: "Power Hour", icon: Zap, bg: "bg-amber-500/10", text: "text-amber-600", border: "border-amber-500/20" },
+  campaign: { label: "Campaign", icon: Target, bg: "bg-violet-500/10", text: "text-violet-600", border: "border-violet-500/20" },
+  team: { label: "Team", icon: Users, bg: "bg-blue-500/10", text: "text-blue-600", border: "border-blue-500/20" },
 };
 
 // ============================================================================
@@ -1788,8 +1807,25 @@ export default function Communications() {
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [callingMode, setCallingMode] = useState<CallingModeKey>("start");
+  const [searchParams, setSearchParams] = useSearchParams();
   const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
   const modeTheme = MODE_THEME[callingMode];
+  const executionModeTheme = EXECUTION_MODE_THEME[callState.executionMode];
+
+  // Handle execution mode from URL params (e.g., ?mode=power-hour)
+  useEffect(() => {
+    const mode = searchParams.get("mode") as ExecutionMode | null;
+    if (mode && ["manual", "power-hour", "campaign", "team"].includes(mode)) {
+      callState.setExecutionMode(mode);
+      // Switch to Dialer view when entering Power Hour
+      if (mode === "power-hour") {
+        setActiveView("dialer");
+      }
+      // Clean up URL param
+      searchParams.delete("mode");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, []);
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -2013,6 +2049,22 @@ export default function Communications() {
               Communications
             </h1>
             <ViewSwitcher activeView={activeView} onSwitch={setActiveView} />
+            {/* Execution Mode Badge */}
+            {callState.executionMode !== "manual" && (
+              <div className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold border",
+                executionModeTheme.bg, executionModeTheme.text, executionModeTheme.border,
+              )}>
+                <executionModeTheme.icon className="h-3 w-3" />
+                {executionModeTheme.label}
+                <button
+                  onClick={() => callState.setExecutionMode("manual")}
+                  className="ml-1 hover:opacity-70"
+                >
+                  <X className="h-2.5 w-2.5" />
+                </button>
+              </div>
+            )}
             {callState.isCallActive && (
               <div className="flex items-center gap-3">
                 <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold animate-pulse", modeTheme.badge)}>
