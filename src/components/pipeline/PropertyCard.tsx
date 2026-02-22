@@ -85,6 +85,8 @@ export interface PropertyCardData {
   sellerPhone?: string;
   sellerEmail?: string;
   images?: string[];
+  /** Number of pending unified actions for this property */
+  pendingActionsCount?: number;
 }
 
 function formatMoney(n?: number) {
@@ -136,15 +138,28 @@ export function PropertyCard({
         )}
         onClick={() => onOpenDetails?.(property.id)}
       >
-        {/* Top row: homeType badge + time badge + menu */}
+        {/* Top row: homeType badge + actions badge + time badge + menu */}
         <div className="p-3 pb-0">
           <div className="flex items-center justify-between">
-            {/* Left: homeType badge only */}
+            {/* Left: homeType badge + pending actions */}
             <div className="flex items-center gap-2">
               {property.homeType && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-success/15 text-success border border-success/20">
                   {property.homeType}
                 </span>
+              )}
+              {(property.pendingActionsCount ?? 0) > 0 && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-warning/15 text-warning border border-warning/20">
+                      <Clock className="h-3 w-3" />
+                      {property.pendingActionsCount} action{property.pendingActionsCount! > 1 ? "s" : ""}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>{property.pendingActionsCount} pending action{property.pendingActionsCount! > 1 ? "s" : ""} on this deal</p>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
 

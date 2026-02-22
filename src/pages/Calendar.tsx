@@ -116,6 +116,51 @@ function useCalendarEvents(currentDate: Date) {
     queryFn: async (): Promise<CalendarEvent[]> => {
       const events: CalendarEvent[] = [];
 
+      // 1. Fetch from unified_actions (canonical source)
+      const { data: unifiedActions } = await supabase
+        .from("unified_actions")
+        .select("*")
+        .gte("due_at", rangeStart.toISOString())
+        .lte("due_at", rangeEnd.toISOString())
+        .in("status", ["pending", "overdue", "completed"])
+        .order("due_at", { ascending: true });
+
+      const unifiedIds = new Set<string>();
+
+      unifiedActions?.forEach((action: any) => {
+        const typeMap: Record<string, CalendarEvent["type"]> = {
+          call: "followup",
+          follow_up: "followup",
+          appointment: "appointment",
+          deadline: "offer_deadline",
+          inspection: "inspection",
+          task: "followup",
+          doc: "offer_deadline",
+          payment: "closing",
+        };
+        const dueDate = parseISO(action.due_at);
+        const isOverdue = action.status === "overdue" || (action.status === "pending" && dueDate < new Date());
+
+        events.push({
+          id: `ua-${action.id}`,
+          title: action.title,
+          date: dueDate,
+          time: action.due_at ? format(dueDate, "h:mm a") : null,
+          type: typeMap[action.type] || "followup",
+          status: action.status === "completed" ? "completed" : isOverdue ? "overdue" : "pending",
+          propertyId: action.property_id || undefined,
+          propertyAddress: action.property_address || undefined,
+          contactName: action.contact_name || undefined,
+          meta: action.meta || {},
+          isOverdue,
+          urgency: action.priority as CalendarEvent["urgency"],
+        });
+
+        // Track source refs to avoid duplicates from legacy queries
+        if (action.source_ref) unifiedIds.add(action.source_ref);
+      });
+
+      // 2. Legacy: appointments (skip if already in unified_actions)
       const { data: appointments } = await supabase
         .from("appointments")
         .select(`id, scheduled_time, appointment_type, status, notes, property_id, properties!inner(address, city, state)`)
@@ -124,6 +169,7 @@ function useCalendarEvents(currentDate: Date) {
         .order("scheduled_time", { ascending: true });
 
       appointments?.forEach((apt) => {
+        if (unifiedIds.has(apt.id)) return; // Already in unified_actions
         const prop = apt.properties as unknown as { address: string; city: string; state: string };
         events.push({
           id: apt.id,
@@ -137,6 +183,7 @@ function useCalendarEvents(currentDate: Date) {
         });
       });
 
+      // 3. Legacy: follow-ups from calls (skip if already in unified_actions)
       const { data: followups } = await supabase
         .from("calls")
         .select(`id, follow_up_date, follow_up_time, follow_up_notes, contact_name, property_id, properties(address, city), created_at`)
@@ -145,6 +192,7 @@ function useCalendarEvents(currentDate: Date) {
         .lte("follow_up_date", format(rangeEnd, "yyyy-MM-dd"));
 
       followups?.forEach((f) => {
+        if (unifiedIds.has(f.id)) return;
         const prop = f.properties as unknown as { address: string; city: string } | null;
         const d = parseISO(f.follow_up_date!);
         const isOverdue = d < new Date() && !isSameDay(d, new Date());
@@ -165,6 +213,7 @@ function useCalendarEvents(currentDate: Date) {
         });
       });
 
+      // 4. Legacy: stale properties
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const { data: staleProps } = await supabase
@@ -175,6 +224,7 @@ function useCalendarEvents(currentDate: Date) {
         .limit(10);
 
       staleProps?.forEach((prop) => {
+        if (unifiedIds.has(prop.id)) return;
         const lastContactDays = differenceInDays(new Date(), parseISO(prop.updated_at));
         events.push({
           id: `stale-${prop.id}`,
@@ -190,7 +240,7 @@ function useCalendarEvents(currentDate: Date) {
         });
       });
 
-      return events.map((e) => ({ ...e, urgency: getUrgency(e) })).sort((a, b) => a.date.getTime() - b.date.getTime());
+      return events.map((e) => ({ ...e, urgency: e.urgency || getUrgency(e) })).sort((a, b) => a.date.getTime() - b.date.getTime());
     },
     refetchInterval: 60000,
   });

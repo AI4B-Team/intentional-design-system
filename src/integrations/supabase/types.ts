@@ -8313,6 +8313,93 @@ export type Database = {
           },
         ]
       }
+      unified_actions: {
+        Row: {
+          completed_at: string | null
+          contact_name: string | null
+          created_at: string
+          description: string | null
+          due_at: string | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          meta: Json | null
+          organization_id: string | null
+          priority: string
+          property_address: string | null
+          property_id: string | null
+          snoozed_until: string | null
+          source: string
+          source_ref: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          contact_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          meta?: Json | null
+          organization_id?: string | null
+          priority?: string
+          property_address?: string | null
+          property_id?: string | null
+          snoozed_until?: string | null
+          source?: string
+          source_ref?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          contact_name?: string | null
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          meta?: Json | null
+          organization_id?: string | null
+          priority?: string
+          property_address?: string | null
+          property_id?: string | null
+          snoozed_until?: string | null
+          source?: string
+          source_ref?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unified_actions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unified_actions_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string
