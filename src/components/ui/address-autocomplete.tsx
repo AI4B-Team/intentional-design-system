@@ -71,7 +71,7 @@ export function AddressAutocomplete({
   value,
   onChange,
   onSelect,
-  placeholder = "Search address, city, or ZIP for insights",
+  placeholder = "Search address, city, state or zip for insights",
   className,
   inputClassName,
   defaultMode = "listings",
