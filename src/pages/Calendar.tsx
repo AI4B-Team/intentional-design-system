@@ -449,43 +449,6 @@ export default function Calendar() {
               </Button>
             ))}
           </div>
-        </div>
-
-        {/* Calendar Controls — Refined like reference */}
-        <div className="flex items-center justify-between px-6 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            {/* View Mode Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  {viewMode}
-                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="bg-white w-32">
-                {(["day", "week", "month"] as ViewMode[]).map((v) => (
-                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
-                    {v}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button size="icon" variant="default" onClick={goToToday} className="h-8 w-8" title="Today">
-              <CalendarIcon className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="text-sm font-semibold text-foreground min-w-[160px] text-center">
-              {viewMode === "day"
-                ? format(currentDate, "EEEE, MMM d, yyyy")
-                : viewMode === "week"
-                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
-                  : format(currentDate, "MMMM yyyy")}
-            </span>
-            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
-          </div>
-
           {/* Right side tools */}
           <div className="flex items-center gap-1">
             {/* Search */}
@@ -613,6 +576,43 @@ export default function Calendar() {
               </Tooltip>
             </TooltipProvider>
           </div>
+        </div>
+
+        {/* Calendar Controls */}
+        <div className="flex items-center justify-between px-6 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            {/* View Mode Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  {viewMode}
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="bg-white w-32">
+                {(["day", "week", "month"] as ViewMode[]).map((v) => (
+                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
+                    {v}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button size="icon" variant="default" onClick={goToToday} className="h-8 w-8" title="Today">
+              <CalendarIcon className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+
+          <span className="text-sm font-semibold text-foreground">
+            {viewMode === "day"
+              ? format(currentDate, "EEEE, MMM d, yyyy")
+              : viewMode === "week"
+                ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
+                : format(currentDate, "MMMM yyyy")}
+          </span>
         </div>
 
         {/* Active filters indicator */}
