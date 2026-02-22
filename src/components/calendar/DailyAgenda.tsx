@@ -320,11 +320,10 @@ export function DailyAgenda({ events, teamMode = false }: { events: CalendarEven
           {callsToMake.length > 0 && (
             <Button
               className="w-full h-10 gap-2"
-              onClick={() => navigate("/power-hour")}
+              onClick={() => navigate("/communications?channel=calls&filter=needs_action")}
             >
-              <Zap className="h-4 w-4" />
-              Start Power Hour
-              <span className="text-[10px] font-normal opacity-70 ml-1">AI-guided calls optimized for closings</span>
+              <Phone className="h-4 w-4" />
+              Start Dialing
             </Button>
           )}
         </div>
