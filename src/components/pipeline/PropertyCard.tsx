@@ -82,6 +82,7 @@ export interface PropertyCardData {
   homeType?: string;
   leadType?: string;
   daysInStage?: number;
+  leadScore?: number;
   sellerPhone?: string;
   sellerEmail?: string;
   images?: string[];
@@ -189,6 +190,24 @@ export function PropertyCard({
                   <p>{property.daysInStage ?? 0} Days In Current Stage</p>
                 </TooltipContent>
               </Tooltip>
+
+              {property.leadScore != null && (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className={cn(
+                      "inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium tabular-nums",
+                      property.leadScore >= 80 ? "bg-success/10 text-success" :
+                      property.leadScore >= 60 ? "bg-warning/10 text-warning" :
+                      "bg-destructive/10 text-destructive"
+                    )}>
+                      {property.leadScore}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p>Lead Score: {property.leadScore}</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
