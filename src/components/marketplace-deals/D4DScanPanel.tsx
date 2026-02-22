@@ -207,7 +207,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
               }}
             >
               <Phone className="h-3 w-3" />
-              Add All to Dial Queue
+              Add All To Dial Queue
             </Button>
           </div>
 
