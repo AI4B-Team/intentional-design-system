@@ -351,50 +351,58 @@ export default function Calendar() {
         type: "closing", status: "scheduled", propertyAddress: "789 Birch Court, Leander",
         contactName: "Michael Torres", urgency: "low",
       },
-      // Follow-Up (future)
+      // Upcoming (future non-blocked)
       {
-        id: "demo-followup-1", title: "Follow up: Karen White", date: addDays(today, 2), time: "9:00 AM",
-        type: "followup", status: "pending", propertyAddress: "321 Sunset Blvd, Georgetown",
-        contactName: "Karen White", lastContactDays: 2, urgency: "low",
-        meta: { notes: "Discussing earnest money terms." },
-      },
-      {
-        id: "demo-followup-2", title: "Follow up: David Miller", date: addDays(today, 3), time: null,
-        type: "followup", status: "pending", propertyAddress: "654 River Road, Bastrop",
-        contactName: "David Miller", lastContactDays: 4, urgency: "low",
-      },
-      // Deadline
-      {
-        id: "demo-deadline-1", title: "Offer Deadline - 1500 Lamar", date: addDays(today, 1), time: "5:00 PM",
-        type: "offer_deadline", status: "pending", propertyAddress: "1500 Lamar Blvd, Austin",
-        contactName: "Sandra Lee", urgency: "high",
-      },
-      {
-        id: "demo-deadline-2", title: "Inspection Due - 890 Pine Rd", date: addDays(today, 2), time: "12:00 PM",
-        type: "offer_deadline", status: "pending", propertyAddress: "890 Pine Road, Georgetown",
-        contactName: "Maria Santos", urgency: "high",
-      },
-      // Appointment
-      {
-        id: "demo-appt-1", title: "Showing - 450 Willow Way", date: addDays(today, 1), time: "11:00 AM",
+        id: "demo-upcoming-1", title: "Showing - 450 Willow Way", date: addDays(today, 1), time: "11:00 AM",
         type: "appointment", status: "scheduled", propertyAddress: "450 Willow Way, Cedar Park",
         contactName: "Nancy Johnson", urgency: "low",
       },
       {
-        id: "demo-appt-2", title: "Listing Presentation - 900 Main St", date: addDays(today, 3), time: "3:00 PM",
-        type: "appointment", status: "scheduled", propertyAddress: "900 Main Street, Round Rock",
-        contactName: "Brian Thompson", urgency: "low",
+        id: "demo-upcoming-2", title: "Offer Deadline - 1500 Lamar", date: addDays(today, 1), time: "5:00 PM",
+        type: "offer_deadline", status: "pending", propertyAddress: "1500 Lamar Blvd, Austin",
+        contactName: "Sandra Lee", urgency: "high",
       },
-      // This Week
       {
-        id: "demo-week-1", title: "Closing - 2100 Lake Travis", date: addDays(today, 4), time: "10:00 AM",
+        id: "demo-upcoming-3", title: "Closing - 2100 Lake Travis", date: addDays(today, 4), time: "10:00 AM",
         type: "closing", status: "scheduled", propertyAddress: "2100 Lake Travis Dr, Lakeway",
         contactName: "Angela Martinez", urgency: "low",
       },
       {
-        id: "demo-week-2", title: "Title Review - 345 Heritage", date: addDays(today, 5), time: "1:00 PM",
+        id: "demo-upcoming-4", title: "Title Review - 345 Heritage", date: addDays(today, 5), time: "1:00 PM",
         type: "inspection", status: "scheduled", propertyAddress: "345 Heritage Lane, Dripping Springs",
         contactName: "Tom Harris", urgency: "low",
+      },
+      // Waiting on Seller
+      {
+        id: "demo-ws-1", title: "Follow up: Karen White", date: addDays(today, 2), time: null,
+        type: "followup", status: "pending", propertyAddress: "321 Sunset Blvd, Georgetown",
+        contactName: "Karen White", lastContactDays: 2, urgency: "low", waitingOn: "seller",
+        meta: { notes: "Sent counter-offer, awaiting seller response." },
+      },
+      {
+        id: "demo-ws-2", title: "Follow up: David Miller", date: addDays(today, 3), time: null,
+        type: "followup", status: "pending", propertyAddress: "654 River Road, Bastrop",
+        contactName: "David Miller", lastContactDays: 4, urgency: "medium", waitingOn: "seller",
+        meta: { notes: "Seller reviewing inspection report." },
+      },
+      {
+        id: "demo-ws-3", title: "Inspection Due - 890 Pine Rd", date: addDays(today, 2), time: null,
+        type: "offer_deadline", status: "pending", propertyAddress: "890 Pine Road, Georgetown",
+        contactName: "Maria Santos", urgency: "medium", waitingOn: "seller",
+        meta: { notes: "Seller scheduling inspector access." },
+      },
+      // Waiting on Me
+      {
+        id: "demo-wm-1", title: "Send Comps - 900 Main St", date: addDays(today, 1), time: null,
+        type: "followup", status: "pending", propertyAddress: "900 Main Street, Round Rock",
+        contactName: "Brian Thompson", urgency: "medium", waitingOn: "me",
+        meta: { notes: "Need to pull comps and send offer letter." },
+      },
+      {
+        id: "demo-wm-2", title: "Listing Presentation Prep", date: addDays(today, 2), time: null,
+        type: "appointment", status: "pending", propertyAddress: "1100 Burnet Rd, Austin",
+        contactName: "Rachel Kim", urgency: "low", waitingOn: "me",
+        meta: { notes: "Prepare CMA and listing agreement." },
       },
     ];
     // Merge: real events + demo events (dedup by id)
@@ -496,10 +504,13 @@ export default function Calendar() {
         <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-white border-b border-border">
           <h1 className="text-xl font-bold text-foreground tracking-tight">Calendar</h1>
           <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
-              <Zap className="h-3.5 w-3.5" />
-              Start Power Hour
-            </Button>
+            <div className="flex flex-col items-end">
+              <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
+                <Zap className="h-3.5 w-3.5" />
+                Start Power Hour
+              </Button>
+              <span className="text-[9px] text-muted-foreground/60 mt-0.5 italic">AI-curated calls with the highest close probability</span>
+            </div>
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5 h-8 rounded-lg">
               <Users className="h-3.5 w-3.5" />
               {teamMode ? "Team" : "Solo"}
@@ -1018,50 +1029,35 @@ export default function Calendar() {
                   label: "Today",
                   dotColor: "bg-primary",
                   emptyMsg: "Nothing scheduled today",
-                  events: filteredEvents.filter((e) => !e.isOverdue && isSameDay(e.date, now)),
+                  events: filteredEvents.filter((e) => !e.isOverdue && isSameDay(e.date, now) && !e.waitingOn),
                 },
                 {
-                  id: "followup",
-                  label: "Follow-Up",
-                  dotColor: "bg-amber-500",
-                  emptyMsg: "No follow-ups pending",
-                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "followup"),
+                  id: "upcoming",
+                  label: "Upcoming",
+                  dotColor: "bg-muted-foreground",
+                  emptyMsg: "No upcoming tasks",
+                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && !e.waitingOn && e.date >= todayStart && e.date <= weekEnd),
                 },
                 {
-                  id: "deadline",
-                  label: "Deadline",
-                  dotColor: "bg-destructive",
-                  emptyMsg: "No upcoming deadlines",
-                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "offer_deadline"),
+                  id: "waiting_seller",
+                  label: "Waiting on Seller",
+                  dotColor: "bg-amber-400",
+                  emptyMsg: "Nothing blocked by sellers",
+                  events: filteredEvents.filter((e) => !e.isOverdue && e.waitingOn === "seller"),
                 },
                 {
-                  id: "appointment",
-                  label: "Appointment",
+                  id: "waiting_me",
+                  label: "Waiting on Me",
                   dotColor: "bg-blue-500",
-                  emptyMsg: "No upcoming appointments",
-                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "appointment"),
-                },
-                {
-                  id: "this_week",
-                  label: "This Week",
-                  dotColor: "bg-emerald-500",
-                  emptyMsg: "Nothing else this week",
-                  events: filteredEvents.filter((e) =>
-                    !e.isOverdue &&
-                    !isSameDay(e.date, now) &&
-                    e.type !== "followup" &&
-                    e.type !== "offer_deadline" &&
-                    e.type !== "appointment" &&
-                    e.date >= todayStart &&
-                    e.date <= weekEnd
-                  ),
+                  emptyMsg: "You're caught up",
+                  events: filteredEvents.filter((e) => !e.isOverdue && e.waitingOn === "me"),
                 },
               ];
 
               return (
                 <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1">
                   {columns.map((col) => (
-                    <div key={col.id} className="flex-shrink-0 w-72 flex flex-col">
+                    <div key={col.id} className="flex-shrink-0 w-64 flex flex-col">
                       {/* Column header */}
                       <div className="flex items-center gap-2 mb-3 px-1">
                         <div className={cn("w-2 h-2 rounded-full", col.dotColor)} />
@@ -1071,7 +1067,7 @@ export default function Calendar() {
 
                       {/* Column body */}
                       <div className={cn(
-                        "flex-1 space-y-2 min-h-[200px] p-2 rounded-xl border",
+                        "flex-1 space-y-1.5 min-h-[200px] p-2 rounded-xl border",
                         col.id === "overdue" && col.events.length > 0
                           ? "bg-red-50/30 border-red-200/50"
                           : "bg-muted/15 border-border/40",
@@ -1082,116 +1078,108 @@ export default function Calendar() {
                           </div>
                         ) : (
                           col.events.map((evt) => {
-                            const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                             const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
-                            const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+                            const isAtRisk = !evt.isOverdue && evt.urgency && evt.urgency !== "low";
+                            const isOnTrack = !evt.isOverdue && (!evt.urgency || evt.urgency === "low");
 
                             return (
                               <div
                                 key={evt.id}
                                 className={cn(
-                                  "rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
-                                  evt.isOverdue ? "border-l-[3px] border-l-red-400" : urgencyColor && `border-l-[3px] ${urgencyColor.border}`,
+                                  "group rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
+                                  evt.isOverdue && "border-l-[3px] border-l-red-400",
+                                  isAtRisk && "border-l-[3px] border-l-amber-300",
                                 )}
                               >
-                                {/* Card content */}
-                                <div className="p-3" onClick={() => navigate(getEventNavigation(evt))}>
-                                  {/* Who */}
-                                  <div className="flex items-start gap-2">
-                                    <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", evt.isOverdue ? "bg-red-50" : urgencyColor ? urgencyColor.bg : colors.bg)}>
-                                      <Icon className={cn("h-3.5 w-3.5", evt.isOverdue ? "text-red-600" : urgencyColor ? urgencyColor.text : colors.text)} />
+                                {/* Compact card content */}
+                                <div className="px-2.5 py-2" onClick={() => navigate(getEventNavigation(evt))}>
+                                  <div className="flex items-center gap-2">
+                                    <div className={cn(
+                                      "w-6 h-6 rounded-md flex items-center justify-center shrink-0",
+                                      evt.isOverdue ? "bg-red-50" : isAtRisk ? "bg-amber-50" : "bg-muted/40",
+                                    )}>
+                                      <Icon className={cn("h-3 w-3", evt.isOverdue ? "text-red-600" : isAtRisk ? "text-amber-600" : "text-muted-foreground")} />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <p className="text-[11px] font-semibold text-foreground truncate">
                                         {evt.contactName || evt.title.split(" - ")[0]}
                                       </p>
-                                      {evt.propertyAddress && (
-                                        <div className="flex items-center gap-1 mt-0.5">
-                                          <MapPin className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
-                                          <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
-                                        </div>
-                                      )}
                                     </div>
-                                  </div>
-
-                                  {/* Risk + Last touch */}
-                                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                    {/* Status indicators — minimal */}
                                     {evt.isOverdue && (
-                                      <Badge variant="outline" className="text-[8px] border rounded-md px-1.5 bg-red-50 text-red-700 border-red-200">
-                                        Overdue
+                                      <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Overdue" />
+                                    )}
+                                    {isAtRisk && !evt.isOverdue && (
+                                      <Badge variant="outline" className="text-[7px] px-1 py-0 border-amber-200 text-amber-600 bg-transparent font-medium">
+                                        At Risk
                                       </Badge>
                                     )}
-                                    {!evt.isOverdue && urgencyColor && (
-                                      <Badge variant="outline" className={cn(
-                                        "text-[8px] border rounded-md px-1.5",
-                                        urgencyColor.bg, urgencyColor.text, urgencyColor.border,
-                                      )}>
-                                        {evt.urgency === "critical" ? "Critical" : evt.urgency === "high" ? "High Risk" : "Medium"}
-                                      </Badge>
+                                    {isOnTrack && (
+                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" title="On Track" />
+                                    )}
+                                  </div>
+
+                                  {/* Secondary metadata — collapsed until hover */}
+                                  <div className="hidden group-hover:flex items-center gap-2 mt-1 ml-8 flex-wrap">
+                                    {evt.propertyAddress && (
+                                      <span className="text-[9px] text-muted-foreground flex items-center gap-0.5 truncate max-w-[160px]">
+                                        <MapPin className="h-2 w-2 shrink-0" /> {evt.propertyAddress}
+                                      </span>
                                     )}
                                     {evt.lastContactDays !== undefined && (
                                       <span className="text-[9px] text-muted-foreground">
-                                        {evt.lastContactDays}d since contact
+                                        {evt.lastContactDays}d ago
                                       </span>
                                     )}
                                     {evt.time && (
-                                      <span className="text-[9px] text-muted-foreground flex items-center gap-0.5 ml-auto">
-                                        <Clock className="h-2.5 w-2.5" /> {evt.time}
-                                      </span>
-                                    )}
-                                    {!evt.time && (
-                                      <span className="text-[9px] text-muted-foreground ml-auto">
-                                        {format(evt.date, "MMM d")}
+                                      <span className="text-[9px] text-muted-foreground flex items-center gap-0.5">
+                                        <Clock className="h-2 w-2" /> {evt.time}
                                       </span>
                                     )}
                                   </div>
                                 </div>
 
-                                {/* Quick actions bar */}
-                                {(evt.isOverdue || evt.type === "followup" || evt.type === "offer_deadline") && (
-                                  <div className="flex items-center border-t border-border/40 bg-muted/10">
-                                    <TooltipProvider>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "call"); }}
-                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-emerald-700 hover:bg-emerald-50 transition-colors"
-                                          >
-                                            <Phone className="h-3 w-3" />
-                                            Call
-                                          </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
-                                      </Tooltip>
-                                      <div className="w-px h-4 bg-border/40" />
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "sms"); }}
-                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/30 transition-colors"
-                                          >
-                                            <MessageSquare className="h-3 w-3" />
-                                            Message
-                                          </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Send SMS</p></TooltipContent>
-                                      </Tooltip>
-                                      <div className="w-px h-4 bg-border/40" />
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <button
-                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule"); }}
-                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/30 transition-colors"
-                                          >
-                                            <CalendarClock className="h-3 w-3" />
-                                            Reschedule
-                                          </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
-                                      </Tooltip>
-                                    </TooltipProvider>
-                                  </div>
-                                )}
+                                {/* Quick actions — always visible, Call dominant */}
+                                <div className="flex items-center border-t border-border/30">
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "call"); }}
+                                          className="flex-[2] flex items-center justify-center gap-1 py-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
+                                        >
+                                          <Phone className="h-3 w-3" />
+                                          Call
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
+                                    </Tooltip>
+                                    <div className="w-px h-3.5 bg-border/30" />
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "sms"); }}
+                                          className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
+                                        >
+                                          <MessageSquare className="h-3 w-3" />
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Message</p></TooltipContent>
+                                    </Tooltip>
+                                    <div className="w-px h-3.5 bg-border/30" />
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule"); }}
+                                          className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
+                                        >
+                                          <CalendarClock className="h-3 w-3" />
+                                        </button>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                </div>
                               </div>
                             );
                           })

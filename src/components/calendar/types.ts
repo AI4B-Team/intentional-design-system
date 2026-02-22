@@ -12,6 +12,8 @@ export interface CalendarEvent {
   isOverdue?: boolean;
   urgency?: "low" | "medium" | "high" | "critical";
   lastContactDays?: number;
+  /** For Kanban: who is blocking progress */
+  waitingOn?: "seller" | "me" | null;
 }
 
 export type ViewMode = "month" | "week" | "day";
