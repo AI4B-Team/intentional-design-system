@@ -133,6 +133,7 @@ import DispoCampaignDetail from "./pages/DispoCampaignDetail";
 import DispoSettings from "./pages/DispoSettings";
 import Appointments from "./pages/Appointments";
 import Calendar from "./pages/Calendar";
+import PowerHour from "./pages/PowerHour";
 import LeadSources from "./pages/LeadSources";
 import Documents from "./pages/Documents";
 import Apps from "./pages/Apps";
@@ -1116,6 +1117,16 @@ const App = () => (
               }
             />
             
+            {/* Power Hour */}
+            <Route
+              path="/power-hour"
+              element={
+                <ProtectedRoute>
+                  <PowerHour />
+                </ProtectedRoute>
+              }
+            />
+
             {/* Redirects */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
