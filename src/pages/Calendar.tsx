@@ -502,19 +502,19 @@ export default function Calendar() {
       <div className="flex flex-col h-full overflow-hidden bg-muted/30">
         {/* Title and action buttons */}
         <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-white border-b border-border">
-          <h1 className="text-xl font-bold text-foreground tracking-tight">Calendar</h1>
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col items-end">
-              <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
-                <Zap className="h-3.5 w-3.5" />
-                Start Power Hour
-              </Button>
-              <span className="text-[9px] text-muted-foreground/60 mt-0.5 italic">AI-curated calls with the highest close probability</span>
-            </div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-foreground tracking-tight">Calendar</h1>
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5 h-8 rounded-lg">
               <Users className="h-3.5 w-3.5" />
               {teamMode ? "Team" : "Solo"}
             </Button>
+          </div>
+          <div className="flex flex-col items-end">
+            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
+              <Zap className="h-3.5 w-3.5" />
+              Start Power Hour
+            </Button>
+            <span className="text-[9px] text-muted-foreground/60 mt-0.5 italic">AI-curated calls with the highest close probability</span>
           </div>
         </div>
 
