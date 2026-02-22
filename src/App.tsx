@@ -137,6 +137,7 @@ import LeadSources from "./pages/LeadSources";
 import Documents from "./pages/Documents";
 import Apps from "./pages/Apps";
 import Signatures from "./pages/apps/Signatures";
+import AppTemplates from "./pages/AppTemplates";
 import { BuyerRegister, BuyerLogin, BuyerAuthCallback, BuyerDashboard, BuyerProfile } from "./pages/buyer";
 import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
 
@@ -1022,6 +1023,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Signatures />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/apps/templates"
+              element={
+                <ProtectedRoute>
+                  <AppTemplates />
                 </ProtectedRoute>
               }
             />
