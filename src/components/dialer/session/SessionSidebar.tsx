@@ -64,8 +64,8 @@ export function SessionSidebar({
           id: "power-dialer",
           label: "Power Dialer",
           icon: Phone,
-          href: "/dialer",
-          activeMatch: (p) => p.startsWith("/dialer"),
+          href: "/communications?tab=dialer",
+          activeMatch: (p) => p.startsWith("/communications"),
         },
         {
           id: "sms",
