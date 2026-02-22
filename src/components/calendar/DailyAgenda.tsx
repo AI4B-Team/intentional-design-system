@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { CalendarEvent } from "./types";
+import { PrepWithAIDialog } from "./PrepWithAIDialog";
 
 function navigateToEvent(navigate: ReturnType<typeof useNavigate>, event: CalendarEvent) {
   if (event.type === "followup" || event.isOverdue) {
@@ -140,43 +141,59 @@ function CallsSection({ calls, navigate }: { calls: CalendarEvent[]; navigate: R
 
 // ─── Appointments Section ──────────────────────────────────
 function AppointmentsSection({ appointments, navigate }: { appointments: CalendarEvent[]; navigate: ReturnType<typeof useNavigate> }) {
+  const [prepOpen, setPrepOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<CalendarEvent | null>(null);
+
   if (appointments.length === 0) return null;
 
+  const handlePrepWithAI = () => {
+    const target = appointments[0];
+    setSelectedAppointment(target);
+    setPrepOpen(true);
+  };
+
   return (
-    <div className="rounded-lg border border-border p-3">
-      <div className="flex items-center gap-1.5 mb-2">
-        <CalendarIcon className="h-3.5 w-3.5 text-primary" />
-        <span className="text-xs font-semibold text-foreground">Appointments ({appointments.length})</span>
+    <>
+      <div className="rounded-lg border border-border p-3">
+        <div className="flex items-center gap-1.5 mb-2">
+          <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+          <span className="text-xs font-semibold text-foreground">Appointments ({appointments.length})</span>
+        </div>
+        <div className="space-y-1.5">
+          {appointments.slice(0, 4).map((evt) => (
+            <button
+              key={evt.id}
+              onClick={() => navigateToEvent(navigate, evt)}
+              className="w-full text-left flex items-center gap-2 rounded px-2 py-1.5 hover:bg-muted/50 transition-colors group"
+            >
+              <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-primary" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-foreground truncate">{evt.title.split(" - ")[0]}</p>
+                <p className="text-[10px] text-muted-foreground">{evt.time} · {evt.propertyAddress}</p>
+              </div>
+              <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          ))}
+        </div>
+        <Button
+          size="sm"
+          variant="secondary"
+          className="w-full mt-2 text-xs h-8"
+          onClick={handlePrepWithAI}
+        >
+          <Sparkles className="h-3 w-3 mr-1.5" />
+          Prep with AI
+        </Button>
       </div>
-      <div className="space-y-1.5">
-        {appointments.slice(0, 4).map((evt) => (
-          <button
-            key={evt.id}
-            onClick={() => navigateToEvent(navigate, evt)}
-            className="w-full text-left flex items-center gap-2 rounded px-2 py-1.5 hover:bg-muted/50 transition-colors group"
-          >
-            <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-primary" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium text-foreground truncate">{evt.title.split(" - ")[0]}</p>
-              <p className="text-[10px] text-muted-foreground">{evt.time} · {evt.propertyAddress}</p>
-            </div>
-            <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-        ))}
-      </div>
-      <Button
-        size="sm"
-        variant="secondary"
-        className="w-full mt-2 text-xs h-8"
-        onClick={() => {
-          const firstWithProp = appointments.find((a) => a.propertyId);
-          if (firstWithProp) navigate(`/properties/${firstWithProp.propertyId}`);
-        }}
-      >
-        <Sparkles className="h-3 w-3 mr-1.5" />
-        Prep with AI
-      </Button>
-    </div>
+
+      {selectedAppointment && (
+        <PrepWithAIDialog
+          open={prepOpen}
+          onOpenChange={setPrepOpen}
+          appointment={selectedAppointment}
+        />
+      )}
+    </>
   );
 }
 
