@@ -13,7 +13,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  LayoutDashboard,
+  Gauge,
   Building2,
   Users,
   UserCheck,
@@ -65,7 +65,7 @@ interface NavGroup {
 }
 
 const topNavItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Dashboard", href: "/dashboard", icon: Gauge },
   { label: "Intel", href: "/intel", icon: Radar },
   { label: "Search", href: "/marketplace", icon: Search },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
