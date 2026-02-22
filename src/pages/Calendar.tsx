@@ -782,10 +782,7 @@ export default function Calendar() {
                       <div
                         key={evt.id}
                         onClick={() => navigate(getEventNavigation(evt))}
-                        className={cn(
-                          "flex flex-col p-4 rounded-lg border border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors",
-                          urgencyColor && urgencyColor.bg,
-                        )}
+                        className="flex flex-col p-4 rounded-lg border border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors"
                       >
                         <div className="flex items-center justify-between mb-3">
                           <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", urgencyColor ? urgencyColor.bg : colors.bg)}>
