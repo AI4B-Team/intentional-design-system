@@ -900,57 +900,204 @@ export default function Calendar() {
               </div>
             )}
 
-            {viewTab === "kanban" && (
-              <div className="flex gap-4 overflow-x-auto pb-4">
-                {Object.entries(EVENT_COLORS).map(([type, colors]) => {
-                  const typeEvents = filteredEvents.filter((e) => e.type === type);
-                  return (
-                    <div key={type} className="flex-shrink-0 w-72 flex flex-col">
+            {viewTab === "kanban" && (() => {
+              // Execution-oriented columns
+              const now = new Date();
+              const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              const weekEnd = addDays(todayStart, 7);
+
+              const columns: { id: string; label: string; dotColor: string; emptyMsg: string; events: CalendarEvent[] }[] = [
+                {
+                  id: "overdue",
+                  label: "🔥 Overdue",
+                  dotColor: "bg-red-500",
+                  emptyMsg: "No overdue — you're clean",
+                  events: filteredEvents.filter((e) => e.isOverdue),
+                },
+                {
+                  id: "today",
+                  label: "Today",
+                  dotColor: "bg-primary",
+                  emptyMsg: "Nothing scheduled today",
+                  events: filteredEvents.filter((e) => !e.isOverdue && isSameDay(e.date, now)),
+                },
+                {
+                  id: "followup",
+                  label: "Follow-Up",
+                  dotColor: "bg-amber-500",
+                  emptyMsg: "No follow-ups pending",
+                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "followup"),
+                },
+                {
+                  id: "deadline",
+                  label: "Deadline",
+                  dotColor: "bg-destructive",
+                  emptyMsg: "No upcoming deadlines",
+                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "offer_deadline"),
+                },
+                {
+                  id: "appointment",
+                  label: "Appointment",
+                  dotColor: "bg-blue-500",
+                  emptyMsg: "No upcoming appointments",
+                  events: filteredEvents.filter((e) => !e.isOverdue && !isSameDay(e.date, now) && e.type === "appointment"),
+                },
+                {
+                  id: "this_week",
+                  label: "This Week",
+                  dotColor: "bg-emerald-500",
+                  emptyMsg: "Nothing else this week",
+                  events: filteredEvents.filter((e) =>
+                    !e.isOverdue &&
+                    !isSameDay(e.date, now) &&
+                    e.type !== "followup" &&
+                    e.type !== "offer_deadline" &&
+                    e.type !== "appointment" &&
+                    e.date >= todayStart &&
+                    e.date <= weekEnd
+                  ),
+                },
+              ];
+
+              return (
+                <div className="flex gap-3 overflow-x-auto pb-4 -mx-1 px-1">
+                  {columns.map((col) => (
+                    <div key={col.id} className="flex-shrink-0 w-72 flex flex-col">
+                      {/* Column header */}
                       <div className="flex items-center gap-2 mb-3 px-1">
-                        <div className={cn("w-2.5 h-2.5 rounded-full", colors.dot)} />
-                        <span className="text-xs font-semibold text-foreground">{colors.label}</span>
-                        <Badge variant="secondary" className="text-[10px] ml-auto rounded-md">{typeEvents.length}</Badge>
+                        <div className={cn("w-2 h-2 rounded-full", col.dotColor)} />
+                        <span className="text-xs font-semibold text-foreground">{col.label}</span>
+                        <Badge variant="secondary" className="text-[10px] ml-auto rounded-md h-5 px-1.5">{col.events.length}</Badge>
                       </div>
-                      <div className="flex-1 space-y-2 min-h-[200px] p-2.5 rounded-xl bg-muted/20 border border-border/40">
-                        {typeEvents.length === 0 ? (
-                          <p className="text-[10px] text-muted-foreground text-center py-10">No events</p>
+
+                      {/* Column body */}
+                      <div className={cn(
+                        "flex-1 space-y-2 min-h-[200px] p-2 rounded-xl border",
+                        col.id === "overdue" && col.events.length > 0
+                          ? "bg-red-50/30 border-red-200/50"
+                          : "bg-muted/15 border-border/40",
+                      )}>
+                        {col.events.length === 0 ? (
+                          <div className="flex flex-col items-center justify-center py-10">
+                            <p className="text-[10px] text-muted-foreground/60">{col.emptyMsg}</p>
+                          </div>
                         ) : (
-                          typeEvents.map((evt) => {
+                          col.events.map((evt) => {
+                            const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                             const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
                             const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+
                             return (
                               <div
                                 key={evt.id}
-                                onClick={() => navigate(getEventNavigation(evt))}
                                 className={cn(
-                                  "p-3 rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all",
-                                  urgencyColor && `border-l-2 ${urgencyColor.border}`,
+                                  "rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
+                                  urgencyColor && `border-l-[3px] ${urgencyColor.border}`,
                                 )}
                               >
-                                <div className="flex items-start gap-2">
-                                  <Icon className={cn("h-3.5 w-3.5 shrink-0 mt-0.5", colors.text)} />
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-[11px] font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
-                                    {evt.propertyAddress && (
-                                      <span className="text-[10px] text-muted-foreground truncate block">{evt.propertyAddress}</span>
+                                {/* Card content */}
+                                <div className="p-3" onClick={() => navigate(getEventNavigation(evt))}>
+                                  {/* Who */}
+                                  <div className="flex items-start gap-2">
+                                    <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
+                                      <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-[11px] font-semibold text-foreground truncate">
+                                        {evt.contactName || evt.title.split(" - ")[0]}
+                                      </p>
+                                      {evt.propertyAddress && (
+                                        <div className="flex items-center gap-1 mt-0.5">
+                                          <MapPin className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
+                                          <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Risk + Last touch */}
+                                  <div className="flex items-center gap-2 mt-2 flex-wrap">
+                                    {urgencyColor && (
+                                      <Badge variant="outline" className={cn(
+                                        "text-[8px] border rounded-md px-1.5",
+                                        urgencyColor.bg, urgencyColor.text, urgencyColor.border,
+                                      )}>
+                                        {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High Risk" : "Medium"}
+                                      </Badge>
+                                    )}
+                                    {evt.lastContactDays !== undefined && (
+                                      <span className="text-[9px] text-muted-foreground">
+                                        {evt.lastContactDays}d since contact
+                                      </span>
+                                    )}
+                                    {evt.time && (
+                                      <span className="text-[9px] text-muted-foreground flex items-center gap-0.5 ml-auto">
+                                        <Clock className="h-2.5 w-2.5" /> {evt.time}
+                                      </span>
+                                    )}
+                                    {!evt.time && (
+                                      <span className="text-[9px] text-muted-foreground ml-auto">
+                                        {format(evt.date, "MMM d")}
+                                      </span>
                                     )}
                                   </div>
                                 </div>
-                                <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
-                                  <span>{format(evt.date, "MMM d")}</span>
-                                  {evt.time && <span>· {evt.time}</span>}
-                                  {evt.isOverdue && <Badge variant="outline" className="text-[8px] text-destructive border-destructive/30 rounded-md">Overdue</Badge>}
-                                </div>
+
+                                {/* Quick actions bar */}
+                                {(evt.isOverdue || evt.type === "followup" || evt.type === "offer_deadline") && (
+                                  <div className="flex items-center border-t border-border/40 bg-muted/10">
+                                    <TooltipProvider>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "call"); }}
+                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-emerald-700 hover:bg-emerald-50 transition-colors"
+                                          >
+                                            <Phone className="h-3 w-3" />
+                                            Call
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
+                                      </Tooltip>
+                                      <div className="w-px h-4 bg-border/40" />
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "sms"); }}
+                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/30 transition-colors"
+                                          >
+                                            <MessageSquare className="h-3 w-3" />
+                                            Message
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Send SMS</p></TooltipContent>
+                                      </Tooltip>
+                                      <div className="w-px h-4 bg-border/40" />
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button
+                                            onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule"); }}
+                                            className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/30 transition-colors"
+                                          >
+                                            <CalendarClock className="h-3 w-3" />
+                                            Reschedule
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
+                                      </Tooltip>
+                                    </TooltipProvider>
+                                  </div>
+                                )}
                               </div>
                             );
                           })
                         )}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  ))}
+                </div>
+              );
+            })()}
 
             {viewTab === "feed" && (
               <div className="max-w-2xl mx-auto space-y-0">
