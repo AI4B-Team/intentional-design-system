@@ -1375,6 +1375,23 @@ export default function Pipeline() {
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger asChild>
+                            <Button variant="secondary" size="sm" onClick={(e) => {
+                              e.stopPropagation();
+                              const phone = selectedDeal.contact_phone;
+                              if (phone) {
+                                const digits = phone.replace(/[^\d+]/g, "");
+                                window.open(`sms:${digits.startsWith("+") ? digits : `+1${digits}`}`);
+                              }
+                            }}>
+                              <MessageCircle className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Text {selectedDeal.contact_phone || "No Phone"}
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
                             <Button variant="secondary" size="sm">
                               <Mail className="h-4 w-4" />
                             </Button>
