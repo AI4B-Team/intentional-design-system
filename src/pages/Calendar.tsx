@@ -1441,7 +1441,7 @@ export default function Calendar() {
                         {/* Why This Matters — connects Calendar to Dashboard logic */}
                         {(evt.isOverdue || (evt.urgency && evt.urgency !== "low")) && (
                           <div className="mt-2 px-3 py-2 rounded-lg border border-primary/10 bg-primary/5">
-                            <p className="text-[10px] font-semibold text-foreground mb-0.5">Why this matters</p>
+                            <p className="text-[10px] font-semibold text-foreground mb-0.5">Why This Matters</p>
                             <p className="text-[10px] text-muted-foreground leading-relaxed">
                               {evt.isOverdue && evt.lastContactDays
                                 ? `${evt.lastContactDays} days without contact. Deal probability drops ~12% daily after 5 days of silence.`
