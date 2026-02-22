@@ -410,6 +410,14 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                         </div>
                       </div>
 
+                      {/* AI reasoning snippet */}
+                      <div className="mt-2 p-2 rounded-md bg-primary/5 border border-primary/10">
+                        <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-3">
+                          <span className="font-semibold text-foreground">🧠 AI: </span>
+                          {property.overallReasoning}
+                        </p>
+                      </div>
+
                       <div className="flex gap-1.5 mt-2">
                         <Button size="sm" className="h-7 text-xs flex-1 gap-1" onClick={(e) => { e.stopPropagation(); setDetailProperty(property); }}>
                           <Eye className="h-3 w-3" />

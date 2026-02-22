@@ -56,6 +56,10 @@ export interface D4DProperty {
   hoaFee: number | null;
   arvEstimate: number;
   wholesaleSpread: number;
+  // AI reasoning
+  physicalReasoning: string;
+  financialReasoning: string;
+  overallReasoning: string;
 }
 
 // Seeded random for consistency
@@ -205,6 +209,42 @@ export function generateD4DProperties(
     const arvEstimate = estimatedValue + estimatedRehab + Math.floor(rand() * 40000);
     const wholesaleSpread = Math.max(5000, arvEstimate * 0.7 - estimatedValue);
 
+    // Pre-compute contact and vacancy for reasoning
+    const daysVacantVal = vacant ? Math.floor(rand() * 365) + 30 : null;
+    const waterShutoffVal = vacant && rand() < 0.4;
+    const phoneAvailableVal = rand() < 0.65;
+    const emailAvailableVal = rand() < 0.4;
+
+    // Generate AI reasoning
+    const physicalReasons: string[] = [];
+    if (overgrown) physicalReasons.push("Street view imagery shows significant vegetation overgrowth indicating neglected landscaping and potential property abandonment.");
+    if (boardedWindows) physicalReasons.push("Boarded or covered windows detected, suggesting the property has been secured against unauthorized entry — a strong vacancy indicator.");
+    if (roofDamage) physicalReasons.push("Visible roof deterioration including missing shingles or sagging sections, indicating deferred maintenance and potential water damage.");
+    if (codeViolations > 0) physicalReasons.push(`${codeViolations} active code violation(s) on record with the municipality, confirming ongoing maintenance neglect.`);
+    if (vacant) physicalReasons.push(`Property appears vacant${daysVacantVal ? ` for approximately ${daysVacantVal} days` : ""}. No signs of occupancy from street view — no vehicles, uncollected mail, and deteriorating exterior.`);
+    if (waterShutoffVal) physicalReasons.push("Utility records show water service has been disconnected, further confirming vacancy and owner disengagement.");
+    if (physicalReasons.length === 0) physicalReasons.push("No major physical distress indicators detected from street view analysis. Property exterior appears maintained.");
+
+    const financialReasons: string[] = [];
+    if (preForeclosure) financialReasons.push("Property is in pre-foreclosure status. Owner has received a Notice of Default, creating urgency to sell before auction.");
+    if (taxLien) financialReasons.push("Outstanding tax lien filed against the property. Owner owes delinquent taxes, increasing motivation to liquidate.");
+    if (probate) financialReasons.push("Property is part of a probate estate. Heirs often prefer a quick cash sale to avoid ongoing carrying costs.");
+    if (highEquity) financialReasons.push(`Owner has approximately ${estimatedEquityPct}% equity built up over ${ownershipYears} years of ownership, providing room for a below-market offer that still benefits the seller.`);
+    if (ownershipYears > 15) financialReasons.push(`Long-term ownership of ${ownershipYears} years suggests the property may be free-and-clear or have minimal mortgage balance.`);
+    if (financialReasons.length === 0) financialReasons.push("No major financial distress signals detected. Standard ownership situation.");
+
+    const overallReasons: string[] = [];
+    if (distressScore >= 70) {
+      overallReasons.push(`High distress score of ${distressScore}/100. Multiple physical and financial distress signals converge on this property, making it a strong acquisition candidate.`);
+    } else if (distressScore >= 45) {
+      overallReasons.push(`Moderate distress score of ${distressScore}/100. Several indicators suggest the owner may be motivated to sell.`);
+    } else {
+      overallReasons.push(`Mild distress score of ${distressScore}/100. Limited distress signals present, but the property may still offer opportunity.`);
+    }
+    if (wholesaleSpread > 20000) overallReasons.push(`Estimated wholesale spread of $${wholesaleSpread.toLocaleString()} provides strong profit margin after rehab costs of $${estimatedRehab.toLocaleString()}.`);
+    if (phoneAvailableVal || emailAvailableVal) overallReasons.push("Owner contact information is available, enabling direct outreach without additional skip tracing costs.");
+    overallReasons.push(`Located in ${pick(NEIGHBORHOODS, rand)} (rated ${Math.floor(rand() * 7) + 2}/10), a neighborhood with active investor activity and consistent resale demand.`);
+
     properties.push({
       id: `d4d-${seed}-${i}`,
       address: `${streetNum} ${streetName} ${streetType}`,
@@ -242,14 +282,14 @@ export function generateD4DProperties(
       ownerType,
       mailingAddress: `${100 + Math.floor(rand() * 9000)} ${pick(STREET_NAMES, rand)} ${pick(STREET_TYPES, rand)}, ${cityInfo.city}, FL`,
       mailStatus: pick(MAIL_STATUSES, rand),
-      phoneAvailable: rand() < 0.65,
-      emailAvailable: rand() < 0.4,
+      phoneAvailable: phoneAvailableVal,
+      emailAvailable: emailAvailableVal,
       estimatedRehab,
       neighborhoodRating: Math.floor(rand() * 7) + 2,
       neighborhoodName: pick(NEIGHBORHOODS, rand),
-      daysVacant: vacant ? Math.floor(rand() * 365) + 30 : null,
+      daysVacant: daysVacantVal,
       lastInspection: rand() < 0.3 ? `${2023 + Math.floor(rand() * 3)}-${String(Math.floor(rand() * 12) + 1).padStart(2, "0")}-${String(Math.floor(rand() * 28) + 1).padStart(2, "0")}` : null,
-      waterShutoff: vacant && rand() < 0.4,
+      waterShutoff: waterShutoffVal,
       permitActivity: rand() < 0.15,
       lotSqft,
       zoning: pick(ZONINGS, rand),
@@ -257,6 +297,9 @@ export function generateD4DProperties(
       hoaFee: rand() < 0.25 ? Math.floor(rand() * 300) + 50 : null,
       arvEstimate,
       wholesaleSpread,
+      physicalReasoning: physicalReasons.join(" "),
+      financialReasoning: financialReasons.join(" "),
+      overallReasoning: overallReasons.join(" "),
     });
   }
 
