@@ -864,7 +864,7 @@ export default function Calendar() {
                     const isCurrentMonth = isSameMonth(day, currentDate);
                     const isSelected = isSameDay(day, selectedDate);
                     const isCurrentDay = isToday(day);
-                    const isPastDay = isBefore(day, startOfDay(new Date())) && !isCurrentDay;
+                    
                     const hasOverdue = dayEvents.some((e) => e.isOverdue);
                     return (
                       <button
@@ -873,7 +873,7 @@ export default function Calendar() {
                         className={cn(
                           "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col overflow-hidden",
                           !isCurrentMonth && "bg-muted/10",
-                          isPastDay && "bg-muted/20",
+                          
                           isSelected && "relative z-10 shadow-[0_0_0_2px_hsl(var(--primary))] rounded-md bg-primary/[0.02]",
                           hasOverdue && isCurrentDay && "bg-red-50/30",
                         )}
@@ -882,8 +882,7 @@ export default function Calendar() {
                           "text-[13px] font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1",
                           isCurrentDay && "bg-primary text-primary-foreground font-semibold",
                           !isCurrentDay && !isCurrentMonth && "text-muted-foreground/40",
-                          !isCurrentDay && isCurrentMonth && isPastDay && "text-muted-foreground line-through",
-                          !isCurrentDay && isCurrentMonth && !isPastDay && "text-foreground",
+                          !isCurrentDay && isCurrentMonth && "text-foreground",
                         )}>
                           {format(day, "d")}
                         </span>
