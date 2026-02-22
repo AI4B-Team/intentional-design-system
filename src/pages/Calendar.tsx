@@ -651,7 +651,7 @@ export default function Calendar() {
                         key={dateKey}
                         onClick={() => setSelectedDate(day)}
                         className={cn(
-                          "bg-card p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
+                          "bg-white p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
                           !isCurrentMonth && "bg-muted/20",
                           isSelected && "ring-2 ring-primary ring-inset",
                           hasOverdue && isCurrentDay && "bg-red-50/50",
