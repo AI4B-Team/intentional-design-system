@@ -13,7 +13,7 @@ export default function Terms() {
             <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
               <Building2 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">RealVest</span>
+            <span className="text-xl font-bold text-slate-900">RealElite</span>
           </Link>
           <Button variant="ghost" size="sm" asChild>
             <Link to="/login">
@@ -33,7 +33,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-slate-600 mb-4">
-              By accessing or using RealVest ("the Service"), you agree to be bound by these Terms of Service 
+              By accessing or using RealElite ("the Service"), you agree to be bound by these Terms of Service 
               ("Terms"). If you do not agree to these Terms, you may not access or use the Service. These Terms 
               apply to all visitors, users, and others who access or use the Service.
             </p>
@@ -42,7 +42,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">2. Description of Service</h2>
             <p className="text-slate-600 mb-4">
-              RealVest provides a real estate investment management platform that includes property analysis tools, 
+              RealElite provides a real estate investment management platform that includes property analysis tools, 
               buyer network management, deal tracking, and related services. The Service is designed for real estate 
               professionals and investors to manage their investment activities.
             </p>
@@ -79,7 +79,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">5. Intellectual Property</h2>
             <p className="text-slate-600 mb-4">
-              The Service and its original content, features, and functionality are owned by RealVest and are 
+              The Service and its original content, features, and functionality are owned by RealElite and are 
               protected by international copyright, trademark, patent, trade secret, and other intellectual 
               property laws. You may not copy, modify, distribute, sell, or lease any part of our Service without 
               our prior written consent.
@@ -120,7 +120,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">9. Limitation of Liability</h2>
             <p className="text-slate-600 mb-4">
-              TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL REALVEST, ITS DIRECTORS, EMPLOYEES, 
+              TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL REALELITE, ITS DIRECTORS, EMPLOYEES, 
               PARTNERS, AGENTS, SUPPLIERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, 
               CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, 
               GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR ACCESS TO OR USE OF OR INABILITY TO 
@@ -131,7 +131,7 @@ export default function Terms() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">10. Indemnification</h2>
             <p className="text-slate-600 mb-4">
-              You agree to defend, indemnify, and hold harmless RealVest and its officers, directors, employees, 
+              You agree to defend, indemnify, and hold harmless RealElite and its officers, directors, employees, 
               and agents from and against any claims, liabilities, damages, judgments, awards, losses, costs, 
               expenses, or fees arising out of or relating to your violation of these Terms or your use of the 
               Service.
@@ -152,7 +152,7 @@ export default function Terms() {
             <h2 className="text-xl font-semibold text-slate-900 mb-4">12. Governing Law</h2>
             <p className="text-slate-600 mb-4">
               These Terms shall be governed by and construed in accordance with the laws of the jurisdiction in 
-              which RealVest is established, without regard to its conflict of law provisions. Any disputes arising 
+              which RealElite is established, without regard to its conflict of law provisions. Any disputes arising 
               under these Terms shall be resolved through binding arbitration in accordance with applicable 
               arbitration rules.
             </p>
@@ -174,7 +174,7 @@ export default function Terms() {
               If you have any questions about these Terms, please contact us at:
             </p>
             <p className="text-slate-600">
-              Email: legal@realvest.io<br />
+              Email: legal@realelite.io<br />
               Address: [Your Business Address]
             </p>
           </section>
@@ -185,7 +185,7 @@ export default function Terms() {
       <footer className="border-t border-slate-100 py-6">
         <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} RealVest. All rights reserved.
+            © {new Date().getFullYear()} RealElite. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link to="/terms" className="text-sm text-slate-500 hover:text-brand">

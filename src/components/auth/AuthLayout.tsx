@@ -34,7 +34,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <div className="h-10 w-10 rounded-lg bg-brand flex items-center justify-center">
             <Building2 className="h-6 w-6 text-white" />
           </div>
-          <span className="text-2xl font-bold text-slate-900">RealVest</span>
+          <span className="text-2xl font-bold text-slate-900">RealElite</span>
         </div>
 
         {/* Main Content */}
@@ -93,7 +93,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
           <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
             <Building2 className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-bold text-slate-900">RealVest</span>
+          <span className="text-xl font-bold text-slate-900">RealElite</span>
         </div>
 
         {/* Form Container */}

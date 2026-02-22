@@ -236,13 +236,13 @@ export default function SignupFlow() {
             <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
               <Building2 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold">RealVest</span>
+            <span className="text-xl font-bold">RealElite</span>
           </div>
 
           {/* Welcome Message */}
           <div className="mb-5">
             <h2 className="text-lg font-semibold mb-1.5">
-              Welcome to RealVest! 👋
+              Welcome to RealElite! 👋
             </h2>
             <p className="text-xs text-slate-400 leading-relaxed">
               We'll guide you through a quick setup to personalize your real estate investing command center.
@@ -341,7 +341,7 @@ export default function SignupFlow() {
           <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
             <Building2 className="h-4 w-4 text-white" />
           </div>
-          <span className="text-base font-bold text-slate-900">RealVest</span>
+          <span className="text-base font-bold text-slate-900">RealElite</span>
           <div className="ml-auto text-sm text-slate-500">
             Step {currentStepIndex + 1} of {STEPS.length}
           </div>
@@ -610,7 +610,7 @@ export default function SignupFlow() {
                   <p className="text-slate-600">
                     Your workspace is set up and ready to help you find deals.
                     <br />
-                    Think big — RealVest handles the complexity.
+                    Think big — RealElite handles the complexity.
                   </p>
                 </div>
 
@@ -620,7 +620,7 @@ export default function SignupFlow() {
                     <span className="font-semibold text-slate-900">Pro Tip</span>
                   </div>
                   <p className="text-sm text-slate-600 mb-4">
-                    Don't start with small tasks. Give RealVest something ambitious:
+                    Don't start with small tasks. Give RealElite something ambitious:
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
@@ -651,7 +651,7 @@ export default function SignupFlow() {
                         Creating...
                       </>
                     ) : (
-                      "Enter RealVest"
+                      "Enter RealElite"
                     )}
                   </Button>
                 </div>

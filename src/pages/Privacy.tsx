@@ -13,7 +13,7 @@ export default function Privacy() {
             <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
               <Building2 className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-slate-900">RealVest</span>
+            <span className="text-xl font-bold text-slate-900">RealElite</span>
           </Link>
           <Button variant="ghost" size="sm" asChild>
             <Link to="/login">
@@ -33,7 +33,7 @@ export default function Privacy() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold text-slate-900 mb-4">1. Introduction</h2>
             <p className="text-slate-600 mb-4">
-              RealVest ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy 
+              RealElite ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy 
               explains how we collect, use, disclose, and safeguard your information when you use our 
               real estate investment platform ("Service"). Please read this policy carefully. By using the 
               Service, you consent to the practices described in this Privacy Policy.
@@ -188,7 +188,7 @@ export default function Privacy() {
               If you have any questions about this Privacy Policy or our data practices, please contact us at:
             </p>
             <p className="text-slate-600">
-              Email: privacy@realvest.io<br />
+              Email: privacy@realelite.io<br />
               Address: [Your Business Address]
             </p>
           </section>
@@ -219,7 +219,7 @@ export default function Privacy() {
       <footer className="border-t border-slate-100 py-6">
         <div className="max-w-4xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} RealVest. All rights reserved.
+            © {new Date().getFullYear()} RealElite. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link to="/terms" className="text-sm text-slate-500 hover:text-brand">
