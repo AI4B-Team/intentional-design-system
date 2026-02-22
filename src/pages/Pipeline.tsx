@@ -1134,13 +1134,13 @@ export default function Pipeline() {
                           </div>
                         </td>
                         {/* Home Type */}
-                        <td className="px-4">
+                        <td className="px-4 whitespace-nowrap">
                           <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-success/15 text-success border border-success/20">
                             {homeTypeLabel}
                           </span>
                         </td>
                         {/* Stage */}
-                        <td className="px-4">
+                        <td className="px-4 whitespace-nowrap">
                           <Badge className={cn("text-white text-[10px]", stageConfig?.color)}>
                             {stageConfig?.label}
                           </Badge>
@@ -1203,7 +1203,7 @@ export default function Pipeline() {
                           </div>
                         </td>
                         {/* Contact */}
-                        <td className="px-4">
+                        <td className="px-4 whitespace-nowrap">
                           <div className="text-body font-medium">{deal.contact_name}</div>
                           <div className="text-tiny text-content-secondary">{deal.contact_type}</div>
                         </td>
