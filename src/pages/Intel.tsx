@@ -295,7 +295,7 @@ export default function Intel() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 border-b border-border pb-0 overflow-x-auto">
+        <div className="flex gap-1 border-b border-border pb-0 overflow-x-auto scrollbar-hide">
           {TABS.map((tab) => (
             <button key={tab.key} onClick={() => setActiveTab(tab.key)}
               className={cn("flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-colors border-b-2 -mb-px whitespace-nowrap",
