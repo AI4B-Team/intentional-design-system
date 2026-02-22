@@ -572,8 +572,9 @@ export default function Calendar() {
         </div>
 
         {/* Row 2: View mode + date navigation */}
-        <div className="flex items-center justify-between px-6 py-2 bg-muted/20 border-b border-border/40">
-          <div className="flex items-center gap-2">
+        <div className="relative flex items-center justify-center px-6 py-2 bg-muted/20 border-b border-border/40">
+          {/* Left: View mode + Today — absolutely positioned */}
+          <div className="absolute left-6 flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize h-7 rounded-md border-border/60 bg-white hover:bg-muted/30 text-foreground font-medium px-3">
@@ -606,6 +607,7 @@ export default function Calendar() {
             </TooltipProvider>
           </div>
 
+          {/* Center: Date navigation */}
           <div className="flex items-center gap-1.5">
             <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7 rounded-md hover:bg-white"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></Button>
             <span className="text-sm font-semibold text-foreground min-w-[180px] text-center tracking-tight">
@@ -617,8 +619,6 @@ export default function Calendar() {
             </span>
             <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7 rounded-md hover:bg-white"><ChevronRight className="h-4 w-4 text-muted-foreground" /></Button>
           </div>
-
-          <div className="w-[88px]" /> {/* Spacer for visual balance */}
         </div>
 
         {/* Active filters indicator */}
