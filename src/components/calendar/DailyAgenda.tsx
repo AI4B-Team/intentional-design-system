@@ -110,14 +110,14 @@ function CallsSection({ calls, navigate }: { calls: CalendarEvent[]; navigate: R
           >
             <div className={cn(
               "w-1.5 h-1.5 rounded-full shrink-0",
-              evt.isOverdue ? "bg-amber-500" : "bg-muted-foreground/40",
+              evt.isOverdue ? "bg-destructive" : "bg-muted-foreground/40",
             )} />
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-medium text-foreground truncate">
                 {evt.contactName || evt.propertyAddress || evt.title.replace("Follow up: ", "").replace("Overdue: ", "")}
               </p>
               <p className="text-[10px] text-muted-foreground">
-                {evt.isOverdue ? "Overdue" : "Scheduled"}{evt.lastContactDays ? ` · ${evt.lastContactDays}d since contact` : ""}
+                {evt.isOverdue ? <span className="text-destructive font-medium">Overdue</span> : "Scheduled"}{evt.lastContactDays ? ` · ${evt.lastContactDays}d since contact` : ""}
               </p>
             </div>
             <ArrowRight className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />

@@ -329,12 +329,21 @@ export function TodaysFocus() {
 
       {/* Footer Link */}
       {!isAllComplete && (
-        <div 
-          className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
-          onClick={() => navigate("/tasks?filter=priority")}
-        >
-          <span>View All Tasks</span>
-          <ArrowRight className="h-3.5 w-3.5" />
+        <div className="flex items-center justify-between px-4 py-3 border-t border-border-subtle">
+          <div 
+            className="flex items-center gap-2 text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+            onClick={() => navigate("/calendar")}
+          >
+            <Calendar className="h-3.5 w-3.5" />
+            <span>View in Calendar</span>
+          </div>
+          <div 
+            className="flex items-center gap-2 text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors"
+            onClick={() => navigate("/tasks?filter=priority")}
+          >
+            <span>All Tasks</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </div>
         </div>
       )}
     </Card>
