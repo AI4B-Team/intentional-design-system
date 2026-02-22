@@ -31,7 +31,6 @@ import {
   MessageSquare,
   CalendarClock,
   CheckCircle2,
-  Flame,
   PanelRightClose,
   PanelRightOpen,
   Sparkles,
@@ -41,22 +40,10 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { DailyAgenda } from "@/components/calendar/DailyAgenda";
+import type { CalendarEvent } from "@/components/calendar/types";
 
-// Unified calendar event type
-interface CalendarEvent {
-  id: string;
-  title: string;
-  date: Date;
-  time: string | null;
-  type: "appointment" | "followup" | "offer_deadline" | "closing" | "inspection";
-  status: string;
-  propertyId?: string;
-  propertyAddress?: string;
-  meta?: Record<string, any>;
-  isOverdue?: boolean;
-  urgency?: "low" | "medium" | "high" | "critical";
-  lastContactDays?: number;
-}
+type ViewMode = "month" | "week" | "day";
 
 const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; label: string }> = {
   appointment: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Appointment" },
@@ -66,7 +53,6 @@ const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; labe
   inspection: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500", label: "Inspection" },
 };
 
-// Urgency-based colors override defaults
 const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   low: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
   medium: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
@@ -81,8 +67,6 @@ const EVENT_ICONS: Record<string, React.ElementType> = {
   closing: Home,
   inspection: AlertCircle,
 };
-
-type ViewMode = "month" | "week" | "day";
 
 function getUrgency(event: CalendarEvent): "low" | "medium" | "high" | "critical" {
   if (event.status === "overdue") {
@@ -107,13 +91,9 @@ function useCalendarEvents(currentDate: Date) {
     queryFn: async (): Promise<CalendarEvent[]> => {
       const events: CalendarEvent[] = [];
 
-      // 1. Appointments
       const { data: appointments } = await supabase
         .from("appointments")
-        .select(`
-          id, scheduled_time, appointment_type, status, notes,
-          property_id, properties!inner(address, city, state)
-        `)
+        .select(`id, scheduled_time, appointment_type, status, notes, property_id, properties!inner(address, city, state)`)
         .gte("scheduled_time", rangeStart.toISOString())
         .lte("scheduled_time", rangeEnd.toISOString())
         .order("scheduled_time", { ascending: true });
@@ -132,13 +112,9 @@ function useCalendarEvents(currentDate: Date) {
         });
       });
 
-      // 2. Follow-ups from calls
       const { data: followups } = await supabase
         .from("calls")
-        .select(`
-          id, follow_up_date, follow_up_time, follow_up_notes, contact_name,
-          property_id, properties(address, city), created_at
-        `)
+        .select(`id, follow_up_date, follow_up_time, follow_up_notes, contact_name, property_id, properties(address, city), created_at`)
         .not("follow_up_date", "is", null)
         .gte("follow_up_date", format(rangeStart, "yyyy-MM-dd"))
         .lte("follow_up_date", format(rangeEnd, "yyyy-MM-dd"));
@@ -157,13 +133,13 @@ function useCalendarEvents(currentDate: Date) {
           status: isOverdue ? "overdue" : "pending",
           propertyId: f.property_id || undefined,
           propertyAddress: prop ? `${prop.address}, ${prop.city}` : undefined,
+          contactName: f.contact_name || undefined,
           meta: { notes: f.follow_up_notes },
           isOverdue,
           lastContactDays,
         });
       });
 
-      // 3. Properties needing follow-up (contacted, stale 3+ days)
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       const { data: staleProps } = await supabase
@@ -189,83 +165,48 @@ function useCalendarEvents(currentDate: Date) {
         });
       });
 
-      // Compute urgency for each event
-      const enriched = events.map((e) => ({ ...e, urgency: getUrgency(e) }));
-      return enriched.sort((a, b) => a.date.getTime() - b.date.getTime());
+      return events.map((e) => ({ ...e, urgency: getUrgency(e) })).sort((a, b) => a.date.getTime() - b.date.getTime());
     },
     refetchInterval: 60000,
   });
 }
 
+// ─── Deep-link navigation ─────────────────────────────────
+function getEventNavigation(event: CalendarEvent): string {
+  if (event.type === "followup" || event.isOverdue) {
+    const params = new URLSearchParams();
+    if (event.contactName) params.set("contact", event.contactName);
+    if (event.propertyId) params.set("property", event.propertyId);
+    params.set("filter", "needs_action");
+    params.set("channel", "calls");
+    return `/communications?${params.toString()}`;
+  }
+  if (event.type === "appointment") {
+    if (event.propertyId) return `/communications?property=${event.propertyId}&channel=calls`;
+    return "/communications";
+  }
+  if (event.propertyId) return `/properties/${event.propertyId}`;
+  return "#";
+}
+
 // ─── Action handlers ──────────────────────────────────────
-function handleQuickCall(event: CalendarEvent) {
-  if (event.propertyId) {
-    toast.success("Opening dialer...", { description: event.propertyAddress });
+function handleQuickAction(navigate: ReturnType<typeof useNavigate>, event: CalendarEvent, action: "call" | "sms" | "reschedule" | "complete") {
+  if (action === "call") {
+    navigate(getEventNavigation(event));
+  } else if (action === "sms") {
+    const params = new URLSearchParams();
+    if (event.propertyId) params.set("property", event.propertyId);
+    params.set("channel", "sms");
+    navigate(`/communications?${params.toString()}`);
+  } else if (action === "reschedule") {
+    toast.info("Reschedule coming soon", { description: "This will open a date picker" });
+  } else if (action === "complete") {
+    toast.success("Marked as complete", { description: event.title });
   }
 }
 
-function handleQuickSMS(event: CalendarEvent) {
-  toast.success("Opening SMS composer...", { description: event.propertyAddress });
-}
-
-function handleReschedule(event: CalendarEvent) {
-  toast.info("Reschedule coming soon", { description: "This will open a date picker" });
-}
-
-function handleMarkComplete(event: CalendarEvent) {
-  toast.success("Marked as complete", { description: event.title });
-}
-
-// ─── Priority Strip Component ─────────────────────────────
-function TodayPriorityStrip({ events }: { events: CalendarEvent[] }) {
-  const todayEvents = events.filter((e) => isToday(e.date));
-  const overdueFollowups = events.filter((e) => e.isOverdue && e.type === "followup");
-  const inspections = todayEvents.filter((e) => e.type === "inspection");
-  const closings = todayEvents.filter((e) => e.type === "closing");
-  const deadlines = todayEvents.filter((e) => e.type === "offer_deadline");
-
-  const hasPriority = overdueFollowups.length > 0 || inspections.length > 0 || closings.length > 0 || deadlines.length > 0;
-
-  if (!hasPriority) return null;
-
-  return (
-    <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border bg-card">
-      <div className="flex items-center gap-1.5">
-        <Flame className="h-3.5 w-3.5 text-orange-500" />
-        <span className="text-xs font-semibold text-foreground">Today's Focus</span>
-      </div>
-      <div className="h-4 w-px bg-border" />
-      <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-        {overdueFollowups.length > 0 && (
-          <span className={cn(
-            "font-medium",
-            overdueFollowups.length > 2 ? "text-red-600" : "text-orange-600"
-          )}>
-            {overdueFollowups.length} overdue follow-up{overdueFollowups.length !== 1 ? "s" : ""}
-          </span>
-        )}
-        {deadlines.length > 0 && (
-          <span className="font-medium text-red-600">
-            {deadlines.length} deadline{deadlines.length !== 1 ? "s" : ""}
-          </span>
-        )}
-        {inspections.length > 0 && (
-          <span className="font-medium text-blue-600">
-            {inspections.length} inspection{inspections.length !== 1 ? "s" : ""}
-          </span>
-        )}
-        {closings.length > 0 && (
-          <span className="font-medium text-emerald-600">
-            {closings.length} closing{closings.length !== 1 ? "s" : ""}
-          </span>
-        )}
-      </div>
-    </div>
-  );
-}
-
 // ─── Event Action Buttons ─────────────────────────────────
-function EventActions({ event }: { event: CalendarEvent }) {
+function EventActions({ event, navigate }: { event: CalendarEvent; navigate: ReturnType<typeof useNavigate> }) {
   const isActionable = event.isOverdue || event.type === "followup" || event.type === "offer_deadline";
   if (!isActionable) return null;
 
@@ -274,34 +215,31 @@ function EventActions({ event }: { event: CalendarEvent }) {
       <div className="flex items-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickCall(event); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call"); }}>
               <Phone className="h-3.5 w-3.5 text-emerald-600" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call</p></TooltipContent>
         </Tooltip>
-
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickSMS(event); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms"); }}>
               <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">SMS</p></TooltipContent>
         </Tooltip>
-
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleReschedule(event); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule"); }}>
               <CalendarClock className="h-3.5 w-3.5 text-amber-600" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
         </Tooltip>
-
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleMarkComplete(event); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "complete"); }}>
               <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -315,11 +253,8 @@ function EventActions({ event }: { event: CalendarEvent }) {
 // ─── AI Context Snippet ───────────────────────────────────
 function AIContext({ event }: { event: CalendarEvent }) {
   if (!event.isOverdue && event.type !== "followup") return null;
-
   const contextParts: string[] = [];
-  if (event.lastContactDays !== undefined) {
-    contextParts.push(`Last contact: ${event.lastContactDays}d ago`);
-  }
+  if (event.lastContactDays !== undefined) contextParts.push(`Last contact: ${event.lastContactDays}d ago`);
   if (event.meta?.notes) {
     const snippet = event.meta.notes.length > 60 ? event.meta.notes.slice(0, 60) + "…" : event.meta.notes;
     contextParts.push(snippet);
@@ -329,9 +264,7 @@ function AIContext({ event }: { event: CalendarEvent }) {
   return (
     <div className="flex items-start gap-1.5 mt-1.5 px-1 py-1 rounded bg-muted/50">
       <Sparkles className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
-      <p className="text-[10px] text-muted-foreground leading-tight">
-        {contextParts.join(" · ")}
-      </p>
+      <p className="text-[10px] text-muted-foreground leading-tight">{contextParts.join(" · ")}</p>
     </div>
   );
 }
@@ -344,7 +277,7 @@ export default function Calendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const { data: events = [], isLoading } = useCalendarEvents(currentDate);
+  const { data: events = [] } = useCalendarEvents(currentDate);
 
   const goToPrev = () => {
     if (viewMode === "month") setCurrentDate(subMonths(currentDate, 1));
@@ -358,33 +291,19 @@ export default function Calendar() {
     else setCurrentDate(addDays(currentDate, 1));
   };
 
-  const goToToday = () => {
-    setCurrentDate(new Date());
-    setSelectedDate(new Date());
-  };
+  const goToToday = () => { setCurrentDate(new Date()); setSelectedDate(new Date()); };
 
-  // Build calendar grid
   const calendarDays = useMemo(() => {
-    const monthStart_ = startOfMonth(currentDate);
-    const monthEnd_ = endOfMonth(currentDate);
-    const startDate = startOfWeek(monthStart_);
-    const endDate = endOfWeek(monthEnd_);
-
+    const s = startOfWeek(startOfMonth(currentDate));
+    const e = endOfWeek(endOfMonth(currentDate));
     const days: Date[] = [];
-    let day = startDate;
-    while (day <= endDate) {
-      days.push(day);
-      day = addDays(day, 1);
-    }
+    let day = s;
+    while (day <= e) { days.push(day); day = addDays(day, 1); }
     return days;
   }, [currentDate]);
 
-  // Events for selected date
-  const selectedDateEvents = useMemo(() => {
-    return events.filter((e) => isSameDay(e.date, selectedDate));
-  }, [events, selectedDate]);
+  const selectedDateEvents = useMemo(() => events.filter((e) => isSameDay(e.date, selectedDate)), [events, selectedDate]);
 
-  // Events grouped by date for dots
   const eventsByDate = useMemo(() => {
     const map = new Map<string, CalendarEvent[]>();
     events.forEach((e) => {
@@ -395,10 +314,8 @@ export default function Calendar() {
     return map;
   }, [events]);
 
-  // Stats
   const todayEvents = useMemo(() => events.filter((e) => isToday(e.date)), [events]);
   const upcomingCount = useMemo(() => events.filter((e) => e.date >= new Date()).length, [events]);
-
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
@@ -406,16 +323,13 @@ export default function Calendar() {
       <div className="flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Calendar</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {todayEvents.length} events today · {upcomingCount} upcoming
-              </p>
-            </div>
+          <div>
+            <h1 className="text-xl font-bold text-foreground">Calendar</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {todayEvents.length} events today · {upcomingCount} upcoming
+            </p>
           </div>
           <div className="flex items-center gap-2">
-            {/* View toggles */}
             {(["month", "week", "day"] as ViewMode[]).map((v) => (
               <Button key={v} size="sm" variant={viewMode === v ? "default" : "secondary"}
                 onClick={() => setViewMode(v)} className="capitalize text-xs">
@@ -452,23 +366,19 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Today's Priority Strip */}
-        <TodayPriorityStrip events={events} />
+        {/* AI Daily Agenda */}
+        <DailyAgenda events={events} />
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
           {/* Calendar grid */}
           <div className="flex-1 flex flex-col overflow-auto p-4">
-            {/* Week day headers */}
             <div className="grid grid-cols-7 gap-px mb-1">
               {weekDays.map((d) => (
-                <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider py-2">
-                  {d}
-                </div>
+                <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider py-2">{d}</div>
               ))}
             </div>
 
-            {/* Calendar grid */}
             <div className="grid grid-cols-7 gap-px flex-1 bg-border rounded-lg overflow-hidden">
               {calendarDays.map((day) => {
                 const dateKey = format(day, "yyyy-MM-dd");
@@ -497,7 +407,6 @@ export default function Calendar() {
                     )}>
                       {format(day, "d")}
                     </span>
-                    {/* Event dots / previews */}
                     <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
                       {dayEvents.slice(0, 3).map((evt) => {
                         const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
@@ -521,13 +430,11 @@ export default function Calendar() {
             </div>
           </div>
 
-          {/* Sidebar - Selected day events */}
+          {/* Sidebar */}
           {sidebarOpen && (
             <div className="w-[320px] border-l border-border bg-card overflow-y-auto hidden lg:block">
               <div className="p-4 border-b border-border">
-                <h3 className="text-sm font-bold text-foreground">
-                  {format(selectedDate, "EEEE, MMMM d")}
-                </h3>
+                <h3 className="text-sm font-bold text-foreground">{format(selectedDate, "EEEE, MMMM d")}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5">
                   {selectedDateEvents.length} event{selectedDateEvents.length !== 1 ? "s" : ""}
                 </p>
@@ -553,7 +460,7 @@ export default function Calendar() {
                           "rounded-lg border p-3 space-y-1 cursor-pointer hover:bg-muted/50 transition-colors",
                           urgencyColor ? cn(urgencyColor.border, urgencyColor.bg) : "border-border",
                         )}
-                        onClick={() => evt.propertyId && navigate(`/properties/${evt.propertyId}`)}
+                        onClick={() => navigate(getEventNavigation(evt))}
                       >
                         <div className="flex items-start gap-2">
                           <div className={cn(
@@ -596,19 +503,14 @@ export default function Calendar() {
                             </Badge>
                           )}
                         </div>
-
-                        {/* AI Context */}
                         <AIContext event={evt} />
-
-                        {/* Quick Actions */}
-                        <EventActions event={evt} />
+                        <EventActions event={evt} navigate={navigate} />
                       </div>
                     );
                   })}
                 </div>
               )}
 
-              {/* Legend */}
               <div className="p-4 border-t border-border mt-auto">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Event Types</p>
                 <div className="grid grid-cols-2 gap-1.5">
