@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => ({
         skipWaiting: true,
         // Cache version bump to force update - v4
         cacheId: 'realelite-v4',
-        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6 MB
+        maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,

@@ -83,6 +83,7 @@ export interface PropertyCardData {
   leadType?: string;
   daysInStage?: number;
   leadScore?: number;
+  equityPercentage?: number;
   sellerPhone?: string;
   sellerEmail?: string;
   images?: string[];
@@ -270,6 +271,16 @@ export function PropertyCard({
             {property.arv != null && (
               <div className="text-xs text-muted-foreground">
                 ARV: {formatMoney(property.arv)}
+              </div>
+            )}
+            {property.equityPercentage != null && (
+              <div className={cn(
+                "text-xs font-medium",
+                property.equityPercentage >= 25 ? "text-success" :
+                property.equityPercentage >= 15 ? "text-warning" :
+                "text-destructive"
+              )}>
+                {property.equityPercentage}% Equity
               </div>
             )}
           </div>
