@@ -197,12 +197,17 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
             </Button>
             <Button
               size="sm"
-              variant="default"
+              variant="outline"
               className="h-7 text-xs gap-1 flex-1"
-              onClick={handleLaunchCampaign}
+              onClick={() => {
+                const withPhone = sorted.filter(p => p.phoneAvailable).length;
+                toast.success(`Adding ${withPhone} leads to Dial Queue`, {
+                  description: `${withPhone} of ${sorted.length} leads have phone numbers`,
+                });
+              }}
             >
-              <Megaphone className="h-3 w-3" />
-              Launch Campaign
+              <Phone className="h-3 w-3" />
+              Add All to Dial Queue
             </Button>
           </div>
 
