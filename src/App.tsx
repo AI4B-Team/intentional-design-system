@@ -1038,7 +1038,7 @@ const App = () => (
 
             <Route
               path="/dialer"
-              element={<Navigate to="/communications" replace />}
+              element={<Navigate to="/communications?view=dialer" replace />}
             />
             <Route
               path="/dialer/session"

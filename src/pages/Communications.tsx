@@ -1225,7 +1225,7 @@ function CoPilotPanel({
 // ============================================================================
 // DIALER VIEW
 // ============================================================================
-function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeKey; setCallingMode: (m: CallingModeKey) => void }) {
+function DialerView({ callingMode, setCallingMode, focusMode = false, isPowerHour = false, onToggleFocus }: { callingMode: CallingModeKey; setCallingMode: (m: CallingModeKey) => void; focusMode?: boolean; isPowerHour?: boolean; onToggleFocus?: () => void }) {
   const callState = useCallState();
   const navigate = useNavigate();
   const [selectedScriptId, setSelectedScriptId] = useState<string | null>(null);
@@ -1294,6 +1294,8 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
       }
     }
     callState.startDialerSession();
+    // Auto-enter focus mode when dialing starts
+    if (!focusMode && onToggleFocus) onToggleFocus();
   };
 
   const handleSelectScript = (scriptId: string) => {
@@ -1424,10 +1426,44 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
 
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
-      {/* Dialer Intelligence Bar — Before/After context */}
-      <DialerIntelligenceBar />
+      {/* Focus Mode / Power Hour Header Banner */}
+      {(focusMode || isPowerHour) && (
+        <div className={cn(
+          "flex items-center justify-between px-4 py-2.5 rounded-lg border",
+          isPowerHour
+            ? "bg-amber-500/5 border-amber-500/20"
+            : "bg-primary/5 border-primary/20"
+        )}>
+          <div className="flex items-center gap-2.5">
+            {isPowerHour ? (
+              <>
+                <Zap className="h-4 w-4 text-amber-500" />
+                <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour</span>
+                <span className="text-[11px] text-muted-foreground">· Locked in. One queue. One goal.</span>
+              </>
+            ) : (
+              <>
+                <Target className="h-4 w-4 text-primary" />
+                <span className="text-xs font-bold text-primary uppercase tracking-wider">Focus Mode</span>
+                <span className="text-[11px] text-muted-foreground">· Distractions hidden. Ctrl+Shift+F to toggle.</span>
+              </>
+            )}
+          </div>
+          {!isPowerHour && (
+            <button
+              onClick={onToggleFocus}
+              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Exit Focus
+            </button>
+          )}
+        </div>
+      )}
 
-      {/* Daily Goals Tracker */}
+      {/* Dialer Intelligence Bar — hidden in Power Hour */}
+      {!isPowerHour && <DialerIntelligenceBar />}
+
+      {/* Daily Goals Tracker — always visible */}
       <DailyGoalsTracker />
 
       {/* Post-Call Automation Actions */}
@@ -1450,49 +1486,63 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
         </div>
       )}
 
-      {/* Calling Mode */}
-      <div className="p-5 bg-muted/30 rounded-xl border border-border">
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
-          <button
-            onClick={handleStartPowerDial}
-            disabled={callState.isCallActive || dialerContacts.length === 0}
-            className={cn(
-              "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
-              callState.isCallActive || dialerContacts.length === 0
-                ? "bg-muted text-muted-foreground cursor-not-allowed"
-                : "bg-primary text-primary-foreground hover:bg-primary/90"
-            )}
-          >
-            {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
-          </button>
-        </div>
-        <div className="flex gap-3">
-          {modes.map(({ key, label, desc, icon: Icon, colorClass, inactiveClass, beta }) => (
-            <button
-              key={key}
-              onClick={() => {
-                setCallingMode(key as CallingModeKey);
-                if (key === "voice") toast.info("Voice Agent mode — AI will handle calls autonomously");
-                if (key === "listen") toast.info("Listen Mode — captures external calls from Zoom, Meet, etc.");
-              }}
-              className={cn(
-                "flex-1 p-6 rounded-lg text-center transition-all relative border-2",
-                callingMode === key
-                  ? cn(colorClass, "border-transparent shadow-sm")
-                  : cn(inactiveClass, "hover:opacity-80")
+      {/* Calling Mode — hidden in Power Hour, compact in Focus */}
+      {!isPowerHour && (
+        <div className="p-5 bg-muted/30 rounded-xl border border-border">
+          <div className="flex items-center justify-between mb-3.5">
+            <div className="text-[13px] font-semibold text-foreground">Select Calling Mode</div>
+            <div className="flex items-center gap-2">
+              {!focusMode && (
+                <button
+                  onClick={onToggleFocus}
+                  className="px-3 py-1.5 rounded-lg border border-border text-[11px] font-medium text-muted-foreground hover:text-primary hover:border-primary/30 transition-colors flex items-center gap-1.5"
+                >
+                  <Target className="h-3 w-3" /> Focus Session
+                </button>
               )}
-            >
-              {beta && (
-                <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-bold tracking-wider">BETA</span>
-              )}
-              <Icon className="h-6 w-6 mx-auto mb-2.5" />
-              <div className="text-sm font-semibold">{label}</div>
-              <div className="text-[10px] mt-1 opacity-70 tracking-wide">{desc}</div>
-            </button>
-          ))}
+              <button
+                onClick={handleStartPowerDial}
+                disabled={callState.isCallActive || dialerContacts.length === 0}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
+                  callState.isCallActive || dialerContacts.length === 0
+                    ? "bg-muted text-muted-foreground cursor-not-allowed"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90"
+                )}
+              >
+                {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
+              </button>
+            </div>
+          </div>
+          {!focusMode && (
+            <div className="flex gap-3">
+              {modes.map(({ key, label, desc, icon: Icon, colorClass, inactiveClass, beta }) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    setCallingMode(key as CallingModeKey);
+                    if (key === "voice") toast.info("Voice Agent mode — AI will handle calls autonomously");
+                    if (key === "listen") toast.info("Listen Mode — captures external calls from Zoom, Meet, etc.");
+                  }}
+                  className={cn(
+                    "flex-1 p-6 rounded-lg text-center transition-all relative border-2",
+                    callingMode === key
+                      ? cn(colorClass, "border-transparent shadow-sm")
+                      : cn(inactiveClass, "hover:opacity-80")
+                  )}
+                >
+                  {beta && (
+                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-bold tracking-wider">BETA</span>
+                  )}
+                  <Icon className="h-6 w-6 mx-auto mb-2.5" />
+                  <div className="text-sm font-semibold">{label}</div>
+                  <div className="text-[10px] mt-1 opacity-70 tracking-wide">{desc}</div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       <div className="flex gap-5">
         {/* Left column: Dialing List + Import */}
@@ -1714,8 +1764,8 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
           </div>
         </div>
 
-        {/* Right column: Scripts */}
-        <div className="w-[280px] flex flex-col gap-5">
+        {/* Right column: Scripts — hidden in Focus/Power Hour */}
+        {!focusMode && !isPowerHour && <div className="w-[280px] flex flex-col gap-5">
           <div className="p-5 bg-muted/30 rounded-xl border border-border">
             <div className="flex justify-between items-center mb-3.5">
               <div className="text-[13px] font-semibold text-foreground">Call Scripts</div>
@@ -1775,7 +1825,7 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
               ))}
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );
@@ -1802,25 +1852,56 @@ export default function Communications() {
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [callingMode, setCallingMode] = useState<CallingModeKey>("start");
+  const [focusMode, setFocusMode] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const userInteractedRef = React.useRef(false); // tracks if user filtered/searched
+  const userInteractedRef = React.useRef(false);
   const modeTheme = MODE_THEME[callingMode];
   const executionModeTheme = EXECUTION_MODE_THEME[callState.executionMode];
+  const isPowerHour = callState.executionMode === "power-hour";
 
-  // Handle execution mode from URL params (e.g., ?mode=power-hour)
+  // Handle URL params (e.g., ?view=dialer&mode=power-hour)
   useEffect(() => {
+    const view = searchParams.get("view");
     const mode = searchParams.get("mode") as ExecutionMode | null;
+    let dirty = false;
+
+    if (view === "dialer") {
+      setActiveView("dialer");
+      searchParams.delete("view");
+      dirty = true;
+    }
+
     if (mode && ["manual", "power-hour", "campaign", "team"].includes(mode)) {
       callState.setExecutionMode(mode);
-      // Switch to Dialer view when entering Power Hour
       if (mode === "power-hour") {
         setActiveView("dialer");
+        setFocusMode(true);
       }
-      // Clean up URL param
       searchParams.delete("mode");
+      dirty = true;
+    }
+
+    if (dirty) {
       setSearchParams(searchParams, { replace: true });
     }
   }, []);
+
+  // Power Hour always implies focus mode
+  useEffect(() => {
+    if (isPowerHour) setFocusMode(true);
+  }, [isPowerHour]);
+
+  // Keyboard shortcut: Ctrl+Shift+F for Focus Mode toggle
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.shiftKey && e.key === "F" && activeView === "dialer") {
+        e.preventDefault();
+        setFocusMode(f => !f);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [activeView]);
 
   // Convert deal_sources to Contact format, merging with mock activities for demo
   const contacts: Contact[] = useMemo(() => {
@@ -2266,7 +2347,7 @@ export default function Communications() {
             </>
           ) : (
             <>
-              <DialerView callingMode={callingMode} setCallingMode={setCallingMode} />
+              <DialerView callingMode={callingMode} setCallingMode={setCallingMode} focusMode={focusMode} isPowerHour={isPowerHour} onToggleFocus={() => setFocusMode(f => !f)} />
               <CoPilotPanel contact={selectedContact} activeView={activeView} onQuickReply={handleQuickReply} callingMode={callingMode} />
             </>
           )}
