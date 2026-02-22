@@ -639,7 +639,7 @@ export default function Calendar() {
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
           <div className="flex-1 flex flex-col overflow-auto p-4 bg-white">
-            {viewTab === "calendar" && (
+            {viewTab === "calendar" && viewMode === "month" && (
               <>
                 {/* Month Grid */}
                 <div className="grid grid-cols-7 gap-px mb-1">
@@ -697,6 +697,114 @@ export default function Calendar() {
                 </div>
               </>
             )}
+
+            {viewTab === "calendar" && viewMode === "week" && (() => {
+              const weekStart = startOfWeek(currentDate);
+              const weekDaysArr = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+              const hours = Array.from({ length: 24 }, (_, i) => i);
+              return (
+                <>
+                  <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px mb-1">
+                    <div />
+                    {weekDaysArr.map((day) => (
+                      <div key={day.toISOString()} className="text-center py-2">
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase">{format(day, "EEE")}</div>
+                        <button
+                          onClick={() => { setSelectedDate(day); setViewMode("day"); }}
+                          className={cn(
+                            "text-sm font-medium w-8 h-8 rounded-full mx-auto flex items-center justify-center",
+                            isToday(day) && "bg-primary text-primary-foreground",
+                            isSameDay(day, selectedDate) && !isToday(day) && "ring-2 ring-primary",
+                          )}
+                        >
+                          {format(day, "d")}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex-1 overflow-auto border border-border rounded-lg">
+                    <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px bg-border">
+                      {hours.map((hour) => (
+                        <React.Fragment key={hour}>
+                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-12 flex items-start justify-end">
+                            {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
+                          </div>
+                          {weekDaysArr.map((day) => {
+                            const dateKey = format(day, "yyyy-MM-dd");
+                            const hourEvents = (filteredEventsByDate.get(dateKey) || []).filter((evt) => {
+                              if (!evt.time) return hour === 9;
+                              const eventHour = parseInt(evt.time.split(":")[0]);
+                              return eventHour === hour;
+                            });
+                            return (
+                              <button
+                                key={`${dateKey}-${hour}`}
+                                onClick={() => setSelectedDate(day)}
+                                className="bg-white h-12 relative hover:bg-muted/30 transition-colors"
+                              >
+                                {hourEvents.map((evt) => {
+                                  const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                                  return (
+                                    <div
+                                      key={evt.id}
+                                      onClick={(e) => { e.stopPropagation(); navigate(getEventNavigation(evt)); }}
+                                      className={cn("absolute inset-x-0.5 top-0.5 text-[9px] px-1 py-0.5 rounded truncate cursor-pointer", colors.bg, colors.text)}
+                                    >
+                                      {evt.title.split(" - ")[0]}
+                                    </div>
+                                  );
+                                })}
+                              </button>
+                            );
+                          })}
+                        </React.Fragment>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              );
+            })()}
+
+            {viewTab === "calendar" && viewMode === "day" && (() => {
+              const dateKey = format(currentDate, "yyyy-MM-dd");
+              const dayEvts = filteredEventsByDate.get(dateKey) || [];
+              const hours = Array.from({ length: 24 }, (_, i) => i);
+              return (
+                <div className="flex-1 overflow-auto border border-border rounded-lg">
+                  <div className="grid grid-cols-[60px_1fr] gap-px bg-border">
+                    {hours.map((hour) => {
+                      const hourEvents = dayEvts.filter((evt) => {
+                        if (!evt.time) return hour === 9;
+                        const eventHour = parseInt(evt.time.split(":")[0]);
+                        return eventHour === hour;
+                      });
+                      return (
+                        <React.Fragment key={hour}>
+                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-14 flex items-start justify-end">
+                            {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
+                          </div>
+                          <div className="bg-white h-14 relative hover:bg-muted/30 transition-colors">
+                            {hourEvents.map((evt) => {
+                              const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                              return (
+                                <div
+                                  key={evt.id}
+                                  onClick={() => navigate(getEventNavigation(evt))}
+                                  className={cn("absolute inset-x-1 top-0.5 text-xs px-2 py-1 rounded cursor-pointer", colors.bg, colors.text)}
+                                >
+                                  <span className="font-medium">{evt.title}</span>
+                                  {evt.time && <span className="ml-2 opacity-75">{evt.time}</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
 
             {viewTab === "plan" && (
               <div className="space-y-4">
