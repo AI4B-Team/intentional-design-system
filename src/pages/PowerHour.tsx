@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Zap,
   Phone,
-  ChevronRight,
   X,
   Timer,
   TrendingUp,
@@ -17,6 +16,9 @@ import {
   DollarSign,
   CheckCircle2,
   Calendar,
+  AlertTriangle,
+  Brain,
+  RefreshCw,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +36,7 @@ interface PowerHourContact {
   priority: PriorityResult;
   lastContactDays?: number;
   status?: string;
+  bestCallWindow?: string;
 }
 
 interface SessionStats {
@@ -42,19 +45,21 @@ interface SessionStats {
   dealsAdvanced: number;
   revenueInfluenced: number;
   startedAt: Date;
+  noAnswerStreak: number;
+  lastConversationAt: number | null;
 }
 
 // ─── Mock contacts scored by Priority Index ────────────────
 function generateScoredContacts(): PowerHourContact[] {
   const contacts = [
-    { id: "1", name: "Robert Davis", phone: "(512) 555-0142", address: "890 Pine Road", lastContactDays: 9, status: "contacted" },
-    { id: "2", name: "Marcus Williams", phone: "(512) 555-0198", address: "321 Cedar Lane", lastContactDays: 2, status: "warm" },
-    { id: "3", name: "Jennifer Lee", phone: "(512) 555-0276", address: "4444 Dahlia Drive", lastContactDays: 0, status: "appointment_set" },
-    { id: "4", name: "Sarah Johnson", phone: "(512) 555-0331", address: "567 Oak Avenue", lastContactDays: 5, status: "offer_sent" },
-    { id: "5", name: "Michael Chen", phone: "(512) 555-0415", address: "1919 Jasmine Court", lastContactDays: 7, status: "new" },
-    { id: "6", name: "Lisa Thompson", phone: "(512) 555-0503", address: "3636 Clover Court", lastContactDays: 4, status: "contacted" },
-    { id: "7", name: "James Wilson", phone: "(512) 555-0612", address: "741 Hickory Place", lastContactDays: 1, status: "warm" },
-    { id: "8", name: "Maria Garcia", phone: "(512) 555-0724", address: "2929 Birch Boulevard", lastContactDays: 6, status: "contacted" },
+    { id: "1", name: "Robert Davis", phone: "(512) 555-0142", address: "890 Pine Road", lastContactDays: 9, status: "contacted", bestCallWindow: "10:00 AM" },
+    { id: "2", name: "Marcus Williams", phone: "(512) 555-0198", address: "321 Cedar Lane", lastContactDays: 2, status: "warm", bestCallWindow: "10:30 AM" },
+    { id: "3", name: "Jennifer Lee", phone: "(512) 555-0276", address: "4444 Dahlia Drive", lastContactDays: 0, status: "appointment_set", bestCallWindow: "11:00 AM" },
+    { id: "4", name: "Sarah Johnson", phone: "(512) 555-0331", address: "567 Oak Avenue", lastContactDays: 5, status: "offer_sent", bestCallWindow: "11:15 AM" },
+    { id: "5", name: "Michael Chen", phone: "(512) 555-0415", address: "1919 Jasmine Court", lastContactDays: 7, status: "new", bestCallWindow: "11:45 AM" },
+    { id: "6", name: "Lisa Thompson", phone: "(512) 555-0503", address: "3636 Clover Court", lastContactDays: 4, status: "contacted", bestCallWindow: "12:00 PM" },
+    { id: "7", name: "James Wilson", phone: "(512) 555-0612", address: "741 Hickory Place", lastContactDays: 1, status: "warm", bestCallWindow: "12:30 PM" },
+    { id: "8", name: "Maria Garcia", phone: "(512) 555-0724", address: "2929 Birch Boulevard", lastContactDays: 6, status: "contacted", bestCallWindow: "1:00 PM" },
   ];
 
   return contacts
@@ -70,7 +75,69 @@ function generateScoredContacts(): PowerHourContact[] {
         repairEstimate: 15000 + Math.floor(Math.random() * 25000),
       }),
     }))
+    .filter((c) => c.priority.score >= 60) // Only Priority Index ≥ 60
     .sort((a, b) => b.priority.score - a.priority.score);
+}
+
+// ─── AI Strategy Generator ─────────────────────────────────
+function getAIStrategy(contact: PowerHourContact): { strategy: string; script: string; tone: string } {
+  if (contact.lastContactDays && contact.lastContactDays > 5) {
+    return {
+      strategy: `Re-engage with empathy. ${contact.lastContactDays} days of silence — lead with value, not pressure. Ask about timeline changes.`,
+      script: "Motivated Seller Re-Engage",
+      tone: "Warm & empathetic",
+    };
+  }
+  if (contact.priority.tier === "hot") {
+    return {
+      strategy: "High-intent lead. Be direct — present the offer and push for commitment. Time sensitivity is your leverage.",
+      script: "Direct Close",
+      tone: "Confident & direct",
+    };
+  }
+  if (contact.status === "offer_sent") {
+    return {
+      strategy: "Follow up on pending offer. Ask if they've had time to review. Address any concerns proactively.",
+      script: "Offer Follow-up",
+      tone: "Professional & patient",
+    };
+  }
+  return {
+    strategy: "Build rapport, confirm motivation, and schedule next step. Don't oversell — listen for buying signals.",
+    script: "Discovery Call",
+    tone: "Conversational & curious",
+  };
+}
+
+// ─── Fatigue Detection ─────────────────────────────────────
+function detectFatigue(stats: SessionStats): { fatigued: boolean; message: string } | null {
+  const minutesElapsed = (Date.now() - stats.startedAt.getTime()) / 60000;
+
+  // No-answer streak
+  if (stats.noAnswerStreak >= 4) {
+    return {
+      fatigued: true,
+      message: "4 no-answers in a row. Want to switch to SMS outreach for a few contacts?",
+    };
+  }
+
+  // Low conversion after many calls
+  if (stats.callsMade >= 6 && stats.conversations === 0) {
+    return {
+      fatigued: true,
+      message: "Conversion slowing. Want to switch strategy? Try a different script or take a 2-minute reset.",
+    };
+  }
+
+  // Long session without results
+  if (minutesElapsed > 40 && stats.dealsAdvanced === 0 && stats.callsMade > 3) {
+    return {
+      fatigued: true,
+      message: "40+ minutes without a deal advance. Consider switching to higher-priority leads or adjusting your approach.",
+    };
+  }
+
+  return null;
 }
 
 // ─── Timer Display ─────────────────────────────────────────
@@ -148,22 +215,46 @@ function ContactCard({
           {!isCompleted && <ArrowRight className="h-3 w-3 text-muted-foreground" />}
         </div>
       </div>
-      {!isCompleted && contact.lastContactDays !== undefined && contact.lastContactDays > 0 && (
+      {!isCompleted && contact.bestCallWindow && (
         <p className="text-[10px] text-muted-foreground mt-1 pl-5">
-          {contact.lastContactDays}d since contact
+          Best window: {contact.bestCallWindow}
+          {contact.lastContactDays && contact.lastContactDays > 0 ? ` · ${contact.lastContactDays}d since contact` : ""}
         </p>
       )}
     </button>
   );
 }
 
+// ─── Fatigue Alert ─────────────────────────────────────────
+function FatigueAlert({ message, onDismiss, onSwitch }: { message: string; onDismiss: () => void; onSwitch: () => void }) {
+  return (
+    <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-4 flex items-start gap-3">
+      <Brain className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+      <div className="flex-1">
+        <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">AI Performance Check</p>
+        <p className="text-xs text-amber-700 dark:text-amber-400 mt-1">{message}</p>
+        <div className="flex gap-2 mt-3">
+          <Button size="sm" variant="default" className="text-xs h-7" onClick={onSwitch}>
+            <RefreshCw className="h-3 w-3 mr-1" />
+            Switch Strategy
+          </Button>
+          <Button size="sm" variant="ghost" className="text-xs h-7" onClick={onDismiss}>
+            Keep Going
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Session Recap ─────────────────────────────────────────
-function SessionRecap({ stats, onClose, onSchedule }: { stats: SessionStats; onClose: () => void; onSchedule: () => void }) {
+function SessionRecap({ stats, totalContacts, onClose, onSchedule }: { stats: SessionStats; totalContacts: number; onClose: () => void; onSchedule: () => void }) {
   const duration = Math.floor((Date.now() - stats.startedAt.getTime()) / 60000);
+  const connectRate = stats.callsMade > 0 ? Math.round((stats.conversations / stats.callsMade) * 100) : 0;
 
   return (
     <div className="fixed inset-0 bg-background/95 z-50 flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-card border border-border rounded-xl p-8 space-y-6">
+      <div className="max-w-lg w-full bg-card border border-border rounded-xl p-8 space-y-6">
         <div className="text-center">
           <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Zap className="h-7 w-7 text-primary" />
@@ -186,12 +277,31 @@ function SessionRecap({ stats, onClose, onSchedule }: { stats: SessionStats; onC
           <div className="rounded-lg border border-border p-3 text-center">
             <TrendingUp className="h-4 w-4 text-amber-600 mx-auto mb-1" />
             <p className="text-lg font-bold text-foreground">{stats.dealsAdvanced}</p>
-            <p className="text-[10px] text-muted-foreground">Deals Moved</p>
+            <p className="text-[10px] text-muted-foreground">Deals Advanced</p>
           </div>
           <div className="rounded-lg border border-border p-3 text-center">
             <DollarSign className="h-4 w-4 text-emerald-600 mx-auto mb-1" />
             <p className="text-lg font-bold text-foreground">${(stats.revenueInfluenced / 1000).toFixed(0)}K</p>
             <p className="text-[10px] text-muted-foreground">Revenue Influenced</p>
+          </div>
+        </div>
+
+        {/* Performance summary */}
+        <div className="rounded-lg border border-border p-3 space-y-2">
+          <p className="text-xs font-semibold text-foreground">Session Performance</p>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-muted-foreground">Connect Rate</span>
+            <span className="font-semibold text-foreground">{connectRate}%</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-muted-foreground">Contacts Remaining</span>
+            <span className="font-semibold text-foreground">{totalContacts - stats.callsMade}</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="text-muted-foreground">Avg Revenue/Conversation</span>
+            <span className="font-semibold text-foreground">
+              ${stats.conversations > 0 ? Math.round(stats.revenueInfluenced / stats.conversations / 1000) : 0}K
+            </span>
           </div>
         </div>
 
@@ -217,16 +327,29 @@ export default function PowerHour() {
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [isPaused, setIsPaused] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
+  const [fatigueAlert, setFatigueAlert] = useState<string | null>(null);
+  const [dismissedFatigue, setDismissedFatigue] = useState(false);
   const [stats, setStats] = useState<SessionStats>({
     callsMade: 0,
     conversations: 0,
     dealsAdvanced: 0,
     revenueInfluenced: 0,
     startedAt: new Date(),
+    noAnswerStreak: 0,
+    lastConversationAt: null,
   });
 
   const activeContact = contacts[activeIndex];
-  const progress = (completedIds.size / contacts.length) * 100;
+  const progress = contacts.length > 0 ? (completedIds.size / contacts.length) * 100 : 0;
+
+  // Fatigue detection
+  useEffect(() => {
+    if (dismissedFatigue) return;
+    const result = detectFatigue(stats);
+    if (result?.fatigued) {
+      setFatigueAlert(result.message);
+    }
+  }, [stats.callsMade, stats.conversations, stats.noAnswerStreak, dismissedFatigue]);
 
   const handleComplete = useCallback((hadConversation: boolean) => {
     setCompletedIds((prev) => new Set([...prev, activeContact.id]));
@@ -236,7 +359,11 @@ export default function PowerHour() {
       conversations: prev.conversations + (hadConversation ? 1 : 0),
       dealsAdvanced: prev.dealsAdvanced + (hadConversation && activeContact.priority.score >= 60 ? 1 : 0),
       revenueInfluenced: prev.revenueInfluenced + (hadConversation ? 15000 + Math.floor(Math.random() * 35000) : 0),
+      noAnswerStreak: hadConversation ? 0 : prev.noAnswerStreak + 1,
+      lastConversationAt: hadConversation ? Date.now() : prev.lastConversationAt,
     }));
+    setFatigueAlert(null);
+    setDismissedFatigue(false);
 
     // Auto-advance to next uncompleted
     const nextIndex = contacts.findIndex((c, i) => i > activeIndex && !completedIds.has(c.id));
@@ -252,19 +379,49 @@ export default function PowerHour() {
     if (nextIndex >= 0) setActiveIndex(nextIndex);
   }, [activeIndex, contacts, completedIds]);
 
+  const handleSwitchStrategy = useCallback(() => {
+    setFatigueAlert(null);
+    setDismissedFatigue(true);
+    // Skip to next high-priority contact
+    const nextHot = contacts.findIndex((c, i) => i > activeIndex && !completedIds.has(c.id) && c.priority.tier === "hot");
+    if (nextHot >= 0) {
+      setActiveIndex(nextHot);
+    }
+  }, [activeIndex, contacts, completedIds]);
+
   if (showRecap) {
     return (
       <SessionRecap
         stats={stats}
+        totalContacts={contacts.length}
         onClose={() => navigate("/calendar")}
         onSchedule={() => navigate("/calendar")}
       />
     );
   }
 
+  if (contacts.length === 0) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-background">
+        <div className="text-center max-w-sm">
+          <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 className="h-7 w-7 text-primary" />
+          </div>
+          <h2 className="text-lg font-bold text-foreground">No Priority Contacts</h2>
+          <p className="text-sm text-muted-foreground mt-2">All contacts below the Priority Index threshold of 60. Your pipeline is clear.</p>
+          <Button className="mt-4" onClick={() => navigate("/calendar")}>
+            Back to Calendar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const aiStrategy = activeContact ? getAIStrategy(activeContact) : null;
+
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
-      {/* Top Bar */}
+      {/* Top Bar — minimal, focused */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-card">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -272,7 +429,7 @@ export default function PowerHour() {
           </div>
           <div>
             <h1 className="text-sm font-bold text-foreground">Power Hour</h1>
-            <p className="text-[10px] text-muted-foreground">AI-guided calls optimized for closings</p>
+            <p className="text-[10px] text-muted-foreground">This is what will move money today.</p>
           </div>
         </div>
 
@@ -322,7 +479,7 @@ export default function PowerHour() {
         {/* Contact Queue */}
         <div className="w-[300px] border-r border-border bg-card overflow-y-auto p-3 space-y-1.5">
           <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-2">
-            Queue · Sorted by Priority Index
+            Queue · Priority ≥ 60 · {contacts.length} contacts
           </p>
           {contacts.map((contact, i) => (
             <ContactCard
@@ -351,18 +508,15 @@ export default function PowerHour() {
                         getTierStyles(activeContact.priority.tier).text,
                         getTierStyles(activeContact.priority.tier).border,
                       )}>
-                        Priority: {activeContact.priority.score}
+                        {activeContact.priority.tier === "hot" ? "🔥" : ""} Priority: {activeContact.priority.score}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{activeContact.address}</p>
-                    <p className="text-sm text-muted-foreground">{activeContact.phone}</p>
+                    <p className="text-sm text-muted-foreground">{activeContact.address} · {activeContact.phone}</p>
                   </div>
                   <Button
                     size="lg"
                     className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
-                    onClick={() => {
-                      navigate(`/communications?channel=calls&filter=needs_action`);
-                    }}
+                    onClick={() => navigate(`/communications?channel=calls&filter=needs_action`)}
                   >
                     <Phone className="h-4 w-4" />
                     Call Now
@@ -372,22 +526,31 @@ export default function PowerHour() {
 
               {/* AI Guidance */}
               <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
-                {/* AI Recommendation */}
-                <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">AI Strategy</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {activeContact.lastContactDays && activeContact.lastContactDays > 5
-                          ? `Re-engage with empathy. ${activeContact.lastContactDays} days of silence — lead with value, not pressure. Ask about their timeline changes.`
-                          : activeContact.priority.tier === "hot"
-                            ? "High-intent lead. Be direct — present the offer and push for commitment. Time sensitivity is your leverage."
-                            : "Warm lead. Build rapport, confirm motivation, and schedule next step. Don't oversell."}
-                      </p>
+                {/* Fatigue Alert */}
+                {fatigueAlert && (
+                  <FatigueAlert
+                    message={fatigueAlert}
+                    onDismiss={() => { setFatigueAlert(null); setDismissedFatigue(true); }}
+                    onSwitch={handleSwitchStrategy}
+                  />
+                )}
+
+                {/* AI Strategy — auto-selected */}
+                {aiStrategy && (
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                    <div className="flex items-start gap-2">
+                      <Sparkles className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-xs font-semibold text-foreground">AI Strategy</p>
+                          <Badge variant="outline" className="text-[9px]">{aiStrategy.script}</Badge>
+                          <Badge variant="outline" className="text-[9px] text-muted-foreground">{aiStrategy.tone}</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">{aiStrategy.strategy}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Score Breakdown */}
                 <div className="rounded-lg border border-border p-4">

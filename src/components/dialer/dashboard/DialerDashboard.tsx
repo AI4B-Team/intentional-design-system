@@ -193,6 +193,27 @@ export function DialerDashboard({ onStartCall, onSelectMode }: DialerDashboardPr
         sessionDuration={0}
       />
 
+      {/* Power Hour CTA */}
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="py-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-foreground">Start Power Hour</h3>
+                <p className="text-small text-muted-foreground">AI-guided calls optimized for closings</p>
+              </div>
+            </div>
+            <Button onClick={() => navigate('/power-hour')} className="gap-2">
+              <Zap className="h-4 w-4" />
+              Launch
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Call Mode Selection */}
       <Card className="border-border">
         <CardContent className="py-6">
