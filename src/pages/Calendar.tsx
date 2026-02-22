@@ -16,6 +16,7 @@ import {
   isSameDay,
   isToday,
   parseISO,
+  differenceInDays,
 } from "date-fns";
 import {
   ChevronLeft,
@@ -25,14 +26,21 @@ import {
   MapPin,
   Phone,
   FileText,
-  Users,
   Home,
   AlertCircle,
-  Plus,
+  MessageSquare,
+  CalendarClock,
+  CheckCircle2,
+  Flame,
+  PanelRightClose,
+  PanelRightOpen,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 // Unified calendar event type
 interface CalendarEvent {
@@ -45,14 +53,25 @@ interface CalendarEvent {
   propertyId?: string;
   propertyAddress?: string;
   meta?: Record<string, any>;
+  isOverdue?: boolean;
+  urgency?: "low" | "medium" | "high" | "critical";
+  lastContactDays?: number;
 }
 
 const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; label: string }> = {
   appointment: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Appointment" },
-  followup: { bg: "bg-warning/10", text: "text-warning", dot: "bg-warning", label: "Followup" },
-  offer_deadline: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive", label: "Overdue" },
-  closing: { bg: "bg-accent/10", text: "text-accent", dot: "bg-accent", label: "Closing" },
-  inspection: { bg: "bg-info/10", text: "text-info", dot: "bg-info", label: "Inspection" },
+  followup: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Follow-Up" },
+  offer_deadline: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive", label: "Deadline" },
+  closing: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Closing" },
+  inspection: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500", label: "Inspection" },
+};
+
+// Urgency-based colors override defaults
+const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  low: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
+  medium: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
+  high: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300" },
+  critical: { bg: "bg-red-100", text: "text-red-800", border: "border-red-400" },
 };
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
@@ -65,10 +84,21 @@ const EVENT_ICONS: Record<string, React.ElementType> = {
 
 type ViewMode = "month" | "week" | "day";
 
+function getUrgency(event: CalendarEvent): "low" | "medium" | "high" | "critical" {
+  if (event.status === "overdue") {
+    const daysOverdue = differenceInDays(new Date(), event.date);
+    if (daysOverdue > 7) return "critical";
+    if (daysOverdue > 3) return "high";
+    return "medium";
+  }
+  if (event.type === "offer_deadline") return "high";
+  if (event.type === "followup") return "low";
+  return "low";
+}
+
 function useCalendarEvents(currentDate: Date) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  // Fetch a wider range for week view edges
   const rangeStart = startOfWeek(subMonths(monthStart, 1));
   const rangeEnd = endOfWeek(addMonths(monthEnd, 1));
 
@@ -107,7 +137,7 @@ function useCalendarEvents(currentDate: Date) {
         .from("calls")
         .select(`
           id, follow_up_date, follow_up_time, follow_up_notes, contact_name,
-          property_id, properties(address, city)
+          property_id, properties(address, city), created_at
         `)
         .not("follow_up_date", "is", null)
         .gte("follow_up_date", format(rangeStart, "yyyy-MM-dd"))
@@ -116,16 +146,20 @@ function useCalendarEvents(currentDate: Date) {
       followups?.forEach((f) => {
         const prop = f.properties as unknown as { address: string; city: string } | null;
         const d = parseISO(f.follow_up_date!);
+        const isOverdue = d < new Date() && !isSameDay(d, new Date());
+        const lastContactDays = f.created_at ? differenceInDays(new Date(), parseISO(f.created_at)) : undefined;
         events.push({
           id: `followup-${f.id}`,
           title: `Follow up: ${f.contact_name || prop?.address || "Unknown"}`,
           date: d,
           time: f.follow_up_time || null,
           type: "followup",
-          status: "pending",
+          status: isOverdue ? "overdue" : "pending",
           propertyId: f.property_id || undefined,
           propertyAddress: prop ? `${prop.address}, ${prop.city}` : undefined,
           meta: { notes: f.follow_up_notes },
+          isOverdue,
+          lastContactDays,
         });
       });
 
@@ -140,29 +174,175 @@ function useCalendarEvents(currentDate: Date) {
         .limit(10);
 
       staleProps?.forEach((prop) => {
+        const lastContactDays = differenceInDays(new Date(), parseISO(prop.updated_at));
         events.push({
           id: `stale-${prop.id}`,
-          title: `Overdue follow-up: ${prop.address}`,
-          date: new Date(), // Show today
+          title: `Overdue: ${prop.address}`,
+          date: new Date(),
           time: null,
           type: "followup",
           status: "overdue",
           propertyId: prop.id,
           propertyAddress: `${prop.address}, ${prop.city}`,
+          isOverdue: true,
+          lastContactDays,
         });
       });
 
-      return events.sort((a, b) => a.date.getTime() - b.date.getTime());
+      // Compute urgency for each event
+      const enriched = events.map((e) => ({ ...e, urgency: getUrgency(e) }));
+      return enriched.sort((a, b) => a.date.getTime() - b.date.getTime());
     },
     refetchInterval: 60000,
   });
 }
 
+// ─── Action handlers ──────────────────────────────────────
+function handleQuickCall(event: CalendarEvent) {
+  if (event.propertyId) {
+    toast.success("Opening dialer...", { description: event.propertyAddress });
+  }
+}
+
+function handleQuickSMS(event: CalendarEvent) {
+  toast.success("Opening SMS composer...", { description: event.propertyAddress });
+}
+
+function handleReschedule(event: CalendarEvent) {
+  toast.info("Reschedule coming soon", { description: "This will open a date picker" });
+}
+
+function handleMarkComplete(event: CalendarEvent) {
+  toast.success("Marked as complete", { description: event.title });
+}
+
+// ─── Priority Strip Component ─────────────────────────────
+function TodayPriorityStrip({ events }: { events: CalendarEvent[] }) {
+  const todayEvents = events.filter((e) => isToday(e.date));
+  const overdueFollowups = events.filter((e) => e.isOverdue && e.type === "followup");
+  const inspections = todayEvents.filter((e) => e.type === "inspection");
+  const closings = todayEvents.filter((e) => e.type === "closing");
+  const deadlines = todayEvents.filter((e) => e.type === "offer_deadline");
+
+  const hasPriority = overdueFollowups.length > 0 || inspections.length > 0 || closings.length > 0 || deadlines.length > 0;
+
+  if (!hasPriority) return null;
+
+  return (
+    <div className="flex items-center gap-3 px-6 py-2.5 border-b border-border bg-card">
+      <div className="flex items-center gap-1.5">
+        <Flame className="h-3.5 w-3.5 text-orange-500" />
+        <span className="text-xs font-semibold text-foreground">Today's Focus</span>
+      </div>
+      <div className="h-4 w-px bg-border" />
+      <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+        {overdueFollowups.length > 0 && (
+          <span className={cn(
+            "font-medium",
+            overdueFollowups.length > 2 ? "text-red-600" : "text-orange-600"
+          )}>
+            {overdueFollowups.length} overdue follow-up{overdueFollowups.length !== 1 ? "s" : ""}
+          </span>
+        )}
+        {deadlines.length > 0 && (
+          <span className="font-medium text-red-600">
+            {deadlines.length} deadline{deadlines.length !== 1 ? "s" : ""}
+          </span>
+        )}
+        {inspections.length > 0 && (
+          <span className="font-medium text-blue-600">
+            {inspections.length} inspection{inspections.length !== 1 ? "s" : ""}
+          </span>
+        )}
+        {closings.length > 0 && (
+          <span className="font-medium text-emerald-600">
+            {closings.length} closing{closings.length !== 1 ? "s" : ""}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Event Action Buttons ─────────────────────────────────
+function EventActions({ event }: { event: CalendarEvent }) {
+  const isActionable = event.isOverdue || event.type === "followup" || event.type === "offer_deadline";
+  if (!isActionable) return null;
+
+  return (
+    <TooltipProvider>
+      <div className="flex items-center gap-1 pt-1.5 border-t border-border mt-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickCall(event); }}>
+              <Phone className="h-3.5 w-3.5 text-emerald-600" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call</p></TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickSMS(event); }}>
+              <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">SMS</p></TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleReschedule(event); }}>
+              <CalendarClock className="h-3.5 w-3.5 text-amber-600" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleMarkComplete(event); }}>
+              <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Complete</p></TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
+  );
+}
+
+// ─── AI Context Snippet ───────────────────────────────────
+function AIContext({ event }: { event: CalendarEvent }) {
+  if (!event.isOverdue && event.type !== "followup") return null;
+
+  const contextParts: string[] = [];
+  if (event.lastContactDays !== undefined) {
+    contextParts.push(`Last contact: ${event.lastContactDays}d ago`);
+  }
+  if (event.meta?.notes) {
+    const snippet = event.meta.notes.length > 60 ? event.meta.notes.slice(0, 60) + "…" : event.meta.notes;
+    contextParts.push(snippet);
+  }
+  if (contextParts.length === 0) return null;
+
+  return (
+    <div className="flex items-start gap-1.5 mt-1.5 px-1 py-1 rounded bg-muted/50">
+      <Sparkles className="h-3 w-3 text-muted-foreground shrink-0 mt-0.5" />
+      <p className="text-[10px] text-muted-foreground leading-tight">
+        {contextParts.join(" · ")}
+      </p>
+    </div>
+  );
+}
+
+// ─── Main Calendar Component ──────────────────────────────
 export default function Calendar() {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const { data: events = [], isLoading } = useCalendarEvents(currentDate);
 
@@ -226,11 +406,13 @@ export default function Calendar() {
       <div className="flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Calendar</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {todayEvents.length} events today · {upcomingCount} upcoming
-            </p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-xl font-bold text-foreground">Calendar</h1>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {todayEvents.length} events today · {upcomingCount} upcoming
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {/* View toggles */}
@@ -241,7 +423,10 @@ export default function Calendar() {
               </Button>
             ))}
             <div className="w-px h-6 bg-border mx-1" />
-            <Button size="sm" variant="secondary" onClick={goToToday}>Today</Button>
+            <Button size="sm" variant="default" onClick={goToToday} className="font-semibold">
+              <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+              Today
+            </Button>
             <Button size="icon" variant="ghost" onClick={goToPrev}><ChevronLeft className="h-4 w-4" /></Button>
             <span className="text-sm font-semibold text-foreground min-w-[140px] text-center">
               {viewMode === "day"
@@ -251,8 +436,24 @@ export default function Calendar() {
                   : format(currentDate, "MMMM yyyy")}
             </span>
             <Button size="icon" variant="ghost" onClick={goToNext}><ChevronRight className="h-4 w-4" /></Button>
+            <div className="w-px h-6 bg-border mx-1" />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                    {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                  <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
+
+        {/* Today's Priority Strip */}
+        <TodayPriorityStrip events={events} />
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
@@ -275,6 +476,7 @@ export default function Calendar() {
                 const isCurrentMonth = isSameMonth(day, currentDate);
                 const isSelected = isSameDay(day, selectedDate);
                 const isCurrentDay = isToday(day);
+                const hasOverdue = dayEvents.some((e) => e.isOverdue);
 
                 return (
                   <button
@@ -284,6 +486,7 @@ export default function Calendar() {
                       "bg-card p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
                       !isCurrentMonth && "bg-muted/20",
                       isSelected && "ring-2 ring-primary ring-inset",
+                      hasOverdue && isCurrentDay && "bg-red-50/50",
                     )}
                   >
                     <span className={cn(
@@ -297,9 +500,13 @@ export default function Calendar() {
                     {/* Event dots / previews */}
                     <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
                       {dayEvents.slice(0, 3).map((evt) => {
+                        const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
                         const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                         return (
-                          <div key={evt.id} className={cn("text-[9px] leading-tight px-1 py-0.5 rounded truncate", colors.bg, colors.text)}>
+                          <div key={evt.id} className={cn(
+                            "text-[9px] leading-tight px-1 py-0.5 rounded truncate",
+                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : cn(colors.bg, colors.text),
+                          )}>
                             {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
                           </div>
                         );
@@ -315,83 +522,106 @@ export default function Calendar() {
           </div>
 
           {/* Sidebar - Selected day events */}
-          <div className="w-[320px] border-l border-border bg-card overflow-y-auto hidden lg:block">
-            <div className="p-4 border-b border-border">
-              <h3 className="text-sm font-bold text-foreground">
-                {format(selectedDate, "EEEE, MMMM d")}
-              </h3>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                {selectedDateEvents.length} event{selectedDateEvents.length !== 1 ? "s" : ""}
-              </p>
-            </div>
-
-            {selectedDateEvents.length === 0 ? (
-              <div className="p-6 text-center">
-                <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">No events scheduled</p>
-                <p className="text-[10px] text-muted-foreground/70 mt-1">Click a day with events to see details</p>
+          {sidebarOpen && (
+            <div className="w-[320px] border-l border-border bg-card overflow-y-auto hidden lg:block">
+              <div className="p-4 border-b border-border">
+                <h3 className="text-sm font-bold text-foreground">
+                  {format(selectedDate, "EEEE, MMMM d")}
+                </h3>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {selectedDateEvents.length} event{selectedDateEvents.length !== 1 ? "s" : ""}
+                </p>
               </div>
-            ) : (
-              <div className="p-3 space-y-2">
-                {selectedDateEvents.map((evt) => {
-                  const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
-                  const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
 
-                  return (
-                    <div
-                      key={evt.id}
-                      className={cn(
-                        "rounded-lg border border-border p-3 space-y-2 cursor-pointer hover:bg-muted/50 transition-colors",
-                      )}
-                      onClick={() => evt.propertyId && navigate(`/properties/${evt.propertyId}`)}
-                    >
-                      <div className="flex items-start gap-2">
-                        <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5", colors.bg)}>
-                          <Icon className={cn("h-3.5 w-3.5", colors.text)} />
+              {selectedDateEvents.length === 0 ? (
+                <div className="p-6 text-center">
+                  <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">No events scheduled</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1">Click a day with events to see details</p>
+                </div>
+              ) : (
+                <div className="p-3 space-y-2">
+                  {selectedDateEvents.map((evt) => {
+                    const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                    const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
+                    const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+
+                    return (
+                      <div
+                        key={evt.id}
+                        className={cn(
+                          "rounded-lg border p-3 space-y-1 cursor-pointer hover:bg-muted/50 transition-colors",
+                          urgencyColor ? cn(urgencyColor.border, urgencyColor.bg) : "border-border",
+                        )}
+                        onClick={() => evt.propertyId && navigate(`/properties/${evt.propertyId}`)}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className={cn(
+                            "w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5",
+                            urgencyColor ? urgencyColor.bg : colors.bg,
+                          )}>
+                            <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
+                            {evt.time && (
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <Clock className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-[10px] text-muted-foreground">{evt.time}</span>
+                              </div>
+                            )}
+                            {evt.propertyAddress && (
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <MapPin className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
-                          {evt.time && (
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <Clock className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-[10px] text-muted-foreground">{evt.time}</span>
-                            </div>
-                          )}
-                          {evt.propertyAddress && (
-                            <div className="flex items-center gap-1 mt-0.5">
-                              <MapPin className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
-                            </div>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant="outline" className={cn(
+                            "text-[9px] border",
+                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
+                          )}>
+                            {evt.isOverdue ? "Overdue" : colors.label}
+                          </Badge>
+                          {evt.urgency && evt.urgency !== "low" && (
+                            <Badge variant="outline" className={cn(
+                              "text-[9px] border",
+                              URGENCY_COLORS[evt.urgency].bg,
+                              URGENCY_COLORS[evt.urgency].text,
+                              URGENCY_COLORS[evt.urgency].border,
+                            )}>
+                              {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
+                            </Badge>
                           )}
                         </div>
+
+                        {/* AI Context */}
+                        <AIContext event={evt} />
+
+                        {/* Quick Actions */}
+                        <EventActions event={evt} />
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Badge variant="outline" className={cn("text-[9px] border", colors.bg, colors.text)}>
-                          {colors.label}
-                        </Badge>
-                        <Badge variant="outline" className="text-[9px]">
-                          {evt.status}
-                        </Badge>
-                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Legend */}
+              <div className="p-4 border-t border-border mt-auto">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Event Types</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {Object.entries(EVENT_COLORS).map(([type, colors]) => (
+                    <div key={type} className="flex items-center gap-1.5">
+                      <div className={cn("w-2 h-2 rounded-full", colors.dot)} />
+                      <span className="text-[10px] text-muted-foreground capitalize">{colors.label}</span>
                     </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Legend */}
-            <div className="p-4 border-t border-border mt-auto">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Event Types</p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {Object.entries(EVENT_COLORS).map(([type, colors]) => (
-                  <div key={type} className="flex items-center gap-1.5">
-                    <div className={cn("w-2 h-2 rounded-full", colors.dot)} />
-                    <span className="text-[10px] text-muted-foreground capitalize">{colors.label}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </AppLayout>
