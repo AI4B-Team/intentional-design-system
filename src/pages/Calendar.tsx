@@ -341,18 +341,6 @@ export default function Calendar() {
               <Users className="h-3 w-3" />
               {teamMode ? "Team" : "Solo"}
             </Button>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                    {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
-                  <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           </div>
         </div>
 
@@ -391,6 +379,18 @@ export default function Calendar() {
             </span>
             <Button size="icon" variant="ghost" onClick={goToNext}><ChevronRight className="h-4 w-4" /></Button>
           </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                  {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* Main content */}
