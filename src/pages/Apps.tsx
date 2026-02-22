@@ -231,6 +231,7 @@ export default function Apps() {
         <PageHeader
           title="Apps"
           description="Tools and utilities to supercharge your real estate investing"
+          className="mb-4"
         />
 
         {/* Search and Categories */}
