@@ -154,6 +154,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   const [scanActive, setScanActive] = useState(false);
   const [scanLoading, setScanLoading] = useState(false);
   const [scanProperties, setScanProperties] = useState<D4DProperty[]>([]);
+  const [scanPanelExpanded, setScanPanelExpanded] = useState(false);
   const scanMarkersRef = useRef<any[]>([]);
 
   const loadedRef = useRef(false);
@@ -910,6 +911,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         onClose={() => {
           setScanActive(false);
           setScanProperties([]);
+          setScanPanelExpanded(false);
           if (mapInstanceRef.current) {
             scanMarkersRef.current.forEach(m => mapInstanceRef.current.map.removeLayer(m));
             scanMarkersRef.current = [];
@@ -917,6 +919,8 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         }}
         onFocusProperty={handleFocusScanProperty}
         totalScanned={scanProperties.length}
+        isExpanded={scanPanelExpanded}
+        onToggleExpand={() => setScanPanelExpanded(prev => !prev)}
       />
     )}
     </div>
