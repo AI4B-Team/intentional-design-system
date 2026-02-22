@@ -35,6 +35,7 @@ import {
   PanelRightOpen,
   Sparkles,
   Users,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -332,6 +333,10 @@ export default function Calendar() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => navigate("/power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
+              <Zap className="h-3 w-3" />
+              Start Power Hour
+            </Button>
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
               <Users className="h-3 w-3" />
               {teamMode ? "Team" : "Investor"}
