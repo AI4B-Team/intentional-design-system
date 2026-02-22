@@ -78,7 +78,7 @@ const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; labe
 
 const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   low: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
-  medium: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
+  medium: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200" },
   high: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300" },
   critical: { bg: "bg-red-100", text: "text-red-800", border: "border-red-400" },
 };
@@ -801,7 +801,7 @@ export default function Calendar() {
 
           {/* Sidebar — Fixed Order: Context → Signal → Directive → Events → Notes */}
           {sidebarOpen && (
-            <div className="w-[320px] border-l border-border bg-card overflow-y-auto hidden lg:block">
+            <div className="w-[320px] border-l border-border bg-white overflow-y-auto hidden lg:block">
               <div className="p-4 border-b border-border">
                 <h3 className="text-sm font-bold text-foreground">{format(selectedDate, "EEEE, MMMM d")}</h3>
                 <p className="text-[10px] text-muted-foreground mt-0.5">
