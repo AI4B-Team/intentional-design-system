@@ -1070,10 +1070,7 @@ export default function Calendar() {
                     return (
                       <div
                         key={evt.id}
-                        className={cn(
-                          "border-b border-border p-3 cursor-pointer hover:bg-muted/30 transition-colors",
-                          urgencyColor ? urgencyColor.bg : "",
-                        )}
+                        className="border-b border-border p-3 cursor-pointer hover:bg-muted/30 transition-colors"
                         onClick={() => navigate(getEventNavigation(evt))}
                       >
                         {/* Context: Name, Address, Type */}
