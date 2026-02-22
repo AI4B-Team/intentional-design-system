@@ -410,17 +410,15 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                       </div>
 
                       {/* AI reasoning snippet */}
-                      {property.overallReasoning && (
-                        <div className="mt-2 p-2 rounded-md bg-muted/50 border">
-                          <div className="flex items-start gap-1.5">
-                            <Brain className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
-                            <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">
-                              <span className="font-semibold text-foreground">AI: </span>
-                              {property.overallReasoning}
-                            </p>
-                          </div>
+                      <div className="mt-2 p-2 rounded-md bg-muted/50 border">
+                        <div className="flex items-start gap-1.5">
+                          <Brain className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
+                          <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">
+                            <span className="font-semibold text-foreground">AI: </span>
+                            {property.overallReasoning || "Analyzing property distress signals..."}
+                          </p>
                         </div>
-                      )}
+                      </div>
 
                       <div className="flex gap-1.5 mt-2">
                         <Button size="sm" className="h-7 text-xs flex-1 gap-1" onClick={(e) => { e.stopPropagation(); setDetailProperty(property); }}>
