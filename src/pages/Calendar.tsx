@@ -427,7 +427,7 @@ export default function Calendar() {
 
         {/* Row 1: View tabs + action buttons */}
         <div className="flex items-center justify-between px-6 py-2 bg-white border-b border-border/60">
-          <div className="flex items-center gap-0.5 bg-muted/40 p-0.5 rounded-lg">
+          <div className="flex items-center gap-1.5">
             {([
               { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
               { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
@@ -437,10 +437,10 @@ export default function Calendar() {
                 key={tab.id}
                 onClick={() => setViewTab(tab.id)}
                 className={cn(
-                  "flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-md transition-all",
+                  "flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-lg border transition-all",
                   viewTab === tab.id
-                    ? "bg-white text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-white text-foreground shadow-sm border-border"
+                    : "text-muted-foreground hover:text-foreground border-transparent hover:border-border/50 hover:bg-muted/30"
                 )}
               >
                 <tab.icon className="h-3.5 w-3.5" />
