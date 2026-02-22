@@ -602,17 +602,19 @@ export default function Calendar() {
             <Button size="icon" variant="outline" onClick={goToToday} className="h-8 w-8" title="Today">
               <CalendarIcon className="h-4 w-4 text-primary" />
             </Button>
-            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
-            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
           </div>
 
-          <span className="text-sm font-semibold text-foreground">
-            {viewMode === "day"
-              ? format(currentDate, "EEEE, MMM d, yyyy")
-              : viewMode === "week"
-                ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
-                : format(currentDate, "MMMM yyyy")}
-          </span>
+          <div className="flex items-center gap-1">
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
+            <span className="text-sm font-semibold text-foreground">
+              {viewMode === "day"
+                ? format(currentDate, "EEEE, MMM d, yyyy")
+                : viewMode === "week"
+                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
+                  : format(currentDate, "MMMM yyyy")}
+            </span>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
+          </div>
         </div>
 
         {/* Active filters indicator */}
