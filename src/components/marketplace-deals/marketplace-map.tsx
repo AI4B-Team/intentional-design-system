@@ -574,7 +574,7 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
           disabled={scanLoading}
         >
           {scanLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
-          {scanLoading ? "Scanning..." : scanActive ? "Stop Scan" : "Scan"}
+          {scanLoading ? "Scanning..." : scanActive ? "Clear Scan" : "Scan"}
         </Button>
         {/* Draw Button */}
         <Button
