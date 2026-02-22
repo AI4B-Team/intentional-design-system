@@ -67,6 +67,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toast } from "sonner";
 import { DailyAgenda } from "@/components/calendar/DailyAgenda";
 import type { CalendarEvent } from "@/components/calendar/types";
+import { useCompleteAction, useUpdateAction } from "@/hooks/useUnifiedActions";
 
 type ViewMode = "month" | "week" | "day";
 
@@ -80,9 +81,9 @@ const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; labe
 
 const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   low: { bg: "bg-muted/50", text: "text-muted-foreground", border: "border-border" },
-  medium: { bg: "bg-yellow-50", text: "text-yellow-700", border: "border-yellow-200" },
-  high: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300" },
-  critical: { bg: "bg-red-100", text: "text-red-800", border: "border-red-400" },
+  medium: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+  high: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30" },
+  critical: { bg: "bg-destructive/15", text: "text-destructive", border: "border-destructive/40" },
 };
 
 const EVENT_ICONS: Record<string, React.ElementType> = {
@@ -265,7 +266,13 @@ function getEventNavigation(event: CalendarEvent): string {
 }
 
 // ─── Action handlers ──────────────────────────────────────
-function handleQuickAction(navigate: ReturnType<typeof useNavigate>, event: CalendarEvent, action: "call" | "sms" | "reschedule" | "complete") {
+function handleQuickAction(
+  navigate: ReturnType<typeof useNavigate>,
+  event: CalendarEvent,
+  action: "call" | "sms" | "reschedule" | "complete" | "snooze",
+  completeAction?: ReturnType<typeof useCompleteAction>,
+  updateAction?: ReturnType<typeof useUpdateAction>,
+) {
   if (action === "call") {
     navigate(getEventNavigation(event));
   } else if (action === "sms") {
@@ -276,12 +283,39 @@ function handleQuickAction(navigate: ReturnType<typeof useNavigate>, event: Cale
   } else if (action === "reschedule") {
     toast.info("Reschedule coming soon", { description: "This will open a date picker" });
   } else if (action === "complete") {
-    toast.success("Marked as complete", { description: event.title });
+    // Extract unified action ID from event id (prefixed with "ua-")
+    const unifiedId = event.id.startsWith("ua-") ? event.id.slice(3) : null;
+    if (unifiedId && completeAction) {
+      completeAction.mutate(unifiedId);
+      toast.success("Marked as complete", { description: `${event.title} — synced across all surfaces` });
+    } else {
+      toast.success("Marked as complete", { description: event.title });
+    }
+  } else if (action === "snooze") {
+    const unifiedId = event.id.startsWith("ua-") ? event.id.slice(3) : null;
+    if (unifiedId && updateAction) {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+      updateAction.mutate({
+        id: unifiedId,
+        status: "snoozed",
+        snoozed_until: tomorrow.toISOString(),
+      });
+      toast.info("Snoozed until tomorrow 9 AM", { description: `${event.title} — removed from today's focus` });
+    } else {
+      toast.info("Snooze not available", { description: "Only unified actions can be snoozed" });
+    }
   }
 }
 
 // ─── Event Action Buttons ─────────────────────────────────
-function EventActions({ event, navigate }: { event: CalendarEvent; navigate: ReturnType<typeof useNavigate> }) {
+function EventActions({ event, navigate, completeAction, updateAction }: { 
+  event: CalendarEvent; 
+  navigate: ReturnType<typeof useNavigate>;
+  completeAction?: ReturnType<typeof useCompleteAction>;
+  updateAction?: ReturnType<typeof useUpdateAction>;
+}) {
   const isActionable = event.isOverdue || event.type === "followup" || event.type === "offer_deadline";
   if (!isActionable) return null;
 
@@ -290,7 +324,7 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
       <div className="flex items-center justify-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" className="h-7 w-7 p-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call"); }}>
+            <Button size="sm" className="h-7 w-7 p-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call", completeAction, updateAction); }}>
               <Phone className="h-3.5 w-3.5" />
             </Button>
           </TooltipTrigger>
@@ -298,7 +332,7 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms"); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms", completeAction, updateAction); }}>
               <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -306,7 +340,7 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule"); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule", completeAction, updateAction); }}>
               <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -314,12 +348,22 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "complete"); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "complete", completeAction, updateAction); }}>
               <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Complete</p></TooltipContent>
         </Tooltip>
+        {event.id.startsWith("ua-") && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "snooze", completeAction, updateAction); }}>
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Snooze to tomorrow</p></TooltipContent>
+          </Tooltip>
+        )}
       </div>
     </TooltipProvider>
   );
@@ -349,6 +393,8 @@ type CalendarViewTab = "calendar" | "plan" | "kanban" | "grid" | "feed";
 
 export default function Calendar() {
   const navigate = useNavigate();
+  const completeAction = useCompleteAction();
+  const updateAction = useUpdateAction();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
@@ -1195,7 +1241,7 @@ export default function Calendar() {
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <button
-                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "call"); }}
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "call", completeAction, updateAction); }}
                                           className="flex-[2] flex items-center justify-center gap-1 py-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-50 transition-colors"
                                         >
                                           <Phone className="h-3 w-3" />
@@ -1208,7 +1254,7 @@ export default function Calendar() {
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <button
-                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "sms"); }}
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "sms", completeAction, updateAction); }}
                                           className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
                                         >
                                           <MessageSquare className="h-3 w-3" />
@@ -1220,7 +1266,7 @@ export default function Calendar() {
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <button
-                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule"); }}
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule", completeAction, updateAction); }}
                                           className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
                                         >
                                           <CalendarClock className="h-3 w-3" />
@@ -1384,11 +1430,30 @@ export default function Calendar() {
                           </div>
                         )}
 
+                        {/* Why This Matters — connects Calendar to Dashboard logic */}
+                        {(evt.isOverdue || (evt.urgency && evt.urgency !== "low")) && (
+                          <div className="mt-2 px-3 py-2 rounded-lg border border-primary/10 bg-primary/5">
+                            <p className="text-[10px] font-semibold text-foreground mb-0.5">Why this matters</p>
+                            <p className="text-[10px] text-muted-foreground leading-relaxed">
+                              {evt.isOverdue && evt.lastContactDays
+                                ? `${evt.lastContactDays} days without contact. Deal probability drops ~12% daily after 5 days of silence.`
+                                : evt.type === "offer_deadline"
+                                ? "Hard deadline approaching. Missing this could lose the deal entirely."
+                                : evt.type === "followup" && evt.lastContactDays && evt.lastContactDays > 3
+                                ? `Seller engagement decays after 3 days. Contact within 24h to maintain momentum.`
+                                : evt.urgency === "critical"
+                                ? "AI flagged as critical — this action has the highest impact on your pipeline right now."
+                                : "Completing this action keeps your pipeline moving and prevents deal decay."
+                              }
+                            </p>
+                          </div>
+                        )}
+
                         {/* AI Context */}
                         <AIContext event={evt} />
 
                         {/* Actions */}
-                        <EventActions event={evt} navigate={navigate} />
+                        <EventActions event={evt} navigate={navigate} completeAction={completeAction} updateAction={updateAction} />
                       </div>
                     );
                   })}

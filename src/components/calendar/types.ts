@@ -27,10 +27,10 @@ export const EVENT_COLORS: Record<string, { bg: string; text: string; dot: strin
 };
 
 export const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  low: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-200" },
-  medium: { bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200" },
-  high: { bg: "bg-red-50", text: "text-red-700", border: "border-red-300" },
-  critical: { bg: "bg-red-100", text: "text-red-800", border: "border-red-400" },
+  low: { bg: "bg-muted/50", text: "text-muted-foreground", border: "border-border" },
+  medium: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+  high: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30" },
+  critical: { bg: "bg-destructive/15", text: "text-destructive", border: "border-destructive/40" },
 };
 
 export const EVENT_ICONS: Record<string, React.ElementType> = {
