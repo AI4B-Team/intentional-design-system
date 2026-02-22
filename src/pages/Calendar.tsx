@@ -323,8 +323,8 @@ export default function Calendar() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+        {/* Page Title */}
+        <div className="flex items-center justify-between px-6 pt-4 pb-2">
           <div>
             <h1 className="text-xl font-bold text-foreground">Calendar</h1>
             <p className="text-xs text-muted-foreground mt-0.5">
@@ -332,31 +332,10 @@ export default function Calendar() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            {(["month", "week", "day"] as ViewMode[]).map((v) => (
-              <Button key={v} size="sm" variant={viewMode === v ? "default" : "secondary"}
-                onClick={() => setViewMode(v)} className="capitalize text-xs">
-                {v}
-              </Button>
-            ))}
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
               <Users className="h-3 w-3" />
               {teamMode ? "Team" : "Investor"}
             </Button>
-            <div className="w-px h-6 bg-border mx-1" />
-            <Button size="sm" variant="default" onClick={goToToday} className="font-semibold">
-              <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
-              Today
-            </Button>
-            <Button size="icon" variant="ghost" onClick={goToPrev}><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="text-sm font-semibold text-foreground min-w-[140px] text-center">
-              {viewMode === "day"
-                ? format(currentDate, "EEEE, MMM d, yyyy")
-                : viewMode === "week"
-                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
-                  : format(currentDate, "MMMM yyyy")}
-            </span>
-            <Button size="icon" variant="ghost" onClick={goToNext}><ChevronRight className="h-4 w-4" /></Button>
-            <div className="w-px h-6 bg-border mx-1" />
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -372,8 +351,35 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* AI Daily Agenda */}
+        {/* AI Daily Agenda — Above all controls */}
         <DailyAgenda events={events} teamMode={teamMode} />
+
+        {/* Calendar Controls */}
+        <div className="flex items-center justify-between px-6 py-2 border-b border-border">
+          <div className="flex items-center gap-2">
+            {(["month", "week", "day"] as ViewMode[]).map((v) => (
+              <Button key={v} size="sm" variant={viewMode === v ? "default" : "secondary"}
+                onClick={() => setViewMode(v)} className="capitalize text-xs">
+                {v}
+              </Button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="default" onClick={goToToday} className="font-semibold">
+              <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+              Today
+            </Button>
+            <Button size="icon" variant="ghost" onClick={goToPrev}><ChevronLeft className="h-4 w-4" /></Button>
+            <span className="text-sm font-semibold text-foreground min-w-[140px] text-center">
+              {viewMode === "day"
+                ? format(currentDate, "EEEE, MMM d, yyyy")
+                : viewMode === "week"
+                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
+                  : format(currentDate, "MMMM yyyy")}
+            </span>
+            <Button size="icon" variant="ghost" onClick={goToNext}><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+        </div>
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
@@ -436,7 +442,7 @@ export default function Calendar() {
             </div>
           </div>
 
-          {/* Sidebar */}
+          {/* Sidebar — Fixed Order: Context → Signal → Directive → Events → Notes */}
           {sidebarOpen && (
             <div className="w-[320px] border-l border-border bg-card overflow-y-auto hidden lg:block">
               <div className="p-4 border-b border-border">
@@ -457,7 +463,8 @@ export default function Calendar() {
                   </Button>
                 </div>
               ) : (
-                <div className="p-3 space-y-2">
+                <div className="flex flex-col">
+                  {/* 1. Contact / Deal Context */}
                   {selectedDateEvents.map((evt) => {
                     const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                     const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
@@ -467,11 +474,12 @@ export default function Calendar() {
                       <div
                         key={evt.id}
                         className={cn(
-                          "rounded-lg border p-3 space-y-1 cursor-pointer hover:bg-muted/50 transition-colors",
-                          urgencyColor ? cn(urgencyColor.border, urgencyColor.bg) : "border-border",
+                          "border-b border-border p-3 cursor-pointer hover:bg-muted/30 transition-colors",
+                          urgencyColor ? urgencyColor.bg : "",
                         )}
                         onClick={() => navigate(getEventNavigation(evt))}
                       >
+                        {/* Context: Name, Address, Type */}
                         <div className="flex items-start gap-2">
                           <div className={cn(
                             "w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5",
@@ -480,44 +488,79 @@ export default function Calendar() {
                             <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
-                            {evt.time && (
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <Clock className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-[10px] text-muted-foreground">{evt.time}</span>
-                              </div>
-                            )}
+                            <p className="text-xs font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
                             {evt.propertyAddress && (
                               <div className="flex items-center gap-1 mt-0.5">
                                 <MapPin className="h-3 w-3 text-muted-foreground" />
                                 <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
                               </div>
                             )}
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <Badge variant="outline" className={cn(
+                                "text-[9px] border",
+                                urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
+                              )}>
+                                {evt.isOverdue ? "Overdue" : colors.label}
+                              </Badge>
+                              {evt.time && (
+                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                                  <Clock className="h-2.5 w-2.5" /> {evt.time}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Badge variant="outline" className={cn(
-                            "text-[9px] border",
-                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
-                          )}>
-                            {evt.isOverdue ? "Overdue" : colors.label}
-                          </Badge>
-                          {evt.urgency && evt.urgency !== "low" && (
-                            <Badge variant="outline" className={cn(
-                              "text-[9px] border",
-                              URGENCY_COLORS[evt.urgency].bg,
-                              URGENCY_COLORS[evt.urgency].text,
-                              URGENCY_COLORS[evt.urgency].border,
-                            )}>
-                              {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
-                            </Badge>
-                          )}
-                        </div>
+
+                        {/* 2. AI Priority Signal */}
+                        {(evt.urgency && evt.urgency !== "low") && (
+                          <div className="mt-2 px-2 py-1.5 rounded bg-muted/50 flex items-center gap-2">
+                            <Sparkles className="h-3 w-3 text-primary shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-muted-foreground">Risk:</span>
+                                <Badge variant="outline" className={cn(
+                                  "text-[9px] border",
+                                  URGENCY_COLORS[evt.urgency!].bg,
+                                  URGENCY_COLORS[evt.urgency!].text,
+                                  URGENCY_COLORS[evt.urgency!].border,
+                                )}>
+                                  {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
+                                </Badge>
+                                {evt.lastContactDays !== undefined && (
+                                  <span className="text-[10px] text-muted-foreground">
+                                    · {evt.lastContactDays}d since contact
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* 3. AI Directive — single sentence + CTA */}
                         <AIContext event={evt} />
+
+                        {/* 4. Actions */}
                         <EventActions event={evt} navigate={navigate} />
                       </div>
                     );
                   })}
+
+                  {/* 5. AI Summary / Notes — collapsible */}
+                  {selectedDateEvents.some((e) => e.meta?.notes) && (
+                    <details className="border-b border-border">
+                      <summary className="px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/30">
+                        AI Notes
+                      </summary>
+                      <div className="px-3 pb-3 space-y-1.5">
+                        {selectedDateEvents.filter((e) => e.meta?.notes).map((evt) => (
+                          <div key={`note-${evt.id}`} className="text-[10px] text-muted-foreground bg-muted/30 rounded px-2 py-1.5">
+                            <span className="font-medium text-foreground">{evt.contactName || evt.propertyAddress}: </span>
+                            {evt.meta!.notes}
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  )}
                 </div>
               )}
 
