@@ -99,7 +99,7 @@ function CallsSection({ calls, navigate }: { calls: CalendarEvent[]; navigate: R
     <div className="rounded-lg border border-border p-3">
       <div className="flex items-center gap-1.5 mb-2">
         <Phone className="h-3.5 w-3.5 text-emerald-600" />
-        <span className="text-xs font-semibold text-foreground">Calls to Make ({calls.length})</span>
+        <span className="text-xs font-semibold text-foreground">Calls To Make ({calls.length})</span>
       </div>
       <div className="space-y-1.5">
         {calls.slice(0, 4).map((evt) => (
