@@ -400,8 +400,18 @@ export default function Calendar() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Top Tab Bar — like reference */}
-        <div className="flex items-center justify-between px-6 pt-4 pb-2">
+        {/* AI Daily Agenda — Above all controls */}
+        <DailyAgenda events={events} teamMode={teamMode} />
+
+        {/* Transition divider */}
+        <div className="flex items-center gap-3 px-6 py-2">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">After today's execution…</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
+        {/* View Tab Bar */}
+        <div className="flex items-center justify-between px-6 pt-2 pb-1">
           <div className="flex items-center gap-1">
             {([
               { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
@@ -435,16 +445,6 @@ export default function Calendar() {
               {teamMode ? "Team" : "Solo"}
             </Button>
           </div>
-        </div>
-
-        {/* AI Daily Agenda — Above all controls */}
-        <DailyAgenda events={events} teamMode={teamMode} />
-
-        {/* Transition divider */}
-        <div className="flex items-center gap-3 px-6 py-2">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">After today's execution…</span>
-          <div className="flex-1 h-px bg-border" />
         </div>
 
         {/* Calendar Controls — Refined like reference */}
