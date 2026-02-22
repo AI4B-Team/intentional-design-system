@@ -311,9 +311,8 @@ export default function Calendar() {
 
   const { data: fetchedEvents = [] } = useCalendarEvents(currentDate);
 
-  // Merge with demo data when DB is empty so every view has content
+  // Always merge demo data with real data so every column has content for preview
   const events = useMemo(() => {
-    if (fetchedEvents.length > 0) return fetchedEvents;
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const demo: CalendarEvent[] = [
@@ -398,7 +397,10 @@ export default function Calendar() {
         contactName: "Tom Harris", urgency: "low",
       },
     ];
-    return demo;
+    // Merge: real events + demo events (dedup by id)
+    const realIds = new Set(fetchedEvents.map((e) => e.id));
+    const merged = [...fetchedEvents, ...demo.filter((d) => !realIds.has(d.id))];
+    return merged.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [fetchedEvents]);
 
   const goToPrev = () => {
