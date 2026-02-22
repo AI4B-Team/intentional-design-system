@@ -400,6 +400,18 @@ export default function Calendar() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
+        {/* Top action buttons */}
+        <div className="flex items-center justify-end px-6 pt-4 pb-2 gap-2">
+          <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
+            <Zap className="h-3 w-3" />
+            Start Power Hour
+          </Button>
+          <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
+            <Users className="h-3 w-3" />
+            {teamMode ? "Team" : "Solo"}
+          </Button>
+        </div>
+
         {/* AI Daily Agenda — Above all controls */}
         <DailyAgenda events={events} teamMode={teamMode} />
 
@@ -418,7 +430,6 @@ export default function Calendar() {
               { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
               { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
               { id: "grid" as CalendarViewTab, icon: LayoutGrid, label: "Grid" },
-              { id: "feed" as CalendarViewTab, icon: Rss, label: "Feed" },
             ]).map((tab) => (
               <Button
                 key={tab.id}
@@ -426,7 +437,7 @@ export default function Calendar() {
                 variant={viewTab === tab.id ? "default" : "ghost"}
                 onClick={() => setViewTab(tab.id)}
                 className={cn(
-                  "gap-1.5 text-xs rounded-full px-4",
+                  "gap-1.5 text-xs rounded-md px-4",
                   viewTab === tab.id && "bg-primary text-primary-foreground shadow-sm"
                 )}
               >
@@ -434,16 +445,6 @@ export default function Calendar() {
                 {tab.label}
               </Button>
             ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
-              <Zap className="h-3 w-3" />
-              Start Power Hour
-            </Button>
-            <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
-              <Users className="h-3 w-3" />
-              {teamMode ? "Team" : "Solo"}
-            </Button>
           </div>
         </div>
 
