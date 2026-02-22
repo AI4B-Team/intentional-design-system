@@ -7,6 +7,7 @@ import { LiveCallInline } from "@/components/calling/LiveCallInline";
 import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
 import { PostCallActions } from "@/components/dialer/post-call-actions";
 import { CampaignBadge } from "@/components/dialer/campaign-badge";
+import { DialerIntelligenceBar, ScheduledCallbacks, RecentCallLog, CampaignContext } from "@/components/dialer/intelligence";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -906,6 +907,8 @@ function CoPilotPanel({
   const callState = useCallState();
   const isLiveCall = callState.isCallActive && callState.callStatus === "connected";
   const theme = MODE_THEME[callingMode];
+  const isPowerHour = callState.executionMode === "power-hour";
+  const isDialerView = activeView === "dialer";
 
   return (
     <div className={cn(
@@ -954,7 +957,57 @@ function CoPilotPanel({
       </div>
 
       <div className="flex-1 overflow-auto p-4">
-        {!contact ? (
+        {/* ===== DIALER VIEW (No contact needed) — Intelligence Stack ===== */}
+        {isDialerView && !isLiveCall ? (
+          <div className="space-y-3">
+            {/* Power Hour Override: Simplified stack */}
+            {isPowerHour ? (
+              <>
+                <div className="p-3 rounded-lg border-2 border-amber-500/30 bg-amber-500/5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-4 w-4 text-amber-500" />
+                    <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour Active</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">Focus mode — stats locked to session metrics. Campaign switching disabled.</div>
+                </div>
+                <CollapsiblePanel title="Scheduled Callbacks" icon={<Calendar className="h-3 w-3" />} defaultOpen={true}>
+                  <ScheduledCallbacks compact />
+                </CollapsiblePanel>
+                <CollapsiblePanel title="Session Queue" icon={<Phone className="h-3 w-3" />} defaultOpen={true}>
+                  <div className="text-xs text-muted-foreground">
+                    {callState.dialerQueue.length > 0
+                      ? `${callState.dialerQueueIndex + 1} of ${callState.dialerQueue.length} contacts`
+                      : "No queue loaded"}
+                  </div>
+                </CollapsiblePanel>
+              </>
+            ) : (
+              <>
+                {/* Scheduled Callbacks — First-Class */}
+                <CollapsiblePanel title="Scheduled Callbacks" icon={<Calendar className="h-3 w-3" />} defaultOpen={true}>
+                  <ScheduledCallbacks />
+                </CollapsiblePanel>
+
+                {/* Campaign Context */}
+                <CollapsiblePanel title="Campaign Context" icon={<Target className="h-3 w-3" />} defaultOpen={true}>
+                  <CampaignContext />
+                </CollapsiblePanel>
+
+                {/* Recent Call Log (Last 5) */}
+                <CollapsiblePanel title="Recent Calls" icon={<Phone className="h-3 w-3" />} defaultOpen={true}>
+                  <RecentCallLog />
+                </CollapsiblePanel>
+
+                {/* AI Directive */}
+                <CollapsiblePanel title="AI Directive" icon={<Sparkles className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
+                  <div className="text-xs text-foreground leading-relaxed font-medium">
+                    You have 1 overdue callback and 2 upcoming today. Prioritize David Park — he requested a callback yesterday and hasn't been reached.
+                  </div>
+                </CollapsiblePanel>
+              </>
+            )}
+          </div>
+        ) : !contact ? (
           <div className="text-center py-10 text-muted-foreground">
             <Sparkles className="h-8 w-8 opacity-30 mx-auto mb-3" />
             <p className="text-[13px]">Select a contact to get AI-powered insights</p>
@@ -1371,6 +1424,9 @@ function DialerView({ callingMode, setCallingMode }: { callingMode: CallingModeK
 
   return (
     <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+      {/* Dialer Intelligence Bar — Before/After context */}
+      <DialerIntelligenceBar />
+
       {/* Daily Goals Tracker */}
       <DailyGoalsTracker />
 
