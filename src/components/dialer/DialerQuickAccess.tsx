@@ -298,10 +298,10 @@ export function DialerQuickAccess() {
             </Button>
 
             <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t">
-              <Button variant="ghost" size="sm" className="text-xs" onClick={() => { navigate("/communications"); setOpen(false); }}>
+              <Button variant="ghost" size="sm" className="text-xs" onClick={() => { navigate("/communications?view=dialer"); setOpen(false); }}>
                 <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Open Dialer
               </Button>
-              <Button variant="ghost" size="sm" className="text-xs" onClick={() => { navigate("/communications"); setOpen(false); }}>
+              <Button variant="ghost" size="sm" className="text-xs" onClick={() => { navigate("/communications?view=dialer"); setOpen(false); }}>
                 <Users className="h-3.5 w-3.5 mr-1.5" /> Call Queues
               </Button>
             </div>
