@@ -425,74 +425,31 @@ export default function Calendar() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Combined controls bar */}
-        <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-border">
-          {/* Left: View tabs + mode */}
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg">
-              {([
-                { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
-                { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
-                { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
-              ]).map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewTab(tab.id)}
-                  className={cn(
-                    "flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-md transition-all",
-                    viewTab === tab.id
-                      ? "bg-white text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <tab.icon className="h-3.5 w-3.5" />
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="w-px h-5 bg-border" />
-
-            {/* View mode dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="ghost" className="gap-1.5 text-xs capitalize h-8 text-muted-foreground hover:text-foreground">
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  {viewMode}
-                  <ChevronDown className="h-3 w-3 opacity-50" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="bg-white w-36">
-                {(["day", "week", "month"] as ViewMode[]).map((v) => (
-                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs gap-2">
-                    {v === viewMode && <CheckCircle2 className="h-3 w-3 text-primary" />}
-                    {v !== viewMode && <div className="w-3" />}
-                    {v}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Button size="icon" variant="ghost" onClick={goToToday} className="h-8 w-8 text-primary hover:bg-primary/5" title="Today">
-              <CalendarIcon className="h-4 w-4" />
-            </Button>
+        {/* Row 1: View tabs + action buttons */}
+        <div className="flex items-center justify-between px-6 py-2 bg-white border-b border-border/60">
+          <div className="flex items-center gap-0.5 bg-muted/40 p-0.5 rounded-lg">
+            {([
+              { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
+              { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
+              { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
+            ]).map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setViewTab(tab.id)}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-1.5 text-xs font-medium rounded-md transition-all",
+                  viewTab === tab.id
+                    ? "bg-white text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <tab.icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* Center: Date navigation */}
-          <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7"><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="text-sm font-semibold text-foreground min-w-[180px] text-center">
-              {viewMode === "day"
-                ? format(currentDate, "EEEE, MMM d, yyyy")
-                : viewMode === "week"
-                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
-                  : format(currentDate, "MMMM yyyy")}
-            </span>
-            <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7"><ChevronRight className="h-4 w-4" /></Button>
-          </div>
-
-          {/* Right: Tools */}
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1.5">
             {searchOpen ? (
               <div className="flex items-center gap-1">
                 <Input
@@ -612,6 +569,56 @@ export default function Calendar() {
               </Tooltip>
             </TooltipProvider>
           </div>
+        </div>
+
+        {/* Row 2: View mode + date navigation */}
+        <div className="flex items-center justify-between px-6 py-2 bg-muted/20 border-b border-border/40">
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize h-7 rounded-md border-border/60 bg-white hover:bg-muted/30 text-foreground font-medium px-3">
+                  <LayoutGrid className="h-3 w-3 text-muted-foreground" />
+                  {viewMode}
+                  <ChevronDown className="h-3 w-3 opacity-40" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="bg-white w-36">
+                {(["day", "week", "month"] as ViewMode[]).map((v) => (
+                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs gap-2">
+                    {v === viewMode && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                    {v !== viewMode && <div className="w-3" />}
+                    {v}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="sm" variant="outline" onClick={goToToday} className="h-7 text-xs rounded-md border-border/60 bg-white hover:bg-primary/5 text-primary font-medium px-3 gap-1.5">
+                    <CalendarIcon className="h-3 w-3" />
+                    Today
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Jump to today</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7 rounded-md hover:bg-white"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></Button>
+            <span className="text-sm font-semibold text-foreground min-w-[180px] text-center tracking-tight">
+              {viewMode === "day"
+                ? format(currentDate, "EEEE, MMM d, yyyy")
+                : viewMode === "week"
+                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
+                  : format(currentDate, "MMMM yyyy")}
+            </span>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7 rounded-md hover:bg-white"><ChevronRight className="h-4 w-4 text-muted-foreground" /></Button>
+          </div>
+
+          <div className="w-[88px]" /> {/* Spacer for visual balance */}
         </div>
 
         {/* Active filters indicator */}
