@@ -268,7 +268,6 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                     "rounded-lg border bg-card overflow-hidden transition-all cursor-pointer hover:shadow-sm",
                     isItemExpanded && "shadow-md",
                     isExpanded && "flex flex-col",
-                    isExpanded && isItemExpanded && "col-span-full"
                   )}
                 >
                   {/* Main row with street view thumbnail */}
@@ -369,7 +368,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
 
                   {/* Expanded details */}
                   {isItemExpanded && (
-                    <div className={cn("px-2 pb-2 border-t bg-muted/20", isExpanded && "max-w-lg")}>
+                    <div className="px-2 pb-2 border-t bg-muted/20">
                       {/* Larger street view */}
                       <img
                         src={property.streetViewUrl}
