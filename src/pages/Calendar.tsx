@@ -399,19 +399,19 @@ export default function Calendar() {
 
   return (
     <AppLayout>
-      <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex flex-col h-full overflow-hidden bg-muted/30">
         {/* Title and action buttons */}
-        <div className="flex items-center justify-between px-6 pt-4 pb-2 gap-2">
-          <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-white border-b border-border">
+          <h1 className="text-xl font-bold text-foreground tracking-tight">Calendar</h1>
           <div className="flex items-center gap-2">
-          <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
-            <Zap className="h-3 w-3" />
-            Start Power Hour
-          </Button>
-          <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
-            <Users className="h-3 w-3" />
-            {teamMode ? "Team" : "Solo"}
-          </Button>
+            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
+              <Zap className="h-3.5 w-3.5" />
+              Start Power Hour
+            </Button>
+            <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5 h-8 rounded-lg">
+              <Users className="h-3.5 w-3.5" />
+              {teamMode ? "Team" : "Solo"}
+            </Button>
           </div>
         </div>
 
@@ -419,46 +419,87 @@ export default function Calendar() {
         <DailyAgenda events={events} teamMode={teamMode} />
 
         {/* Transition divider */}
-        <div className="flex items-center gap-3 px-6 py-2">
+        <div className="flex items-center gap-4 px-6 py-2.5 bg-white">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">After today's execution, tomorrow gets easier.</span>
+          <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-widest">After today's execution, tomorrow gets easier.</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* View Tab Bar */}
-        <div className="flex items-center justify-between px-6 pt-2 pb-1">
-          <div className="flex items-center gap-1">
-            {([
-              { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
-              { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
-              { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
-              
-            ]).map((tab) => (
-              <Button
-                key={tab.id}
-                size="sm"
-                variant={viewTab === tab.id ? "default" : "ghost"}
-                onClick={() => setViewTab(tab.id)}
-                className={cn(
-                  "gap-1.5 text-xs rounded-md px-4",
-                  viewTab === tab.id && "bg-primary text-primary-foreground shadow-sm"
-                )}
-              >
-                <tab.icon className="h-3.5 w-3.5" />
-                {tab.label}
-              </Button>
-            ))}
+        {/* Combined controls bar */}
+        <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-border">
+          {/* Left: View tabs + mode */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg">
+              {([
+                { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
+                { id: "plan" as CalendarViewTab, icon: List, label: "Plan" },
+                { id: "kanban" as CalendarViewTab, icon: Kanban, label: "Kanban" },
+              ]).map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setViewTab(tab.id)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-md transition-all",
+                    viewTab === tab.id
+                      ? "bg-white text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <tab.icon className="h-3.5 w-3.5" />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="w-px h-5 bg-border" />
+
+            {/* View mode dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="ghost" className="gap-1.5 text-xs capitalize h-8 text-muted-foreground hover:text-foreground">
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  {viewMode}
+                  <ChevronDown className="h-3 w-3 opacity-50" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="bg-white w-36">
+                {(["day", "week", "month"] as ViewMode[]).map((v) => (
+                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs gap-2">
+                    {v === viewMode && <CheckCircle2 className="h-3 w-3 text-primary" />}
+                    {v !== viewMode && <div className="w-3" />}
+                    {v}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button size="icon" variant="ghost" onClick={goToToday} className="h-8 w-8 text-primary hover:bg-primary/5" title="Today">
+              <CalendarIcon className="h-4 w-4" />
+            </Button>
           </div>
-          {/* Right side tools */}
+
+          {/* Center: Date navigation */}
           <div className="flex items-center gap-1">
-            {/* Search */}
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7"><ChevronLeft className="h-4 w-4" /></Button>
+            <span className="text-sm font-semibold text-foreground min-w-[180px] text-center">
+              {viewMode === "day"
+                ? format(currentDate, "EEEE, MMM d, yyyy")
+                : viewMode === "week"
+                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
+                  : format(currentDate, "MMMM yyyy")}
+            </span>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7"><ChevronRight className="h-4 w-4" /></Button>
+          </div>
+
+          {/* Right: Tools */}
+          <div className="flex items-center gap-0.5">
             {searchOpen ? (
               <div className="flex items-center gap-1">
                 <Input
                   placeholder="Search events..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-8 w-48 text-xs"
+                  className="h-8 w-48 text-xs rounded-lg"
                   autoFocus
                 />
                 <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSearchOpen(false); setSearchQuery(""); }}>
@@ -469,7 +510,7 @@ export default function Calendar() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSearchOpen(true)}>
+                    <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setSearchOpen(true)}>
                       <Search className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
@@ -478,13 +519,12 @@ export default function Calendar() {
               </TooltipProvider>
             )}
 
-            {/* Filter */}
             <Popover>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <PopoverTrigger asChild>
-                      <Button size="icon" variant="ghost" className={cn("h-8 w-8", activeFilters.length > 0 && "text-primary")}>
+                      <Button size="icon" variant="ghost" className={cn("h-8 w-8 text-muted-foreground hover:text-foreground", activeFilters.length > 0 && "text-primary")}>
                         <SlidersHorizontal className="h-4 w-4" />
                       </Button>
                     </PopoverTrigger>
@@ -499,22 +539,19 @@ export default function Calendar() {
                     key={type}
                     onClick={() => toggleFilter(type)}
                     className={cn(
-                      "flex items-center gap-2 w-full px-2 py-1.5 rounded text-xs hover:bg-muted/50 transition-colors",
+                      "flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs hover:bg-muted/50 transition-colors",
                       activeFilters.includes(type) && "bg-primary/5"
                     )}
                   >
-                    <div className={cn("w-2.5 h-2.5 rounded-full", colors.dot)} />
-                    <span className="flex-1 text-left capitalize">{colors.label}</span>
+                    <div className={cn("w-2 h-2 rounded-full", colors.dot)} />
+                    <span className="flex-1 text-left">{colors.label}</span>
                     {activeFilters.includes(type) && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
                   </button>
                 ))}
                 {activeFilters.length > 0 && (
                   <>
                     <div className="border-t border-border my-1" />
-                    <button
-                      onClick={() => setActiveFilters([])}
-                      className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 text-left"
-                    >
+                    <button onClick={() => setActiveFilters([])} className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 text-left">
                       Clear filters
                     </button>
                   </>
@@ -522,11 +559,10 @@ export default function Calendar() {
               </PopoverContent>
             </Popover>
 
-            {/* Export */}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleExport}>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={handleExport}>
                     <Download className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -534,13 +570,12 @@ export default function Calendar() {
               </Tooltip>
             </TooltipProvider>
 
-            {/* More Options */}
             <DropdownMenu>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <DropdownMenuTrigger asChild>
-                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-foreground">
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -562,11 +597,12 @@ export default function Calendar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Panel Toggle */}
+            <div className="w-px h-5 bg-border mx-0.5" />
+
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                  <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => setSidebarOpen(!sidebarOpen)}>
                     {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
                   </Button>
                 </TooltipTrigger>
@@ -578,62 +614,18 @@ export default function Calendar() {
           </div>
         </div>
 
-        {/* Calendar Controls */}
-        <div className="flex items-center justify-between px-6 py-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            {/* View Mode Dropdown */}
-            <div className="flex flex-col">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
-                    <LayoutGrid className="h-3.5 w-3.5" />
-                    {viewMode}
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="bg-white w-32">
-                  {(["day", "week", "month"] as ViewMode[]).map((v) => (
-                    <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
-                      {v}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <span className="text-[9px] text-muted-foreground mt-0.5 pl-0.5">
-                {viewMode === "month" ? "Best for spotting missed follow-ups" : viewMode === "week" ? "Best for planning your week" : "Focus on today's execution"}
-              </span>
-            </div>
-
-            <Button size="icon" variant="outline" onClick={goToToday} className="h-8 w-8" title="Today">
-              <CalendarIcon className="h-4 w-4 text-primary" />
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="text-sm font-semibold text-foreground">
-              {viewMode === "day"
-                ? format(currentDate, "EEEE, MMM d, yyyy")
-                : viewMode === "week"
-                  ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
-                  : format(currentDate, "MMMM yyyy")}
-            </span>
-            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
-          </div>
-        </div>
-
         {/* Active filters indicator */}
         {(activeFilters.length > 0 || searchQuery) && (
-          <div className="flex items-center gap-2 px-6 py-1.5 bg-muted/30 border-b border-border">
+          <div className="flex items-center gap-2 px-6 py-1.5 bg-white border-b border-border">
             {activeFilters.map((f) => (
-              <Badge key={f} variant="secondary" className="text-[10px] gap-1 capitalize">
+              <Badge key={f} variant="secondary" className="text-[10px] gap-1 rounded-md">
                 <div className={cn("w-1.5 h-1.5 rounded-full", EVENT_COLORS[f]?.dot)} />
                 {EVENT_COLORS[f]?.label}
                 <button onClick={() => toggleFilter(f)} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
               </Badge>
             ))}
             {searchQuery && (
-              <Badge variant="secondary" className="text-[10px] gap-1">
+              <Badge variant="secondary" className="text-[10px] gap-1 rounded-md">
                 Search: "{searchQuery}"
                 <button onClick={() => { setSearchQuery(""); setSearchOpen(false); }} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
               </Badge>
@@ -643,16 +635,17 @@ export default function Calendar() {
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-auto p-4 bg-white">
+          <div className="flex-1 flex flex-col overflow-auto p-5 bg-white">
             {viewTab === "calendar" && viewMode === "month" && (
               <>
-                {/* Month Grid */}
-                <div className="grid grid-cols-7 gap-px mb-1">
+                {/* Month Grid Header */}
+                <div className="grid grid-cols-7 mb-2">
                   {weekDays.map((d) => (
-                    <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider py-2">{d}</div>
+                    <div key={d} className="text-center text-[11px] font-semibold text-muted-foreground uppercase tracking-wider py-2">{d}</div>
                   ))}
                 </div>
-                <div className="grid grid-cols-7 gap-px flex-1 bg-border rounded-lg overflow-hidden">
+                {/* Month Grid */}
+                <div className="grid grid-cols-7 gap-px flex-1 bg-border/60 rounded-xl overflow-hidden shadow-sm">
                   {calendarDays.map((day) => {
                     const dateKey = format(day, "yyyy-MM-dd");
                     const dayEvents = filteredEventsByDate.get(dateKey) || [];
@@ -665,16 +658,16 @@ export default function Calendar() {
                         key={dateKey}
                         onClick={() => setSelectedDate(day)}
                         className={cn(
-                          "bg-white p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
-                          !isCurrentMonth && "bg-muted/20",
-                          isSelected && "ring-2 ring-primary ring-inset",
-                          hasOverdue && isCurrentDay && "bg-red-50/50",
+                          "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col",
+                          !isCurrentMonth && "bg-muted/10",
+                          isSelected && "ring-2 ring-primary ring-inset bg-primary/[0.02]",
+                          hasOverdue && isCurrentDay && "bg-red-50/30",
                         )}
                       >
                         <span className={cn(
-                          "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-0.5",
-                          isCurrentDay && "bg-primary text-primary-foreground",
-                          !isCurrentDay && !isCurrentMonth && "text-muted-foreground/50",
+                          "text-[13px] font-medium w-7 h-7 flex items-center justify-center rounded-full mb-1",
+                          isCurrentDay && "bg-primary text-primary-foreground font-semibold",
+                          !isCurrentDay && !isCurrentMonth && "text-muted-foreground/40",
                           !isCurrentDay && isCurrentMonth && "text-foreground",
                         )}>
                           {format(day, "d")}
@@ -685,10 +678,9 @@ export default function Calendar() {
                             const normalEvents = dayEvents.filter((e) => !e.isOverdue);
                             const items: React.ReactNode[] = [];
 
-                            // Collapse overdue into a single signal
                             if (overdueEvents.length > 1) {
                               items.push(
-                                <div key="overdue-summary" className="text-[9px] leading-tight px-1 py-0.5 rounded truncate bg-red-50 text-red-700 font-medium">
+                                <div key="overdue-summary" className="text-[9px] leading-tight px-1.5 py-0.5 rounded-md truncate bg-red-50 text-red-700 font-medium">
                                   {overdueEvents.length} Overdue
                                 </div>
                               );
@@ -696,18 +688,17 @@ export default function Calendar() {
                               const evt = overdueEvents[0];
                               const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
                               items.push(
-                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1 py-0.5 rounded truncate", urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : "bg-red-50 text-red-700")}>
+                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1.5 py-0.5 rounded-md truncate", urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : "bg-red-50 text-red-700")}>
                                   {evt.title.split(" - ")[0]}
                                 </div>
                               );
                             }
 
-                            // Show normal events (limit total to 3)
                             const slotsLeft = 3 - items.length;
                             normalEvents.slice(0, slotsLeft).forEach((evt) => {
                               const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                               items.push(
-                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1 py-0.5 rounded truncate", colors.bg, colors.text)}>
+                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1.5 py-0.5 rounded-md truncate", colors.bg, colors.text)}>
                                   {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
                                 </div>
                               );
@@ -715,7 +706,7 @@ export default function Calendar() {
 
                             const remaining = dayEvents.length - (overdueEvents.length > 1 ? 1 : overdueEvents.length) - Math.min(normalEvents.length, slotsLeft);
                             if (remaining > 0) {
-                              items.push(<span key="more" className="text-[9px] text-muted-foreground pl-1">+{remaining} more</span>);
+                              items.push(<span key="more" className="text-[9px] text-muted-foreground pl-1.5">+{remaining} more</span>);
                             }
 
                             return items;
@@ -734,15 +725,15 @@ export default function Calendar() {
               const hours = Array.from({ length: 24 }, (_, i) => i);
               return (
                 <>
-                  <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px mb-1">
+                  <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px mb-2">
                     <div />
                     {weekDaysArr.map((day) => (
                       <div key={day.toISOString()} className="text-center py-2">
-                        <div className="text-[10px] font-semibold text-muted-foreground uppercase">{format(day, "EEE")}</div>
+                        <div className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{format(day, "EEE")}</div>
                         <button
                           onClick={() => { setSelectedDate(day); setViewMode("day"); }}
                           className={cn(
-                            "text-sm font-medium w-8 h-8 rounded-full mx-auto flex items-center justify-center",
+                            "text-sm font-medium w-8 h-8 rounded-full mx-auto flex items-center justify-center mt-0.5 transition-all",
                             isToday(day) && "bg-primary text-primary-foreground",
                             isSameDay(day, selectedDate) && !isToday(day) && "ring-2 ring-primary",
                           )}
@@ -752,11 +743,11 @@ export default function Calendar() {
                       </div>
                     ))}
                   </div>
-                  <div className="flex-1 overflow-auto border border-border rounded-lg">
-                    <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px bg-border">
+                  <div className="flex-1 overflow-auto border border-border/60 rounded-xl shadow-sm">
+                    <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px bg-border/60">
                       {hours.map((hour) => (
                         <React.Fragment key={hour}>
-                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-12 flex items-start justify-end">
+                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-12 flex items-start justify-end pt-1">
                             {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                           </div>
                           {weekDaysArr.map((day) => {
@@ -770,7 +761,7 @@ export default function Calendar() {
                               <button
                                 key={`${dateKey}-${hour}`}
                                 onClick={() => setSelectedDate(day)}
-                                className="bg-white h-12 relative hover:bg-muted/30 transition-colors"
+                                className="bg-white h-12 relative hover:bg-muted/20 transition-colors"
                               >
                                 {hourEvents.map((evt) => {
                                   const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
@@ -778,7 +769,7 @@ export default function Calendar() {
                                     <div
                                       key={evt.id}
                                       onClick={(e) => { e.stopPropagation(); navigate(getEventNavigation(evt)); }}
-                                      className={cn("absolute inset-x-0.5 top-0.5 text-[9px] px-1 py-0.5 rounded truncate cursor-pointer", colors.bg, colors.text)}
+                                      className={cn("absolute inset-x-0.5 top-0.5 text-[9px] px-1.5 py-0.5 rounded-md truncate cursor-pointer", colors.bg, colors.text)}
                                     >
                                       {evt.title.split(" - ")[0]}
                                     </div>
@@ -800,8 +791,8 @@ export default function Calendar() {
               const dayEvts = filteredEventsByDate.get(dateKey) || [];
               const hours = Array.from({ length: 24 }, (_, i) => i);
               return (
-                <div className="flex-1 overflow-auto border border-border rounded-lg">
-                  <div className="grid grid-cols-[60px_1fr] gap-px bg-border">
+                <div className="flex-1 overflow-auto border border-border/60 rounded-xl shadow-sm">
+                  <div className="grid grid-cols-[60px_1fr] gap-px bg-border/60">
                     {hours.map((hour) => {
                       const hourEvents = dayEvts.filter((evt) => {
                         if (!evt.time) return hour === 9;
@@ -810,17 +801,17 @@ export default function Calendar() {
                       });
                       return (
                         <React.Fragment key={hour}>
-                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-14 flex items-start justify-end">
+                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-14 flex items-start justify-end pt-1">
                             {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                           </div>
-                          <div className="bg-white h-14 relative hover:bg-muted/30 transition-colors">
+                          <div className="bg-white h-14 relative hover:bg-muted/20 transition-colors">
                             {hourEvents.map((evt) => {
                               const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                               return (
                                 <div
                                   key={evt.id}
                                   onClick={() => navigate(getEventNavigation(evt))}
-                                  className={cn("absolute inset-x-1 top-0.5 text-xs px-2 py-1 rounded cursor-pointer", colors.bg, colors.text)}
+                                  className={cn("absolute inset-x-1 top-0.5 text-xs px-2.5 py-1.5 rounded-md cursor-pointer", colors.bg, colors.text)}
                                 >
                                   <span className="font-medium">{evt.title}</span>
                                   {evt.time && <span className="ml-2 opacity-75">{evt.time}</span>}
@@ -837,10 +828,10 @@ export default function Calendar() {
             })()}
 
             {viewTab === "plan" && (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {filteredEvents.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <CalendarIcon className="h-12 w-12 text-muted-foreground/20 mb-4" />
                     <p className="text-sm text-muted-foreground">No events found</p>
                   </div>
                 ) : (
@@ -853,17 +844,17 @@ export default function Calendar() {
                     });
                     return Array.from(grouped.entries()).map(([dateKey, dayEvts]) => (
                       <div key={dateKey}>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex items-center gap-3 mb-2.5">
                           <span className={cn(
-                            "text-xs font-semibold px-2 py-0.5 rounded",
-                            isToday(parseISO(dateKey)) ? "bg-primary text-primary-foreground" : "text-muted-foreground"
+                            "text-xs font-semibold px-2.5 py-1 rounded-md",
+                            isToday(parseISO(dateKey)) ? "bg-primary text-primary-foreground" : "text-muted-foreground bg-muted/50"
                           )}>
                             {isToday(parseISO(dateKey)) ? "Today" : format(parseISO(dateKey), "EEEE, MMM d")}
                           </span>
                           <div className="flex-1 h-px bg-border" />
                           <span className="text-[10px] text-muted-foreground">{dayEvts.length} event{dayEvts.length !== 1 ? "s" : ""}</span>
                         </div>
-                        <div className="space-y-1 pl-2 border-l-2 border-border ml-2">
+                        <div className="space-y-1.5 pl-3 border-l-2 border-border/60 ml-3">
                           {dayEvts.map((evt) => {
                             const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                             const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
@@ -872,10 +863,10 @@ export default function Calendar() {
                               <div
                                 key={evt.id}
                                 onClick={() => navigate(getEventNavigation(evt))}
-                                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors"
+                                className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer transition-all"
                               >
-                                <div className={cn("w-7 h-7 rounded-md flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
-                                  <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
+                                <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
+                                  <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
@@ -892,7 +883,7 @@ export default function Calendar() {
                                     </span>
                                   )}
                                   <Badge variant="outline" className={cn(
-                                    "text-[9px] border",
+                                    "text-[9px] border rounded-md",
                                     urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
                                   )}>
                                     {evt.isOverdue ? "Overdue" : colors.label}
@@ -909,71 +900,20 @@ export default function Calendar() {
               </div>
             )}
 
-            {viewTab === "grid" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {filteredEvents.length === 0 ? (
-                  <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
-                    <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
-                    <p className="text-sm text-muted-foreground">No events found</p>
-                  </div>
-                ) : (
-                  filteredEvents.map((evt) => {
-                    const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
-                    const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
-                    const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
-                    return (
-                      <div
-                        key={evt.id}
-                        onClick={() => navigate(getEventNavigation(evt))}
-                        className="flex flex-col p-4 rounded-lg border border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors"
-                      >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", urgencyColor ? urgencyColor.bg : colors.bg)}>
-                            <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
-                          </div>
-                          <Badge variant="outline" className={cn(
-                            "text-[9px] border",
-                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
-                          )}>
-                            {evt.isOverdue ? "Overdue" : colors.label}
-                          </Badge>
-                        </div>
-                        <p className="text-xs font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
-                        {evt.propertyAddress && (
-                          <div className="flex items-center gap-1 mt-1">
-                            <MapPin className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
-                            <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border">
-                          <span className="text-[10px] text-muted-foreground">{format(evt.date, "MMM d, yyyy")}</span>
-                          {evt.time && (
-                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                              <Clock className="h-2.5 w-2.5" /> {evt.time}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            )}
-
             {viewTab === "kanban" && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-4 overflow-x-auto pb-4">
                 {Object.entries(EVENT_COLORS).map(([type, colors]) => {
                   const typeEvents = filteredEvents.filter((e) => e.type === type);
                   return (
-                    <div key={type} className="flex-shrink-0 w-64 flex flex-col">
+                    <div key={type} className="flex-shrink-0 w-72 flex flex-col">
                       <div className="flex items-center gap-2 mb-3 px-1">
                         <div className={cn("w-2.5 h-2.5 rounded-full", colors.dot)} />
-                        <span className="text-xs font-semibold text-foreground capitalize">{colors.label}</span>
-                        <span className="text-[10px] text-muted-foreground ml-auto">{typeEvents.length}</span>
+                        <span className="text-xs font-semibold text-foreground">{colors.label}</span>
+                        <Badge variant="secondary" className="text-[10px] ml-auto rounded-md">{typeEvents.length}</Badge>
                       </div>
-                      <div className="flex-1 space-y-2 min-h-[200px] p-2 rounded-lg bg-muted/20 border border-border/50">
+                      <div className="flex-1 space-y-2 min-h-[200px] p-2.5 rounded-xl bg-muted/20 border border-border/40">
                         {typeEvents.length === 0 ? (
-                          <p className="text-[10px] text-muted-foreground text-center py-8">No events</p>
+                          <p className="text-[10px] text-muted-foreground text-center py-10">No events</p>
                         ) : (
                           typeEvents.map((evt) => {
                             const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
@@ -983,7 +923,7 @@ export default function Calendar() {
                                 key={evt.id}
                                 onClick={() => navigate(getEventNavigation(evt))}
                                 className={cn(
-                                  "p-3 rounded-lg bg-white border border-border hover:shadow-sm cursor-pointer transition-all",
+                                  "p-3 rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all",
                                   urgencyColor && `border-l-2 ${urgencyColor.border}`,
                                 )}
                               >
@@ -999,7 +939,7 @@ export default function Calendar() {
                                 <div className="flex items-center gap-2 mt-2 text-[10px] text-muted-foreground">
                                   <span>{format(evt.date, "MMM d")}</span>
                                   {evt.time && <span>· {evt.time}</span>}
-                                  {evt.isOverdue && <Badge variant="outline" className="text-[8px] text-destructive border-destructive/30">Overdue</Badge>}
+                                  {evt.isOverdue && <Badge variant="outline" className="text-[8px] text-destructive border-destructive/30 rounded-md">Overdue</Badge>}
                                 </div>
                               </div>
                             );
@@ -1015,8 +955,8 @@ export default function Calendar() {
             {viewTab === "feed" && (
               <div className="max-w-2xl mx-auto space-y-0">
                 {filteredEvents.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <Rss className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                  <div className="flex flex-col items-center justify-center py-20 text-center">
+                    <Rss className="h-12 w-12 text-muted-foreground/20 mb-4" />
                     <p className="text-sm text-muted-foreground">No activity to show</p>
                   </div>
                 ) : (
@@ -1027,22 +967,17 @@ export default function Calendar() {
                     const isLast = i === filteredEvents.length - 1;
                     return (
                       <div key={evt.id} className="flex gap-3">
-                        {/* Timeline line */}
                         <div className="flex flex-col items-center">
                           <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 bg-white", urgencyColor ? urgencyColor.border : `border-${colors.dot.replace("bg-", "")}`)}>
                             <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
                           </div>
                           {!isLast && <div className="w-px flex-1 bg-border min-h-[20px]" />}
                         </div>
-                        {/* Content */}
-                        <div
-                          className="flex-1 pb-4 cursor-pointer"
-                          onClick={() => navigate(getEventNavigation(evt))}
-                        >
+                        <div className="flex-1 pb-4 cursor-pointer" onClick={() => navigate(getEventNavigation(evt))}>
                           <div className="flex items-center gap-2">
                             <p className="text-xs font-medium text-foreground">{evt.title}</p>
                             <Badge variant="outline" className={cn(
-                              "text-[8px] border",
+                              "text-[8px] border rounded-md",
                               urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
                             )}>
                               {evt.isOverdue ? "Overdue" : colors.label}
@@ -1058,7 +993,7 @@ export default function Calendar() {
                             </span>
                           )}
                           {evt.meta?.notes && (
-                            <p className="text-[10px] text-muted-foreground mt-1.5 bg-muted/30 rounded px-2 py-1.5 line-clamp-2">{evt.meta.notes}</p>
+                            <p className="text-[10px] text-muted-foreground mt-1.5 bg-muted/30 rounded-md px-2.5 py-1.5 line-clamp-2">{evt.meta.notes}</p>
                           )}
                         </div>
                       </div>
@@ -1069,29 +1004,31 @@ export default function Calendar() {
             )}
           </div>
 
-          {/* Sidebar — Fixed Order: Context → Signal → Directive → Events → Notes */}
+          {/* Sidebar */}
           {sidebarOpen && (
-            <div className="w-[320px] border-l border-border bg-white overflow-y-auto hidden lg:block">
-              <div className="p-4 border-b border-border">
-                <h3 className="text-sm font-bold text-foreground">{format(selectedDate, "EEEE, MMMM d")}</h3>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
+            <div className="w-[340px] border-l border-border bg-white overflow-y-auto hidden lg:block">
+              {/* Sidebar header */}
+              <div className="px-5 py-4 border-b border-border">
+                <h3 className="text-base font-bold text-foreground">{format(selectedDate, "EEEE, MMMM d")}</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   {selectedDateEvents.length} event{selectedDateEvents.length !== 1 ? "s" : ""}
                 </p>
               </div>
 
               {selectedDateEvents.length === 0 ? (
-                <div className="p-6 text-center">
-                  <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">You're clear for this day.</p>
-                  <p className="text-[10px] text-muted-foreground/70 mt-1">Want to generate outreach?</p>
-                  <Button size="sm" variant="secondary" className="mt-3 text-xs" onClick={() => navigate("/intel")}>
-                    <Sparkles className="h-3 w-3 mr-1.5" />
+                <div className="p-8 text-center">
+                  <div className="w-14 h-14 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-4">
+                    <CalendarIcon className="h-7 w-7 text-muted-foreground/30" />
+                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">You're clear for this day.</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1">Want to generate outreach?</p>
+                  <Button size="sm" variant="outline" className="mt-4 text-xs rounded-lg gap-1.5" onClick={() => navigate("/intel")}>
+                    <Sparkles className="h-3.5 w-3.5" />
                     Find Opportunities
                   </Button>
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  {/* 1. Contact / Deal Context */}
                   {selectedDateEvents.map((evt) => {
                     const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                     const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
@@ -1100,84 +1037,82 @@ export default function Calendar() {
                     return (
                       <div
                         key={evt.id}
-                        className="border-b border-border p-3 cursor-pointer hover:bg-muted/30 transition-colors"
+                        className="border-b border-border px-5 py-4 cursor-pointer hover:bg-muted/20 transition-colors"
                         onClick={() => navigate(getEventNavigation(evt))}
                       >
-                        {/* Context: Name, Address, Type */}
-                        <div className="flex items-start gap-2">
+                        {/* Event header */}
+                        <div className="flex items-start gap-3">
                           <div className={cn(
-                            "w-7 h-7 rounded-md flex items-center justify-center shrink-0 mt-0.5",
+                            "w-9 h-9 rounded-lg flex items-center justify-center shrink-0",
                             urgencyColor ? urgencyColor.bg : colors.bg,
                           )}>
-                            <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
+                            <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
+                            <p className="text-sm font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
                             {evt.propertyAddress && (
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <MapPin className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
+                              <div className="flex items-center gap-1 mt-1">
+                                <MapPin className="h-3 w-3 text-muted-foreground shrink-0" />
+                                <span className="text-xs text-muted-foreground truncate">{evt.propertyAddress}</span>
                               </div>
                             )}
-                            <div className="flex items-center gap-1.5 mt-1">
+                            <div className="flex items-center gap-2 mt-1.5">
                               <Badge variant="outline" className={cn(
-                                "text-[9px] border",
+                                "text-[9px] border rounded-md",
                                 urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
                               )}>
                                 {evt.isOverdue ? "Overdue" : colors.label}
                               </Badge>
                               {evt.time && (
-                                <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                                  <Clock className="h-2.5 w-2.5" /> {evt.time}
+                                <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                                  <Clock className="h-3 w-3" /> {evt.time}
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
 
-                        {/* 2. AI Priority Signal */}
+                        {/* AI Priority Signal */}
                         {(evt.urgency && evt.urgency !== "low") && (
-                          <div className="mt-2 px-2 py-1.5 rounded bg-muted/50 flex items-center gap-2">
-                            <Sparkles className="h-3 w-3 text-primary shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-muted-foreground">Risk:</span>
-                                <Badge variant="outline" className={cn(
-                                  "text-[9px] border",
-                                  URGENCY_COLORS[evt.urgency!].bg,
-                                  URGENCY_COLORS[evt.urgency!].text,
-                                  URGENCY_COLORS[evt.urgency!].border,
-                                )}>
-                                  {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
-                                </Badge>
-                                {evt.lastContactDays !== undefined && (
-                                  <span className="text-[10px] text-muted-foreground">
-                                    · {evt.lastContactDays}d since contact
-                                  </span>
-                                )}
-                              </div>
+                          <div className="mt-3 px-3 py-2 rounded-lg bg-muted/40 flex items-center gap-2">
+                            <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-[11px] text-muted-foreground">Risk:</span>
+                              <Badge variant="outline" className={cn(
+                                "text-[9px] border rounded-md",
+                                URGENCY_COLORS[evt.urgency!].bg,
+                                URGENCY_COLORS[evt.urgency!].text,
+                                URGENCY_COLORS[evt.urgency!].border,
+                              )}>
+                                {evt.urgency === "critical" ? "🔥 Critical" : evt.urgency === "high" ? "High" : "Medium"}
+                              </Badge>
+                              {evt.lastContactDays !== undefined && (
+                                <span className="text-[11px] text-muted-foreground">
+                                  · {evt.lastContactDays}d since contact
+                                </span>
+                              )}
                             </div>
                           </div>
                         )}
 
-                        {/* 3. AI Directive — single sentence + CTA */}
+                        {/* AI Context */}
                         <AIContext event={evt} />
 
-                        {/* 4. Actions */}
+                        {/* Actions */}
                         <EventActions event={evt} navigate={navigate} />
                       </div>
                     );
                   })}
 
-                  {/* 5. AI Summary / Notes — collapsible */}
+                  {/* AI Notes */}
                   {selectedDateEvents.some((e) => e.meta?.notes) && (
                     <details className="border-b border-border">
-                      <summary className="px-3 py-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/30">
+                      <summary className="px-5 py-3 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider cursor-pointer hover:bg-muted/20 transition-colors">
                         AI Notes
                       </summary>
-                      <div className="px-3 pb-3 space-y-1.5">
+                      <div className="px-5 pb-4 space-y-2">
                         {selectedDateEvents.filter((e) => e.meta?.notes).map((evt) => (
-                          <div key={`note-${evt.id}`} className="text-[10px] text-muted-foreground bg-muted/30 rounded px-2 py-1.5">
+                          <div key={`note-${evt.id}`} className="text-xs text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
                             <span className="font-medium text-foreground">{evt.contactName || evt.propertyAddress}: </span>
                             {evt.meta!.notes}
                           </div>
@@ -1187,7 +1122,6 @@ export default function Calendar() {
                   )}
                 </div>
               )}
-
             </div>
           )}
         </div>
