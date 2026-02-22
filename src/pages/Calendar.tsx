@@ -599,8 +599,8 @@ export default function Calendar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button size="icon" variant="default" onClick={goToToday} className="h-8 w-8" title="Today">
-              <CalendarIcon className="h-4 w-4" />
+            <Button size="icon" variant="outline" onClick={goToToday} className="h-8 w-8" title="Today">
+              <CalendarIcon className="h-4 w-4 text-primary" />
             </Button>
             <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
             <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
