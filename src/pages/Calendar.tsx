@@ -240,16 +240,16 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
       <div className="flex items-center justify-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call"); }}>
-              <Phone className="h-3.5 w-3.5 text-emerald-600" />
+            <Button size="sm" className="h-7 w-7 p-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call"); }}>
+              <Phone className="h-3.5 w-3.5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms"); }}>
-              <MessageSquare className="h-3.5 w-3.5 text-blue-600" />
+              <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">SMS</p></TooltipContent>
@@ -257,7 +257,7 @@ function EventActions({ event, navigate }: { event: CalendarEvent; navigate: Ret
         <Tooltip>
           <TooltipTrigger asChild>
             <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule"); }}>
-              <CalendarClock className="h-3.5 w-3.5 text-amber-600" />
+              <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
@@ -421,7 +421,7 @@ export default function Calendar() {
         {/* Transition divider */}
         <div className="flex items-center gap-3 px-6 py-2">
           <div className="flex-1 h-px bg-border" />
-          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">After today's execution…</span>
+          <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">After today's execution, tomorrow gets easier.</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
@@ -582,22 +582,27 @@ export default function Calendar() {
         <div className="flex items-center justify-between px-6 py-2 border-b border-border">
           <div className="flex items-center gap-2">
             {/* View Mode Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
-                  <LayoutGrid className="h-3.5 w-3.5" />
-                  {viewMode}
-                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="bg-white w-32">
-                {(["day", "week", "month"] as ViewMode[]).map((v) => (
-                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
-                    {v}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex flex-col">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
+                    <LayoutGrid className="h-3.5 w-3.5" />
+                    {viewMode}
+                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-white w-32">
+                  {(["day", "week", "month"] as ViewMode[]).map((v) => (
+                    <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
+                      {v}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <span className="text-[9px] text-muted-foreground mt-0.5 pl-0.5">
+                {viewMode === "month" ? "Best for spotting missed follow-ups" : viewMode === "week" ? "Best for planning your week" : "Focus on today's execution"}
+              </span>
+            </div>
 
             <Button size="icon" variant="outline" onClick={goToToday} className="h-8 w-8" title="Today">
               <CalendarIcon className="h-4 w-4 text-primary" />
@@ -675,21 +680,46 @@ export default function Calendar() {
                           {format(day, "d")}
                         </span>
                         <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
-                          {dayEvents.slice(0, 3).map((evt) => {
-                            const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
-                            const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
-                            return (
-                              <div key={evt.id} className={cn(
-                                "text-[9px] leading-tight px-1 py-0.5 rounded truncate",
-                                urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : cn(colors.bg, colors.text),
-                              )}>
-                                {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
-                              </div>
-                            );
-                          })}
-                          {dayEvents.length > 3 && (
-                            <span className="text-[9px] text-muted-foreground pl-1">+{dayEvents.length - 3} more</span>
-                          )}
+                          {(() => {
+                            const overdueEvents = dayEvents.filter((e) => e.isOverdue);
+                            const normalEvents = dayEvents.filter((e) => !e.isOverdue);
+                            const items: React.ReactNode[] = [];
+
+                            // Collapse overdue into a single signal
+                            if (overdueEvents.length > 1) {
+                              items.push(
+                                <div key="overdue-summary" className="text-[9px] leading-tight px-1 py-0.5 rounded truncate bg-red-50 text-red-700 font-medium">
+                                  {overdueEvents.length} Overdue
+                                </div>
+                              );
+                            } else if (overdueEvents.length === 1) {
+                              const evt = overdueEvents[0];
+                              const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+                              items.push(
+                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1 py-0.5 rounded truncate", urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : "bg-red-50 text-red-700")}>
+                                  {evt.title.split(" - ")[0]}
+                                </div>
+                              );
+                            }
+
+                            // Show normal events (limit total to 3)
+                            const slotsLeft = 3 - items.length;
+                            normalEvents.slice(0, slotsLeft).forEach((evt) => {
+                              const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                              items.push(
+                                <div key={evt.id} className={cn("text-[9px] leading-tight px-1 py-0.5 rounded truncate", colors.bg, colors.text)}>
+                                  {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
+                                </div>
+                              );
+                            });
+
+                            const remaining = dayEvents.length - (overdueEvents.length > 1 ? 1 : overdueEvents.length) - Math.min(normalEvents.length, slotsLeft);
+                            if (remaining > 0) {
+                              items.push(<span key="more" className="text-[9px] text-muted-foreground pl-1">+{remaining} more</span>);
+                            }
+
+                            return items;
+                          })()}
                         </div>
                       </button>
                     );
