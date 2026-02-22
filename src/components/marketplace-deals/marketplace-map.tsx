@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { generateD4DProperties, getDistressColor, type D4DProperty } from "./d4d-scan-data";
 import { D4DScanPanel } from "./D4DScanPanel";
 import { D4DScanOverlay } from "./D4DScanOverlay";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AnalysisResult {
   propertyCount: number;
@@ -564,30 +565,44 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
       {/* Right side controls: Scan + Draw + Intel */}
       <div className="absolute top-3 right-3 z-10 flex gap-2">
         {/* Scan Button */}
-        <Button
-          variant={scanActive ? "default" : "outline"}
-          className={cn(
-            "shadow-md gap-2",
-            scanActive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "bg-white"
-          )}
-          onClick={handleScan}
-          disabled={scanLoading}
-        >
-          {scanLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
-          {scanLoading ? "Scanning..." : scanActive ? "Clear Scan" : "Scan"}
-        </Button>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={scanActive ? "default" : "outline"}
+                className={cn(
+                  "shadow-md gap-2",
+                  scanActive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "bg-white"
+                )}
+                onClick={handleScan}
+                disabled={scanLoading}
+              >
+                {scanLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
+                {scanLoading ? "Scanning..." : scanActive ? "Clear Scan" : "Scan"}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">AI Driving for Dollars — scan visible area</p></TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         {/* Draw Button */}
-        <Button
-          variant={isDrawing ? "default" : "outline"}
-          className={cn(
-            "shadow-md gap-2",
-            isDrawing ? "bg-primary text-primary-foreground" : "bg-white"
-          )}
-          onClick={toggleDrawMode}
-        >
-          <PenTool className="h-4 w-4" />
-          {isDrawing ? "Drawing..." : "Draw"}
-        </Button>
+        <TooltipProvider delayDuration={0}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={isDrawing ? "default" : "outline"}
+                className={cn(
+                  "shadow-md gap-2",
+                  isDrawing ? "bg-primary text-primary-foreground" : "bg-white"
+                )}
+                onClick={toggleDrawMode}
+              >
+                <PenTool className="h-4 w-4" />
+                {isDrawing ? "Drawing..." : "Draw"}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Draw a polygon to filter properties</p></TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         
         <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
           <PopoverTrigger asChild>
