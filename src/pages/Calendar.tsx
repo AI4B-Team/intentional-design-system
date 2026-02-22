@@ -36,7 +36,28 @@ import {
   Sparkles,
   Users,
   Zap,
+  Search,
+  SlidersHorizontal,
+  Download,
+  MoreHorizontal,
+  List,
+  LayoutGrid,
+  ChevronDown,
+  X,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -272,6 +293,8 @@ function AIContext({ event }: { event: CalendarEvent }) {
 }
 
 // ─── Main Calendar Component ──────────────────────────────
+type CalendarViewTab = "calendar" | "list" | "grid";
+
 export default function Calendar() {
   const navigate = useNavigate();
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -279,6 +302,10 @@ export default function Calendar() {
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [teamMode, setTeamMode] = useState(false);
+  const [viewTab, setViewTab] = useState<CalendarViewTab>("calendar");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const { data: events = [] } = useCalendarEvents(currentDate);
 
@@ -321,16 +348,78 @@ export default function Calendar() {
   const upcomingCount = useMemo(() => events.filter((e) => e.date >= new Date()).length, [events]);
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+  const filteredEvents = useMemo(() => {
+    let filtered = events;
+    if (activeFilters.length > 0) {
+      filtered = filtered.filter((e) => activeFilters.includes(e.type));
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter((e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.propertyAddress?.toLowerCase().includes(q) ||
+        e.contactName?.toLowerCase().includes(q)
+      );
+    }
+    return filtered;
+  }, [events, activeFilters, searchQuery]);
+
+  const filteredEventsByDate = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>();
+    filteredEvents.forEach((e) => {
+      const key = format(e.date, "yyyy-MM-dd");
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(e);
+    });
+    return map;
+  }, [filteredEvents]);
+
+  const toggleFilter = (type: string) => {
+    setActiveFilters((prev) =>
+      prev.includes(type) ? prev.filter((f) => f !== type) : [...prev, type]
+    );
+  };
+
+  const handleExport = () => {
+    const lines = ["Subject,Start Date,Start Time,Type,Address"];
+    filteredEvents.forEach((e) => {
+      lines.push(`"${e.title}","${format(e.date, "yyyy-MM-dd")}","${e.time || ""}","${e.type}","${e.propertyAddress || ""}"`);
+    });
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `calendar-${format(currentDate, "yyyy-MM")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Calendar exported", { description: `${filteredEvents.length} events exported as CSV` });
+  };
+
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Page Title */}
+        {/* Top Tab Bar — like reference */}
         <div className="flex items-center justify-between px-6 pt-4 pb-2">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Calendar</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              {todayEvents.length} events today · {upcomingCount} upcoming
-            </p>
+          <div className="flex items-center gap-1">
+            {([
+              { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
+              { id: "list" as CalendarViewTab, icon: List, label: "List" },
+              { id: "grid" as CalendarViewTab, icon: LayoutGrid, label: "Grid" },
+            ]).map((tab) => (
+              <Button
+                key={tab.id}
+                size="sm"
+                variant={viewTab === tab.id ? "default" : "ghost"}
+                onClick={() => setViewTab(tab.id)}
+                className={cn(
+                  "gap-1.5 text-xs rounded-full px-4",
+                  viewTab === tab.id && "bg-primary text-primary-foreground shadow-sm"
+                )}
+              >
+                <tab.icon className="h-3.5 w-3.5" />
+                {tab.label}
+              </Button>
+            ))}
           </div>
           <div className="flex items-center gap-2">
             <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
@@ -354,44 +443,189 @@ export default function Calendar() {
           <div className="flex-1 h-px bg-border" />
         </div>
 
-        {/* Calendar Controls */}
+        {/* Calendar Controls — Refined like reference */}
         <div className="flex items-center justify-between px-6 py-2 border-b border-border">
           <div className="flex items-center gap-2">
-            {(["month", "week", "day"] as ViewMode[]).map((v) => (
-              <Button key={v} size="sm" variant={viewMode === v ? "default" : "secondary"}
-                onClick={() => setViewMode(v)} className="capitalize text-xs">
-                {v}
-              </Button>
-            ))}
-          </div>
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="default" onClick={goToToday} className="font-semibold">
+            {/* View Mode Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize">
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  {viewMode}
+                  <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="bg-white w-32">
+                {(["day", "week", "month"] as ViewMode[]).map((v) => (
+                  <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs">
+                    {v}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button size="sm" variant="default" onClick={goToToday} className="font-semibold text-xs">
               <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
               Today
             </Button>
-            <Button size="icon" variant="ghost" onClick={goToPrev}><ChevronLeft className="h-4 w-4" /></Button>
-            <span className="text-sm font-semibold text-foreground min-w-[140px] text-center">
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-8 w-8"><ChevronLeft className="h-4 w-4" /></Button>
+            <span className="text-sm font-semibold text-foreground min-w-[160px] text-center">
               {viewMode === "day"
                 ? format(currentDate, "EEEE, MMM d, yyyy")
                 : viewMode === "week"
                   ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
                   : format(currentDate, "MMMM yyyy")}
             </span>
-            <Button size="icon" variant="ghost" onClick={goToNext}><ChevronRight className="h-4 w-4" /></Button>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-8 w-8"><ChevronRight className="h-4 w-4" /></Button>
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>
-                  {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+
+          {/* Right side tools */}
+          <div className="flex items-center gap-1">
+            {/* Search */}
+            {searchOpen ? (
+              <div className="flex items-center gap-1">
+                <Input
+                  placeholder="Search events..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-8 w-48 text-xs"
+                  autoFocus
+                />
+                <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { setSearchOpen(false); setSearchQuery(""); }}>
+                  <X className="h-3.5 w-3.5" />
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
-                <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              </div>
+            ) : (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSearchOpen(true)}>
+                      <Search className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Search</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            {/* Filter */}
+            <Popover>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <PopoverTrigger asChild>
+                      <Button size="icon" variant="ghost" className={cn("h-8 w-8", activeFilters.length > 0 && "text-primary")}>
+                        <SlidersHorizontal className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Filter</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <PopoverContent align="end" className="bg-white w-48 p-2">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Event Types</p>
+                {Object.entries(EVENT_COLORS).map(([type, colors]) => (
+                  <button
+                    key={type}
+                    onClick={() => toggleFilter(type)}
+                    className={cn(
+                      "flex items-center gap-2 w-full px-2 py-1.5 rounded text-xs hover:bg-muted/50 transition-colors",
+                      activeFilters.includes(type) && "bg-primary/5"
+                    )}
+                  >
+                    <div className={cn("w-2.5 h-2.5 rounded-full", colors.dot)} />
+                    <span className="flex-1 text-left capitalize">{colors.label}</span>
+                    {activeFilters.includes(type) && <CheckCircle2 className="h-3.5 w-3.5 text-primary" />}
+                  </button>
+                ))}
+                {activeFilters.length > 0 && (
+                  <>
+                    <div className="border-t border-border my-1" />
+                    <button
+                      onClick={() => setActiveFilters([])}
+                      className="w-full text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 text-left"
+                    >
+                      Clear filters
+                    </button>
+                  </>
+                )}
+              </PopoverContent>
+            </Popover>
+
+            {/* Export */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={handleExport}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Export CSV</p></TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            {/* More Options */}
+            <DropdownMenu>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">More</p></TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <DropdownMenuContent align="end" className="bg-white w-48">
+                <DropdownMenuItem onClick={() => navigate("/communications?channel=calls&filter=needs_action")} className="text-xs">
+                  <Phone className="h-3.5 w-3.5 mr-2" /> Calls To Make
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/intel")} className="text-xs">
+                  <Sparkles className="h-3.5 w-3.5 mr-2" /> Find Opportunities
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleExport} className="text-xs">
+                  <Download className="h-3.5 w-3.5 mr-2" /> Export Calendar
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Panel Toggle */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                    {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                  <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
+
+        {/* Active filters indicator */}
+        {(activeFilters.length > 0 || searchQuery) && (
+          <div className="flex items-center gap-2 px-6 py-1.5 bg-muted/30 border-b border-border">
+            {activeFilters.map((f) => (
+              <Badge key={f} variant="secondary" className="text-[10px] gap-1 capitalize">
+                <div className={cn("w-1.5 h-1.5 rounded-full", EVENT_COLORS[f]?.dot)} />
+                {EVENT_COLORS[f]?.label}
+                <button onClick={() => toggleFilter(f)} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
+              </Badge>
+            ))}
+            {searchQuery && (
+              <Badge variant="secondary" className="text-[10px] gap-1">
+                Search: "{searchQuery}"
+                <button onClick={() => { setSearchQuery(""); setSearchOpen(false); }} className="ml-0.5 hover:text-destructive"><X className="h-2.5 w-2.5" /></button>
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
@@ -406,7 +640,7 @@ export default function Calendar() {
             <div className="grid grid-cols-7 gap-px flex-1 bg-border rounded-lg overflow-hidden">
               {calendarDays.map((day) => {
                 const dateKey = format(day, "yyyy-MM-dd");
-                const dayEvents = eventsByDate.get(dateKey) || [];
+                const dayEvents = filteredEventsByDate.get(dateKey) || [];
                 const isCurrentMonth = isSameMonth(day, currentDate);
                 const isSelected = isSameDay(day, selectedDate);
                 const isCurrentDay = isToday(day);
