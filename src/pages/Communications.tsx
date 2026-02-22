@@ -381,8 +381,8 @@ const MOCK_DIALER_QUEUE = [
 ];
 
 const MOCK_CALL_SCRIPTS = [
-  { id: "s1", name: "Motivated Seller", type: "OUTBOUND", desc: "For distressed property owners", progress: 68 },
-  { id: "s2", name: "Follow-up Close", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 42 },
+  { id: "s1", name: "Follow-Up", type: "OUTBOUND", desc: "Re-engage warm leads", progress: 68 },
+  { id: "s2", name: "Follow-Up Close", type: "OUTBOUND", desc: "Second touch negotiation", progress: 42 },
   { id: "s3", name: "Agent Intro", type: "OUTBOUND", desc: "Pitch to listing agents", progress: 15 },
 ];
 
