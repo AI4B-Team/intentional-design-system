@@ -34,6 +34,7 @@ import {
   PanelRightClose,
   PanelRightOpen,
   Sparkles,
+  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -276,6 +277,7 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("month");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [teamMode, setTeamMode] = useState(false);
 
   const { data: events = [] } = useCalendarEvents(currentDate);
 
@@ -336,6 +338,10 @@ export default function Calendar() {
                 {v}
               </Button>
             ))}
+            <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5">
+              <Users className="h-3 w-3" />
+              {teamMode ? "Team" : "Investor"}
+            </Button>
             <div className="w-px h-6 bg-border mx-1" />
             <Button size="sm" variant="default" onClick={goToToday} className="font-semibold">
               <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
@@ -367,7 +373,7 @@ export default function Calendar() {
         </div>
 
         {/* AI Daily Agenda */}
-        <DailyAgenda events={events} />
+        <DailyAgenda events={events} teamMode={teamMode} />
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
@@ -443,8 +449,12 @@ export default function Calendar() {
               {selectedDateEvents.length === 0 ? (
                 <div className="p-6 text-center">
                   <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-sm text-muted-foreground">No events scheduled</p>
-                  <p className="text-[10px] text-muted-foreground/70 mt-1">Click a day with events to see details</p>
+                  <p className="text-sm text-muted-foreground">You're clear for this day.</p>
+                  <p className="text-[10px] text-muted-foreground/70 mt-1">Want to generate outreach?</p>
+                  <Button size="sm" variant="secondary" className="mt-3 text-xs" onClick={() => navigate("/intel")}>
+                    <Sparkles className="h-3 w-3 mr-1.5" />
+                    Find Opportunities
+                  </Button>
                 </div>
               ) : (
                 <div className="p-3 space-y-2">
