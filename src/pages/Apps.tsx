@@ -70,7 +70,7 @@ const apps: AppItem[] = [
     icon: Calculator,
     iconBg: "bg-emerald-100",
     iconColor: "text-emerald-600",
-    href: "/deal-analyzer",
+    href: "/tools/deal-analyzer",
     category: "analysis",
     isFeatured: true,
   },
@@ -81,7 +81,7 @@ const apps: AppItem[] = [
     icon: BarChart3,
     iconBg: "bg-cyan-100",
     iconColor: "text-cyan-600",
-    href: "/market-analyzer",
+    href: "/intel",
     category: "analysis",
   },
   {
@@ -102,7 +102,7 @@ const apps: AppItem[] = [
     icon: Megaphone,
     iconBg: "bg-red-100",
     iconColor: "text-red-600",
-    href: "/offer-blaster",
+    href: "/tools/offer-blaster",
     category: "marketing",
     isNew: true,
   },
@@ -113,7 +113,7 @@ const apps: AppItem[] = [
     icon: Globe,
     iconBg: "bg-indigo-100",
     iconColor: "text-indigo-600",
-    href: "/seller-websites",
+    href: "/communications",
     category: "marketing",
   },
   {
@@ -123,7 +123,7 @@ const apps: AppItem[] = [
     icon: Phone,
     iconBg: "bg-teal-100",
     iconColor: "text-teal-600",
-    href: "/dialer",
+    href: "/communications",
     category: "marketing",
   },
   // Operations
@@ -175,7 +175,7 @@ const apps: AppItem[] = [
     icon: FileText,
     iconBg: "bg-purple-100",
     iconColor: "text-purple-600",
-    href: "/lists",
+    href: "/marketing/lists",
     category: "data",
   },
   {
@@ -185,7 +185,7 @@ const apps: AppItem[] = [
     icon: Building2,
     iconBg: "bg-sky-100",
     iconColor: "text-sky-600",
-    href: "/property-scout",
+    href: "/tools/property-scout",
     category: "data",
   },
   // Documents & Templates
