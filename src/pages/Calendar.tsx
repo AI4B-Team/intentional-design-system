@@ -667,7 +667,7 @@ export default function Calendar() {
                         className={cn(
                           "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col",
                           !isCurrentMonth && "bg-muted/10",
-                          isSelected && "ring-2 ring-primary ring-inset bg-primary/[0.02]",
+                          isSelected && "shadow-[inset_0_0_0_2px_hsl(var(--primary))] bg-primary/[0.02]",
                           hasOverdue && isCurrentDay && "bg-red-50/30",
                         )}
                       >
