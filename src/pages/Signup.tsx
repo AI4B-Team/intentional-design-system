@@ -106,7 +106,7 @@ export default function Signup() {
       {/* Welcome Text */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold text-slate-900 mb-2">Create Account</h1>
-        <p className="text-slate-500">Get started with RealVest</p>
+        <p className="text-slate-500">Get started with RealElite</p>
       </div>
 
       {/* Signup Form */}
