@@ -111,6 +111,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
 import { usePipelineDeals, useUpdatePipelineDealStage, useCreatePipelineDeal } from "@/hooks/usePipelineDeals";
+import { useUnifiedActions } from "@/hooks/useUnifiedActions";
 import type { PipelineDeal } from "@/hooks/usePipelineDeals";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
@@ -613,6 +614,22 @@ export default function Pipeline() {
   const { data: pipelineDeals = [], isLoading: dealsLoading } = usePipelineDeals();
   const updateDealStage = useUpdatePipelineDealStage();
   const createDeal = useCreatePipelineDeal();
+
+  // Fetch pending unified actions to show counts on deal cards
+  const { data: pendingActions = [] } = useUnifiedActions({
+    status: ["pending", "overdue"],
+  });
+
+  // Build a map of property_id -> pending action count
+  const actionCountByProperty = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    pendingActions.forEach((action) => {
+      if (action.property_id) {
+        map[action.property_id] = (map[action.property_id] || 0) + 1;
+      }
+    });
+    return map;
+  }, [pendingActions]);
 
   // Demo data for visualization when no real data exists - matches Dashboard exactly
   const demoData = {

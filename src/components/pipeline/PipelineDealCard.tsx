@@ -18,6 +18,7 @@ interface PipelineDealCardProps {
   prevStage?: StageConfig;
   onView: () => void;
   onMove: (newStage: string) => void;
+  pendingActionsCount?: number;
 }
 
 // Map source to lead type display
@@ -61,6 +62,7 @@ export function PipelineDealCard({
   prevStage,
   onView,
   onMove,
+  pendingActionsCount,
 }: PipelineDealCardProps) {
   // Map PipelineDeal to PropertyCardData
   const propertyData: PropertyCardData = {
@@ -79,6 +81,7 @@ export function PipelineDealCard({
     sellerPhone: deal.contact_phone || undefined,
     sellerEmail: deal.contact_email || undefined,
     images: [], // TODO: Add images when available
+    pendingActionsCount,
   };
 
   return (
