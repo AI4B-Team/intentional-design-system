@@ -369,7 +369,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
 
                   {/* Expanded details */}
                   {isItemExpanded && (
-                    <div className="px-2 pb-2 border-t bg-muted/20">
+                    <div className={cn("px-2 pb-2 border-t bg-muted/20", isExpanded && "max-w-lg")}>
                       {/* Larger street view */}
                       <img
                         src={property.streetViewUrl}
