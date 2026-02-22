@@ -605,13 +605,17 @@ export default function Calendar() {
               {teamMode ? "Team" : "Solo"}
             </Button>
           </div>
-          <div className="flex flex-col items-end">
-            <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
-              <Zap className="h-3.5 w-3.5" />
-              Start Power Hour
-            </Button>
-            <span className="text-[9px] text-muted-foreground/60 mt-0.5 italic">AI-curated calls with the highest close probability</span>
-          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90 h-8 rounded-lg">
+                  <Zap className="h-3.5 w-3.5" />
+                  Start Power Hour
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-white text-foreground"><p className="text-xs">AI-curated calls with the highest close probability</p></TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {/* AI Daily Agenda — Above all controls */}
