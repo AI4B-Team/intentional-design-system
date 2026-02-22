@@ -1271,24 +1271,6 @@ export default function Pipeline() {
                                   <p>{canEmail ? `Email ${deal.contact_email}` : "No Email"}</p>
                                 </TooltipContent>
                               </Tooltip>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      navigate(`/properties/${deal.id}`);
-                                    }}
-                                  >
-                                    <Eye className="h-3.5 w-3.5" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent side="top">
-                                  <p>View Details</p>
-                                </TooltipContent>
-                              </Tooltip>
                             </TooltipProvider>
                           </div>
                         </td>
