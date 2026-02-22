@@ -638,7 +638,7 @@ export default function Calendar() {
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-auto p-4">
+          <div className="flex-1 flex flex-col overflow-auto p-4 bg-white">
             {viewTab === "calendar" && (
               <>
                 {/* Month Grid */}
