@@ -1,5 +1,5 @@
 import React from "react";
-import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2, PhoneCall, MailPlus } from "lucide-react";
+import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2, PhoneCall, MailPlus, Brain, Eye, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -131,35 +131,71 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
             </div>
           </Section>
 
-          {/* Distress signals */}
-          <Section title="Distress Signals">
-            <div className="grid grid-cols-2 gap-2">
-              <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase">Physical ({property.physicalScore}/100)</p>
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-500 rounded-full" style={{ width: `${property.physicalScore}%` }} />
+          {/* AI Overall Score Reasoning */}
+          <Section title="AI Lead Score Analysis">
+            <div className="flex items-start gap-2 p-2.5 rounded-lg bg-muted/50 border">
+              <Brain className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs font-semibold">Distress Score: {property.distressScore}/100</span>
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0" style={{ borderColor: color, color }}>
+                    {getDistressLabel(property.distressScore)}
+                  </Badge>
                 </div>
-                <div className="space-y-0.5 text-xs mt-1">
-                  {property.overgrown && <p>🌿 Overgrown yard</p>}
-                  {property.boardedWindows && <p>🪟 Boarded windows</p>}
-                  {property.roofDamage && <p>🏚️ Roof damage</p>}
-                  {property.codeViolations > 0 && <p>⚠️ {property.codeViolations} violations</p>}
-                  {property.vacant && <p>🏠 Vacant{property.daysVacant ? ` (${property.daysVacant}d)` : ""}</p>}
-                  {property.waterShutoff && <p>💧 Water shutoff</p>}
-                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed">{property.overallReasoning}</p>
               </div>
-              <div className="space-y-1">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase">Financial ({property.financialScore}/100)</p>
-                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-red-500 rounded-full" style={{ width: `${property.financialScore}%` }} />
-                </div>
-                <div className="space-y-0.5 text-xs mt-1">
-                  {property.preForeclosure && <p>🏦 Pre-foreclosure</p>}
-                  {property.taxLien && <p>💰 Tax lien</p>}
-                  {property.probate && <p>📜 Probate</p>}
-                  {property.highEquity && <p>📈 {property.estimatedEquityPct}% equity</p>}
-                  <p>🕐 Owned {property.ownershipYears} yrs</p>
-                </div>
+            </div>
+          </Section>
+
+          {/* Physical Distress - AI Reasoning */}
+          <Section title="Physical Distress Analysis">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Eye className="h-3.5 w-3.5 text-amber-600" />
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase">Based on Street View & Records ({property.physicalScore}/100)</span>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-amber-500 rounded-full" style={{ width: `${property.physicalScore}%` }} />
+              </div>
+              <div className="space-y-0.5 text-xs">
+                {property.overgrown && <p>🌿 Overgrown yard</p>}
+                {property.boardedWindows && <p>🪟 Boarded windows</p>}
+                {property.roofDamage && <p>🏚️ Roof damage</p>}
+                {property.codeViolations > 0 && <p>⚠️ {property.codeViolations} violations</p>}
+                {property.vacant && <p>🏠 Vacant{property.daysVacant ? ` (${property.daysVacant}d)` : ""}</p>}
+                {property.waterShutoff && <p>💧 Water shutoff</p>}
+              </div>
+              <div className="p-2 rounded-md bg-amber-50 border border-amber-200 mt-1">
+                <p className="text-[11px] text-amber-900 leading-relaxed">
+                  <span className="font-semibold">AI Analysis: </span>
+                  {property.physicalReasoning}
+                </p>
+              </div>
+            </div>
+          </Section>
+
+          {/* Financial Distress - AI Reasoning */}
+          <Section title="Financial Distress Analysis">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Landmark className="h-3.5 w-3.5 text-red-600" />
+                <span className="text-[10px] font-semibold text-muted-foreground uppercase">Based on Public Records ({property.financialScore}/100)</span>
+              </div>
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div className="h-full bg-red-500 rounded-full" style={{ width: `${property.financialScore}%` }} />
+              </div>
+              <div className="space-y-0.5 text-xs">
+                {property.preForeclosure && <p>🏦 Pre-foreclosure</p>}
+                {property.taxLien && <p>💰 Tax lien</p>}
+                {property.probate && <p>📜 Probate</p>}
+                {property.highEquity && <p>📈 {property.estimatedEquityPct}% equity</p>}
+                <p>🕐 Owned {property.ownershipYears} yrs</p>
+              </div>
+              <div className="p-2 rounded-md bg-red-50 border border-red-200 mt-1">
+                <p className="text-[11px] text-red-900 leading-relaxed">
+                  <span className="font-semibold">AI Analysis: </span>
+                  {property.financialReasoning}
+                </p>
               </div>
             </div>
           </Section>
