@@ -392,25 +392,29 @@ const MOCK_CALL_SCRIPTS = [
 // ============================================================================
 function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onSwitch: (v: string) => void }) {
   const views = [
-    { key: "activity", label: "All Activity", icon: MessageCircle },
-    { key: "dialer", label: "Dialer", icon: Phone },
+    { key: "activity", label: "All Activity", icon: MessageCircle, tooltip: "Review messages, missed calls, and voicemails" },
+    { key: "dialer", label: "Dialer", icon: Phone, tooltip: "Start live calls with AI guidance" },
   ];
   return (
     <div className="flex gap-2">
-      {views.map(({ key, label, icon: Icon }) => (
-        <button
-          key={key}
-          onClick={() => onSwitch(key)}
-          className={cn(
-            "flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all border",
-            activeView === key
-              ? "bg-primary text-primary-foreground border-primary shadow-sm"
-              : "bg-background text-muted-foreground border-border hover:text-foreground hover:border-foreground/20"
-          )}
-        >
-          <Icon className="h-4 w-4" />
-          {label}
-        </button>
+      {views.map(({ key, label, icon: Icon, tooltip }) => (
+        <Tooltip key={key}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => onSwitch(key)}
+              className={cn(
+                "flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-all border",
+                activeView === key
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                  : "bg-background text-muted-foreground border-border hover:text-foreground hover:border-foreground/20"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>{tooltip}</TooltipContent>
+        </Tooltip>
       ))}
     </div>
   );
@@ -661,6 +665,8 @@ function ConversationThread({
   onDismissAutoSelect,
   onEditContact,
   onDeleteContact,
+  onSwitchToDialer,
+  onStartPowerHour,
 }: {
   contact: Contact | null;
   onCall: () => void;
@@ -673,6 +679,8 @@ function ConversationThread({
   onDismissAutoSelect?: () => void;
   onEditContact?: () => void;
   onDeleteContact?: () => void;
+  onSwitchToDialer?: () => void;
+  onStartPowerHour?: () => void;
 }) {
   const callState = useCallState();
   const [contactDetailsOpen, setContactDetailsOpen] = useState(true);
@@ -680,9 +688,62 @@ function ConversationThread({
 
   if (!contact) {
     return (
-      <div className="flex-1 flex items-center justify-center flex-col gap-4 text-muted-foreground">
-        <MessageCircle className="h-12 w-12 opacity-30" />
-        <span className="text-sm">Select A Conversation</span>
+      <div className="flex-1 flex items-center justify-center flex-col gap-6 text-muted-foreground px-8">
+        {/* First-Time Welcome State */}
+        <div className="max-w-2xl w-full space-y-6">
+          <div className="text-center">
+            <h2 className="text-xl font-bold text-foreground mb-1">Welcome to Communications</h2>
+            <p className="text-sm text-muted-foreground">This is where deals move forward. Messages, calls, and AI guidance work together here.</p>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-4">
+            {/* Inbox Tile */}
+            <div className="p-5 rounded-xl border border-border bg-background hover:border-primary/30 hover:shadow-sm transition-all group cursor-pointer" onClick={() => { /* already on inbox view */ }}>
+              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center mb-3">
+                <Mail className="h-5 w-5 text-blue-500" />
+              </div>
+              <div className="text-sm font-semibold text-foreground mb-1">Inbox</div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Review messages, missed calls, and voicemails. AI highlights what needs action.</p>
+              <span className="text-xs font-semibold text-primary group-hover:underline">View Inbox →</span>
+            </div>
+            
+              {/* Dialer Tile */}
+            <div className="p-5 rounded-xl border border-border bg-background hover:border-primary/30 hover:shadow-sm transition-all group cursor-pointer" onClick={() => onSwitchToDialer?.()}>
+              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-3">
+                <Phone className="h-5 w-5 text-emerald-500" />
+              </div>
+              <div className="text-sm font-semibold text-foreground mb-1">Dialer</div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">Make live calls with real-time AI coaching.</p>
+              <span className="text-xs font-semibold text-primary group-hover:underline">Start Dialing →</span>
+            </div>
+            
+            {/* Power Hour Tile */}
+            <div className="p-5 rounded-xl border border-border bg-background hover:border-amber-500/30 hover:shadow-sm transition-all group cursor-pointer" onClick={() => onStartPowerHour?.()}>
+              <div className="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center mb-3">
+                <Zap className="h-5 w-5 text-amber-500" />
+              </div>
+              <div className="text-sm font-semibold text-foreground mb-1">Power Hour</div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">60 minutes of focused calling. No distractions. Just execution.</p>
+              <span className="text-xs font-semibold text-amber-600 group-hover:underline">Start Power Hour →</span>
+            </div>
+          </div>
+          
+          {/* AI Guidance Banner */}
+          <div className="flex items-center gap-3 p-4 rounded-xl border border-primary/15 bg-primary/[0.03]">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex-1">
+              <p className="text-xs text-muted-foreground">Not sure where to start? AI will guide you to the highest-impact action.</p>
+            </div>
+            <button
+              onClick={() => toast.info("AI analyzing your pipeline for the best next action...")}
+              className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap"
+            >
+              Show Me What to Do
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -710,17 +771,22 @@ function ConversationThread({
           </div>
         </div>
         <div className="flex gap-2 items-center">
-          <button
-            onClick={onCall}
-            className={cn(
-              "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
-              callState.isCallActive
-                ? "bg-primary text-primary-foreground border-primary"
-                : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
-            )}
-          >
-            <Phone className="h-3.5 w-3.5" /> Call
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={onCall}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2 rounded-lg border text-xs font-semibold transition-colors",
+                  callState.isCallActive
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "border-border text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5"
+                )}
+              >
+                <Phone className="h-3.5 w-3.5" /> Call Now
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>Call with real-time AI coaching</TooltipContent>
+          </Tooltip>
           <button
             onClick={() => { onSendChannelChange("sms"); toast.info("Channel set to SMS"); setTimeout(() => composeInputRef.current?.focus(), 100); }}
             className={cn(
@@ -761,7 +827,54 @@ function ConversationThread({
         </div>
       </div>
 
-
+      {/* AI Readiness Nudge */}
+      {(() => {
+        const lastAct = contact.activities[contact.activities.length - 1];
+        const hasReplyKeyword = lastAct?.content && /\b(call|talk|when can you|discuss)\b/i.test(lastAct.content);
+        const isInbound = lastAct?.direction === "inbound";
+        const isHardReady = hasReplyKeyword && isInbound;
+        const isSoftReady = isInbound && !hasReplyKeyword;
+        
+        if (isHardReady) {
+          return (
+            <div className="mx-5 mt-3 flex items-center gap-3 p-3.5 rounded-xl border-2 border-emerald-500/30 bg-emerald-500/5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                <Phone className="h-4 w-4 text-emerald-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-foreground">This contact is ready for a live conversation.</p>
+                <p className="text-[11px] text-muted-foreground">Calling now increases conversion likelihood.</p>
+              </div>
+              <button
+                onClick={onCall}
+                className="px-3.5 py-2 rounded-lg bg-emerald-500 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors whitespace-nowrap flex items-center gap-1.5"
+              >
+                <Phone className="h-3 w-3" /> Call Now
+              </button>
+            </div>
+          );
+        }
+        
+        if (isSoftReady) {
+          return (
+            <div className="mx-5 mt-3 flex items-center gap-3 p-3 rounded-xl border border-primary/15 bg-primary/[0.03]">
+              <Sparkles className="h-4 w-4 text-primary flex-shrink-0" />
+              <p className="text-[11px] text-muted-foreground flex-1">You have warm leads ready to call. Want to switch to Dialer mode?</p>
+              <button
+                onClick={onCall}
+                className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-[11px] font-semibold hover:bg-primary/20 transition-colors whitespace-nowrap"
+              >
+                Start Dialing
+              </button>
+              <button className="text-[11px] text-muted-foreground hover:text-foreground transition-colors">
+                Not Now
+              </button>
+            </div>
+          );
+        }
+        
+        return null;
+      })()}
 
       {/* Activity Timeline */}
       <div className="flex-1 min-h-0 overflow-auto p-5">
@@ -983,6 +1096,17 @@ function CoPilotPanel({
               </>
             ) : (
               <>
+                {/* Call Next Best Lead CTA */}
+                <button
+                  onClick={() => toast.info("AI selecting best lead based on urgency and deal value...")}
+                  className="w-full py-3 rounded-xl border-2 border-primary/20 bg-primary/5 text-primary font-semibold text-sm hover:bg-primary/10 hover:border-primary/30 transition-all flex flex-col items-center gap-1"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Sparkle className="h-4 w-4" />
+                    Call Next Best Lead
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-normal">AI-selected based on urgency and deal value</span>
+                </button>
                 {/* Scheduled Callbacks — First-Class */}
                 <CollapsiblePanel title="Scheduled Callbacks" icon={<Calendar className="h-3 w-3" />} defaultOpen={true}>
                   <ScheduledCallbacks />
@@ -1255,7 +1379,7 @@ function DialerView({ callingMode, setCallingMode, focusMode = false, isPowerHou
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const modes = [
-    { key: "start", label: "Start Call", desc: "YOU TALK, AI ASSISTS WITH REAL-TIME SUGGESTIONS", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
+    { key: "start", label: "Call Now", desc: "CALL WITH REAL-TIME AI COACHING", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
     { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
     { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white", inactiveClass: "bg-blue-500/5 text-foreground border-blue-500/20" },
   ];
@@ -1516,18 +1640,23 @@ function DialerView({ callingMode, setCallingMode, focusMode = false, isPowerHou
                   <Target className="h-3 w-3" /> Focus Session
                 </button>
               )}
-              <button
-                onClick={handleStartPowerDial}
-                disabled={callState.isCallActive || dialerContacts.length === 0}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
-                  callState.isCallActive || dialerContacts.length === 0
-                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-              >
-                {callState.isDialerSessionActive ? "Session Active" : `Start Power Dial (${dialerContacts.length})`}
-              </button>
+              <div className="flex flex-col items-end gap-0.5">
+                <button
+                  onClick={handleStartPowerDial}
+                  disabled={callState.isCallActive || dialerContacts.length === 0}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-xs font-semibold transition-colors",
+                    callState.isCallActive || dialerContacts.length === 0
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
+                      : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
+                >
+                  {callState.isDialerSessionActive ? "Resume Dialer" : "Start Dialing"}
+                </button>
+                <span className="text-[10px] text-muted-foreground">
+                  {callState.isDialerSessionActive ? "Continue where you left off" : "AI-optimized calling sequence"}
+                </span>
+              </div>
             </div>
           </div>
           {!focusMode && (
@@ -1849,6 +1978,8 @@ export default function Communications() {
   const [leftPanelOpen, setLeftPanelOpen] = useState(true);
   const [autoSelectedReason, setAutoSelectedReason] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [powerHourConfirmOpen, setPowerHourConfirmOpen] = useState(false);
+  const [readinessNudgeDismissed, setReadinessNudgeDismissed] = useState(false);
   const [callingMode, setCallingMode] = useState<CallingModeKey>("start");
   const [focusMode, setFocusMode] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -2337,6 +2468,8 @@ export default function Communications() {
                   onDismissAutoSelect={handleDismissAutoSelect}
                   onEditContact={handleEditContact}
                   onDeleteContact={handleDeleteContact}
+                  onSwitchToDialer={() => setActiveView("dialer")}
+                  onStartPowerHour={() => setPowerHourConfirmOpen(true)}
                 />
               )}
 
@@ -2366,6 +2499,39 @@ export default function Communications() {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDeleteContact} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Power Hour Confirmation Modal */}
+      <AlertDialog open={powerHourConfirmOpen} onOpenChange={setPowerHourConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-amber-500" />
+              Power Hour Mode
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm leading-relaxed">
+              This will pause notifications and guide you through high-priority calls only.
+              <br />
+              <span className="font-medium text-foreground mt-2 block">Ready to focus?</span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                callState.setExecutionMode("power-hour");
+                setActiveView("dialer");
+                setFocusMode(true);
+                setPowerHourConfirmOpen(false);
+                toast.success("Power Hour activated — 60 minutes of focused calling");
+              }}
+              className="bg-amber-500 text-white hover:bg-amber-600"
+            >
+              <Zap className="h-3.5 w-3.5 mr-1.5" />
+              Start Power Hour
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
