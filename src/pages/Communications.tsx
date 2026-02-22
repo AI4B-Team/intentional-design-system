@@ -760,69 +760,6 @@ function ConversationThread({
       </div>
 
 
-      {/* Contact Info Card - Collapsible */}
-      <div className="border-b border-border bg-muted/30 flex-shrink-0">
-        <button
-          onClick={() => setContactDetailsOpen(!contactDetailsOpen)}
-          className="w-full px-5 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <span>Contact Details</span>
-          {contactDetailsOpen ? (
-            <ChevronDown className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronRight className="h-3.5 w-3.5" />
-          )}
-        </button>
-        {contactDetailsOpen && (
-          <div className="px-5 pb-3">
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-              <div className="flex items-center gap-2 text-xs">
-                <Home className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Property:</span>
-                <span className="font-medium text-foreground">{contact.address}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <MapPin className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">City/State:</span>
-                <span className="font-medium text-foreground">
-                  {[contact.city, contact.state].filter(Boolean).join(", ") || "—"}
-                  {contact.zip ? ` ${contact.zip}` : ""}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Phone className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Phone:</span>
-                <button onClick={onCall} className="font-medium text-primary hover:underline cursor-pointer">{contact.phone || "—"}</button>
-                {contact.phone && (
-                  <button onClick={() => { navigator.clipboard.writeText(contact.phone || ""); toast.success("Phone copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-                    <Copy className="h-3 w-3 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Mail className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Email:</span>
-                <span className="font-medium text-foreground">{contact.email || "—"}</span>
-                {contact.email && (
-                  <button onClick={() => { navigator.clipboard.writeText(contact.email || ""); toast.success("Email copied"); }} className="p-0.5 hover:bg-muted rounded transition-colors">
-                    <Copy className="h-3 w-3 text-muted-foreground" />
-                  </button>
-                )}
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Calendar className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Last Contact:</span>
-                <span className="font-medium text-foreground">{contact.lastActivity}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <Star className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-                <span className="text-muted-foreground">Type:</span>
-                <span className="font-medium text-primary">{contact.tag}</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Activity Timeline */}
       <div className="flex-1 min-h-0 overflow-auto p-5">
