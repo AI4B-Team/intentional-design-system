@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
@@ -224,24 +225,46 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Calendar */}
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-9 w-9 text-content-secondary hover:text-content"
-        onClick={() => navigate("/calendar")}
-      >
-        <Calendar className="h-5 w-5" />
-      </Button>
+      <TooltipProvider delayDuration={0}>
+        {/* Calendar */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-9 w-9 text-content-secondary hover:text-content"
+              onClick={() => navigate("/calendar")}
+            >
+              <Calendar className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Calendar</p></TooltipContent>
+        </Tooltip>
 
-      {/* Dialer Quick Access */}
-      <DialerQuickAccess />
+        {/* Dialer Quick Access */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span><DialerQuickAccess /></span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Dialer</p></TooltipContent>
+        </Tooltip>
 
-      {/* Help */}
-      <HelpButton variant="icon" />
+        {/* Help */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span><HelpButton variant="icon" /></span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Help & Support</p></TooltipContent>
+        </Tooltip>
 
-      {/* Notifications */}
-      <NotificationsDropdown />
+        {/* Notifications */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span><NotificationsDropdown /></span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Notifications</p></TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       {/* User Dropdown */}
       <ProfileDropdown />
