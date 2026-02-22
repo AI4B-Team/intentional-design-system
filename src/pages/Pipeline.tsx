@@ -1077,9 +1077,9 @@ export default function Pipeline() {
                   <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Type</th>
                   <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Stage</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Beds/Baths</th>
-                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Sq Ft</th>
-                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">Price</th>
-                  <th className="px-4 py-3 text-right text-tiny font-medium uppercase tracking-wide text-content-secondary">ARV</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Sq Ft</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Price</th>
+                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">ARV</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Score</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Equity</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Days</th>
@@ -1153,17 +1153,17 @@ export default function Pipeline() {
                           </span>
                         </td>
                         {/* Sq Ft */}
-                        <td className="px-4 text-right text-body tabular-nums">
+                        <td className="px-4 text-center text-body tabular-nums">
                           {deal.sqft?.toLocaleString() || "—"}
                         </td>
                         {/* Price */}
-                        <td className="px-4 text-right">
+                        <td className="px-4 text-center">
                           <span className="text-body font-bold text-success tabular-nums">
                             ${deal.asking_price.toLocaleString()}
                           </span>
                         </td>
                         {/* ARV */}
-                        <td className="px-4 text-right text-body tabular-nums text-muted-foreground">
+                        <td className="px-4 text-center text-body tabular-nums text-muted-foreground">
                           ${deal.arv.toLocaleString()}
                         </td>
                         {/* Score */}
