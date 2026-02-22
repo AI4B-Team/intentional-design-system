@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus } from "lucide-react";
+import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -411,12 +411,17 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                       </div>
 
                       {/* AI reasoning snippet */}
-                      <div className="mt-2 p-2 rounded-md bg-primary/5 border border-primary/10">
-                        <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-3">
-                          <span className="font-semibold text-foreground">🧠 AI: </span>
-                          {property.overallReasoning}
-                        </p>
-                      </div>
+                      {property.overallReasoning && (
+                        <div className="mt-2 p-2 rounded-md bg-muted/50 border">
+                          <div className="flex items-start gap-1.5">
+                            <Brain className="h-3 w-3 text-primary flex-shrink-0 mt-0.5" />
+                            <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">
+                              <span className="font-semibold text-foreground">AI: </span>
+                              {property.overallReasoning}
+                            </p>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex gap-1.5 mt-2">
                         <Button size="sm" className="h-7 text-xs flex-1 gap-1" onClick={(e) => { e.stopPropagation(); setDetailProperty(property); }}>
