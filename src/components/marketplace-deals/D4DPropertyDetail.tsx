@@ -1,10 +1,11 @@
 import React from "react";
-import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2 } from "lucide-react";
+import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2, PhoneCall, MailPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { D4DProperty } from "./d4d-scan-data";
 import { getDistressColor, getDistressLabel } from "./d4d-scan-data";
+import { toast } from "sonner";
 
 interface D4DPropertyDetailProps {
   property: D4DProperty;
@@ -84,15 +85,45 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
               <Detail icon={Building2} label="Type" value={property.ownerType.charAt(0).toUpperCase() + property.ownerType.slice(1)} />
               <Detail icon={MapPin} label="Mailing" value={property.mailingAddress} />
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant={property.mailStatus === "deliverable" ? "default" : "destructive"} className="text-[10px] px-1.5 py-0">
+                <Badge
+                  variant={property.mailStatus === "deliverable" ? "default" : "destructive"}
+                  className="text-[10px] px-1.5 py-0 cursor-pointer"
+                  onClick={() => {
+                    if (property.mailStatus === "deliverable") {
+                      toast.success(`Preparing mailer to ${property.ownerName}`, { description: property.mailingAddress });
+                    } else {
+                      toast.error("Address not deliverable");
+                    }
+                  }}
+                >
                   <Mail className="h-2.5 w-2.5 mr-1" />
                   {property.mailStatus}
                 </Badge>
-                <Badge variant={property.phoneAvailable ? "default" : "outline"} className="text-[10px] px-1.5 py-0">
+                <Badge
+                  variant={property.phoneAvailable ? "default" : "outline"}
+                  className="text-[10px] px-1.5 py-0 cursor-pointer"
+                  onClick={() => {
+                    if (property.phoneAvailable) {
+                      toast.success(`Calling ${property.ownerName}...`, { description: property.address });
+                    } else {
+                      toast.error("No phone number available");
+                    }
+                  }}
+                >
                   <Phone className="h-2.5 w-2.5 mr-1" />
                   {property.phoneAvailable ? "Phone found" : "No phone"}
                 </Badge>
-                <Badge variant={property.emailAvailable ? "default" : "outline"} className="text-[10px] px-1.5 py-0">
+                <Badge
+                  variant={property.emailAvailable ? "default" : "outline"}
+                  className="text-[10px] px-1.5 py-0 cursor-pointer"
+                  onClick={() => {
+                    if (property.emailAvailable) {
+                      toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
+                    } else {
+                      toast.error("No email available");
+                    }
+                  }}
+                >
                   <AtSign className="h-2.5 w-2.5 mr-1" />
                   {property.emailAvailable ? "Email found" : "No email"}
                 </Badge>
@@ -157,14 +188,44 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
           </Section>
 
           {/* Actions */}
-          <div className="flex gap-2">
-            <Button size="sm" className="flex-1 text-xs h-8" onClick={onLocate}>
+          <div className="grid grid-cols-2 gap-2">
+            <Button size="sm" className="text-xs h-8" onClick={onLocate}>
               <MapPin className="h-3 w-3 mr-1" />
               Locate on Map
             </Button>
-            <Button size="sm" variant="outline" className="flex-1 text-xs h-8">
+            <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => toast.success("Adding to list...")}>
               <FileText className="h-3 w-3 mr-1" />
               Add to List
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs h-8"
+              onClick={() => {
+                if (property.phoneAvailable) {
+                  toast.success(`Calling ${property.ownerName}...`, { description: property.address });
+                } else {
+                  toast.error("No phone number available");
+                }
+              }}
+            >
+              <PhoneCall className="h-3 w-3 mr-1" />
+              Call Owner
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-xs h-8"
+              onClick={() => {
+                if (property.emailAvailable) {
+                  toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
+                } else {
+                  toast.error("No email available");
+                }
+              }}
+            >
+              <MailPlus className="h-3 w-3 mr-1" />
+              Email Owner
             </Button>
           </div>
         </div>
