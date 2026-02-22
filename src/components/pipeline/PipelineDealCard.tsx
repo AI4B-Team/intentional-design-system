@@ -78,6 +78,7 @@ export function PipelineDealCard({
     arv: deal.arv,
     homeType: getHomeType(deal.property_type),
     daysInStage: deal.days_in_stage,
+    leadScore: deal.lead_score,
     sellerPhone: deal.contact_phone || undefined,
     sellerEmail: deal.contact_email || undefined,
     images: [], // TODO: Add images when available
