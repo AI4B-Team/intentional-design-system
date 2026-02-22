@@ -309,7 +309,97 @@ export default function Calendar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
-  const { data: events = [] } = useCalendarEvents(currentDate);
+  const { data: fetchedEvents = [] } = useCalendarEvents(currentDate);
+
+  // Merge with demo data when DB is empty so every view has content
+  const events = useMemo(() => {
+    if (fetchedEvents.length > 0) return fetchedEvents;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const demo: CalendarEvent[] = [
+      // Overdue
+      {
+        id: "demo-overdue-1", title: "Follow up: Maria Santos", date: addDays(today, -5), time: null,
+        type: "followup", status: "overdue", propertyAddress: "890 Pine Road, Georgetown",
+        contactName: "Maria Santos", isOverdue: true, lastContactDays: 5, urgency: "high",
+        meta: { notes: "Seller motivated, discussed 85% offer. Needs follow-up on inspection waiver." },
+      },
+      {
+        id: "demo-overdue-2", title: "Follow up: James Chen", date: addDays(today, -3), time: null,
+        type: "followup", status: "overdue", propertyAddress: "234 Maple Drive, Cedar Park",
+        contactName: "James Chen", isOverdue: true, lastContactDays: 3, urgency: "medium",
+        meta: { notes: "Initial offer sent. Waiting for counter." },
+      },
+      {
+        id: "demo-overdue-3", title: "Overdue: 456 Oak Lane", date: addDays(today, -8), time: null,
+        type: "followup", status: "overdue", propertyAddress: "456 Oak Lane, Round Rock",
+        contactName: "Patricia Williams", isOverdue: true, lastContactDays: 8, urgency: "critical",
+      },
+      // Today
+      {
+        id: "demo-today-1", title: "Walkthrough - 1200 Congress Ave", date: today, time: "10:00 AM",
+        type: "appointment", status: "scheduled", propertyAddress: "1200 Congress Ave, Austin",
+        contactName: "Robert Davis", urgency: "low",
+      },
+      {
+        id: "demo-today-2", title: "Follow up: Lisa Park", date: today, time: "2:00 PM",
+        type: "followup", status: "pending", propertyAddress: "567 Elm Street, Pflugerville",
+        contactName: "Lisa Park", lastContactDays: 1, urgency: "low",
+        meta: { notes: "Warm lead — asked about closing timeline." },
+      },
+      {
+        id: "demo-today-3", title: "Closing Call - 789 Birch Ct", date: today, time: "4:30 PM",
+        type: "closing", status: "scheduled", propertyAddress: "789 Birch Court, Leander",
+        contactName: "Michael Torres", urgency: "low",
+      },
+      // Follow-Up (future)
+      {
+        id: "demo-followup-1", title: "Follow up: Karen White", date: addDays(today, 2), time: "9:00 AM",
+        type: "followup", status: "pending", propertyAddress: "321 Sunset Blvd, Georgetown",
+        contactName: "Karen White", lastContactDays: 2, urgency: "low",
+        meta: { notes: "Discussing earnest money terms." },
+      },
+      {
+        id: "demo-followup-2", title: "Follow up: David Miller", date: addDays(today, 3), time: null,
+        type: "followup", status: "pending", propertyAddress: "654 River Road, Bastrop",
+        contactName: "David Miller", lastContactDays: 4, urgency: "low",
+      },
+      // Deadline
+      {
+        id: "demo-deadline-1", title: "Offer Deadline - 1500 Lamar", date: addDays(today, 1), time: "5:00 PM",
+        type: "offer_deadline", status: "pending", propertyAddress: "1500 Lamar Blvd, Austin",
+        contactName: "Sandra Lee", urgency: "high",
+      },
+      {
+        id: "demo-deadline-2", title: "Inspection Due - 890 Pine Rd", date: addDays(today, 2), time: "12:00 PM",
+        type: "offer_deadline", status: "pending", propertyAddress: "890 Pine Road, Georgetown",
+        contactName: "Maria Santos", urgency: "high",
+      },
+      // Appointment
+      {
+        id: "demo-appt-1", title: "Showing - 450 Willow Way", date: addDays(today, 1), time: "11:00 AM",
+        type: "appointment", status: "scheduled", propertyAddress: "450 Willow Way, Cedar Park",
+        contactName: "Nancy Johnson", urgency: "low",
+      },
+      {
+        id: "demo-appt-2", title: "Listing Presentation - 900 Main St", date: addDays(today, 3), time: "3:00 PM",
+        type: "appointment", status: "scheduled", propertyAddress: "900 Main Street, Round Rock",
+        contactName: "Brian Thompson", urgency: "low",
+      },
+      // This Week
+      {
+        id: "demo-week-1", title: "Closing - 2100 Lake Travis", date: addDays(today, 4), time: "10:00 AM",
+        type: "closing", status: "scheduled", propertyAddress: "2100 Lake Travis Dr, Lakeway",
+        contactName: "Angela Martinez", urgency: "low",
+      },
+      {
+        id: "demo-week-2", title: "Title Review - 345 Heritage", date: addDays(today, 5), time: "1:00 PM",
+        type: "inspection", status: "scheduled", propertyAddress: "345 Heritage Lane, Dripping Springs",
+        contactName: "Tom Harris", urgency: "low",
+      },
+    ];
+    return demo;
+  }, [fetchedEvents]);
 
   const goToPrev = () => {
     if (viewMode === "month") setCurrentDate(subMonths(currentDate, 1));
