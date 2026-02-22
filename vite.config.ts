@@ -49,8 +49,8 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        // Cache version bump to force update - v4
-        cacheId: 'realelite-v4',
+        // Cache version bump to force update - v5
+        cacheId: 'realelite-v5',
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
         runtimeCaching: [
           {
