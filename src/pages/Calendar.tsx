@@ -400,8 +400,10 @@ export default function Calendar() {
   return (
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Top action buttons */}
-        <div className="flex items-center justify-end px-6 pt-4 pb-2 gap-2">
+        {/* Title and action buttons */}
+        <div className="flex items-center justify-between px-6 pt-4 pb-2 gap-2">
+          <h1 className="text-2xl font-bold text-foreground">Calendar</h1>
+          <div className="flex items-center gap-2">
           <Button size="sm" onClick={() => navigate("/communications?mode=power-hour")} className="text-xs gap-1.5 bg-primary hover:bg-primary/90">
             <Zap className="h-3 w-3" />
             Start Power Hour
@@ -410,6 +412,7 @@ export default function Calendar() {
             <Users className="h-3 w-3" />
             {teamMode ? "Team" : "Solo"}
           </Button>
+          </div>
         </div>
 
         {/* AI Daily Agenda — Above all controls */}
