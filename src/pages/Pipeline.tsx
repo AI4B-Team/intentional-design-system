@@ -1081,7 +1081,7 @@ export default function Pipeline() {
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Price</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">ARV</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Score</th>
-                  <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Equity</th>
+                  
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Days</th>
                   <th className="px-4 py-3 text-left text-tiny font-medium uppercase tracking-wide text-content-secondary">Contact</th>
                   <th className="px-4 py-3 text-center text-tiny font-medium uppercase tracking-wide text-content-secondary">Actions</th>
@@ -1175,17 +1175,6 @@ export default function Pipeline() {
                             "bg-destructive/10 text-destructive"
                           )}>
                             {deal.lead_score}
-                          </span>
-                        </td>
-                        {/* Equity */}
-                        <td className="px-4 text-center">
-                          <span className={cn(
-                            "text-body font-medium",
-                            deal.equity_percentage >= 25 ? "text-success" :
-                            deal.equity_percentage >= 15 ? "text-warning" :
-                            "text-destructive"
-                          )}>
-                            {deal.equity_percentage}%
                           </span>
                         </td>
                         {/* Days in Stage */}
