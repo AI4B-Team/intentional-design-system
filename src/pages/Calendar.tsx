@@ -629,63 +629,174 @@ export default function Calendar() {
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Calendar grid — slightly reduced contrast */}
-          <div className="flex-1 flex flex-col overflow-auto p-4 opacity-90">
-            <div className="grid grid-cols-7 gap-px mb-1">
-              {weekDays.map((d) => (
-                <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider py-2">{d}</div>
-              ))}
-            </div>
+          <div className="flex-1 flex flex-col overflow-auto p-4">
+            {viewTab === "calendar" && (
+              <>
+                {/* Month Grid */}
+                <div className="grid grid-cols-7 gap-px mb-1">
+                  {weekDays.map((d) => (
+                    <div key={d} className="text-center text-[10px] font-semibold text-muted-foreground uppercase tracking-wider py-2">{d}</div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-px flex-1 bg-border rounded-lg overflow-hidden">
+                  {calendarDays.map((day) => {
+                    const dateKey = format(day, "yyyy-MM-dd");
+                    const dayEvents = filteredEventsByDate.get(dateKey) || [];
+                    const isCurrentMonth = isSameMonth(day, currentDate);
+                    const isSelected = isSameDay(day, selectedDate);
+                    const isCurrentDay = isToday(day);
+                    const hasOverdue = dayEvents.some((e) => e.isOverdue);
+                    return (
+                      <button
+                        key={dateKey}
+                        onClick={() => setSelectedDate(day)}
+                        className={cn(
+                          "bg-card p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
+                          !isCurrentMonth && "bg-muted/20",
+                          isSelected && "ring-2 ring-primary ring-inset",
+                          hasOverdue && isCurrentDay && "bg-red-50/50",
+                        )}
+                      >
+                        <span className={cn(
+                          "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-0.5",
+                          isCurrentDay && "bg-primary text-primary-foreground",
+                          !isCurrentDay && !isCurrentMonth && "text-muted-foreground/50",
+                          !isCurrentDay && isCurrentMonth && "text-foreground",
+                        )}>
+                          {format(day, "d")}
+                        </span>
+                        <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
+                          {dayEvents.slice(0, 3).map((evt) => {
+                            const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+                            const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                            return (
+                              <div key={evt.id} className={cn(
+                                "text-[9px] leading-tight px-1 py-0.5 rounded truncate",
+                                urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : cn(colors.bg, colors.text),
+                              )}>
+                                {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
+                              </div>
+                            );
+                          })}
+                          {dayEvents.length > 3 && (
+                            <span className="text-[9px] text-muted-foreground pl-1">+{dayEvents.length - 3} more</span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
-            <div className="grid grid-cols-7 gap-px flex-1 bg-border rounded-lg overflow-hidden">
-              {calendarDays.map((day) => {
-                const dateKey = format(day, "yyyy-MM-dd");
-                const dayEvents = filteredEventsByDate.get(dateKey) || [];
-                const isCurrentMonth = isSameMonth(day, currentDate);
-                const isSelected = isSameDay(day, selectedDate);
-                const isCurrentDay = isToday(day);
-                const hasOverdue = dayEvents.some((e) => e.isOverdue);
-
-                return (
-                  <button
-                    key={dateKey}
-                    onClick={() => setSelectedDate(day)}
-                    className={cn(
-                      "bg-card p-1.5 min-h-[80px] text-left transition-colors hover:bg-muted/50 flex flex-col",
-                      !isCurrentMonth && "bg-muted/20",
-                      isSelected && "ring-2 ring-primary ring-inset",
-                      hasOverdue && isCurrentDay && "bg-red-50/50",
-                    )}
-                  >
-                    <span className={cn(
-                      "text-xs font-medium w-6 h-6 flex items-center justify-center rounded-full mb-0.5",
-                      isCurrentDay && "bg-primary text-primary-foreground",
-                      !isCurrentDay && !isCurrentMonth && "text-muted-foreground/50",
-                      !isCurrentDay && isCurrentMonth && "text-foreground",
-                    )}>
-                      {format(day, "d")}
-                    </span>
-                    <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
-                      {dayEvents.slice(0, 3).map((evt) => {
-                        const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
-                        const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
-                        return (
-                          <div key={evt.id} className={cn(
-                            "text-[9px] leading-tight px-1 py-0.5 rounded truncate",
-                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text) : cn(colors.bg, colors.text),
-                          )}>
-                            {evt.time ? `${evt.time} ` : ""}{evt.title.split(" - ")[0]}
+            {viewTab === "list" && (
+              <div className="space-y-1">
+                {filteredEvents.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">No events found</p>
+                  </div>
+                ) : (
+                  filteredEvents.map((evt) => {
+                    const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                    const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
+                    const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+                    return (
+                      <div
+                        key={evt.id}
+                        onClick={() => navigate(getEventNavigation(evt))}
+                        className={cn(
+                          "flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors",
+                          urgencyColor && urgencyColor.bg,
+                        )}
+                      >
+                        <div className={cn("w-8 h-8 rounded-md flex items-center justify-center shrink-0", urgencyColor ? urgencyColor.bg : colors.bg)}>
+                          <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium text-foreground truncate">{evt.title}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {evt.propertyAddress && (
+                              <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 truncate">
+                                <MapPin className="h-2.5 w-2.5 shrink-0" /> {evt.propertyAddress}
+                              </span>
+                            )}
                           </div>
-                        );
-                      })}
-                      {dayEvents.length > 3 && (
-                        <span className="text-[9px] text-muted-foreground pl-1">+{dayEvents.length - 3} more</span>
-                      )}
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          <span className="text-[10px] text-muted-foreground">{format(evt.date, "MMM d")}</span>
+                          {evt.time && (
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                              <Clock className="h-2.5 w-2.5" /> {evt.time}
+                            </span>
+                          )}
+                          <Badge variant="outline" className={cn(
+                            "text-[9px] border",
+                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
+                          )}>
+                            {evt.isOverdue ? "Overdue" : colors.label}
+                          </Badge>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
+
+            {viewTab === "grid" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {filteredEvents.length === 0 ? (
+                  <div className="col-span-full flex flex-col items-center justify-center py-16 text-center">
+                    <CalendarIcon className="h-10 w-10 text-muted-foreground/30 mb-3" />
+                    <p className="text-sm text-muted-foreground">No events found</p>
+                  </div>
+                ) : (
+                  filteredEvents.map((evt) => {
+                    const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
+                    const Icon = EVENT_ICONS[evt.type] || CalendarIcon;
+                    const urgencyColor = evt.urgency && evt.urgency !== "low" ? URGENCY_COLORS[evt.urgency] : null;
+                    return (
+                      <div
+                        key={evt.id}
+                        onClick={() => navigate(getEventNavigation(evt))}
+                        className={cn(
+                          "flex flex-col p-4 rounded-lg border border-border bg-card hover:bg-muted/30 cursor-pointer transition-colors",
+                          urgencyColor && urgencyColor.bg,
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className={cn("w-8 h-8 rounded-md flex items-center justify-center", urgencyColor ? urgencyColor.bg : colors.bg)}>
+                            <Icon className={cn("h-4 w-4", urgencyColor ? urgencyColor.text : colors.text)} />
+                          </div>
+                          <Badge variant="outline" className={cn(
+                            "text-[9px] border",
+                            urgencyColor ? cn(urgencyColor.bg, urgencyColor.text, urgencyColor.border) : cn(colors.bg, colors.text),
+                          )}>
+                            {evt.isOverdue ? "Overdue" : colors.label}
+                          </Badge>
+                        </div>
+                        <p className="text-xs font-medium text-foreground truncate">{evt.contactName || evt.title.split(" - ")[0]}</p>
+                        {evt.propertyAddress && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <MapPin className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
+                            <span className="text-[10px] text-muted-foreground truncate">{evt.propertyAddress}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border">
+                          <span className="text-[10px] text-muted-foreground">{format(evt.date, "MMM d, yyyy")}</span>
+                          {evt.time && (
+                            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                              <Clock className="h-2.5 w-2.5" /> {evt.time}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
           </div>
 
           {/* Sidebar — Fixed Order: Context → Signal → Directive → Events → Notes */}
@@ -810,17 +921,6 @@ export default function Calendar() {
                 </div>
               )}
 
-              <div className="p-4 border-t border-border mt-auto">
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Event Types</p>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {Object.entries(EVENT_COLORS).map(([type, colors]) => (
-                    <div key={type} className="flex items-center gap-1.5">
-                      <div className={cn("w-2 h-2 rounded-full", colors.dot)} />
-                      <span className="text-[10px] text-muted-foreground capitalize">{colors.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
         </div>
