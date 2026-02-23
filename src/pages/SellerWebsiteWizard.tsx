@@ -344,7 +344,7 @@ export default function SellerWebsiteWizard() {
   const stepHeader = getStepHeader();
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-full overflow-hidden bg-background" style={{ minHeight: "calc(100vh - 56px)" }}>
       {/* Left Step Navigation */}
       <div className="w-[240px] flex-shrink-0 border-r border-border bg-surface flex flex-col">
         {/* Back button */}
