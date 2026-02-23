@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Twitter, Linkedin, Youtube } from "lucide-react";
+import { Phone, Mail, MapPin } from "lucide-react";
 
 interface SocialLinks {
   facebook?: string;
@@ -24,91 +24,86 @@ export function WebsiteFooter({
   companyPhone,
   companyEmail,
   footerText,
-  socialLinks,
   primaryColor,
   accentColor,
   onGetOfferClick,
 }: WebsiteFooterProps) {
-  const socialIcons = {
-    facebook: Facebook,
-    instagram: Instagram,
-    twitter: Twitter,
-    linkedin: Linkedin,
-    youtube: Youtube,
-  };
-
-  const hasSocialLinks = socialLinks && Object.values(socialLinks).some(Boolean);
-
   return (
-    <footer 
-      className="py-12 text-white"
-      style={{ backgroundColor: primaryColor }}
-    >
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Company Info */}
+    <footer className="bg-white border-t border-gray-200">
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand */}
           <div>
-            <h3 className="text-xl font-bold mb-4">{companyName}</h3>
-            {companyPhone && (
-              <p className="mb-2">
-                <a href={`tel:${companyPhone}`} className="hover:underline">
-                  📞 {companyPhone}
-                </a>
-              </p>
-            )}
-            {companyEmail && (
-              <p className="mb-2">
-                <a href={`mailto:${companyEmail}`} className="hover:underline">
-                  ✉️ {companyEmail}
-                </a>
-              </p>
-            )}
+            <div className="flex items-center gap-2 mb-3">
+              <div
+                className="h-8 w-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                style={{ backgroundColor: primaryColor }}
+              >
+                {companyName.charAt(0)}
+              </div>
+              <span className="font-bold text-gray-900">{companyName}</span>
+            </div>
+            <p className="text-sm text-gray-500 leading-relaxed">
+              We help homeowners sell their properties quickly and fairly. No fees, no repairs, no hassle.
+            </p>
           </div>
 
-          {/* Quick CTA */}
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">Ready to Sell?</h3>
-            <button
-              onClick={onGetOfferClick}
-              className="px-6 py-3 rounded-lg font-semibold transition-transform hover:scale-105"
-              style={{ backgroundColor: accentColor }}
-            >
-              Get Your Cash Offer
-            </button>
+          {/* Company Links */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Company</h4>
+            <ul className="space-y-2 text-sm text-gray-500">
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">About Us</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">How It Works</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">Testimonials</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">Blog</button></li>
+            </ul>
           </div>
 
-          {/* Social Links */}
-          <div className="text-center md:text-right">
-            {hasSocialLinks && (
-              <>
-                <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-                <div className="flex justify-center md:justify-end gap-4">
-                  {Object.entries(socialLinks || {}).map(([platform, url]) => {
-                    if (!url) return null;
-                    const Icon = socialIcons[platform as keyof typeof socialIcons];
-                    if (!Icon) return null;
-                    return (
-                      <a
-                        key={platform}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
-                      >
-                        <Icon className="h-5 w-5" />
-                      </a>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Resources</h4>
+            <ul className="space-y-2 text-sm text-gray-500">
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">FAQ</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">Cost Guides</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">Browse Properties</button></li>
+              <li><button onClick={onGetOfferClick} className="hover:text-gray-700 transition-colors">Home Services</button></li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <h4 className="font-semibold text-gray-900 mb-3 text-sm">Contact</h4>
+            <ul className="space-y-2 text-sm text-gray-500">
+              {companyPhone && (
+                <li className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <a href={`tel:${companyPhone}`} className="hover:text-gray-700">{companyPhone}</a>
+                </li>
+              )}
+              {companyEmail && (
+                <li className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <a href={`mailto:${companyEmail}`} className="hover:text-gray-700">{companyEmail}</a>
+                </li>
+              )}
+              <li className="flex items-center gap-2">
+                <MapPin className="h-4 w-4" />
+                <span>United States</span>
+              </li>
+            </ul>
           </div>
         </div>
+      </div>
 
-        {/* Footer Text & Copyright */}
-        <div className="border-t border-white/20 pt-6 text-center text-sm text-white/70">
-          {footerText && <p className="mb-2">{footerText}</p>}
+      {/* Bottom Bar */}
+      <div className="border-t border-gray-100">
+        <div className="container mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between text-xs text-gray-400">
           <p>© {new Date().getFullYear()} {companyName}. All rights reserved.</p>
+          <div className="flex items-center gap-4 mt-2 md:mt-0">
+            <span className="hover:text-gray-600 cursor-pointer">Privacy Policy</span>
+            <span className="hover:text-gray-600 cursor-pointer">Terms of Service</span>
+            <span className="hover:text-gray-600 cursor-pointer">Accessibility</span>
+          </div>
         </div>
       </div>
     </footer>
