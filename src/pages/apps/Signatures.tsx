@@ -1259,7 +1259,7 @@ export default function Signatures() {
 
       {/* ─── Document Detail Dialog ──────────────────────────── */}
       <Dialog open={!!selectedRequest} onOpenChange={(open) => { if (!open) { setSelectedRequest(null); setDetailTab("details"); } }}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[650px]">
           {selectedRequest && (() => {
             const info = statusConfig[selectedRequest.status];
             const Icon = info.icon;
@@ -1272,7 +1272,7 @@ export default function Signatures() {
                 </DialogHeader>
 
                 {/* Tabs */}
-                <div className="flex items-center gap-1 border-b border-border-subtle -mx-6 px-6">
+                <div className="flex items-center gap-1 border-b border-border-subtle px-6 flex-shrink-0">
                   {(["details", "signers", "audit"] as const).map((tab) => (
                     <button
                       key={tab}
@@ -1446,7 +1446,7 @@ export default function Signatures() {
                   )}
                 </div>
 
-                <DialogFooter className="flex-wrap gap-2">
+                <DialogFooter className="flex-wrap gap-1.5">
                   {selectedRequest.status === "pending" && (
                     <>
                       <Button size="sm" className="gap-2" onClick={() => handleOpenSigning(selectedRequest)}>
