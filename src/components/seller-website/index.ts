@@ -7,3 +7,7 @@ export { FAQSection } from './FAQSection';
 export { AboutSection } from './AboutSection';
 export { WebsiteFooter } from './WebsiteFooter';
 export { SEOHead } from './SEOHead';
+export { StatsSection } from './StatsSection';
+export { ComparisonSection } from './ComparisonSection';
+export { SituationsSection } from './SituationsSection';
+export { CTABannerSection } from './CTABannerSection';

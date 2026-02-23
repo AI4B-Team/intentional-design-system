@@ -3,24 +3,19 @@ import { useParams } from "react-router-dom";
 import { getPublicWebsite, trackWebsiteEvent } from "@/lib/getPublicWebsite";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
 import { WebsiteHero } from "@/components/seller-website/WebsiteHero";
-import { ValuePropsSection } from "@/components/seller-website/ValuePropsSection";
-import { LeadCaptureForm, type FormData } from "@/components/seller-website/LeadCaptureForm";
+import { StatsSection } from "@/components/seller-website/StatsSection";
 import { HowItWorksSection } from "@/components/seller-website/HowItWorksSection";
+import { ComparisonSection } from "@/components/seller-website/ComparisonSection";
 import { TestimonialsSection } from "@/components/seller-website/TestimonialsSection";
+import { SituationsSection } from "@/components/seller-website/SituationsSection";
 import { FAQSection } from "@/components/seller-website/FAQSection";
-import { AboutSection } from "@/components/seller-website/AboutSection";
+import { CTABannerSection } from "@/components/seller-website/CTABannerSection";
 import { WebsiteFooter } from "@/components/seller-website/WebsiteFooter";
 import { SEOHead } from "@/components/seller-website/SEOHead";
 import { Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type SellerWebsite = Database["public"]["Tables"]["seller_websites"]["Row"];
-
-interface ValueProp {
-  icon: string;
-  title: string;
-  description: string;
-}
 
 interface ProcessStep {
   step: number;
@@ -34,18 +29,13 @@ interface Testimonial {
   quote: string;
   image_url?: string;
   rating?: number;
+  sale_price?: string;
+  situation?: string;
 }
 
 interface FAQ {
   question: string;
   answer: string;
-}
-
-interface TeamMember {
-  name: string;
-  title: string;
-  image_url?: string;
-  bio?: string;
 }
 
 interface SocialLinks {
@@ -80,7 +70,6 @@ export default function SellerWebsitePage() {
       } else {
         setWebsite(data);
         setCompanyPhone(data.company_phone);
-        // Track page view
         trackWebsiteEvent(data.id, 'page_view', window.location.href, {
           referrer: document.referrer,
           utmSource: new URLSearchParams(window.location.search).get('utm_source') || undefined,
@@ -94,11 +83,11 @@ export default function SellerWebsitePage() {
     loadWebsite();
   }, [slug]);
 
-  const scrollToForm = () => {
-    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFormSubmit = async (formData: FormData) => {
+  const handleFormSubmit = async (formData: any) => {
     if (!website) return;
 
     try {
@@ -128,18 +117,18 @@ export default function SellerWebsitePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
       </div>
     );
   }
 
   if (error || !website) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center px-4">
-          <h1 className="text-4xl font-bold text-foreground mb-4">Page Not Found</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
+          <p className="text-gray-500">
             The website you're looking for doesn't exist or is not published.
           </p>
         </div>
@@ -147,17 +136,14 @@ export default function SellerWebsitePage() {
     );
   }
 
-  // Parse JSON fields safely
-  const valueProps = (website.value_props as unknown as ValueProp[] | null) || [];
   const processSteps = (website.process_steps as unknown as ProcessStep[] | null) || [];
   const testimonials = (website.testimonials as unknown as Testimonial[] | null) || [];
   const faqs = (website.faqs as unknown as FAQ[] | null) || [];
-  const teamMembers = (website.team_members as unknown as TeamMember[] | null) || [];
   const socialLinks = (website.social_links as unknown as SocialLinks | null) || {};
   const formFields = (website.form_fields as unknown as string[] | null) || ["address", "name", "phone", "email"];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: website.background_color || '#FFFFFF' }}>
+    <div className="min-h-screen bg-white">
       <SEOHead
         title={website.meta_title}
         description={website.meta_description}
@@ -168,99 +154,42 @@ export default function SellerWebsitePage() {
         googleTagManagerId={website.google_tag_manager_id}
       />
 
-      {/* Hero Section */}
-      <WebsiteHero
-        companyName={website.company_name}
-        companyPhone={website.company_phone}
-        logoUrl={website.logo_url}
-        headline={website.hero_headline || "We Buy Houses Fast For Cash"}
-        subheadline={website.hero_subheadline || "Get a fair cash offer in 24 hours."}
-        heroImageUrl={website.hero_image_url}
-        heroVideoUrl={website.hero_video_url}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
-        onGetOfferClick={scrollToForm}
-      />
+      {/* Hero with Inline Form */}
+      <div ref={formRef}>
+        <WebsiteHero
+          companyName={website.company_name}
+          companyPhone={website.company_phone}
+          logoUrl={website.logo_url}
+          headline={website.hero_headline || "Sell Your Home Fast, Fair & Simple"}
+          subheadline={website.hero_subheadline || "Get a free cash offer on your house regardless of location, condition, size, price & equity."}
+          heroImageUrl={website.hero_image_url}
+          heroVideoUrl={website.hero_video_url}
+          primaryColor={website.primary_color || "#2563EB"}
+          accentColor={website.accent_color || "#10B981"}
+          onGetOfferClick={scrollToTop}
+          formHeadline={website.form_headline || "Get Your Free Cash Offer"}
+          formSubheadline={website.form_subheadline || "No Obligation. No Pressure. Takes 7 Minutes."}
+          formFields={formFields}
+          formSubmitText={website.form_submit_text || "Get My Cash Offer →"}
+          onFormSubmit={handleFormSubmit}
+          isFormSubmitting={submitting}
+          isFormSubmitted={success}
+        />
+      </div>
 
-      {/* Value Propositions */}
-      <ValuePropsSection
-        valueProps={valueProps}
-        primaryColor={website.primary_color || "#2563EB"}
-      />
-
-      {/* Lead Capture Form Section */}
-      <section className="py-16 md:py-24 bg-white" id="get-offer">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-            {/* Left side - Benefits */}
-            <div className="hidden lg:block">
-              <h2 
-                className="text-3xl font-bold mb-6"
-                style={{ color: website.primary_color || "#2563EB" }}
-              >
-                Get Your Fair Cash Offer Today
-              </h2>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <span 
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-0.5"
-                    style={{ backgroundColor: website.accent_color || "#10B981" }}
-                  >
-                    ✓
-                  </span>
-                  <span className="text-gray-700">No obligation - get your offer with zero commitment</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span 
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-0.5"
-                    style={{ backgroundColor: website.accent_color || "#10B981" }}
-                  >
-                    ✓
-                  </span>
-                  <span className="text-gray-700">Fast response - we'll contact you within 24 hours</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span 
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-0.5"
-                    style={{ backgroundColor: website.accent_color || "#10B981" }}
-                  >
-                    ✓
-                  </span>
-                  <span className="text-gray-700">Fair pricing - we use market data to make competitive offers</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span 
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-0.5"
-                    style={{ backgroundColor: website.accent_color || "#10B981" }}
-                  >
-                    ✓
-                  </span>
-                  <span className="text-gray-700">Close on your timeline - as fast as 7 days or whenever you're ready</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Right side - Form */}
-            <div ref={formRef}>
-              <LeadCaptureForm
-                formHeadline={website.form_headline || "Get Your Cash Offer Today"}
-                formSubheadline={website.form_subheadline || "Fill out the form below and we'll contact you within 24 hours"}
-                formFields={formFields}
-                formSubmitText={website.form_submit_text || "Get My Cash Offer"}
-                accentColor={website.accent_color || "#10B981"}
-                primaryColor={website.primary_color || "#2563EB"}
-                onSubmit={handleFormSubmit}
-                isSubmitting={submitting}
-                isSubmitted={success}
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Stats */}
+      <StatsSection primaryColor={website.primary_color || "#2563EB"} />
 
       {/* How It Works */}
       <HowItWorksSection
         processSteps={processSteps}
+        primaryColor={website.primary_color || "#2563EB"}
+        accentColor={website.accent_color || "#10B981"}
+      />
+
+      {/* Comparison Table */}
+      <ComparisonSection
+        companyName={website.company_name}
         primaryColor={website.primary_color || "#2563EB"}
         accentColor={website.accent_color || "#10B981"}
       />
@@ -272,19 +201,21 @@ export default function SellerWebsitePage() {
         accentColor={website.accent_color || "#10B981"}
       />
 
-      {/* About Section */}
-      <AboutSection
-        headline={website.about_headline || "Why Sell To Us?"}
-        content={website.about_content}
-        imageUrl={website.about_image_url}
-        teamMembers={teamMembers}
-        primaryColor={website.primary_color || "#2563EB"}
-      />
+      {/* Situations */}
+      <SituationsSection primaryColor={website.primary_color || "#2563EB"} />
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <FAQSection
         faqs={faqs}
         primaryColor={website.primary_color || "#2563EB"}
+      />
+
+      {/* CTA Banner */}
+      <CTABannerSection
+        companyPhone={website.company_phone}
+        primaryColor={website.primary_color || "#2563EB"}
+        accentColor={website.accent_color || "#10B981"}
+        onGetOfferClick={scrollToTop}
       />
 
       {/* Footer */}
@@ -296,14 +227,14 @@ export default function SellerWebsitePage() {
         socialLinks={socialLinks}
         primaryColor={website.primary_color || "#2563EB"}
         accentColor={website.accent_color || "#10B981"}
-        onGetOfferClick={scrollToForm}
+        onGetOfferClick={scrollToTop}
       />
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg z-40">
         <button
-          onClick={scrollToForm}
-          className="w-full py-3 rounded-lg font-bold text-white transition-transform active:scale-95"
+          onClick={scrollToTop}
+          className="w-full py-3 rounded-lg font-bold text-white transition-colors"
           style={{ backgroundColor: website.accent_color || "#10B981" }}
         >
           Get Your Cash Offer
