@@ -175,12 +175,10 @@ export function DealSourcesTable({
                 />
               </th>
               <TableHeader>Contact</TableHeader>
+              <TableHeader>Phone</TableHeader>
+              <TableHeader>Email</TableHeader>
               <TableHeader>City</TableHeader>
               <TableHeader>State</TableHeader>
-              <TableHeader>Zip</TableHeader>
-              <TableHeader>Phone</TableHeader>
-              <TableHeader>Created</TableHeader>
-              <TableHeader>Modified</TableHeader>
               <TableHeader className="text-center">Type</TableHeader>
               <TableHeader className="text-center">Status</TableHeader>
               <th className="w-12"></th>
@@ -236,29 +234,12 @@ export function DealSourcesTable({
                     </div>
                   </TableCell>
 
-                  {/* City */}
-                  <TableCell>
-                    <span className="text-sm text-slate-600">
-                      {source.company ? "—" : "—"}
-                    </span>
-                  </TableCell>
-
-                  {/* State */}
-                  <TableCell>
-                    <span className="text-sm text-slate-600">—</span>
-                  </TableCell>
-
-                  {/* Zip */}
-                  <TableCell>
-                    <span className="text-sm text-slate-600">—</span>
-                  </TableCell>
-
                   {/* Phone */}
                   <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     {source.phone ? (
                       <a
                         href={`tel:${source.phone}`}
-                        className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-primary transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                       >
                         <Phone className="h-3.5 w-3.5" />
                         {formatPhone(source.phone)}
@@ -268,18 +249,29 @@ export function DealSourcesTable({
                     )}
                   </TableCell>
 
-                  {/* Created */}
-                  <TableCell>
-                    <span className="text-sm text-slate-600 tabular-nums">
-                      {formatDate(source.created_at)}
-                    </span>
+                  {/* Email */}
+                  <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+                    {source.email ? (
+                      <a
+                        href={`mailto:${source.email}`}
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors truncate max-w-[200px]"
+                      >
+                        <Mail className="h-3.5 w-3.5 flex-shrink-0" />
+                        {source.email}
+                      </a>
+                    ) : (
+                      <span className="text-sm text-slate-400">—</span>
+                    )}
                   </TableCell>
 
-                  {/* Modified */}
+                  {/* City */}
                   <TableCell>
-                    <span className="text-sm text-slate-600 tabular-nums">
-                      {formatDate(source.updated_at)}
-                    </span>
+                    <span className="text-sm text-slate-600">—</span>
+                  </TableCell>
+
+                  {/* State */}
+                  <TableCell>
+                    <span className="text-sm text-slate-600">—</span>
                   </TableCell>
 
                   {/* Type */}
