@@ -129,7 +129,7 @@ export function AuditTrailViewer({ isOpen, onClose, documentName, entries, onDow
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[650px]">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-brand/10 flex items-center justify-center">

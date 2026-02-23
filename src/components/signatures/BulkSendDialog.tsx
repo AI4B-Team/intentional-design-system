@@ -106,7 +106,7 @@ export function BulkSendDialog({ isOpen, onClose, onSend }: BulkSendDialogProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[750px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[750px]">
         {/* Step: Select Recipients */}
         {step === "recipients" && (
           <>

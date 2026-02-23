@@ -926,7 +926,6 @@ export default function Signatures() {
       {/* ─── Multi-Step Send Flow Dialog ─────────────────────── */}
       <Dialog open={isNewRequestOpen} onOpenChange={(open) => { if (!open) resetSendFlow(); }}>
         <DialogContent className={cn(
-          "max-h-[85vh] overflow-y-auto",
           sendStep === "template" || sendStep === "fields" || sendStep === "deal" ? "sm:max-w-[900px]" : "sm:max-w-[600px]"
         )}>
           {/* Step: Select Deal */}
@@ -936,7 +935,7 @@ export default function Signatures() {
                 <DialogTitle>Build from Deal</DialogTitle>
                 <DialogDescription>Select a property from your pipeline to auto-fill document fields, or skip to start fresh.</DialogDescription>
               </DialogHeader>
-              <div className="py-4">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
                 <DealPicker onSelect={handleSelectDeal} selectedDealId={selectedDeal?.id} />
               </div>
               <DialogFooter className="flex justify-between">
@@ -985,7 +984,7 @@ export default function Signatures() {
                   <span className="text-muted-foreground">· {selectedDeal.status?.replace(/_/g, " ")}</span>
                 </div>
               )}
-              <div className="py-4">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
                 <TemplateLibrary onSelectTemplate={handleSelectTemplate} compact />
               </div>
               <DialogFooter className="flex justify-between">
@@ -1019,7 +1018,7 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="py-4">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
                 <VariableFillForm
                   template={selectedTemplate}
                   values={variableValues}
@@ -1050,7 +1049,7 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="py-4 min-h-[420px]">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 min-h-[420px]">
                 <DocumentFieldBuilder
                   fields={documentFields}
                   onFieldsChange={setDocumentFields}
@@ -1081,7 +1080,7 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="py-4 space-y-6">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 space-y-6">
                 <SignerManager workflow={sendWorkflow} onWorkflowChange={setSendWorkflow} />
                 
                 {/* Signer Authentication Config */}
@@ -1113,7 +1112,7 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="py-4 space-y-3">
+              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 space-y-3">
                 {(Object.entries(AI_MODE_CONFIG) as [AIActionMode, typeof AI_MODE_CONFIG[AIActionMode]][]).map(([mode, config]) => (
                   <button
                     key={mode}
@@ -1185,7 +1184,7 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className="flex-1 overflow-y-auto min-h-0 space-y-4 py-4 px-6">
                 {!selectedTemplate && (
                   <div className="space-y-2">
                     <Label htmlFor="documentName">Document Name *</Label>
@@ -1260,7 +1259,7 @@ export default function Signatures() {
 
       {/* ─── Document Detail Dialog ──────────────────────────── */}
       <Dialog open={!!selectedRequest} onOpenChange={(open) => { if (!open) { setSelectedRequest(null); setDetailTab("details"); } }}>
-        <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px]">
           {selectedRequest && (() => {
             const info = statusConfig[selectedRequest.status];
             const Icon = info.icon;
@@ -1290,7 +1289,7 @@ export default function Signatures() {
                   ))}
                 </div>
 
-                <div className="py-4">
+                <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
                   {/* Details Tab */}
                   {detailTab === "details" && (
                     <div className="space-y-4">

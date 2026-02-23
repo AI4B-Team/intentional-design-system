@@ -64,7 +64,7 @@ export function CompletionCertificate({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="gap-2 flex items-center">
             <Shield className="h-5 w-5 text-success" />
