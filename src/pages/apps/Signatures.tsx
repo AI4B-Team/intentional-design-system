@@ -318,7 +318,7 @@ export default function Signatures() {
 
             return (
               <Card key={request.id} padding="md" className="group hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 justify-center text-center">
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <PenTool className="h-5 w-5 text-primary" />
                   </div>
