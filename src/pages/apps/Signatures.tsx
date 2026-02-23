@@ -533,7 +533,7 @@ export default function Signatures() {
           <div className="flex items-center gap-2">
             <Button className="gap-2" onClick={() => { resetSendFlow(); setIsNewRequestOpen(true); }}>
               <Send className="h-4 w-4" />
-              Send for Signature
+              Send For Signature
             </Button>
             <Button variant="outline" className="gap-2" onClick={() => setBulkSendOpen(true)}>
               <Users className="h-4 w-4" />
@@ -882,7 +882,7 @@ export default function Signatures() {
                   {!searchQuery && (
                     <Button onClick={() => { resetSendFlow(); setIsNewRequestOpen(true); }} className="gap-2">
                       <Send className="h-4 w-4" />
-                      Send for Signature
+                      Send For Signature
                     </Button>
                   )}
                 </div>
@@ -1180,7 +1180,7 @@ export default function Signatures() {
                     <DialogDescription>
                       {selectedTemplate
                         ? `Sending: ${selectedTemplate.name}`
-                        : "Enter recipient details and send for signature."}
+                        : "Enter recipient details and Send For Signature."}
                     </DialogDescription>
                   </div>
                 </div>
@@ -1250,7 +1250,7 @@ export default function Signatures() {
                 <Button variant="outline" onClick={() => setSendStep("signers")}>Back</Button>
                 <Button onClick={handleSendRequest} className="gap-2">
                   <Send className="h-4 w-4" />
-                  Send for Signature
+                  Send For Signature
                 </Button>
               </DialogFooter>
             </>
