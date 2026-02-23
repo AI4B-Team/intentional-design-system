@@ -400,7 +400,7 @@ export function JVAgreementGenerator({
                 Download PDF
               </Button>
               <Button variant="primary" icon={<Send />} onClick={handleGenerate}>
-                Send for Signature
+                Send For Signature
               </Button>
             </div>
           )}
