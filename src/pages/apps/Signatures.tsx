@@ -198,7 +198,7 @@ export default function Signatures() {
                 New Request
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Send for Signature</DialogTitle>
                 <DialogDescription>
@@ -215,7 +215,7 @@ export default function Signatures() {
                     onChange={(e) => setNewRequest({ ...newRequest, documentName: e.target.value })}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="recipientName">Recipient Name</Label>
                     <Input
