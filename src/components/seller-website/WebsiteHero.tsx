@@ -21,6 +21,13 @@ interface WebsiteHeroProps {
   onFormSubmit?: (data: FormData) => Promise<void>;
   isFormSubmitting?: boolean;
   isFormSubmitted?: boolean;
+  // Niche-specific props
+  trustBadgeText?: string;
+  benefitsLine?: string;
+  benefitsSubline?: string;
+  quickStats?: Array<{ value: string; label: string }>;
+  asSeenOn?: string[];
+  navCtaText?: string;
 }
 
 export function WebsiteHero({
@@ -39,6 +46,12 @@ export function WebsiteHero({
   onFormSubmit,
   isFormSubmitting,
   isFormSubmitted,
+  trustBadgeText,
+  benefitsLine,
+  benefitsSubline,
+  quickStats,
+  asSeenOn,
+  navCtaText,
 }: WebsiteHeroProps) {
   const hasInlineForm = !!onFormSubmit;
 
@@ -76,7 +89,7 @@ export function WebsiteHero({
             className="font-semibold text-white"
             style={{ backgroundColor: accentColor }}
           >
-            Get Offer
+            {navCtaText || "Get Offer"}
           </Button>
         </div>
       </nav>
@@ -89,7 +102,7 @@ export function WebsiteHero({
             {/* Trust Badge */}
             <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-1.5 mb-6">
               <span className="text-sm" style={{ color: accentColor }}>✦</span>
-              <span className="text-sm text-gray-600 font-medium">Rated 4.9★ By 2,400+ Homeowners</span>
+              <span className="text-sm text-gray-600 font-medium">{trustBadgeText || "Rated 4.9★ By 2,400+ Homeowners"}</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 leading-tight">
@@ -110,38 +123,37 @@ export function WebsiteHero({
 
             {/* Bold Benefits */}
             <p className="font-bold text-gray-900 mb-1">
-              NO Commissions! NO Repairs! NO Listing Fees! NO Hassles!
+              {benefitsLine || "NO Commissions! NO Repairs! NO Listing Fees! NO Hassles!"}
             </p>
             <p className="text-gray-500 mb-8">
-              Simply our cash for your house in 3 days.
+              {benefitsSubline || "Simply our cash for your house in 3 days."}
             </p>
 
             {/* Quick Stats */}
-            <div className="flex items-start gap-8 mb-8">
-              <div>
-                <div className="text-2xl font-bold" style={{ color: accentColor }}>$0</div>
-                <div className="text-xs text-gray-500">Fees & Commissions</div>
+            {quickStats && quickStats.length > 0 && (
+              <div className="flex items-start gap-8 mb-8">
+                {quickStats.map((stat, i) => (
+                  <div key={i} className={i > 0 ? "border-l border-gray-200 pl-8" : ""}>
+                    <div className="text-2xl font-bold" style={{ color: accentColor }}>{stat.value}</div>
+                    <div className="text-xs text-gray-500">{stat.label}</div>
+                  </div>
+                ))}
               </div>
-              <div className="border-l border-gray-200 pl-8">
-                <div className="text-2xl font-bold" style={{ color: accentColor }}>3 Days</div>
-                <div className="text-xs text-gray-500">Fastest Closing</div>
-              </div>
-              <div className="border-l border-gray-200 pl-8">
-                <div className="text-2xl font-bold" style={{ color: accentColor }}>24hr</div>
-                <div className="text-xs text-gray-500">Offer Turnaround</div>
-              </div>
-            </div>
+            )}
 
             {/* As Seen On */}
-            <div>
-              <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-3">As Seen On</p>
-              <div className="flex items-center gap-6 opacity-40">
-                <span className="text-lg font-bold text-gray-800">HGTV</span>
-                <span className="text-lg font-bold text-gray-800">A&E</span>
-                <span className="text-lg font-bold text-gray-800">DIY</span>
-                <span className="text-sm font-semibold text-gray-800">Tampa Bay Times</span>
+            {asSeenOn && asSeenOn.length > 0 && (
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold mb-3">As Seen On</p>
+                <div className="flex items-center gap-6 opacity-40">
+                  {asSeenOn.map((name, i) => (
+                    <span key={i} className={name.length > 5 ? "text-sm font-semibold text-gray-800" : "text-lg font-bold text-gray-800"}>
+                      {name}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Right: Lead Capture Form */}

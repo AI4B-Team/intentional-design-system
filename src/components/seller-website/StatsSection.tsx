@@ -10,6 +10,7 @@ interface StatsSectionProps {
   primaryColor: string;
 }
 
+// Default stats are now provided via siteTypeConfig; these are fallback only
 const DEFAULT_STATS: Stat[] = [
   { value: "2,400+", label: "Homes Purchased" },
   { value: "$480M+", label: "Paid to Homeowners" },
