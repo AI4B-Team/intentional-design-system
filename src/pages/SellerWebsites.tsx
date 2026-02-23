@@ -157,7 +157,7 @@ export default function SellerWebsites() {
       ) : !websites || websites.length === 0 ? (
         <Card variant="default" padding="lg" className="text-center">
           <Globe className="h-12 w-12 text-content-tertiary/50 mx-auto mb-4" />
-          <h3 className="text-h3 font-medium text-content mb-2">No websites yet</h3>
+          <h3 className="text-h3 font-medium text-content mb-2">No Websites Yet</h3>
           <p className="text-small text-content-secondary mb-6">
             Create your first website to start capturing leads.
           </p>

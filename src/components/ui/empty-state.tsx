@@ -154,7 +154,7 @@ export function NoDataState({
   return (
     <EmptyState
       variant="inbox"
-      title={`No ${entityName} yet`}
+      title={`No ${entityName} Yet`}
       description={`Get started by adding your first ${entityName.replace(/s$/, "")}.`}
       action={
         onAdd
@@ -173,7 +173,7 @@ export function EmptyPropertiesState({ onAdd }: { onAdd?: () => void }) {
   return (
     <EmptyState
       variant="properties"
-      title="No properties yet"
+      title="No Properties Yet"
       description="Start building your pipeline by adding your first property."
       action={onAdd ? { label: "Add Property", onClick: onAdd, icon: Plus } : undefined}
     />
@@ -184,7 +184,7 @@ export function EmptyContactsState({ onAdd }: { onAdd?: () => void }) {
   return (
     <EmptyState
       variant="contacts"
-      title="No contacts yet"
+      title="No Contacts Yet"
       description="Add your first contact to start building relationships."
       action={onAdd ? { label: "Add Contact", onClick: onAdd, icon: Plus } : undefined}
     />
