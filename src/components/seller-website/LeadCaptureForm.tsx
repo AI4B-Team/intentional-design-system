@@ -148,133 +148,74 @@ export function LeadCaptureForm({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+    <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
       <h2 
-        className="text-xl md:text-2xl font-bold mb-2 text-center"
-        style={{ color: primaryColor }}
+        className="text-xl md:text-2xl font-bold mb-1 text-center text-gray-900"
       >
         {formHeadline}
       </h2>
-      <p className="text-gray-600 text-center mb-6 text-sm md:text-base">
+      <p className="text-gray-500 text-center mb-6 text-sm">
         {formSubheadline}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Address Fields */}
+        {/* Property Address - Single Field */}
         {fields.includes("address") && (
-          <>
-            <div>
-              <Label htmlFor="propertyAddress" className="text-sm font-medium">
-                Property Address *
-              </Label>
-              <Input
-                id="propertyAddress"
-                required
-                placeholder="123 Main Street"
-                value={formData.propertyAddress}
-                onChange={(e) => handleChange("propertyAddress", e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="col-span-2">
-                <Label htmlFor="propertyCity" className="text-sm font-medium">
-                  City *
-                </Label>
-                <Input
-                  id="propertyCity"
-                  required
-                  placeholder="City"
-                  value={formData.propertyCity}
-                  onChange={(e) => handleChange("propertyCity", e.target.value)}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label htmlFor="propertyState" className="text-sm font-medium">
-                  State *
-                </Label>
-                <Select
-                  value={formData.propertyState}
-                  onValueChange={(value) => handleChange("propertyState", value)}
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="State" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {US_STATES.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="propertyZip" className="text-sm font-medium">
-                  Zip *
-                </Label>
-                <Input
-                  id="propertyZip"
-                  required
-                  placeholder="12345"
-                  value={formData.propertyZip}
-                  onChange={(e) => handleChange("propertyZip", e.target.value)}
-                  className="mt-1"
-                  maxLength={10}
-                />
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* Name Field */}
-        {fields.includes("name") && (
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label htmlFor="firstName" className="text-sm font-medium">
-                First Name *
-              </Label>
-              <Input
-                id="firstName"
-                required
-                placeholder="John"
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <Label htmlFor="lastName" className="text-sm font-medium">
-                Last Name *
-              </Label>
-              <Input
-                id="lastName"
-                required
-                placeholder="Smith"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                className="mt-1"
-              />
-            </div>
+          <div>
+            <Label htmlFor="propertyAddress" className="text-sm font-medium">
+              Property Address
+            </Label>
+            <Input
+              id="propertyAddress"
+              required
+              placeholder="123 Main St, City, State"
+              value={formData.propertyAddress}
+              onChange={(e) => handleChange("propertyAddress", e.target.value)}
+              className="mt-1"
+            />
           </div>
         )}
 
-        {/* Phone Field */}
-        {fields.includes("phone") && (
-          <div>
-            <Label htmlFor="phone" className="text-sm font-medium">
-              Phone Number *
-            </Label>
-            <Input
-              id="phone"
-              type="tel"
-              required
-              placeholder="(555) 123-4567"
-              value={formData.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
-              className="mt-1"
-            />
+        {/* Name & Phone - Side by Side */}
+        {(fields.includes("name") || fields.includes("phone")) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {fields.includes("name") && (
+              <div>
+                <Label htmlFor="fullName" className="text-sm font-medium">
+                  Your Name
+                </Label>
+                <Input
+                  id="fullName"
+                  required
+                  placeholder="Full Name"
+                  value={formData.fullName || `${formData.firstName} ${formData.lastName}`.trim()}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    handleChange("fullName", val);
+                    const parts = val.split(" ");
+                    handleChange("firstName", parts[0] || "");
+                    handleChange("lastName", parts.slice(1).join(" ") || "");
+                  }}
+                  className="mt-1"
+                />
+              </div>
+            )}
+            {fields.includes("phone") && (
+              <div>
+                <Label htmlFor="phone" className="text-sm font-medium">
+                  Phone
+                </Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  required
+                  placeholder="(555) 000-0000"
+                  value={formData.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+            )}
           </div>
         )}
 
@@ -403,9 +344,8 @@ export function LeadCaptureForm({
         </Button>
 
         {/* Privacy Notice */}
-        <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
-          <Lock className="h-3 w-3" />
-          Your information is 100% secure and will never be shared or sold.
+        <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+          🔒 Your info is safe. We never share or sell your data.
         </p>
       </form>
     </div>
