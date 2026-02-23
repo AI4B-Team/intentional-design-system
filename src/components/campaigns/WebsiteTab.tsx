@@ -11,7 +11,7 @@ export function WebsiteTab() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground">
-          Manage your seller websites and landing pages
+          Manage your websites and landing pages
         </p>
         <Button onClick={() => navigate('/websites')}>
           <ExternalLink className="h-4 w-4 mr-2" />
@@ -24,7 +24,7 @@ export function WebsiteTab() {
           <Globe className="h-12 w-12 text-muted-foreground/50 mx-auto mb-4" />
           <h3 className="text-lg font-medium mb-2">Website Builder</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Create seller websites to capture motivated seller leads.
+            Build landing pages for sellers, buyers, listings, and more.
           </p>
           <Button onClick={() => navigate('/websites')}>
             <Plus className="h-4 w-4 mr-2" />

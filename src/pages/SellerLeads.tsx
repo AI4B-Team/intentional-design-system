@@ -200,7 +200,7 @@ export default function SellerLeads() {
     <PageLayout>
       <PageHeader
         title={pageTitle}
-        description="Manage leads from your seller websites"
+        description="Manage leads from your websites"
         action={
           <div className="flex items-center gap-2">
             <Button
@@ -409,7 +409,7 @@ export default function SellerLeads() {
           <Users className="h-12 w-12 text-content-tertiary/50 mx-auto mb-4" />
           <h3 className="text-h3 font-medium text-content mb-2">No leads yet</h3>
           <p className="text-small text-content-secondary mb-6">
-            Leads from your seller websites will appear here.
+            Leads from your websites will appear here.
           </p>
           <Button variant="primary" icon={<Plus />} onClick={() => setAddModalOpen(true)}>
             Add Your First Lead

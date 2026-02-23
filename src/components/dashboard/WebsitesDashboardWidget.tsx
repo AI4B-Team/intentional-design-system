@@ -28,7 +28,7 @@ export function WebsitesDashboardWidget() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Globe className="h-5 w-5 text-brand-accent" />
-          <h3 className="text-h4 font-medium">Seller Websites</h3>
+          <h3 className="text-h4 font-medium">Websites</h3>
         </div>
         <Link to="/websites">
           <Button variant="ghost" size="sm">
@@ -42,7 +42,7 @@ export function WebsitesDashboardWidget() {
         <div className="text-center py-6">
           <Globe className="h-10 w-10 text-content-tertiary/50 mx-auto mb-3" />
           <p className="text-small text-content-secondary mb-3">
-            No seller websites yet
+            No websites yet
           </p>
           <Link to="/websites/new">
             <Button variant="secondary" size="sm" icon={<Plus />}>
