@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PageLayout } from "@/components/layout";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +26,11 @@ import {
   Sparkles,
   LayoutTemplate,
   Wand2,
+  Monitor,
+  Tablet,
+  Smartphone,
+  RefreshCw,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCreateWebsite } from "@/hooks/useSellerWebsites";
@@ -147,11 +151,11 @@ const FORM_FIELD_OPTIONS = [
 ];
 
 const STEPS = [
-  { id: 1, title: "Site Type", icon: Globe },
-  { id: 2, title: "Setup", icon: Palette },
-  { id: 3, title: "Content", icon: FileText },
-  { id: 4, title: "Notifications", icon: Bell },
-  { id: 5, title: "Publish", icon: Rocket },
+  { id: 1, title: "Site Type", icon: Globe, description: "Choose your site type" },
+  { id: 2, title: "Setup", icon: Palette, description: "Company & branding" },
+  { id: 3, title: "Content", icon: FileText, description: "Headlines & form" },
+  { id: 4, title: "Notifications", icon: Bell, description: "Lead alerts" },
+  { id: 5, title: "Publish", icon: Rocket, description: "Domain & go live" },
 ];
 
 function generateSlug(name: string): string {
@@ -188,11 +192,14 @@ interface WizardData {
   publishNow: boolean;
 }
 
+type DeviceType = "desktop" | "tablet" | "mobile";
+
 export default function SellerWebsiteWizard() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const createWebsite = useCreateWebsite();
   const [currentStep, setCurrentStep] = useState(1);
+  const [device, setDevice] = useState<DeviceType>("desktop");
   const [data, setData] = useState<WizardData>({
     siteType: "",
     creationMethod: "",
@@ -314,66 +321,119 @@ export default function SellerWebsiteWizard() {
 
   const currentTemplates = TEMPLATES[data.siteType] || TEMPLATES.seller;
 
-  return (
-    <PageLayout>
-      <div className="max-w-4xl mx-auto">
-        {/* Progress Steps */}
-        <div className="flex items-center justify-between mb-8">
-          {STEPS.map((step, index) => {
-            const Icon = step.icon;
-            const isActive = step.id === currentStep;
-            const isComplete = step.id < currentStep;
+  const getDeviceWidth = () => {
+    switch (device) {
+      case "mobile": return "375px";
+      case "tablet": return "768px";
+      default: return "100%";
+    }
+  };
 
-            return (
-              <React.Fragment key={step.id}>
-                <div className="flex flex-col items-center">
+  // ── Step Title & Description ──
+  const getStepHeader = () => {
+    switch (currentStep) {
+      case 1: return { title: "What kind of website do you want to build?", desc: "Choose a site type and how you'd like to create it" };
+      case 2: return { title: `Set up your ${selectedSiteType?.name || "website"}`, desc: data.creationMethod === "template" ? "Choose a template and enter your company info" : "Enter your company info to get started" };
+      case 3: return { title: "Customize your content", desc: "Edit your headline, form fields, and more" };
+      case 4: return { title: "How should we notify you?", desc: "Configure notifications and auto-responses" };
+      case 5: return { title: "Your website is ready!", desc: "Configure your URL and publish" };
+      default: return { title: "", desc: "" };
+    }
+  };
+
+  const stepHeader = getStepHeader();
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Left Step Navigation */}
+      <div className="w-[240px] flex-shrink-0 border-r border-border bg-surface flex flex-col">
+        {/* Back button */}
+        <div className="p-4 border-b border-border">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start"
+            onClick={() => navigate("/websites")}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back To Websites
+          </Button>
+        </div>
+
+        {/* Site info */}
+        {selectedSiteType && (
+          <div className="px-4 py-3 border-b border-border">
+            <div className="flex items-center gap-2">
+              <div className={cn("p-1.5 rounded-md", selectedSiteType.bg)}>
+                <selectedSiteType.icon className={cn("h-4 w-4", selectedSiteType.color)} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-medium truncate">{data.companyName || "New Website"}</p>
+                <p className="text-xs text-muted-foreground">{selectedSiteType.name}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Steps */}
+        <div className="px-3 py-4 flex-1">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Configuration</p>
+          <nav className="space-y-1">
+            {STEPS.map((step) => {
+              const Icon = step.icon;
+              const isActive = step.id === currentStep;
+              const isComplete = step.id < currentStep;
+              const isClickable = step.id <= currentStep;
+
+              return (
+                <button
+                  key={step.id}
+                  onClick={() => isClickable && setCurrentStep(step.id)}
+                  disabled={!isClickable}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-colors",
+                    isActive
+                      ? "bg-accent text-accent-foreground font-medium"
+                      : isComplete
+                      ? "text-foreground hover:bg-accent/50 cursor-pointer"
+                      : "text-muted-foreground cursor-not-allowed"
+                  )}
+                >
                   <div
                     className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center transition-colors",
+                      "w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0",
                       isComplete
                         ? "bg-success text-success-foreground"
                         : isActive
                         ? "bg-brand text-white"
-                        : "bg-surface-secondary text-content-tertiary"
+                        : "bg-muted text-muted-foreground"
                     )}
                   >
-                    {isComplete ? <Check className="h-5 w-5" /> : <Icon className="h-5 w-5" />}
+                    {isComplete ? <Check className="h-3.5 w-3.5" /> : step.id}
                   </div>
-                  <span
-                    className={cn(
-                      "text-tiny mt-1",
-                      isActive ? "text-brand font-medium" : "text-content-tertiary"
-                    )}
-                  >
-                    {step.title}
-                  </span>
-                </div>
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      "flex-1 h-0.5 mx-2",
-                      isComplete ? "bg-success" : "bg-border"
-                    )}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
+                  <span>{step.title}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
+      </div>
 
-        {/* Step Content */}
-        <Card variant="default" padding="lg">
-          {/* Step 1: Site Type & Creation Method */}
-          {currentStep === 1 && (
-            <>
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>What kind of website do you want to build?</CardTitle>
-                <CardDescription>Choose a site type and how you'd like to create it</CardDescription>
-              </CardHeader>
-              <CardContent className="px-0 pb-0 space-y-8">
-                {/* Site Type Selection */}
+      {/* Center: Form Inputs */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-2xl mx-auto px-8 py-8">
+            {/* Step Header */}
+            <div className="mb-6">
+              <h1 className="text-xl font-semibold text-foreground">{stepHeader.title}</h1>
+              <p className="text-sm text-muted-foreground mt-1">{stepHeader.desc}</p>
+            </div>
+
+            {/* Step 1: Site Type */}
+            {currentStep === 1 && (
+              <div className="space-y-8">
                 <div>
-                  <Label className="text-small font-medium mb-3 block">Site Type</Label>
+                  <Label className="text-sm font-medium mb-3 block">Site Type</Label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {SITE_TYPES.map((type) => {
                       const Icon = type.icon;
@@ -393,24 +453,19 @@ export default function SellerWebsiteWizard() {
                             <Icon className={cn("h-5 w-5", type.color)} />
                           </div>
                           <div className="min-w-0">
-                            <div className="font-medium text-content">{type.name}</div>
-                            <div className="text-small text-content-secondary mt-0.5">
-                              {type.description}
-                            </div>
+                            <div className="font-medium text-foreground">{type.name}</div>
+                            <div className="text-sm text-muted-foreground mt-0.5">{type.description}</div>
                           </div>
-                          {isSelected && (
-                            <Check className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-                          )}
+                          {isSelected && <Check className="h-5 w-5 text-brand shrink-0 mt-0.5" />}
                         </button>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* Creation Method */}
                 {data.siteType && (
                   <div>
-                    <Label className="text-small font-medium mb-3 block">How do you want to create it?</Label>
+                    <Label className="text-sm font-medium mb-3 block">How do you want to create it?</Label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {CREATION_METHODS.map((method) => {
                         const Icon = method.icon;
@@ -429,10 +484,8 @@ export default function SellerWebsiteWizard() {
                             <div className={cn("p-3 rounded-lg", method.bg)}>
                               <Icon className={cn("h-6 w-6", method.color)} />
                             </div>
-                            <div className="font-medium text-content">{method.name}</div>
-                            <div className="text-tiny text-content-secondary">
-                              {method.description}
-                            </div>
+                            <div className="font-medium text-foreground">{method.name}</div>
+                            <div className="text-xs text-muted-foreground">{method.description}</div>
                           </button>
                         );
                       })}
@@ -440,7 +493,6 @@ export default function SellerWebsiteWizard() {
                   </div>
                 )}
 
-                {/* AI Prompt (if AI method selected) */}
                 {data.creationMethod === "ai" && (
                   <div>
                     <Label htmlFor="aiPrompt">Describe your website</Label>
@@ -448,39 +500,28 @@ export default function SellerWebsiteWizard() {
                       id="aiPrompt"
                       value={data.aiPrompt}
                       onChange={(e) => updateData({ aiPrompt: e.target.value })}
-                      placeholder={`Describe your ideal ${selectedSiteType?.name || "website"}. For example: "A modern We Buy Houses site for the Austin, TX area. Company name is Quick Cash Homes. Use blue and white colors. Include testimonials and a FAQ section."`}
+                      placeholder={`Describe your ideal ${selectedSiteType?.name || "website"}...`}
                       rows={4}
                       className="mt-2"
                     />
                     <div className="flex items-center gap-2 mt-2">
                       <Sparkles className="h-4 w-4 text-amber-500" />
-                      <span className="text-tiny text-content-secondary">
-                        AI will generate your site content, design, and structure based on your description
+                      <span className="text-xs text-muted-foreground">
+                        AI will generate your site content, design, and structure
                       </span>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </>
-          )}
+              </div>
+            )}
 
-          {/* Step 2: Setup (Template + Company Info) */}
-          {currentStep === 2 && (
-            <>
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>Set up your {selectedSiteType?.name || "website"}</CardTitle>
-                <CardDescription>
-                  {data.creationMethod === "template"
-                    ? "Choose a template and enter your company info"
-                    : "Enter your company info to get started"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="px-0 pb-0 space-y-6">
-                {/* Templates (if template method) */}
+            {/* Step 2: Setup */}
+            {currentStep === 2 && (
+              <div className="space-y-6">
                 {data.creationMethod === "template" && (
                   <div>
-                    <Label className="text-small font-medium mb-3 block">Choose a Template</Label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <Label className="text-sm font-medium mb-3 block">Choose a Template</Label>
+                    <div className="grid grid-cols-2 gap-4">
                       {currentTemplates.map((template) => (
                         <div
                           key={template.id}
@@ -492,13 +533,10 @@ export default function SellerWebsiteWizard() {
                               : "border-border hover:border-brand/50"
                           )}
                         >
-                          <div
-                            className="h-24"
-                            style={{ backgroundColor: template.color }}
-                          />
+                          <div className="h-24" style={{ backgroundColor: template.color }} />
                           <div className="p-3">
-                            <div className="font-medium text-small">{template.name}</div>
-                            <div className="text-tiny text-content-tertiary">{template.description}</div>
+                            <div className="font-medium text-sm">{template.name}</div>
+                            <div className="text-xs text-muted-foreground">{template.description}</div>
                           </div>
                           {data.template === template.id && (
                             <div className="absolute top-2 right-2 bg-brand text-white rounded-full p-1">
@@ -511,7 +549,6 @@ export default function SellerWebsiteWizard() {
                   </div>
                 )}
 
-                {/* Colors */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="primaryColor">Primary Color</Label>
@@ -549,8 +586,7 @@ export default function SellerWebsiteWizard() {
                   </div>
                 </div>
 
-                {/* Company Info */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="companyName">
                       Company / Website Name <span className="text-destructive">*</span>
@@ -587,27 +623,17 @@ export default function SellerWebsiteWizard() {
                 <div>
                   <Label>Upload Logo</Label>
                   <div className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 mx-auto text-content-tertiary mb-2" />
-                    <p className="text-small text-content-secondary">
-                      Drag and drop or click to upload
-                    </p>
-                    <p className="text-tiny text-content-tertiary mt-1">
-                      PNG, JPG up to 2MB
-                    </p>
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground">Drag and drop or click to upload</p>
+                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 2MB</p>
                   </div>
                 </div>
-              </CardContent>
-            </>
-          )}
+              </div>
+            )}
 
-          {/* Step 3: Content */}
-          {currentStep === 3 && (
-            <>
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>Customize your content</CardTitle>
-                <CardDescription>Edit your headline, form fields, and more</CardDescription>
-              </CardHeader>
-              <CardContent className="px-0 pb-0 space-y-6">
+            {/* Step 3: Content */}
+            {currentStep === 3 && (
+              <div className="space-y-6">
                 <div>
                   <Label htmlFor="heroHeadline">Hero Headline</Label>
                   <Input
@@ -630,19 +656,19 @@ export default function SellerWebsiteWizard() {
                 </div>
 
                 <div>
-                  <Label className="text-small font-medium mb-3 block">Form Fields</Label>
-                  <div className="p-3 bg-surface-secondary rounded-lg mb-2">
+                  <Label className="text-sm font-medium mb-3 block">Form Fields</Label>
+                  <div className="p-3 bg-muted rounded-lg mb-2">
                     <div className="flex items-center gap-2">
                       <Checkbox checked disabled />
                       <span className="font-medium">Property Address</span>
-                      <span className="text-tiny text-content-tertiary">(Required)</span>
+                      <span className="text-xs text-muted-foreground">(Required)</span>
                     </div>
                   </div>
                   <div className="space-y-2">
                     {FORM_FIELD_OPTIONS.map((field) => (
                       <label
                         key={field.id}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-surface-secondary cursor-pointer transition-colors"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted cursor-pointer transition-colors"
                       >
                         <Checkbox
                           checked={data.formFields.includes(field.id)}
@@ -663,20 +689,14 @@ export default function SellerWebsiteWizard() {
                     placeholder={selectedSiteType?.defaultCta || "Submit"}
                   />
                 </div>
-              </CardContent>
-            </>
-          )}
+              </div>
+            )}
 
-          {/* Step 4: Notifications */}
-          {currentStep === 4 && (
-            <>
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>How should we notify you of new leads?</CardTitle>
-                <CardDescription>Configure notifications and auto-responses</CardDescription>
-              </CardHeader>
-              <CardContent className="px-0 pb-0 space-y-6">
+            {/* Step 4: Notifications */}
+            {currentStep === 4 && (
+              <div className="space-y-6">
                 <div>
-                  <Label className="text-small font-medium mb-3 block">Notify me via:</Label>
+                  <Label className="text-sm font-medium mb-3 block">Notify me via:</Label>
                   <div className="space-y-4">
                     <div>
                       <label className="flex items-center gap-3 mb-2">
@@ -709,21 +729,17 @@ export default function SellerWebsiteWizard() {
                 </div>
 
                 <div>
-                  <Label className="text-small font-medium mb-3 block">Auto-respond to leads:</Label>
+                  <Label className="text-sm font-medium mb-3 block">Auto-respond to leads:</Label>
                   <div className="space-y-3">
                     <label className="flex items-center justify-between p-4 rounded-lg border border-border">
                       <div className="flex items-center gap-3">
                         <Checkbox
                           checked={data.autoRespondEmail}
-                          onCheckedChange={(checked) =>
-                            updateData({ autoRespondEmail: !!checked })
-                          }
+                          onCheckedChange={(checked) => updateData({ autoRespondEmail: !!checked })}
                         />
                         <div>
                           <div className="font-medium">Send automatic email confirmation</div>
-                          <div className="text-small text-content-secondary">
-                            Instantly confirm receipt to leads
-                          </div>
+                          <div className="text-sm text-muted-foreground">Instantly confirm receipt to leads</div>
                         </div>
                       </div>
                     </label>
@@ -731,47 +747,35 @@ export default function SellerWebsiteWizard() {
                       <div className="flex items-center gap-3">
                         <Checkbox
                           checked={data.autoRespondSms}
-                          onCheckedChange={(checked) =>
-                            updateData({ autoRespondSms: !!checked })
-                          }
+                          onCheckedChange={(checked) => updateData({ autoRespondSms: !!checked })}
                         />
                         <div>
                           <div className="font-medium">Send automatic SMS confirmation</div>
-                          <div className="text-small text-content-secondary">
-                            Text leads when they submit
-                          </div>
+                          <div className="text-sm text-muted-foreground">Text leads when they submit</div>
                         </div>
                       </div>
                     </label>
                   </div>
                 </div>
-              </CardContent>
-            </>
-          )}
+              </div>
+            )}
 
-          {/* Step 5: Publish */}
-          {currentStep === 5 && (
-            <>
-              <CardHeader className="px-0 pt-0">
-                <CardTitle>Your website is ready!</CardTitle>
-                <CardDescription>Configure your URL and publish</CardDescription>
-              </CardHeader>
-              <CardContent className="px-0 pb-0 space-y-6">
+            {/* Step 5: Publish */}
+            {currentStep === 5 && (
+              <div className="space-y-6">
                 <div>
                   <Label htmlFor="slug">Website URL</Label>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-content-secondary">/s/</span>
+                    <span className="text-muted-foreground">/s/</span>
                     <Input
                       id="slug"
                       value={data.slug}
-                      onChange={(e) =>
-                        updateData({ slug: generateSlug(e.target.value) })
-                      }
+                      onChange={(e) => updateData({ slug: generateSlug(e.target.value) })}
                       placeholder="my-website"
                       className="flex-1"
                     />
                   </div>
-                  <p className="text-tiny text-content-tertiary mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Your website will be at: /s/{data.slug || "your-url"}
                   </p>
                 </div>
@@ -784,13 +788,13 @@ export default function SellerWebsiteWizard() {
                     onChange={(e) => updateData({ customDomain: e.target.value })}
                     placeholder="mywebsite.com"
                   />
-                  <p className="text-tiny text-content-tertiary mt-1">
-                    Point your domain's DNS to our servers to use a custom domain. Works without one too.
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Point your domain's DNS to our servers. Works without a custom domain too.
                   </p>
                 </div>
 
                 <div>
-                  <Label className="text-small font-medium mb-3 block">Publish Options</Label>
+                  <Label className="text-sm font-medium mb-3 block">Publish Options</Label>
                   <RadioGroup
                     value={data.publishNow ? "now" : "draft"}
                     onValueChange={(value) => updateData({ publishNow: value === "now" })}
@@ -799,73 +803,181 @@ export default function SellerWebsiteWizard() {
                     <label
                       className={cn(
                         "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
-                        data.publishNow
-                          ? "border-brand bg-brand/5"
-                          : "border-border hover:border-brand/50"
+                        data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
                       )}
                     >
                       <RadioGroupItem value="now" className="mt-0.5" />
                       <div>
                         <div className="font-medium">Publish Now</div>
-                        <div className="text-small text-content-secondary">
-                          Go live immediately
-                        </div>
+                        <div className="text-sm text-muted-foreground">Go live immediately</div>
                       </div>
                     </label>
                     <label
                       className={cn(
                         "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
-                        !data.publishNow
-                          ? "border-brand bg-brand/5"
-                          : "border-border hover:border-brand/50"
+                        !data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
                       )}
                     >
                       <RadioGroupItem value="draft" className="mt-0.5" />
                       <div>
                         <div className="font-medium">Save as Draft</div>
-                        <div className="text-small text-content-secondary">
-                          Edit more before publishing
-                        </div>
+                        <div className="text-sm text-muted-foreground">Edit more before publishing</div>
                       </div>
                     </label>
                   </RadioGroup>
                 </div>
-              </CardContent>
-            </>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
-            <Button
-              variant="ghost"
-              onClick={currentStep === 1 ? () => navigate("/websites") : handleBack}
-              icon={<ArrowLeft className="h-4 w-4" />}
-            >
-              {currentStep === 1 ? "Cancel" : "Back"}
-            </Button>
-
-            {currentStep < 5 ? (
-              <Button
-                variant="primary"
-                onClick={handleNext}
-                disabled={!canProceed()}
-              >
-                Next
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                onClick={handleCreate}
-                disabled={!canProceed() || createWebsite.isPending}
-                icon={createWebsite.isPending ? <Spinner size="sm" /> : <Rocket className="h-4 w-4" />}
-              >
-                {createWebsite.isPending ? "Creating..." : "Create Website"}
-              </Button>
+              </div>
             )}
+
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
+              <Button
+                variant="ghost"
+                onClick={currentStep === 1 ? () => navigate("/websites") : handleBack}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {currentStep === 1 ? "Cancel" : "Back"}
+              </Button>
+
+              {currentStep < 5 ? (
+                <Button variant="default" onClick={handleNext} disabled={!canProceed()}>
+                  Next
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              ) : (
+                <Button
+                  variant="default"
+                  onClick={handleCreate}
+                  disabled={!canProceed() || createWebsite.isPending}
+                >
+                  {createWebsite.isPending ? (
+                    <Spinner size="sm" className="mr-2" />
+                  ) : (
+                    <Rocket className="h-4 w-4 mr-2" />
+                  )}
+                  {createWebsite.isPending ? "Creating..." : "Create Website"}
+                </Button>
+              )}
+            </div>
           </div>
-        </Card>
+        </div>
       </div>
-    </PageLayout>
+
+      {/* Right: Live Preview */}
+      <div className="w-[45%] flex-shrink-0 border-l border-border flex flex-col bg-muted/30">
+        {/* Preview Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Live Preview</span>
+            <Badge variant="secondary" className="text-xs">Auto-Sync</Badge>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              variant={device === "desktop" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setDevice("desktop")}
+            >
+              <Monitor className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={device === "tablet" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setDevice("tablet")}
+            >
+              <Tablet className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={device === "mobile" ? "secondary" : "ghost"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setDevice("mobile")}
+            >
+              <Smartphone className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Preview Content */}
+        <div className="flex-1 overflow-auto p-4 flex justify-center">
+          <div
+            className="bg-background rounded-lg border border-border shadow-sm overflow-hidden transition-all duration-300"
+            style={{
+              width: getDeviceWidth(),
+              maxWidth: "100%",
+              minHeight: "500px",
+            }}
+          >
+            {/* Mock browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-2 bg-muted border-b border-border">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+              <div className="flex-1 mx-4">
+                <div className="bg-background rounded-md px-3 py-1 text-xs text-muted-foreground text-center truncate">
+                  {data.customDomain || `${data.slug || "your-site"}.yourdomain.app`}
+                </div>
+              </div>
+            </div>
+
+            {/* Preview Body */}
+            <div className="p-0">
+              {/* Nav */}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                <div className="flex items-center gap-2">
+                  {data.logoUrl ? (
+                    <img src={data.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
+                  ) : (
+                    <div className="h-8 w-8 rounded-md" style={{ backgroundColor: data.primaryColor }} />
+                  )}
+                  <span className="font-semibold text-sm">{data.companyName || "Your Company"}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Login</span>
+                  <Button size="sm" className="h-7 text-xs" style={{ backgroundColor: data.primaryColor }}>
+                    {data.formSubmitText || "Get Started"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Hero */}
+              <div className="text-center px-6 py-12">
+                {selectedSiteType && (
+                  <Badge variant="secondary" className="mb-4 text-xs">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    {selectedSiteType.name}
+                  </Badge>
+                )}
+                <h1 className="text-2xl font-bold mb-3" style={{ color: data.primaryColor }}>
+                  {data.heroHeadline || "Your Headline Here"}
+                </h1>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+                  {data.heroSubheadline || "Your subheadline will appear here"}
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  <Button size="sm" style={{ backgroundColor: data.primaryColor }}>
+                    {data.formSubmitText || "Get Started"}
+                  </Button>
+                  <Button variant="outline" size="sm">Learn More</Button>
+                </div>
+              </div>
+
+              {/* Trust bar */}
+              <div className="text-center py-4 border-t border-border">
+                <p className="text-xs text-muted-foreground font-medium">
+                  Trusted By Industry Leaders
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Preview Updates Automatically As You Make Changes
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
