@@ -12,6 +12,8 @@ interface Situation {
 interface SituationsSectionProps {
   situations?: Situation[];
   primaryColor: string;
+  headline?: string;
+  subheadline?: string;
 }
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -43,17 +45,17 @@ const DEFAULT_SITUATIONS: Situation[] = [
   { icon: "warehouse", label: "Hoarder Property" },
 ];
 
-export function SituationsSection({ situations, primaryColor }: SituationsSectionProps) {
+export function SituationsSection({ situations, primaryColor, headline, subheadline }: SituationsSectionProps) {
   const displaySituations = situations && situations.length > 0 ? situations : DEFAULT_SITUATIONS;
 
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-3">
-          We Buy Houses In Any Situation
+          {headline || "We Buy Houses In Any Situation"}
         </h2>
         <p className="text-gray-500 text-center mb-10">
-          Whatever you're going through, we've helped someone just like you
+          {subheadline || "Whatever you're going through, we've helped someone just like you"}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">

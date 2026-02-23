@@ -12,6 +12,7 @@ import { FAQSection } from "@/components/seller-website/FAQSection";
 import { CTABannerSection } from "@/components/seller-website/CTABannerSection";
 import { WebsiteFooter } from "@/components/seller-website/WebsiteFooter";
 import { SEOHead } from "@/components/seller-website/SEOHead";
+import { getSiteTypeDefaults } from "@/components/seller-website/siteTypeConfig";
 import { Loader2 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -136,11 +137,14 @@ export default function SellerWebsitePage() {
     );
   }
 
-  const processSteps = (website.process_steps as unknown as ProcessStep[] | null) || [];
+  const defaults = getSiteTypeDefaults(website.site_type);
+  const processSteps = (website.process_steps as unknown as ProcessStep[] | null) || defaults.processSteps;
   const testimonials = (website.testimonials as unknown as Testimonial[] | null) || [];
   const faqs = (website.faqs as unknown as FAQ[] | null) || [];
   const socialLinks = (website.social_links as unknown as SocialLinks | null) || {};
   const formFields = (website.form_fields as unknown as string[] | null) || ["address", "name", "phone", "email"];
+  const primaryColor = website.primary_color || "#2563EB";
+  const accentColor = website.accent_color || "#10B981";
 
   return (
     <div className="min-h-screen bg-white">
@@ -160,62 +164,92 @@ export default function SellerWebsitePage() {
           companyName={website.company_name}
           companyPhone={website.company_phone}
           logoUrl={website.logo_url}
-          headline={website.hero_headline || "Sell Your Home Fast, Fair & Simple"}
-          subheadline={website.hero_subheadline || "Get a free cash offer on your house regardless of location, condition, size, price & equity."}
+          headline={website.hero_headline || defaults.heroHeadline}
+          subheadline={website.hero_subheadline || defaults.heroSubheadline}
           heroImageUrl={website.hero_image_url}
           heroVideoUrl={website.hero_video_url}
-          primaryColor={website.primary_color || "#2563EB"}
-          accentColor={website.accent_color || "#10B981"}
+          primaryColor={primaryColor}
+          accentColor={accentColor}
           onGetOfferClick={scrollToTop}
-          formHeadline={website.form_headline || "Get Your Free Cash Offer"}
-          formSubheadline={website.form_subheadline || "No Obligation. No Pressure. Takes 7 Minutes."}
+          formHeadline={website.form_headline || defaults.formHeadline}
+          formSubheadline={website.form_subheadline || defaults.formSubheadline}
           formFields={formFields}
-          formSubmitText={website.form_submit_text || "Get My Cash Offer →"}
+          formSubmitText={website.form_submit_text || defaults.formSubmitText}
           onFormSubmit={handleFormSubmit}
           isFormSubmitting={submitting}
           isFormSubmitted={success}
+          trustBadgeText={defaults.trustBadgeText}
+          benefitsLine={defaults.heroBenefitsLine}
+          benefitsSubline={defaults.heroBenefitsSubline}
+          quickStats={defaults.quickStats}
+          asSeenOn={defaults.asSeenOn}
+          navCtaText={defaults.formSubmitText.replace(" →", "")}
         />
       </div>
 
       {/* Stats */}
-      <StatsSection primaryColor={website.primary_color || "#2563EB"} />
+      {defaults.showStats && (
+        <StatsSection stats={defaults.stats} primaryColor={primaryColor} />
+      )}
 
       {/* How It Works */}
-      <HowItWorksSection
-        processSteps={processSteps}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
-      />
+      {defaults.showHowItWorks && (
+        <HowItWorksSection
+          processSteps={processSteps}
+          primaryColor={primaryColor}
+          accentColor={accentColor}
+        />
+      )}
 
       {/* Comparison Table */}
-      <ComparisonSection
-        companyName={website.company_name}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
-      />
+      {defaults.showComparison && (
+        <ComparisonSection
+          companyName={website.company_name}
+          primaryColor={primaryColor}
+          accentColor={accentColor}
+          headline={defaults.comparisonHeadline}
+          subheadline={defaults.comparisonSubheadline}
+          traditionalLabel={defaults.comparisonTraditionalLabel}
+          companyLabel={defaults.comparisonCompanyLabel}
+          rows={defaults.comparisonRows}
+        />
+      )}
 
       {/* Testimonials */}
       <TestimonialsSection
         testimonials={testimonials}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
+        primaryColor={primaryColor}
+        accentColor={accentColor}
+        headline={defaults.testimonialsHeadline}
+        subheadline={defaults.testimonialsSubheadline}
+        tagline={defaults.testimonialsTagline}
       />
 
-      {/* Situations */}
-      <SituationsSection primaryColor={website.primary_color || "#2563EB"} />
+      {/* Situations / Services Grid */}
+      {defaults.showSituations && (
+        <SituationsSection
+          primaryColor={primaryColor}
+          situations={defaults.situations}
+          headline={defaults.situationsHeadline}
+          subheadline={defaults.situationsSubheadline}
+        />
+      )}
 
       {/* FAQ */}
       <FAQSection
         faqs={faqs}
-        primaryColor={website.primary_color || "#2563EB"}
+        primaryColor={primaryColor}
       />
 
       {/* CTA Banner */}
       <CTABannerSection
         companyPhone={website.company_phone}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
+        primaryColor={primaryColor}
+        accentColor={accentColor}
         onGetOfferClick={scrollToTop}
+        headline={defaults.ctaHeadline}
+        subheadline={defaults.ctaSubheadline}
+        buttonText={defaults.ctaButtonText}
       />
 
       {/* Footer */}
@@ -225,8 +259,8 @@ export default function SellerWebsitePage() {
         companyEmail={website.company_email}
         footerText={website.footer_text}
         socialLinks={socialLinks}
-        primaryColor={website.primary_color || "#2563EB"}
-        accentColor={website.accent_color || "#10B981"}
+        primaryColor={primaryColor}
+        accentColor={accentColor}
         onGetOfferClick={scrollToTop}
       />
 
@@ -235,9 +269,9 @@ export default function SellerWebsitePage() {
         <button
           onClick={scrollToTop}
           className="w-full py-3 rounded-lg font-bold text-white transition-colors"
-          style={{ backgroundColor: website.accent_color || "#10B981" }}
+          style={{ backgroundColor: accentColor }}
         >
-          Get Your Cash Offer
+          {defaults.mobileStickyText}
         </button>
       </div>
     </div>

@@ -14,22 +14,27 @@ interface TestimonialsSectionProps {
   testimonials: Testimonial[];
   primaryColor: string;
   accentColor: string;
+  headline?: string;
+  subheadline?: string;
+  tagline?: string;
 }
 
-export function TestimonialsSection({ testimonials, primaryColor, accentColor }: TestimonialsSectionProps) {
+export function TestimonialsSection({ testimonials, primaryColor, accentColor, headline, subheadline, tagline }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
 
   return (
     <section className="py-16 md:py-24 bg-gray-50">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-3">
-          Real Stories From Real Sellers
+          {headline || "Real Stories From Real Sellers"}
         </h2>
-        <p className="text-center mb-2" style={{ color: accentColor }}>
-          <em>Over 1,000 Homeowners Have Successfully Sold Their Home As-Is With Our Team Since 2005</em>
-        </p>
+        {(tagline) && (
+          <p className="text-center mb-2" style={{ color: accentColor }}>
+            <em>{tagline}</em>
+          </p>
+        )}
         <p className="text-gray-500 text-center mb-10">
-          Don't Take Our Word For It — Take Theirs
+          {subheadline || "Don't Take Our Word For It — Take Theirs"}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

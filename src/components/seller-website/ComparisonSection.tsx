@@ -9,6 +9,10 @@ interface ComparisonSectionProps {
   primaryColor: string;
   accentColor: string;
   rows?: ComparisonRow[];
+  headline?: string;
+  subheadline?: string;
+  traditionalLabel?: string;
+  companyLabel?: string;
 }
 
 const DEFAULT_ROWS: ComparisonRow[] = [
@@ -21,17 +25,20 @@ const DEFAULT_ROWS: ComparisonRow[] = [
   { label: "Closing Date", traditional: "Buyer decides", company: "You choose" },
 ];
 
-export function ComparisonSection({ companyName, primaryColor, accentColor, rows }: ComparisonSectionProps) {
+export function ComparisonSection({ companyName, primaryColor, accentColor, rows, headline, subheadline, traditionalLabel, companyLabel }: ComparisonSectionProps) {
   const displayRows = rows && rows.length > 0 ? rows : DEFAULT_ROWS;
+  const resolvedHeadline = (headline || "Why Sellers Choose {companyName}").replace("{companyName}", companyName);
+  const resolvedSubheadline = subheadline || "See how we compare to listing with an agent";
+  const resolvedCompanyLabel = (companyLabel || companyName).replace("{companyName}", companyName);
 
   return (
     <section className="py-16 md:py-24 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-3">
-          Why Sellers Choose {companyName}
+          {resolvedHeadline}
         </h2>
         <p className="text-gray-500 text-center mb-10">
-          See how we compare to listing with an agent
+          {resolvedSubheadline}
         </p>
 
         <div className="max-w-3xl mx-auto overflow-hidden rounded-xl border border-gray-200">
@@ -40,13 +47,13 @@ export function ComparisonSection({ companyName, primaryColor, accentColor, rows
               <tr className="border-b border-gray-200">
                 <th className="py-4 px-6 text-left text-sm font-medium text-gray-500" />
                 <th className="py-4 px-6 text-center text-sm font-semibold text-gray-600">
-                  Traditional Agent
+                  {traditionalLabel || "Traditional Agent"}
                 </th>
                 <th
                   className="py-4 px-6 text-center text-sm font-bold"
                   style={{ color: accentColor }}
                 >
-                  {companyName}
+                  {resolvedCompanyLabel}
                 </th>
               </tr>
             </thead>
