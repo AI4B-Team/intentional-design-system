@@ -326,7 +326,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
       <div className="flex items-center justify-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" className="h-7 w-7 p-0 bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call", completeAction, updateAction); }}>
+            <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-emerald-300 text-emerald-600 hover:bg-emerald-50 shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call", completeAction, updateAction); }}>
               <Phone className="h-3.5 w-3.5" />
             </Button>
           </TooltipTrigger>
