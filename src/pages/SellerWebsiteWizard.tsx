@@ -951,6 +951,7 @@ export default function SellerWebsiteWizard() {
                 companyPhone={data.companyPhone}
                 companyEmail={data.companyEmail}
                 primaryColor={data.primaryColor}
+                accentColor={data.accentColor}
                 heroHeadline={data.heroHeadline}
                 heroSubheadline={data.heroSubheadline}
                 formSubmitText={data.formSubmitText}
