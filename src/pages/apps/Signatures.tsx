@@ -54,6 +54,7 @@ import {
   Layers,
   ArrowLeft,
   Sparkles,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, differenceInHours, differenceInDays } from "date-fns";
@@ -68,6 +69,7 @@ import { DocumentField } from "@/types/document-fields";
 import { SignerManager } from "@/components/signatures/SignerManager";
 import { AuditTrail } from "@/components/signatures/AuditTrail";
 import { SigningWorkflow, createDefaultWorkflow, createSigner, AuditEvent } from "@/types/signing-workflow";
+import { DealPicker, DealData, dealToVariables } from "@/components/signatures/DealPicker";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -88,6 +90,8 @@ interface SignatureRequest {
   lastActivity?: string;
   templateId?: string;
   workflow?: SigningWorkflow;
+  dealId?: string;
+  dealStatus?: string;
 }
 
 // ─── Mock data ──────────────────────────────────────────────
@@ -208,7 +212,7 @@ function getNextAction(request: SignatureRequest): { label: string; icon: React.
 }
 
 // ─── Send Flow Steps ────────────────────────────────────────
-type SendStep = "template" | "variables" | "fields" | "signers" | "recipient";
+type SendStep = "deal" | "template" | "variables" | "fields" | "signers" | "recipient";
 
 // ─── Main Component ─────────────────────────────────────────
 export default function Signatures() {
@@ -225,7 +229,7 @@ export default function Signatures() {
 
   // Send flow state
   const [isNewRequestOpen, setIsNewRequestOpen] = React.useState(!!templateId);
-  const [sendStep, setSendStep] = React.useState<SendStep>("template");
+  const [sendStep, setSendStep] = React.useState<SendStep>("deal");
   const [selectedTemplate, setSelectedTemplate] = React.useState<SignatureTemplate | null>(null);
   const [variableValues, setVariableValues] = React.useState<Record<string, string>>({});
   const [recipientInfo, setRecipientInfo] = React.useState({
@@ -236,6 +240,7 @@ export default function Signatures() {
   const [documentFields, setDocumentFields] = React.useState<DocumentField[]>([]);
   const [sendWorkflow, setSendWorkflow] = React.useState<SigningWorkflow>(createDefaultWorkflow());
   const [detailTab, setDetailTab] = React.useState<"details" | "signers" | "audit">("details");
+  const [selectedDeal, setSelectedDeal] = React.useState<DealData | null>(null);
 
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
@@ -260,9 +265,34 @@ export default function Signatures() {
   };
 
   // ─── Send Flow Handlers ────────────────────────────────────
+  const handleSelectDeal = (deal: DealData) => {
+    setSelectedDeal(deal);
+    // Pre-fill variables from deal
+    const dealVars = dealToVariables(deal);
+    setVariableValues((prev) => {
+      const merged = { ...prev };
+      Object.entries(dealVars).forEach(([key, val]) => {
+        if (val && !merged[key]?.trim()) merged[key] = val;
+      });
+      return merged;
+    });
+    // Pre-fill recipient from deal owner
+    setRecipientInfo({
+      recipientName: deal.ownerName || "",
+      recipientEmail: deal.ownerEmail || "",
+      propertyAddress: [deal.address, deal.city, deal.state, deal.zip].filter(Boolean).join(", "),
+    });
+  };
+
   const handleSelectTemplate = (template: SignatureTemplate) => {
     setSelectedTemplate(template);
-    setVariableValues({});
+    // Merge deal vars into template if deal already selected
+    if (selectedDeal) {
+      const dealVars = dealToVariables(selectedDeal);
+      setVariableValues(dealVars);
+    } else {
+      setVariableValues({});
+    }
     setSendStep("variables");
   };
 
@@ -343,6 +373,8 @@ export default function Signatures() {
       viewCount: 0,
       templateId: selectedTemplate?.id,
       workflow,
+      dealId: selectedDeal?.id,
+      dealStatus: selectedDeal?.status,
     };
 
     setRequests([request, ...requests]);
@@ -352,13 +384,14 @@ export default function Signatures() {
 
   const resetSendFlow = () => {
     setIsNewRequestOpen(false);
-    setSendStep("template");
+    setSendStep("deal");
     setSelectedTemplate(null);
     setVariableValues({});
     setRecipientInfo({ recipientName: "", recipientEmail: "", propertyAddress: "" });
     setDocumentFields([]);
     setSendWorkflow(createDefaultWorkflow());
     setDetailTab("details");
+    setSelectedDeal(null);
   };
 
   const handleResend = (id: string, e?: React.MouseEvent) => {
@@ -678,20 +711,69 @@ export default function Signatures() {
       <Dialog open={isNewRequestOpen} onOpenChange={(open) => { if (!open) resetSendFlow(); }}>
         <DialogContent className={cn(
           "max-h-[85vh] overflow-y-auto",
-          sendStep === "template" || sendStep === "fields" ? "sm:max-w-[900px]" : "sm:max-w-[600px]"
+          sendStep === "template" || sendStep === "fields" || sendStep === "deal" ? "sm:max-w-[900px]" : "sm:max-w-[600px]"
         )}>
+          {/* Step: Select Deal */}
+          {sendStep === "deal" && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Build from Deal</DialogTitle>
+                <DialogDescription>Select a property from your pipeline to auto-fill document fields, or skip to start fresh.</DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <DealPicker onSelect={handleSelectDeal} selectedDealId={selectedDeal?.id} />
+              </div>
+              <DialogFooter className="flex justify-between">
+                <Button variant="outline" onClick={resetSendFlow}>Cancel</Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setSendStep("template")}
+                  >
+                    Skip — No Deal
+                  </Button>
+                  {selectedDeal && (
+                    <Button onClick={() => setSendStep("template")} className="gap-2">
+                      Continue with {selectedDeal.address.split(",")[0]}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </DialogFooter>
+            </>
+          )}
+
           {/* Step: Choose Template */}
           {sendStep === "template" && (
             <>
               <DialogHeader>
-                <DialogTitle>Choose a Template</DialogTitle>
-                <DialogDescription>Select a document template or start from scratch.</DialogDescription>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("deal")}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <div>
+                    <DialogTitle>Choose a Template</DialogTitle>
+                    <DialogDescription>
+                      {selectedDeal
+                        ? `Deal: ${selectedDeal.address} — Select a template to auto-fill.`
+                        : "Select a document template or start from scratch."}
+                    </DialogDescription>
+                  </div>
+                </div>
               </DialogHeader>
+              {selectedDeal && (
+                <div className="mx-6 mb-2 flex items-center gap-2 text-xs text-brand bg-brand/5 border border-brand/20 rounded-lg px-3 py-2">
+                  <Building2 className="h-3.5 w-3.5" />
+                  <span className="font-medium">{selectedDeal.address}</span>
+                  <span className="text-muted-foreground">· {selectedDeal.ownerName || "No owner"}</span>
+                  <span className="text-muted-foreground">· {selectedDeal.status?.replace(/_/g, " ")}</span>
+                </div>
+              )}
               <div className="py-4">
                 <TemplateLibrary onSelectTemplate={handleSelectTemplate} compact />
               </div>
               <DialogFooter className="flex justify-between">
-                <Button variant="outline" onClick={resetSendFlow}>Cancel</Button>
+                <Button variant="outline" onClick={() => setSendStep("deal")}>Back</Button>
                 <Button
                   variant="outline"
                   className="gap-2"
@@ -1014,6 +1096,17 @@ export default function Signatures() {
                           <div>
                             <p className="text-muted-foreground mb-1">Reminders</p>
                             <p className="font-medium">{wf.reminders.remindersSent}/{wf.reminders.maxReminders} sent</p>
+                          </div>
+                        )}
+                        {selectedRequest.dealId && (
+                          <div className="col-span-2 mt-2 flex items-center gap-2 text-xs bg-brand/5 border border-brand/20 rounded-lg px-3 py-2">
+                            <Building2 className="h-3.5 w-3.5 text-brand" />
+                            <span className="font-medium text-brand">Linked to Deal</span>
+                            {selectedRequest.dealStatus && (
+                              <Badge variant="outline" className="text-[10px] h-5 capitalize">
+                                {selectedRequest.dealStatus.replace(/_/g, " ")}
+                              </Badge>
+                            )}
                           </div>
                         )}
                       </div>
