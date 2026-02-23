@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AppLayout } from "@/components/layout/AppLayout";
+
 import { PageLayout, PageHeader } from "@/components/layout/page-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -185,7 +185,7 @@ export default function Signatures() {
   };
 
   return (
-    <AppLayout>
+    <>
       <PageLayout>
         <PageHeader
           title="Digital Signatures"
@@ -411,6 +411,6 @@ export default function Signatures() {
           )}
         </div>
       </PageLayout>
-    </AppLayout>
+    </>
   );
 }
