@@ -118,13 +118,13 @@ const apps: AppItem[] = [
     isNew: true,
   },
   {
-    id: "seller-websites",
-    name: "Seller Websites",
-    description: "Create custom landing pages to attract motivated sellers",
+    id: "websites",
+    name: "Websites",
+    description: "Build landing pages for sellers, buyers, listings, and more",
     icon: Globe,
     iconBg: "bg-indigo-100",
     iconColor: "text-indigo-600",
-    href: "/communications",
+    href: "/websites",
     category: "marketing",
   },
   {

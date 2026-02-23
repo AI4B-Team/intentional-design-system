@@ -705,7 +705,7 @@ const App = () => (
               }
             />
             
-            {/* Seller Websites Routes */}
+            {/* Websites Routes */}
             <Route
               path="/websites"
               element={

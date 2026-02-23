@@ -79,8 +79,8 @@ export default function SellerWebsites() {
   return (
     <PageLayout>
       <PageHeader
-        title="Seller Websites"
-        description="Create landing pages to capture motivated seller leads"
+        title="Websites"
+        description="Build and manage landing pages for sellers, buyers, listings, and more"
         action={
           <Button variant="primary" icon={<Plus />} onClick={() => navigate("/websites/new")}>
             Create Website
@@ -159,7 +159,7 @@ export default function SellerWebsites() {
           <Globe className="h-12 w-12 text-content-tertiary/50 mx-auto mb-4" />
           <h3 className="text-h3 font-medium text-content mb-2">No websites yet</h3>
           <p className="text-small text-content-secondary mb-6">
-            Create your first seller website to start capturing leads.
+            Create your first website to start capturing leads.
           </p>
           <Button variant="primary" icon={<Plus />} onClick={() => navigate("/websites/new")}>
             Create Your First Website
@@ -187,7 +187,7 @@ export default function SellerWebsites() {
                     className="text-body font-semibold text-content truncate cursor-pointer hover:text-brand transition-colors"
                     onClick={() => navigate(`/websites/${website.id}/edit`)}
                   >
-                    🏠 {website.name}
+                    {website.name}
                   </h3>
                   <p className="text-small text-content-secondary truncate">
                     /s/{website.slug}
