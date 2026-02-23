@@ -31,7 +31,8 @@
   body[style*="margin-right"],
   body[style*="padding-right"] {
     position: static !important;
-    overflow: auto !important;
+    overflow-y: scroll !important;
+    overflow-x: auto !important;
     margin-right: 0 !important;
     padding-right: 0 !important;
   }
