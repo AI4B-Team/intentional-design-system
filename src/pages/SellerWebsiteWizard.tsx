@@ -332,11 +332,11 @@ export default function SellerWebsiteWizard() {
   // ── Step Title & Description ──
   const getStepHeader = () => {
     switch (currentStep) {
-      case 1: return { title: "What kind of website do you want to build?", desc: "Choose a site type and how you'd like to create it" };
-      case 2: return { title: `Set up your ${selectedSiteType?.name || "website"}`, desc: data.creationMethod === "template" ? "Choose a template and enter your company info" : "Enter your company info to get started" };
-      case 3: return { title: "Customize your content", desc: "Edit your headline, form fields, and more" };
-      case 4: return { title: "How should we notify you?", desc: "Configure notifications and auto-responses" };
-      case 5: return { title: "Your website is ready!", desc: "Configure your URL and publish" };
+      case 1: return { title: "What Kind Of Website Do You Want To Build?", desc: "Choose a site type and how you'd like to create it" };
+      case 2: return { title: `Set Up Your ${selectedSiteType?.name || "Website"}`, desc: data.creationMethod === "template" ? "Choose a template and enter your company info" : "Enter your company info to get started" };
+      case 3: return { title: "Customize Your Content", desc: "Edit your headline, form fields, and more" };
+      case 4: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
+      case 5: return { title: "Your Website Is Ready!", desc: "Configure your URL and publish" };
       default: return { title: "", desc: "" };
     }
   };
