@@ -88,6 +88,13 @@ import { WebhookIntegration } from "@/components/signatures/WebhookIntegration";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
+type AIActionMode = "manual" | "ai_assist" | "ai_auto";
+
+const AI_MODE_CONFIG: Record<AIActionMode, { label: string; icon: string; description: string; color: string }> = {
+  manual: { label: "Manual", icon: "🧍", description: "AI suggests — you decide", color: "text-muted-foreground" },
+  ai_assist: { label: "AI Assist", icon: "🤖", description: "AI drafts — you approve with one click", color: "text-brand" },
+  ai_auto: { label: "AI Auto", icon: "⚡", description: "AI sends reminders automatically on your rules", color: "text-warning" },
+};
 
 interface SignatureRequest {
   id: string;
@@ -107,6 +114,8 @@ interface SignatureRequest {
   workflow?: SigningWorkflow;
   dealId?: string;
   dealStatus?: string;
+  aiMode?: AIActionMode;
+  aiStatus?: string; // e.g. "Follow-Up Ready", "Reminder Scheduled", "Waiting on Approval"
 }
 
 // ─── Mock data ──────────────────────────────────────────────
@@ -127,6 +136,8 @@ const mockRequests: SignatureRequest[] = [
     templateId: "tpl-1",
     dealId: "deal-1",
     dealStatus: "offer_made",
+    aiMode: "ai_assist",
+    aiStatus: "Follow-Up Ready",
     workflow: {
       signingOrder: "sequential",
       signers: [
@@ -158,6 +169,8 @@ const mockRequests: SignatureRequest[] = [
     templateId: "tpl-2",
     dealId: "deal-2",
     dealStatus: "under_contract",
+    aiMode: "ai_auto",
+    aiStatus: "Complete — Archived",
   },
   {
     id: "3",
@@ -171,6 +184,7 @@ const mockRequests: SignatureRequest[] = [
     viewCount: 1,
     lastActivity: "Declined",
     templateId: "tpl-3",
+    aiMode: "manual",
   },
   {
     id: "4",
@@ -198,6 +212,8 @@ const mockRequests: SignatureRequest[] = [
     templateId: "tpl-5",
     dealId: "deal-5",
     dealStatus: "negotiating",
+    aiMode: "ai_auto",
+    aiStatus: "Reminder Scheduled",
   },
 ];
 
@@ -238,7 +254,7 @@ function getNextAction(request: SignatureRequest): { label: string; icon: React.
 }
 
 // ─── Send Flow Steps ────────────────────────────────────────
-type SendStep = "deal" | "template" | "variables" | "fields" | "signers" | "recipient";
+type SendStep = "deal" | "template" | "variables" | "fields" | "signers" | "followup_mode" | "recipient";
 
 // ─── Main Component ─────────────────────────────────────────
 export default function Signatures() {
@@ -370,8 +386,11 @@ export default function Signatures() {
       recipientEmail: prev.recipientEmail || firstSigner.email,
       propertyAddress: prev.propertyAddress,
     }));
-    setSendStep("recipient");
+    setSendStep("followup_mode");
   };
+
+  // Follow-up mode state
+  const [sendAiMode, setSendAiMode] = React.useState<AIActionMode>("ai_assist");
 
   const handleSendRequest = () => {
     if (!recipientInfo.recipientEmail.trim()) {
@@ -416,6 +435,8 @@ export default function Signatures() {
       workflow,
       dealId: selectedDeal?.id,
       dealStatus: selectedDeal?.status,
+      aiMode: sendAiMode,
+      aiStatus: sendAiMode === "ai_auto" ? "Monitoring" : sendAiMode === "ai_assist" ? "Awaiting Approval" : undefined,
     };
 
     setRequests([request, ...requests]);
@@ -706,6 +727,22 @@ export default function Signatures() {
                               {request.viewCount}×
                             </span>
                           )}
+                          {/* AI Mode Status — visible, not hidden */}
+                          {request.aiMode && request.aiMode !== "manual" && request.aiStatus && (
+                            <span className={cn(
+                              "ml-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand/5 border border-brand/15",
+                              AI_MODE_CONFIG[request.aiMode].color
+                            )}>
+                              <Sparkles className="h-2.5 w-2.5" />
+                              <span className="font-medium">{request.aiStatus}</span>
+                            </span>
+                          )}
+                          {request.aiMode === "manual" && request.status !== "signed" && request.status !== "draft" && (
+                            <span className="ml-2 flex items-center gap-1 text-muted-foreground/60">
+                              <span className="text-[10px]">🧍</span>
+                              <span>Manual</span>
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -790,6 +827,39 @@ export default function Signatures() {
                             <FileText className="h-4 w-4" />
                             View Audit Trail
                           </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {/* AI Actions Section */}
+                          <div className="px-2 py-1">
+                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">AI Actions</p>
+                          </div>
+                          <DropdownMenuItem className="gap-2" onClick={(e) => {
+                            e.stopPropagation();
+                            setAiAnalysisDoc(request.documentName);
+                            setAiAnalysisOpen(true);
+                          }}>
+                            <Sparkles className="h-4 w-4" />
+                            Run AI Review
+                          </DropdownMenuItem>
+                          {request.aiMode !== "manual" && (
+                            <DropdownMenuItem className="gap-2" onClick={(e) => {
+                              e.stopPropagation();
+                              setRequests(prev => prev.map(r => r.id === request.id ? { ...r, aiMode: "manual" as AIActionMode, aiStatus: undefined } : r));
+                              toast.success("Switched to Manual mode");
+                            }}>
+                              <Ban className="h-4 w-4" />
+                              Pause AI
+                            </DropdownMenuItem>
+                          )}
+                          {request.aiMode === "manual" && request.status === "pending" && (
+                            <DropdownMenuItem className="gap-2" onClick={(e) => {
+                              e.stopPropagation();
+                              setRequests(prev => prev.map(r => r.id === request.id ? { ...r, aiMode: "ai_assist" as AIActionMode, aiStatus: "Awaiting Approval" } : r));
+                              toast.success("Switched to AI Assist mode");
+                            }}>
+                              <Sparkles className="h-4 w-4" />
+                              Enable AI Assist
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive" onClick={(e) => handleDelete(request.id, e as any)}>
                             <Trash2 className="h-4 w-4" />
@@ -1029,12 +1099,80 @@ export default function Signatures() {
             </>
           )}
 
+          {/* Step: Follow-Up Mode */}
+          {sendStep === "followup_mode" && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("signers")}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <div>
+                    <DialogTitle>Follow-Up Mode</DialogTitle>
+                    <DialogDescription>Choose how AI handles follow-ups for this document.</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+              <div className="py-4 space-y-3">
+                {(Object.entries(AI_MODE_CONFIG) as [AIActionMode, typeof AI_MODE_CONFIG[AIActionMode]][]).map(([mode, config]) => (
+                  <button
+                    key={mode}
+                    className={cn(
+                      "w-full text-left rounded-lg border p-4 transition-all",
+                      sendAiMode === mode
+                        ? "border-brand bg-brand/5 ring-1 ring-brand/20"
+                        : "border-border-subtle hover:border-brand/30 hover:bg-muted/30"
+                    )}
+                    onClick={() => setSendAiMode(mode)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{config.icon}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-sm text-foreground">{config.label}</span>
+                          {mode === "ai_assist" && (
+                            <Badge variant="default" size="sm">Recommended</Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">{config.description}</p>
+                      </div>
+                      <div className={cn(
+                        "h-5 w-5 rounded-full border-2 flex items-center justify-center",
+                        sendAiMode === mode ? "border-brand" : "border-border"
+                      )}>
+                        {sendAiMode === mode && <div className="h-2.5 w-2.5 rounded-full bg-brand" />}
+                      </div>
+                    </div>
+                    {mode === "ai_auto" && sendAiMode === mode && (
+                      <div className="mt-3 ml-8 text-xs text-muted-foreground space-y-1 border-t border-border-subtle pt-2">
+                        <p>• If viewed but not signed in 24h → send email</p>
+                        <p>• If still unsigned after 48h → send SMS</p>
+                        <p>• If 72h + expires soon → notify you + suggest call</p>
+                        <p>• If declined → pause automation and alert you</p>
+                      </div>
+                    )}
+                  </button>
+                ))}
+                <p className="text-xs text-muted-foreground/70 text-center mt-2">
+                  AI will follow up automatically if not signed within 48 hours.
+                </p>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSendStep("signers")}>Back</Button>
+                <Button onClick={() => setSendStep("recipient")} className="gap-2">
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
           {/* Step: Recipient + Send */}
           {sendStep === "recipient" && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("signers")}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("followup_mode")}>
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
                   <div>
@@ -1258,6 +1396,34 @@ export default function Signatures() {
                                 {selectedRequest.dealStatus.replace(/_/g, " ")}
                               </Badge>
                             )}
+                          </div>
+                        )}
+                        {/* AI Mode indicator in detail view */}
+                        {selectedRequest.aiMode && (
+                          <div className="col-span-2 mt-2 flex items-center justify-between text-xs bg-muted/30 border border-border-subtle rounded-lg px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              <span>{AI_MODE_CONFIG[selectedRequest.aiMode].icon}</span>
+                              <span className="font-medium text-foreground">{AI_MODE_CONFIG[selectedRequest.aiMode].label}</span>
+                              {selectedRequest.aiStatus && (
+                                <span className="text-muted-foreground">· {selectedRequest.aiStatus}</span>
+                              )}
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 text-xs px-2"
+                              onClick={() => {
+                                const modes: AIActionMode[] = ["manual", "ai_assist", "ai_auto"];
+                                const current = modes.indexOf(selectedRequest.aiMode!);
+                                const next = modes[(current + 1) % modes.length];
+                                const updated = { ...selectedRequest, aiMode: next, aiStatus: next === "ai_auto" ? "Monitoring" : next === "ai_assist" ? "Awaiting Approval" : undefined };
+                                setRequests(prev => prev.map(r => r.id === selectedRequest.id ? updated : r));
+                                setSelectedRequest(updated);
+                                toast.success(`Switched to ${AI_MODE_CONFIG[next].label}`);
+                              }}
+                            >
+                              Switch Mode
+                            </Button>
                           </div>
                         )}
                       </div>
