@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -290,19 +290,19 @@ export default function DealSourceDetail() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+          <div className="flex flex-wrap gap-2">
+            <Button variant={activeTab === "overview" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("overview")}>Overview</Button>
             {source.type === "lender" && (
               <>
-                <TabsTrigger value="lending-terms">Lending Terms</TabsTrigger>
-                <TabsTrigger value="active-loans">Active Loans</TabsTrigger>
-                <TabsTrigger value="loan-history">Loan History</TabsTrigger>
+                <Button variant={activeTab === "lending-terms" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("lending-terms")}>Lending Terms</Button>
+                <Button variant={activeTab === "active-loans" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("active-loans")}>Active Loans</Button>
+                <Button variant={activeTab === "loan-history" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("loan-history")}>Loan History</Button>
               </>
             )}
-            <TabsTrigger value="deals">Deals</TabsTrigger>
-            <TabsTrigger value="outreach">Outreach</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-          </TabsList>
+            <Button variant={activeTab === "deals" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("deals")}>Deals</Button>
+            <Button variant={activeTab === "outreach" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("outreach")}>Outreach</Button>
+            <Button variant={activeTab === "performance" ? "default" : "outline"} size="sm" onClick={() => setActiveTab("performance")}>Performance</Button>
+          </div>
 
           <Card variant="default" padding="none" className="mt-lg">
             <TabsContent value="overview" className="mt-0">
