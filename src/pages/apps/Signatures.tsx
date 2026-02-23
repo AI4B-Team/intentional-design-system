@@ -65,6 +65,9 @@ import { VariableFillForm } from "@/components/signatures/VariableFillForm";
 import { SignatureTemplate } from "@/types/signature-templates";
 import { DocumentFieldBuilder } from "@/components/signatures/DocumentFieldBuilder";
 import { DocumentField } from "@/types/document-fields";
+import { SignerManager } from "@/components/signatures/SignerManager";
+import { AuditTrail } from "@/components/signatures/AuditTrail";
+import { SigningWorkflow, createDefaultWorkflow, createSigner, AuditEvent } from "@/types/signing-workflow";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -84,6 +87,7 @@ interface SignatureRequest {
   viewCount?: number;
   lastActivity?: string;
   templateId?: string;
+  workflow?: SigningWorkflow;
 }
 
 // ─── Mock data ──────────────────────────────────────────────
@@ -102,6 +106,21 @@ const mockRequests: SignatureRequest[] = [
     viewCount: 3,
     lastActivity: "Viewed 3h ago",
     templateId: "tpl-1",
+    workflow: {
+      signingOrder: "sequential",
+      signers: [
+        { id: "s1", name: "John Smith", email: "john.smith@email.com", role: "signer", order: 1, status: "viewed", viewCount: 3, viewedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), sentAt: new Date("2024-01-20") },
+        { id: "s2", name: "Jane Smith", email: "jane.smith@email.com", role: "signer", order: 2, status: "pending", viewCount: 0 },
+      ],
+      reminders: { enabled: true, frequency: "every_2_days", maxReminders: 5, remindersSent: 1, lastReminderAt: new Date(Date.now() - 48 * 60 * 60 * 1000) },
+      expirationDays: 30,
+      auditTrail: [
+        { id: "a1", timestamp: new Date("2024-01-20T09:00:00"), action: "created", actor: "You", details: "Document created from Purchase Agreement template" },
+        { id: "a2", timestamp: new Date("2024-01-20T09:05:00"), action: "sent", actor: "System", actorEmail: "john.smith@email.com", details: "Sent to John Smith" },
+        { id: "a3", timestamp: new Date("2024-01-20T14:30:00"), action: "viewed", actor: "John Smith", actorEmail: "john.smith@email.com", ipAddress: "192.168.1.42" },
+        { id: "a4", timestamp: new Date("2024-01-22T09:00:00"), action: "reminder_sent", actor: "System", details: "Auto-reminder sent to John Smith" },
+      ],
+    },
   },
   {
     id: "2",
@@ -189,7 +208,7 @@ function getNextAction(request: SignatureRequest): { label: string; icon: React.
 }
 
 // ─── Send Flow Steps ────────────────────────────────────────
-type SendStep = "template" | "variables" | "fields" | "recipient";
+type SendStep = "template" | "variables" | "fields" | "signers" | "recipient";
 
 // ─── Main Component ─────────────────────────────────────────
 export default function Signatures() {
@@ -215,6 +234,8 @@ export default function Signatures() {
     propertyAddress: "",
   });
   const [documentFields, setDocumentFields] = React.useState<DocumentField[]>([]);
+  const [sendWorkflow, setSendWorkflow] = React.useState<SigningWorkflow>(createDefaultWorkflow());
+  const [detailTab, setDetailTab] = React.useState<"details" | "signers" | "audit">("details");
 
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
@@ -263,6 +284,21 @@ export default function Signatures() {
   };
 
   const handleFieldsNext = () => {
+    setSendStep("signers");
+  };
+
+  const handleSignersNext = () => {
+    if (sendWorkflow.signers.length === 0) {
+      toast.error("Add at least one signer");
+      return;
+    }
+    // Auto-fill recipient from first signer
+    const firstSigner = sendWorkflow.signers[0];
+    setRecipientInfo((prev) => ({
+      recipientName: prev.recipientName || firstSigner.name,
+      recipientEmail: prev.recipientEmail || firstSigner.email,
+      propertyAddress: prev.propertyAddress,
+    }));
     setSendStep("recipient");
   };
 
@@ -276,18 +312,37 @@ export default function Signatures() {
       ? `${selectedTemplate.name}${recipientInfo.propertyAddress ? ` - ${recipientInfo.propertyAddress.split(",")[0]}` : ""}`
       : "Untitled Document";
 
+    const now = new Date();
+    const workflow: SigningWorkflow = {
+      ...sendWorkflow,
+      signers: sendWorkflow.signers.map((s) => ({ ...s, status: "sent" as const, sentAt: now })),
+      expiresAt: new Date(Date.now() + sendWorkflow.expirationDays * 24 * 60 * 60 * 1000),
+      auditTrail: [
+        { id: `a-${Date.now()}`, timestamp: now, action: "created", actor: "You", details: `Document created${selectedTemplate ? ` from ${selectedTemplate.name}` : ""}` },
+        ...sendWorkflow.signers.map((s, i) => ({
+          id: `a-${Date.now()}-${i}`,
+          timestamp: now,
+          action: "sent" as const,
+          actor: "System",
+          actorEmail: s.email,
+          details: `Sent to ${s.name}`,
+        })),
+      ],
+    };
+
     const request: SignatureRequest = {
       id: Date.now().toString(),
       documentName: docName,
-      recipientName: recipientInfo.recipientName || "Unknown",
-      recipientEmail: recipientInfo.recipientEmail,
+      recipientName: recipientInfo.recipientName || workflow.signers[0]?.name || "Unknown",
+      recipientEmail: recipientInfo.recipientEmail || workflow.signers[0]?.email || "",
       propertyAddress: recipientInfo.propertyAddress,
       status: "pending",
-      createdAt: new Date(),
-      sentAt: new Date(),
-      expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      createdAt: now,
+      sentAt: now,
+      expiresAt: workflow.expiresAt,
       viewCount: 0,
       templateId: selectedTemplate?.id,
+      workflow,
     };
 
     setRequests([request, ...requests]);
@@ -302,6 +357,8 @@ export default function Signatures() {
     setVariableValues({});
     setRecipientInfo({ recipientName: "", recipientEmail: "", propertyAddress: "" });
     setDocumentFields([]);
+    setSendWorkflow(createDefaultWorkflow());
+    setDetailTab("details");
   };
 
   const handleResend = (id: string, e?: React.MouseEvent) => {
@@ -712,12 +769,39 @@ export default function Signatures() {
             </>
           )}
 
+          {/* Step: Signers + Workflow */}
+          {sendStep === "signers" && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("fields")}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <div>
+                    <DialogTitle>Add Signers</DialogTitle>
+                    <DialogDescription>Add signers, set signing order, and configure reminders.</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+              <div className="py-4">
+                <SignerManager workflow={sendWorkflow} onWorkflowChange={setSendWorkflow} />
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setSendStep("fields")}>Back</Button>
+                <Button onClick={handleSignersNext} className="gap-2">
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
           {/* Step: Recipient + Send */}
           {sendStep === "recipient" && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("fields")}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("signers")}>
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
                   <div>
@@ -792,7 +876,7 @@ export default function Signatures() {
                 )}
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setSendStep("fields")}>Back</Button>
+                <Button variant="outline" onClick={() => setSendStep("signers")}>Back</Button>
                 <Button onClick={handleSendRequest} className="gap-2">
                   <Send className="h-4 w-4" />
                   Send for Signature
@@ -804,102 +888,155 @@ export default function Signatures() {
       </Dialog>
 
       {/* ─── Document Detail Dialog ──────────────────────────── */}
-      <Dialog open={!!selectedRequest} onOpenChange={(open) => !open && setSelectedRequest(null)}>
-        <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto">
+      <Dialog open={!!selectedRequest} onOpenChange={(open) => { if (!open) { setSelectedRequest(null); setDetailTab("details"); } }}>
+        <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto">
           {selectedRequest && (() => {
             const info = statusConfig[selectedRequest.status];
             const Icon = info.icon;
+            const wf = selectedRequest.workflow;
             return (
               <>
                 <DialogHeader>
                   <DialogTitle>{selectedRequest.documentName}</DialogTitle>
                   <DialogDescription>Signature request details</DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className={cn("text-xs", info.color)}>
-                      <Icon className="h-3 w-3 mr-1" />
-                      {info.label}
-                    </Badge>
-                    {selectedRequest.viewCount !== undefined && selectedRequest.viewCount > 0 && (
-                      <Badge variant="outline" className="text-xs gap-1">
-                        <Eye className="h-3 w-3" />
-                        Viewed {selectedRequest.viewCount}×
-                      </Badge>
-                    )}
-                  </div>
 
-                  {/* Status Timeline */}
-                  <div className="flex items-center gap-2 text-sm border border-border-subtle rounded-lg p-3 bg-surface-secondary">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      {selectedRequest.sentAt && (
-                        <span className="flex items-center gap-1 text-muted-foreground">
-                          <Send className="h-3 w-3" /> Sent {formatTimeAgo(selectedRequest.sentAt)}
-                        </span>
+                {/* Tabs */}
+                <div className="flex items-center gap-1 border-b border-border-subtle -mx-6 px-6">
+                  {(["details", "signers", "audit"] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      className={cn(
+                        "px-3 py-2 text-sm font-medium border-b-2 transition-colors capitalize",
+                        detailTab === tab
+                          ? "border-brand text-brand"
+                          : "border-transparent text-muted-foreground hover:text-foreground"
                       )}
-                      {selectedRequest.viewedAt && (
-                        <>
-                          <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                          <span className="flex items-center gap-1 text-muted-foreground">
-                            <Eye className="h-3 w-3" /> Opened {formatTimeAgo(selectedRequest.viewedAt)}
-                          </span>
-                        </>
-                      )}
-                      {selectedRequest.signedAt && (
-                        <>
-                          <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                          <span className="flex items-center gap-1 text-success">
-                            <CheckCircle className="h-3 w-3" /> Signed {formatTimeAgo(selectedRequest.signedAt)}
-                          </span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-muted-foreground mb-1">Recipient</p>
-                      <p className="font-medium">{selectedRequest.recipientName}</p>
-                    </div>
-                    <div>
-                      <p className="text-muted-foreground mb-1">Email</p>
-                      <p className="font-medium">{selectedRequest.recipientEmail}</p>
-                    </div>
-                    {selectedRequest.propertyAddress && (
-                      <div className="col-span-2">
-                        <p className="text-muted-foreground mb-1">Property Address</p>
-                        <p className="font-medium">{selectedRequest.propertyAddress}</p>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-muted-foreground mb-1">Created</p>
-                      <p className="font-medium">{format(selectedRequest.createdAt, "MMM d, yyyy")}</p>
-                    </div>
-                    {selectedRequest.sentAt && (
-                      <div>
-                        <p className="text-muted-foreground mb-1">Sent</p>
-                        <p className="font-medium">{format(selectedRequest.sentAt, "MMM d, yyyy")}</p>
-                      </div>
-                    )}
-                    {selectedRequest.signedAt && (
-                      <div>
-                        <p className="text-muted-foreground mb-1">Signed</p>
-                        <p className="font-medium">{format(selectedRequest.signedAt, "MMM d, yyyy")}</p>
-                      </div>
-                    )}
-                    {selectedRequest.expiresAt && (
-                      <div>
-                        <p className="text-muted-foreground mb-1">Expires</p>
-                        <p className={cn(
-                          "font-medium",
-                          selectedRequest.expiresAt && differenceInHours(selectedRequest.expiresAt, new Date()) <= 48 ? "text-destructive" : ""
-                        )}>
-                          {format(selectedRequest.expiresAt, "MMM d, yyyy")}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                      onClick={() => setDetailTab(tab)}
+                    >
+                      {tab === "signers" ? `Signers${wf ? ` (${wf.signers.length})` : ""}` : tab === "audit" ? "Audit Trail" : "Details"}
+                    </button>
+                  ))}
                 </div>
+
+                <div className="py-4">
+                  {/* Details Tab */}
+                  {detailTab === "details" && (
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className={cn("text-xs", info.color)}>
+                          <Icon className="h-3 w-3 mr-1" />
+                          {info.label}
+                        </Badge>
+                        {selectedRequest.viewCount !== undefined && selectedRequest.viewCount > 0 && (
+                          <Badge variant="outline" className="text-xs gap-1">
+                            <Eye className="h-3 w-3" />
+                            Viewed {selectedRequest.viewCount}×
+                          </Badge>
+                        )}
+                        {wf && (
+                          <Badge variant="outline" className="text-xs capitalize">
+                            {wf.signingOrder}
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Status Timeline */}
+                      <div className="flex items-center gap-2 text-sm border border-border-subtle rounded-lg p-3 bg-surface-secondary">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {selectedRequest.sentAt && (
+                            <span className="flex items-center gap-1 text-muted-foreground">
+                              <Send className="h-3 w-3" /> Sent {formatTimeAgo(selectedRequest.sentAt)}
+                            </span>
+                          )}
+                          {selectedRequest.viewedAt && (
+                            <>
+                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                              <span className="flex items-center gap-1 text-muted-foreground">
+                                <Eye className="h-3 w-3" /> Opened {formatTimeAgo(selectedRequest.viewedAt)}
+                              </span>
+                            </>
+                          )}
+                          {selectedRequest.signedAt && (
+                            <>
+                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                              <span className="flex items-center gap-1 text-success">
+                                <CheckCircle className="h-3 w-3" /> Signed {formatTimeAgo(selectedRequest.signedAt)}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-muted-foreground mb-1">Recipient</p>
+                          <p className="font-medium">{selectedRequest.recipientName}</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground mb-1">Email</p>
+                          <p className="font-medium">{selectedRequest.recipientEmail}</p>
+                        </div>
+                        {selectedRequest.propertyAddress && (
+                          <div className="col-span-2">
+                            <p className="text-muted-foreground mb-1">Property Address</p>
+                            <p className="font-medium">{selectedRequest.propertyAddress}</p>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-muted-foreground mb-1">Created</p>
+                          <p className="font-medium">{format(selectedRequest.createdAt, "MMM d, yyyy")}</p>
+                        </div>
+                        {selectedRequest.sentAt && (
+                          <div>
+                            <p className="text-muted-foreground mb-1">Sent</p>
+                            <p className="font-medium">{format(selectedRequest.sentAt, "MMM d, yyyy")}</p>
+                          </div>
+                        )}
+                        {selectedRequest.signedAt && (
+                          <div>
+                            <p className="text-muted-foreground mb-1">Signed</p>
+                            <p className="font-medium">{format(selectedRequest.signedAt, "MMM d, yyyy")}</p>
+                          </div>
+                        )}
+                        {selectedRequest.expiresAt && (
+                          <div>
+                            <p className="text-muted-foreground mb-1">Expires</p>
+                            <p className={cn(
+                              "font-medium",
+                              selectedRequest.expiresAt && differenceInHours(selectedRequest.expiresAt, new Date()) <= 48 ? "text-destructive" : ""
+                            )}>
+                              {format(selectedRequest.expiresAt, "MMM d, yyyy")}
+                            </p>
+                          </div>
+                        )}
+                        {wf?.reminders.enabled && (
+                          <div>
+                            <p className="text-muted-foreground mb-1">Reminders</p>
+                            <p className="font-medium">{wf.reminders.remindersSent}/{wf.reminders.maxReminders} sent</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Signers Tab */}
+                  {detailTab === "signers" && wf && (
+                    <SignerManager workflow={wf} onWorkflowChange={() => {}} readOnly />
+                  )}
+                  {detailTab === "signers" && !wf && (
+                    <div className="text-center py-6 text-sm text-muted-foreground">
+                      <Users className="h-8 w-8 mx-auto mb-2 opacity-40" />
+                      No workflow configured for this request
+                    </div>
+                  )}
+
+                  {/* Audit Trail Tab */}
+                  {detailTab === "audit" && (
+                    <AuditTrail events={wf?.auditTrail || []} />
+                  )}
+                </div>
+
                 <DialogFooter className="flex-wrap gap-2">
                   {selectedRequest.status === "pending" && (
                     <>
