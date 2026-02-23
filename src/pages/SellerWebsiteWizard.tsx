@@ -89,7 +89,7 @@ const CREATION_METHODS = [
   {
     id: "template",
     name: "Start from Template",
-    description: "Choose from professionally designed templates",
+    description: "Choose From Professionally Designed Templates",
     icon: LayoutTemplate,
     color: "text-blue-600",
     bg: "bg-blue-50",
@@ -97,7 +97,7 @@ const CREATION_METHODS = [
   {
     id: "scratch",
     name: "Build from Scratch",
-    description: "Start with a blank canvas and customize everything",
+    description: "Start With A Blank Canvas And Customize Everything",
     icon: Palette,
     color: "text-violet-600",
     bg: "bg-violet-50",
@@ -105,7 +105,7 @@ const CREATION_METHODS = [
   {
     id: "ai",
     name: "AI-Generated",
-    description: "Describe your site and let AI create it for you",
+    description: "Describe Your Site And Let AI Create It For You",
     icon: Wand2,
     color: "text-amber-600",
     bg: "bg-amber-50",
