@@ -368,6 +368,28 @@ export function PropertyDetailMap({
     <div className="relative h-full w-full">
       <div ref={mapRef} className="h-full w-full" />
       
+      {/* Ensure zoom controls are visible and not clipped */}
+      <style>{`
+        .leaflet-bottom.leaflet-right {
+          z-index: 1000 !important;
+          bottom: 10px !important;
+          right: 10px !important;
+        }
+        .leaflet-bottom.leaflet-right .leaflet-control-zoom {
+          margin: 0 !important;
+          border: none !important;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+        }
+        .leaflet-bottom.leaflet-right .leaflet-control-zoom a {
+          width: 36px !important;
+          height: 36px !important;
+          line-height: 36px !important;
+          font-size: 18px !important;
+          background: white !important;
+          color: #333 !important;
+        }
+      `}</style>
+      
       {/* Map Type Toggle - Top Left */}
       <div className="absolute top-3 left-3 z-[1000]">
         <div className="bg-background rounded-lg shadow-md overflow-hidden flex">
