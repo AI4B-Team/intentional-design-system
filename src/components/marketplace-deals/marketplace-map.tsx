@@ -263,7 +263,8 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
 
         // Create map instance
         if (mapContainerRef.current && !mapInstanceRef.current) {
-          const map = L.map(mapContainerRef.current).setView(defaultCenter, 7);
+          const map = L.map(mapContainerRef.current, { zoomControl: false }).setView(defaultCenter, 7);
+          L.control.zoom({ position: 'bottomright' }).addTo(map);
           mapInstanceRef.current = { map, L };
 
           // Add tile layer
@@ -868,15 +869,18 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
         .leaflet-control {
           z-index: 10 !important;
         }
-        /* Move zoom controls to bottom right */
-        .leaflet-top.leaflet-left {
-          top: auto !important;
-          bottom: 30px !important;
-          left: auto !important;
-          right: 10px !important;
+        /* Zoom controls styling */
+        .leaflet-bottom.leaflet-right .leaflet-control-zoom {
+          margin-bottom: 30px !important;
+          margin-right: 10px !important;
+          border: none !important;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
         }
-        .leaflet-control-zoom {
-          margin: 0 !important;
+        .leaflet-bottom.leaflet-right .leaflet-control-zoom a {
+          width: 36px !important;
+          height: 36px !important;
+          line-height: 36px !important;
+          font-size: 18px !important;
         }
         .price-marker {
           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
