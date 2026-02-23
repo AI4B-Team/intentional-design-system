@@ -74,6 +74,9 @@ import { DealPicker, DealData, dealToVariables } from "@/components/signatures/D
 import { SigningView } from "@/components/signatures/SigningView";
 import { CompletionCertificate } from "@/components/signatures/CompletionCertificate";
 import { SignatureCaptureResult } from "@/components/signatures/SignaturePad";
+import { BulkSendDialog } from "@/components/signatures/BulkSendDialog";
+import { ReminderManager } from "@/components/signatures/ReminderManager";
+import { WorkflowVisualizer } from "@/components/signatures/WorkflowVisualizer";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -229,7 +232,8 @@ export default function Signatures() {
   const [selectedRequest, setSelectedRequest] = React.useState<SignatureRequest | null>(null);
 
   // Page-level view: requests | templates | clauses
-  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses">("requests");
+  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses" | "reminders">("requests");
+  const [bulkSendOpen, setBulkSendOpen] = React.useState(false);
 
   // Send flow state
   const [isNewRequestOpen, setIsNewRequestOpen] = React.useState(!!templateId);
@@ -476,10 +480,16 @@ export default function Signatures() {
           title="Digital Signatures"
           description="Send, track, and automate deal paperwork"
         >
-          <Button className="gap-2" onClick={() => { resetSendFlow(); setIsNewRequestOpen(true); }}>
-            <Send className="h-4 w-4" />
-            Send for Signature
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button className="gap-2" onClick={() => { resetSendFlow(); setIsNewRequestOpen(true); }}>
+              <Send className="h-4 w-4" />
+              Send for Signature
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={() => setBulkSendOpen(true)}>
+              <Users className="h-4 w-4" />
+              Bulk Send
+            </Button>
+          </div>
         </PageHeader>
 
         {/* Page View Tabs */}
@@ -488,6 +498,7 @@ export default function Signatures() {
             { value: "requests" as const, label: "Requests", icon: PenTool },
             { value: "templates" as const, label: "Templates", icon: Layers },
             { value: "clauses" as const, label: "Clause Library", icon: BookOpen },
+            { value: "reminders" as const, label: "Reminders", icon: Clock },
           ].map((tab) => (
             <Button
               key={tab.value}
@@ -755,6 +766,18 @@ export default function Signatures() {
 
         {/* ─── Clauses View ──────────────────────────────────── */}
         {pageView === "clauses" && <ClauseLibrary />}
+
+        {/* ─── Reminders View ────────────────────────────────── */}
+        {pageView === "reminders" && (
+          <ReminderManager
+            onSendReminder={(id) => {
+              toast.success("Reminder sent");
+            }}
+            onExtendExpiration={(id, days) => {
+              toast.success(`Expiration extended by ${days} days`);
+            }}
+          />
+        )}
       </PageLayout>
 
       {/* ─── Multi-Step Send Flow Dialog ─────────────────────── */}
@@ -1163,9 +1186,9 @@ export default function Signatures() {
                     </div>
                   )}
 
-                  {/* Signers Tab */}
+                  {/* Signers Tab - Enhanced with Workflow Visualizer */}
                   {detailTab === "signers" && wf && (
-                    <SignerManager workflow={wf} onWorkflowChange={() => {}} readOnly />
+                    <WorkflowVisualizer workflow={wf} />
                   )}
                   {detailTab === "signers" && !wf && (
                     <div className="text-center py-6 text-sm text-muted-foreground">
@@ -1261,6 +1284,41 @@ export default function Signatures() {
           }
         />
       )}
+
+      {/* ─── Bulk Send Dialog ────────────────────────────────── */}
+      <BulkSendDialog
+        isOpen={bulkSendOpen}
+        onClose={() => setBulkSendOpen(false)}
+        onSend={(template, recipients) => {
+          const now = new Date();
+          const newRequests = recipients.map((r) => ({
+            id: `bulk-${Date.now()}-${r.id}`,
+            documentName: `${template.name}${r.propertyAddress ? ` - ${r.propertyAddress.split(",")[0]}` : ""}`,
+            recipientName: r.name,
+            recipientEmail: r.email,
+            propertyAddress: r.propertyAddress,
+            status: "pending" as const,
+            createdAt: now,
+            sentAt: now,
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            viewCount: 0,
+            templateId: template.id,
+            dealId: r.dealId,
+            workflow: {
+              signingOrder: "parallel" as const,
+              signers: [{ id: `s-${r.id}`, name: r.name, email: r.email, role: "signer" as const, order: 1, status: "sent" as const, viewCount: 0, sentAt: now }],
+              reminders: { enabled: true, frequency: "every_2_days" as const, maxReminders: 5, remindersSent: 0 },
+              expirationDays: 30,
+              auditTrail: [
+                { id: `a-${Date.now()}-${r.id}`, timestamp: now, action: "created", actor: "You", details: `Bulk send: ${template.name}` },
+                { id: `a-${Date.now()}-${r.id}-s`, timestamp: now, action: "sent", actor: "System", actorEmail: r.email, details: `Sent to ${r.name}` },
+              ],
+            },
+          }));
+          setRequests((prev) => [...newRequests, ...prev]);
+          toast.success(`Sent ${recipients.length} signature requests!`);
+        }}
+      />
     </>
   );
 }
