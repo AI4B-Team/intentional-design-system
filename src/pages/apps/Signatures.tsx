@@ -81,6 +81,10 @@ import { AIDocumentAnalysis } from "@/components/signatures/AIDocumentAnalysis";
 import { SignerAuthConfigPanel, SignerAuthChallenge, defaultAuthConfig } from "@/components/signatures/SignerAuthentication";
 import type { SignerAuthConfig, SignerAuthResult } from "@/components/signatures/SignerAuthentication";
 import { SignaturesDashboard } from "@/components/signatures/SignaturesDashboard";
+import { AuditTrailViewer, generateMockAuditTrail } from "@/components/signatures/AuditTrailViewer";
+import { DocumentVersioning } from "@/components/signatures/DocumentVersioning";
+import { MobileSigningManager } from "@/components/signatures/MobileSigningView";
+import { WebhookIntegration } from "@/components/signatures/WebhookIntegration";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -236,12 +240,18 @@ export default function Signatures() {
   const [selectedRequest, setSelectedRequest] = React.useState<SignatureRequest | null>(null);
 
   // Page-level view: requests | templates | clauses
-  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses" | "reminders" | "dashboard">("requests");
+  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses" | "reminders" | "dashboard" | "webhooks">("requests");
   const [bulkSendOpen, setBulkSendOpen] = React.useState(false);
   const [aiAnalysisOpen, setAiAnalysisOpen] = React.useState(false);
   const [aiAnalysisDoc, setAiAnalysisDoc] = React.useState("");
   const [authConfig, setAuthConfig] = React.useState<SignerAuthConfig>(defaultAuthConfig);
   const [authChallengeOpen, setAuthChallengeOpen] = React.useState(false);
+  const [auditTrailOpen, setAuditTrailOpen] = React.useState(false);
+  const [auditTrailDoc, setAuditTrailDoc] = React.useState("");
+  const [versioningOpen, setVersioningOpen] = React.useState(false);
+  const [versioningDoc, setVersioningDoc] = React.useState("");
+  const [mobileSignOpen, setMobileSignOpen] = React.useState(false);
+  const [mobileSignRequest, setMobileSignRequest] = React.useState<SignatureRequest | null>(null);
 
   // Send flow state
   const [isNewRequestOpen, setIsNewRequestOpen] = React.useState(!!templateId);
@@ -508,6 +518,7 @@ export default function Signatures() {
             { value: "templates" as const, label: "Templates", icon: Layers },
             { value: "clauses" as const, label: "Clause Library", icon: BookOpen },
             { value: "reminders" as const, label: "Reminders", icon: Clock },
+            { value: "webhooks" as const, label: "API & Webhooks", icon: Link2 },
           ].map((tab) => (
             <Button
               key={tab.value}
@@ -787,6 +798,9 @@ export default function Signatures() {
             }}
           />
         )}
+
+        {/* ─── Webhooks View ─────────────────────────────────── */}
+        {pageView === "webhooks" && <WebhookIntegration />}
 
         {/* ─── Dashboard View ────────────────────────────────── */}
         {pageView === "dashboard" && <SignaturesDashboard />}
@@ -1253,13 +1267,25 @@ export default function Signatures() {
                       </Button>
                     </>
                   )}
-                  <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAiAnalysisDoc(selectedRequest.documentName); setAiAnalysisOpen(true); }}>
-                    <Sparkles className="h-4 w-4" />
-                    AI Analysis
-                  </Button>
-                  <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
-                    <Trash2 className="h-4 w-4" />
-                    Delete
+                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAuditTrailDoc(selectedRequest.documentName); setAuditTrailOpen(true); }}>
+                     <Shield className="h-4 w-4" />
+                     Audit Trail
+                   </Button>
+                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setVersioningDoc(selectedRequest.documentName); setVersioningOpen(true); }}>
+                     <RefreshCw className="h-4 w-4" />
+                     Versions
+                   </Button>
+                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setMobileSignRequest(selectedRequest); setMobileSignOpen(true); }}>
+                     <Phone className="h-4 w-4" />
+                     Mobile
+                   </Button>
+                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAiAnalysisDoc(selectedRequest.documentName); setAiAnalysisOpen(true); }}>
+                     <Sparkles className="h-4 w-4" />
+                     AI Analysis
+                   </Button>
+                   <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
+                     <Trash2 className="h-4 w-4" />
+                     Delete
                   </Button>
                 </DialogFooter>
               </>
@@ -1367,6 +1393,44 @@ export default function Signatures() {
         signerEmail={signingRequest?.recipientEmail || ""}
         config={authConfig}
       />
+
+      {/* ─── Audit Trail Viewer Dialog ───────────────────────── */}
+      <AuditTrailViewer
+        isOpen={auditTrailOpen}
+        onClose={() => setAuditTrailOpen(false)}
+        documentName={auditTrailDoc}
+        entries={generateMockAuditTrail(auditTrailDoc, selectedRequest?.recipientName || "", selectedRequest?.recipientEmail || "")}
+        onDownloadCertificate={() => {
+          if (selectedRequest) {
+            handleViewCertificate(selectedRequest);
+          }
+        }}
+      />
+
+      {/* ─── Document Versioning Dialog ──────────────────────── */}
+      <DocumentVersioning
+        isOpen={versioningOpen}
+        onClose={() => setVersioningOpen(false)}
+        documentName={versioningDoc}
+        onRestore={(version) => {
+          toast.success(`Restored to v${version.version}`);
+          setVersioningOpen(false);
+        }}
+      />
+
+      {/* ─── Mobile Signing Dialog ───────────────────────────── */}
+      {mobileSignRequest && (
+        <MobileSigningManager
+          isOpen={mobileSignOpen}
+          onClose={() => { setMobileSignOpen(false); setMobileSignRequest(null); }}
+          documentName={mobileSignRequest.documentName}
+          recipientName={mobileSignRequest.recipientName}
+          recipientEmail={mobileSignRequest.recipientEmail}
+          onSendSms={(phone, link) => {
+            toast.success(`SMS signing link sent to ${phone}`);
+          }}
+        />
+      )}
     </>
   );
 }
