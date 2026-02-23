@@ -867,20 +867,30 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
           z-index: 5 !important;
         }
         .leaflet-control {
-          z-index: 10 !important;
+          z-index: 1000 !important;
+        }
+        .leaflet-control-container,
+        .leaflet-bottom,
+        .leaflet-right,
+        .leaflet-bottom.leaflet-right {
+          z-index: 1000 !important;
+          pointer-events: auto !important;
         }
         /* Zoom controls styling */
         .leaflet-bottom.leaflet-right .leaflet-control-zoom {
-          margin-bottom: 30px !important;
-          margin-right: 10px !important;
-          border: none !important;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.3) !important;
+          margin: 0 10px 10px 0 !important;
+          border: 1px solid hsl(var(--border)) !important;
+          box-shadow: 0 2px 6px hsl(var(--foreground) / 0.25) !important;
+          overflow: hidden;
         }
         .leaflet-bottom.leaflet-right .leaflet-control-zoom a {
           width: 36px !important;
           height: 36px !important;
           line-height: 36px !important;
-          font-size: 18px !important;
+          font-size: 20px !important;
+          font-weight: 700 !important;
+          background: hsl(var(--background)) !important;
+          color: hsl(var(--foreground)) !important;
         }
         .price-marker {
           background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
