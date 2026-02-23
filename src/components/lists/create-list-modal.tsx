@@ -31,7 +31,7 @@ export function CreateListModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Create New List</DialogTitle>
         </DialogHeader>
@@ -60,7 +60,7 @@ export function CreateListModal({
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-y-auto mt-4">
+          <div className="flex-1 overflow-y-auto mt-4 min-h-0 pb-2">
             <TabsContent value="criteria" className="mt-0 h-full">
               <CriteriaTab onSuccess={handleSuccess} />
             </TabsContent>
