@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { WizardLivePreview } from "@/components/seller-website/WizardLivePreview";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -926,54 +927,35 @@ export default function SellerWebsiteWizard() {
             {/* Preview Body */}
             <div className="p-0">
               {/* Nav */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <div className="flex items-center justify-between px-6 py-3 border-b border-border">
                 <div className="flex items-center gap-2">
                   {data.logoUrl ? (
-                    <img src={data.logoUrl} alt="Logo" className="h-8 w-8 object-contain" />
+                    <img src={data.logoUrl} alt="Logo" className="h-6 w-6 object-contain" />
                   ) : (
-                    <div className="h-8 w-8 rounded-md" style={{ backgroundColor: data.primaryColor }} />
+                    <div className="h-6 w-6 rounded-md" style={{ backgroundColor: data.primaryColor }} />
                   )}
-                  <span className="font-semibold text-sm">{data.companyName || "Your Company"}</span>
+                  <span className="font-semibold text-xs">{data.companyName || "Your Company"}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground">Login</span>
-                  <Button size="sm" className="h-7 text-xs" style={{ backgroundColor: data.primaryColor }}>
+                  <span className="text-[10px] text-muted-foreground">Login</span>
+                  <button className="h-6 px-3 rounded-md text-[10px] font-medium text-white" style={{ backgroundColor: data.primaryColor }}>
                     {data.formSubmitText || "Get Started"}
-                  </Button>
+                  </button>
                 </div>
               </div>
 
-              {/* Hero */}
-              <div className="text-center px-6 py-12">
-                {selectedSiteType && (
-                  <Badge variant="secondary" className="mb-4 text-xs">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    {selectedSiteType.name}
-                  </Badge>
-                )}
-                <h1 className="text-2xl font-bold mb-3" style={{ color: data.primaryColor }}>
-                  {data.heroHeadline || "Your Headline Here"}
-                </h1>
-                <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
-                  {data.heroSubheadline || "Your subheadline will appear here"}
-                </p>
-                <div className="flex items-center justify-center gap-3">
-                  <Button size="sm" style={{ backgroundColor: data.primaryColor }}>
-                    {data.formSubmitText || "Get Started"}
-                  </Button>
-                  <Button variant="outline" size="sm">Learn More</Button>
-                </div>
-              </div>
-
-              {/* Trust bar */}
-              <div className="text-center py-4 border-t border-border">
-                <p className="text-xs text-muted-foreground font-medium">
-                  Trusted By Industry Leaders
-                </p>
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Preview Updates Automatically As You Make Changes
-                </p>
-              </div>
+              {/* Full Preview Body */}
+              <WizardLivePreview
+                siteType={data.siteType}
+                companyName={data.companyName}
+                companyPhone={data.companyPhone}
+                companyEmail={data.companyEmail}
+                primaryColor={data.primaryColor}
+                heroHeadline={data.heroHeadline}
+                heroSubheadline={data.heroSubheadline}
+                formSubmitText={data.formSubmitText}
+                logoUrl={data.logoUrl}
+              />
             </div>
           </div>
         </div>
