@@ -2921,6 +2921,8 @@ export type Database = {
           reliability_score: number | null
           service_areas: string[] | null
           source: string | null
+          source_entity_id: string | null
+          source_origin: string | null
           specialty: string[] | null
           state: string | null
           status: string | null
@@ -2963,6 +2965,8 @@ export type Database = {
           reliability_score?: number | null
           service_areas?: string[] | null
           source?: string | null
+          source_entity_id?: string | null
+          source_origin?: string | null
           specialty?: string[] | null
           state?: string | null
           status?: string | null
@@ -3005,6 +3009,8 @@ export type Database = {
           reliability_score?: number | null
           service_areas?: string[] | null
           source?: string | null
+          source_entity_id?: string | null
+          source_origin?: string | null
           specialty?: string[] | null
           state?: string | null
           status?: string | null
@@ -8670,6 +8676,7 @@ export type Database = {
         }
         Returns: Json
       }
+      bulk_sync_contacts: { Args: { p_user_id: string }; Returns: Json }
       calculate_distance_miles: {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number }
         Returns: number
@@ -8736,6 +8743,26 @@ export type Database = {
         Returns: string
       }
       update_queue_stats: { Args: { p_queue_id: string }; Returns: undefined }
+      upsert_contact_from_source: {
+        Args: {
+          p_address?: string
+          p_city?: string
+          p_company?: string
+          p_email?: string
+          p_name: string
+          p_notes?: string
+          p_org_id: string
+          p_phone?: string
+          p_source_entity_id?: string
+          p_source_origin?: string
+          p_state?: string
+          p_tags?: string[]
+          p_type?: string
+          p_user_id: string
+          p_zip?: string
+        }
+        Returns: string
+      }
       user_has_role: { Args: { required_role: string }; Returns: boolean }
     }
     Enums: {
