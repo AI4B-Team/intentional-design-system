@@ -12,6 +12,7 @@ import { FloatingCallBanner } from "@/components/calling/FloatingCallBanner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { PWAProvider } from "@/components/pwa";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { AppLayout } from "@/components/layout/AppLayout";
 import { AIVAPanel } from "@/components/aiva/AIVAPanel";
 import { AIVAPanelWrapper } from "@/components/aiva/AIVAPanelWrapper";
 import Login from "./pages/Login";
@@ -718,7 +719,9 @@ const App = () => (
               path="/websites/new"
               element={
                 <ProtectedRoute>
-                  <SellerWebsiteWizard />
+                  <AppLayout fullWidth>
+                    <SellerWebsiteWizard />
+                  </AppLayout>
                 </ProtectedRoute>
               }
             />
