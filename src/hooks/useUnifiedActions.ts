@@ -3,11 +3,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 
 // ─── Types ──────────────────────────────────────────────────
-export type ActionType = "call" | "follow_up" | "appointment" | "deadline" | "doc" | "payment" | "task" | "inspection";
+export type ActionType = "call" | "sms" | "email" | "voicemail" | "follow_up" | "appointment" | "deadline" | "doc" | "payment" | "task" | "inspection";
 export type EntityType = "lead" | "deal" | "transaction" | "contact" | "property";
-export type ActionStatus = "pending" | "completed" | "overdue" | "cancelled" | "snoozed";
+export type ActionStatus = "pending" | "completed" | "overdue" | "cancelled" | "snoozed" | "scheduled" | "blocked";
 export type ActionPriority = "low" | "medium" | "high" | "critical";
-export type ActionSource = "ai" | "user" | "automation" | "system";
+export type ActionSource = "ai" | "user" | "automation" | "system" | "pipeline" | "transactions" | "calendar" | "communications";
+export type OwnerMode = "human" | "ai_agent" | "hybrid";
+export type ActionChannel = "call" | "sms" | "email" | "voicemail" | null;
 
 export interface UnifiedAction {
   id: string;
@@ -31,6 +33,10 @@ export interface UnifiedAction {
   meta: Record<string, any>;
   created_at: string;
   updated_at: string;
+  owner_mode: OwnerMode;
+  channel: ActionChannel;
+  contact_id: string | null;
+  deal_id: string | null;
 }
 
 export interface CreateActionInput {
@@ -48,6 +54,10 @@ export interface CreateActionInput {
   property_address?: string;
   contact_name?: string;
   meta?: Record<string, any>;
+  owner_mode?: OwnerMode;
+  channel?: ActionChannel;
+  contact_id?: string;
+  deal_id?: string;
 }
 
 export interface UpdateActionInput {
@@ -60,6 +70,8 @@ export interface UpdateActionInput {
   completed_at?: string | null;
   snoozed_until?: string | null;
   meta?: Record<string, any>;
+  owner_mode?: OwnerMode;
+  channel?: ActionChannel;
 }
 
 // ─── Query keys ─────────────────────────────────────────────
@@ -75,13 +87,18 @@ export interface ActionFilters {
   due_before?: string;
   due_after?: string;
   limit?: number;
+  owner_mode?: OwnerMode | OwnerMode[];
+  channel?: ActionChannel;
+  source?: ActionSource | ActionSource[];
+  deal_id?: string;
+  contact_id?: string;
 }
 
 function buildQuery(filters: ActionFilters) {
   let query = supabase
     .from("unified_actions")
     .select("*")
-    .order("due_at", { ascending: true, nullsFirst: false });
+    .order("due_at", { ascending: true, nullsFirst: false }) as any;
 
   if (filters.status) {
     const statuses = Array.isArray(filters.status) ? filters.status : [filters.status];
@@ -110,6 +127,23 @@ function buildQuery(filters: ActionFilters) {
   }
   if (filters.limit) {
     query = query.limit(filters.limit);
+  }
+  if (filters.owner_mode) {
+    const modes = Array.isArray(filters.owner_mode) ? filters.owner_mode : [filters.owner_mode];
+    query = query.in("owner_mode", modes);
+  }
+  if (filters.channel) {
+    query = query.eq("channel", filters.channel);
+  }
+  if (filters.source) {
+    const sources = Array.isArray(filters.source) ? filters.source : [filters.source];
+    query = query.in("source", sources);
+  }
+  if (filters.deal_id) {
+    query = query.eq("deal_id", filters.deal_id);
+  }
+  if (filters.contact_id) {
+    query = query.eq("contact_id", filters.contact_id);
   }
 
   return query;
@@ -290,5 +324,29 @@ export function useTodayActions() {
     status: ["pending", "overdue"],
     due_after: todayStart.toISOString(),
     due_before: todayEnd.toISOString(),
+  });
+}
+
+/** Communications: actions needing comms attention */
+export function useCommsActions() {
+  return useUnifiedActions({
+    status: ["pending", "overdue"],
+    type: ["call", "sms", "email", "voicemail", "follow_up"],
+  });
+}
+
+/** Actions by deal */
+export function useDealActions(dealId: string) {
+  return useUnifiedActions({
+    deal_id: dealId,
+    status: ["pending", "overdue", "scheduled"],
+  });
+}
+
+/** AI-executed actions (for AI Command Center) */
+export function useAIActions(limit = 20) {
+  return useUnifiedActions({
+    source: ["ai", "automation"],
+    limit,
   });
 }
