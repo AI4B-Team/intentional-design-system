@@ -42,7 +42,7 @@ export function WebsitesDashboardWidget() {
         <div className="text-center py-6">
           <Globe className="h-10 w-10 text-content-tertiary/50 mx-auto mb-3" />
           <p className="text-small text-content-secondary mb-3">
-            No websites yet
+            No Websites Yet
           </p>
           <Link to="/websites/new">
             <Button variant="secondary" size="sm" icon={<Plus />}>
