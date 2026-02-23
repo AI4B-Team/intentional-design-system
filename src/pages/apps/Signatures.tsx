@@ -63,6 +63,8 @@ import { TemplateLibrary } from "@/components/signatures/TemplateLibrary";
 import { ClauseLibrary } from "@/components/signatures/ClauseLibrary";
 import { VariableFillForm } from "@/components/signatures/VariableFillForm";
 import { SignatureTemplate } from "@/types/signature-templates";
+import { DocumentFieldBuilder } from "@/components/signatures/DocumentFieldBuilder";
+import { DocumentField } from "@/types/document-fields";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -187,7 +189,7 @@ function getNextAction(request: SignatureRequest): { label: string; icon: React.
 }
 
 // ─── Send Flow Steps ────────────────────────────────────────
-type SendStep = "template" | "variables" | "recipient";
+type SendStep = "template" | "variables" | "fields" | "recipient";
 
 // ─── Main Component ─────────────────────────────────────────
 export default function Signatures() {
@@ -212,6 +214,7 @@ export default function Signatures() {
     recipientEmail: "",
     propertyAddress: "",
   });
+  const [documentFields, setDocumentFields] = React.useState<DocumentField[]>([]);
 
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
@@ -256,6 +259,10 @@ export default function Signatures() {
       recipientEmail: variableValues["seller_email"] || variableValues["buyer_email"] || "",
       propertyAddress: variableValues["property_address"] || "",
     });
+    setSendStep("fields");
+  };
+
+  const handleFieldsNext = () => {
     setSendStep("recipient");
   };
 
@@ -294,6 +301,7 @@ export default function Signatures() {
     setSelectedTemplate(null);
     setVariableValues({});
     setRecipientInfo({ recipientName: "", recipientEmail: "", propertyAddress: "" });
+    setDocumentFields([]);
   };
 
   const handleResend = (id: string, e?: React.MouseEvent) => {
@@ -613,7 +621,7 @@ export default function Signatures() {
       <Dialog open={isNewRequestOpen} onOpenChange={(open) => { if (!open) resetSendFlow(); }}>
         <DialogContent className={cn(
           "max-h-[85vh] overflow-y-auto",
-          sendStep === "template" ? "sm:max-w-[800px]" : "sm:max-w-[600px]"
+          sendStep === "template" || sendStep === "fields" ? "sm:max-w-[900px]" : "sm:max-w-[600px]"
         )}>
           {/* Step: Choose Template */}
           {sendStep === "template" && (
@@ -632,7 +640,7 @@ export default function Signatures() {
                   className="gap-2"
                   onClick={() => {
                     setSelectedTemplate(null);
-                    setSendStep("recipient");
+                    setSendStep("fields");
                   }}
                 >
                   <FileText className="h-4 w-4" />
@@ -673,12 +681,43 @@ export default function Signatures() {
             </>
           )}
 
+          {/* Step: Place Fields */}
+          {sendStep === "fields" && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <div>
+                    <DialogTitle>Place Signature Fields</DialogTitle>
+                    <DialogDescription>Upload a PDF and place fields where signers need to sign, initial, or fill in information.</DialogDescription>
+                  </div>
+                </div>
+              </DialogHeader>
+              <div className="py-4 min-h-[420px]">
+                <DocumentFieldBuilder
+                  fields={documentFields}
+                  onFieldsChange={setDocumentFields}
+                  documentName={selectedTemplate?.name}
+                />
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>Back</Button>
+                <Button onClick={handleFieldsNext} className="gap-2">
+                  Continue
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+
           {/* Step: Recipient + Send */}
           {sendStep === "recipient" && (
             <>
               <DialogHeader>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>
+                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("fields")}>
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
                   <div>
@@ -744,11 +783,16 @@ export default function Signatures() {
                         {Object.values(variableValues).filter((v) => v?.trim()).length}/{selectedTemplate.variables.length}
                       </span>
                     </p>
+                    {documentFields.length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        Signature fields: <span className="font-medium text-foreground">{documentFields.length}</span>
+                      </p>
+                    )}
                   </div>
                 )}
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>Back</Button>
+                <Button variant="outline" onClick={() => setSendStep("fields")}>Back</Button>
                 <Button onClick={handleSendRequest} className="gap-2">
                   <Send className="h-4 w-4" />
                   Send for Signature
