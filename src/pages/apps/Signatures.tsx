@@ -77,6 +77,10 @@ import { SignatureCaptureResult } from "@/components/signatures/SignaturePad";
 import { BulkSendDialog } from "@/components/signatures/BulkSendDialog";
 import { ReminderManager } from "@/components/signatures/ReminderManager";
 import { WorkflowVisualizer } from "@/components/signatures/WorkflowVisualizer";
+import { AIDocumentAnalysis } from "@/components/signatures/AIDocumentAnalysis";
+import { SignerAuthConfigPanel, SignerAuthChallenge, defaultAuthConfig } from "@/components/signatures/SignerAuthentication";
+import type { SignerAuthConfig, SignerAuthResult } from "@/components/signatures/SignerAuthentication";
+import { SignaturesDashboard } from "@/components/signatures/SignaturesDashboard";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -232,8 +236,12 @@ export default function Signatures() {
   const [selectedRequest, setSelectedRequest] = React.useState<SignatureRequest | null>(null);
 
   // Page-level view: requests | templates | clauses
-  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses" | "reminders">("requests");
+  const [pageView, setPageView] = React.useState<"requests" | "templates" | "clauses" | "reminders" | "dashboard">("requests");
   const [bulkSendOpen, setBulkSendOpen] = React.useState(false);
+  const [aiAnalysisOpen, setAiAnalysisOpen] = React.useState(false);
+  const [aiAnalysisDoc, setAiAnalysisDoc] = React.useState("");
+  const [authConfig, setAuthConfig] = React.useState<SignerAuthConfig>(defaultAuthConfig);
+  const [authChallengeOpen, setAuthChallengeOpen] = React.useState(false);
 
   // Send flow state
   const [isNewRequestOpen, setIsNewRequestOpen] = React.useState(!!templateId);
@@ -496,6 +504,7 @@ export default function Signatures() {
         <div className="flex items-center gap-2 mb-6">
           {[
             { value: "requests" as const, label: "Requests", icon: PenTool },
+            { value: "dashboard" as const, label: "Dashboard", icon: TrendingUp },
             { value: "templates" as const, label: "Templates", icon: Layers },
             { value: "clauses" as const, label: "Clause Library", icon: BookOpen },
             { value: "reminders" as const, label: "Reminders", icon: Clock },
@@ -778,6 +787,9 @@ export default function Signatures() {
             }}
           />
         )}
+
+        {/* ─── Dashboard View ────────────────────────────────── */}
+        {pageView === "dashboard" && <SignaturesDashboard />}
       </PageLayout>
 
       {/* ─── Multi-Step Send Flow Dialog ─────────────────────── */}
@@ -938,8 +950,13 @@ export default function Signatures() {
                   </div>
                 </div>
               </DialogHeader>
-              <div className="py-4">
+              <div className="py-4 space-y-6">
                 <SignerManager workflow={sendWorkflow} onWorkflowChange={setSendWorkflow} />
+                
+                {/* Signer Authentication Config */}
+                <div className="border-t border-border-subtle pt-4">
+                  <SignerAuthConfigPanel config={authConfig} onChange={setAuthConfig} />
+                </div>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setSendStep("fields")}>Back</Button>
@@ -1236,6 +1253,10 @@ export default function Signatures() {
                       </Button>
                     </>
                   )}
+                  <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAiAnalysisDoc(selectedRequest.documentName); setAiAnalysisOpen(true); }}>
+                    <Sparkles className="h-4 w-4" />
+                    AI Analysis
+                  </Button>
                   <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
                     <Trash2 className="h-4 w-4" />
                     Delete
@@ -1318,6 +1339,33 @@ export default function Signatures() {
           setRequests((prev) => [...newRequests, ...prev]);
           toast.success(`Sent ${recipients.length} signature requests!`);
         }}
+      />
+
+      {/* ─── AI Document Analysis Dialog ─────────────────────── */}
+      <AIDocumentAnalysis
+        isOpen={aiAnalysisOpen}
+        onClose={() => setAiAnalysisOpen(false)}
+        documentName={aiAnalysisDoc}
+        template={selectedTemplate}
+        onApplySuggestion={(suggestion) => {
+          toast.success(`Applied: ${suggestion.title}`);
+        }}
+        onAddClause={(clause) => {
+          toast.success(`Added clause: ${clause.name}`);
+        }}
+      />
+
+      {/* ─── Signer Auth Challenge Dialog ────────────────────── */}
+      <SignerAuthChallenge
+        isOpen={authChallengeOpen}
+        onClose={() => setAuthChallengeOpen(false)}
+        onVerified={(results) => {
+          setAuthChallengeOpen(false);
+          toast.success("Signer identity verified");
+        }}
+        signerName={signingRequest?.recipientName || ""}
+        signerEmail={signingRequest?.recipientEmail || ""}
+        config={authConfig}
       />
     </>
   );
