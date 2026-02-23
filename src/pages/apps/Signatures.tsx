@@ -55,6 +55,7 @@ import {
   ArrowLeft,
   Sparkles,
   Building2,
+  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format, differenceInHours, differenceInDays } from "date-fns";
@@ -70,6 +71,9 @@ import { SignerManager } from "@/components/signatures/SignerManager";
 import { AuditTrail } from "@/components/signatures/AuditTrail";
 import { SigningWorkflow, createDefaultWorkflow, createSigner, AuditEvent } from "@/types/signing-workflow";
 import { DealPicker, DealData, dealToVariables } from "@/components/signatures/DealPicker";
+import { SigningView } from "@/components/signatures/SigningView";
+import { CompletionCertificate } from "@/components/signatures/CompletionCertificate";
+import { SignatureCaptureResult } from "@/components/signatures/SignaturePad";
 
 // ─── Types ──────────────────────────────────────────────────
 type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
@@ -241,6 +245,10 @@ export default function Signatures() {
   const [sendWorkflow, setSendWorkflow] = React.useState<SigningWorkflow>(createDefaultWorkflow());
   const [detailTab, setDetailTab] = React.useState<"details" | "signers" | "audit">("details");
   const [selectedDeal, setSelectedDeal] = React.useState<DealData | null>(null);
+  const [signingViewOpen, setSigningViewOpen] = React.useState(false);
+  const [signingRequest, setSigningRequest] = React.useState<SignatureRequest | null>(null);
+  const [certificateOpen, setCertificateOpen] = React.useState(false);
+  const [certificateRequest, setCertificateRequest] = React.useState<SignatureRequest | null>(null);
 
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
@@ -417,6 +425,48 @@ export default function Signatures() {
     setRequests(requests.map((r) => r.id === id ? { ...r, status: "expired" as SignatureStatus } : r));
     setSelectedRequest(null);
     toast.success("Request voided");
+  };
+
+  const handleOpenSigning = (request: SignatureRequest) => {
+    setSigningRequest(request);
+    setSigningViewOpen(true);
+    setSelectedRequest(null);
+  };
+
+  const handleSigningComplete = (signatures: Record<string, SignatureCaptureResult>) => {
+    if (!signingRequest) return;
+    const now = new Date();
+    setRequests((prev) =>
+      prev.map((r) =>
+        r.id === signingRequest.id
+          ? {
+              ...r,
+              status: "signed" as SignatureStatus,
+              signedAt: now,
+              lastActivity: "Signed",
+              workflow: r.workflow
+                ? {
+                    ...r.workflow,
+                    signers: r.workflow.signers.map((s) => ({ ...s, status: "signed" as const, signedAt: now })),
+                    auditTrail: [
+                      ...r.workflow.auditTrail,
+                      { id: `a-${Date.now()}`, timestamp: now, action: "signed", actor: r.recipientName, actorEmail: r.recipientEmail, details: "Document signed electronically" },
+                    ],
+                  }
+                : undefined,
+            }
+          : r
+      )
+    );
+    setSigningViewOpen(false);
+    setSigningRequest(null);
+    toast.success("Document signed successfully!");
+  };
+
+  const handleViewCertificate = (request: SignatureRequest) => {
+    setCertificateRequest(request);
+    setCertificateOpen(true);
+    setSelectedRequest(null);
   };
 
   return (
@@ -1133,6 +1183,10 @@ export default function Signatures() {
                 <DialogFooter className="flex-wrap gap-2">
                   {selectedRequest.status === "pending" && (
                     <>
+                      <Button size="sm" className="gap-2" onClick={() => handleOpenSigning(selectedRequest)}>
+                        <PenTool className="h-4 w-4" />
+                        Sign Now
+                      </Button>
                       <Button variant="outline" size="sm" className="gap-2" onClick={() => handleCopyLink(selectedRequest.id)}>
                         <Link2 className="h-4 w-4" />
                         Copy Link
@@ -1148,10 +1202,16 @@ export default function Signatures() {
                     </>
                   )}
                   {selectedRequest.status === "signed" && (
-                    <Button variant="outline" size="sm" className="gap-2">
-                      <Download className="h-4 w-4" />
-                      Download Signed
-                    </Button>
+                    <>
+                      <Button size="sm" className="gap-2" onClick={() => handleViewCertificate(selectedRequest)}>
+                        <Shield className="h-4 w-4" />
+                        View Certificate
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Download className="h-4 w-4" />
+                        Download Signed
+                      </Button>
+                    </>
                   )}
                   <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
                     <Trash2 className="h-4 w-4" />
@@ -1163,6 +1223,44 @@ export default function Signatures() {
           })()}
         </DialogContent>
       </Dialog>
+      {/* ─── Signing View Dialog ─────────────────────────────── */}
+      {signingRequest && (
+        <SigningView
+          isOpen={signingViewOpen}
+          onClose={() => { setSigningViewOpen(false); setSigningRequest(null); }}
+          documentName={signingRequest.documentName}
+          signerName={signingRequest.recipientName}
+          signerEmail={signingRequest.recipientEmail}
+          fields={documentFields}
+          onComplete={handleSigningComplete}
+        />
+      )}
+
+      {/* ─── Completion Certificate Dialog ───────────────────── */}
+      {certificateRequest && (
+        <CompletionCertificate
+          isOpen={certificateOpen}
+          onClose={() => { setCertificateOpen(false); setCertificateRequest(null); }}
+          documentName={certificateRequest.documentName}
+          documentId={certificateRequest.id}
+          createdAt={certificateRequest.createdAt}
+          completedAt={certificateRequest.signedAt || new Date()}
+          signers={
+            certificateRequest.workflow?.signers.map((s) => ({
+              name: s.name,
+              email: s.email,
+              signedAt: s.signedAt || new Date(),
+              ipAddress: s.ipAddress,
+            })) || [
+              {
+                name: certificateRequest.recipientName,
+                email: certificateRequest.recipientEmail,
+                signedAt: certificateRequest.signedAt || new Date(),
+              },
+            ]
+          }
+        />
+      )}
     </>
   );
 }
