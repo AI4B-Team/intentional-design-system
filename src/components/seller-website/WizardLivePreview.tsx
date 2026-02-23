@@ -8,6 +8,7 @@ interface WizardLivePreviewProps {
   companyPhone: string;
   companyEmail: string;
   primaryColor: string;
+  accentColor: string;
   heroHeadline: string;
   heroSubheadline: string;
   formSubmitText: string;
@@ -34,6 +35,7 @@ export function WizardLivePreview({
   companyPhone,
   companyEmail,
   primaryColor,
+  accentColor,
   heroHeadline,
   heroSubheadline,
   formSubmitText,
@@ -45,87 +47,98 @@ export function WizardLivePreview({
   const submitText = formSubmitText || defaults.formSubmitText;
   const company = companyName || "HomesDaily";
 
-  // Split headline for colored portion
-  const headlineParts = headline.split("\n");
   const replacePlaceholder = (text: string) => text.replace(/\{companyName\}/g, company);
 
   return (
     <div className="text-[11px] leading-relaxed">
       {/* ── HERO SECTION ── */}
-      <div className="flex gap-4 px-5 py-6">
-        {/* Left: Headline */}
-        <div className="flex-1 min-w-0 space-y-2">
-          <div className="inline-flex items-center gap-1 text-[9px] px-2 py-0.5 rounded-full border" style={{ borderColor: primaryColor, color: primaryColor }}>
-            <Star className="h-2.5 w-2.5" /> {defaults.trustBadgeText}
-          </div>
-          <h1 className="text-[18px] font-bold leading-tight text-foreground">
-            {headline.split(/( Fast| Fair| Simple| Free| Exclusive)/i).map((part, i) => {
-              if (/Fast|Fair|Simple|Free|Exclusive/i.test(part)) {
-                return <span key={i} style={{ color: primaryColor }}>{part}</span>;
-              }
-              return part;
-            })}
-          </h1>
-          <p className="text-[10px] text-muted-foreground">{subheadline}</p>
-          <p className="text-[9px] font-bold text-foreground">{defaults.heroBenefitsLine}</p>
-          <p className="text-[9px] text-muted-foreground">{defaults.heroBenefitsSubline}</p>
+      <section style={{ backgroundColor: "hsl(48 19% 95%)" }}>
+        <div className="flex gap-4 px-5 py-6">
+          {/* Left: Headlines */}
+          <div className="flex-1 min-w-0 space-y-2">
+            <div className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-2 py-0.5">
+              <Star className="h-2.5 w-2.5" style={{ color: accentColor }} />
+              <span className="text-[9px] text-muted-foreground">{defaults.trustBadgeText}</span>
+            </div>
 
-          {/* Quick Stats */}
-          {defaults.quickStats.length > 0 && (
-            <div className="flex gap-4 pt-2">
-              {defaults.quickStats.map((s, i) => (
-                <div key={i}>
-                  <div className="text-[13px] font-bold" style={{ color: primaryColor }}>{s.value}</div>
-                  <div className="text-[8px] text-muted-foreground">{s.label}</div>
+            <h1 className="text-[18px] font-bold leading-tight text-foreground">
+              {headline.split(/(?=Fast|Fair|Simple|Cash)/i).map((part, i) => {
+                const isAccent = /^(Fast|Fair|Simple|Cash)/i.test(part.trim());
+                if (i === 0) return <span key={i}>{part}</span>;
+                return (
+                  <span key={i} style={{ color: isAccent ? accentColor : undefined }}>
+                    {part}
+                  </span>
+                );
+              })}
+            </h1>
+
+            <p className="text-[10px] text-muted-foreground">{subheadline}</p>
+            <p className="text-[9px] font-bold text-foreground">{defaults.heroBenefitsLine}</p>
+            <p className="text-[9px] text-muted-foreground">{defaults.heroBenefitsSubline}</p>
+
+            {defaults.quickStats.length > 0 && (
+              <div className="flex gap-4 pt-2">
+                {defaults.quickStats.map((s, i) => (
+                  <div key={i} className={i > 0 ? "border-l border-border pl-4" : ""}>
+                    <div className="text-[13px] font-bold" style={{ color: accentColor }}>{s.value}</div>
+                    <div className="text-[8px] text-muted-foreground">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Right: Lead Form */}
+          <div className="w-[200px] flex-shrink-0 rounded-xl p-3 bg-background shadow-lg border border-border">
+            <h3 className="text-[12px] font-bold text-center mb-0.5">{defaults.formHeadline}</h3>
+            <p className="text-[8px] text-muted-foreground text-center mb-2">{defaults.formSubheadline}</p>
+            <div className="space-y-1.5">
+              <div>
+                <label className="text-[8px] font-medium text-foreground">Property Address</label>
+                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">123 Main St, City, State</div>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="text-[8px] font-medium text-foreground">Your Name</label>
+                  <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">Full Name</div>
                 </div>
-              ))}
-            </div>
-          )}
-
-          {/* As Seen On */}
-          {defaults.asSeenOn.length > 0 && (
-            <div className="flex items-center gap-2 pt-1">
-              <span className="text-[8px] text-muted-foreground uppercase tracking-wider">As Seen On</span>
-              {defaults.asSeenOn.map((name, i) => (
-                <span key={i} className="text-[8px] font-semibold text-muted-foreground/70">{name}</span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Right: Lead Form */}
-        <div className="w-[200px] flex-shrink-0 border rounded-lg p-3 bg-background shadow-sm">
-          <h3 className="text-[12px] font-bold text-center mb-0.5">{defaults.formHeadline}</h3>
-          <p className="text-[8px] text-muted-foreground text-center mb-2">{defaults.formSubheadline}</p>
-          <div className="space-y-1.5">
-            <div>
-              <label className="text-[8px] font-medium text-foreground">Property Address</label>
-              <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">123 Main St, City, State</div>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              <div>
-                <label className="text-[8px] font-medium text-foreground">Your Name</label>
-                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">Full Name</div>
+                <div>
+                  <label className="text-[8px] font-medium text-foreground">Phone</label>
+                  <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">(555) 000-0000</div>
+                </div>
               </div>
               <div>
-                <label className="text-[8px] font-medium text-foreground">Phone</label>
-                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">(555) 000-0000</div>
+                <label className="text-[8px] font-medium text-foreground">Email</label>
+                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">you@example.com</div>
               </div>
+              <button
+                className="w-full rounded-lg py-1.5 text-[10px] font-bold text-white"
+                style={{ backgroundColor: accentColor }}
+              >
+                {submitText}
+              </button>
+              <p className="text-[7px] text-muted-foreground text-center">🔒 Your info is safe. We never share or sell your data.</p>
             </div>
-            <div>
-              <label className="text-[8px] font-medium text-foreground">Email</label>
-              <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">you@example.com</div>
-            </div>
-            <button
-              className="w-full rounded-lg py-1.5 text-[10px] font-bold text-white"
-              style={{ backgroundColor: primaryColor }}
-            >
-              {submitText}
-            </button>
-            <p className="text-[7px] text-muted-foreground text-center">🔒 Your info is safe. We never share or sell your data.</p>
           </div>
         </div>
-      </div>
+
+        {/* Founders Featured On bar */}
+        {defaults.asSeenOn.length > 0 && (
+          <div className="border-t border-border py-3" style={{ backgroundColor: "hsl(48 16% 92%)" }}>
+            <div className="px-5 flex items-center gap-2">
+              <span className="text-[8px] text-muted-foreground uppercase tracking-wider font-semibold whitespace-nowrap">
+                Founders Featured On
+              </span>
+              <div className="flex items-center gap-2 opacity-60">
+                {defaults.asSeenOn.map((name, i) => (
+                  <span key={i} className="text-[8px] font-bold text-foreground">{name}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
 
       {/* ── STATS BAR ── */}
       {defaults.showStats && defaults.stats.length > 0 && (
