@@ -438,10 +438,10 @@ export function TemplateLibrary({ onSelectTemplate, compact = false }: TemplateL
 
       {/* Template Preview Dialog */}
       <Dialog open={!!previewTemplate} onOpenChange={(open) => !open && setPreviewTemplate(null)}>
-        <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[650px] max-h-[85vh] flex flex-col">
           {previewTemplate && (
             <>
-              <DialogHeader>
+              <DialogHeader className="flex-shrink-0">
                 <div className="flex items-center gap-2">
                   <DialogTitle>{previewTemplate.name}</DialogTitle>
                   <Badge variant="outline" className={cn("text-xs", categoryConfig[previewTemplate.category].color)}>
@@ -451,7 +451,7 @@ export function TemplateLibrary({ onSelectTemplate, compact = false }: TemplateL
                 <DialogDescription>{previewTemplate.description}</DialogDescription>
               </DialogHeader>
 
-              <div className="space-y-5 py-4">
+              <div className="flex-1 overflow-y-auto space-y-5 py-4 min-h-0">
                 {/* Stats Row */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="text-center p-3 rounded-lg bg-surface-secondary">
@@ -505,7 +505,7 @@ export function TemplateLibrary({ onSelectTemplate, compact = false }: TemplateL
                 )}
               </div>
 
-              <DialogFooter>
+              <DialogFooter className="flex-shrink-0">
                 <Button variant="outline" onClick={() => setPreviewTemplate(null)}>
                   Close
                 </Button>
