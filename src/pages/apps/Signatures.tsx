@@ -281,15 +281,24 @@ export default function Signatures() {
 
         {/* Tabs and Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="pending">Pending</TabsTrigger>
-              <TabsTrigger value="signed">Signed</TabsTrigger>
-              <TabsTrigger value="declined">Declined</TabsTrigger>
-              <TabsTrigger value="draft">Drafts</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div className="flex gap-2 flex-wrap">
+            {[
+              { value: "all", label: "All" },
+              { value: "pending", label: "Pending" },
+              { value: "signed", label: "Signed" },
+              { value: "declined", label: "Declined" },
+              { value: "draft", label: "Drafts" },
+            ].map((tab) => (
+              <Button
+                key={tab.value}
+                size="sm"
+                variant={activeTab === tab.value ? "default" : "outline"}
+                onClick={() => setActiveTab(tab.value)}
+              >
+                {tab.label}
+              </Button>
+            ))}
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
