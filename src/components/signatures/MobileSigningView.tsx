@@ -94,7 +94,7 @@ export function MobileSigningManager({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[550px]">
+      <DialogContent className="sm:max-w-[680px]">
         <DialogHeader>
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 rounded-lg bg-brand/10 flex items-center justify-center">
@@ -153,7 +153,7 @@ export function MobileSigningManager({
                 <div className="h-40 w-40 rounded-lg bg-muted flex items-center justify-center mb-3">
                   <QrCode className="h-16 w-16 text-muted-foreground/40" />
                 </div>
-                <p className="text-sm font-medium text-foreground">Scan to Sign</p>
+                <p className="text-sm font-medium text-foreground">Scan To Sign</p>
                 <p className="text-xs text-muted-foreground">Recipient can scan this QR code on their phone</p>
               </Card>
 
