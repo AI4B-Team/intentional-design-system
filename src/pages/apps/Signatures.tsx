@@ -126,6 +126,7 @@ export default function Signatures() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [requests, setRequests] = React.useState<SignatureRequest[]>(mockRequests);
   const [activeTab, setActiveTab] = React.useState("all");
+  const [selectedRequest, setSelectedRequest] = React.useState<SignatureRequest | null>(null);
   const [isNewRequestOpen, setIsNewRequestOpen] = React.useState(!!templateId);
   const [newRequest, setNewRequest] = React.useState({
     documentName: "",
@@ -317,7 +318,7 @@ export default function Signatures() {
             const StatusIcon = statusInfo.icon;
 
             return (
-              <Card key={request.id} padding="md" className="group hover:shadow-md transition-shadow">
+              <Card key={request.id} padding="md" className="group hover:shadow-md transition-shadow cursor-pointer" onClick={() => setSelectedRequest(request)}>
                 <div className="flex items-center gap-4 justify-center text-center">
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <PenTool className="h-5 w-5 text-primary" />
@@ -420,6 +421,88 @@ export default function Signatures() {
           )}
         </div>
       </PageLayout>
+
+      {/* Document Detail Dialog */}
+      <Dialog open={!!selectedRequest} onOpenChange={(open) => !open && setSelectedRequest(null)}>
+        <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto">
+          {selectedRequest && (() => {
+            const info = statusConfig[selectedRequest.status];
+            const Icon = info.icon;
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle>{selectedRequest.documentName}</DialogTitle>
+                  <DialogDescription>Signature request details</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={cn("text-xs", info.color)}>
+                      <Icon className="h-3 w-3 mr-1" />
+                      {info.label}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <p className="text-muted-foreground mb-1">Recipient</p>
+                      <p className="font-medium">{selectedRequest.recipientName}</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground mb-1">Email</p>
+                      <p className="font-medium">{selectedRequest.recipientEmail}</p>
+                    </div>
+                    {selectedRequest.propertyAddress && (
+                      <div className="col-span-2">
+                        <p className="text-muted-foreground mb-1">Property Address</p>
+                        <p className="font-medium">{selectedRequest.propertyAddress}</p>
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-muted-foreground mb-1">Created</p>
+                      <p className="font-medium">{format(selectedRequest.createdAt, "MMM d, yyyy")}</p>
+                    </div>
+                    {selectedRequest.sentAt && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Sent</p>
+                        <p className="font-medium">{format(selectedRequest.sentAt, "MMM d, yyyy")}</p>
+                      </div>
+                    )}
+                    {selectedRequest.signedAt && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Signed</p>
+                        <p className="font-medium">{format(selectedRequest.signedAt, "MMM d, yyyy")}</p>
+                      </div>
+                    )}
+                    {selectedRequest.expiresAt && (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Expires</p>
+                        <p className="font-medium">{format(selectedRequest.expiresAt, "MMM d, yyyy")}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <DialogFooter>
+                  {selectedRequest.status === "pending" && (
+                    <Button variant="outline" className="gap-2" onClick={() => { handleResend(selectedRequest.id); setSelectedRequest(null); }}>
+                      <RefreshCw className="h-4 w-4" />
+                      Send Reminder
+                    </Button>
+                  )}
+                  {selectedRequest.status === "signed" && (
+                    <Button variant="outline" className="gap-2">
+                      <Download className="h-4 w-4" />
+                      Download Signed
+                    </Button>
+                  )}
+                  <Button variant="destructive" className="gap-2" onClick={() => { handleDelete(selectedRequest.id); setSelectedRequest(null); }}>
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
