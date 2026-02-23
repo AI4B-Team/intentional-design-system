@@ -434,7 +434,7 @@ export default function SellerWebsiteWizard() {
               <div className="space-y-8">
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Site Type</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3">
                     {SITE_TYPES.map((type) => {
                       const Icon = type.icon;
                       const isSelected = data.siteType === type.id;
