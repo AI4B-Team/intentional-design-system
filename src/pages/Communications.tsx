@@ -8,6 +8,7 @@ import { DailyGoalsTracker } from "@/components/dialer/daily-goals-tracker";
 import { PostCallActions } from "@/components/dialer/post-call-actions";
 import { CampaignBadge } from "@/components/dialer/campaign-badge";
 import { DialerIntelligenceBar, ScheduledCallbacks, RecentCallLog, CampaignContext } from "@/components/dialer/intelligence";
+import { CommsActionsFeed } from "@/components/communications/CommsActionsFeed";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useDealSources, useUpdateDealSource, useDeleteDealSource, type DealSource } from "@/hooks/useDealSources";
 import {
@@ -1133,6 +1134,11 @@ function CoPilotPanel({
                       </div>
                     ))}
                   </div>
+                </CollapsiblePanel>
+
+                {/* Pending Comms Actions — Unified Actions Feed */}
+                <CollapsiblePanel title="Pending Actions" icon={<Zap className="h-3 w-3" />} defaultOpen={true}>
+                  <CommsActionsFeed compact />
                 </CollapsiblePanel>
 
                 {/* Campaign Context */}
