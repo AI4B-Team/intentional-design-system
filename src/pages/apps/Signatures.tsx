@@ -125,6 +125,8 @@ const mockRequests: SignatureRequest[] = [
     viewCount: 3,
     lastActivity: "Viewed 3h ago",
     templateId: "tpl-1",
+    dealId: "deal-1",
+    dealStatus: "offer_made",
     workflow: {
       signingOrder: "sequential",
       signers: [
@@ -154,6 +156,8 @@ const mockRequests: SignatureRequest[] = [
     viewCount: 2,
     lastActivity: "Signed",
     templateId: "tpl-2",
+    dealId: "deal-2",
+    dealStatus: "under_contract",
   },
   {
     id: "3",
@@ -192,6 +196,8 @@ const mockRequests: SignatureRequest[] = [
     viewCount: 5,
     lastActivity: "Viewed 12h ago · No action",
     templateId: "tpl-5",
+    dealId: "deal-5",
+    dealStatus: "negotiating",
   },
 ];
 
@@ -199,7 +205,7 @@ const statusConfig: Record<SignatureStatus, { label: string; color: string; icon
   draft: { label: "In Progress", color: "bg-muted text-muted-foreground", icon: FileText },
   pending: { label: "Out for Signature", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
   signed: { label: "Completed", color: "bg-success/10 text-success border-success/20", icon: CheckCircle },
-  declined: { label: "Needs Review", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
+  declined: { label: "Action Required", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
   expired: { label: "Expired", color: "bg-muted text-muted-foreground", icon: AlertCircle },
 };
 
@@ -216,12 +222,17 @@ function formatTimeAgo(date: Date): string {
 }
 
 function getNextAction(request: SignatureRequest): { label: string; icon: React.ElementType; color: string } | null {
+  if (request.status === "signed") return { label: "Archive", icon: CheckCircle, color: "text-success" };
+  if (request.status === "pending" && request.expiresAt && differenceInHours(request.expiresAt, new Date()) <= 24) {
+    return { label: "Resend — Expires in 24h", icon: RefreshCw, color: "text-destructive" };
+  }
   if (request.status === "pending" && request.viewedAt && !request.signedAt) {
     const hoursSinceView = differenceInHours(new Date(), request.viewedAt);
-    if (hoursSinceView > 6) return { label: "Follow Up", icon: Phone, color: "text-warning" };
-    return { label: "Resend", icon: RefreshCw, color: "text-content-secondary" };
+    if (hoursSinceView > 6) return { label: `Follow Up (SMS) — Viewed ${hoursSinceView}h ago`, icon: Phone, color: "text-warning" };
+    return { label: "Waiting — Viewed recently", icon: Eye, color: "text-muted-foreground" };
   }
-  if (request.status === "declined") return { label: "Call", icon: Phone, color: "text-destructive" };
+  if (request.status === "pending" && !request.viewedAt) return { label: "Waiting — Not yet opened", icon: Clock, color: "text-muted-foreground" };
+  if (request.status === "declined") return { label: "Call Signer — Declined", icon: Phone, color: "text-destructive" };
   if (request.status === "draft") return { label: "Send", icon: Send, color: "text-brand" };
   return null;
 }
@@ -507,6 +518,31 @@ export default function Signatures() {
               <Users className="h-4 w-4" />
               Bulk Send
             </Button>
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="gap-2"
+                    onClick={() => {
+                      setAiAnalysisDoc("All Active Requests");
+                      setAiAnalysisOpen(true);
+                    }}
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    AI Review
+                    {(stats.expiringSoon > 0 || stats.needsFollowUp > 0) && (
+                      <Badge variant="warning" size="sm" className="ml-0.5">
+                        {stats.expiringSoon + stats.needsFollowUp}
+                      </Badge>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                  Missing fields · Pricing check · Expiry risk · Clause flags
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </PageHeader>
 
@@ -568,7 +604,7 @@ export default function Signatures() {
                   { value: "all", label: "All" },
                   { value: "pending", label: "Out for Signature" },
                   { value: "signed", label: "Completed" },
-                  { value: "declined", label: "Needs Review" },
+                  { value: "declined", label: "Action Required" },
                   { value: "draft", label: "In Progress" },
                 ].map((tab) => (
                   <Button
@@ -607,7 +643,7 @@ export default function Signatures() {
                       </div>
 
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-0.5">
                           <h3 className="font-semibold text-foreground truncate">{request.documentName}</h3>
                           <Badge variant="outline" className={cn("text-xs", statusInfo.color)}>
                             <StatusIcon className="h-3 w-3 mr-1" />
@@ -620,6 +656,22 @@ export default function Signatures() {
                             </Badge>
                           )}
                         </div>
+                        {/* Deal context line */}
+                        {(request.dealId || request.propertyAddress) && (
+                          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
+                            <Building2 className="h-3 w-3 text-brand/60" />
+                            {request.dealId ? (
+                              <>
+                                <span>Linked Deal: {request.propertyAddress || "—"}</span>
+                                {request.dealStatus && (
+                                  <span className="text-brand/80 font-medium">· {request.dealStatus.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</span>
+                                )}
+                              </>
+                            ) : (
+                              <span>{request.propertyAddress}</span>
+                            )}
+                          </p>
+                        )}
                         <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
@@ -629,11 +681,6 @@ export default function Signatures() {
                             <Mail className="h-3 w-3" />
                             {request.recipientEmail}
                           </span>
-                          {request.propertyAddress && (
-                            <span className="hidden md:flex items-center gap-1 truncate">
-                              {request.propertyAddress}
-                            </span>
-                          )}
                         </div>
 
                         {/* Status Timeline */}
