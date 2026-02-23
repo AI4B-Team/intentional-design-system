@@ -132,7 +132,7 @@ const mockRequests: SignatureRequest[] = [
     propertyAddress: "123 Main St, Austin, TX",
     viewedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
     viewCount: 3,
-    lastActivity: "Viewed 3h ago",
+    lastActivity: "Viewed 3h Ago",
     templateId: "tpl-1",
     dealId: "deal-1",
     dealStatus: "offer_made",
@@ -208,7 +208,7 @@ const mockRequests: SignatureRequest[] = [
     propertyAddress: "321 Elm St, San Antonio, TX",
     viewedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
     viewCount: 5,
-    lastActivity: "Viewed 12h ago · No action",
+    lastActivity: "Viewed 12h Ago · No Action",
     templateId: "tpl-5",
     dealId: "deal-5",
     dealStatus: "negotiating",
@@ -228,13 +228,13 @@ const statusConfig: Record<SignatureStatus, { label: string; color: string; icon
 // ─── Helpers ────────────────────────────────────────────────
 function formatTimeAgo(date: Date): string {
   const hours = differenceInHours(new Date(), date);
-  if (hours < 1) return "just now";
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 1) return "Just Now";
+  if (hours < 24) return `${hours}h Ago`;
   const days = differenceInDays(new Date(), date);
-  if (days < 7) return `${days}d ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-  return `${Math.floor(days / 365)}y ago`;
+  if (days < 7) return `${days}d Ago`;
+  if (days < 30) return `${Math.floor(days / 7)}w Ago`;
+  if (days < 365) return `${Math.floor(days / 30)}mo Ago`;
+  return `${Math.floor(days / 365)}y Ago`;
 }
 
 function getNextAction(request: SignatureRequest): { label: string; icon: React.ElementType; color: string } | null {
@@ -244,10 +244,10 @@ function getNextAction(request: SignatureRequest): { label: string; icon: React.
   }
   if (request.status === "pending" && request.viewedAt && !request.signedAt) {
     const hoursSinceView = differenceInHours(new Date(), request.viewedAt);
-    if (hoursSinceView > 6) return { label: `Follow Up (SMS) — Viewed ${hoursSinceView}h ago`, icon: Phone, color: "text-warning" };
-    return { label: "Waiting — Viewed recently", icon: Eye, color: "text-muted-foreground" };
+    if (hoursSinceView > 6) return { label: `Follow Up (SMS) — Viewed ${hoursSinceView}h Ago`, icon: Phone, color: "text-warning" };
+    return { label: "Waiting — Viewed Recently", icon: Eye, color: "text-muted-foreground" };
   }
-  if (request.status === "pending" && !request.viewedAt) return { label: "Waiting — Not yet opened", icon: Clock, color: "text-muted-foreground" };
+  if (request.status === "pending" && !request.viewedAt) return { label: "Waiting — Not Yet Opened", icon: Clock, color: "text-muted-foreground" };
   if (request.status === "declined") return { label: "Call Signer — Declined", icon: Phone, color: "text-destructive" };
   if (request.status === "draft") return { label: "Send", icon: Send, color: "text-brand" };
   return null;
