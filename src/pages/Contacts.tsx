@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
@@ -50,6 +50,7 @@ import {
   X,
 } from "lucide-react";
 import { useDealSources, useDeleteDealSource, type DealSourceType, type DealSourceStatus } from "@/hooks/useDealSources";
+import { useSyncContacts } from "@/hooks/useSyncContacts";
 import { AddDealSourceModal } from "@/components/deal-sources";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -85,6 +86,16 @@ export default function Contacts() {
     sortBy: "newest",
   });
   const deleteMutation = useDeleteDealSource();
+  const syncContacts = useSyncContacts();
+  const hasSynced = useRef(false);
+
+  // Auto-sync contacts on first load when there are no contacts
+  useEffect(() => {
+    if (!isLoading && contacts.length === 0 && !hasSynced.current && !syncContacts.isPending) {
+      hasSynced.current = true;
+      syncContacts.mutate();
+    }
+  }, [isLoading, contacts.length]);
 
   // Filter and sort contacts
   const filteredContacts = contacts
