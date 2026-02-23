@@ -40,7 +40,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const SITE_TYPES = [
   {
     id: "seller",
-    name: "Seller Landing Page",
+    name: "Seller Site",
     description: "Capture motivated seller leads with a 'We Buy Houses' page",
     icon: Home,
     color: "text-emerald-600",
@@ -51,7 +51,7 @@ const SITE_TYPES = [
   },
   {
     id: "buyer",
-    name: "Buyer / Listing Site",
+    name: "Buyer Site",
     description: "Showcase deals and properties to attract cash buyers",
     icon: Users,
     color: "text-blue-600",
@@ -62,7 +62,7 @@ const SITE_TYPES = [
   },
   {
     id: "company",
-    name: "Company / Brand Site",
+    name: "Company Site",
     description: "Professional company website with about, services, and contact info",
     icon: Building2,
     color: "text-violet-600",
