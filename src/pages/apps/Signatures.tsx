@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +30,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Plus,
   Search,
   PenTool,
@@ -47,9 +52,17 @@ import {
   Users,
   AlertCircle,
   RefreshCw,
+  Link2,
+  UserPlus,
+  Ban,
+  ArrowRight,
+  Phone,
+  MessageSquare,
+  Timer,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow, differenceInHours, differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 
@@ -66,6 +79,9 @@ interface SignatureRequest {
   signedAt?: Date;
   expiresAt?: Date;
   propertyAddress?: string;
+  viewedAt?: Date;
+  viewCount?: number;
+  lastActivity?: string;
 }
 
 const mockRequests: SignatureRequest[] = [
@@ -77,8 +93,11 @@ const mockRequests: SignatureRequest[] = [
     status: "pending",
     createdAt: new Date("2024-01-20"),
     sentAt: new Date("2024-01-20"),
-    expiresAt: new Date("2024-02-20"),
+    expiresAt: new Date(Date.now() + 36 * 60 * 60 * 1000), // 36h from now
     propertyAddress: "123 Main St, Austin, TX",
+    viewedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
+    viewCount: 3,
+    lastActivity: "Viewed 3h ago",
   },
   {
     id: "2",
@@ -90,6 +109,8 @@ const mockRequests: SignatureRequest[] = [
     sentAt: new Date("2024-01-18"),
     signedAt: new Date("2024-01-19"),
     propertyAddress: "456 Oak Ave, Dallas, TX",
+    viewCount: 2,
+    lastActivity: "Signed",
   },
   {
     id: "3",
@@ -100,6 +121,8 @@ const mockRequests: SignatureRequest[] = [
     createdAt: new Date("2024-01-15"),
     sentAt: new Date("2024-01-15"),
     propertyAddress: "789 Pine Rd, Houston, TX",
+    viewCount: 1,
+    lastActivity: "Declined",
   },
   {
     id: "4",
@@ -108,16 +131,54 @@ const mockRequests: SignatureRequest[] = [
     recipientEmail: "emily.brown@email.com",
     status: "draft",
     createdAt: new Date("2024-01-22"),
+    viewCount: 0,
+    lastActivity: "Draft",
+  },
+  {
+    id: "5",
+    documentName: "Addendum - 321 Elm St",
+    recipientName: "David Lee",
+    recipientEmail: "david.lee@email.com",
+    status: "pending",
+    createdAt: new Date("2024-01-21"),
+    sentAt: new Date("2024-01-21"),
+    expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+    propertyAddress: "321 Elm St, San Antonio, TX",
+    viewedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
+    viewCount: 5,
+    lastActivity: "Viewed 12h ago · No action",
   },
 ];
 
 const statusConfig: Record<SignatureStatus, { label: string; color: string; icon: React.ElementType }> = {
-  draft: { label: "Draft", color: "bg-muted text-muted-foreground", icon: FileText },
-  pending: { label: "Pending", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
-  signed: { label: "Signed", color: "bg-success/10 text-success border-success/20", icon: CheckCircle },
-  declined: { label: "Declined", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
+  draft: { label: "In Progress", color: "bg-muted text-muted-foreground", icon: FileText },
+  pending: { label: "Out for Signature", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
+  signed: { label: "Completed", color: "bg-success/10 text-success border-success/20", icon: CheckCircle },
+  declined: { label: "Needs Review", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
   expired: { label: "Expired", color: "bg-muted text-muted-foreground", icon: AlertCircle },
 };
+
+function formatTimeAgo(date: Date): string {
+  const hours = differenceInHours(new Date(), date);
+  if (hours < 1) return "just now";
+  if (hours < 24) return `${hours}h ago`;
+  const days = differenceInDays(new Date(), date);
+  if (days < 7) return `${days}d ago`;
+  if (days < 30) return `${Math.floor(days / 7)}w ago`;
+  if (days < 365) return `${Math.floor(days / 30)}mo ago`;
+  return `${Math.floor(days / 365)}y ago`;
+}
+
+function getNextAction(request: SignatureRequest): { label: string; icon: React.ElementType; color: string } | null {
+  if (request.status === "pending" && request.viewedAt && !request.signedAt) {
+    const hoursSinceView = differenceInHours(new Date(), request.viewedAt);
+    if (hoursSinceView > 6) return { label: "Follow Up", icon: Phone, color: "text-warning" };
+    return { label: "Resend", icon: RefreshCw, color: "text-content-secondary" };
+  }
+  if (request.status === "declined") return { label: "Call", icon: Phone, color: "text-destructive" };
+  if (request.status === "draft") return { label: "Send", icon: Send, color: "text-brand" };
+  return null;
+}
 
 export default function Signatures() {
   const [searchParams] = useSearchParams();
@@ -145,11 +206,20 @@ export default function Signatures() {
     return matchesSearch && req.status === activeTab;
   });
 
+  // Operational stats
   const stats = {
     total: requests.length,
-    pending: requests.filter((r) => r.status === "pending").length,
-    signed: requests.filter((r) => r.status === "signed").length,
-    declined: requests.filter((r) => r.status === "declined").length,
+    outForSignature: requests.filter((r) => r.status === "pending").length,
+    expiringSoon: requests.filter((r) => {
+      if (r.status !== "pending" || !r.expiresAt) return false;
+      return differenceInHours(r.expiresAt, new Date()) <= 48;
+    }).length,
+    needsFollowUp: requests.filter((r) => {
+      return r.status === "pending" && r.viewedAt && !r.signedAt;
+    }).length,
+    completionRate: requests.length > 0
+      ? Math.round((requests.filter((r) => r.status === "signed").length / requests.filter((r) => r.status !== "draft").length) * 100)
+      : 0,
   };
 
   const handleSendRequest = () => {
@@ -168,21 +238,38 @@ export default function Signatures() {
       createdAt: new Date(),
       sentAt: new Date(),
       expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      viewCount: 0,
     };
 
     setRequests([request, ...requests]);
     setNewRequest({ documentName: "", recipientName: "", recipientEmail: "", propertyAddress: "" });
     setIsNewRequestOpen(false);
-    toast.success("Signature request sent!");
+    toast.success("Document sent for signature!");
   };
 
-  const handleResend = (id: string) => {
+  const handleResend = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     toast.success("Reminder sent to recipient");
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
     setRequests(requests.filter((r) => r.id !== id));
+    setSelectedRequest(null);
     toast.success("Request deleted");
+  };
+
+  const handleCopyLink = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    navigator.clipboard.writeText(`https://app.realelite.com/sign/${id}`);
+    toast.success("Signing link copied");
+  };
+
+  const handleVoid = (id: string, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setRequests(requests.map((r) => r.id === id ? { ...r, status: "expired" as SignatureStatus } : r));
+    setSelectedRequest(null);
+    toast.success("Request voided");
   };
 
   return (
@@ -190,13 +277,13 @@ export default function Signatures() {
       <PageLayout>
         <PageHeader
           title="Digital Signatures"
-          description="Send documents for electronic signature and track signing status"
+          description="Send, track, and automate deal paperwork"
         >
           <Dialog open={isNewRequestOpen} onOpenChange={setIsNewRequestOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2">
                 <Send className="h-4 w-4" />
-                New Request
+                Send for Signature
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
@@ -253,42 +340,47 @@ export default function Signatures() {
                 </Button>
                 <Button onClick={handleSendRequest} className="gap-2">
                   <Send className="h-4 w-4" />
-                  Send Request
+                  Send
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </PageHeader>
 
-        {/* Stats */}
+        {/* Operational Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card padding="md" className="text-center">
-            <p className="text-2xl font-bold text-foreground">{stats.total}</p>
-            <p className="text-sm text-muted-foreground">Total Requests</p>
+            <p className="text-2xl font-bold text-foreground">{stats.outForSignature}</p>
+            <p className="text-sm text-muted-foreground">Out for Signature</p>
           </Card>
           <Card padding="md" className="text-center">
-            <p className="text-2xl font-bold text-warning">{stats.pending}</p>
-            <p className="text-sm text-muted-foreground">Pending</p>
+            <p className={cn("text-2xl font-bold", stats.expiringSoon > 0 ? "text-destructive" : "text-foreground")}>{stats.expiringSoon}</p>
+            <p className="text-sm text-muted-foreground">Expiring Soon</p>
+            <p className="text-xs text-muted-foreground/70">Next 48h</p>
           </Card>
           <Card padding="md" className="text-center">
-            <p className="text-2xl font-bold text-success">{stats.signed}</p>
-            <p className="text-sm text-muted-foreground">Signed</p>
+            <p className={cn("text-2xl font-bold", stats.needsFollowUp > 0 ? "text-warning" : "text-foreground")}>{stats.needsFollowUp}</p>
+            <p className="text-sm text-muted-foreground">Needs Follow-Up</p>
+            <p className="text-xs text-muted-foreground/70">Viewed, not signed</p>
           </Card>
           <Card padding="md" className="text-center">
-            <p className="text-2xl font-bold text-destructive">{stats.declined}</p>
-            <p className="text-sm text-muted-foreground">Declined</p>
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-2xl font-bold text-success">{stats.completionRate}%</p>
+              <TrendingUp className="h-4 w-4 text-success" />
+            </div>
+            <p className="text-sm text-muted-foreground">Completion Rate</p>
           </Card>
         </div>
 
-        {/* Tabs and Search */}
+        {/* Filters and Search */}
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex gap-2 flex-wrap">
             {[
               { value: "all", label: "All" },
-              { value: "pending", label: "Pending" },
-              { value: "signed", label: "Signed" },
-              { value: "declined", label: "Declined" },
-              { value: "draft", label: "Drafts" },
+              { value: "pending", label: "Out for Signature" },
+              { value: "signed", label: "Completed" },
+              { value: "declined", label: "Needs Review" },
+              { value: "draft", label: "In Progress" },
             ].map((tab) => (
               <Button
                 key={tab.value}
@@ -316,10 +408,11 @@ export default function Signatures() {
           {filteredRequests.map((request) => {
             const statusInfo = statusConfig[request.status];
             const StatusIcon = statusInfo.icon;
+            const nextAction = getNextAction(request);
 
             return (
               <Card key={request.id} padding="md" className="group hover:shadow-md transition-shadow cursor-pointer" onClick={() => setSelectedRequest(request)}>
-                <div className="flex items-center gap-4 justify-center text-center">
+                <div className="flex items-center gap-4">
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                     <PenTool className="h-5 w-5 text-primary" />
                   </div>
@@ -331,6 +424,12 @@ export default function Signatures() {
                         <StatusIcon className="h-3 w-3 mr-1" />
                         {statusInfo.label}
                       </Badge>
+                      {nextAction && (
+                        <Badge variant="outline" className={cn("text-xs gap-1", nextAction.color)}>
+                          <nextAction.icon className="h-3 w-3" />
+                          {nextAction.label}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span className="flex items-center gap-1">
@@ -347,39 +446,107 @@ export default function Signatures() {
                         </span>
                       )}
                     </div>
+
+                    {/* Status Timeline */}
+                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        {request.sentAt ? (
+                          <>Sent {formatTimeAgo(request.sentAt)}</>
+                        ) : (
+                          <>Created {formatTimeAgo(request.createdAt)}</>
+                        )}
+                      </span>
+                      {request.viewedAt && (
+                        <>
+                          <ArrowRight className="h-3 w-3" />
+                          <span>Viewed {formatTimeAgo(request.viewedAt)}</span>
+                        </>
+                      )}
+                      {request.signedAt && (
+                        <>
+                          <ArrowRight className="h-3 w-3" />
+                          <span className="text-success">Signed {formatTimeAgo(request.signedAt)}</span>
+                        </>
+                      )}
+                      {request.viewCount !== undefined && request.viewCount > 0 && (
+                        <span className="ml-2 flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          {request.viewCount}×
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="text-right hidden sm:block">
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {request.signedAt
-                        ? `Signed ${formatDistanceToNow(request.signedAt, { addSuffix: true })}`
-                        : request.sentAt
-                        ? `Sent ${formatDistanceToNow(request.sentAt, { addSuffix: true })}`
-                        : `Created ${formatDistanceToNow(request.createdAt, { addSuffix: true })}`}
-                    </p>
+                  <div className="text-right hidden sm:flex flex-col items-end gap-1">
                     {request.expiresAt && request.status === "pending" && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className={cn(
+                        "text-xs",
+                        differenceInHours(request.expiresAt, new Date()) <= 48
+                          ? "text-destructive font-medium"
+                          : "text-muted-foreground"
+                      )}>
                         Expires {format(request.expiresAt, "MMM d")}
                       </p>
                     )}
+                    {request.lastActivity && (
+                      <p className="text-xs text-muted-foreground">{request.lastActivity}</p>
+                    )}
                   </div>
+
+                  {/* Quick Actions */}
+                  <TooltipProvider delayDuration={0}>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {request.status === "pending" && (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleResend(request.id, e)}>
+                              <RefreshCw className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">Send Reminder</TooltipContent>
+                        </Tooltip>
+                      )}
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleCopyLink(request.id, e)}>
+                            <Link2 className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">Copy Link</TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </TooltipProvider>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
                         <MoreVertical className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="gap-2">
+                      <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); }}>
                         <Eye className="h-4 w-4" />
-                        View Document
+                        View Details
                       </DropdownMenuItem>
                       {request.status === "pending" && (
-                        <DropdownMenuItem className="gap-2" onClick={() => handleResend(request.id)}>
-                          <RefreshCw className="h-4 w-4" />
-                          Send Reminder
-                        </DropdownMenuItem>
+                        <>
+                          <DropdownMenuItem className="gap-2" onClick={(e) => handleResend(request.id, e as any)}>
+                            <RefreshCw className="h-4 w-4" />
+                            Send Reminder
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2" onClick={(e) => handleCopyLink(request.id, e as any)}>
+                            <Link2 className="h-4 w-4" />
+                            Copy Link
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2">
+                            <UserPlus className="h-4 w-4" />
+                            Add Signer
+                          </DropdownMenuItem>
+                          <DropdownMenuItem className="gap-2" onClick={(e) => handleVoid(request.id, e as any)}>
+                            <Ban className="h-4 w-4" />
+                            Void
+                          </DropdownMenuItem>
+                        </>
                       )}
                       {request.status === "signed" && (
                         <DropdownMenuItem className="gap-2">
@@ -387,10 +554,14 @@ export default function Signatures() {
                           Download Signed
                         </DropdownMenuItem>
                       )}
+                      <DropdownMenuItem className="gap-2">
+                        <FileText className="h-4 w-4" />
+                        View Audit Trail
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="gap-2 text-destructive focus:text-destructive"
-                        onClick={() => handleDelete(request.id)}
+                        onClick={(e) => handleDelete(request.id, e as any)}
                       >
                         <Trash2 className="h-4 w-4" />
                         Delete
@@ -414,7 +585,7 @@ export default function Signatures() {
               {!searchQuery && (
                 <Button onClick={() => setIsNewRequestOpen(true)} className="gap-2">
                   <Send className="h-4 w-4" />
-                  New Request
+                  Send for Signature
                 </Button>
               )}
             </div>
@@ -440,7 +611,41 @@ export default function Signatures() {
                       <Icon className="h-3 w-3 mr-1" />
                       {info.label}
                     </Badge>
+                    {selectedRequest.viewCount !== undefined && selectedRequest.viewCount > 0 && (
+                      <Badge variant="outline" className="text-xs gap-1">
+                        <Eye className="h-3 w-3" />
+                        Viewed {selectedRequest.viewCount}×
+                      </Badge>
+                    )}
                   </div>
+
+                  {/* Status Timeline in Detail */}
+                  <div className="flex items-center gap-2 text-sm border border-border-subtle rounded-lg p-3 bg-surface-secondary">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {selectedRequest.sentAt && (
+                        <span className="flex items-center gap-1 text-muted-foreground">
+                          <Send className="h-3 w-3" /> Sent {formatTimeAgo(selectedRequest.sentAt)}
+                        </span>
+                      )}
+                      {selectedRequest.viewedAt && (
+                        <>
+                          <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Eye className="h-3 w-3" /> Opened {formatTimeAgo(selectedRequest.viewedAt)}
+                          </span>
+                        </>
+                      )}
+                      {selectedRequest.signedAt && (
+                        <>
+                          <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                          <span className="flex items-center gap-1 text-success">
+                            <CheckCircle className="h-3 w-3" /> Signed {formatTimeAgo(selectedRequest.signedAt)}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground mb-1">Recipient</p>
@@ -475,25 +680,42 @@ export default function Signatures() {
                     {selectedRequest.expiresAt && (
                       <div>
                         <p className="text-muted-foreground mb-1">Expires</p>
-                        <p className="font-medium">{format(selectedRequest.expiresAt, "MMM d, yyyy")}</p>
+                        <p className={cn(
+                          "font-medium",
+                          selectedRequest.expiresAt && differenceInHours(selectedRequest.expiresAt, new Date()) <= 48
+                            ? "text-destructive"
+                            : ""
+                        )}>
+                          {format(selectedRequest.expiresAt, "MMM d, yyyy")}
+                        </p>
                       </div>
                     )}
                   </div>
                 </div>
-                <DialogFooter>
+                <DialogFooter className="flex-wrap gap-2">
                   {selectedRequest.status === "pending" && (
-                    <Button variant="outline" className="gap-2" onClick={() => { handleResend(selectedRequest.id); setSelectedRequest(null); }}>
-                      <RefreshCw className="h-4 w-4" />
-                      Send Reminder
-                    </Button>
+                    <>
+                      <Button variant="outline" size="sm" className="gap-2" onClick={() => handleCopyLink(selectedRequest.id)}>
+                        <Link2 className="h-4 w-4" />
+                        Copy Link
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2" onClick={() => { handleResend(selectedRequest.id); setSelectedRequest(null); }}>
+                        <RefreshCw className="h-4 w-4" />
+                        Send Reminder
+                      </Button>
+                      <Button variant="outline" size="sm" className="gap-2" onClick={() => handleVoid(selectedRequest.id)}>
+                        <Ban className="h-4 w-4" />
+                        Void
+                      </Button>
+                    </>
                   )}
                   {selectedRequest.status === "signed" && (
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" size="sm" className="gap-2">
                       <Download className="h-4 w-4" />
                       Download Signed
                     </Button>
                   )}
-                  <Button variant="destructive" className="gap-2" onClick={() => { handleDelete(selectedRequest.id); setSelectedRequest(null); }}>
+                  <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
                     <Trash2 className="h-4 w-4" />
                     Delete
                   </Button>
