@@ -3,6 +3,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Sparkles, Bot, Brain, MessageSquare, Zap, TrendingUp } from "lucide-react";
 import { AIVAChat } from "@/components/aiva/AIVAChat";
+import { AIActionsLog } from "@/components/ai/AIActionsLog";
 
 export default function AIVA() {
   return (
@@ -89,6 +90,11 @@ export default function AIVA() {
               <p className="text-[10px] text-muted-foreground">Research trends</p>
             </Card>
           </div>
+
+          {/* AI Actions Log — Automation Feed */}
+          <Card className="p-4">
+            <AIActionsLog />
+          </Card>
 
           <Card className="p-4 border-dashed">
             <div className="flex items-center gap-2 text-muted-foreground">
