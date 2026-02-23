@@ -22,6 +22,7 @@ import {
   Sparkles,
   Clock,
   Star,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -96,6 +97,16 @@ const apps: AppItem[] = [
   },
   // Marketing
   {
+    id: "campaigns",
+    name: "Campaigns",
+    description: "Create and manage email campaigns to agents and property owners",
+    icon: Megaphone,
+    iconBg: "bg-pink-100",
+    iconColor: "text-pink-600",
+    href: "/dispo/campaigns",
+    category: "marketing",
+  },
+  {
     id: "offer-blaster",
     name: "Offer Blaster",
     description: "Send bulk offers to agents and property owners",
@@ -127,6 +138,16 @@ const apps: AppItem[] = [
     category: "marketing",
   },
   // Operations
+  {
+    id: "financing",
+    name: "Financing",
+    description: "Find funding, manage lenders, and track capital sources",
+    icon: DollarSign,
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    href: "/financing",
+    category: "operations",
+  },
   {
     id: "renovations",
     name: "Renovations",
