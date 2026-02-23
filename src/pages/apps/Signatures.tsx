@@ -349,7 +349,7 @@ export default function Signatures() {
                   </div>
 
                   <div className="text-right hidden sm:block">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground capitalize">
                       {request.signedAt
                         ? `Signed ${formatDistanceToNow(request.signedAt, { addSuffix: true })}`
                         : request.sentAt
