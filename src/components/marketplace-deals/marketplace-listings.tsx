@@ -409,17 +409,16 @@ function DealListItem({
             <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
               <span className="text-[9px] text-muted-foreground self-start">View As:</span>
               <div className="flex items-center gap-1">
-                <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
                   <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
                           onClick={(e) => handleViewModeChange(e, "flip")}
                           className={cn(
-                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                            "px-2 py-0.5 text-[10px] font-medium rounded-md border transition-all",
                             cardViewMode === "flip"
-                              ? "bg-background text-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
+                              ? "bg-surface-secondary text-foreground border-border font-semibold"
+                              : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                           )}
                         >
                           Flip
@@ -436,10 +435,10 @@ function DealListItem({
                         <button
                           onClick={(e) => handleViewModeChange(e, "hold")}
                           className={cn(
-                            "px-2 py-0.5 text-[10px] font-medium rounded-sm transition-all",
+                            "px-2 py-0.5 text-[10px] font-medium rounded-md border transition-all",
                             cardViewMode === "hold"
-                              ? "bg-background text-foreground shadow-sm"
-                              : "text-muted-foreground hover:text-foreground"
+                              ? "bg-surface-secondary text-foreground border-border font-semibold"
+                              : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                           )}
                         >
                           Hold
@@ -450,7 +449,6 @@ function DealListItem({
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -815,14 +813,14 @@ function DealCard({
         {/* View Mode Toggle with helper text */}
         <div className="mt-2 flex flex-col items-center">
           <span className="text-[10px] text-muted-foreground mb-1">View Property As:</span>
-          <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+          <div className="flex items-center gap-2">
             <button
               onClick={(e) => handleViewModeChange(e, "flip")}
               className={cn(
-                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                 cardViewMode === "flip"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-surface-secondary text-foreground border-border font-semibold"
+                  : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
               )}
             >
               Flip
@@ -830,10 +828,10 @@ function DealCard({
             <button
               onClick={(e) => handleViewModeChange(e, "hold")}
               className={cn(
-                "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                 cardViewMode === "hold"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-surface-secondary text-foreground border-border font-semibold"
+                  : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
               )}
             >
               Hold
@@ -1031,17 +1029,17 @@ export function MarketplaceListings({
           {/* Global View As Toggle */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-muted-foreground mr-1">View As:</span>
-            <div className="inline-flex rounded-md border border-border bg-muted p-0.5">
+            <div className="flex items-center gap-2">
               <TooltipProvider delayDuration={300}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => onGlobalCardViewModeChange?.("flip")}
                       className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                        "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                         effectiveCardViewMode === "flip"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
+                          ? "bg-surface-secondary text-foreground border-border font-semibold"
+                          : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                       )}
                     >
                       Flip
@@ -1058,10 +1056,10 @@ export function MarketplaceListings({
                     <button
                       onClick={() => onGlobalCardViewModeChange?.("hold")}
                       className={cn(
-                        "px-3 py-1 text-xs font-medium rounded-sm transition-all",
+                        "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                         effectiveCardViewMode === "hold"
-                          ? "bg-background text-foreground shadow-sm"
-                          : "text-muted-foreground hover:text-foreground"
+                          ? "bg-surface-secondary text-foreground border-border font-semibold"
+                          : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                       )}
                     >
                       Hold
