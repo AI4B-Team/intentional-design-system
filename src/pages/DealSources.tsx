@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus } from "lucide-react";
+import { Plus, RefreshCw } from "lucide-react";
+import { useSyncContacts } from "@/hooks/useSyncContacts";
 import {
   AddContactModal,
   ContactsTable,
@@ -69,6 +70,7 @@ export default function DealSources() {
   const { data: stats, isLoading: statsLoading } = useContactStats(activeTab);
   const logContact = useLogContactInteraction();
   const deleteContact = useDeleteContact();
+  const syncContacts = useSyncContacts();
 
   const handleTabChange = (value: string) => {
     setActiveTab(value as ContactType | "all");
@@ -113,9 +115,19 @@ export default function DealSources() {
               Manage your network of agents, buyers, sellers, lenders, and vendors
             </p>
           </div>
-          <Button variant="primary" icon={<Plus />} onClick={() => setShowAddModal(true)}>
-            Add Contact
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="secondary" 
+              icon={<RefreshCw className={syncContacts.isPending ? "animate-spin" : ""} />} 
+              onClick={() => syncContacts.mutate()}
+              disabled={syncContacts.isPending}
+            >
+              {syncContacts.isPending ? "Syncing..." : "Sync Contacts"}
+            </Button>
+            <Button variant="primary" icon={<Plus />} onClick={() => setShowAddModal(true)}>
+              Add Contact
+            </Button>
+          </div>
         </div>
 
         {/* Stats - type-specific */}
