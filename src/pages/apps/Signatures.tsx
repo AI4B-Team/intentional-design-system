@@ -219,7 +219,7 @@ const mockRequests: SignatureRequest[] = [
 
 const statusConfig: Record<SignatureStatus, { label: string; color: string; icon: React.ElementType }> = {
   draft: { label: "In Progress", color: "bg-muted text-muted-foreground", icon: FileText },
-  pending: { label: "Out for Signature", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
+  pending: { label: "Out For Signature", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
   signed: { label: "Completed", color: "bg-success/10 text-success border-success/20", icon: CheckCircle },
   declined: { label: "Action Required", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
   expired: { label: "Expired", color: "bg-muted text-muted-foreground", icon: AlertCircle },
@@ -597,7 +597,7 @@ export default function Signatures() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <Card padding="md" className="text-center">
                 <p className="text-2xl font-bold text-foreground">{stats.outForSignature}</p>
-                <p className="text-sm text-muted-foreground">Out for Signature</p>
+                <p className="text-sm text-muted-foreground">Out For Signature</p>
               </Card>
               <Card padding="md" className="text-center">
                 <p className={cn("text-2xl font-bold", stats.expiringSoon > 0 ? "text-destructive" : "text-foreground")}>{stats.expiringSoon}</p>
@@ -623,7 +623,7 @@ export default function Signatures() {
               <div className="flex gap-2 flex-wrap">
                 {[
                   { value: "all", label: "All" },
-                  { value: "pending", label: "Out for Signature" },
+                  { value: "pending", label: "Out For Signature" },
                   { value: "signed", label: "Completed" },
                   { value: "declined", label: "Action Required" },
                   { value: "draft", label: "In Progress" },
