@@ -285,21 +285,25 @@ export function WizardLivePreview({
         {/* Founders Featured On bar */}
         {showCredibilityBar && displayLogos.length > 0 && (
           <div className="border-t border-border py-3 overflow-hidden" style={{ backgroundColor: "hsl(48 16% 92%)" }}>
-            <div className={cn("px-5 flex items-center gap-2", credibilityAnimated && "animate-marquee-wrapper")}>
+            <div className={cn("px-5 flex items-center justify-center gap-4", credibilityAnimated && "animate-marquee-wrapper")}>
               <span className="text-[8px] text-muted-foreground uppercase tracking-wider font-semibold whitespace-nowrap">
                 Founders Featured On
               </span>
               <div className={cn(
-                "flex items-center gap-4 opacity-60",
+                "flex items-center justify-center gap-6 opacity-60",
                 credibilityAnimated && "animate-marquee"
               )}>
                 {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => {
                   const origIdx = i % displayLogos.length;
                   const imgUrl = credibilityLogoImages?.[String(origIdx)];
-                  return imgUrl ? (
-                    <img key={i} src={imgUrl} alt={name} className="h-[12px] max-w-[40px] object-contain" />
-                  ) : (
-                    <NetworkLogo key={i} name={name} sizeClass="text-[9px]" colorClass="text-foreground" />
+                  return (
+                    <div key={i} className="flex items-center justify-center" style={{ width: 60, height: 16 }}>
+                      {imgUrl ? (
+                        <img src={imgUrl} alt={name} className="max-h-[14px] max-w-[56px] object-contain" />
+                      ) : (
+                        <NetworkLogo name={name} sizeClass="text-[10px]" colorClass="text-foreground" />
+                      )}
+                    </div>
                   );
                 })}
               </div>
