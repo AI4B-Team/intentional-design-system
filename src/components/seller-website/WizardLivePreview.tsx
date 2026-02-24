@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail } from "lucide-react";
 
@@ -13,6 +14,23 @@ interface WizardLivePreviewProps {
   heroSubheadline: string;
   formSubmitText: string;
   logoUrl?: string;
+  // Credibility bar
+  showCredibilityBar?: boolean;
+  credibilityLogos?: string[];
+  credibilityAnimated?: boolean;
+  // Section toggles
+  showStats?: boolean;
+  showHowItWorks?: boolean;
+  showComparison?: boolean;
+  showTestimonials?: boolean;
+  showSituations?: boolean;
+  showFAQ?: boolean;
+  showCTA?: boolean;
+  // Editable content overrides
+  trustBadgeText?: string;
+  benefitsLine?: string;
+  ctaHeadline?: string;
+  ctaSubheadline?: string;
 }
 
 const SITUATION_ICONS: Record<string, React.ElementType> = {
@@ -40,12 +58,42 @@ export function WizardLivePreview({
   heroSubheadline,
   formSubmitText,
   logoUrl,
+  showCredibilityBar = true,
+  credibilityLogos,
+  credibilityAnimated = false,
+  showStats: showStatsProp,
+  showHowItWorks: showHowItWorksProp,
+  showComparison: showComparisonProp,
+  showTestimonials: showTestimonialsProp,
+  showSituations: showSituationsProp,
+  showFAQ: showFAQProp,
+  showCTA: showCTAProp,
+  trustBadgeText: trustBadgeTextProp,
+  benefitsLine: benefitsLineProp,
+  ctaHeadline: ctaHeadlineProp,
+  ctaSubheadline: ctaSubheadlineProp,
 }: WizardLivePreviewProps) {
   const defaults = getSiteTypeDefaults(siteType);
   const headline = heroHeadline || defaults.heroHeadline;
   const subheadline = heroSubheadline || defaults.heroSubheadline;
   const submitText = formSubmitText || defaults.formSubmitText;
   const company = companyName || "Swift Home Buyers";
+  const displayLogos = credibilityLogos && credibilityLogos.length > 0 ? credibilityLogos.filter(Boolean) : defaults.asSeenOn;
+  
+  // Section visibility (prop overrides defaults)
+  const sShowStats = showStatsProp ?? defaults.showStats;
+  const sShowHowItWorks = showHowItWorksProp ?? defaults.showHowItWorks;
+  const sShowComparison = showComparisonProp ?? defaults.showComparison;
+  const sShowTestimonials = showTestimonialsProp ?? true;
+  const sShowSituations = showSituationsProp ?? defaults.showSituations;
+  const sShowFAQ = showFAQProp ?? true;
+  const sShowCTA = showCTAProp ?? true;
+  
+  // Content overrides
+  const trustBadge = trustBadgeTextProp || defaults.trustBadgeText;
+  const benefitsLn = benefitsLineProp || defaults.heroBenefitsLine;
+  const ctaHl = ctaHeadlineProp || defaults.ctaHeadline;
+  const ctaSub = ctaSubheadlineProp || defaults.ctaSubheadline;
 
   const replacePlaceholder = (text: string) => text.replace(/\{companyName\}/g, company);
 
@@ -58,7 +106,7 @@ export function WizardLivePreview({
           <div className="flex-1 min-w-0 space-y-2">
             <div className="inline-flex items-center gap-1 bg-background border border-border rounded-full px-2 py-0.5">
               <Star className="h-2.5 w-2.5" style={{ color: accentColor }} />
-              <span className="text-[9px] text-muted-foreground">{defaults.trustBadgeText}</span>
+              <span className="text-[9px] text-muted-foreground">{trustBadge}</span>
             </div>
 
             <h1 className="text-[18px] font-bold leading-tight text-foreground">
@@ -74,7 +122,7 @@ export function WizardLivePreview({
             </h1>
 
             <p className="text-[10px] text-muted-foreground">{subheadline}</p>
-            <p className="text-[9px] font-bold text-foreground">{defaults.heroBenefitsLine}</p>
+            <p className="text-[9px] font-bold text-foreground">{benefitsLn}</p>
             <p className="text-[9px] text-muted-foreground">{defaults.heroBenefitsSubline}</p>
 
             {defaults.quickStats.length > 0 && (
@@ -124,15 +172,18 @@ export function WizardLivePreview({
         </div>
 
         {/* Founders Featured On bar */}
-        {defaults.asSeenOn.length > 0 && (
-          <div className="border-t border-border py-3" style={{ backgroundColor: "hsl(48 16% 92%)" }}>
-            <div className="px-5 flex items-center gap-2">
+        {showCredibilityBar && displayLogos.length > 0 && (
+          <div className="border-t border-border py-3 overflow-hidden" style={{ backgroundColor: "hsl(48 16% 92%)" }}>
+            <div className={cn("px-5 flex items-center gap-2", credibilityAnimated && "animate-marquee-wrapper")}>
               <span className="text-[8px] text-muted-foreground uppercase tracking-wider font-semibold whitespace-nowrap">
                 Founders Featured On
               </span>
-              <div className="flex items-center gap-2 opacity-60">
-                {defaults.asSeenOn.map((name, i) => (
-                  <span key={i} className="text-[8px] font-bold text-foreground">{name}</span>
+              <div className={cn(
+                "flex items-center gap-4 opacity-60",
+                credibilityAnimated && "animate-marquee"
+              )}>
+                {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => (
+                  <span key={i} className="text-[9px] font-extrabold text-foreground tracking-tight whitespace-nowrap uppercase">{name}</span>
                 ))}
               </div>
             </div>
@@ -227,7 +278,7 @@ export function WizardLivePreview({
       ) : (
         <>
           {/* ── STATS BAR ── */}
-          {defaults.showStats && defaults.stats.length > 0 && (
+          {sShowStats && defaults.stats.length > 0 && (
             <div className="flex justify-around py-3 border-y border-border bg-muted/20">
               {defaults.stats.map((s, i) => (
                 <div key={i} className="text-center">
@@ -239,7 +290,7 @@ export function WizardLivePreview({
           )}
 
           {/* ── HOW IT WORKS ── */}
-          {defaults.showHowItWorks && defaults.processSteps.length > 0 && (
+          {sShowHowItWorks && defaults.processSteps.length > 0 && (
             <div className="px-5 py-5 text-center">
               <h2 className="text-[14px] font-bold text-foreground mb-0.5">How It Works</h2>
               <p className="text-[9px] text-muted-foreground mb-4">Three simple steps — no surprises, no hidden costs</p>
@@ -258,7 +309,7 @@ export function WizardLivePreview({
           )}
 
           {/* ── COMPARISON TABLE ── */}
-          {defaults.showComparison && defaults.comparisonRows.length > 0 && (
+          {sShowComparison && defaults.comparisonRows.length > 0 && (
             <div className="px-5 py-5 bg-muted/10">
               <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(defaults.comparisonHeadline)}</h2>
               <p className="text-[9px] text-muted-foreground text-center mb-3">{defaults.comparisonSubheadline}</p>
@@ -280,45 +331,47 @@ export function WizardLivePreview({
           )}
 
           {/* ── TESTIMONIALS ── */}
-          <div className="px-5 py-5 text-center">
-            <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.testimonialsHeadline}</h2>
-            {defaults.testimonialsTagline && (
-              <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
-            )}
-            <p className="text-[9px] text-muted-foreground mb-3">{defaults.testimonialsSubheadline}</p>
-            <div className="flex gap-2">
-              {[
-                { name: "Sarah Mitchell", location: "Miami, FL", amount: "$285,000", text: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days." },
-                { name: "James Rivera", location: "Austin, TX", amount: "$342,000", text: "We had 3 weeks to move. They made an offer the next day and closed before our move date." },
-                { name: "Marcus Johnson", location: "Phoenix, AZ", amount: "$198,000", text: "I was behind on payments and getting letters from the bank. They bought my house in 6 days." },
-              ].map((t, i) => (
-                <div key={i} className="flex-1 border rounded-lg p-2 text-left bg-background">
-                  <div className="flex gap-0.5 mb-1">
-                    {[1,2,3,4,5].map(s => <Star key={s} className="h-2 w-2 fill-amber-400 text-amber-400" />)}
-                  </div>
-                  <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.text}"</p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
-                        {t.name.split(" ").map(n => n[0]).join("")}
+          {sShowTestimonials && (
+            <div className="px-5 py-5 text-center">
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.testimonialsHeadline}</h2>
+              {defaults.testimonialsTagline && (
+                <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
+              )}
+              <p className="text-[9px] text-muted-foreground mb-3">{defaults.testimonialsSubheadline}</p>
+              <div className="flex gap-2">
+                {[
+                  { name: "Sarah Mitchell", location: "Miami, FL", amount: "$285,000", text: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days." },
+                  { name: "James Rivera", location: "Austin, TX", amount: "$342,000", text: "We had 3 weeks to move. They made an offer the next day and closed before our move date." },
+                  { name: "Marcus Johnson", location: "Phoenix, AZ", amount: "$198,000", text: "I was behind on payments and getting letters from the bank. They bought my house in 6 days." },
+                ].map((t, i) => (
+                  <div key={i} className="flex-1 border rounded-lg p-2 text-left bg-background">
+                    <div className="flex gap-0.5 mb-1">
+                      {[1,2,3,4,5].map(s => <Star key={s} className="h-2 w-2 fill-amber-400 text-amber-400" />)}
+                    </div>
+                    <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.text}"</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1">
+                        <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+                          {t.name.split(" ").map(n => n[0]).join("")}
+                        </div>
+                        <div>
+                          <div className="text-[7px] font-semibold text-foreground">{t.name}</div>
+                          <div className="text-[6px] text-muted-foreground">{t.location}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-[7px] font-semibold text-foreground">{t.name}</div>
-                        <div className="text-[6px] text-muted-foreground">{t.location}</div>
+                      <div className="text-right">
+                        <div className="text-[8px] font-bold text-foreground">{t.amount}</div>
+                        <div className="text-[6px] text-muted-foreground">Sale price</div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-[8px] font-bold text-foreground">{t.amount}</div>
-                      <div className="text-[6px] text-muted-foreground">Sale price</div>
-                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* ── SITUATIONS ── */}
-          {defaults.showSituations && defaults.situations.length > 0 && (
+          {sShowSituations && defaults.situations.length > 0 && (
             <div className="px-5 py-5 bg-muted/10 text-center">
               <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.situationsHeadline}</h2>
               <p className="text-[9px] text-muted-foreground mb-3">{defaults.situationsSubheadline}</p>
@@ -337,36 +390,40 @@ export function WizardLivePreview({
           )}
 
           {/* ── FAQ ── */}
-          <div className="px-5 py-5 text-center">
-            <h2 className="text-[14px] font-bold text-foreground mb-0.5">Frequently Asked Questions</h2>
-            <p className="text-[9px] text-muted-foreground mb-3">Everything you need to know about selling with {company}</p>
-            <div className="space-y-1 max-w-[350px] mx-auto">
-              {["How does the cash offer process work?", "Are there any fees or commissions?", "Do I need to make repairs before selling?", "How fast can I close?"].map((q, i) => (
-                <div key={i} className="flex items-center justify-between border rounded px-2 py-1.5 text-left bg-background">
-                  <span className="text-[8px] text-foreground">{q}</span>
-                  <ChevronDown className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
-                </div>
-              ))}
+          {sShowFAQ && (
+            <div className="px-5 py-5 text-center">
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">Frequently Asked Questions</h2>
+              <p className="text-[9px] text-muted-foreground mb-3">Everything you need to know about selling with {company}</p>
+              <div className="space-y-1 max-w-[350px] mx-auto">
+                {["How does the cash offer process work?", "Are there any fees or commissions?", "Do I need to make repairs before selling?", "How fast can I close?"].map((q, i) => (
+                  <div key={i} className="flex items-center justify-between border rounded px-2 py-1.5 text-left bg-background">
+                    <span className="text-[8px] text-foreground">{q}</span>
+                    <ChevronDown className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
 
       {/* ── CTA BANNER ── */}
-      <div className="px-5 py-6 text-center text-white" style={{ backgroundColor: "#1a1a2e" }}>
-        <h2 className="text-[14px] font-bold mb-1">{defaults.ctaHeadline}</h2>
-        <p className="text-[9px] text-white/70 mb-3 max-w-[300px] mx-auto">{defaults.ctaSubheadline}</p>
-        <div className="flex items-center justify-center gap-2">
-          <button className="rounded-full px-4 py-1.5 text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
-            {defaults.ctaButtonText}
-          </button>
-          {companyPhone && (
-            <span className="text-[9px] text-white/70 flex items-center gap-1">
-              <Phone className="h-2.5 w-2.5" /> {companyPhone}
-            </span>
-          )}
+      {sShowCTA && (
+        <div className="px-5 py-6 text-center text-white" style={{ backgroundColor: "#1a1a2e" }}>
+          <h2 className="text-[14px] font-bold mb-1">{ctaHl}</h2>
+          <p className="text-[9px] text-white/70 mb-3 max-w-[300px] mx-auto">{ctaSub}</p>
+          <div className="flex items-center justify-center gap-2">
+            <button className="rounded-full px-4 py-1.5 text-[9px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+              {defaults.ctaButtonText}
+            </button>
+            {companyPhone && (
+              <span className="text-[9px] text-white/70 flex items-center gap-1">
+                <Phone className="h-2.5 w-2.5" /> {companyPhone}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── FOOTER ── */}
       <div className="px-5 py-4 border-t border-border">

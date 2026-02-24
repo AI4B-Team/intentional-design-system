@@ -786,3 +786,14 @@
 .animate-pulse-slow {
   animation: pulse-slow 5s ease-in-out infinite !important;
 }
+
+/* Marquee animation for credibility bar */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 12s linear infinite;
+}
+

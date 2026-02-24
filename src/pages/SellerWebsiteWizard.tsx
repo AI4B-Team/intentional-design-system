@@ -10,6 +10,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { AIWriterField } from "@/components/seller-website/AIWriterField";
+import { useAIWriter } from "@/hooks/useAIWriter";
 import {
   ArrowLeft,
   ArrowRight,
@@ -32,6 +35,9 @@ import {
   Smartphone,
   RefreshCw,
   ExternalLink,
+  X,
+  Plus,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCreateWebsite } from "@/hooks/useSellerWebsites";
@@ -191,7 +197,26 @@ interface WizardData {
   slug: string;
   customDomain: string;
   publishNow: boolean;
+  // Credibility bar
+  showCredibilityBar: boolean;
+  credibilityLogos: string[];
+  credibilityAnimated: boolean;
+  // Section toggles
+  showStats: boolean;
+  showHowItWorks: boolean;
+  showComparison: boolean;
+  showTestimonials: boolean;
+  showSituations: boolean;
+  showFAQ: boolean;
+  showCTA: boolean;
+  // Editable content
+  trustBadgeText: string;
+  benefitsLine: string;
+  ctaHeadline: string;
+  ctaSubheadline: string;
 }
+
+const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
 
 type DeviceType = "desktop" | "tablet" | "mobile";
 
@@ -224,7 +249,26 @@ export default function SellerWebsiteWizard() {
     slug: "",
     customDomain: "",
     publishNow: true,
+    // Credibility bar
+    showCredibilityBar: true,
+    credibilityLogos: [...DEFAULT_CREDIBILITY_LOGOS],
+    credibilityAnimated: false,
+    // Section toggles
+    showStats: true,
+    showHowItWorks: true,
+    showComparison: true,
+    showTestimonials: true,
+    showSituations: true,
+    showFAQ: true,
+    showCTA: true,
+    // Editable content
+    trustBadgeText: "",
+    benefitsLine: "",
+    ctaHeadline: "",
+    ctaSubheadline: "",
   });
+
+  const aiWriter = useAIWriter({ siteType: data.siteType, companyName: data.companyName });
 
   const updateData = (updates: Partial<WizardData>) => {
     setData((prev) => ({ ...prev, ...updates }));
@@ -635,30 +679,115 @@ export default function SellerWebsiteWizard() {
             {/* Step 3: Content */}
             {currentStep === 3 && (
               <div className="space-y-6">
-                <div>
-                  <Label htmlFor="heroHeadline">Hero Headline</Label>
-                  <Input
-                    id="heroHeadline"
+                {/* Hero Content */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Hero Section</h3>
+                  <AIWriterField
+                    label="Hero Headline"
+                    fieldType="heroHeadline"
                     value={data.heroHeadline}
-                    onChange={(e) => updateData({ heroHeadline: e.target.value })}
+                    onChange={(v) => updateData({ heroHeadline: v })}
                     placeholder={selectedSiteType?.defaultHeadline || "Your Main Headline"}
+                    loadingField={aiWriter.loadingField}
+                    onGenerate={aiWriter.generateCopy}
                   />
-                </div>
-
-                <div>
-                  <Label htmlFor="heroSubheadline">Hero Subheadline</Label>
-                  <Textarea
-                    id="heroSubheadline"
+                  <AIWriterField
+                    label="Hero Subheadline"
+                    fieldType="heroSubheadline"
                     value={data.heroSubheadline}
-                    onChange={(e) => updateData({ heroSubheadline: e.target.value })}
+                    onChange={(v) => updateData({ heroSubheadline: v })}
                     placeholder={selectedSiteType?.defaultSubheadline || "Your supporting text..."}
+                    multiline
                     rows={2}
+                    loadingField={aiWriter.loadingField}
+                    onGenerate={aiWriter.generateCopy}
+                    context={data.heroHeadline}
+                  />
+                  <AIWriterField
+                    label="Trust Badge Text"
+                    fieldType="trustBadgeText"
+                    value={data.trustBadgeText}
+                    onChange={(v) => updateData({ trustBadgeText: v })}
+                    placeholder="Rated 4.9★ By 2,400+ Homeowners"
+                    loadingField={aiWriter.loadingField}
+                    onGenerate={aiWriter.generateCopy}
+                  />
+                  <AIWriterField
+                    label="Benefits Line"
+                    fieldType="benefitsLine"
+                    value={data.benefitsLine}
+                    onChange={(v) => updateData({ benefitsLine: v })}
+                    placeholder="NO Commissions! NO Repairs! NO Listing Fees!"
+                    loadingField={aiWriter.loadingField}
+                    onGenerate={aiWriter.generateCopy}
                   />
                 </div>
 
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">Form Fields</Label>
-                  <div className="p-3 bg-muted rounded-lg mb-2">
+                {/* Credibility Bar */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-border pb-2">
+                    <h3 className="text-sm font-semibold text-foreground">Credibility Bar</h3>
+                    <Switch
+                      checked={data.showCredibilityBar}
+                      onCheckedChange={(v) => updateData({ showCredibilityBar: v })}
+                    />
+                  </div>
+                  {data.showCredibilityBar && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs">Animated (scrolling marquee)</Label>
+                        <Switch
+                          checked={data.credibilityAnimated}
+                          onCheckedChange={(v) => updateData({ credibilityAnimated: v })}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs mb-2 block">Logos / Networks</Label>
+                        <div className="space-y-2">
+                          {data.credibilityLogos.map((logo, i) => (
+                            <div key={i} className="flex items-center gap-2">
+                              <Input
+                                value={logo}
+                                onChange={(e) => {
+                                  const updated = [...data.credibilityLogos];
+                                  updated[i] = e.target.value;
+                                  updateData({ credibilityLogos: updated });
+                                }}
+                                className="flex-1"
+                                placeholder="Logo name"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                                onClick={() => {
+                                  updateData({
+                                    credibilityLogos: data.credibilityLogos.filter((_, idx) => idx !== i),
+                                  });
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => updateData({ credibilityLogos: [...data.credibilityLogos, ""] })}
+                            className="w-full"
+                          >
+                            <Plus className="h-4 w-4 mr-1" /> Add Logo
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Form Fields */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Lead Capture Form</h3>
+                  <div className="p-3 bg-muted rounded-lg">
                     <div className="flex items-center gap-2">
                       <Checkbox checked disabled />
                       <span className="font-medium">Property Address</span>
@@ -679,17 +808,66 @@ export default function SellerWebsiteWizard() {
                       </label>
                     ))}
                   </div>
-                </div>
-
-                <div>
-                  <Label htmlFor="formSubmitText">Submit Button Text</Label>
-                  <Input
-                    id="formSubmitText"
+                  <AIWriterField
+                    label="Submit Button Text"
+                    fieldType="formSubmitText"
                     value={data.formSubmitText}
-                    onChange={(e) => updateData({ formSubmitText: e.target.value })}
+                    onChange={(v) => updateData({ formSubmitText: v })}
                     placeholder={selectedSiteType?.defaultCta || "Submit"}
+                    loadingField={aiWriter.loadingField}
+                    onGenerate={aiWriter.generateCopy}
                   />
                 </div>
+
+                {/* Section Toggles */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Page Sections</h3>
+                  <p className="text-xs text-muted-foreground">Toggle sections on/off to customize your page layout</p>
+                  {[
+                    { key: "showStats" as const, label: "Stats Bar" },
+                    { key: "showHowItWorks" as const, label: "How It Works" },
+                    { key: "showComparison" as const, label: "Comparison Table" },
+                    { key: "showTestimonials" as const, label: "Testimonials" },
+                    { key: "showSituations" as const, label: "Situations / Services" },
+                    { key: "showFAQ" as const, label: "FAQ" },
+                    { key: "showCTA" as const, label: "Call-to-Action Banner" },
+                  ].map(({ key, label }) => (
+                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                      <span className="text-sm">{label}</span>
+                      <Switch
+                        checked={data[key]}
+                        onCheckedChange={(v) => updateData({ [key]: v })}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* CTA Content */}
+                {data.showCTA && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">CTA Section Content</h3>
+                    <AIWriterField
+                      label="CTA Headline"
+                      fieldType="ctaHeadline"
+                      value={data.ctaHeadline}
+                      onChange={(v) => updateData({ ctaHeadline: v })}
+                      placeholder="Ready To Sell Your House For Cash?"
+                      loadingField={aiWriter.loadingField}
+                      onGenerate={aiWriter.generateCopy}
+                    />
+                    <AIWriterField
+                      label="CTA Subheadline"
+                      fieldType="ctaSubheadline"
+                      value={data.ctaSubheadline}
+                      onChange={(v) => updateData({ ctaSubheadline: v })}
+                      placeholder="Get your free, no-obligation cash offer..."
+                      multiline
+                      rows={2}
+                      loadingField={aiWriter.loadingField}
+                      onGenerate={aiWriter.generateCopy}
+                    />
+                  </div>
+                )}
               </div>
             )}
 
@@ -956,6 +1134,20 @@ export default function SellerWebsiteWizard() {
                 heroSubheadline={data.heroSubheadline}
                 formSubmitText={data.formSubmitText}
                 logoUrl={data.logoUrl}
+                showCredibilityBar={data.showCredibilityBar}
+                credibilityLogos={data.credibilityLogos}
+                credibilityAnimated={data.credibilityAnimated}
+                showStats={data.showStats}
+                showHowItWorks={data.showHowItWorks}
+                showComparison={data.showComparison}
+                showTestimonials={data.showTestimonials}
+                showSituations={data.showSituations}
+                showFAQ={data.showFAQ}
+                showCTA={data.showCTA}
+                trustBadgeText={data.trustBadgeText}
+                benefitsLine={data.benefitsLine}
+                ctaHeadline={data.ctaHeadline}
+                ctaSubheadline={data.ctaSubheadline}
               />
             </div>
           </div>
