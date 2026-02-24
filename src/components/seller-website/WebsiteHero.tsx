@@ -110,7 +110,7 @@ export function WebsiteHero({
                 const isAccent = /^(Fast|Fair|Simple|Cash)/i.test(part.trim());
                 if (i === 0) return <span key={i}>{part}</span>;
                 return (
-                  <span key={i} style={{ color: isAccent ? accentColor : undefined }}>
+                  <span key={i} style={{ color: isAccent ? primaryColor : undefined }}>
                     {part}
                   </span>
                 );
@@ -134,7 +134,7 @@ export function WebsiteHero({
               <div className="flex items-start gap-8">
                 {quickStats.map((stat, i) => (
                   <div key={i} className={i > 0 ? "border-l border-gray-300 pl-8" : ""}>
-                    <div className="text-2xl md:text-3xl font-bold" style={{ color: accentColor }}>{stat.value}</div>
+                    <div className="text-2xl md:text-3xl font-bold" style={{ color: primaryColor }}>{stat.value}</div>
                     <div className="text-xs text-gray-500 mt-1">{stat.label}</div>
                   </div>
                 ))}

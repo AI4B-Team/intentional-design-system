@@ -114,7 +114,7 @@ export function WizardLivePreview({
                 const isAccent = /^(Fast|Fair|Simple|Cash)/i.test(part.trim());
                 if (i === 0) return <span key={i}>{part}</span>;
                 return (
-                  <span key={i} style={{ color: isAccent ? accentColor : undefined }}>
+                  <span key={i} style={{ color: isAccent ? primaryColor : undefined }}>
                     {part}
                   </span>
                 );
@@ -129,7 +129,7 @@ export function WizardLivePreview({
               <div className="flex gap-4 pt-2">
                 {defaults.quickStats.map((s, i) => (
                   <div key={i} className={i > 0 ? "border-l border-border pl-4" : ""}>
-                    <div className="text-[13px] font-bold" style={{ color: accentColor }}>{s.value}</div>
+                    <div className="text-[13px] font-bold" style={{ color: primaryColor }}>{s.value}</div>
                     <div className="text-[8px] text-muted-foreground">{s.label}</div>
                   </div>
                 ))}
