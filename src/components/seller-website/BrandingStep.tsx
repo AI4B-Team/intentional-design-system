@@ -41,7 +41,7 @@ const PREDEFINED_ICONS = [
 // ── Color Presets ──
 const COLOR_PRESETS = [
   { name: "Ocean Blue", primary: "#2563EB", accent: "#10B981" },
-  { name: "Bold Red", primary: "#DC2626", accent: "#F59E0B" },
+  { name: "Bold Red", primary: "#DC2626", accent: "#1E1E1E" },
   { name: "Forest Green", primary: "#16A34A", accent: "#0EA5E9" },
   { name: "Royal Purple", primary: "#7C3AED", accent: "#EC4899" },
   { name: "Slate Pro", primary: "#1E293B", accent: "#2563EB" },
