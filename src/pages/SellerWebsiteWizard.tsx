@@ -520,7 +520,7 @@ export default function SellerWebsiteWizard() {
 
                 {data.siteType && (
                   <div>
-                    <Label className="text-sm font-medium mb-3 block">How do you want to create it?</Label>
+                    <Label className="text-sm font-medium mb-3 block">How Do You Want To Create It?</Label>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                       {CREATION_METHODS.map((method) => {
                         const Icon = method.icon;
