@@ -208,6 +208,7 @@ interface WizardData {
   // Credibility bar
   showCredibilityBar: boolean;
   credibilityLogos: string[];
+  credibilityLogoImages: Record<string, string>;
   credibilityAnimated: boolean;
   // Section toggles
   showStats: boolean;
@@ -263,6 +264,7 @@ export default function SellerWebsiteWizard() {
     publishNow: true,
     showCredibilityBar: true,
     credibilityLogos: [...DEFAULT_CREDIBILITY_LOGOS],
+    credibilityLogoImages: {},
     credibilityAnimated: false,
     showStats: true,
     showHowItWorks: true,
@@ -930,6 +932,7 @@ export default function SellerWebsiteWizard() {
                 logoUrl={data.logoUrl}
                 showCredibilityBar={data.showCredibilityBar}
                 credibilityLogos={data.credibilityLogos}
+                credibilityLogoImages={data.credibilityLogoImages}
                 credibilityAnimated={data.credibilityAnimated}
                 showStats={data.showStats}
                 showHowItWorks={data.showHowItWorks}

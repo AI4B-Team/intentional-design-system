@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,8 @@ import {
   X,
   Plus,
   Lock,
+  Upload,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -252,32 +254,66 @@ function renderSectionEditor(
           <div>
             <Label className="text-xs mb-2 block">Logos / Networks</Label>
             <div className="space-y-2">
-              {(data.credibilityLogos || []).map((logo: string, i: number) => (
-                <div key={i} className="flex items-center gap-2">
-                  <Input
-                    value={logo}
-                    onChange={(v: string) => {
-                      const updated = [...(data.credibilityLogos || [])];
-                      updated[i] = v;
-                      onUpdate({ credibilityLogos: updated });
-                    }}
-                    className="flex-1"
-                    placeholder="Logo name"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                    onClick={() => {
-                      onUpdate({
-                        credibilityLogos: (data.credibilityLogos || []).filter((_: any, idx: number) => idx !== i),
-                      });
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+              {(data.credibilityLogos || []).map((logo: string, i: number) => {
+                const logoImages: Record<string, string> = data.credibilityLogoImages || {};
+                const imageUrl = logoImages[String(i)];
+                return (
+                  <div key={i} className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={logo}
+                        onChange={(v: string) => {
+                          const updated = [...(data.credibilityLogos || [])];
+                          updated[i] = v;
+                          onUpdate({ credibilityLogos: updated });
+                        }}
+                        className="flex-1"
+                        placeholder="Logo name"
+                      />
+                      <LogoImageUpload
+                        imageUrl={imageUrl}
+                        onUpload={(url) => {
+                          const updated = { ...(data.credibilityLogoImages || {}), [String(i)]: url };
+                          onUpdate({ credibilityLogoImages: updated });
+                        }}
+                        onRemove={() => {
+                          const updated = { ...(data.credibilityLogoImages || {}) };
+                          delete updated[String(i)];
+                          onUpdate({ credibilityLogoImages: updated });
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        onClick={() => {
+                          const newLogos = (data.credibilityLogos || []).filter((_: any, idx: number) => idx !== i);
+                          // Re-index images
+                          const oldImages: Record<string, string> = data.credibilityLogoImages || {};
+                          const newImages: Record<string, string> = {};
+                          let newIdx = 0;
+                          for (let j = 0; j < (data.credibilityLogos || []).length; j++) {
+                            if (j === i) continue;
+                            if (oldImages[String(j)]) {
+                              newImages[String(newIdx)] = oldImages[String(j)];
+                            }
+                            newIdx++;
+                          }
+                          onUpdate({ credibilityLogos: newLogos, credibilityLogoImages: newImages });
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    {imageUrl && (
+                      <div className="flex items-center gap-2 pl-1">
+                        <img src={imageUrl} alt={logo} className="h-6 max-w-[80px] object-contain rounded" />
+                        <span className="text-[10px] text-muted-foreground">Custom logo uploaded</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
               <Button
                 variant="secondary"
                 size="sm"
@@ -372,4 +408,51 @@ function renderSectionEditor(
         </p>
       );
   }
+}
+
+function LogoImageUpload({
+  imageUrl,
+  onUpload,
+  onRemove,
+}: {
+  imageUrl?: string;
+  onUpload: (url: string) => void;
+  onRemove: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onUpload(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    // Reset so re-selecting the same file works
+    e.target.value = "";
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFile}
+      />
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+        onClick={() => inputRef.current?.click()}
+        title={imageUrl ? "Replace logo image" : "Upload logo image"}
+      >
+        {imageUrl ? <ImageIcon className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
+      </Button>
+    </>
+  );
 }
