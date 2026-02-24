@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AIWriterField } from "./AIWriterField";
-import { X, Plus, RotateCcw, Upload, Image as ImageIcon, Trash2 } from "lucide-react";
+import { X, Plus, RotateCcw, Upload, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Pencil, Sparkles, Link as LinkIcon } from "lucide-react";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 
 interface EditorProps {
@@ -618,6 +618,178 @@ export function TestimonialsEditor({ data, onUpdate, aiWriter, selectedSiteType 
         onClick={() => onUpdate({ testimonialItems: [...items, { name: "", role: "", company: "", quote: "", imageUrl: "" }] })}
       >
         <Plus className="h-4 w-4 mr-1" /> Add Testimonial
+      </Button>
+    </div>
+  );
+}
+
+/* ─── CTA Section ─── */
+export function CTAEditor({ data, onUpdate, aiWriter, selectedSiteType }: EditorProps) {
+  const buttons: Array<{ label: string; variant: "primary" | "secondary"; link: string }> = data.ctaButtons || [];
+  const [editingIdx, setEditingIdx] = React.useState<number | null>(null);
+
+  const updateButton = (idx: number, field: string, val: string) => {
+    const updated = [...buttons];
+    updated[idx] = { ...updated[idx], [field]: val };
+    onUpdate({ ctaButtons: updated });
+  };
+
+  const moveButton = (idx: number, dir: "up" | "down") => {
+    const updated = [...buttons];
+    const swapIdx = dir === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= updated.length) return;
+    [updated[idx], updated[swapIdx]] = [updated[swapIdx], updated[idx]];
+    onUpdate({ ctaButtons: updated });
+  };
+
+  return (
+    <div className="space-y-3">
+      <AIWriterField
+        label="Headline"
+        fieldType="ctaHeadline"
+        value={data.ctaHeadline || ""}
+        onChange={(v: string) => onUpdate({ ctaHeadline: v })}
+        placeholder="Ready To Sell Your House For Cash?"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+      <AIWriterField
+        label="Subheadline"
+        fieldType="ctaSubheadline"
+        value={data.ctaSubheadline || ""}
+        onChange={(v: string) => onUpdate({ ctaSubheadline: v })}
+        placeholder="Get your free, no-obligation cash offer..."
+        multiline
+        rows={2}
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+
+      {/* CTA Buttons */}
+      <div className="border border-border rounded-lg p-3 space-y-2">
+        <Label className="text-xs font-semibold">CTA Buttons</Label>
+        {buttons.map((btn, i) => (
+          <div key={i} className="border border-border rounded-md p-2.5">
+            {editingIdx === i ? (
+              <div className="space-y-2">
+                <Input
+                  value={btn.label}
+                  onChange={(v: string) => updateButton(i, "label", v)}
+                  placeholder="Button text"
+                />
+                <div className="flex gap-2">
+                  <div className="flex-1">
+                    <Label className="text-[10px] text-muted-foreground">Link / Action</Label>
+                    <Input
+                      value={btn.link}
+                      onChange={(v: string) => updateButton(i, "link", v)}
+                      placeholder="#form or https://..."
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-[10px] text-muted-foreground">Style</Label>
+                    <div className="flex gap-1 mt-1">
+                      <Button
+                        variant={btn.variant === "primary" ? "default" : "outline"}
+                        size="sm"
+                        className="text-[10px] h-7 px-2"
+                        onClick={() => updateButton(i, "variant", "primary")}
+                      >
+                        Primary
+                      </Button>
+                      <Button
+                        variant={btn.variant === "secondary" ? "default" : "outline"}
+                        size="sm"
+                        className="text-[10px] h-7 px-2"
+                        onClick={() => updateButton(i, "variant", "secondary")}
+                      >
+                        Secondary
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <Button variant="secondary" size="sm" className="text-xs" onClick={() => setEditingIdx(null)}>
+                  Done
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <div className="flex flex-col">
+                  <button
+                    onClick={() => moveButton(i, "up")}
+                    disabled={i === 0}
+                    className="p-0.5 text-muted-foreground hover:text-foreground disabled:opacity-20"
+                  >
+                    <ChevronUp className="h-3 w-3" />
+                  </button>
+                  <button
+                    onClick={() => moveButton(i, "down")}
+                    disabled={i === buttons.length - 1}
+                    className="p-0.5 text-muted-foreground hover:text-foreground disabled:opacity-20"
+                  >
+                    <ChevronDown className="h-3 w-3" />
+                  </button>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-foreground">{btn.label || "Untitled"}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-medium">
+                      {btn.variant === "primary" ? "Primary" : "Secondary"}
+                    </span>
+                  </div>
+                  {btn.link && (
+                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
+                      <LinkIcon className="h-2.5 w-2.5" />
+                      {btn.link}
+                    </div>
+                  )}
+                </div>
+                <Button
+                  variant="ghost" size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => setEditingIdx(i)}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost" size="sm"
+                  className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                  onClick={() => onUpdate({ ctaButtons: buttons.filter((_, idx) => idx !== i) })}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            )}
+          </div>
+        ))}
+        {buttons.length === 0 && (
+          <p className="text-xs text-muted-foreground italic">No custom buttons. Default CTA button will be used.</p>
+        )}
+        <Button
+          variant="secondary" size="sm" className="w-full"
+          onClick={() => {
+            onUpdate({ ctaButtons: [...buttons, { label: "", variant: buttons.length === 0 ? "primary" : "secondary", link: "#form" }] });
+            setEditingIdx(buttons.length);
+          }}
+        >
+          <Plus className="h-4 w-4 mr-1" /> Add Button
+        </Button>
+      </div>
+
+      {/* Generate Entire Section */}
+      <Button
+        variant="outline"
+        size="sm"
+        className="w-full gap-1.5"
+        disabled={aiWriter.loadingField !== null}
+        onClick={async () => {
+          const headline = await aiWriter.generateCopy("ctaHeadline", data.ctaHeadline || "", "CTA section headline for a real estate website");
+          if (headline) onUpdate({ ctaHeadline: headline });
+          const sub = await aiWriter.generateCopy("ctaSubheadline", data.ctaSubheadline || "", "CTA section subheadline");
+          if (sub) onUpdate({ ctaSubheadline: sub });
+        }}
+      >
+        <Sparkles className="h-4 w-4" /> Generate Entire Section With AI
       </Button>
     </div>
   );
