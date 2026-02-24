@@ -51,6 +51,16 @@ interface WizardLivePreviewProps {
   testimonialsTagline?: string;
   testimonialsSubheadline?: string;
   testimonialItems?: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }>;
+  // Footer
+  footerTagline?: string;
+  footerAlignment?: "left" | "center" | "right";
+  showSocialLinks?: boolean;
+  socialProfiles?: Record<string, { enabled: boolean; url: string }>;
+  showNewsletter?: boolean;
+  newsletterHeadline?: string;
+  newsletterDescription?: string;
+  newsletterButtonText?: string;
+  newsletterPlaceholder?: string;
 }
 
 const SITUATION_ICONS: Record<string, React.ElementType> = {
@@ -110,6 +120,15 @@ export function WizardLivePreview({
   testimonialsTagline: testimonialsTaglineProp,
   testimonialsSubheadline: testimonialsSubheadlineProp,
   testimonialItems: testimonialItemsProp,
+  footerTagline,
+  footerAlignment = "left",
+  showSocialLinks = true,
+  socialProfiles,
+  showNewsletter = true,
+  newsletterHeadline,
+  newsletterDescription,
+  newsletterButtonText,
+  newsletterPlaceholder,
 }: WizardLivePreviewProps) {
   const defaults = getSiteTypeDefaults(siteType);
   const headline = heroHeadline || defaults.heroHeadline;
@@ -492,8 +511,24 @@ export function WizardLivePreview({
         </div>
       )}
 
+      {/* ── NEWSLETTER ── */}
+      {showNewsletter && (
+        <div className="px-5 py-4 border-t border-border" style={{ backgroundColor: primaryColor }}>
+          <div className="text-center">
+            <div className="text-[9px] font-bold text-white mb-0.5">{newsletterHeadline || "Stay Updated"}</div>
+            <p className="text-[7px] text-white/70 mb-2">{newsletterDescription || "Get the latest news and updates"}</p>
+            <div className="flex items-center gap-1 max-w-[200px] mx-auto">
+              <div className="flex-1 bg-white/20 rounded px-2 py-1 text-[7px] text-white/50">{newsletterPlaceholder || "Enter your email"}</div>
+              <div className="px-2 py-1 rounded text-[7px] font-semibold text-white" style={{ backgroundColor: accentColor }}>
+                {newsletterButtonText || "Subscribe"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── FOOTER ── */}
-      <div className="px-5 py-4 border-t border-border">
+      <div className={`px-5 py-4 border-t border-border text-${footerAlignment}`}>
         <div className="grid grid-cols-4 gap-3 mb-3">
           <div>
             <div className="flex items-center gap-1 mb-1">
@@ -504,7 +539,23 @@ export function WizardLivePreview({
               )}
               <span className="text-[8px] font-bold text-foreground">{company}</span>
             </div>
-            <p className="text-[7px] text-muted-foreground">We help homeowners sell their properties quickly and fairly.</p>
+            <p className="text-[7px] text-muted-foreground">{footerTagline || "We help homeowners sell their properties quickly and fairly."}</p>
+            {/* Social Icons */}
+            {showSocialLinks && socialProfiles && (
+              <div className="flex items-center gap-1 mt-1.5 flex-wrap">
+                {Object.entries(socialProfiles)
+                  .filter(([, v]) => v.enabled)
+                  .map(([key]) => (
+                    <div
+                      key={key}
+                      className="w-3.5 h-3.5 rounded-sm flex items-center justify-center"
+                      style={{ backgroundColor: primaryColor }}
+                    >
+                      <span className="text-[5px] text-white font-bold">{key[0].toUpperCase()}</span>
+                    </div>
+                  ))}
+              </div>
+            )}
           </div>
           <div>
             <div className="text-[8px] font-semibold text-foreground mb-1">Company</div>
