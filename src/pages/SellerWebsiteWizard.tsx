@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getSiteTypeDefaults } from "@/components/seller-website/siteTypeConfig";
 import { WizardLivePreview } from "@/components/seller-website/WizardLivePreview";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -494,11 +495,14 @@ export default function SellerWebsiteWizard() {
   const handleSiteTypeSelect = (typeId: string) => {
     const siteType = SITE_TYPES.find((t) => t.id === typeId);
     if (siteType) {
+      const defaults = getSiteTypeDefaults(typeId);
       updateData({
         siteType: typeId,
         heroHeadline: siteType.defaultHeadline,
         heroSubheadline: siteType.defaultSubheadline,
         formSubmitText: siteType.defaultCta,
+        ctaHeadline: defaults.ctaHeadline,
+        ctaSubheadline: defaults.ctaSubheadline,
       });
     }
   };
