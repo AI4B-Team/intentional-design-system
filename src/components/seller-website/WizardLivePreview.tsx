@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 import { USStateMap, US_STATES } from "./USStateMap";
+import { SocialIcon, SOCIAL_PLATFORMS } from "./SocialIcons";
 import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail } from "lucide-react";
 import { NetworkLogo } from "./NetworkLogos";
 
@@ -584,15 +585,18 @@ export function WizardLivePreview({
               <div className="flex items-center gap-1 mt-1.5 flex-wrap">
                 {Object.entries(socialProfiles)
                   .filter(([, v]) => v.enabled)
-                  .map(([key]) => (
-                    <div
-                      key={key}
-                      className="w-3.5 h-3.5 rounded-sm flex items-center justify-center"
-                      style={{ backgroundColor: primaryColor }}
-                    >
-                      <span className="text-[5px] text-white font-bold">{key[0].toUpperCase()}</span>
-                    </div>
-                  ))}
+                  .map(([key]) => {
+                    const platform = SOCIAL_PLATFORMS.find(p => p.id === key);
+                    return (
+                      <div
+                        key={key}
+                        className="w-4 h-4 rounded-sm flex items-center justify-center"
+                        style={{ backgroundColor: platform?.color || primaryColor }}
+                      >
+                        <SocialIcon id={key} size={10} />
+                      </div>
+                    );
+                  })}
               </div>
             )}
           </div>
