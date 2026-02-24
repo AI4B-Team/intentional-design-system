@@ -254,12 +254,12 @@ function renderSectionEditor(
           </div>
           <div>
             <Label className="text-xs mb-2 block">Logos / Networks</Label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {(data.credibilityLogos || []).map((logo: string, i: number) => {
                 const logoImages: Record<string, string> = data.credibilityLogoImages || {};
                 const imageUrl = logoImages[String(i)];
                 return (
-                  <div key={i} className="space-y-1">
+                  <div key={i} className="border border-border rounded-lg p-3 space-y-2">
                     <div className="flex items-center gap-2">
                       <Input
                         value={logo}
@@ -269,19 +269,7 @@ function renderSectionEditor(
                           onUpdate({ credibilityLogos: updated });
                         }}
                         className="flex-1"
-                        placeholder="Logo name"
-                      />
-                      <LogoImageUpload
-                        imageUrl={imageUrl}
-                        onUpload={(url) => {
-                          const updated = { ...(data.credibilityLogoImages || {}), [String(i)]: url };
-                          onUpdate({ credibilityLogoImages: updated });
-                        }}
-                        onRemove={() => {
-                          const updated = { ...(data.credibilityLogoImages || {}) };
-                          delete updated[String(i)];
-                          onUpdate({ credibilityLogoImages: updated });
-                        }}
+                        placeholder="Logo name (e.g. Forbes)"
                       />
                       <Button
                         variant="ghost"
@@ -289,7 +277,6 @@ function renderSectionEditor(
                         className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                         onClick={() => {
                           const newLogos = (data.credibilityLogos || []).filter((_: any, idx: number) => idx !== i);
-                          // Re-index images
                           const oldImages: Record<string, string> = data.credibilityLogoImages || {};
                           const newImages: Record<string, string> = {};
                           let newIdx = 0;
@@ -306,11 +293,42 @@ function renderSectionEditor(
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
-                    {imageUrl && (
-                      <div className="flex items-center gap-2 pl-1">
-                        <img src={imageUrl} alt={logo} className="h-6 max-w-[80px] object-contain rounded" />
-                        <span className="text-[10px] text-muted-foreground">Custom logo uploaded</span>
+                    {imageUrl ? (
+                      <div className="flex items-center gap-2 bg-muted/50 rounded-md p-2">
+                        <img src={imageUrl} alt={logo} className="h-8 max-w-[100px] object-contain" />
+                        <span className="text-[10px] text-muted-foreground flex-1">Custom logo</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 text-xs text-destructive hover:text-destructive px-2"
+                          onClick={() => {
+                            const updated = { ...(data.credibilityLogoImages || {}) };
+                            delete updated[String(i)];
+                            onUpdate({ credibilityLogoImages: updated });
+                          }}
+                        >
+                          Remove
+                        </Button>
+                        <LogoImageUpload
+                          imageUrl={imageUrl}
+                          onUpload={(url) => {
+                            const updated = { ...(data.credibilityLogoImages || {}), [String(i)]: url };
+                            onUpdate({ credibilityLogoImages: updated });
+                          }}
+                          onRemove={() => {
+                            const updated = { ...(data.credibilityLogoImages || {}) };
+                            delete updated[String(i)];
+                            onUpdate({ credibilityLogoImages: updated });
+                          }}
+                        />
                       </div>
+                    ) : (
+                      <LogoImageUploadFull
+                        onUpload={(url) => {
+                          const updated = { ...(data.credibilityLogoImages || {}), [String(i)]: url };
+                          onUpdate({ credibilityLogoImages: updated });
+                        }}
+                      />
                     )}
                   </div>
                 );
@@ -404,6 +422,43 @@ function LogoImageUpload({
       >
         {imageUrl ? <ImageIcon className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
       </Button>
+    </>
+  );
+}
+
+function LogoImageUploadFull({ onUpload }: { onUpload: (url: string) => void }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        onUpload(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFile}
+      />
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
+        className="w-full flex items-center justify-center gap-2 py-2 px-3 border border-dashed border-border rounded-md text-xs text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors"
+      >
+        <Upload className="h-3.5 w-3.5" />
+        Upload Custom Logo Image
+      </button>
     </>
   );
 }
