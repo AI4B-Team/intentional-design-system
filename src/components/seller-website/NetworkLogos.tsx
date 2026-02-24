@@ -205,7 +205,7 @@ export function NetworkLogo({ name, sizeClass = "text-base", colorClass = "text-
   const Comp = LOGO_COMPONENTS[key];
   if (Comp) {
     return (
-      <span className={`inline-flex items-center whitespace-nowrap select-none ${colorClass}`} style={{ height }}>
+      <span className={`inline-flex items-center justify-center whitespace-nowrap select-none ${colorClass}`} style={{ height }}>
         <Comp height={height} color={color} />
       </span>
     );
