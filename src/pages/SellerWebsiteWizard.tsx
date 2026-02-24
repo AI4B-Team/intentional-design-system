@@ -494,6 +494,8 @@ export default function SellerWebsiteWizard() {
       pinterest: { enabled: false, url: "" },
       threads: { enabled: false, url: "" },
       bluesky: { enabled: false, url: "" },
+      reddit: { enabled: false, url: "" },
+      snapchat: { enabled: false, url: "" },
     },
     showNewsletter: true,
     newsletterHeadline: "Stay Updated",
