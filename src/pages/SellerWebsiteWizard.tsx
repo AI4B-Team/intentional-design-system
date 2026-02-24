@@ -1319,6 +1319,7 @@ export default function SellerWebsiteWizard() {
                 heroSubheadline={data.heroSubheadline}
                 formSubmitText={data.formSubmitText}
                 logoUrl={data.logoUrl}
+                selectedIcon={data.selectedIcon}
                 showCredibilityBar={data.showCredibilityBar}
                 credibilityLogos={data.credibilityLogos}
                 credibilityLogoImages={data.credibilityLogoImages}
