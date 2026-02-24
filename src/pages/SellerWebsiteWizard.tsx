@@ -25,6 +25,11 @@ import {
   FileText,
   Bell,
   Rocket,
+  Star,
+  Flame,
+  Target,
+  Crown,
+  Diamond,
   Upload,
   Home,
   Users,
@@ -102,6 +107,19 @@ const SITE_TYPES = [
     defaultCta: "Get My Offer Now",
   },
 ];
+
+const PREDEFINED_ICONS_MAP: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
+  rocket: { icon: Rocket, color: "#ef4444", bg: "#fef2f2" },
+  zap: { icon: Zap, color: "#f59e0b", bg: "#fffbeb" },
+  star: { icon: Star, color: "#8b5cf6", bg: "#f5f3ff" },
+  shield: { icon: Shield, color: "#06b6d4", bg: "#ecfeff" },
+  flame: { icon: Flame, color: "#f97316", bg: "#fff7ed" },
+  target: { icon: Target, color: "#ec4899", bg: "#fdf2f8" },
+  crown: { icon: Crown, color: "#eab308", bg: "#fefce8" },
+  diamond: { icon: Diamond, color: "#6366f1", bg: "#eef2ff" },
+  building: { icon: Building2, color: "#64748b", bg: "#f8fafc" },
+  home: { icon: Home, color: "#10b981", bg: "#ecfdf5" },
+};
 
 // ── Creation Method ──
 const CREATION_METHODS = [
@@ -1309,6 +1327,16 @@ export default function SellerWebsiteWizard() {
                 <div className="flex items-center gap-2">
                   {data.logoUrl ? (
                     <img src={data.logoUrl} alt="Logo" className="h-6 w-6 object-contain" />
+                  ) : data.selectedIcon && PREDEFINED_ICONS_MAP[data.selectedIcon] ? (
+                    (() => {
+                      const iconData = PREDEFINED_ICONS_MAP[data.selectedIcon];
+                      const IconComp = iconData.icon;
+                      return (
+                        <div className="h-6 w-6 rounded-md flex items-center justify-center" style={{ backgroundColor: iconData.bg }}>
+                          <IconComp className="h-4 w-4" style={{ color: iconData.color }} />
+                        </div>
+                      );
+                    })()
                   ) : (
                     <div className="h-6 w-6 rounded-md" style={{ backgroundColor: data.primaryColor }} />
                   )}
