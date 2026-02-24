@@ -43,6 +43,12 @@ import {
   Brush,
   HelpCircle,
   ChevronDown,
+  Scale,
+  Cookie,
+  ShieldAlert,
+  FileText as FileTextIcon,
+  Shield,
+  ScrollText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCreateWebsite } from "@/hooks/useSellerWebsites";
@@ -169,6 +175,7 @@ const STEPS = [
   { id: 4, title: "Page", icon: FileText, description: "Page builder" },
   { id: 5, title: "Notifications", icon: Bell, description: "Lead alerts" },
   { id: 6, title: "Domain", icon: Globe, description: "URL & publish" },
+  { id: 7, title: "Legal", icon: Scale, description: "Legal & compliance" },
 ];
 
 function generateSlug(name: string): string {
@@ -244,6 +251,13 @@ interface WizardData {
   testimonialsTagline: string;
   testimonialsSubheadline: string;
   testimonialItems: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }>;
+  // Legal
+  legalCompanyName: string;
+  legalEmail: string;
+  legalAddress: string;
+  showCookieBanner: boolean;
+  showAgeVerification: boolean;
+  legalDocs: Array<{ id: string; title: string; icon: string; enabled: boolean; content: string; lastUpdated: string }>;
 }
 
 const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
@@ -295,6 +309,95 @@ function DomainSetupGuide() {
           </p>
         </div>
       )}
+    </div>
+  );
+}
+
+const LEGAL_DOC_ICONS: Record<string, React.ElementType> = {
+  scroll: ScrollText,
+  shield: Shield,
+  scale: Scale,
+  cookie: Cookie,
+};
+
+function LegalDocumentsList({ data, updateData, aiWriter }: { data: any; updateData: (u: any) => void; aiWriter: any }) {
+  const [expandedDoc, setExpandedDoc] = useState<string | null>(null);
+  const docs: Array<{ id: string; title: string; icon: string; enabled: boolean; content: string; lastUpdated: string }> = data.legalDocs || [];
+
+  const updateDoc = (idx: number, field: string, val: any) => {
+    const updated = [...docs];
+    updated[idx] = { ...updated[idx], [field]: val };
+    updateData({ legalDocs: updated });
+  };
+
+  return (
+    <div className="space-y-3">
+      {docs.map((doc, i) => {
+        const IconComp = LEGAL_DOC_ICONS[doc.icon] || FileTextIcon;
+        const isExpanded = expandedDoc === doc.id;
+
+        return (
+          <div key={doc.id} className="border border-border rounded-lg overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-muted">
+                  <IconComp className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">{doc.title}</p>
+                  <p className="text-xs text-muted-foreground">Last Updated: {doc.lastUpdated}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={doc.enabled}
+                  onCheckedChange={(v) => updateDoc(i, "enabled", v)}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => setExpandedDoc(isExpanded ? null : doc.id)}
+                >
+                  <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", isExpanded && "rotate-180")} />
+                </Button>
+              </div>
+            </div>
+            {isExpanded && (
+              <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
+                <Textarea
+                  value={doc.content}
+                  onChange={(e) => updateDoc(i, "content", e.target.value)}
+                  placeholder={`Enter your ${doc.title} content here...`}
+                  className="min-h-[200px] font-mono text-xs"
+                />
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1.5"
+                    disabled={aiWriter.loadingField !== null}
+                    onClick={async () => {
+                      const companyName = data.legalCompanyName || data.companyName || "our company";
+                      const prompt = `Generate a professional ${doc.title} document for "${companyName}". Include standard legal sections appropriate for a real estate website. Use plain language. Format with numbered sections and clear headings.`;
+                      try {
+                        const result = await aiWriter.generateCopy(`legal_${doc.id}`, doc.content, prompt);
+                        if (result) {
+                          updateDoc(i, "content", result);
+                          updateDoc(i, "lastUpdated", new Date().toLocaleDateString());
+                        }
+                      } catch { /* ignore */ }
+                    }}
+                  >
+                    <Sparkles className="h-3.5 w-3.5" /> Customize With AI
+                  </Button>
+                  <span className="text-xs text-muted-foreground">AI will personalize this document with your company details</span>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -367,6 +470,17 @@ export default function SellerWebsiteWizard() {
     testimonialsTagline: "",
     testimonialsSubheadline: "",
     testimonialItems: [],
+    legalCompanyName: "",
+    legalEmail: "",
+    legalAddress: "",
+    showCookieBanner: true,
+    showAgeVerification: false,
+    legalDocs: [
+      { id: "tos", title: "Terms of Service", icon: "scroll", enabled: true, content: "", lastUpdated: new Date().toLocaleDateString() },
+      { id: "privacy", title: "Privacy Policy", icon: "shield", enabled: true, content: "", lastUpdated: new Date().toLocaleDateString() },
+      { id: "refund", title: "Refund Policy", icon: "scale", enabled: true, content: "", lastUpdated: new Date().toLocaleDateString() },
+      { id: "cookie", title: "Cookie Policy", icon: "cookie", enabled: true, content: "", lastUpdated: new Date().toLocaleDateString() },
+    ],
   });
 
   const aiWriter = useAIWriter({ siteType: data.siteType, companyName: data.companyName });
@@ -484,6 +598,7 @@ export default function SellerWebsiteWizard() {
       case 4: return { title: "Page Builder", desc: "Configure and customize your page sections. Changes are reflected in the live preview." };
       case 5: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
       case 6: return { title: "Domain Settings", desc: "Connect your custom domain for a fully branded experience" };
+      case 7: return { title: "Legal & Compliance", desc: "Configure legal documents and compliance settings for your platform" };
       default: return { title: "", desc: "" };
     }
   };
@@ -897,6 +1012,104 @@ export default function SellerWebsiteWizard() {
               </div>
             )}
 
+            {/* Step 7: Legal & Compliance */}
+            {currentStep === 7 && (
+              <div className="space-y-6">
+                {/* Company Information */}
+                <div className="border border-border rounded-lg p-5 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-muted-foreground" />
+                    <h3 className="font-semibold text-foreground">Company Information</h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">This information will be used across all legal documents</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-sm font-medium">Company Name</Label>
+                      <Input
+                        value={data.legalCompanyName || data.companyName}
+                        onChange={(e) => updateData({ legalCompanyName: e.target.value })}
+                        placeholder="Your Company Name"
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium">Legal Email</Label>
+                      <Input
+                        value={data.legalEmail}
+                        onChange={(e) => updateData({ legalEmail: e.target.value })}
+                        placeholder="legal@yourcompany.com"
+                        className="mt-1"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Business Address</Label>
+                    <Input
+                      value={data.legalAddress}
+                      onChange={(e) => updateData({ legalAddress: e.target.value })}
+                      placeholder="123 Business Street, City, Country"
+                      className="mt-1"
+                    />
+                  </div>
+                </div>
+
+                {/* Compliance Settings */}
+                <div className="border border-border rounded-lg p-5 space-y-3">
+                  <h3 className="font-semibold text-foreground">Compliance Settings</h3>
+                  <div className="border border-border rounded-lg p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Cookie className="h-5 w-5 text-amber-500" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Cookie Consent Banner</p>
+                        <p className="text-xs text-muted-foreground">Show GDPR-compliant cookie notice</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={data.showCookieBanner}
+                      onCheckedChange={(v) => updateData({ showCookieBanner: v })}
+                    />
+                  </div>
+                  <div className="border border-border rounded-lg p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <ShieldAlert className="h-5 w-5 text-blue-500" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Age Verification</p>
+                        <p className="text-xs text-muted-foreground">Require users to confirm they are 18+</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={data.showAgeVerification}
+                      onCheckedChange={(v) => updateData({ showAgeVerification: v })}
+                    />
+                  </div>
+                </div>
+
+                {/* Legal Documents */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-foreground">Legal Documents</h3>
+                    <span className="text-sm text-muted-foreground">
+                      {data.legalDocs.filter((d) => d.enabled).length} of {data.legalDocs.length} Enabled
+                    </span>
+                  </div>
+                  <LegalDocumentsList data={data} updateData={updateData} aiWriter={aiWriter} />
+                </div>
+
+                {/* Legal Disclaimer */}
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                  <div className="flex items-start gap-2">
+                    <ShieldAlert className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground">Legal Disclaimer</h4>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        These templates are provided as a starting point. We recommend having a legal professional review all documents before publishing to ensure compliance with local laws and regulations.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Navigation Buttons */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
               <Button
@@ -907,7 +1120,7 @@ export default function SellerWebsiteWizard() {
                 {currentStep === 1 ? "Cancel" : "Back"}
               </Button>
 
-              {currentStep < 6 ? (
+              {currentStep < 7 ? (
                 <Button variant="default" onClick={handleNext} disabled={!canProceed()}>
                   Next
                   <ArrowRight className="h-4 w-4 ml-2" />
