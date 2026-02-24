@@ -493,7 +493,7 @@ export default function SellerWebsiteWizard() {
   return (
     <div className="flex h-full overflow-hidden bg-background" style={{ minHeight: "calc(100vh - 56px)" }}>
       {/* Left Step Navigation */}
-      <div className="w-[240px] flex-shrink-0 border-r border-border bg-surface flex flex-col">
+      <div className="w-[240px] flex-shrink-0 border-r border-border bg-surface flex flex-col overflow-hidden">
         {/* Back button */}
         <div className="p-4 border-b border-border">
           <Button
@@ -523,7 +523,7 @@ export default function SellerWebsiteWizard() {
         )}
 
         {/* Steps */}
-        <div className="px-3 py-4 flex-1">
+        <div className="px-3 py-4 flex-1 overflow-y-auto">
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-3">Configuration</p>
           <nav className="space-y-1">
             {STEPS.map((step) => {
