@@ -1046,7 +1046,7 @@ export default function SellerWebsiteWizard() {
                     <div>
                       <Label className="text-sm font-medium">Legal Email</Label>
                       <Input
-                        value={data.legalEmail}
+                        value={data.legalEmail || data.companyEmail}
                         onChange={(e) => updateData({ legalEmail: e.target.value })}
                         placeholder="legal@yourcompany.com"
                         className="mt-1"
