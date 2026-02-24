@@ -39,6 +39,7 @@ interface WizardLivePreviewProps {
   howItWorksHeadline?: string;
   howItWorksSubheadline?: string;
   comparisonHeadline?: string;
+  comparisonSubheadline?: string;
   comparisonTraditionalLabel?: string;
   comparisonCompanyLabel?: string;
   comparisonRows?: Array<{ label: string; traditional: string; company: string }>;
@@ -108,6 +109,7 @@ export function WizardLivePreview({
   howItWorksHeadline: howItWorksHeadlineProp,
   howItWorksSubheadline: howItWorksSubheadlineProp,
   comparisonHeadline: comparisonHeadlineProp,
+  comparisonSubheadline: comparisonSubheadlineProp,
   comparisonTraditionalLabel: comparisonTraditionalLabelProp,
   comparisonCompanyLabel: comparisonCompanyLabelProp,
   comparisonRows: comparisonRowsProp,
@@ -399,7 +401,7 @@ export function WizardLivePreview({
           {sShowComparison && displayCompRows.length > 0 && (
             <div className="px-5 py-5 bg-muted/10">
               <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(displayCompHeadline)}</h2>
-              <p className="text-[9px] text-muted-foreground text-center mb-3">{defaults.comparisonSubheadline}</p>
+              <p className="text-[9px] text-muted-foreground text-center mb-3">{comparisonSubheadlineProp || defaults.comparisonSubheadline}</p>
               <div className="border rounded-lg overflow-hidden bg-background">
                 <div className="grid grid-cols-3 text-[8px] font-semibold border-b">
                   <div className="p-1.5"></div>

@@ -207,6 +207,15 @@ export function ComparisonEditor({ data, onUpdate, aiWriter, selectedSiteType }:
         loadingField={aiWriter.loadingField}
         onGenerate={aiWriter.generateCopy}
       />
+      <AIWriterField
+        label="Subheadline"
+        fieldType="comparisonSubheadline"
+        value={data.comparisonSubheadline || ""}
+        onChange={(v: string) => onUpdate({ comparisonSubheadline: v })}
+        placeholder="See how we compare to listing with an agent"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
       <div className="grid grid-cols-2 gap-2">
         <div>
           <Label className="text-xs">Left Column Label</Label>
