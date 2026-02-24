@@ -18,6 +18,7 @@ interface WizardLivePreviewProps {
   // Credibility bar
   showCredibilityBar?: boolean;
   credibilityLogos?: string[];
+  credibilityLogoImages?: Record<string, string>;
   credibilityAnimated?: boolean;
   // Section toggles
   showStats?: boolean;
@@ -61,6 +62,7 @@ export function WizardLivePreview({
   logoUrl,
   showCredibilityBar = true,
   credibilityLogos,
+  credibilityLogoImages,
   credibilityAnimated = false,
   showStats: showStatsProp,
   showHowItWorks: showHowItWorksProp,
@@ -183,9 +185,15 @@ export function WizardLivePreview({
                 "flex items-center gap-4 opacity-60",
                 credibilityAnimated && "animate-marquee"
               )}>
-                {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => (
-                  <NetworkLogo key={i} name={name} sizeClass="text-[9px]" colorClass="text-foreground" />
-                ))}
+                {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => {
+                  const origIdx = i % displayLogos.length;
+                  const imgUrl = credibilityLogoImages?.[String(origIdx)];
+                  return imgUrl ? (
+                    <img key={i} src={imgUrl} alt={name} className="h-[12px] max-w-[40px] object-contain" />
+                  ) : (
+                    <NetworkLogo key={i} name={name} sizeClass="text-[9px]" colorClass="text-foreground" />
+                  );
+                })}
               </div>
             </div>
           </div>
