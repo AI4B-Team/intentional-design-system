@@ -94,9 +94,6 @@ export function PageBuilderStep({ data, onUpdate, aiWriter, selectedSiteType }: 
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Page Sections</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Configure and customize your page sections. Changes are reflected in the live preview.
-          </p>
         </div>
         <span className="text-xs text-muted-foreground">
           {enabledCount} of {PAGE_SECTIONS.length} Enabled
