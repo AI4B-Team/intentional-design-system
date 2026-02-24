@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.dialer-copilot]
 verify_jwt = false
+
+[functions.ai-website-writer]
+verify_jwt = false
