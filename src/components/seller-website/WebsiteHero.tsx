@@ -187,7 +187,6 @@ export function WebsiteHero({
                   <NetworkLogo name={name} sizeClass="text-xl" />
                 </span>
               ))}
-              ))}
             </div>
           </div>
         </div>
