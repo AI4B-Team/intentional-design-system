@@ -33,6 +33,7 @@ Rules:
       ctaHeadline: `Write a compelling CTA section headline (under 10 words) for a ${siteType} real estate website. Current: "${currentValue}".`,
       ctaSubheadline: `Write a persuasive CTA subheadline (1-2 sentences) that drives immediate action. Site type: ${siteType}. Current: "${currentValue}".`,
       testimonialsHeadline: `Write a testimonials section headline (under 8 words) for a ${siteType} real estate website. Current: "${currentValue}".`,
+      brandTagline: `Write a memorable brand tagline (3-7 words) for a ${siteType} real estate business called "${companyName}". Make it punchy and memorable. Current: "${currentValue}".`,
       generic: `Rewrite this website copy to be more compelling and converting for a ${siteType} real estate website (company: "${companyName}"): "${currentValue}". Keep similar length.`,
     };
 

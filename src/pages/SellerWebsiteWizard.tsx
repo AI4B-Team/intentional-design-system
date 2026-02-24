@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AIWriterField } from "@/components/seller-website/AIWriterField";
 import { useAIWriter } from "@/hooks/useAIWriter";
+import { BrandingStep } from "@/components/seller-website/BrandingStep";
 import {
   ArrowLeft,
   ArrowRight,
@@ -38,6 +39,7 @@ import {
   X,
   Plus,
   Image as ImageIcon,
+  Brush,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCreateWebsite } from "@/hooks/useSellerWebsites";
@@ -159,10 +161,11 @@ const FORM_FIELD_OPTIONS = [
 
 const STEPS = [
   { id: 1, title: "Site Type", icon: Globe, description: "Choose your site type" },
-  { id: 2, title: "Setup", icon: Palette, description: "Company & branding" },
-  { id: 3, title: "Content", icon: FileText, description: "Headlines & form" },
-  { id: 4, title: "Notifications", icon: Bell, description: "Lead alerts" },
-  { id: 5, title: "Publish", icon: Rocket, description: "Domain & go live" },
+  { id: 2, title: "Setup", icon: Palette, description: "Company info" },
+  { id: 3, title: "Branding", icon: Brush, description: "Logo, colors & fonts" },
+  { id: 4, title: "Content", icon: FileText, description: "Headlines & form" },
+  { id: 5, title: "Notifications", icon: Bell, description: "Lead alerts" },
+  { id: 6, title: "Publish", icon: Rocket, description: "Domain & go live" },
 ];
 
 function generateSlug(name: string): string {
@@ -183,8 +186,12 @@ interface WizardData {
   companyPhone: string;
   companyEmail: string;
   logoUrl: string;
+  faviconUrl: string;
+  selectedIcon: string;
+  logoMode: "icon" | "upload";
   primaryColor: string;
   accentColor: string;
+  fontPairing: string;
   heroHeadline: string;
   heroSubheadline: string;
   heroImageUrl: string;
@@ -235,8 +242,12 @@ export default function SellerWebsiteWizard() {
     companyPhone: "",
     companyEmail: user?.email || "",
     logoUrl: "",
+    faviconUrl: "",
+    selectedIcon: "",
+    logoMode: "icon",
     primaryColor: "#2563EB",
     accentColor: "#10B981",
+    fontPairing: "default",
     heroHeadline: "",
     heroSubheadline: "",
     heroImageUrl: "",
@@ -249,11 +260,9 @@ export default function SellerWebsiteWizard() {
     slug: "",
     customDomain: "",
     publishNow: true,
-    // Credibility bar
     showCredibilityBar: true,
     credibilityLogos: [...DEFAULT_CREDIBILITY_LOGOS],
     credibilityAnimated: false,
-    // Section toggles
     showStats: true,
     showHowItWorks: true,
     showComparison: true,
@@ -261,7 +270,6 @@ export default function SellerWebsiteWizard() {
     showSituations: true,
     showFAQ: true,
     showCTA: true,
-    // Editable content
     trustBadgeText: "",
     benefitsLine: "",
     ctaHeadline: "",
@@ -307,8 +315,8 @@ export default function SellerWebsiteWizard() {
   };
 
   const handleNext = () => {
-    if (currentStep < 5) {
-      if (currentStep === 4 && !data.slug && data.companyName) {
+    if (currentStep < 6) {
+      if (currentStep === 5 && !data.slug && data.companyName) {
         updateData({ slug: generateSlug(data.companyName) });
       }
       setCurrentStep(currentStep + 1);
@@ -357,7 +365,7 @@ export default function SellerWebsiteWizard() {
         return data.siteType && data.creationMethod;
       case 2:
         return data.companyName.trim().length > 0;
-      case 5:
+      case 6:
         return data.slug.trim().length > 0;
       default:
         return true;
@@ -379,9 +387,10 @@ export default function SellerWebsiteWizard() {
     switch (currentStep) {
       case 1: return { title: "What Kind Of Website Do You Want To Build?", desc: "Choose a site type and how you'd like to create it" };
       case 2: return { title: `Set Up Your ${selectedSiteType?.name || "Website"}`, desc: data.creationMethod === "template" ? "Choose a template and enter your company info" : "Enter your company info to get started" };
-      case 3: return { title: "Customize Your Content", desc: "Edit your headline, form fields, and more" };
-      case 4: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
-      case 5: return { title: "Your Website Is Ready!", desc: "Configure your URL and publish" };
+      case 3: return { title: "Branding", desc: "Customize your brand identity with logos, colors, and themes" };
+      case 4: return { title: "Customize Your Content", desc: "Edit your headline, form fields, and more" };
+      case 5: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
+      case 6: return { title: "Your Website Is Ready!", desc: "Configure your URL and publish" };
       default: return { title: "", desc: "" };
     }
   };
@@ -596,43 +605,6 @@ export default function SellerWebsiteWizard() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="primaryColor">Primary Color</Label>
-                    <div className="flex gap-2 mt-1">
-                      <input
-                        type="color"
-                        value={data.primaryColor}
-                        onChange={(e) => updateData({ primaryColor: e.target.value })}
-                        className="w-10 h-10 rounded cursor-pointer"
-                      />
-                      <Input
-                        id="primaryColor"
-                        value={data.primaryColor}
-                        onChange={(e) => updateData({ primaryColor: e.target.value })}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="accentColor">Accent Color</Label>
-                    <div className="flex gap-2 mt-1">
-                      <input
-                        type="color"
-                        value={data.accentColor}
-                        onChange={(e) => updateData({ accentColor: e.target.value })}
-                        className="w-10 h-10 rounded cursor-pointer"
-                      />
-                      <Input
-                        id="accentColor"
-                        value={data.accentColor}
-                        onChange={(e) => updateData({ accentColor: e.target.value })}
-                        className="flex-1"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
                     <Label htmlFor="companyName">
                       Company / Website Name <span className="text-destructive">*</span>
                     </Label>
@@ -664,20 +636,28 @@ export default function SellerWebsiteWizard() {
                     placeholder="info@company.com"
                   />
                 </div>
-
-                <div>
-                  <Label>Upload Logo</Label>
-                  <div className="mt-2 border-2 border-dashed border-border rounded-lg p-6 text-center">
-                    <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">Drag and drop or click to upload</p>
-                    <p className="text-xs text-muted-foreground mt-1">PNG, JPG up to 2MB</p>
-                  </div>
-                </div>
               </div>
             )}
 
-            {/* Step 3: Content */}
+            {/* Step 3: Branding */}
             {currentStep === 3 && (
+              <BrandingStep
+                logoUrl={data.logoUrl}
+                faviconUrl={data.faviconUrl}
+                selectedIcon={data.selectedIcon}
+                logoMode={data.logoMode}
+                primaryColor={data.primaryColor}
+                accentColor={data.accentColor}
+                fontPairing={data.fontPairing}
+                companyName={data.companyName}
+                siteType={data.siteType}
+                onUpdate={updateData}
+                aiWriter={aiWriter}
+              />
+            )}
+
+            {/* Step 4: Content */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 {/* Hero Content */}
                 <div className="space-y-4">
@@ -871,8 +851,8 @@ export default function SellerWebsiteWizard() {
               </div>
             )}
 
-            {/* Step 4: Notifications */}
-            {currentStep === 4 && (
+            {/* Step 5: Notifications */}
+            {currentStep === 5 && (
               <div className="space-y-6">
                 <div>
                   <Label className="text-sm font-medium mb-3 block">Notify me via:</Label>
@@ -939,8 +919,8 @@ export default function SellerWebsiteWizard() {
               </div>
             )}
 
-            {/* Step 5: Publish */}
-            {currentStep === 5 && (
+            {/* Step 6: Publish */}
+            {currentStep === 6 && (
               <div className="space-y-6">
                 <div>
                   <Label htmlFor="slug">Website URL</Label>
@@ -1018,7 +998,7 @@ export default function SellerWebsiteWizard() {
                 {currentStep === 1 ? "Cancel" : "Back"}
               </Button>
 
-              {currentStep < 5 ? (
+              {currentStep < 6 ? (
                 <Button variant="default" onClick={handleNext} disabled={!canProceed()}>
                   Next
                   <ArrowRight className="h-4 w-4 ml-2" />
