@@ -449,9 +449,7 @@ export default function SellerWebsiteWizard() {
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-colors",
                     isActive
                       ? "bg-accent text-accent-foreground font-medium"
-                      : isComplete
-                      ? "text-foreground hover:bg-accent/50 cursor-pointer"
-                      : "text-muted-foreground cursor-not-allowed"
+                      : "text-foreground hover:bg-accent/50 cursor-pointer"
                   )}
                 >
                   <div
