@@ -175,8 +175,8 @@ const STEPS = [
   { id: 3, title: "Branding", icon: Brush, description: "Logo, colors & fonts" },
   { id: 4, title: "Page", icon: FileText, description: "Page builder" },
   { id: 5, title: "Notifications", icon: Bell, description: "Lead alerts" },
-  { id: 6, title: "Domain", icon: Globe, description: "URL & publish" },
-  { id: 7, title: "Legal", icon: Scale, description: "Legal & compliance" },
+  { id: 6, title: "Legal", icon: Scale, description: "Legal & compliance" },
+  { id: 7, title: "Publish", icon: Globe, description: "URL & publish" },
 ];
 
 function generateSlug(name: string): string {
@@ -680,8 +680,8 @@ export default function SellerWebsiteWizard() {
       case 3: return { title: "Branding", desc: "Customize your brand identity with logos, colors, and themes" };
       case 4: return { title: "Page Builder", desc: "Configure and customize your page sections. Changes are reflected in the live preview." };
       case 5: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
-      case 6: return { title: "Domain Settings", desc: "Connect your custom domain for a fully branded experience" };
-      case 7: return { title: "Legal & Compliance", desc: "Configure legal documents and compliance settings for your platform" };
+      case 6: return { title: "Legal & Compliance", desc: "Configure legal documents and compliance settings for your platform" };
+      case 7: return { title: "Publish Settings", desc: "Connect your custom domain and publish your website" };
       default: return { title: "", desc: "" };
     }
   };
@@ -1023,80 +1023,8 @@ export default function SellerWebsiteWizard() {
               </div>
             )}
 
-            {/* Step 6: Domain Settings */}
+            {/* Step 6: Legal & Compliance */}
             {currentStep === 6 && (
-              <div className="space-y-6">
-                {/* Setup Guide */}
-                <DomainSetupGuide />
-
-                <div>
-                  <Label htmlFor="slug">Website URL</Label>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-muted-foreground">/s/</span>
-                    <Input
-                      id="slug"
-                      value={data.slug}
-                      onChange={(e) => updateData({ slug: generateSlug(e.target.value) })}
-                      placeholder="my-website"
-                      className="flex-1"
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Your website will be at: /s/{data.slug || "your-url"}
-                  </p>
-                </div>
-
-                <div>
-                  <Label htmlFor="customDomain">Custom Domain (optional)</Label>
-                  <Input
-                    id="customDomain"
-                    value={data.customDomain}
-                    onChange={(e) => updateData({ customDomain: e.target.value })}
-                    placeholder="mywebsite.com"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Point your domain's DNS to our servers. Works without a custom domain too.
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">Publish Options</Label>
-                  <RadioGroup
-                    value={data.publishNow ? "now" : "draft"}
-                    onValueChange={(value) => updateData({ publishNow: value === "now" })}
-                    className="space-y-3"
-                  >
-                    <label
-                      className={cn(
-                        "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
-                        data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
-                      )}
-                    >
-                      <RadioGroupItem value="now" className="mt-0.5" />
-                      <div>
-                        <div className="font-medium">Publish Now</div>
-                        <div className="text-sm text-muted-foreground">Go live immediately</div>
-                      </div>
-                    </label>
-                    <label
-                      className={cn(
-                        "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
-                        !data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
-                      )}
-                    >
-                      <RadioGroupItem value="draft" className="mt-0.5" />
-                      <div>
-                        <div className="font-medium">Save as Draft</div>
-                        <div className="text-sm text-muted-foreground">Edit more before publishing</div>
-                      </div>
-                    </label>
-                  </RadioGroup>
-                </div>
-              </div>
-            )}
-
-            {/* Step 7: Legal & Compliance */}
-            {currentStep === 7 && (
               <div className="space-y-6">
                 {/* Company Information */}
                 <div className="border border-border rounded-lg p-5 space-y-4">
@@ -1189,6 +1117,78 @@ export default function SellerWebsiteWizard() {
                       </p>
                     </div>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Step 7: Publish Settings */}
+            {currentStep === 7 && (
+              <div className="space-y-6">
+                {/* Setup Guide */}
+                <DomainSetupGuide />
+
+                <div>
+                  <Label htmlFor="slug">Website URL</Label>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-muted-foreground">/s/</span>
+                    <Input
+                      id="slug"
+                      value={data.slug}
+                      onChange={(e) => updateData({ slug: generateSlug(e.target.value) })}
+                      placeholder="my-website"
+                      className="flex-1"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your website will be at: /s/{data.slug || "your-url"}
+                  </p>
+                </div>
+
+                <div>
+                  <Label htmlFor="customDomain">Custom Domain (optional)</Label>
+                  <Input
+                    id="customDomain"
+                    value={data.customDomain}
+                    onChange={(e) => updateData({ customDomain: e.target.value })}
+                    placeholder="mywebsite.com"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Point your domain's DNS to our servers. Works without a custom domain too.
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-3 block">Publish Options</Label>
+                  <RadioGroup
+                    value={data.publishNow ? "now" : "draft"}
+                    onValueChange={(value) => updateData({ publishNow: value === "now" })}
+                    className="space-y-3"
+                  >
+                    <label
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
+                        data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
+                      )}
+                    >
+                      <RadioGroupItem value="now" className="mt-0.5" />
+                      <div>
+                        <div className="font-medium">Publish Now</div>
+                        <div className="text-sm text-muted-foreground">Go live immediately</div>
+                      </div>
+                    </label>
+                    <label
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors",
+                        !data.publishNow ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"
+                      )}
+                    >
+                      <RadioGroupItem value="draft" className="mt-0.5" />
+                      <div>
+                        <div className="font-medium">Save as Draft</div>
+                        <div className="text-sm text-muted-foreground">Edit more before publishing</div>
+                      </div>
+                    </label>
+                  </RadioGroup>
                 </div>
               </div>
             )}
