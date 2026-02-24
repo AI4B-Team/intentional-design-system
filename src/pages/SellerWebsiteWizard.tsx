@@ -1317,6 +1317,15 @@ export default function SellerWebsiteWizard() {
                 testimonialsTagline={data.testimonialsTagline}
                 testimonialsSubheadline={data.testimonialsSubheadline}
                 testimonialItems={data.testimonialItems}
+                footerTagline={data.footerTagline}
+                footerAlignment={data.footerAlignment}
+                showSocialLinks={data.showSocialLinks}
+                socialProfiles={data.socialProfiles}
+                showNewsletter={data.showNewsletter}
+                newsletterHeadline={data.newsletterHeadline}
+                newsletterDescription={data.newsletterDescription}
+                newsletterButtonText={data.newsletterButtonText}
+                newsletterPlaceholder={data.newsletterPlaceholder}
               />
             </div>
           </div>
