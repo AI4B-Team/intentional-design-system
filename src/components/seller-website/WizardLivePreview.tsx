@@ -140,129 +140,217 @@ export function WizardLivePreview({
         )}
       </section>
 
-      {/* ── STATS BAR ── */}
-      {defaults.showStats && defaults.stats.length > 0 && (
-        <div className="flex justify-around py-3 border-y border-border bg-muted/20">
-          {defaults.stats.map((s, i) => (
-            <div key={i} className="text-center">
-              <div className="text-[14px] font-bold text-foreground">{s.value}</div>
-              <div className="text-[8px] text-muted-foreground">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── HOW IT WORKS ── */}
-      {defaults.showHowItWorks && defaults.processSteps.length > 0 && (
-        <div className="px-5 py-5 text-center">
-          <h2 className="text-[14px] font-bold text-foreground mb-0.5">How It Works</h2>
-          <p className="text-[9px] text-muted-foreground mb-4">Three simple steps — no surprises, no hidden costs</p>
-          <div className="flex gap-3">
-            {defaults.processSteps.map((step) => (
-              <div key={step.step} className="flex-1 text-center">
-                <div className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" style={{ backgroundColor: `${primaryColor}15` }}>
-                  <span className="text-[10px] font-bold" style={{ color: primaryColor }}>0{step.step}</span>
-                </div>
-                <div className="text-[10px] font-semibold text-foreground mb-0.5">{step.title}</div>
-                <div className="text-[8px] text-muted-foreground leading-tight">{step.description}</div>
-              </div>
+      {/* ── BUYER SITE: Off-Market Listings Grid ── */}
+      {siteType === "buyer" ? (
+        <>
+          {/* Filter bar */}
+          <div className="px-5 py-3 border-b border-border bg-background flex items-center gap-2 flex-wrap">
+            <span className="text-[9px] font-semibold text-foreground">Filter:</span>
+            {["All Deals", "Fix & Flip", "Buy & Hold", "Wholesale", "BRRRR"].map((f, i) => (
+              <span
+                key={f}
+                className="text-[8px] px-2 py-0.5 rounded-full border cursor-pointer"
+                style={i === 0 ? { backgroundColor: primaryColor, color: "white", borderColor: primaryColor } : {}}
+              >
+                {f}
+              </span>
             ))}
+            <span className="ml-auto text-[8px] text-muted-foreground">Showing 12 deals</span>
           </div>
-        </div>
-      )}
 
-      {/* ── COMPARISON TABLE ── */}
-      {defaults.showComparison && defaults.comparisonRows.length > 0 && (
-        <div className="px-5 py-5 bg-muted/10">
-          <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(defaults.comparisonHeadline)}</h2>
-          <p className="text-[9px] text-muted-foreground text-center mb-3">{defaults.comparisonSubheadline}</p>
-          <div className="border rounded-lg overflow-hidden bg-background">
-            <div className="grid grid-cols-3 text-[8px] font-semibold border-b">
-              <div className="p-1.5"></div>
-              <div className="p-1.5 text-center text-muted-foreground">{defaults.comparisonTraditionalLabel}</div>
-              <div className="p-1.5 text-center text-white rounded-tr-lg" style={{ backgroundColor: primaryColor }}>{replacePlaceholder(defaults.comparisonCompanyLabel)}</div>
+          {/* Listings Grid */}
+          <div className="px-5 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-[14px] font-bold text-foreground">Available Off-Market Deals</h2>
+              <span className="text-[8px] text-muted-foreground">Updated daily</span>
             </div>
-            {defaults.comparisonRows.slice(0, 5).map((row, i) => (
-              <div key={i} className="grid grid-cols-3 text-[8px] border-b last:border-0">
-                <div className="p-1.5 font-medium text-foreground">{row.label}</div>
-                <div className="p-1.5 text-center text-muted-foreground">{row.traditional}</div>
-                <div className="p-1.5 text-center font-semibold" style={{ color: primaryColor }}>{row.company}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── TESTIMONIALS ── */}
-      <div className="px-5 py-5 text-center">
-        <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.testimonialsHeadline}</h2>
-        {defaults.testimonialsTagline && (
-          <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
-        )}
-        <p className="text-[9px] text-muted-foreground mb-3">{defaults.testimonialsSubheadline}</p>
-        <div className="flex gap-2">
-          {[
-            { name: "Sarah Mitchell", location: "Miami, FL", amount: "$285,000", text: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days." },
-            { name: "James Rivera", location: "Austin, TX", amount: "$342,000", text: "We had 3 weeks to move. They made an offer the next day and closed before our move date." },
-            { name: "Marcus Johnson", location: "Phoenix, AZ", amount: "$198,000", text: "I was behind on payments and getting letters from the bank. They bought my house in 6 days." },
-          ].map((t, i) => (
-            <div key={i} className="flex-1 border rounded-lg p-2 text-left bg-background">
-              <div className="flex gap-0.5 mb-1">
-                {[1,2,3,4,5].map(s => <Star key={s} className="h-2 w-2 fill-amber-400 text-amber-400" />)}
-              </div>
-              <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.text}"</p>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
-                    {t.name.split(" ").map(n => n[0]).join("")}
+            <div className="grid grid-cols-3 gap-2.5">
+              {[
+                { address: "1423 Oak Ridge Dr", city: "Tampa, FL", price: "$165,000", arv: "$245,000", beds: 3, baths: 2, sqft: "1,450", roi: "32%", type: "Fix & Flip", status: "New" },
+                { address: "882 Palmetto Ave", city: "Orlando, FL", price: "$89,000", arv: "$155,000", beds: 2, baths: 1, sqft: "980", roi: "41%", type: "Wholesale", status: "Hot" },
+                { address: "5501 Bayshore Blvd", city: "St Pete, FL", price: "$210,000", arv: "$310,000", beds: 4, baths: 2, sqft: "1,800", roi: "28%", type: "Buy & Hold", status: "New" },
+                { address: "301 Magnolia St", city: "Clearwater, FL", price: "$125,000", arv: "$198,000", beds: 3, baths: 2, sqft: "1,200", roi: "35%", type: "BRRRR", status: "Price Drop" },
+                { address: "7744 Elm Creek Rd", city: "Lakeland, FL", price: "$72,000", arv: "$130,000", beds: 2, baths: 1, sqft: "850", roi: "52%", type: "Wholesale", status: "Hot" },
+                { address: "990 Sunset Terrace", city: "Sarasota, FL", price: "$185,000", arv: "$265,000", beds: 3, baths: 2, sqft: "1,550", roi: "25%", type: "Fix & Flip", status: "New" },
+              ].map((deal, i) => (
+                <div key={i} className="border rounded-lg overflow-hidden bg-background group">
+                  {/* Image placeholder */}
+                  <div className="h-[60px] bg-muted/40 relative flex items-center justify-center">
+                    <Home className="h-5 w-5 text-muted-foreground/30" />
+                    <span
+                      className="absolute top-1 left-1 text-[6px] font-bold px-1.5 py-0.5 rounded text-white"
+                      style={{ backgroundColor: deal.status === "Hot" ? "#ef4444" : deal.status === "Price Drop" ? "#f59e0b" : primaryColor }}
+                    >
+                      {deal.status}
+                    </span>
+                    <span className="absolute top-1 right-1 text-[6px] px-1.5 py-0.5 rounded bg-black/60 text-white font-medium">
+                      {deal.type}
+                    </span>
                   </div>
-                  <div>
-                    <div className="text-[7px] font-semibold text-foreground">{t.name}</div>
-                    <div className="text-[6px] text-muted-foreground">{t.location}</div>
+                  {/* Details */}
+                  <div className="p-2">
+                    <div className="text-[9px] font-bold text-foreground leading-tight">{deal.address}</div>
+                    <div className="text-[7px] text-muted-foreground mb-1.5">{deal.city}</div>
+                    <div className="flex items-baseline justify-between mb-1.5">
+                      <span className="text-[11px] font-bold" style={{ color: primaryColor }}>{deal.price}</span>
+                      <span className="text-[7px] text-muted-foreground">ARV: {deal.arv}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[7px] text-muted-foreground mb-1.5">
+                      <span>{deal.beds}bd</span>
+                      <span>{deal.baths}ba</span>
+                      <span>{deal.sqft} sqft</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8px] font-semibold text-green-600">↑ {deal.roi} ROI</span>
+                      <button
+                        className="text-[7px] font-bold px-2 py-0.5 rounded text-white"
+                        style={{ backgroundColor: accentColor }}
+                      >
+                        View Deal
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-[8px] font-bold text-foreground">{t.amount}</div>
-                  <div className="text-[6px] text-muted-foreground">Sale price</div>
+              ))}
+            </div>
+          </div>
+
+          {/* CTA for buyers */}
+          <div className="px-5 py-4 text-center bg-muted/10 border-t border-border">
+            <h2 className="text-[13px] font-bold text-foreground mb-0.5">Want First Access To New Deals?</h2>
+            <p className="text-[8px] text-muted-foreground mb-2">Join our buyers list and get notified before deals go public.</p>
+            <button className="rounded-full px-4 py-1.5 text-[9px] font-bold text-white" style={{ backgroundColor: accentColor }}>
+              {submitText}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* ── STATS BAR ── */}
+          {defaults.showStats && defaults.stats.length > 0 && (
+            <div className="flex justify-around py-3 border-y border-border bg-muted/20">
+              {defaults.stats.map((s, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-[14px] font-bold text-foreground">{s.value}</div>
+                  <div className="text-[8px] text-muted-foreground">{s.label}</div>
                 </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── HOW IT WORKS ── */}
+          {defaults.showHowItWorks && defaults.processSteps.length > 0 && (
+            <div className="px-5 py-5 text-center">
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">How It Works</h2>
+              <p className="text-[9px] text-muted-foreground mb-4">Three simple steps — no surprises, no hidden costs</p>
+              <div className="flex gap-3">
+                {defaults.processSteps.map((step) => (
+                  <div key={step.step} className="flex-1 text-center">
+                    <div className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" style={{ backgroundColor: `${primaryColor}15` }}>
+                      <span className="text-[10px] font-bold" style={{ color: primaryColor }}>0{step.step}</span>
+                    </div>
+                    <div className="text-[10px] font-semibold text-foreground mb-0.5">{step.title}</div>
+                    <div className="text-[8px] text-muted-foreground leading-tight">{step.description}</div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* ── SITUATIONS ── */}
-      {defaults.showSituations && defaults.situations.length > 0 && (
-        <div className="px-5 py-5 bg-muted/10 text-center">
-          <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.situationsHeadline}</h2>
-          <p className="text-[9px] text-muted-foreground mb-3">{defaults.situationsSubheadline}</p>
-          <div className="grid grid-cols-6 gap-1.5">
-            {defaults.situations.map((s, i) => {
-              const Icon = SITUATION_ICONS[s.icon] || Home;
-              return (
-                <div key={i} className="border rounded-lg p-2 bg-background text-center">
-                  <Icon className="h-3.5 w-3.5 mx-auto mb-1 text-muted-foreground" />
-                  <div className="text-[7px] text-foreground">{s.label}</div>
+          {/* ── COMPARISON TABLE ── */}
+          {defaults.showComparison && defaults.comparisonRows.length > 0 && (
+            <div className="px-5 py-5 bg-muted/10">
+              <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(defaults.comparisonHeadline)}</h2>
+              <p className="text-[9px] text-muted-foreground text-center mb-3">{defaults.comparisonSubheadline}</p>
+              <div className="border rounded-lg overflow-hidden bg-background">
+                <div className="grid grid-cols-3 text-[8px] font-semibold border-b">
+                  <div className="p-1.5"></div>
+                  <div className="p-1.5 text-center text-muted-foreground">{defaults.comparisonTraditionalLabel}</div>
+                  <div className="p-1.5 text-center text-white rounded-tr-lg" style={{ backgroundColor: primaryColor }}>{replacePlaceholder(defaults.comparisonCompanyLabel)}</div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* ── FAQ ── */}
-      <div className="px-5 py-5 text-center">
-        <h2 className="text-[14px] font-bold text-foreground mb-0.5">Frequently Asked Questions</h2>
-        <p className="text-[9px] text-muted-foreground mb-3">Everything you need to know about selling with {company}</p>
-        <div className="space-y-1 max-w-[350px] mx-auto">
-          {["How does the cash offer process work?", "Are there any fees or commissions?", "Do I need to make repairs before selling?", "How fast can I close?"].map((q, i) => (
-            <div key={i} className="flex items-center justify-between border rounded px-2 py-1.5 text-left bg-background">
-              <span className="text-[8px] text-foreground">{q}</span>
-              <ChevronDown className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
+                {defaults.comparisonRows.slice(0, 5).map((row, i) => (
+                  <div key={i} className="grid grid-cols-3 text-[8px] border-b last:border-0">
+                    <div className="p-1.5 font-medium text-foreground">{row.label}</div>
+                    <div className="p-1.5 text-center text-muted-foreground">{row.traditional}</div>
+                    <div className="p-1.5 text-center font-semibold" style={{ color: primaryColor }}>{row.company}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
+
+          {/* ── TESTIMONIALS ── */}
+          <div className="px-5 py-5 text-center">
+            <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.testimonialsHeadline}</h2>
+            {defaults.testimonialsTagline && (
+              <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
+            )}
+            <p className="text-[9px] text-muted-foreground mb-3">{defaults.testimonialsSubheadline}</p>
+            <div className="flex gap-2">
+              {[
+                { name: "Sarah Mitchell", location: "Miami, FL", amount: "$285,000", text: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days." },
+                { name: "James Rivera", location: "Austin, TX", amount: "$342,000", text: "We had 3 weeks to move. They made an offer the next day and closed before our move date." },
+                { name: "Marcus Johnson", location: "Phoenix, AZ", amount: "$198,000", text: "I was behind on payments and getting letters from the bank. They bought my house in 6 days." },
+              ].map((t, i) => (
+                <div key={i} className="flex-1 border rounded-lg p-2 text-left bg-background">
+                  <div className="flex gap-0.5 mb-1">
+                    {[1,2,3,4,5].map(s => <Star key={s} className="h-2 w-2 fill-amber-400 text-amber-400" />)}
+                  </div>
+                  <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.text}"</p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
+                        {t.name.split(" ").map(n => n[0]).join("")}
+                      </div>
+                      <div>
+                        <div className="text-[7px] font-semibold text-foreground">{t.name}</div>
+                        <div className="text-[6px] text-muted-foreground">{t.location}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[8px] font-bold text-foreground">{t.amount}</div>
+                      <div className="text-[6px] text-muted-foreground">Sale price</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* ── SITUATIONS ── */}
+          {defaults.showSituations && defaults.situations.length > 0 && (
+            <div className="px-5 py-5 bg-muted/10 text-center">
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.situationsHeadline}</h2>
+              <p className="text-[9px] text-muted-foreground mb-3">{defaults.situationsSubheadline}</p>
+              <div className="grid grid-cols-6 gap-1.5">
+                {defaults.situations.map((s, i) => {
+                  const Icon = SITUATION_ICONS[s.icon] || Home;
+                  return (
+                    <div key={i} className="border rounded-lg p-2 bg-background text-center">
+                      <Icon className="h-3.5 w-3.5 mx-auto mb-1 text-muted-foreground" />
+                      <div className="text-[7px] text-foreground">{s.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── FAQ ── */}
+          <div className="px-5 py-5 text-center">
+            <h2 className="text-[14px] font-bold text-foreground mb-0.5">Frequently Asked Questions</h2>
+            <p className="text-[9px] text-muted-foreground mb-3">Everything you need to know about selling with {company}</p>
+            <div className="space-y-1 max-w-[350px] mx-auto">
+              {["How does the cash offer process work?", "Are there any fees or commissions?", "Do I need to make repairs before selling?", "How fast can I close?"].map((q, i) => (
+                <div key={i} className="flex items-center justify-between border rounded px-2 py-1.5 text-left bg-background">
+                  <span className="text-[8px] text-foreground">{q}</span>
+                  <ChevronDown className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
 
       {/* ── CTA BANNER ── */}
       <div className="px-5 py-6 text-center text-white" style={{ backgroundColor: "#1a1a2e" }}>
