@@ -240,6 +240,7 @@ interface WizardData {
   howItWorksHeadline: string;
   howItWorksSubheadline: string;
   comparisonHeadline: string;
+  comparisonSubheadline: string;
   comparisonTraditionalLabel: string;
   comparisonCompanyLabel: string;
   comparisonRows: Array<{ label: string; traditional: string; company: string }>;
@@ -469,6 +470,7 @@ export default function SellerWebsiteWizard() {
     howItWorksHeadline: "",
     howItWorksSubheadline: "",
     comparisonHeadline: "",
+    comparisonSubheadline: "",
     comparisonTraditionalLabel: "",
     comparisonCompanyLabel: "",
     comparisonRows: [],
@@ -1305,6 +1307,7 @@ export default function SellerWebsiteWizard() {
                 howItWorksHeadline={data.howItWorksHeadline}
                 howItWorksSubheadline={data.howItWorksSubheadline}
                 comparisonHeadline={data.comparisonHeadline}
+                comparisonSubheadline={data.comparisonSubheadline}
                 comparisonTraditionalLabel={data.comparisonTraditionalLabel}
                 comparisonCompanyLabel={data.comparisonCompanyLabel}
                 comparisonRows={data.comparisonRows}
