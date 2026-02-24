@@ -238,6 +238,9 @@ interface WizardData {
   faqHeadline: string;
   faqItems: Array<{ question: string; answer: string }>;
   testimonialsHeadline: string;
+  testimonialsTagline: string;
+  testimonialsSubheadline: string;
+  testimonialItems: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }>;
 }
 
 const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
@@ -306,6 +309,9 @@ export default function SellerWebsiteWizard() {
     faqHeadline: "",
     faqItems: [],
     testimonialsHeadline: "",
+    testimonialsTagline: "",
+    testimonialsSubheadline: "",
+    testimonialItems: [],
   });
 
   const aiWriter = useAIWriter({ siteType: data.siteType, companyName: data.companyName });
@@ -988,6 +994,9 @@ export default function SellerWebsiteWizard() {
                 faqHeadline={data.faqHeadline}
                 faqItems={data.faqItems}
                 testimonialsHeadline={data.testimonialsHeadline}
+                testimonialsTagline={data.testimonialsTagline}
+                testimonialsSubheadline={data.testimonialsSubheadline}
+                testimonialItems={data.testimonialItems}
               />
             </div>
           </div>
