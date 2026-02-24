@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 import { USStateMap, US_STATES } from "./USStateMap";
 import { SocialIcon, SOCIAL_PLATFORMS } from "./SocialIcons";
-import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail } from "lucide-react";
+import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail, X } from "lucide-react";
 import { NetworkLogo } from "./NetworkLogos";
 
 interface WizardLivePreviewProps {
@@ -68,6 +68,7 @@ interface WizardLivePreviewProps {
   newsletterDescription?: string;
   newsletterButtonText?: string;
   newsletterPlaceholder?: string;
+  legalDocs?: Array<{ id: string; title: string; enabled: boolean; content: string }>;
 }
 
 const SITUATION_ICONS: Record<string, React.ElementType> = {
@@ -141,7 +142,9 @@ export function WizardLivePreview({
   newsletterDescription,
   newsletterButtonText,
   newsletterPlaceholder,
+  legalDocs: legalDocsProp,
 }: WizardLivePreviewProps) {
+  const [openLegalDoc, setOpenLegalDoc] = useState<{ title: string; content: string } | null>(null);
   const defaults = getSiteTypeDefaults(siteType);
   const headline = heroHeadline || defaults.heroHeadline;
   const subheadline = heroSubheadline || defaults.heroSubheadline;
@@ -624,11 +627,46 @@ export function WizardLivePreview({
         <div className="flex items-center justify-between border-t pt-2">
           <span className="text-[7px] text-muted-foreground">© 2026 {company}. All rights reserved.</span>
           <div className="flex gap-2 text-[7px] text-muted-foreground">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
+            {(legalDocsProp || []).filter(d => d.enabled && d.content).map(doc => (
+              <button
+                key={doc.id}
+                onClick={() => setOpenLegalDoc({ title: doc.title, content: doc.content })}
+                className="hover:underline cursor-pointer"
+              >
+                {doc.title}
+              </button>
+            ))}
+            {(!legalDocsProp || legalDocsProp.filter(d => d.enabled && d.content).length === 0) && (
+              <>
+                <span>Privacy Policy</span>
+                <span>Terms of Service</span>
+              </>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Legal Document Modal */}
+      {openLegalDoc && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50" onClick={() => setOpenLegalDoc(null)}>
+          <div className="bg-white rounded-lg max-w-md w-full mx-4 max-h-[70vh] flex flex-col shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+              <div>
+                <h2 className="text-sm font-bold text-gray-900">{openLegalDoc.title}</h2>
+                <p className="text-xs text-gray-500">{company}</p>
+              </div>
+              <button onClick={() => setOpenLegalDoc(null)} className="h-6 w-6 rounded-full flex items-center justify-center hover:bg-gray-100">
+                <X className="h-3 w-3 text-gray-500" />
+              </button>
+            </div>
+            <div className="px-4 py-3 overflow-y-auto flex-1">
+              <div className="text-xs text-gray-600 whitespace-pre-line leading-relaxed">
+                {openLegalDoc.content}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
