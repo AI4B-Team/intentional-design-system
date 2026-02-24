@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
 import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor, FooterEditor, CoverageEditor } from "./SectionEditors";
+import { NetworkLogo } from "./NetworkLogos";
 import {
   ChevronDown,
   ChevronUp,
@@ -261,7 +262,13 @@ function renderSectionEditor(
                 const logoImages: Record<string, string> = data.credibilityLogoImages || {};
                 const imageUrl = logoImages[String(i)];
                 return (
-                  <div key={i} className="border border-border rounded-lg p-3 space-y-2">
+                   <div key={i} className="border border-border rounded-lg p-3 space-y-2">
+                    {/* Logo preview */}
+                    {logo && !imageUrl && (
+                      <div className="flex items-center justify-center bg-muted/30 rounded-md py-2">
+                        <NetworkLogo name={logo} sizeClass="text-base" colorClass="text-foreground" />
+                      </div>
+                    )}
                     <div className="flex items-center gap-2">
                       <Input
                         value={logo}
