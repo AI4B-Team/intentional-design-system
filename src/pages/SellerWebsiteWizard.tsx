@@ -496,6 +496,11 @@ export default function SellerWebsiteWizard() {
     const siteType = SITE_TYPES.find((t) => t.id === typeId);
     if (siteType) {
       const defaults = getSiteTypeDefaults(typeId);
+      const defaultTestimonials = [
+        { name: "Sarah Mitchell", role: "Homeowner", company: "Miami, FL", quote: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days.", imageUrl: "" },
+        { name: "James Rivera", role: "Homeowner", company: "Austin, TX", quote: "We had 3 weeks to move. They made an offer the next day and closed before our move date.", imageUrl: "" },
+        { name: "Marcus Johnson", role: "Homeowner", company: "Phoenix, AZ", quote: "I was behind on payments and getting letters from the bank. They bought my house in 6 days.", imageUrl: "" },
+      ];
       updateData({
         siteType: typeId,
         heroHeadline: siteType.defaultHeadline,
@@ -503,6 +508,7 @@ export default function SellerWebsiteWizard() {
         formSubmitText: siteType.defaultCta,
         ctaHeadline: defaults.ctaHeadline,
         ctaSubheadline: defaults.ctaSubheadline,
+        testimonialItems: defaultTestimonials,
       });
     }
   };
