@@ -366,8 +366,27 @@ function renderSectionEditor(
             loadingField={aiWriter.loadingField}
             onGenerate={aiWriter.generateCopy}
           />
-          <p className="text-xs text-muted-foreground">
-            Testimonial content uses default examples. Full customization coming soon.
+          <AIWriterField
+            label="Tagline"
+            fieldType="testimonialsTagline"
+            value={data.testimonialsTagline || ""}
+            onChange={(v: string) => onUpdate({ testimonialsTagline: v })}
+            placeholder="Over 1,000 homeowners have sold with us..."
+            loadingField={aiWriter.loadingField}
+            onGenerate={aiWriter.generateCopy}
+            context={data.testimonialsHeadline}
+          />
+          <AIWriterField
+            label="Subheadline"
+            fieldType="testimonialsSubheadline"
+            value={data.testimonialsSubheadline || ""}
+            onChange={(v: string) => onUpdate({ testimonialsSubheadline: v })}
+            placeholder="Don't Take Our Word For It — Take Theirs"
+            loadingField={aiWriter.loadingField}
+            onGenerate={aiWriter.generateCopy}
+          />
+          <p className="text-xs text-muted-foreground italic">
+            Individual testimonial cards will be fully customizable in a future update.
           </p>
         </div>
       );
