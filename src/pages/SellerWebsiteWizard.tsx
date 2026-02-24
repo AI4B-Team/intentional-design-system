@@ -530,6 +530,12 @@ export default function SellerWebsiteWizard() {
         { name: "James Rivera", role: "Homeowner", company: "Austin, TX", quote: "We had 3 weeks to move. They made an offer the next day and closed before our move date.", imageUrl: "" },
         { name: "Marcus Johnson", role: "Homeowner", company: "Phoenix, AZ", quote: "I was behind on payments and getting letters from the bank. They bought my house in 6 days.", imageUrl: "" },
       ];
+      const defaultFaqItems = [
+        { question: "How does the cash offer process work?", answer: "Simply submit your property details through our form, and we'll present you with a fair cash offer within 24 hours. No obligation." },
+        { question: "Are there any fees or commissions?", answer: "Absolutely not. We charge zero fees and zero commissions. The offer you accept is the amount you receive." },
+        { question: "Do I need to make repairs before selling?", answer: "No repairs needed. We buy houses in any condition — as-is, no questions asked." },
+        { question: "How fast can I close?", answer: "We can close in as little as 3 days, or on your timeline. You pick the date that works best for you." },
+      ];
       updateData({
         siteType: typeId,
         heroHeadline: siteType.defaultHeadline,
@@ -538,6 +544,8 @@ export default function SellerWebsiteWizard() {
         ctaHeadline: defaults.ctaHeadline,
         ctaSubheadline: defaults.ctaSubheadline,
         testimonialItems: defaultTestimonials,
+        faqItems: defaultFaqItems,
+        faqHeadline: "Frequently Asked Questions",
       });
     }
   };
