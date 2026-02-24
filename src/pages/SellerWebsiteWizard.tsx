@@ -438,13 +438,13 @@ export default function SellerWebsiteWizard() {
               const Icon = step.icon;
               const isActive = step.id === currentStep;
               const isComplete = step.id < currentStep;
-              const isClickable = step.id <= currentStep;
+              const isClickable = true;
 
               return (
                 <button
                   key={step.id}
-                  onClick={() => isClickable && setCurrentStep(step.id)}
-                  disabled={!isClickable}
+                  onClick={() => setCurrentStep(step.id)}
+                  disabled={false}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left text-sm transition-colors",
                     isActive
