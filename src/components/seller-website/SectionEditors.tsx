@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AIWriterField } from "./AIWriterField";
-import { X, Plus, RotateCcw } from "lucide-react";
+import { X, Plus, RotateCcw, Upload, Image as ImageIcon, Trash2 } from "lucide-react";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 
 interface EditorProps {
@@ -431,6 +431,193 @@ export function FAQEditor({ data, onUpdate, aiWriter, selectedSiteType }: Editor
         onClick={() => onUpdate({ faqItems: [...items, { question: "", answer: "" }] })}
       >
         <Plus className="h-4 w-4 mr-1" /> Add Question
+      </Button>
+    </div>
+  );
+}
+
+/* ─── Testimonials ─── */
+function TestimonialImageUpload({ imageUrl, onUpload, onRemove }: { imageUrl?: string; onUpload: (url: string) => void; onRemove: () => void }) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { if (typeof reader.result === "string") onUpload(reader.result); };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      {imageUrl ? (
+        <div className="relative">
+          <img src={imageUrl} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-border" />
+          <button
+            onClick={onRemove}
+            className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
+          >
+            <X className="h-2.5 w-2.5" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => inputRef.current?.click()}
+          className="w-10 h-10 rounded-full border-2 border-dashed border-muted-foreground/30 flex items-center justify-center hover:border-muted-foreground/60 transition-colors"
+        >
+          <ImageIcon className="h-4 w-4 text-muted-foreground" />
+        </button>
+      )}
+      <span className="text-[11px] text-muted-foreground">
+        {imageUrl ? "Photo uploaded" : "Upload a profile photo or leave empty for initials"}
+      </span>
+    </div>
+  );
+}
+
+export function TestimonialsEditor({ data, onUpdate, aiWriter, selectedSiteType }: EditorProps) {
+  const items: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }> = data.testimonialItems || [];
+
+  const updateItem = (idx: number, field: string, val: string) => {
+    const updated = [...items];
+    updated[idx] = { ...updated[idx], [field]: val };
+    onUpdate({ testimonialItems: updated });
+  };
+
+  return (
+    <div className="space-y-3">
+      <AIWriterField
+        label="Section Headline"
+        fieldType="testimonialsHeadline"
+        value={data.testimonialsHeadline || ""}
+        onChange={(v: string) => onUpdate({ testimonialsHeadline: v })}
+        placeholder="What Our Clients Say"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+      <AIWriterField
+        label="Tagline"
+        fieldType="testimonialsTagline"
+        value={data.testimonialsTagline || ""}
+        onChange={(v: string) => onUpdate({ testimonialsTagline: v })}
+        placeholder="Over 1,000 homeowners have sold with us..."
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+      <AIWriterField
+        label="Subheadline"
+        fieldType="testimonialsSubheadline"
+        value={data.testimonialsSubheadline || ""}
+        onChange={(v: string) => onUpdate({ testimonialsSubheadline: v })}
+        placeholder="Don't Take Our Word For It — Take Theirs"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+
+      <p className="text-xs text-muted-foreground">
+        Add testimonials with text, images, or both. All fields are optional for maximum flexibility.
+      </p>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Label className="text-xs">Testimonials</Label>
+          <ItemCountBadge count={items.length} label={items.length === 1 ? "testimonial" : "testimonials"} />
+        </div>
+        <LoadDefaultsButton onClick={() => onUpdate({
+          testimonialItems: [
+            { name: "Sarah Mitchell", role: "Homeowner", company: "Miami, FL", quote: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days.", imageUrl: "" },
+            { name: "James Rivera", role: "Homeowner", company: "Austin, TX", quote: "We had 3 weeks to move. They made an offer the next day and closed before our move date.", imageUrl: "" },
+            { name: "Marcus Johnson", role: "Homeowner", company: "Phoenix, AZ", quote: "I was behind on payments and getting letters from the bank. They bought my house in 6 days.", imageUrl: "" },
+          ],
+        })} />
+      </div>
+
+      {items.map((item, i) => (
+        <div key={i} className="border border-border rounded-lg p-3 space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-foreground">Testimonial {i + 1}</span>
+            <Button
+              variant="ghost" size="sm"
+              className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+              onClick={() => onUpdate({ testimonialItems: items.filter((_, idx) => idx !== i) })}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <TestimonialImageUpload
+            imageUrl={item.imageUrl}
+            onUpload={(url) => updateItem(i, "imageUrl", url)}
+            onRemove={() => updateItem(i, "imageUrl", "")}
+          />
+
+          <div className="grid grid-cols-2 gap-2">
+            <AIWriterField
+              label="Name"
+              fieldType={`testimonial_${i}_name`}
+              value={item.name}
+              onChange={(v: string) => updateItem(i, "name", v)}
+              placeholder="Sarah Johnson"
+              loadingField={aiWriter.loadingField}
+              onGenerate={async (ft, val) => {
+                const result = await aiWriter.generateCopy("testimonialName", val, "A realistic homeowner name");
+                return result;
+              }}
+            />
+            <AIWriterField
+              label="Role"
+              fieldType={`testimonial_${i}_role`}
+              value={item.role}
+              onChange={(v: string) => updateItem(i, "role", v)}
+              placeholder="Homeowner"
+              loadingField={aiWriter.loadingField}
+              onGenerate={async (ft, val) => {
+                const result = await aiWriter.generateCopy("testimonialRole", val, "A role or title");
+                return result;
+              }}
+            />
+          </div>
+
+          <AIWriterField
+            label="Company / Location"
+            fieldType={`testimonial_${i}_company`}
+            value={item.company}
+            onChange={(v: string) => updateItem(i, "company", v)}
+            placeholder="Miami, FL"
+            loadingField={aiWriter.loadingField}
+            onGenerate={async (ft, val) => {
+              const result = await aiWriter.generateCopy("testimonialCompany", val, "A company name or city/state");
+              return result;
+            }}
+          />
+
+          <AIWriterField
+            label="Quote"
+            fieldType={`testimonial_${i}_quote`}
+            value={item.quote}
+            onChange={(v: string) => updateItem(i, "quote", v)}
+            placeholder="This platform has completely transformed how we operate..."
+            multiline
+            rows={3}
+            loadingField={aiWriter.loadingField}
+            onGenerate={async (ft, val) => {
+              const result = await aiWriter.generateCopy("testimonialQuote", val, `Testimonial from ${item.name || "a client"}`);
+              return result;
+            }}
+          />
+        </div>
+      ))}
+
+      {items.length === 0 && (
+        <p className="text-xs text-muted-foreground italic">No custom testimonials. Default examples will be shown. Click "Load Defaults" to customize.</p>
+      )}
+
+      <Button
+        variant="secondary" size="sm" className="w-full"
+        onClick={() => onUpdate({ testimonialItems: [...items, { name: "", role: "", company: "", quote: "", imageUrl: "" }] })}
+      >
+        <Plus className="h-4 w-4 mr-1" /> Add Testimonial
       </Button>
     </div>
   );

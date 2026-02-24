@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
-import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor } from "./SectionEditors";
+import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor } from "./SectionEditors";
 import {
   ChevronDown,
   ChevronUp,
@@ -355,41 +355,7 @@ function renderSectionEditor(
       );
 
     case "testimonials":
-      return (
-        <div className="space-y-3">
-          <AIWriterField
-            label="Section Headline"
-            fieldType="testimonialsHeadline"
-            value={data.testimonialsHeadline || ""}
-            onChange={(v: string) => onUpdate({ testimonialsHeadline: v })}
-            placeholder="What Our Clients Say"
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-          />
-          <AIWriterField
-            label="Tagline"
-            fieldType="testimonialsTagline"
-            value={data.testimonialsTagline || ""}
-            onChange={(v: string) => onUpdate({ testimonialsTagline: v })}
-            placeholder="Over 1,000 homeowners have sold with us..."
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-            context={data.testimonialsHeadline}
-          />
-          <AIWriterField
-            label="Subheadline"
-            fieldType="testimonialsSubheadline"
-            value={data.testimonialsSubheadline || ""}
-            onChange={(v: string) => onUpdate({ testimonialsSubheadline: v })}
-            placeholder="Don't Take Our Word For It — Take Theirs"
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-          />
-          <p className="text-xs text-muted-foreground italic">
-            Individual testimonial cards will be fully customizable in a future update.
-          </p>
-        </div>
-      );
+      return <TestimonialsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
 
     case "footer":
       return (

@@ -48,6 +48,9 @@ interface WizardLivePreviewProps {
   faqHeadline?: string;
   faqItems?: Array<{ question: string; answer: string }>;
   testimonialsHeadline?: string;
+  testimonialsTagline?: string;
+  testimonialsSubheadline?: string;
+  testimonialItems?: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }>;
 }
 
 const SITUATION_ICONS: Record<string, React.ElementType> = {
@@ -104,6 +107,9 @@ export function WizardLivePreview({
   faqHeadline: faqHeadlineProp,
   faqItems: faqItemsProp,
   testimonialsHeadline: testimonialsHeadlineProp,
+  testimonialsTagline: testimonialsTaglineProp,
+  testimonialsSubheadline: testimonialsSubheadlineProp,
+  testimonialItems: testimonialItemsProp,
 }: WizardLivePreviewProps) {
   const defaults = getSiteTypeDefaults(siteType);
   const headline = heroHeadline || defaults.heroHeadline;
@@ -142,6 +148,14 @@ export function WizardLivePreview({
   const displayFAQHeadline = faqHeadlineProp || "Frequently Asked Questions";
   const displayFAQItems = faqItemsProp && faqItemsProp.length > 0 ? faqItemsProp : null;
   const displayTestimonialsHeadline = testimonialsHeadlineProp || defaults.testimonialsHeadline;
+  const displayTestimonialsTagline = testimonialsTaglineProp || defaults.testimonialsTagline;
+  const displayTestimonialsSubheadline = testimonialsSubheadlineProp || defaults.testimonialsSubheadline;
+  const defaultTestimonials = [
+    { name: "Sarah Mitchell", role: "Homeowner", company: "Miami, FL", quote: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days.", imageUrl: "" },
+    { name: "James Rivera", role: "Homeowner", company: "Austin, TX", quote: "We had 3 weeks to move. They made an offer the next day and closed before our move date.", imageUrl: "" },
+    { name: "Marcus Johnson", role: "Homeowner", company: "Phoenix, AZ", quote: "I was behind on payments and getting letters from the bank. They bought my house in 6 days.", imageUrl: "" },
+  ];
+  const displayTestimonials = testimonialItemsProp && testimonialItemsProp.length > 0 ? testimonialItemsProp : defaultTestimonials;
 
   const replacePlaceholder = (text: string) => text.replace(/\{companyName\}/g, company);
 
@@ -388,34 +402,28 @@ export function WizardLivePreview({
           {sShowTestimonials && (
             <div className="px-5 py-5 text-center">
               <h2 className="text-[14px] font-bold text-foreground mb-0.5">{displayTestimonialsHeadline}</h2>
-              {defaults.testimonialsTagline && (
-                <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
+              {displayTestimonialsTagline && (
+                <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{displayTestimonialsTagline}</p>
               )}
-              <p className="text-[9px] text-muted-foreground mb-3">{defaults.testimonialsSubheadline}</p>
+              <p className="text-[9px] text-muted-foreground mb-3">{displayTestimonialsSubheadline}</p>
               <div className="flex gap-2">
-                {[
-                  { name: "Sarah Mitchell", location: "Miami, FL", amount: "$285,000", text: "After my mother passed, I inherited a house I couldn't maintain. They gave me a fair cash offer and closed in 5 days." },
-                  { name: "James Rivera", location: "Austin, TX", amount: "$342,000", text: "We had 3 weeks to move. They made an offer the next day and closed before our move date." },
-                  { name: "Marcus Johnson", location: "Phoenix, AZ", amount: "$198,000", text: "I was behind on payments and getting letters from the bank. They bought my house in 6 days." },
-                ].map((t, i) => (
+                {displayTestimonials.map((t, i) => (
                   <div key={i} className="flex-1 border rounded-lg p-2 text-left bg-background">
                     <div className="flex gap-0.5 mb-1">
                       {[1,2,3,4,5].map(s => <Star key={s} className="h-2 w-2 fill-amber-400 text-amber-400" />)}
                     </div>
-                    <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.text}"</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-1">
+                    <p className="text-[7px] text-muted-foreground mb-1.5 line-clamp-3">"{t.quote}"</p>
+                    <div className="flex items-center gap-1">
+                      {t.imageUrl ? (
+                        <img src={t.imageUrl} alt={t.name} className="w-4 h-4 rounded-full object-cover" />
+                      ) : (
                         <div className="w-4 h-4 rounded-full flex items-center justify-center text-[6px] font-bold text-white" style={{ backgroundColor: primaryColor }}>
-                          {t.name.split(" ").map(n => n[0]).join("")}
+                          {t.name ? t.name.split(" ").map(n => n[0]).join("") : "?"}
                         </div>
-                        <div>
-                          <div className="text-[7px] font-semibold text-foreground">{t.name}</div>
-                          <div className="text-[6px] text-muted-foreground">{t.location}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-[8px] font-bold text-foreground">{t.amount}</div>
-                        <div className="text-[6px] text-muted-foreground">Sale price</div>
+                      )}
+                      <div>
+                        <div className="text-[7px] font-semibold text-foreground">{t.name || "Name"}</div>
+                        <div className="text-[6px] text-muted-foreground">{[t.role, t.company].filter(Boolean).join(" · ") || "Role"}</div>
                       </div>
                     </div>
                   </div>
