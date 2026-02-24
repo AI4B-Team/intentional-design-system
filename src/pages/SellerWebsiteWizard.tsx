@@ -98,7 +98,7 @@ const SITE_TYPES = [
 const CREATION_METHODS = [
   {
     id: "template",
-    name: "Start from Template",
+    name: "Start From Template",
     description: "Choose From Professionally Designed Templates",
     icon: LayoutTemplate,
     color: "text-blue-600",
@@ -106,7 +106,7 @@ const CREATION_METHODS = [
   },
   {
     id: "scratch",
-    name: "Build from Scratch",
+    name: "Build From Scratch",
     description: "Start With A Blank Canvas And Customize Everything",
     icon: Palette,
     color: "text-violet-600",
