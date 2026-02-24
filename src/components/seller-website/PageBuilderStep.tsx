@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
+import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor } from "./SectionEditors";
 import {
   ChevronDown,
   ChevronUp,
@@ -401,10 +402,25 @@ function renderSectionEditor(
         </div>
       );
 
+    case "stats":
+      return <StatsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
+    case "howItWorks":
+      return <HowItWorksEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
+    case "comparison":
+      return <ComparisonEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
+    case "situations":
+      return <SituationsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
+    case "faq":
+      return <FAQEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
     default:
       return (
         <p className="text-xs text-muted-foreground">
-          This section uses smart defaults based on your site type. Expanded editing coming soon.
+          No additional settings for this section.
         </p>
       );
   }

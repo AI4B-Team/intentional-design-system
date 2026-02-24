@@ -33,6 +33,21 @@ interface WizardLivePreviewProps {
   benefitsLine?: string;
   ctaHeadline?: string;
   ctaSubheadline?: string;
+  // Section content overrides
+  statsItems?: Array<{ value: string; label: string }>;
+  processSteps?: Array<{ step: number; title: string; description: string }>;
+  howItWorksHeadline?: string;
+  howItWorksSubheadline?: string;
+  comparisonHeadline?: string;
+  comparisonTraditionalLabel?: string;
+  comparisonCompanyLabel?: string;
+  comparisonRows?: Array<{ label: string; traditional: string; company: string }>;
+  situationsHeadline?: string;
+  situationsSubheadline?: string;
+  situationItems?: Array<{ icon: string; label: string }>;
+  faqHeadline?: string;
+  faqItems?: Array<{ question: string; answer: string }>;
+  testimonialsHeadline?: string;
 }
 
 const SITUATION_ICONS: Record<string, React.ElementType> = {
@@ -75,6 +90,20 @@ export function WizardLivePreview({
   benefitsLine: benefitsLineProp,
   ctaHeadline: ctaHeadlineProp,
   ctaSubheadline: ctaSubheadlineProp,
+  statsItems: statsItemsProp,
+  processSteps: processStepsProp,
+  howItWorksHeadline: howItWorksHeadlineProp,
+  howItWorksSubheadline: howItWorksSubheadlineProp,
+  comparisonHeadline: comparisonHeadlineProp,
+  comparisonTraditionalLabel: comparisonTraditionalLabelProp,
+  comparisonCompanyLabel: comparisonCompanyLabelProp,
+  comparisonRows: comparisonRowsProp,
+  situationsHeadline: situationsHeadlineProp,
+  situationsSubheadline: situationsSubheadlineProp,
+  situationItems: situationItemsProp,
+  faqHeadline: faqHeadlineProp,
+  faqItems: faqItemsProp,
+  testimonialsHeadline: testimonialsHeadlineProp,
 }: WizardLivePreviewProps) {
   const defaults = getSiteTypeDefaults(siteType);
   const headline = heroHeadline || defaults.heroHeadline;
@@ -97,6 +126,22 @@ export function WizardLivePreview({
   const benefitsLn = benefitsLineProp || defaults.heroBenefitsLine;
   const ctaHl = ctaHeadlineProp || defaults.ctaHeadline;
   const ctaSub = ctaSubheadlineProp || defaults.ctaSubheadline;
+
+  // Section content (custom overrides defaults)
+  const displayStats = statsItemsProp && statsItemsProp.length > 0 ? statsItemsProp : defaults.stats;
+  const displaySteps = processStepsProp && processStepsProp.length > 0 ? processStepsProp : defaults.processSteps;
+  const displayHIWHeadline = howItWorksHeadlineProp || "How It Works";
+  const displayHIWSubheadline = howItWorksSubheadlineProp || "Three simple steps — no surprises, no hidden costs";
+  const displayCompHeadline = comparisonHeadlineProp || defaults.comparisonHeadline;
+  const displayCompTradLabel = comparisonTraditionalLabelProp || defaults.comparisonTraditionalLabel;
+  const displayCompCoLabel = comparisonCompanyLabelProp || defaults.comparisonCompanyLabel;
+  const displayCompRows = comparisonRowsProp && comparisonRowsProp.length > 0 ? comparisonRowsProp : defaults.comparisonRows;
+  const displaySitHeadline = situationsHeadlineProp || defaults.situationsHeadline;
+  const displaySitSubheadline = situationsSubheadlineProp || defaults.situationsSubheadline;
+  const displaySituations = situationItemsProp && situationItemsProp.length > 0 ? situationItemsProp : defaults.situations;
+  const displayFAQHeadline = faqHeadlineProp || "Frequently Asked Questions";
+  const displayFAQItems = faqItemsProp && faqItemsProp.length > 0 ? faqItemsProp : null;
+  const displayTestimonialsHeadline = testimonialsHeadlineProp || defaults.testimonialsHeadline;
 
   const replacePlaceholder = (text: string) => text.replace(/\{companyName\}/g, company);
 
@@ -287,9 +332,9 @@ export function WizardLivePreview({
       ) : (
         <>
           {/* ── STATS BAR ── */}
-          {sShowStats && defaults.stats.length > 0 && (
+          {sShowStats && displayStats.length > 0 && (
             <div className="flex justify-around py-3 border-y border-border bg-muted/20">
-              {defaults.stats.map((s, i) => (
+              {displayStats.map((s, i) => (
                 <div key={i} className="text-center">
                   <div className="text-[14px] font-bold text-foreground">{s.value}</div>
                   <div className="text-[8px] text-muted-foreground">{s.label}</div>
@@ -299,15 +344,15 @@ export function WizardLivePreview({
           )}
 
           {/* ── HOW IT WORKS ── */}
-          {sShowHowItWorks && defaults.processSteps.length > 0 && (
+          {sShowHowItWorks && displaySteps.length > 0 && (
             <div className="px-5 py-5 text-center">
-              <h2 className="text-[14px] font-bold text-foreground mb-0.5">How It Works</h2>
-              <p className="text-[9px] text-muted-foreground mb-4">Three simple steps — no surprises, no hidden costs</p>
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{displayHIWHeadline}</h2>
+              <p className="text-[9px] text-muted-foreground mb-4">{displayHIWSubheadline}</p>
               <div className="flex gap-3">
-                {defaults.processSteps.map((step) => (
-                  <div key={step.step} className="flex-1 text-center">
+                {displaySteps.map((step, idx) => (
+                  <div key={idx} className="flex-1 text-center">
                     <div className="mx-auto w-8 h-8 rounded-lg flex items-center justify-center mb-1.5" style={{ backgroundColor: `${primaryColor}15` }}>
-                      <span className="text-[10px] font-bold" style={{ color: primaryColor }}>0{step.step}</span>
+                      <span className="text-[10px] font-bold" style={{ color: primaryColor }}>0{idx + 1}</span>
                     </div>
                     <div className="text-[10px] font-semibold text-foreground mb-0.5">{step.title}</div>
                     <div className="text-[8px] text-muted-foreground leading-tight">{step.description}</div>
@@ -318,17 +363,17 @@ export function WizardLivePreview({
           )}
 
           {/* ── COMPARISON TABLE ── */}
-          {sShowComparison && defaults.comparisonRows.length > 0 && (
+          {sShowComparison && displayCompRows.length > 0 && (
             <div className="px-5 py-5 bg-muted/10">
-              <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(defaults.comparisonHeadline)}</h2>
+              <h2 className="text-[14px] font-bold text-foreground text-center mb-0.5">{replacePlaceholder(displayCompHeadline)}</h2>
               <p className="text-[9px] text-muted-foreground text-center mb-3">{defaults.comparisonSubheadline}</p>
               <div className="border rounded-lg overflow-hidden bg-background">
                 <div className="grid grid-cols-3 text-[8px] font-semibold border-b">
                   <div className="p-1.5"></div>
-                  <div className="p-1.5 text-center text-muted-foreground">{defaults.comparisonTraditionalLabel}</div>
-                  <div className="p-1.5 text-center text-white rounded-tr-lg" style={{ backgroundColor: primaryColor }}>{replacePlaceholder(defaults.comparisonCompanyLabel)}</div>
+                  <div className="p-1.5 text-center text-muted-foreground">{displayCompTradLabel}</div>
+                  <div className="p-1.5 text-center text-white rounded-tr-lg" style={{ backgroundColor: primaryColor }}>{replacePlaceholder(displayCompCoLabel)}</div>
                 </div>
-                {defaults.comparisonRows.slice(0, 5).map((row, i) => (
+                {displayCompRows.slice(0, 5).map((row, i) => (
                   <div key={i} className="grid grid-cols-3 text-[8px] border-b last:border-0">
                     <div className="p-1.5 font-medium text-foreground">{row.label}</div>
                     <div className="p-1.5 text-center text-muted-foreground">{row.traditional}</div>
@@ -342,7 +387,7 @@ export function WizardLivePreview({
           {/* ── TESTIMONIALS ── */}
           {sShowTestimonials && (
             <div className="px-5 py-5 text-center">
-              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.testimonialsHeadline}</h2>
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{displayTestimonialsHeadline}</h2>
               {defaults.testimonialsTagline && (
                 <p className="text-[9px] mb-0.5" style={{ color: primaryColor }}>{defaults.testimonialsTagline}</p>
               )}
@@ -380,12 +425,12 @@ export function WizardLivePreview({
           )}
 
           {/* ── SITUATIONS ── */}
-          {sShowSituations && defaults.situations.length > 0 && (
+          {sShowSituations && displaySituations.length > 0 && (
             <div className="px-5 py-5 bg-muted/10 text-center">
-              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{defaults.situationsHeadline}</h2>
-              <p className="text-[9px] text-muted-foreground mb-3">{defaults.situationsSubheadline}</p>
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{displaySitHeadline}</h2>
+              <p className="text-[9px] text-muted-foreground mb-3">{displaySitSubheadline}</p>
               <div className="grid grid-cols-6 gap-1.5">
-                {defaults.situations.map((s, i) => {
+                {displaySituations.map((s, i) => {
                   const Icon = SITUATION_ICONS[s.icon] || Home;
                   return (
                     <div key={i} className="border rounded-lg p-2 bg-background text-center">
@@ -401,12 +446,17 @@ export function WizardLivePreview({
           {/* ── FAQ ── */}
           {sShowFAQ && (
             <div className="px-5 py-5 text-center">
-              <h2 className="text-[14px] font-bold text-foreground mb-0.5">Frequently Asked Questions</h2>
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{displayFAQHeadline}</h2>
               <p className="text-[9px] text-muted-foreground mb-3">Everything you need to know about selling with {company}</p>
               <div className="space-y-1 max-w-[350px] mx-auto">
-                {["How does the cash offer process work?", "Are there any fees or commissions?", "Do I need to make repairs before selling?", "How fast can I close?"].map((q, i) => (
+                {(displayFAQItems || [
+                  { question: "How does the cash offer process work?", answer: "" },
+                  { question: "Are there any fees or commissions?", answer: "" },
+                  { question: "Do I need to make repairs before selling?", answer: "" },
+                  { question: "How fast can I close?", answer: "" },
+                ]).map((q, i) => (
                   <div key={i} className="flex items-center justify-between border rounded px-2 py-1.5 text-left bg-background">
-                    <span className="text-[8px] text-foreground">{q}</span>
+                    <span className="text-[8px] text-foreground">{q.question}</span>
                     <ChevronDown className="h-2.5 w-2.5 text-muted-foreground flex-shrink-0" />
                   </div>
                 ))}

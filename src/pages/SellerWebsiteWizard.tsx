@@ -223,6 +223,21 @@ interface WizardData {
   benefitsLine: string;
   ctaHeadline: string;
   ctaSubheadline: string;
+  // Section content
+  statsItems: Array<{ value: string; label: string }>;
+  processSteps: Array<{ step: number; title: string; description: string }>;
+  howItWorksHeadline: string;
+  howItWorksSubheadline: string;
+  comparisonHeadline: string;
+  comparisonTraditionalLabel: string;
+  comparisonCompanyLabel: string;
+  comparisonRows: Array<{ label: string; traditional: string; company: string }>;
+  situationsHeadline: string;
+  situationsSubheadline: string;
+  situationItems: Array<{ icon: string; label: string }>;
+  faqHeadline: string;
+  faqItems: Array<{ question: string; answer: string }>;
+  testimonialsHeadline: string;
 }
 
 const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
@@ -277,6 +292,20 @@ export default function SellerWebsiteWizard() {
     benefitsLine: "",
     ctaHeadline: "",
     ctaSubheadline: "",
+    statsItems: [],
+    processSteps: [],
+    howItWorksHeadline: "",
+    howItWorksSubheadline: "",
+    comparisonHeadline: "",
+    comparisonTraditionalLabel: "",
+    comparisonCompanyLabel: "",
+    comparisonRows: [],
+    situationsHeadline: "",
+    situationsSubheadline: "",
+    situationItems: [],
+    faqHeadline: "",
+    faqItems: [],
+    testimonialsHeadline: "",
   });
 
   const aiWriter = useAIWriter({ siteType: data.siteType, companyName: data.companyName });
@@ -945,6 +974,20 @@ export default function SellerWebsiteWizard() {
                 benefitsLine={data.benefitsLine}
                 ctaHeadline={data.ctaHeadline}
                 ctaSubheadline={data.ctaSubheadline}
+                statsItems={data.statsItems}
+                processSteps={data.processSteps}
+                howItWorksHeadline={data.howItWorksHeadline}
+                howItWorksSubheadline={data.howItWorksSubheadline}
+                comparisonHeadline={data.comparisonHeadline}
+                comparisonTraditionalLabel={data.comparisonTraditionalLabel}
+                comparisonCompanyLabel={data.comparisonCompanyLabel}
+                comparisonRows={data.comparisonRows}
+                situationsHeadline={data.situationsHeadline}
+                situationsSubheadline={data.situationsSubheadline}
+                situationItems={data.situationItems}
+                faqHeadline={data.faqHeadline}
+                faqItems={data.faqItems}
+                testimonialsHeadline={data.testimonialsHeadline}
               />
             </div>
           </div>
