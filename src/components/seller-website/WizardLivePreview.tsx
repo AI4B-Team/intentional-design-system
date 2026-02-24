@@ -45,7 +45,7 @@ export function WizardLivePreview({
   const headline = heroHeadline || defaults.heroHeadline;
   const subheadline = heroSubheadline || defaults.heroSubheadline;
   const submitText = formSubmitText || defaults.formSubmitText;
-  const company = companyName || "HomesDaily";
+  const company = companyName || "Swift Home Buyers";
 
   const replacePlaceholder = (text: string) => text.replace(/\{companyName\}/g, company);
 
