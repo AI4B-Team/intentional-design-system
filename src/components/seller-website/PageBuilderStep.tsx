@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
-import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor } from "./SectionEditors";
+import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor, FooterEditor } from "./SectionEditors";
 import {
   ChevronDown,
   ChevronUp,
@@ -335,34 +335,7 @@ function renderSectionEditor(
       return <TestimonialsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
 
     case "footer":
-      return (
-        <div className="space-y-3">
-          <div>
-            <Label className="text-xs">Company Name</Label>
-            <Input
-              value={data.companyName || ""}
-              onChange={(v: string) => onUpdate({ companyName: v })}
-              placeholder="Your Company Name"
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Phone</Label>
-            <Input
-              value={data.companyPhone || ""}
-              onChange={(v: string) => onUpdate({ companyPhone: v })}
-              placeholder="(555) 123-4567"
-            />
-          </div>
-          <div>
-            <Label className="text-xs">Email</Label>
-            <Input
-              value={data.companyEmail || ""}
-              onChange={(v: string) => onUpdate({ companyEmail: v })}
-              placeholder="info@company.com"
-            />
-          </div>
-        </div>
-      );
+      return <FooterEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} />;
 
     case "stats":
       return <StatsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;

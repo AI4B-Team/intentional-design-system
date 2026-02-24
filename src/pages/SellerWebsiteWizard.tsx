@@ -252,6 +252,16 @@ interface WizardData {
   testimonialsTagline: string;
   testimonialsSubheadline: string;
   testimonialItems: Array<{ name: string; role: string; company: string; quote: string; imageUrl: string }>;
+  // Footer
+  footerTagline: string;
+  footerAlignment: "left" | "center" | "right";
+  showSocialLinks: boolean;
+  socialProfiles: Record<string, { enabled: boolean; url: string }>;
+  showNewsletter: boolean;
+  newsletterHeadline: string;
+  newsletterDescription: string;
+  newsletterButtonText: string;
+  newsletterPlaceholder: string;
   // Legal
   legalCompanyName: string;
   legalEmail: string;
@@ -471,6 +481,25 @@ export default function SellerWebsiteWizard() {
     testimonialsTagline: "",
     testimonialsSubheadline: "",
     testimonialItems: [],
+    footerTagline: "",
+    footerAlignment: "left" as const,
+    showSocialLinks: true,
+    socialProfiles: {
+      facebook: { enabled: false, url: "" },
+      instagram: { enabled: false, url: "" },
+      twitter: { enabled: false, url: "" },
+      tiktok: { enabled: false, url: "" },
+      youtube: { enabled: false, url: "" },
+      linkedin: { enabled: false, url: "" },
+      pinterest: { enabled: false, url: "" },
+      threads: { enabled: false, url: "" },
+      bluesky: { enabled: false, url: "" },
+    },
+    showNewsletter: true,
+    newsletterHeadline: "Stay Updated",
+    newsletterDescription: "Get the latest news and updates",
+    newsletterButtonText: "Subscribe",
+    newsletterPlaceholder: "Enter your email",
     legalCompanyName: "",
     legalEmail: "",
     legalAddress: "",
