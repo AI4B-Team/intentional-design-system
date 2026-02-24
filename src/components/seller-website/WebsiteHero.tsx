@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
+import { NetworkLogo } from "./NetworkLogos";
 import { LeadCaptureForm, type FormData } from "./LeadCaptureForm";
 
 interface WebsiteHeroProps {
@@ -182,9 +183,7 @@ export function WebsiteHero({
             <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold whitespace-nowrap">Founders Featured On</p>
             <div className="flex items-center gap-8 md:gap-12 opacity-50">
               {asSeenOn.map((name, i) => (
-                <span key={i} className={name.length > 5 ? "text-base font-bold text-gray-800 tracking-tight" : "text-xl font-black text-gray-800"}>
-                  {name}
-                </span>
+                <NetworkLogo key={i} name={name} sizeClass="text-xl" />
               ))}
             </div>
           </div>

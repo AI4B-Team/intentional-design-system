@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail } from "lucide-react";
+import { NetworkLogo } from "./NetworkLogos";
 
 interface WizardLivePreviewProps {
   siteType: string;
@@ -183,7 +184,7 @@ export function WizardLivePreview({
                 credibilityAnimated && "animate-marquee"
               )}>
                 {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => (
-                  <span key={i} className="text-[9px] font-extrabold text-foreground tracking-tight whitespace-nowrap uppercase">{name}</span>
+                  <NetworkLogo key={i} name={name} sizeClass="text-[9px]" colorClass="text-foreground" />
                 ))}
               </div>
             </div>
