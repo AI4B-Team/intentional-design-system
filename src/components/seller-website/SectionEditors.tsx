@@ -814,3 +814,231 @@ export function CTAEditor({ data, onUpdate, aiWriter, selectedSiteType }: Editor
     </div>
   );
 }
+
+const SOCIAL_PLATFORMS = [
+  { id: "facebook", label: "Facebook", color: "#1877F2", icon: "f" },
+  { id: "instagram", label: "Instagram", color: "#E4405F", icon: "📷" },
+  { id: "twitter", label: "X (Twitter)", color: "#000000", icon: "𝕏" },
+  { id: "tiktok", label: "TikTok", color: "#000000", icon: "♪" },
+  { id: "youtube", label: "YouTube", color: "#FF0000", icon: "▶" },
+  { id: "linkedin", label: "LinkedIn", color: "#0A66C2", icon: "in" },
+  { id: "pinterest", label: "Pinterest", color: "#E60023", icon: "P" },
+  { id: "threads", label: "Threads", color: "#000000", icon: "@" },
+  { id: "bluesky", label: "Bluesky", color: "#0085FF", icon: "🦋" },
+];
+
+/* ─── Footer ─── */
+export function FooterEditor({ data, onUpdate, aiWriter }: Omit<EditorProps, "selectedSiteType">) {
+  const profiles: Record<string, { enabled: boolean; url: string }> = data.socialProfiles || {};
+  const alignment: string = data.footerAlignment || "left";
+
+  const updateProfile = (id: string, field: "enabled" | "url", value: any) => {
+    const updated = { ...profiles, [id]: { ...profiles[id], [field]: value } };
+    onUpdate({ socialProfiles: updated });
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Company Name */}
+      <div>
+        <Label className="text-xs font-semibold">Company Name</Label>
+        <AIWriterField
+          label=""
+          fieldType="companyName"
+          value={data.companyName || ""}
+          onChange={(v: string) => onUpdate({ companyName: v })}
+          placeholder="Your Company Name"
+          loadingField={aiWriter.loadingField}
+          onGenerate={aiWriter.generateCopy}
+        />
+      </div>
+
+      {/* Tagline */}
+      <div>
+        <Label className="text-xs font-semibold">Tagline</Label>
+        <AIWriterField
+          label=""
+          fieldType="footerTagline"
+          value={data.footerTagline || ""}
+          onChange={(v: string) => onUpdate({ footerTagline: v })}
+          placeholder="Empowering businesses with AI"
+          loadingField={aiWriter.loadingField}
+          onGenerate={aiWriter.generateCopy}
+        />
+      </div>
+
+      {/* Text Alignment */}
+      <div>
+        <Label className="text-xs font-semibold mb-2 block">Text Alignment</Label>
+        <div className="flex gap-2">
+          {(["left", "center", "right"] as const).map((align) => (
+            <button
+              key={align}
+              onClick={() => onUpdate({ footerAlignment: align })}
+              className={`flex-1 py-2 px-3 rounded-full text-sm font-medium transition-colors ${
+                alignment === align
+                  ? "bg-foreground text-background"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              }`}
+            >
+              {align.charAt(0).toUpperCase() + align.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Show Social Links */}
+      <div className="flex items-center justify-between">
+        <Label className="text-xs font-semibold">Show Social Links</Label>
+        <SwitchToggle checked={data.showSocialLinks !== false} onChange={(v) => onUpdate({ showSocialLinks: v })} />
+      </div>
+
+      {/* Social Media Profiles */}
+      {data.showSocialLinks !== false && (
+        <div className="border border-border rounded-lg p-4 space-y-3">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Social Media Profiles</p>
+            <p className="text-xs text-muted-foreground italic mt-0.5">Select which social platforms to display and add your profile URLs.</p>
+          </div>
+          <div className="space-y-1">
+            {SOCIAL_PLATFORMS.map((platform) => {
+              const profile = profiles[platform.id] || { enabled: false, url: "" };
+              return (
+                <div key={platform.id}>
+                  <div className="flex items-center justify-between py-2">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
+                        style={{ backgroundColor: platform.color }}
+                      >
+                        {platform.icon}
+                      </div>
+                      <span className="text-sm text-foreground">{platform.label}</span>
+                    </div>
+                    <SwitchToggle
+                      checked={profile.enabled}
+                      onChange={(v) => updateProfile(platform.id, "enabled", v)}
+                    />
+                  </div>
+                  {profile.enabled && (
+                    <Input
+                      value={profile.url}
+                      onChange={(e: any) => updateProfile(platform.id, "url", typeof e === "string" ? e : e.target.value)}
+                      placeholder={`https://${platform.id}.com/yourprofile`}
+                      className="mb-2 ml-11"
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Show Newsletter Signup */}
+      <div className="flex items-center justify-between">
+        <Label className="text-xs font-semibold">Show Newsletter Signup</Label>
+        <SwitchToggle checked={data.showNewsletter !== false} onChange={(v) => onUpdate({ showNewsletter: v })} />
+      </div>
+
+      {/* Newsletter Settings */}
+      {data.showNewsletter !== false && (
+        <div className="border border-border rounded-lg p-4 space-y-4">
+          <p className="text-sm font-semibold text-foreground">Newsletter Settings</p>
+          <div>
+            <Label className="text-xs font-semibold">Headline</Label>
+            <AIWriterField
+              label=""
+              fieldType="newsletterHeadline"
+              value={data.newsletterHeadline || ""}
+              onChange={(v: string) => onUpdate({ newsletterHeadline: v })}
+              placeholder="Stay Updated"
+              loadingField={aiWriter.loadingField}
+              onGenerate={aiWriter.generateCopy}
+            />
+          </div>
+          <div>
+            <Label className="text-xs font-semibold">Description</Label>
+            <AIWriterField
+              label=""
+              fieldType="newsletterDescription"
+              value={data.newsletterDescription || ""}
+              onChange={(v: string) => onUpdate({ newsletterDescription: v })}
+              placeholder="Get the latest news and updates"
+              loadingField={aiWriter.loadingField}
+              onGenerate={aiWriter.generateCopy}
+            />
+          </div>
+          <div>
+            <Label className="text-xs font-semibold">Button Text</Label>
+            <AIWriterField
+              label=""
+              fieldType="newsletterButtonText"
+              value={data.newsletterButtonText || ""}
+              onChange={(v: string) => onUpdate({ newsletterButtonText: v })}
+              placeholder="Subscribe"
+              loadingField={aiWriter.loadingField}
+              onGenerate={aiWriter.generateCopy}
+            />
+          </div>
+          <div>
+            <Label className="text-xs font-semibold">Placeholder Text</Label>
+            <AIWriterField
+              label=""
+              fieldType="newsletterPlaceholder"
+              value={data.newsletterPlaceholder || ""}
+              onChange={(v: string) => onUpdate({ newsletterPlaceholder: v })}
+              placeholder="Enter your email"
+              loadingField={aiWriter.loadingField}
+              onGenerate={aiWriter.generateCopy}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Generate Entire Section With AI */}
+      <Button
+        variant="outline"
+        className="w-full gap-2"
+        disabled={aiWriter.loadingField !== null}
+        onClick={async () => {
+          const companyName = data.companyName || "our company";
+          const prompt = `Generate footer content for "${companyName}". Return JSON with fields: tagline (string), newsletterHeadline (string), newsletterDescription (string), newsletterButtonText (string).`;
+          try {
+            const result = await aiWriter.generateCopy("footerTagline", "", prompt);
+            if (result) {
+              const cleaned = result.replace(/\`\`\`json\n?/g, "").replace(/\`\`\`\n?/g, "").trim();
+              const parsed = JSON.parse(cleaned);
+              if (parsed.tagline) onUpdate({ footerTagline: parsed.tagline });
+              if (parsed.newsletterHeadline) onUpdate({ newsletterHeadline: parsed.newsletterHeadline });
+              if (parsed.newsletterDescription) onUpdate({ newsletterDescription: parsed.newsletterDescription });
+              if (parsed.newsletterButtonText) onUpdate({ newsletterButtonText: parsed.newsletterButtonText });
+            }
+          } catch { /* ignore */ }
+        }}
+      >
+        <Sparkles className="h-4 w-4" /> Generate Entire Section With AI
+      </Button>
+    </div>
+  );
+}
+
+function SwitchToggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+        checked ? "bg-brand" : "bg-muted"
+      }`}
+    >
+      <span
+        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+          checked ? "translate-x-6" : "translate-x-1"
+        }`}
+      />
+    </button>
+  );
+}
