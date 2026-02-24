@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AIWriterField } from "./AIWriterField";
+import { AILogoWizard } from "./AILogoWizard";
 import {
   Upload,
   X,
@@ -19,6 +20,7 @@ import {
   Diamond,
   Building2,
   Home,
+  Wand2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -91,6 +93,7 @@ export function BrandingStep({
   const logoInputRef = useRef<HTMLInputElement>(null);
   const faviconInputRef = useRef<HTMLInputElement>(null);
   const [aiSuggesting, setAiSuggesting] = useState(false);
+  const [showLogoWizard, setShowLogoWizard] = useState(false);
 
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -162,6 +165,22 @@ export function BrandingStep({
               Upload custom artwork
             </div>
           </button>
+        </div>
+
+        {/* AI Logo Wizard Button */}
+        <Button
+          onClick={() => setShowLogoWizard(true)}
+          className="w-full bg-brand hover:bg-brand/90 text-white py-5 text-sm font-semibold"
+        >
+          <Wand2 className="h-4 w-4 mr-2" />
+          Create Logo With AI Wizard
+        </Button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 border-t border-border" />
+          <span className="text-[10px] font-semibold text-muted-foreground tracking-wider uppercase">Or Quick Generate</span>
+          <div className="flex-1 border-t border-border" />
         </div>
 
         {logoMode === "icon" ? (
@@ -448,6 +467,16 @@ export function BrandingStep({
           context={`Company: ${companyName}, Site type: ${siteType}`}
         />
       </div>
+
+      {/* AI Logo Wizard Modal */}
+      <AILogoWizard
+        open={showLogoWizard}
+        onOpenChange={setShowLogoWizard}
+        companyName={companyName}
+        onSelectLogo={(url) => {
+          onUpdate({ logoUrl: url, logoMode: "upload" });
+        }}
+      />
     </div>
   );
 }
