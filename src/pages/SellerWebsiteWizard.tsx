@@ -226,6 +226,7 @@ interface WizardData {
   showComparison: boolean;
   showTestimonials: boolean;
   showSituations: boolean;
+  showCoverage: boolean;
   showFAQ: boolean;
   showCTA: boolean;
   // Editable content
@@ -247,6 +248,9 @@ interface WizardData {
   situationsHeadline: string;
   situationsSubheadline: string;
   situationItems: Array<{ icon: string; label: string }>;
+  coverageHeadline: string;
+  coverageSubheadline: string;
+  coverageStates: string[];
   faqHeadline: string;
   faqItems: Array<{ question: string; answer: string }>;
   testimonialsHeadline: string;
@@ -458,6 +462,7 @@ export default function SellerWebsiteWizard() {
     showComparison: true,
     showTestimonials: true,
     showSituations: true,
+    showCoverage: true,
     showFAQ: true,
     showCTA: true,
     trustBadgeText: "Rated 4.9★ By 2,400+ Homeowners",
@@ -501,6 +506,9 @@ export default function SellerWebsiteWizard() {
       { icon: "dollar", label: "Behind on Payments" },
       { icon: "building", label: "Vacant Property" },
     ],
+    coverageHeadline: "Areas We Serve",
+    coverageSubheadline: "We buy houses across these states — select yours to learn more",
+    coverageStates: ["FL", "TX", "GA", "NC", "OH"],
     faqHeadline: "Frequently Asked Questions",
     faqItems: [],
     testimonialsHeadline: "Real Stories From Real Sellers",
@@ -1320,6 +1328,7 @@ export default function SellerWebsiteWizard() {
                 showComparison={data.showComparison}
                 showTestimonials={data.showTestimonials}
                 showSituations={data.showSituations}
+                showCoverage={data.showCoverage}
                 showFAQ={data.showFAQ}
                 showCTA={data.showCTA}
                 trustBadgeText={data.trustBadgeText}
@@ -1338,6 +1347,9 @@ export default function SellerWebsiteWizard() {
                 situationsHeadline={data.situationsHeadline}
                 situationsSubheadline={data.situationsSubheadline}
                 situationItems={data.situationItems}
+                coverageHeadline={data.coverageHeadline}
+                coverageSubheadline={data.coverageSubheadline}
+                coverageStates={data.coverageStates}
                 faqHeadline={data.faqHeadline}
                 faqItems={data.faqItems}
                 testimonialsHeadline={data.testimonialsHeadline}

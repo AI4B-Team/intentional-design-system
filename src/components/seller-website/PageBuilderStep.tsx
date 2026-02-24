@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
-import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor, FooterEditor } from "./SectionEditors";
+import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor, FooterEditor, CoverageEditor } from "./SectionEditors";
 import {
   ChevronDown,
   ChevronUp,
@@ -24,6 +24,7 @@ import {
   Lock,
   Upload,
   Image as ImageIcon,
+  MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +44,7 @@ const PAGE_SECTIONS: PageSection[] = [
   { id: "comparison", label: "Comparison Table", icon: GitCompare, toggleKey: "showComparison" },
   { id: "testimonials", label: "Testimonials", icon: MessageSquare, toggleKey: "showTestimonials" },
   { id: "situations", label: "Situations / Services", icon: Sparkles, toggleKey: "showSituations" },
+  { id: "coverage", label: "Coverage / Service Areas", icon: MapPin, toggleKey: "showCoverage" },
   { id: "faq", label: "FAQ Section", icon: HelpCircle, toggleKey: "showFAQ" },
   { id: "cta", label: "Call To Action", icon: Megaphone, toggleKey: "showCTA" },
   { id: "footer", label: "Footer", icon: Footprints, toggleKey: "", locked: true },
@@ -369,6 +371,9 @@ function renderSectionEditor(
 
     case "faq":
       return <FAQEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
+
+    case "coverage":
+      return <CoverageEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} />;
 
     default:
       return (
