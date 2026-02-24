@@ -4,8 +4,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AIWriterField } from "./AIWriterField";
-import { X, Plus, RotateCcw, Upload, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Pencil, Sparkles, Link as LinkIcon } from "lucide-react";
+import { X, Plus, RotateCcw, Upload, Image as ImageIcon, Trash2, ChevronUp, ChevronDown, Pencil, Sparkles, Link as LinkIcon, MapPin } from "lucide-react";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
+import { USStateMap, US_STATES } from "./USStateMap";
+import { Badge } from "@/components/ui/badge";
 
 interface EditorProps {
   data: Record<string, any>;
@@ -1081,5 +1083,81 @@ function SwitchToggle({ checked, onChange }: { checked: boolean; onChange: (v: b
         }`}
       />
     </button>
+  );
+}
+
+/* ─── Coverage / Service Areas ─── */
+export function CoverageEditor({ data, onUpdate, aiWriter }: Omit<EditorProps, "selectedSiteType">) {
+  const states: string[] = data.coverageStates || [];
+
+  const toggleState = (code: string) => {
+    const updated = states.includes(code)
+      ? states.filter((s) => s !== code)
+      : [...states, code];
+    onUpdate({ coverageStates: updated });
+  };
+
+  const sortedStates = [...states].sort((a, b) => (US_STATES[a] || "").localeCompare(US_STATES[b] || ""));
+
+  return (
+    <div className="space-y-3">
+      <AIWriterField
+        label="Section Headline"
+        fieldType="coverageHeadline"
+        value={data.coverageHeadline || ""}
+        onChange={(v: string) => onUpdate({ coverageHeadline: v })}
+        placeholder="Areas We Serve"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+      <AIWriterField
+        label="Subheadline"
+        fieldType="coverageSubheadline"
+        value={data.coverageSubheadline || ""}
+        onChange={(v: string) => onUpdate({ coverageSubheadline: v })}
+        placeholder="We buy houses across these states"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <Label className="text-xs">Click states on the map to select</Label>
+            <ItemCountBadge count={states.length} label={states.length === 1 ? "state" : "states"} />
+          </div>
+          {states.length > 0 && (
+            <Button variant="ghost" size="sm" className="h-6 text-xs text-destructive" onClick={() => onUpdate({ coverageStates: [] })}>
+              Clear All
+            </Button>
+          )}
+        </div>
+        <div className="border border-border rounded-lg overflow-hidden bg-muted/30 p-2">
+          <USStateMap
+            selectedStates={states}
+            onToggleState={toggleState}
+            primaryColor={data.primaryColor || data.accentColor || "#2563eb"}
+          />
+        </div>
+      </div>
+
+      {sortedStates.length > 0 && (
+        <div>
+          <Label className="text-xs mb-1.5 block">Selected States</Label>
+          <div className="flex flex-wrap gap-1.5">
+            {sortedStates.map((code) => (
+              <Badge
+                key={code}
+                variant="secondary"
+                className="cursor-pointer hover:bg-destructive/10 hover:text-destructive transition-colors"
+                onClick={() => toggleState(code)}
+              >
+                {US_STATES[code]} ×
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

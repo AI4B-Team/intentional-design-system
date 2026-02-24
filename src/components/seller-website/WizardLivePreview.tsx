@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
+import { USStateMap, US_STATES } from "./USStateMap";
 import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail } from "lucide-react";
 import { NetworkLogo } from "./NetworkLogos";
 
@@ -26,6 +27,7 @@ interface WizardLivePreviewProps {
   showComparison?: boolean;
   showTestimonials?: boolean;
   showSituations?: boolean;
+  showCoverage?: boolean;
   showFAQ?: boolean;
   showCTA?: boolean;
   // Editable content overrides
@@ -46,6 +48,9 @@ interface WizardLivePreviewProps {
   situationsHeadline?: string;
   situationsSubheadline?: string;
   situationItems?: Array<{ icon: string; label: string }>;
+  coverageHeadline?: string;
+  coverageSubheadline?: string;
+  coverageStates?: string[];
   faqHeadline?: string;
   faqItems?: Array<{ question: string; answer: string }>;
   testimonialsHeadline?: string;
@@ -98,6 +103,7 @@ export function WizardLivePreview({
   showComparison: showComparisonProp,
   showTestimonials: showTestimonialsProp,
   showSituations: showSituationsProp,
+  showCoverage: showCoverageProp,
   showFAQ: showFAQProp,
   showCTA: showCTAProp,
   trustBadgeText: trustBadgeTextProp,
@@ -116,6 +122,9 @@ export function WizardLivePreview({
   situationsHeadline: situationsHeadlineProp,
   situationsSubheadline: situationsSubheadlineProp,
   situationItems: situationItemsProp,
+  coverageHeadline: coverageHeadlineProp,
+  coverageSubheadline: coverageSubheadlineProp,
+  coverageStates: coverageStatesProp,
   faqHeadline: faqHeadlineProp,
   faqItems: faqItemsProp,
   testimonialsHeadline: testimonialsHeadlineProp,
@@ -145,6 +154,7 @@ export function WizardLivePreview({
   const sShowComparison = showComparisonProp ?? defaults.showComparison;
   const sShowTestimonials = showTestimonialsProp ?? true;
   const sShowSituations = showSituationsProp ?? defaults.showSituations;
+  const sShowCoverage = showCoverageProp ?? true;
   const sShowFAQ = showFAQProp ?? true;
   const sShowCTA = showCTAProp ?? true;
   
@@ -468,6 +478,33 @@ export function WizardLivePreview({
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {/* ── COVERAGE / SERVICE AREAS ── */}
+          {sShowCoverage && (coverageStatesProp || []).length > 0 && (
+            <div className="px-5 py-5 text-center">
+              <h2 className="text-[14px] font-bold text-foreground mb-0.5">{coverageHeadlineProp || "Areas We Serve"}</h2>
+              <p className="text-[9px] text-muted-foreground mb-3">{coverageSubheadlineProp || "We buy houses across these states"}</p>
+              <div className="border rounded-lg overflow-hidden bg-muted/20 p-2 mb-2">
+                <USStateMap
+                  selectedStates={coverageStatesProp || []}
+                  onToggleState={() => {}}
+                  primaryColor={primaryColor}
+                  size="sm"
+                />
+              </div>
+              <div className="flex flex-wrap justify-center gap-1">
+                {(coverageStatesProp || []).sort().map((code) => (
+                  <span
+                    key={code}
+                    className="text-[7px] px-1.5 py-0.5 rounded-full font-medium text-white"
+                    style={{ backgroundColor: primaryColor }}
+                  >
+                    {US_STATES[code] || code}
+                  </span>
+                ))}
               </div>
             </div>
           )}
