@@ -3,8 +3,21 @@ import { cn } from "@/lib/utils";
 import { getSiteTypeDefaults } from "./siteTypeConfig";
 import { USStateMap, US_STATES } from "./USStateMap";
 import { SocialIcon, SOCIAL_PLATFORMS } from "./SocialIcons";
-import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail, X } from "lucide-react";
+import { Star, Shield, Clock, Home, Users, DollarSign, Building2, AlertTriangle, Zap, ArrowDown, Bug, Briefcase, ChevronDown, Phone, MapPin, Mail, X, Rocket, Flame, Target, Crown, Diamond } from "lucide-react";
 import { NetworkLogo } from "./NetworkLogos";
+
+const PREDEFINED_ICONS_MAP: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
+  rocket: { icon: Rocket, color: "#ef4444", bg: "#fef2f2" },
+  zap: { icon: Zap, color: "#f59e0b", bg: "#fffbeb" },
+  star: { icon: Star, color: "#8b5cf6", bg: "#f5f3ff" },
+  shield: { icon: Shield, color: "#06b6d4", bg: "#ecfeff" },
+  flame: { icon: Flame, color: "#f97316", bg: "#fff7ed" },
+  target: { icon: Target, color: "#ec4899", bg: "#fdf2f8" },
+  crown: { icon: Crown, color: "#eab308", bg: "#fefce8" },
+  diamond: { icon: Diamond, color: "#6366f1", bg: "#eef2ff" },
+  building: { icon: Building2, color: "#64748b", bg: "#f8fafc" },
+  home: { icon: Home, color: "#10b981", bg: "#ecfdf5" },
+};
 
 interface WizardLivePreviewProps {
   siteType: string;
@@ -17,7 +30,7 @@ interface WizardLivePreviewProps {
   heroSubheadline: string;
   formSubmitText: string;
   logoUrl?: string;
-  // Credibility bar
+  selectedIcon?: string;
   showCredibilityBar?: boolean;
   credibilityLogos?: string[];
   credibilityLogoImages?: Record<string, string>;
@@ -96,6 +109,7 @@ export function WizardLivePreview({
   heroSubheadline,
   formSubmitText,
   logoUrl,
+  selectedIcon,
   showCredibilityBar = true,
   credibilityLogos,
   credibilityLogoImages,
@@ -577,6 +591,16 @@ export function WizardLivePreview({
             <div className="flex items-center gap-1 mb-1">
               {logoUrl ? (
                 <img src={logoUrl} alt="Logo" className="h-3 w-3 object-contain" />
+              ) : selectedIcon && PREDEFINED_ICONS_MAP[selectedIcon] ? (
+                (() => {
+                  const iconData = PREDEFINED_ICONS_MAP[selectedIcon];
+                  const IconComp = iconData.icon;
+                  return (
+                    <div className="h-3 w-3 rounded flex items-center justify-center" style={{ backgroundColor: iconData.bg }}>
+                      <IconComp className="h-2 w-2" style={{ color: iconData.color }} />
+                    </div>
+                  );
+                })()
               ) : (
                 <div className="h-3 w-3 rounded" style={{ backgroundColor: primaryColor }} />
               )}
