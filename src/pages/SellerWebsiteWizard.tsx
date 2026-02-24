@@ -41,6 +41,8 @@ import {
   Plus,
   Image as ImageIcon,
   Brush,
+  HelpCircle,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCreateWebsite } from "@/hooks/useSellerWebsites";
@@ -245,6 +247,57 @@ interface WizardData {
 }
 
 const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
+
+function DomainSetupGuide() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted/50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">Setup Guide</span>
+        </div>
+        <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-3 text-sm border-t border-border pt-3">
+          <div className="space-y-2">
+            <h4 className="font-semibold text-foreground">How Custom Domains Work</h4>
+            <ol className="list-decimal list-inside space-y-1.5 text-muted-foreground text-xs">
+              <li>Enter your domain name below (e.g., <code className="bg-muted px-1 rounded text-foreground">sellmyhouse.com</code>)</li>
+              <li>Log into your domain registrar (GoDaddy, Namecheap, Cloudflare, etc.)</li>
+              <li>Add an <strong className="text-foreground">A Record</strong> pointing to <code className="bg-muted px-1 rounded text-foreground">185.158.133.1</code></li>
+              <li>Add a <strong className="text-foreground">www</strong> A Record also pointing to <code className="bg-muted px-1 rounded text-foreground">185.158.133.1</code></li>
+              <li>Wait for DNS propagation (usually 15 min – 72 hours)</li>
+              <li>SSL certificate is provisioned automatically</li>
+            </ol>
+          </div>
+          <div className="bg-muted/50 rounded-md p-3 space-y-1">
+            <h5 className="text-xs font-semibold text-foreground">DNS Records Summary</h5>
+            <div className="grid grid-cols-3 gap-1 text-[11px]">
+              <span className="text-muted-foreground font-medium">Type</span>
+              <span className="text-muted-foreground font-medium">Name</span>
+              <span className="text-muted-foreground font-medium">Value</span>
+              <span className="text-foreground">A</span>
+              <span className="text-foreground">@</span>
+              <span className="font-mono text-foreground">185.158.133.1</span>
+              <span className="text-foreground">A</span>
+              <span className="text-foreground">www</span>
+              <span className="font-mono text-foreground">185.158.133.1</span>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            <strong className="text-foreground">Tip:</strong> Remove any conflicting A or CNAME records for your root domain and www subdomain before adding the new records.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 type DeviceType = "desktop" | "tablet" | "mobile";
 
@@ -775,6 +828,9 @@ export default function SellerWebsiteWizard() {
             {/* Step 6: Domain Settings */}
             {currentStep === 6 && (
               <div className="space-y-6">
+                {/* Setup Guide */}
+                <DomainSetupGuide />
+
                 <div>
                   <Label htmlFor="slug">Website URL</Label>
                   <div className="flex items-center gap-2 mt-1">
