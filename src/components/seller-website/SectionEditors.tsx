@@ -609,15 +609,35 @@ export function TestimonialsEditor({ data, onUpdate, aiWriter, selectedSiteType 
         </div>
       ))}
 
-      {items.length === 0 && (
-        <p className="text-xs text-muted-foreground italic">No custom testimonials. Default examples will be shown. Click "Load Defaults" to customize.</p>
-      )}
-
       <Button
         variant="secondary" size="sm" className="w-full"
         onClick={() => onUpdate({ testimonialItems: [...items, { name: "", role: "", company: "", quote: "", imageUrl: "" }] })}
       >
         <Plus className="h-4 w-4 mr-1" /> Add Testimonial
+      </Button>
+
+      <Button
+        variant="outline" size="sm" className="w-full gap-1.5"
+        disabled={aiWriter.loadingField !== null}
+        onClick={async () => {
+          const siteType = data.siteType || selectedSiteType?.id || "seller";
+          const companyName = data.companyName || "our company";
+          const prompt = `Generate 3 realistic testimonials for a ${siteType} real estate website for "${companyName}". For each, provide name, role, company/location, and a compelling 1-2 sentence quote. Return as JSON array with fields: name, role, company, quote.`;
+          try {
+            const result = await aiWriter.generateCopy("testimonialItems", "", prompt);
+            if (result) {
+              try {
+                const cleaned = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+                const parsed = JSON.parse(cleaned);
+                if (Array.isArray(parsed)) {
+                  onUpdate({ testimonialItems: parsed.map((t: any) => ({ name: t.name || "", role: t.role || "", company: t.company || "", quote: t.quote || "", imageUrl: "" })) });
+                }
+              } catch { /* ignore parse errors */ }
+            }
+          } catch { /* ignore */ }
+        }}
+      >
+        <Sparkles className="h-3.5 w-3.5" /> Generate Entire Section With AI
       </Button>
     </div>
   );
