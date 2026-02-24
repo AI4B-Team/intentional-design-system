@@ -217,17 +217,17 @@ export function WizardLivePreview({
             </div>
             <div className="grid grid-cols-3 gap-2.5">
               {[
-                { address: "1423 Oak Ridge Dr", city: "Tampa, FL", price: "$165,000", arv: "$245,000", beds: 3, baths: 2, sqft: "1,450", roi: "32%", type: "Fix & Flip", status: "New" },
-                { address: "882 Palmetto Ave", city: "Orlando, FL", price: "$89,000", arv: "$155,000", beds: 2, baths: 1, sqft: "980", roi: "41%", type: "Wholesale", status: "Hot" },
-                { address: "5501 Bayshore Blvd", city: "St Pete, FL", price: "$210,000", arv: "$310,000", beds: 4, baths: 2, sqft: "1,800", roi: "28%", type: "Buy & Hold", status: "New" },
-                { address: "301 Magnolia St", city: "Clearwater, FL", price: "$125,000", arv: "$198,000", beds: 3, baths: 2, sqft: "1,200", roi: "35%", type: "BRRRR", status: "Price Drop" },
-                { address: "7744 Elm Creek Rd", city: "Lakeland, FL", price: "$72,000", arv: "$130,000", beds: 2, baths: 1, sqft: "850", roi: "52%", type: "Wholesale", status: "Hot" },
-                { address: "990 Sunset Terrace", city: "Sarasota, FL", price: "$185,000", arv: "$265,000", beds: 3, baths: 2, sqft: "1,550", roi: "25%", type: "Fix & Flip", status: "New" },
+                { address: "1423 Oak Ridge Dr", city: "Tampa, FL", price: "$165,000", arv: "$245,000", beds: 3, baths: 2, sqft: "1,450", roi: "32%", type: "Fix & Flip", status: "New", img: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=200&fit=crop" },
+                { address: "882 Palmetto Ave", city: "Orlando, FL", price: "$89,000", arv: "$155,000", beds: 2, baths: 1, sqft: "980", roi: "41%", type: "Wholesale", status: "Hot", img: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=200&fit=crop" },
+                { address: "5501 Bayshore Blvd", city: "St Pete, FL", price: "$210,000", arv: "$310,000", beds: 4, baths: 2, sqft: "1,800", roi: "28%", type: "Buy & Hold", status: "New", img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=200&fit=crop" },
+                { address: "301 Magnolia St", city: "Clearwater, FL", price: "$125,000", arv: "$198,000", beds: 3, baths: 2, sqft: "1,200", roi: "35%", type: "BRRRR", status: "Price Drop", img: "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=400&h=200&fit=crop" },
+                { address: "7744 Elm Creek Rd", city: "Lakeland, FL", price: "$72,000", arv: "$130,000", beds: 2, baths: 1, sqft: "850", roi: "52%", type: "Wholesale", status: "Hot", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=200&fit=crop" },
+                { address: "990 Sunset Terrace", city: "Sarasota, FL", price: "$185,000", arv: "$265,000", beds: 3, baths: 2, sqft: "1,550", roi: "25%", type: "Fix & Flip", status: "New", img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&h=200&fit=crop" },
               ].map((deal, i) => (
                 <div key={i} className="border rounded-lg overflow-hidden bg-background group">
-                  {/* Image placeholder */}
-                  <div className="h-[60px] bg-muted/40 relative flex items-center justify-center">
-                    <Home className="h-5 w-5 text-muted-foreground/30" />
+                  {/* Property photo */}
+                  <div className="h-[60px] relative overflow-hidden">
+                    <img src={deal.img} alt={deal.address} className="w-full h-full object-cover" />
                     <span
                       className="absolute top-1 left-1 text-[6px] font-bold px-1.5 py-0.5 rounded text-white"
                       style={{ backgroundColor: deal.status === "Hot" ? "#ef4444" : deal.status === "Price Drop" ? "#f59e0b" : primaryColor }}
