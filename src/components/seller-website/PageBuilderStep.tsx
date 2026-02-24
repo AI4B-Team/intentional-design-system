@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AIWriterField } from "./AIWriterField";
-import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor } from "./SectionEditors";
+import { StatsEditor, HowItWorksEditor, ComparisonEditor, SituationsEditor, FAQEditor, TestimonialsEditor, CTAEditor } from "./SectionEditors";
 import {
   ChevronDown,
   ChevronUp,
@@ -329,30 +329,7 @@ function renderSectionEditor(
       );
 
     case "cta":
-      return (
-        <div className="space-y-3">
-          <AIWriterField
-            label="CTA Headline"
-            fieldType="ctaHeadline"
-            value={data.ctaHeadline || ""}
-            onChange={(v: string) => onUpdate({ ctaHeadline: v })}
-            placeholder="Ready To Sell Your House For Cash?"
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-          />
-          <AIWriterField
-            label="CTA Subheadline"
-            fieldType="ctaSubheadline"
-            value={data.ctaSubheadline || ""}
-            onChange={(v: string) => onUpdate({ ctaSubheadline: v })}
-            placeholder="Get your free, no-obligation cash offer..."
-            multiline
-            rows={2}
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-          />
-        </div>
-      );
+      return <CTAEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;
 
     case "testimonials":
       return <TestimonialsEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} selectedSiteType={selectedSiteType} />;

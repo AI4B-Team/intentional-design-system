@@ -223,6 +223,7 @@ interface WizardData {
   benefitsLine: string;
   ctaHeadline: string;
   ctaSubheadline: string;
+  ctaButtons: Array<{ label: string; variant: "primary" | "secondary"; link: string }>;
   // Section content
   statsItems: Array<{ value: string; label: string }>;
   processSteps: Array<{ step: number; title: string; description: string }>;
@@ -295,6 +296,7 @@ export default function SellerWebsiteWizard() {
     benefitsLine: "",
     ctaHeadline: "",
     ctaSubheadline: "",
+    ctaButtons: [],
     statsItems: [],
     processSteps: [],
     howItWorksHeadline: "",
