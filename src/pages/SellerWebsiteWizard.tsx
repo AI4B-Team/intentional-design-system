@@ -574,14 +574,29 @@ export default function SellerWebsiteWizard() {
       ];
       updateData({
         siteType: typeId,
-        heroHeadline: siteType.defaultHeadline,
-        heroSubheadline: siteType.defaultSubheadline,
+        heroHeadline: defaults.heroHeadline,
+        heroSubheadline: defaults.heroSubheadline,
         formSubmitText: siteType.defaultCta,
+        trustBadgeText: defaults.trustBadgeText,
+        benefitsLine: defaults.heroBenefitsLine,
         ctaHeadline: defaults.ctaHeadline,
         ctaSubheadline: defaults.ctaSubheadline,
+        howItWorksHeadline: "How It Works",
+        howItWorksSubheadline: "Three simple steps — no surprises, no hidden costs",
+        comparisonHeadline: defaults.comparisonHeadline,
+        situationsHeadline: defaults.situationsHeadline,
+        situationsSubheadline: defaults.situationsSubheadline,
+        coverageHeadline: "Areas We Serve",
+        coverageSubheadline: "We buy houses across these states — select yours to learn more",
+        testimonialsHeadline: defaults.testimonialsHeadline,
+        testimonialsTagline: defaults.testimonialsTagline,
+        testimonialsSubheadline: defaults.testimonialsSubheadline,
         testimonialItems: defaultTestimonials,
         faqItems: defaultFaqItems,
         faqHeadline: "Frequently Asked Questions",
+        statsItems: defaults.stats,
+        processSteps: defaults.processSteps,
+        situationItems: defaults.situations,
       });
     }
   };
