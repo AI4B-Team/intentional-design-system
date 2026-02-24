@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { AIWriterField } from "@/components/seller-website/AIWriterField";
 import { useAIWriter } from "@/hooks/useAIWriter";
 import { BrandingStep } from "@/components/seller-website/BrandingStep";
+import { PageBuilderStep } from "@/components/seller-website/PageBuilderStep";
 import {
   ArrowLeft,
   ArrowRight,
@@ -163,9 +164,9 @@ const STEPS = [
   { id: 1, title: "Site Type", icon: Globe, description: "Choose your site type" },
   { id: 2, title: "Setup", icon: Palette, description: "Company info" },
   { id: 3, title: "Branding", icon: Brush, description: "Logo, colors & fonts" },
-  { id: 4, title: "Content", icon: FileText, description: "Headlines & form" },
+  { id: 4, title: "Page", icon: FileText, description: "Page builder" },
   { id: 5, title: "Notifications", icon: Bell, description: "Lead alerts" },
-  { id: 6, title: "Publish", icon: Rocket, description: "Domain & go live" },
+  { id: 6, title: "Domain", icon: Globe, description: "URL & publish" },
 ];
 
 function generateSlug(name: string): string {
@@ -388,9 +389,9 @@ export default function SellerWebsiteWizard() {
       case 1: return { title: "What Kind Of Website Do You Want To Build?", desc: "Choose a site type and how you'd like to create it" };
       case 2: return { title: `Set Up Your ${selectedSiteType?.name || "Website"}`, desc: data.creationMethod === "template" ? "Choose a template and enter your company info" : "Enter your company info to get started" };
       case 3: return { title: "Branding", desc: "Customize your brand identity with logos, colors, and themes" };
-      case 4: return { title: "Customize Your Content", desc: "Edit your headline, form fields, and more" };
+      case 4: return { title: "Page Builder", desc: "Configure and customize your page sections. Changes are reflected in the live preview." };
       case 5: return { title: "How Should We Notify You?", desc: "Configure notifications and auto-responses" };
-      case 6: return { title: "Your Website Is Ready!", desc: "Configure your URL and publish" };
+      case 6: return { title: "Domain Settings", desc: "Connect your custom domain for a fully branded experience" };
       default: return { title: "", desc: "" };
     }
   };
@@ -656,199 +657,14 @@ export default function SellerWebsiteWizard() {
               />
             )}
 
-            {/* Step 4: Content */}
+            {/* Step 4: Page Builder */}
             {currentStep === 4 && (
-              <div className="space-y-6">
-                {/* Hero Content */}
-                <div className="space-y-4">
-                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Hero Section</h3>
-                  <AIWriterField
-                    label="Hero Headline"
-                    fieldType="heroHeadline"
-                    value={data.heroHeadline}
-                    onChange={(v) => updateData({ heroHeadline: v })}
-                    placeholder={selectedSiteType?.defaultHeadline || "Your Main Headline"}
-                    loadingField={aiWriter.loadingField}
-                    onGenerate={aiWriter.generateCopy}
-                  />
-                  <AIWriterField
-                    label="Hero Subheadline"
-                    fieldType="heroSubheadline"
-                    value={data.heroSubheadline}
-                    onChange={(v) => updateData({ heroSubheadline: v })}
-                    placeholder={selectedSiteType?.defaultSubheadline || "Your supporting text..."}
-                    multiline
-                    rows={2}
-                    loadingField={aiWriter.loadingField}
-                    onGenerate={aiWriter.generateCopy}
-                    context={data.heroHeadline}
-                  />
-                  <AIWriterField
-                    label="Trust Badge Text"
-                    fieldType="trustBadgeText"
-                    value={data.trustBadgeText}
-                    onChange={(v) => updateData({ trustBadgeText: v })}
-                    placeholder="Rated 4.9★ By 2,400+ Homeowners"
-                    loadingField={aiWriter.loadingField}
-                    onGenerate={aiWriter.generateCopy}
-                  />
-                  <AIWriterField
-                    label="Benefits Line"
-                    fieldType="benefitsLine"
-                    value={data.benefitsLine}
-                    onChange={(v) => updateData({ benefitsLine: v })}
-                    placeholder="NO Commissions! NO Repairs! NO Listing Fees!"
-                    loadingField={aiWriter.loadingField}
-                    onGenerate={aiWriter.generateCopy}
-                  />
-                </div>
-
-                {/* Credibility Bar */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-border pb-2">
-                    <h3 className="text-sm font-semibold text-foreground">Credibility Bar</h3>
-                    <Switch
-                      checked={data.showCredibilityBar}
-                      onCheckedChange={(v) => updateData({ showCredibilityBar: v })}
-                    />
-                  </div>
-                  {data.showCredibilityBar && (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-xs">Animated (scrolling marquee)</Label>
-                        <Switch
-                          checked={data.credibilityAnimated}
-                          onCheckedChange={(v) => updateData({ credibilityAnimated: v })}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs mb-2 block">Logos / Networks</Label>
-                        <div className="space-y-2">
-                          {data.credibilityLogos.map((logo, i) => (
-                            <div key={i} className="flex items-center gap-2">
-                              <Input
-                                value={logo}
-                                onChange={(e) => {
-                                  const updated = [...data.credibilityLogos];
-                                  updated[i] = e.target.value;
-                                  updateData({ credibilityLogos: updated });
-                                }}
-                                className="flex-1"
-                                placeholder="Logo name"
-                              />
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                                onClick={() => {
-                                  updateData({
-                                    credibilityLogos: data.credibilityLogos.filter((_, idx) => idx !== i),
-                                  });
-                                }}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => updateData({ credibilityLogos: [...data.credibilityLogos, ""] })}
-                            className="w-full"
-                          >
-                            <Plus className="h-4 w-4 mr-1" /> Add Logo
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Form Fields */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Lead Capture Form</h3>
-                  <div className="p-3 bg-muted rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Checkbox checked disabled />
-                      <span className="font-medium">Property Address</span>
-                      <span className="text-xs text-muted-foreground">(Required)</span>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {FORM_FIELD_OPTIONS.map((field) => (
-                      <label
-                        key={field.id}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-muted cursor-pointer transition-colors"
-                      >
-                        <Checkbox
-                          checked={data.formFields.includes(field.id)}
-                          onCheckedChange={() => toggleFormField(field.id)}
-                        />
-                        <span>{field.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                  <AIWriterField
-                    label="Submit Button Text"
-                    fieldType="formSubmitText"
-                    value={data.formSubmitText}
-                    onChange={(v) => updateData({ formSubmitText: v })}
-                    placeholder={selectedSiteType?.defaultCta || "Submit"}
-                    loadingField={aiWriter.loadingField}
-                    onGenerate={aiWriter.generateCopy}
-                  />
-                </div>
-
-                {/* Section Toggles */}
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">Page Sections</h3>
-                  <p className="text-xs text-muted-foreground">Toggle sections on/off to customize your page layout</p>
-                  {[
-                    { key: "showStats" as const, label: "Stats Bar" },
-                    { key: "showHowItWorks" as const, label: "How It Works" },
-                    { key: "showComparison" as const, label: "Comparison Table" },
-                    { key: "showTestimonials" as const, label: "Testimonials" },
-                    { key: "showSituations" as const, label: "Situations / Services" },
-                    { key: "showFAQ" as const, label: "FAQ" },
-                    { key: "showCTA" as const, label: "Call-to-Action Banner" },
-                  ].map(({ key, label }) => (
-                    <div key={key} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                      <span className="text-sm">{label}</span>
-                      <Switch
-                        checked={data[key]}
-                        onCheckedChange={(v) => updateData({ [key]: v })}
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                {/* CTA Content */}
-                {data.showCTA && (
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-foreground border-b border-border pb-2">CTA Section Content</h3>
-                    <AIWriterField
-                      label="CTA Headline"
-                      fieldType="ctaHeadline"
-                      value={data.ctaHeadline}
-                      onChange={(v) => updateData({ ctaHeadline: v })}
-                      placeholder="Ready To Sell Your House For Cash?"
-                      loadingField={aiWriter.loadingField}
-                      onGenerate={aiWriter.generateCopy}
-                    />
-                    <AIWriterField
-                      label="CTA Subheadline"
-                      fieldType="ctaSubheadline"
-                      value={data.ctaSubheadline}
-                      onChange={(v) => updateData({ ctaSubheadline: v })}
-                      placeholder="Get your free, no-obligation cash offer..."
-                      multiline
-                      rows={2}
-                      loadingField={aiWriter.loadingField}
-                      onGenerate={aiWriter.generateCopy}
-                    />
-                  </div>
-                )}
-              </div>
+              <PageBuilderStep
+                data={data}
+                onUpdate={updateData}
+                aiWriter={aiWriter}
+                selectedSiteType={selectedSiteType}
+              />
             )}
 
             {/* Step 5: Notifications */}
@@ -919,7 +735,7 @@ export default function SellerWebsiteWizard() {
               </div>
             )}
 
-            {/* Step 6: Publish */}
+            {/* Step 6: Domain Settings */}
             {currentStep === 6 && (
               <div className="space-y-6">
                 <div>
