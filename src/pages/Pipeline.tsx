@@ -50,6 +50,7 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Tooltip,
   TooltipContent,
@@ -1104,8 +1105,13 @@ export default function Pipeline() {
               <tbody>
                 {filteredDeals.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-12 text-center text-muted-foreground">
-                      No deals found matching your filters.
+                    <td colSpan={12}>
+                      <EmptyState
+                        icon={<Kanban className="h-9 w-9 text-muted-foreground opacity-70" />}
+                        title="Your pipeline is empty"
+                        description="Add your first deal to start tracking it through your acquisition process."
+                        action={{ label: "Add Deal", onClick: () => handleAddDeal("new") }}
+                      />
                     </td>
                   </tr>
                 ) : (

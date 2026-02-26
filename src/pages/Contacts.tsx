@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   Plus,
   Search,
@@ -326,15 +327,13 @@ export default function Contacts() {
               ) : filteredContacts.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={10} className="h-32 text-center">
-                    <div className="flex flex-col items-center justify-center text-muted-foreground">
-                      <Users className="h-10 w-10 mb-2 opacity-50" />
-                      <p className="font-medium">No Contacts Found</p>
-                      <p className="text-sm">
-                        {hasActiveFilters 
-                          ? "Try adjusting your filters" 
-                          : "Add your first contact to get started"}
-                      </p>
-                    </div>
+                    <EmptyState
+                      icon={<Users className="h-9 w-9 text-muted-foreground opacity-70" />}
+                      title="No contacts yet"
+                      description="Import a list or add contacts manually to start building your database."
+                      action={{ label: "Import List", onClick: () => navigate('/lists') }}
+                      size="sm"
+                    />
                   </TableCell>
                 </TableRow>
               ) : (
