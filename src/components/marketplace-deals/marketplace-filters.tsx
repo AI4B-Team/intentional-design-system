@@ -45,6 +45,7 @@ interface MarketplaceFiltersProps {
     address: string;
     listingStatus: string;
     leadType: string;
+    leadTypes?: string[];
     homeTypes: string[];
     priceRange: string;
     bedsMin: string;
@@ -144,6 +145,7 @@ export function MarketplaceFilters({
   const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
   const [bedsPopoverOpen, setBedsPopoverOpen] = useState(false);
   const [homeTypePopoverOpen, setHomeTypePopoverOpen] = useState(false);
+  const [leadTypePopoverOpen, setLeadTypePopoverOpen] = useState(false);
   const [saveSearchOpen, setSaveSearchOpen] = useState(false);
   const [addressDropdownOpen, setAddressDropdownOpen] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches());
@@ -197,14 +199,29 @@ export function MarketplaceFilters({
     return `${filters.homeTypes.length} Types`;
   };
 
+  const leadTypeIds = leadTypeOptions.slice(1).map(t => t.toLowerCase().replace(/ /g, "-"));
+  const selectedLeadTypes: string[] = filters.leadTypes || (filters.leadType && filters.leadType !== "all" ? [filters.leadType] : []);
+  const allLeadTypesSelected = selectedLeadTypes.length === 0;
+
+  const toggleLeadType = (typeId: string) => {
+    const newTypes = selectedLeadTypes.includes(typeId)
+      ? selectedLeadTypes.filter(t => t !== typeId)
+      : [...selectedLeadTypes, typeId];
+    handleChange("leadTypes", newTypes);
+    handleChange("leadType", newTypes.length === 1 ? newTypes[0] : newTypes.length === 0 ? "all" : "multiple");
+  };
+
+  const selectAllLeadTypes = () => {
+    handleChange("leadTypes", []);
+    handleChange("leadType", "all");
+  };
+
   const getLeadTypeLabel = () => {
-    if (!filters.leadType || filters.leadType === "all") {
-      return "Lead Type";
+    if (selectedLeadTypes.length === 0) return "Lead Type";
+    if (selectedLeadTypes.length === 1) {
+      return leadTypeOptions.find(t => t.toLowerCase().replace(/ /g, "-") === selectedLeadTypes[0]) || "Lead Type";
     }
-    const found = leadTypeOptions.find(
-      (t) => t.toLowerCase().replace(/ /g, "-") === filters.leadType
-    );
-    return found || "Lead Type";
+    return `${selectedLeadTypes.length} Lead Types`;
   };
 
   const getPriceLabel = () => {
@@ -239,24 +256,45 @@ export function MarketplaceFilters({
           </Select>
 
           {/* Lead Type */}
-          <Select 
-            value={filters.leadType || "all"} 
-            onValueChange={(v) => handleChange("leadType", v)}
-          >
-            <SelectTrigger className={filterButtonClass}>
-              <span className="truncate">{getLeadTypeLabel()}</span>
-            </SelectTrigger>
-            <SelectContent className="bg-background">
-              {leadTypeOptions.map((type) => (
-                <SelectItem 
-                  key={type} 
-                  value={type === "All Lead Types" ? "all" : type.toLowerCase().replace(/ /g, "-")}
+          <Popover open={leadTypePopoverOpen} onOpenChange={setLeadTypePopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
+                <span className="truncate">{getLeadTypeLabel()}</span>
+                <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-4 bg-background" align="start">
+              <div className="space-y-3">
+                <div className="font-semibold">Lead Type</div>
+                <button
+                  type="button"
+                  onClick={selectAllLeadTypes}
+                  className="flex items-center gap-2 text-sm text-primary hover:underline"
                 >
-                  {type}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                  <Checkbox checked={allLeadTypesSelected} />
+                  All Lead Types
+                </button>
+                <div className="border-t border-border" />
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                  {leadTypeOptions.slice(1).map((type) => {
+                    const typeId = type.toLowerCase().replace(/ /g, "-");
+                    return (
+                      <div key={type} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`lead-${typeId}`}
+                          checked={selectedLeadTypes.includes(typeId)}
+                          onCheckedChange={() => toggleLeadType(typeId)}
+                        />
+                        <Label htmlFor={`lead-${typeId}`} className="cursor-pointer text-sm">
+                          {type}
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
 
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
@@ -266,7 +304,7 @@ export function MarketplaceFilters({
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-4" align="start">
+            <PopoverContent className="w-56 p-4 bg-background" align="start">
               <div className="space-y-3">
                 <div className="font-semibold">Home Type</div>
                 <button
@@ -277,6 +315,7 @@ export function MarketplaceFilters({
                   <Checkbox checked={allHomeTypesSelected} />
                   {allHomeTypesSelected ? "Deselect All" : "Select All"}
                 </button>
+                <div className="border-t border-border" />
                 <div className="space-y-2">
                   {homeTypeOptions.map((type) => (
                     <div key={type.id} className="flex items-center space-x-2">
@@ -291,12 +330,6 @@ export function MarketplaceFilters({
                     </div>
                   ))}
                 </div>
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90" 
-                  onClick={() => setHomeTypePopoverOpen(false)}
-                >
-                  Apply
-                </Button>
               </div>
             </PopoverContent>
           </Popover>
