@@ -17,6 +17,7 @@ import { Phone, Mail, UserPlus, X, Loader2, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { AddToMailCampaignModal } from "./add-to-mail-campaign-modal";
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -39,6 +40,7 @@ export function BulkActionsBar({
   const [progress, setProgress] = useState(0);
   const [addToSuppression, setAddToSuppression] = useState(false);
   const [skipExistingPhones, setSkipExistingPhones] = useState(true);
+  const [showMailModal, setShowMailModal] = useState(false);
 
   const handleRemove = async () => {
     setIsProcessing(true);
@@ -137,7 +139,7 @@ export function BulkActionsBar({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setActiveAction("add_to_mail")}
+            onClick={() => setShowMailModal(true)}
           >
             <Mail className="h-4 w-4 mr-1" />
             Add to Mail
@@ -211,33 +213,13 @@ export function BulkActionsBar({
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Add to Mail Confirmation */}
-      <AlertDialog open={activeAction === "add_to_mail"} onOpenChange={() => setActiveAction(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Add to Mail Campaign</AlertDialogTitle>
-            <AlertDialogDescription>
-              Add {selectedCount} records to a mail campaign.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground">
-              This feature is coming soon. You'll be able to select or create a campaign.
-            </p>
-          </div>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => {
-              toast.info("Mail campaign feature coming soon");
-              setActiveAction(null);
-            }}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Add to Mail Campaign Modal */}
+      <AddToMailCampaignModal
+        open={showMailModal}
+        onOpenChange={setShowMailModal}
+        selectedRecordIds={selectedRecordIds}
+        onComplete={onClear}
+      />
 
       {/* Add to Properties Confirmation */}
       <AlertDialog open={activeAction === "add_to_properties"} onOpenChange={() => setActiveAction(null)}>
