@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, MapPin, Loader2, X, ChevronDown, Star, Clock, Zap, TrendingUp } from "lucide-react";
+import { Search, MapPin, Loader2, X, ChevronDown, Star, Clock, Zap, TrendingUp, BarChart3, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -19,11 +19,14 @@ interface LocationResult {
 
 interface MarketplaceSearchBarProps {
   onLocationSelect: (loc: LocationResult) => void;
+  onModeSwitch?: (mode: "listings" | "intel") => void;
+  onQueryChange?: (query: string) => void;
+  defaultMode?: "listings" | "intel";
   className?: string;
   placeholder?: string;
 }
 
-export function MarketplaceSearchBar({ onLocationSelect, className, placeholder }: MarketplaceSearchBarProps) {
+export function MarketplaceSearchBar({ onLocationSelect, onModeSwitch, onQueryChange, defaultMode = "listings", className, placeholder }: MarketplaceSearchBarProps) {
   const [query, setQuery] = React.useState("");
   const [suggestions, setSuggestions] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -61,6 +64,7 @@ export function MarketplaceSearchBar({ onLocationSelect, className, placeholder 
 
   const handleChange = (val: string) => {
     setQuery(val);
+    onQueryChange?.(val);
     setShowSuggestions(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => search(val), 300);
@@ -151,10 +155,29 @@ export function MarketplaceSearchBar({ onLocationSelect, className, placeholder 
           className="flex-1 h-full px-2 text-sm outline-none bg-transparent placeholder:text-muted-foreground text-foreground"
           autoComplete="off"
         />
+        {/* Intel / Listings mode badge */}
+        {onModeSwitch && query.trim().length >= 2 && !/^\d+\s/.test(query.trim()) && (
+          <button
+            onClick={() => onModeSwitch(defaultMode === "intel" ? "listings" : "intel")}
+            className={cn(
+              "flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-colors flex-shrink-0 mr-1",
+              defaultMode === "intel"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-accent text-accent-foreground hover:bg-accent/80"
+            )}
+          >
+            {defaultMode === "intel" ? (
+              <><Store className="h-3 w-3" />Listings</>
+            ) : (
+              <><BarChart3 className="h-3 w-3" />Intel</>
+            )}
+          </button>
+        )}
+
         {isLoading && <Loader2 className="mr-2.5 h-4 w-4 animate-spin text-muted-foreground" />}
         {query && !isLoading && (
           <button
-            onClick={() => { setQuery(""); setSuggestions([]); }}
+            onClick={() => { setQuery(""); setSuggestions([]); onQueryChange?.(""); }}
             className="mr-1.5 h-5 w-5 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground transition-colors"
           >
             <X className="h-3 w-3" />
