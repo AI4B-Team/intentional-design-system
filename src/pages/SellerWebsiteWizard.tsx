@@ -781,6 +781,7 @@ export default function SellerWebsiteWizard() {
         hero_subheadline: data.heroSubheadline,
         hero_image_url: data.heroImageUrl || undefined,
         form_fields: ["address", ...data.formFields],
+        custom_form_fields: data.customFormFields,
         form_submit_text: data.formSubmitText,
         lead_notification_email: data.notifyEmail || undefined,
         lead_notification_sms: data.notifySms || undefined,

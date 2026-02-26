@@ -66,6 +66,7 @@ export interface CreateWebsiteData {
   value_props?: Json;
   process_steps?: Json;
   form_fields?: string[];
+  custom_form_fields?: any[];
   form_submit_text?: string;
   lead_notification_email?: string;
   lead_notification_sms?: string;
@@ -157,7 +158,8 @@ export function useCreateWebsite() {
           user_id: user.id,
           ...data,
           form_fields: data.form_fields ? JSON.stringify(data.form_fields) : undefined,
-        })
+          custom_form_fields: data.custom_form_fields ? JSON.stringify(data.custom_form_fields) : undefined,
+        } as any)
         .select()
         .single();
 
@@ -183,6 +185,9 @@ export function useUpdateWebsite() {
       const updateData: Record<string, unknown> = { ...data };
       if (data.form_fields) {
         updateData.form_fields = JSON.stringify(data.form_fields);
+      }
+      if (data.custom_form_fields) {
+        updateData.custom_form_fields = JSON.stringify(data.custom_form_fields);
       }
 
       const { data: website, error } = await supabase

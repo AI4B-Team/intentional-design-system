@@ -7918,6 +7918,7 @@ export type Database = {
           company_phone: string | null
           created_at: string | null
           custom_domain: string | null
+          custom_form_fields: Json | null
           domain_ssl_enabled: boolean | null
           domain_verified: boolean | null
           facebook_pixel_id: string | null
@@ -7974,6 +7975,7 @@ export type Database = {
           company_phone?: string | null
           created_at?: string | null
           custom_domain?: string | null
+          custom_form_fields?: Json | null
           domain_ssl_enabled?: boolean | null
           domain_verified?: boolean | null
           facebook_pixel_id?: string | null
@@ -8030,6 +8032,7 @@ export type Database = {
           company_phone?: string | null
           created_at?: string | null
           custom_domain?: string | null
+          custom_form_fields?: Json | null
           domain_ssl_enabled?: boolean | null
           domain_verified?: boolean | null
           facebook_pixel_id?: string | null
