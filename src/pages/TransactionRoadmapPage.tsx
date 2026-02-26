@@ -25,6 +25,7 @@ import {
   Users,
   FileText,
   CalendarDays,
+  ClipboardCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ContactPanel } from "@/components/marketplace-deals/ContactPanel";
@@ -44,6 +45,7 @@ import { TCCriticalDates } from "@/components/transactions/TCCriticalDates";
 import { TCAIBuyerMatching } from "@/components/transactions/TCAIBuyerMatching";
 import { TCStakeholders } from "@/components/transactions/TCStakeholders";
 import { TCDocumentChecklist } from "@/components/transactions/TCDocumentChecklist";
+import { TransactionRoadmapChecklist } from "@/components/transactions/TransactionRoadmapChecklist";
 
 // Mock transaction data
 const MOCK_TRANSACTIONS = [
@@ -533,9 +535,16 @@ export default function TransactionRoadmapPage() {
 
           {/* Right Side - Transaction Coordinator Tools */}
           <div className="flex-1 bg-muted/30 overflow-hidden flex flex-col">
-            <Tabs defaultValue="buyers" className="flex-1 flex flex-col overflow-hidden">
+            <Tabs defaultValue="roadmap" className="flex-1 flex flex-col overflow-hidden">
               <div className="flex-shrink-0 border-b bg-card px-6 pt-4">
-                <TabsList className="w-full justify-start gap-1 bg-transparent p-0 h-auto">
+                <TabsList className="w-full justify-start gap-1 bg-transparent p-0 h-auto flex-wrap">
+                  <TabsTrigger 
+                    value="roadmap" 
+                    className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
+                  >
+                    <ClipboardCheck className="h-4 w-4" />
+                    Roadmap
+                  </TabsTrigger>
                   <TabsTrigger 
                     value="buyers" 
                     className="gap-2 data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-lg px-4 py-2"
@@ -569,6 +578,19 @@ export default function TransactionRoadmapPage() {
               
               <ScrollArea className="flex-1">
                 <div className="p-6">
+                  <TabsContent value="roadmap" className="mt-0">
+                    <TransactionRoadmapChecklist
+                      dealId={transaction.id}
+                      contractDate={transaction.contractDate}
+                      dealSummary={{
+                        address: `${transaction.address}, ${transaction.city}, ${transaction.state}`,
+                        purchasePrice: transaction.contractPrice,
+                        arv: transaction.arv,
+                        projectedProfit: transaction.assignmentFee,
+                      }}
+                    />
+                  </TabsContent>
+
                   <TabsContent value="buyers" className="mt-0">
                     <TCAIBuyerMatching
                       propertyAddress={transaction.address}
