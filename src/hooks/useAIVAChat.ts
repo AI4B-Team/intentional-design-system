@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 
-interface Message {
+export interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  timestamp: Date;
+  timestamp: string;
 }
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/aiva-chat`;
@@ -21,7 +21,7 @@ export function useAIVAChat() {
       id: crypto.randomUUID(),
       role: "user",
       content: input,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -42,7 +42,7 @@ export function useAIVAChat() {
           id: crypto.randomUUID(),
           role: "assistant" as const,
           content: assistantContent,
-          timestamp: new Date(),
+          timestamp: new Date().toISOString(),
         }];
       });
     };
@@ -144,10 +144,15 @@ export function useAIVAChat() {
     setMessages([]);
   }, []);
 
+  const loadMessages = useCallback((msgs: Message[]) => {
+    setMessages(msgs);
+  }, []);
+
   return {
     messages,
     isLoading,
     sendMessage,
     clearMessages,
+    loadMessages,
   };
 }

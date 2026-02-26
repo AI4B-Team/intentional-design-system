@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { useAIVAChat } from "@/hooks/useAIVAChat";
+import { useAIVAConversations } from "@/hooks/useAIVAConversations";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -73,7 +74,18 @@ interface AIVAChatProps {
 }
 
 export function AIVAChat({ className, onClose }: AIVAChatProps) {
-  const { messages, isLoading, sendMessage, clearMessages } = useAIVAChat();
+  const { messages, isLoading, sendMessage, clearMessages, loadMessages } = useAIVAChat();
+  const {
+    conversations,
+    activeConversationId,
+    isLoadingHistory,
+    loadConversation,
+    createConversation,
+    updateConversation,
+    deleteConversation,
+    startNewConversation,
+  } = useAIVAConversations();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [searchType, setSearchType] = useState<"database" | "online" | "both">("both");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -96,7 +108,22 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const [defaultVoice, setDefaultVoice] = useState("rachel");
   const [attachedContext, setAttachedContext] = useState<AttachedItem[]>([]);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-save conversation after AI responses complete
+  useEffect(() => {
+    if (isLoading || messages.length === 0) return;
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.role !== "assistant") return;
+
+    const firstUserMsg = messages.find(m => m.role === "user");
+    const title = firstUserMsg?.content.slice(0, 50) || "New Conversation";
+
+    if (activeConversationId) {
+      updateConversation(activeConversationId, messages);
+    } else {
+      createConversation(messages, title);
+    }
+  }, [isLoading]); // Only trigger when loading transitions to false
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       const scrollContainer = scrollAreaRef.current.querySelector("[data-radix-scroll-area-viewport]");
@@ -203,8 +230,8 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   // New chat functionality
   const handleNewChat = () => {
     clearMessages();
+    startNewConversation();
     setInput("");
-    toast.success("Started new chat");
   };
 
   const suggestedQuestions = [
@@ -236,12 +263,19 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
     setAttachedContext((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
-  // Placeholder chat history
-  const chatHistory = [
-    { id: "1", title: "Property search in Atlanta", date: "Today" },
-    { id: "2", title: "Market analysis Phoenix", date: "Yesterday" },
-    { id: "3", title: "Deal pipeline review", date: "2 days ago" },
-  ];
+  const formatRelativeTime = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "Just now";
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
 
   return (
     <>
@@ -391,35 +425,85 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
             {/* History List */}
             <ScrollArea className="flex-1">
               <div className="px-4 pb-4 space-y-2">
-                {chatHistory
-                  .filter((chat) => 
-                    chat.title.toLowerCase().includes(historySearch.toLowerCase())
-                  )
-                  .map((chat) => (
-                    <button
-                      key={chat.id}
-                      className="w-full text-left p-3 rounded-lg border hover:bg-muted transition-colors"
-                      onClick={() => {
-                        toast.info("Chat history will be restored in a future update");
-                        setPanelView("chat");
-                      }}
-                    >
-                      <p className="font-medium text-sm">{chat.title}</p>
-                      <p className="text-xs text-muted-foreground">{chat.date}</p>
-                    </button>
-                  ))}
-                {chatHistory.filter((chat) => 
-                  chat.title.toLowerCase().includes(historySearch.toLowerCase())
-                ).length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-20">
-                    <History className="h-12 w-12 text-muted-foreground/30 mb-4" />
-                    <p className="text-lg font-medium text-muted-foreground">
-                      {historySearch ? "No Matching Conversations" : "No Chat History Yet"}
-                    </p>
-                    <p className="text-sm text-muted-foreground/60">
-                      {historySearch ? "Try a different search term" : "Your conversations will appear here"}
-                    </p>
+                {isLoadingHistory ? (
+                  <div className="flex items-center justify-center py-20">
+                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                   </div>
+                ) : (
+                  <>
+                    {conversations
+                      .filter((chat) =>
+                        chat.title.toLowerCase().includes(historySearch.toLowerCase())
+                      )
+                      .map((chat) => (
+                        <div
+                          key={chat.id}
+                          className={cn(
+                            "flex items-center gap-2 p-3 rounded-lg border hover:bg-muted transition-colors group",
+                            activeConversationId === chat.id && "bg-muted border-primary/30"
+                          )}
+                        >
+                          <button
+                            className="flex-1 text-left min-w-0"
+                            onClick={async () => {
+                              const msgs = await loadConversation(chat.id);
+                              if (msgs) {
+                                loadMessages(msgs);
+                                setPanelView("chat");
+                              }
+                            }}
+                          >
+                            <p className="font-medium text-sm truncate">{chat.title}</p>
+                            <p className="text-xs text-muted-foreground">{formatRelativeTime(chat.updated_at)}</p>
+                          </button>
+                          {confirmDeleteId === chat.id ? (
+                            <div className="flex items-center gap-1 flex-shrink-0">
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => {
+                                  deleteConversation(chat.id);
+                                  setConfirmDeleteId(null);
+                                }}
+                              >
+                                <Check className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7"
+                                onClick={() => setConfirmDeleteId(null)}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                              onClick={() => setConfirmDeleteId(chat.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
+                    {conversations.filter((chat) =>
+                      chat.title.toLowerCase().includes(historySearch.toLowerCase())
+                    ).length === 0 && (
+                      <div className="flex flex-col items-center justify-center py-20">
+                        <History className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                        <p className="text-lg font-medium text-muted-foreground">
+                          {historySearch ? "No Matching Conversations" : "No Chat History Yet"}
+                        </p>
+                        <p className="text-sm text-muted-foreground/60">
+                          {historySearch ? "Try a different search term" : "Your conversations will appear here"}
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </ScrollArea>
