@@ -295,6 +295,50 @@ interface WizardData {
   showCookieBanner: boolean;
   showAgeVerification: boolean;
   legalDocs: Array<{ id: string; title: string; icon: string; enabled: boolean; content: string; lastUpdated: string }>;
+  // Thank You Page
+  showThankYou: boolean;
+  thankYouHeadline: string;
+  thankYouSubheadline: string;
+  thankYouShowNextSteps: boolean;
+  thankYouSteps: string[];
+  thankYouCtaText: string;
+  thankYouCtaUrl: string;
+  thankYouRedirectAfter: boolean;
+  thankYouRedirectUrl: string;
+  thankYouRedirectDelay: number;
+  // Follow-Up Questionnaire
+  showFollowUp: boolean;
+  followUpSteps: Array<{
+    id: string;
+    enabled: boolean;
+    title: string;
+    fields: Array<{
+      id: string;
+      label: string;
+      type: "select" | "text" | "radio" | "checkbox";
+      options?: string[];
+      placeholder?: string;
+    }>;
+  }>;
+  // Email Automation
+  emailSequence: Array<{
+    id: string;
+    enabled: boolean;
+    label: string;
+    delay: string;
+    delayValue: string;
+    subject: string;
+    preview: string;
+    body: string;
+  }>;
+  emailSendWeekdaysOnly: boolean;
+  emailStopOnReply: boolean;
+  emailStopOnDealClosed: boolean;
+  // File Delivery
+  fileDeliveryEnabled: boolean;
+  fileDeliveryMethod: string;
+  fileDeliveryEmailSubject: string;
+  fileDeliveryEmailBody: string;
 }
 
 const DEFAULT_CREDIBILITY_LOGOS = ["Forbes", "NBC", "CBS", "Fox"];
@@ -571,6 +615,65 @@ export default function SellerWebsiteWizard() {
       { id: "refund", title: "Refund Policy", icon: "scale", enabled: true, content: "Last Updated: January 1, 2026\n\n1. Overview\nThis Refund Policy outlines the terms under which refunds may be issued for our services.\n\n2. Free Services\nOur property evaluation and cash offer services are provided at no cost to homeowners. Since no payment is required to receive an offer, refunds are generally not applicable.\n\n3. Transaction Fees\nIn the event that any fees are charged during the closing process, these fees will be clearly disclosed prior to closing.\n\n4. Cancellation\nYou may cancel any transaction at any time prior to closing without penalty. We do not charge cancellation fees.\n\n5. Earnest Money\nIf earnest money is deposited as part of a transaction, the return of earnest money will be governed by the terms of the purchase agreement and applicable state law.\n\n6. Contact Us\nIf you have questions about this Refund Policy, please contact us.", lastUpdated: new Date().toLocaleDateString() },
       { id: "cookie", title: "Cookie Policy", icon: "cookie", enabled: true, content: "Last Updated: January 1, 2026\n\n1. What Are Cookies\nCookies are small text files stored on your device when you visit our website. They help us provide you with a better experience.\n\n2. Types of Cookies We Use\n• Essential Cookies: Required for the website to function properly\n• Analytics Cookies: Help us understand how visitors interact with our website\n• Marketing Cookies: Used to deliver relevant advertisements\n\n3. Third-Party Cookies\nWe may use third-party services such as Google Analytics that set their own cookies.\n\n4. Managing Cookies\nYou can control and delete cookies through your browser settings.\n\n5. Cookie Consent\nBy continuing to use our website, you consent to the use of cookies as described in this policy.\n\n6. Contact Us\nIf you have questions about our use of cookies, please contact us.", lastUpdated: new Date().toLocaleDateString() },
     ],
+    // Thank You Page
+    showThankYou: true,
+    thankYouHeadline: "We've Got Your Info!",
+    thankYouSubheadline: "Our team is reviewing your property details. Expect a call within 24 hours.",
+    thankYouShowNextSteps: true,
+    thankYouSteps: [
+      "We review your property details",
+      "We call you within 24 hours with a fair cash offer",
+      "You choose your closing date — as fast as 7 days",
+    ],
+    thankYouCtaText: "Learn How It Works",
+    thankYouCtaUrl: "#how-it-works",
+    thankYouRedirectAfter: false,
+    thankYouRedirectUrl: "",
+    thankYouRedirectDelay: 3,
+    // Follow-Up Questionnaire
+    showFollowUp: true,
+    followUpSteps: [
+      {
+        id: "step1", enabled: true, title: "Tell Us About Your Property",
+        fields: [
+          { id: "beds", label: "How many bedrooms?", type: "select" as const, options: ["1", "2", "3", "4", "5+"] },
+          { id: "baths", label: "How many bathrooms?", type: "select" as const, options: ["1", "1.5", "2", "2.5", "3+"] },
+          { id: "sqft", label: "Approx. Square Footage", type: "select" as const, options: ["Under 1,000", "1,000–1,500", "1,500–2,000", "2,000–3,000", "3,000+"] },
+          { id: "year", label: "Year Built (approx)", type: "text" as const, placeholder: "e.g. 1995" },
+        ],
+      },
+      {
+        id: "step2", enabled: true, title: "Property Condition",
+        fields: [
+          { id: "condition_detail", label: "How would you describe your home's condition?", type: "radio" as const, options: ["Move-in Ready", "Needs Minor Repairs", "Needs Major Repairs", "Distressed / Fixer Upper"] },
+          { id: "repairs", label: "Any major issues? (select all)", type: "checkbox" as const, options: ["Roof", "Foundation", "Plumbing", "Electrical", "HVAC", "None"] },
+        ],
+      },
+      {
+        id: "step3", enabled: true, title: "Your Selling Situation",
+        fields: [
+          { id: "situation", label: "What best describes your situation?", type: "radio" as const, options: ["Inherited / Probate", "Foreclosure", "Divorce", "Relocating", "Downsizing", "Just want a fast sale"] },
+          { id: "timeline_detail", label: "How soon do you want to close?", type: "radio" as const, options: ["ASAP (1–2 weeks)", "Within a month", "1–3 months", "Just exploring options"] },
+          { id: "owed", label: "Do you still owe on the property?", type: "radio" as const, options: ["Yes, mortgage balance", "No, free and clear", "Behind on payments"] },
+        ],
+      },
+    ],
+    // Email Automation
+    emailSequence: [
+      { id: "e1", enabled: true, label: "Welcome / Confirmation", delay: "Immediately", delayValue: "immediately", subject: "✅ We Got Your Info — Here's What Happens Next", preview: "Your cash offer request is in.", body: "Hi {{first_name}},\n\nGreat news — we received your info for {{property_address}}!\n\nOur team is reviewing your details and will be reaching out within 24 hours with a fair cash offer.\n\nNo fees. No commissions. No pressure.\n\n— The {{company_name}} Team" },
+      { id: "e2", enabled: true, label: "Day 1 Follow-Up", delay: "24 hours later", delayValue: "24h", subject: "Have you had a chance to review our offer?", preview: "We want to make sure you get the best outcome...", body: "Hi {{first_name}},\n\nJust checking in — we're still working on your offer for {{property_address}}.\n\nQuick question: Is there a specific timeline you're working with?\n\nReply to this email or call us anytime at {{phone_number}}.\n\n— {{company_name}}" },
+      { id: "e3", enabled: true, label: "Day 3 Value Email", delay: "3 days later", delayValue: "3d", subject: "What selling to us really means for you", preview: "No agents, no fees, no showings...", body: "Hi {{first_name}},\n\nSelling a home the traditional way takes 60–90 days, costs 6% in commissions, and requires endless showings.\n\nWe close in as little as 7 days. You pick the date. We handle everything.\n\nReady to get your offer? Reply here or call {{phone_number}}.\n\n— {{company_name}}" },
+      { id: "e4", enabled: true, label: "Day 7 Re-Engagement", delay: "7 days later", delayValue: "7d", subject: "Still interested in a cash offer for {{property_address}}?", preview: "Our offer stands — we'd love to connect.", body: "Hi {{first_name}},\n\nI wanted to reach out one more time about {{property_address}}.\n\nLife gets busy — I get it. If you're still considering your options, we're here whenever you're ready.\n\nJust reply \"YES\" and we'll get back to you within the hour.\n\n— {{company_name}}" },
+      { id: "e5", enabled: false, label: "Day 14 Final Attempt", delay: "14 days later", delayValue: "14d", subject: "Last chance — is {{property_address}} still available?", preview: "We'll close this file unless we hear from you.", body: "Hi {{first_name}},\n\nThis is our final follow-up regarding your property at {{property_address}}.\n\nIf your situation has changed or you're ready to move forward, we'd love to hear from you.\n\nNo pressure — just here to help.\n\n— {{company_name}}" },
+    ],
+    emailSendWeekdaysOnly: true,
+    emailStopOnReply: true,
+    emailStopOnDealClosed: true,
+    // File Delivery
+    fileDeliveryEnabled: false,
+    fileDeliveryMethod: "email",
+    fileDeliveryEmailSubject: "Your Free Resource from {{company_name}}",
+    fileDeliveryEmailBody: "Hi {{first_name}}, as promised, here is your free resource. Click to download below.",
   });
 
   const aiWriter = useAIWriter({ siteType: data.siteType, companyName: data.companyName });
