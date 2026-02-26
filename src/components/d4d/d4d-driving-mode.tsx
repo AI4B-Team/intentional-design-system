@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -7,13 +7,13 @@ import {
   MapPin, 
   Camera, 
   Mic, 
-  FileText, 
   Pause, 
   Play,
   Plus,
   Compass,
   Navigation,
-  Gauge
+  Gauge,
+  StopCircle
 } from "lucide-react";
 import { formatDuration, formatMiles, formatSpeed, formatHeading } from "@/lib/format-duration";
 import { D4DTagPropertySheet } from "./d4d-tag-property-sheet";
@@ -23,6 +23,11 @@ import { D4DMapView } from "./d4d-map-view";
 import { VoiceNoteRecorder } from "./voice-note-recorder";
 import { CameraCapture } from "./camera-capture";
 import { useVoiceNote } from "@/hooks/useVoiceNote";
+import { useWakeLock } from "@/hooks/useWakeLock";
+import { useOrientationLock } from "@/hooks/useOrientationLock";
+import { useReverseGeocode } from "@/hooks/useReverseGeocode";
+import { useAuth } from "@/contexts/AuthContext";
+import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -75,7 +80,16 @@ export function D4DDrivingMode({
   const [showEndDialog, setShowEndDialog] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
-  
+
+  const { user } = useAuth();
+  const { organizationId } = useOrganizationContext();
+  const { reverseGeocode } = useReverseGeocode();
+
+  // Keep screen awake during active session, release when paused
+  useWakeLock(!isPaused);
+  // Lock to portrait
+  useOrientationLock(true);
+
   const {
     isRecording: isRecordingVoice,
     duration: voiceDuration,
@@ -86,142 +100,186 @@ export function D4DDrivingMode({
     transcribeVoiceNote
   } = useVoiceNote();
 
-  const handleBackPress = () => {
+  const handleBackPress = useCallback(() => {
     setShowEndDialog(true);
-  };
+  }, []);
 
-  const handleTagProperty = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
+  // Quick-tag: immediately save GPS location, then offer "Add Details"
+  const handleQuickTag = useCallback(async () => {
+    if (navigator.vibrate) navigator.vibrate(50);
+
+    if (!user || !currentLocation.latitude || !currentLocation.longitude) {
+      toast.error("Unable to tag — no GPS fix");
+      return;
     }
-    setShowTagSheet(true);
-  };
+
+    try {
+      // Get address in background
+      const geo = await reverseGeocode(currentLocation.latitude, currentLocation.longitude);
+
+      const propertyData = {
+        user_id: user.id,
+        organization_id: organizationId,
+        session_id: session.id,
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        address: geo ? `${geo.streetNumber} ${geo.streetName}` : null,
+        street_number: geo?.streetNumber || null,
+        street_name: geo?.streetName || null,
+        city: geo?.city || null,
+        state: geo?.state || null,
+        zip: geo?.zip || null,
+        county: geo?.county || null,
+        formatted_address: geo?.formattedAddress || null,
+        priority: 3,
+        tagged_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("d4d_properties").insert(propertyData);
+      if (error) throw error;
+
+      onPropertyTagged();
+      if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+
+      toast.success("Property Tagged! Add Details?", {
+        action: {
+          label: "Add Details",
+          onClick: () => setShowTagSheet(true),
+        },
+        duration: 4000,
+      });
+    } catch (err) {
+      console.error("Quick tag error:", err);
+      toast.error("Failed to tag property");
+    }
+  }, [user, currentLocation, organizationId, session.id, onPropertyTagged, reverseGeocode]);
 
   const handlePropertySaved = useCallback(() => {
     onPropertyTagged();
     setShowTagSheet(false);
-    if (navigator.vibrate) {
-      navigator.vibrate([50, 50, 50]);
-    }
+    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
   }, [onPropertyTagged]);
 
   // Voice note handlers
-  const handleVoiceStart = async () => {
+  const handleVoiceStart = useCallback(async () => {
     const started = await startRecording();
-    if (started) {
-      setShowVoiceRecorder(true);
-    }
-  };
+    if (started) setShowVoiceRecorder(true);
+  }, [startRecording]);
 
-  const handleVoiceStop = async () => {
+  const handleVoiceStop = useCallback(async () => {
     const result = await stopRecording();
     setShowVoiceRecorder(false);
-    
     if (result && result.blob) {
-      toast.loading('Saving voice note...');
-      
-      // Upload the voice note
+      toast.loading("Saving voice note...");
       const url = await uploadVoiceNote(result.blob, session.id);
-      
       if (url) {
-        // Optionally transcribe
         const transcript = await transcribeVoiceNote(url);
-        
-        // Save to session notes or last tagged property
-        await supabase.from('driving_sessions').update({
-          notes_recorded: (session as any).notesRecorded ? (session as any).notesRecorded + 1 : 1
-        }).eq('id', session.id);
-        
+        await supabase.from("driving_sessions").update({
+          notes_recorded: ((session as any).notesRecorded || 0) + 1,
+        }).eq("id", session.id);
         toast.dismiss();
-        toast.success(transcript ? 'Voice note saved & transcribed!' : 'Voice note saved!');
+        toast.success(transcript ? "Voice Note Saved & Transcribed!" : "Voice Note Saved!");
       } else {
         toast.dismiss();
-        toast.error('Failed to save voice note');
+        toast.error("Failed to save voice note");
       }
     }
-  };
+  }, [stopRecording, uploadVoiceNote, transcribeVoiceNote, session.id]);
 
-  const handleVoiceCancel = () => {
+  const handleVoiceCancel = useCallback(() => {
     cancelRecording();
     setShowVoiceRecorder(false);
-  };
+  }, [cancelRecording]);
 
-  // Camera handlers
-  const handleCameraCapture = async (blob: Blob) => {
-    toast.loading('Uploading photo...');
-    
+  const handleCameraCapture = useCallback(async (blob: Blob) => {
+    toast.loading("Uploading photo...");
     try {
       const fileName = `${session.id}-${Date.now()}.jpg`;
-      
       const { error } = await supabase.storage
-        .from('d4d-photos')
-        .upload(`photos/${fileName}`, blob, {
-          contentType: 'image/jpeg'
-        });
-      
+        .from("d4d-photos")
+        .upload(`photos/${fileName}`, blob, { contentType: "image/jpeg" });
       if (error) throw error;
-      
       onPhotoTaken();
       setShowCamera(false);
       toast.dismiss();
-      toast.success('Photo saved!');
-      
-      if (navigator.vibrate) {
-        navigator.vibrate(30);
-      }
+      toast.success("Photo Saved!");
+      if (navigator.vibrate) navigator.vibrate(30);
     } catch (error) {
-      console.error('Photo upload error:', error);
+      console.error("Photo upload error:", error);
       toast.dismiss();
-      toast.error('Failed to save photo');
+      toast.error("Failed to save photo");
     }
-  };
+  }, [session.id, onPhotoTaken]);
 
-  const handlePhoto = () => {
-    setShowCamera(true);
-  };
+  // Memoize location display
+  const locationDisplay = useMemo(() => {
+    if (currentLocation.latitude && currentLocation.longitude) {
+      return `${currentLocation.latitude.toFixed(4)}, ${currentLocation.longitude.toFixed(4)}`;
+    }
+    return "Acquiring GPS...";
+  }, [currentLocation.latitude, currentLocation.longitude]);
 
   return (
     <div className="fixed inset-0 flex flex-col bg-background">
-      {/* Header Bar */}
-      <header className="h-14 bg-card border-b flex items-center px-3 gap-3 z-20">
+      {/* Top Bar: Timer + Pause/Resume — always visible */}
+      <header className="bg-card border-b flex items-center justify-between px-3 py-2 z-20">
+        {/* Back button — 48px tap target */}
         <Button
           variant="ghost"
           size="icon"
-          className="h-9 w-9"
+          className="h-12 w-12 flex-shrink-0"
           onClick={handleBackPress}
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-6 w-6" />
         </Button>
-        
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">
-            {session.startedAt ? new Date(session.startedAt).toLocaleDateString() : 'Driving Session'}
-          </p>
+
+        {/* Timer — large, high-contrast, readable in sunlight */}
+        <div className="flex flex-col items-center flex-1 min-w-0">
+          <span className="font-mono text-2xl font-bold tabular-nums tracking-tight text-foreground">
+            {formatDuration(duration)}
+          </span>
+          <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
+            Active {formatDuration(activeDuration)}
+          </span>
         </div>
 
-        <Badge 
-          variant={isPaused ? "secondary" : "default"} 
-          className="font-mono text-sm tabular-nums"
+        {/* Pause/Resume — 48px, always visible top-right */}
+        <Button
+          variant={isPaused ? "default" : "outline"}
+          size="icon"
+          className={cn(
+            "h-12 w-12 flex-shrink-0 rounded-full",
+            isPaused && "bg-success hover:bg-success/90 text-success-foreground"
+          )}
+          onClick={isPaused ? onResume : onPause}
         >
-          {formatDuration(duration)}
-        </Badge>
+          {isPaused ? <Play className="h-6 w-6" /> : <Pause className="h-6 w-6" />}
+        </Button>
       </header>
 
-      {/* Stats Bar */}
-      <div className="h-12 bg-card/80 backdrop-blur border-b flex items-center justify-around px-4 z-10">
-        <div className="flex items-center gap-1.5">
-          <Car className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{formatMiles(session.totalMiles)}</span>
-        </div>
-        <div className="w-px h-5 bg-border" />
-        <div className="flex items-center gap-1.5">
-          <MapPin className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{session.propertiesTagged} tagged</span>
-        </div>
-        <div className="w-px h-5 bg-border" />
-        <div className="flex items-center gap-1.5">
-          <Camera className="h-4 w-4 text-muted-foreground" />
-          <span className="text-sm font-medium">{session.photosTaken} photos</span>
+      {/* Location & Stats Row */}
+      <div className="bg-card/80 backdrop-blur border-b px-4 py-2 z-10">
+        {/* Address display — large, glanceable */}
+        <p className="text-base font-semibold truncate mb-1.5">{locationDisplay}</p>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <Car className="h-4 w-4" />
+            {formatMiles(session.totalMiles)}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <MapPin className="h-4 w-4" />
+            {session.propertiesTagged} Tagged
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Camera className="h-4 w-4" />
+            {session.photosTaken} Photos
+          </span>
+          {currentLocation.speed !== null && (
+            <span className="flex items-center gap-1.5 ml-auto">
+              <Gauge className="h-4 w-4" />
+              {formatSpeed(currentLocation.speed)}
+            </span>
+          )}
         </div>
       </div>
 
@@ -233,30 +291,14 @@ export function D4DDrivingMode({
           isPaused={isPaused}
         />
 
-        {/* Speed & Heading Overlay */}
-        <div className="absolute top-4 right-4 flex flex-col gap-2">
-          <div className="bg-card/90 backdrop-blur rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
-            <Gauge className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-mono font-medium">
-              {formatSpeed(currentLocation.speed)}
-            </span>
-          </div>
-          <div className="bg-card/90 backdrop-blur rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
-            <Compass className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-mono font-medium">
-              {formatHeading(currentLocation.heading)}
-            </span>
-          </div>
-        </div>
-
         {/* GPS Accuracy Indicator */}
         {currentLocation.accuracy && (
-          <div className="absolute top-4 left-4">
-            <Badge 
-              variant="outline" 
+          <div className="absolute top-3 left-3">
+            <Badge
+              variant="outline"
               className={cn(
-                "bg-card/90 backdrop-blur",
-                currentLocation.accuracy < 10 ? "text-success" : 
+                "bg-card/90 backdrop-blur text-xs px-2 py-1",
+                currentLocation.accuracy < 10 ? "text-success" :
                 currentLocation.accuracy < 30 ? "text-warning" : "text-destructive"
               )}
             >
@@ -265,72 +307,70 @@ export function D4DDrivingMode({
             </Badge>
           </div>
         )}
-      </div>
 
-      {/* Quick Actions Bar */}
-      <div className="h-20 bg-card border-t flex items-center justify-around px-4 z-10">
-        <button 
-          className={cn(
-            "flex flex-col items-center gap-1 p-2 rounded-lg transition-colors min-w-[60px]",
-            isRecordingVoice ? "bg-destructive/10 text-destructive" : "hover:bg-muted"
-          )}
-          onClick={isRecordingVoice ? handleVoiceStop : handleVoiceStart}
-        >
-          <Mic className={cn("h-6 w-6", isRecordingVoice && "animate-pulse")} />
-          <span className="text-xs">{isRecordingVoice ? "Stop" : "Voice"}</span>
-        </button>
-        
-        <button 
-          className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-muted transition-colors min-w-[60px]"
-          onClick={handlePhoto}
-        >
-          <Camera className="h-6 w-6" />
-          <span className="text-xs">Photo</span>
-        </button>
-        
-        <div className="w-20" /> {/* Spacer for center button */}
-        
-        <button className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-muted transition-colors min-w-[60px]">
-          <FileText className="h-6 w-6" />
-          <span className="text-xs">Note</span>
-        </button>
-        
-        <button 
-          className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-muted transition-colors min-w-[60px]"
-          onClick={isPaused ? onResume : onPause}
-        >
-          {isPaused ? (
-            <>
-              <Play className="h-6 w-6 text-success" />
-              <span className="text-xs text-success">Resume</span>
-            </>
-          ) : (
-            <>
-              <Pause className="h-6 w-6" />
-              <span className="text-xs">Pause</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Floating Tag Button */}
-      <button
-        className={cn(
-          "absolute bottom-24 left-1/2 -translate-x-1/2 z-20",
-          "w-[72px] h-[72px] rounded-full",
-          "bg-gradient-to-br from-destructive to-destructive/80",
-          "flex items-center justify-center",
-          "shadow-lg shadow-destructive/30",
-          "active:scale-95 transition-transform",
-          "focus:outline-none focus:ring-4 focus:ring-destructive/30"
+        {/* Heading overlay */}
+        {currentLocation.heading !== null && (
+          <div className="absolute top-3 right-3 bg-card/90 backdrop-blur rounded-lg px-3 py-2 shadow-lg flex items-center gap-2">
+            <Compass className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-mono font-medium">
+              {formatHeading(currentLocation.heading)}
+            </span>
+          </div>
         )}
-        onClick={handleTagProperty}
-      >
-        <Plus className="h-8 w-8 text-destructive-foreground" />
-        <span className="absolute -bottom-6 text-xs font-medium text-muted-foreground">
+      </div>
+
+      {/* Fixed Bottom Action Bar — full width, large tap targets */}
+      <div className="bg-card border-t pb-safe z-20">
+        {/* Primary action: Tag Property — prominent center */}
+        <div className="flex justify-center -mt-8 mb-1">
+          <button
+            className={cn(
+              "w-[72px] h-[72px] rounded-full",
+              "bg-gradient-to-br from-destructive to-destructive/80",
+              "flex flex-col items-center justify-center",
+              "shadow-lg shadow-destructive/30",
+              "active:scale-95 transition-transform",
+              "focus:outline-none focus:ring-4 focus:ring-destructive/30"
+            )}
+            onClick={handleQuickTag}
+          >
+            <Plus className="h-8 w-8 text-destructive-foreground" />
+          </button>
+        </div>
+        <p className="text-[10px] font-semibold text-center text-muted-foreground uppercase tracking-wide -mt-0.5 mb-2">
           Tag Property
-        </span>
-      </button>
+        </p>
+
+        {/* Secondary actions row */}
+        <div className="flex items-stretch px-2 pb-2 gap-2">
+          <button
+            className={cn(
+              "flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 min-h-[56px] transition-colors",
+              isRecordingVoice ? "bg-destructive/10 text-destructive" : "bg-muted/60 hover:bg-muted active:bg-muted"
+            )}
+            onClick={isRecordingVoice ? handleVoiceStop : handleVoiceStart}
+          >
+            <Mic className={cn("h-6 w-6", isRecordingVoice && "animate-pulse")} />
+            <span className="text-[11px] font-medium">{isRecordingVoice ? "Stop" : "Voice"}</span>
+          </button>
+
+          <button
+            className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 min-h-[56px] bg-muted/60 hover:bg-muted active:bg-muted transition-colors"
+            onClick={() => setShowCamera(true)}
+          >
+            <Camera className="h-6 w-6" />
+            <span className="text-[11px] font-medium">Photo</span>
+          </button>
+
+          <button
+            className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 min-h-[56px] bg-destructive/10 text-destructive hover:bg-destructive/20 active:bg-destructive/20 transition-colors"
+            onClick={() => setShowEndDialog(true)}
+          >
+            <StopCircle className="h-6 w-6" />
+            <span className="text-[11px] font-medium">End</span>
+          </button>
+        </div>
+      </div>
 
       {/* Voice Recorder Overlay */}
       {showVoiceRecorder && (
@@ -361,7 +401,7 @@ export function D4DDrivingMode({
         />
       )}
 
-      {/* Tag Property Sheet */}
+      {/* Tag Property Sheet (for "Add Details" flow) */}
       <D4DTagPropertySheet
         open={showTagSheet}
         onOpenChange={setShowTagSheet}
