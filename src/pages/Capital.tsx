@@ -277,7 +277,7 @@ export default function Capital() {
                 <SelectItem value="cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="primary" icon={<Plus />} onClick={() => navigate("/capital/request/new")}>
+            <Button variant="primary" icon={<Plus />} onClick={() => navigate("/capital/request/new")} className="shrink-0">
               New Request
             </Button>
           </div>
