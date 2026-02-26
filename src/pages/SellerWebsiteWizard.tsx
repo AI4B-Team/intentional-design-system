@@ -226,6 +226,9 @@ interface WizardData {
   heroImageUrl: string;
   formFields: string[];
   formSubmitText: string;
+  formHeadline: string;
+  formSubheadline: string;
+  formPrivacyText: string;
   notifyEmail: string;
   notifySms: string;
   autoRespondEmail: boolean;
@@ -464,6 +467,9 @@ export default function SellerWebsiteWizard() {
     heroImageUrl: "",
     formFields: FORM_FIELD_OPTIONS.filter((f) => f.default).map((f) => f.id),
     formSubmitText: "Get My Cash Offer →",
+    formHeadline: "Get Your Free Cash Offer",
+    formSubheadline: "No Obligation. No Pressure. Takes 7 Minutes.",
+    formPrivacyText: "🔒 Your info is safe. We never share or sell your data.",
     notifyEmail: user?.email || "",
     notifySms: "",
     autoRespondEmail: true,
@@ -1361,6 +1367,10 @@ export default function SellerWebsiteWizard() {
                 heroHeadline={data.heroHeadline}
                 heroSubheadline={data.heroSubheadline}
                 formSubmitText={data.formSubmitText}
+                formHeadline={data.formHeadline}
+                formSubheadline={data.formSubheadline}
+                formPrivacyText={data.formPrivacyText}
+                formFields={data.formFields}
                 logoUrl={data.logoUrl}
                 selectedIcon={data.selectedIcon}
                 showCredibilityBar={data.showCredibilityBar}

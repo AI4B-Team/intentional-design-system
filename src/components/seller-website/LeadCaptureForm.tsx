@@ -52,6 +52,7 @@ interface LeadCaptureFormProps {
   formSubheadline: string;
   formFields: string[];
   formSubmitText: string;
+  formPrivacyText?: string;
   accentColor: string;
   primaryColor: string;
   onSubmit: (data: FormData) => Promise<void>;
@@ -80,6 +81,7 @@ export function LeadCaptureForm({
   formSubheadline,
   formFields,
   formSubmitText,
+  formPrivacyText,
   accentColor,
   primaryColor,
   onSubmit,
@@ -344,9 +346,11 @@ export function LeadCaptureForm({
         </Button>
 
         {/* Privacy Notice */}
-        <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
-          🔒 Your info is safe. We never share or sell your data.
-        </p>
+        {(formPrivacyText === undefined || formPrivacyText) && (
+          <p className="text-xs text-gray-400 text-center flex items-center justify-center gap-1.5">
+            {formPrivacyText || "🔒 Your info is safe. We never share or sell your data."}
+          </p>
+        )}
       </form>
     </div>
   );
