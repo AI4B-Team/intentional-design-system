@@ -987,7 +987,7 @@ export default function Pipeline() {
                 actionInsight={insights?.leadsInsight}
               />
             </div>
-            <div className="animate-fade-in min-w-0" style={{ animationDelay: '100ms' }}>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '150ms' }}>
               <PipelineValueCard
                 title="Offers"
                 subtitle="Active Proposals"
@@ -1007,7 +1007,7 @@ export default function Pipeline() {
                 contextSeverity="attention"
               />
             </div>
-            <div className="animate-fade-in min-w-0" style={{ animationDelay: '200ms' }}>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
               <PipelineValueCard
                 title="Contracts"
                 subtitle="Secured Deals"
@@ -1025,7 +1025,7 @@ export default function Pipeline() {
                 nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
               />
             </div>
-            <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '450ms' }}>
               <PipelineValueCard
                 title="Sold"
                 subtitle="Closed Deals"

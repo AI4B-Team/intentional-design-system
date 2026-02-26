@@ -343,7 +343,7 @@ export default function Intel() {
             {overviewSubTab === "summary" && (
               <>
                 {/* Metrics Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 animate-fade-in" style={{ animationDelay: '100ms' }}>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 animate-fade-in" style={{ animationDelay: '150ms' }}>
                   <MetricCard label="Inventory" value={D.summary.inventory} suffix=" active" change={-2.0} icon={Building} color={COLORS.cyan} info="Number of currently active listings. Lower inventory often means stronger seller position." />
                   <MetricCard label="Median Price" value={D.summary.medianPrice} prefix="$" change={D.summary.priceGrowth} icon={DollarSign} info="Middle sale price across all transactions in the selected time range." />
                   <MetricCard label="Total Transactions" value={D.summary.totalSales} change={2.8} icon={Activity} color={COLORS.accent} info="Total number of closed transactions (cash + retail) in this market." />
@@ -354,7 +354,7 @@ export default function Intel() {
                 </div>
 
                 {/* Zip Code Table */}
-                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '200ms' }}>
+                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '300ms' }}>
                   <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                     <div>
                       <h3 className="text-[15px] font-bold text-foreground flex items-center gap-1.5 capitalize">Top Zip Codes By Buyer Activity <InfoTooltip text="Ranked zip codes showing transaction counts, investor ratios, and investor scores. Click rows to select zips for campaign targeting." /></h3>
@@ -442,7 +442,7 @@ export default function Intel() {
                 </div>
 
                 {/* Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 animate-fade-in" style={{ animationDelay: '300ms' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 animate-fade-in" style={{ animationDelay: '450ms' }}>
                   <div className="bg-card border border-border rounded-xl p-4">
                     <h3 className="text-sm font-bold text-foreground mb-3 capitalize">Transactions By Price Range</h3>
                     <ResponsiveContainer width="100%" height={260}>
@@ -489,7 +489,7 @@ export default function Intel() {
                 </div>
 
                 {/* Investor Concentration & Price Gap */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 animate-fade-in" style={{ animationDelay: '400ms' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3.5 animate-fade-in" style={{ animationDelay: '600ms' }}>
                   <div className="bg-card border border-border rounded-xl p-4">
                     <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Investor Concentration <InfoTooltip text="Number of investor purchases per zip code. Higher bars indicate zip codes where investors are most actively buying." /></h3>
                     <p className="text-[11px] text-muted-foreground mb-3">Higher bars = more investor activity</p>
@@ -523,7 +523,7 @@ export default function Intel() {
                 </div>
 
                 {/* DOM Investor vs Retail */}
-                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '500ms' }}>
+                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '750ms' }}>
                   <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">Days on Market: Investor vs Retail <InfoTooltip text="Compares how quickly investors close vs traditional financed buyers." /></h3>
                   <p className="text-[11px] text-muted-foreground mb-3">Investors close significantly faster</p>
                   <ResponsiveContainer width="100%" height={260}>
@@ -539,7 +539,7 @@ export default function Intel() {
                 </div>
 
                 {/* What Investors Are Paying */}
-                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '600ms' }}>
+                <div className="bg-card border border-border rounded-xl p-4 animate-fade-in" style={{ animationDelay: '900ms' }}>
                   <h3 className="text-sm font-bold text-foreground mb-0.5 flex items-center gap-1.5 capitalize">What Investors Are Paying <InfoTooltip text="Average acquisition price investors are paying in each zip code." /></h3>
                   <p className="text-[11px] text-muted-foreground mb-3">Average acquisition price by zip</p>
                   <ResponsiveContainer width="100%" height={260}>
