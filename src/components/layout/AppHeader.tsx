@@ -49,6 +49,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   const location = useLocation();
   const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const marketplaceQueryRef = React.useRef("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -145,9 +146,19 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       </button>
 
       {/* Search with Address Autocomplete */}
-      {isMarketplacePage ? (
+      {(isMarketplacePage || isIntelPage) ? (
         <MarketplaceSearchBar
           className="hidden md:block flex-1 min-w-[240px] max-w-md"
+          defaultMode={defaultSearchMode}
+          onQueryChange={(q) => { marketplaceQueryRef.current = q; }}
+          onModeSwitch={(mode) => {
+            const q = marketplaceQueryRef.current.trim();
+            if (mode === "intel") {
+              navigate(q ? `/intel?address=${encodeURIComponent(q)}` : "/intel");
+            } else {
+              navigate(q ? `/marketplace?address=${encodeURIComponent(q)}` : "/marketplace");
+            }
+          }}
           onLocationSelect={(loc) => {
             const params = new URLSearchParams({
               address: loc.displayName,
@@ -155,7 +166,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
               lng: loc.lng.toString(),
             });
             if (loc.bbox) params.set("bbox", loc.bbox.join(","));
-            navigate(`/marketplace?${params.toString()}`);
+            navigate(isIntelPage ? `/intel?${params.toString()}` : `/marketplace?${params.toString()}`);
           }}
         />
       ) : (
