@@ -10,6 +10,8 @@ import { usePipelineStats } from "@/hooks/usePipelineStats";
 import { usePipelineValueStats } from "@/hooks/usePipelineValueStats";
 import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
+import { useCountUp } from "@/hooks/useCountUp";
+import { useCountUpCurrency } from "@/hooks/useCountUpCurrency";
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
@@ -68,7 +70,7 @@ function formatCurrency(value: number): string {
 // Pipeline Value Card Component
 interface PipelineValueCardProps {
   title: string;
-  subtitle?: string; // e.g. "Locked Deals", "In Escrow"
+  subtitle?: string;
   count: number;
   totalValue: number;
   profitPotential: number;
@@ -76,17 +78,18 @@ interface PipelineValueCardProps {
   iconBg: string;
   iconColor: string;
   profitLabel?: string;
-  valueLabel?: string; // e.g. "Revenue Secured"
+  valueLabel?: string;
   isLoading?: boolean;
   onClick?: () => void;
   goal?: number;
   actionInsight?: ActionInsight | null;
-  variant?: "default" | "calm" | "celebration"; // calm = contracts, celebration = sold
-  nextExpectedClose?: number; // days until next expected close
-  lastClosedDaysAgo?: number; // days since last deal closed
-  contextLine?: string; // optional context line text (no emoji)
-  contextIcon?: React.ElementType; // optional icon for context line
-  contextSeverity?: "reminder" | "attention" | "blocking"; // Severity ladder: blue, amber, red
+  variant?: "default" | "calm" | "celebration";
+  nextExpectedClose?: number;
+  lastClosedDaysAgo?: number;
+  contextLine?: string;
+  contextIcon?: React.ElementType;
+  contextSeverity?: "reminder" | "attention" | "blocking";
+  animateOnMount?: boolean;
 }
 
 function PipelineValueCard({ 
@@ -110,7 +113,13 @@ function PipelineValueCard({
   contextLine,
   contextIcon: ContextIcon,
   contextSeverity = "reminder",
+  animateOnMount = true,
 }: PipelineValueCardProps) {
+  const shouldAnimate = animateOnMount && !isLoading;
+  const animatedCount = useCountUp(count, 1000, 100, shouldAnimate);
+  const animatedValue = useCountUpCurrency(totalValue, 1200, 150, shouldAnimate);
+  const animatedProfit = useCountUpCurrency(profitPotential, 1300, 200, shouldAnimate);
+
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
   const goalGap = goal > 0 && count < goal ? goal - count : 0;
@@ -178,7 +187,7 @@ function PipelineValueCard({
         {/* Count with Goal */}
         <div className="mt-4">
           <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
-            {count}
+            {animatedCount}
           </p>
           {hasGoal && (
             <div className="mt-2">
@@ -268,13 +277,13 @@ function PipelineValueCard({
           <div className="flex items-center justify-between">
             <span className="text-tiny text-muted-foreground uppercase">{valueLabel}</span>
             <span className="text-small font-semibold text-foreground tabular-nums">
-              {formatCurrency(totalValue)}
+              {animatedValue}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-tiny text-muted-foreground uppercase">{profitLabel}</span>
             <span className="text-small font-bold text-success tabular-nums">
-              {formatCurrency(profitPotential)}
+              {animatedProfit}
             </span>
           </div>
         </div>
@@ -295,6 +304,7 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, trend, icon: Icon, iconBg, isLoading, invertTrend }: StatCardProps) {
+  const animatedValue = useCountUp(value, 1000, 50, !isLoading);
   const isPositive = invertTrend ? trend <= 0 : trend >= 0;
   const TrendIcon = isPositive ? TrendingUp : TrendingDown;
 
@@ -325,7 +335,7 @@ function StatCard({ title, value, trend, icon: Icon, iconBg, isLoading, invertTr
       <div className="relative flex items-start justify-between">
         <div className="space-y-1">
           <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
-          <p className="text-[2rem] font-bold text-foreground tabular-nums leading-tight">{value.toLocaleString()}</p>
+          <p className="text-[2rem] font-bold text-foreground tabular-nums leading-tight">{animatedValue.toLocaleString()}</p>
           <div className={cn(
             "inline-flex items-center gap-1.5 text-small font-medium px-2 py-0.5 rounded-full",
             isPositive 
@@ -1141,70 +1151,78 @@ export default function Dashboard() {
 
       {/* Pipeline Value Cards - Key Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <PipelineValueCard
-          title="Leads"
-          subtitle="New Opportunities"
-          count={pipelineValueStats?.leads.count || 0}
-          totalValue={pipelineValueStats?.leads.totalValue || 0}
-          profitPotential={pipelineValueStats?.leads.profitPotential || 0}
-          icon={Users}
-          iconBg="bg-red-100"
-          iconColor="text-red-500"
-          isLoading={pipelineValueLoading}
-          onClick={() => navigate("/properties?status=new,contacted,appointment")}
-          goal={goals.leadsGoal}
-          actionInsight={insights?.leadsInsight}
-        />
-        <PipelineValueCard
-          title="Offers"
-          subtitle="Active Proposals"
-          count={pipelineValueStats?.offers.count || 0}
-          totalValue={pipelineValueStats?.offers.totalValue || 0}
-          profitPotential={pipelineValueStats?.offers.profitPotential || 0}
-          icon={FileText}
-          iconBg="bg-amber-100"
-          iconColor="text-amber-500"
-          isLoading={pipelineValueLoading}
-          onClick={() => navigate("/properties?status=offer_made,negotiating")}
-          goal={goals.offersGoal}
-          contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
-            ? `${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
-            : undefined}
-          contextIcon={Hourglass}
-          contextSeverity="attention"
-        />
-        <PipelineValueCard
-          title="Contracts"
-          subtitle="Secured Deals"
-          count={pipelineValueStats?.contracted.count || 0}
-          totalValue={pipelineValueStats?.contracted.totalValue || 0}
-          profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
-          icon={Handshake}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
-          valueLabel="Revenue Secured"
-          isLoading={pipelineValueLoading}
-          onClick={() => navigate("/pipeline?filter=under_contract")}
-          goal={goals.contractsGoal}
-          variant="calm"
-          nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
-        />
-        <PipelineValueCard
-          title="Sold"
-          subtitle="Closed Deals"
-          count={pipelineValueStats?.sold.count || 0}
-          totalValue={pipelineValueStats?.sold.totalValue || 0}
-          profitPotential={pipelineValueStats?.sold.profitPotential || 0}
-          icon={BadgeDollarSign}
-          iconBg="bg-emerald-100"
-          iconColor="text-emerald-500"
-          profitLabel="Realized Profit"
-          isLoading={pipelineValueLoading}
-          onClick={() => navigate("/properties?status=closed")}
-          goal={goals.soldGoal}
-          variant="celebration"
-          lastClosedDaysAgo={pipelineValueStats?.sold.count && pipelineValueStats.sold.count > 0 ? 3 : undefined}
-        />
+        <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
+          <PipelineValueCard
+            title="Leads"
+            subtitle="New Opportunities"
+            count={pipelineValueStats?.leads.count || 0}
+            totalValue={pipelineValueStats?.leads.totalValue || 0}
+            profitPotential={pipelineValueStats?.leads.profitPotential || 0}
+            icon={Users}
+            iconBg="bg-red-100"
+            iconColor="text-red-500"
+            isLoading={pipelineValueLoading}
+            onClick={() => navigate("/properties?status=new,contacted,appointment")}
+            goal={goals.leadsGoal}
+            actionInsight={insights?.leadsInsight}
+          />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+          <PipelineValueCard
+            title="Offers"
+            subtitle="Active Proposals"
+            count={pipelineValueStats?.offers.count || 0}
+            totalValue={pipelineValueStats?.offers.totalValue || 0}
+            profitPotential={pipelineValueStats?.offers.profitPotential || 0}
+            icon={FileText}
+            iconBg="bg-amber-100"
+            iconColor="text-amber-500"
+            isLoading={pipelineValueLoading}
+            onClick={() => navigate("/properties?status=offer_made,negotiating")}
+            goal={goals.offersGoal}
+            contextLine={pipelineValueStats?.offers.count && pipelineValueStats.offers.count > 0 
+              ? `${pipelineValueStats.offers.count} ${pipelineValueStats.offers.count === 1 ? "Offer" : "Offers"} Awaiting Response` 
+              : undefined}
+            contextIcon={Hourglass}
+            contextSeverity="attention"
+          />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <PipelineValueCard
+            title="Contracts"
+            subtitle="Secured Deals"
+            count={pipelineValueStats?.contracted.count || 0}
+            totalValue={pipelineValueStats?.contracted.totalValue || 0}
+            profitPotential={pipelineValueStats?.contracted.profitPotential || 0}
+            icon={Handshake}
+            iconBg="bg-blue-100"
+            iconColor="text-blue-600"
+            valueLabel="Revenue Secured"
+            isLoading={pipelineValueLoading}
+            onClick={() => navigate("/pipeline?filter=under_contract")}
+            goal={goals.contractsGoal}
+            variant="calm"
+            nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
+          />
+        </div>
+        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+          <PipelineValueCard
+            title="Sold"
+            subtitle="Closed Deals"
+            count={pipelineValueStats?.sold.count || 0}
+            totalValue={pipelineValueStats?.sold.totalValue || 0}
+            profitPotential={pipelineValueStats?.sold.profitPotential || 0}
+            icon={BadgeDollarSign}
+            iconBg="bg-emerald-100"
+            iconColor="text-emerald-500"
+            profitLabel="Realized Profit"
+            isLoading={pipelineValueLoading}
+            onClick={() => navigate("/properties?status=closed")}
+            goal={goals.soldGoal}
+            variant="celebration"
+            lastClosedDaysAgo={pipelineValueStats?.sold.count && pipelineValueStats.sold.count > 0 ? 3 : undefined}
+          />
+        </div>
       </div>
 
       {/* Middle Row */}
