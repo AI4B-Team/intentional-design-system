@@ -232,8 +232,17 @@ export function MarketplaceFilters({
     return found?.label || "Price";
   };
 
-  // Standardized button size for filter bar consistency – uniform h-10 and whitespace-nowrap
-  const filterButtonClass = "h-10 px-4 bg-background text-sm flex-shrink-0 whitespace-nowrap";
+  // Standardized button size for filter bar consistency
+  const filterButtonBase = "h-10 px-4 text-sm flex-shrink-0 whitespace-nowrap";
+  const activeFilterClass = "bg-primary/10 border-primary text-primary";
+  const inactiveFilterClass = "bg-background";
+
+  const isLeadTypeActive = selectedLeadTypes.length > 0;
+  const isHomeTypeActive = filters.homeTypes?.length > 0 && filters.homeTypes?.length < homeTypeOptions.length;
+  const isPriceActive = filters.priceRange && filters.priceRange !== "any";
+  const isListingActive = true; // always has a selection
+
+  const filterButtonClass = (active: boolean) => cn(filterButtonBase, active ? activeFilterClass : inactiveFilterClass);
 
   return (
     <>
@@ -245,7 +254,7 @@ export function MarketplaceFilters({
             value={filters.listingStatus || "all"} 
             onValueChange={(v) => handleChange("listingStatus", v)}
           >
-            <SelectTrigger className={filterButtonClass}>
+            <SelectTrigger className={filterButtonClass(isListingActive)}>
               <SelectValue placeholder="All Listings" />
             </SelectTrigger>
             <SelectContent className="bg-background">
@@ -258,7 +267,7 @@ export function MarketplaceFilters({
           {/* Lead Type */}
           <Popover open={leadTypePopoverOpen} onOpenChange={setLeadTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass(isLeadTypeActive), "gap-2 font-normal")}>
                 <span className="truncate">{getLeadTypeLabel()}</span>
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
@@ -299,7 +308,7 @@ export function MarketplaceFilters({
           {/* Home Type */}
           <Popover open={homeTypePopoverOpen} onOpenChange={setHomeTypePopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass(isHomeTypeActive), "gap-2 font-normal")}>
                 <span className="truncate">{getHomeTypeLabel()}</span>
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
@@ -339,7 +348,7 @@ export function MarketplaceFilters({
             value={filters.priceRange || "any"} 
             onValueChange={(v) => handleChange("priceRange", v)}
           >
-            <SelectTrigger className={filterButtonClass}>
+            <SelectTrigger className={filterButtonClass(!!isPriceActive)}>
               <span className="truncate">{getPriceLabel()}</span>
             </SelectTrigger>
             <SelectContent className="bg-background">
@@ -354,7 +363,7 @@ export function MarketplaceFilters({
           {/* Beds & Baths */}
           <Popover open={bedsPopoverOpen} onOpenChange={setBedsPopoverOpen}>
             <PopoverTrigger asChild>
-              <Button variant="outline" className={cn(filterButtonClass, "gap-2 font-normal")}>
+              <Button variant="outline" className={cn(filterButtonClass(false), "gap-2 font-normal")}>
                 Beds & Baths
                 <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
               </Button>
@@ -432,7 +441,7 @@ export function MarketplaceFilters({
           {/* More Filters */}
           <Button 
             variant="outline" 
-            className={cn(filterButtonClass, "gap-2 font-normal")}
+            className={cn(filterButtonClass(false), "gap-2 font-normal")}
             onClick={() => setMoreFiltersOpen(true)}
           >
             <SlidersHorizontal className="h-4 w-4" />
