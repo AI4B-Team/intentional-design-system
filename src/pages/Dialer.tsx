@@ -26,6 +26,7 @@ import { DialerCopilotPanel, type CallMode, type ContactContext } from "@/compon
 import { ActiveCallView, type TranscriptMessage, type CallPhase } from "@/components/dialer/active-call";
 import { Plus, Settings, Clock, ArrowLeft, Sparkles } from "lucide-react";
 import { TransferCallDialog } from "@/components/dialer/TransferCallDialog";
+import { CreateQueueDialog } from "@/components/dialer/CreateQueueDialog";
 
 interface SessionStats {
   callsMade: number;
@@ -68,6 +69,7 @@ export default function Dialer() {
   const [demoMode, setDemoMode] = React.useState(false);
   const [demoDuration, setDemoDuration] = React.useState(8);
   const [showTransferDialog, setShowTransferDialog] = React.useState(false);
+  const [showCreateQueueDialog, setShowCreateQueueDialog] = React.useState(false);
   
   // Mock transcript messages for demo
   const [transcriptMessages, setTranscriptMessages] = React.useState<TranscriptMessage[]>([]);
@@ -536,7 +538,7 @@ export default function Dialer() {
               <QueueSelector
                 selectedQueueId={selectedQueueId}
                 onQueueChange={setSelectedQueueId}
-                onCreateQueue={() => toast.info("Create queue coming soon")}
+                onCreateQueue={() => setShowCreateQueueDialog(true)}
                 onPauseQueue={() => setIsPaused(!isPaused)}
                 onSkipContact={handleSkipContact}
                 isPaused={isPaused}
@@ -679,6 +681,11 @@ export default function Dialer() {
         onTransferComplete={() => {
           dialer.endCall?.();
         }}
+      />
+
+      <CreateQueueDialog
+        open={showCreateQueueDialog}
+        onOpenChange={setShowCreateQueueDialog}
       />
     </PageLayout>
   );
