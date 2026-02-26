@@ -14,6 +14,7 @@ import { useDashboardInsights, type ActionInsight, type HotOpportunityEnhanced }
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
 import { TodaysTasks } from "@/components/dashboard/TodaysTasks";
+import { FollowUpIntelligenceCard } from "@/components/dashboard/FollowUpIntelligenceCard";
 import {
   Building2,
   Calendar,
@@ -1429,6 +1430,10 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      {/* Follow-Up Intelligence */}
+      <div className="mb-8">
+        <FollowUpIntelligenceCard />
+      </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
