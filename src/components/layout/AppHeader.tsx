@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -43,6 +45,21 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8 || (document.querySelector('main')?.scrollTop ?? 0) > 8);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    const main = document.querySelector('main');
+    main?.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      main?.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  // Sync search query from URL params
   // Sync search query from URL params
   const searchParams = new URLSearchParams(location.search);
   const urlQuery = searchParams.get("address") || searchParams.get("search") || "";
@@ -103,7 +120,12 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-50 h-16 bg-white/95 backdrop-blur border-b border-border flex items-center px-4 lg:px-6 gap-2">
+    <header className={cn(
+      "h-14 flex items-center gap-2 px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300",
+      isScrolled
+        ? "bg-background/85 backdrop-blur-md border-b border-border/50 shadow-sm header-frosted dark:bg-[hsl(222_47%_6%_/_0.85)] dark:border-white/5"
+        : "bg-background border-b border-border/30"
+    )}>
       {/* Mobile Menu Button */}
       <button
         onClick={onMenuClick}

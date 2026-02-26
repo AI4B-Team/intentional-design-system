@@ -435,6 +435,14 @@
   box-shadow: 0 0 8px hsl(160 84% 39% / 0.6);
 }
 
+/* Frosted glass header enhancement */
+@supports (backdrop-filter: blur(12px)) {
+  .header-frosted {
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    backdrop-filter: blur(12px) saturate(180%);
+  }
+}
+
 
 @layer components {
   /* Shimmer Animation for Skeletons */
