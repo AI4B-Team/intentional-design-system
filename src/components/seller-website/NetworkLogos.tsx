@@ -52,21 +52,18 @@ function ForbesLogo({ height, color }: { height: number; color: string }) {
 }
 
 function NBCLogo({ height }: { height: number }) {
-  const s = height / 40;
   return (
-    <svg height={height} viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g transform={`scale(${s})`}>
-        {/* Peacock feathers */}
-        <path d="M48 4 L60 20 L52 20Z" fill="#F6BE00" />
-        <path d="M60 20 L68 20 L60 4Z" fill="#FF6600" />
-        <path d="M68 20 L76 8 L60 20Z" fill="#CC0000" />
-        <path d="M68 20 L76 28 L68 20Z" fill="#6600CC" />
-        <path d="M60 20 L52 28 L44 20Z" fill="#009900" />
-        <path d="M60 20 L52 20 L44 12Z" fill="#0066CC" />
-        {/* Body */}
-        <ellipse cx="60" cy="22" rx="3" ry="4" fill="#999" />
-      </g>
-      <text x="20" y="36" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="16" fill="currentColor" letterSpacing="3">
+    <svg height={height} viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Peacock feathers */}
+      <path d="M20 2 L28 18 L22 18Z" fill="#F6BE00" />
+      <path d="M28 18 L34 18 L28 2Z" fill="#FF6600" />
+      <path d="M34 18 L40 6 L28 18Z" fill="#CC0000" />
+      <path d="M34 18 L40 26 L34 18Z" fill="#6600CC" />
+      <path d="M28 18 L22 26 L16 18Z" fill="#009900" />
+      <path d="M28 18 L22 18 L16 10Z" fill="#0066CC" />
+      {/* Body */}
+      <ellipse cx="28" cy="20" rx="3" ry="4" fill="#999" />
+      <text x="52" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="22" fill="currentColor" letterSpacing="3">
         NBC
       </text>
     </svg>

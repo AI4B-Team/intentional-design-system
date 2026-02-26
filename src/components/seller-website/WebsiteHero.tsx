@@ -179,11 +179,11 @@ export function WebsiteHero({
       {/* As Seen On - Full Width Bar */}
       {asSeenOn && asSeenOn.length > 0 && (
         <div className="border-t border-gray-200 bg-[#eeeee8] py-6">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col items-center gap-4">
-            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold whitespace-nowrap">Founders Featured On</p>
+          <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16 flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-10">
+            <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold whitespace-nowrap shrink-0">Founders Featured On</p>
             <div className="flex items-center justify-center gap-10 md:gap-14 opacity-50">
               {asSeenOn.map((name, i) => (
-                <span key={i} className="inline-flex items-center justify-center" style={{ height: 28 }}>
+                <span key={i} className="inline-flex items-center justify-center shrink-0" style={{ height: 28 }}>
                   <NetworkLogo name={name} sizeClass="text-base" />
                 </span>
               ))}
