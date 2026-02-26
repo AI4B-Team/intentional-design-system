@@ -1217,7 +1217,7 @@ export default function SellerWebsiteWizard() {
                     >
                       <RadioGroupItem value="draft" className="mt-0.5" />
                       <div>
-                        <div className="font-medium">Save as Draft</div>
+                        <div className="font-medium">Save As Draft</div>
                         <div className="text-sm text-muted-foreground">Edit more before publishing</div>
                       </div>
                     </label>

@@ -693,7 +693,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
                     }}
                   />
                   <Label htmlFor="draftOnly" className="cursor-pointer text-muted-foreground">
-                    Save as Draft Only (don't send)
+                    Save As Draft Only (don't send)
                   </Label>
                 </div>
               </Card>

@@ -671,7 +671,7 @@ Best regards,
                     >
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4" />
-                        <span className="font-medium">Save as Draft</span>
+                        <span className="font-medium">Save As Draft</span>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         Save without sending
@@ -903,7 +903,7 @@ Best regards,
                             ? "Drip Campaign"
                             : scheduleType === "scheduled"
                             ? `${scheduledDate} at ${scheduledTime}`
-                            : "Save as Draft"}
+                            : "Save As Draft"}
                         </p>
                       </div>
                     </div>

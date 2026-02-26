@@ -425,7 +425,7 @@ export default function MailCampaignWizard() {
         <div className="flex gap-3">
           {currentStep === 5 && (
             <Button variant="secondary" onClick={handleSaveAsDraft} disabled={createCampaign.isPending}>
-              Save as Draft
+              Save As Draft
             </Button>
           )}
           

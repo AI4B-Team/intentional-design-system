@@ -253,7 +253,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
               onClick={(e) => handleSubmit(e, false)}
               disabled={addOffer.isPending}
             >
-              Save as Draft
+              Save As Draft
             </Button>
             <Button type="submit" variant="primary" disabled={addOffer.isPending}>
               {addOffer.isPending ? "Saving..." : "Save & Mark Sent"}
