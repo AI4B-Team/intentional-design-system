@@ -19,17 +19,18 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['Sora', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],
+        display: ['Sora', 'sans-serif'],
       },
       fontSize: {
-        'display': ['48px', { lineHeight: '56px', letterSpacing: '-0.02em' }],
-        'h1': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em' }],
-        'h2': ['24px', { lineHeight: '32px', letterSpacing: '-0.01em' }],
-        'h3': ['18px', { lineHeight: '28px' }],
-        'body': ['15px', { lineHeight: '24px' }],
-        'small': ['13px', { lineHeight: '20px' }],
-        'tiny': ['11px', { lineHeight: '16px', letterSpacing: '0.02em' }],
+        'display': ['56px', { lineHeight: '1.08', letterSpacing: '-0.04em', fontWeight: '800' }],
+        'h1': ['32px', { lineHeight: '1.15', letterSpacing: '-0.03em', fontWeight: '700' }],
+        'h2': ['24px', { lineHeight: '1.25', letterSpacing: '-0.025em', fontWeight: '600' }],
+        'h3': ['18px', { lineHeight: '1.4', letterSpacing: '-0.015em', fontWeight: '600' }],
+        'body': ['15px', { lineHeight: '1.65', letterSpacing: '-0.005em' }],
+        'small': ['13px', { lineHeight: '1.55' }],
+        'tiny': ['11px', { lineHeight: '1.45', letterSpacing: '0.04em' }],
       },
       colors: {
         // Semantic design tokens (CSS variables)

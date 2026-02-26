@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts loaded via index.html preconnect + link tags (Sora + JetBrains Mono) */
 @import 'leaflet/dist/leaflet.css';
 
 @tailwind base;
@@ -20,6 +20,7 @@
   }
 
   body {
+    font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
     height: auto;
     overflow-y: auto;
   }
@@ -295,39 +296,49 @@
   
   /* Typography Scale */
   .text-display {
-    @apply text-5xl font-bold tracking-tight;
-    line-height: 1.16;
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
   }
   
   .text-h1 {
-    @apply text-2xl font-bold tracking-tight;
-    line-height: 1.25;
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
   }
   
   .text-h2 {
-    @apply text-2xl font-semibold;
-    line-height: 1.33;
-    letter-spacing: -0.01em;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.025em;
   }
   
   .text-h3 {
-    @apply text-lg font-semibold;
-    line-height: 1.55;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
   }
   
   .text-body {
-    @apply text-[15px];
-    line-height: 1.6;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
   }
   
   .text-small {
-    @apply text-[13px];
-    line-height: 1.54;
+    font-size: 0.8125rem;
+    line-height: 1.55;
   }
   
   .text-tiny {
-    @apply text-[11px] uppercase tracking-wider;
+    font-size: 0.6875rem;
     line-height: 1.45;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
   }
   
   /* Monospace for numbers */
