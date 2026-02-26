@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useDispoDeal, useCreateDispoDeal, useUpdateDispoDeal, DispoPhoto, DispoDocument } from '@/hooks/useDispoDeals';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const propertyTypes = [
@@ -166,6 +167,72 @@ export default function DispoDealForm() {
 
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [saving, setSaving] = useState(false);
+  const [uploadingPhotos, setUploadingPhotos] = useState<Map<string, number>>(new Map());
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = useCallback(async (files: FileList | File[]) => {
+    const validFiles = Array.from(files).filter(f => {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
+        toast.error(`${f.name}: Only JPG, PNG, WEBP allowed`);
+        return false;
+      }
+      if (f.size > 10 * 1024 * 1024) {
+        toast.error(`Upload failed — check file size (max 10MB)`);
+        return false;
+      }
+      return true;
+    });
+    if (!validFiles.length) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { toast.error('Please sign in to upload'); return; }
+
+    const dealFolder = id || 'new';
+
+    for (const file of validFiles) {
+      const fileKey = `${Date.now()}-${file.name}`;
+      const storagePath = `${user.id}/${dealFolder}/${fileKey}`;
+
+      setUploadingPhotos(prev => new Map(prev).set(fileKey, 0));
+
+      try {
+        const { error } = await supabase.storage
+          .from('dispo-photos')
+          .upload(storagePath, file, { upsert: false });
+
+        if (error) throw error;
+
+        const { data: urlData } = supabase.storage
+          .from('dispo-photos')
+          .getPublicUrl(storagePath);
+
+        setFormData(prev => ({
+          ...prev,
+          photos: [...prev.photos, { url: urlData.publicUrl, caption: '' }],
+        }));
+      } catch {
+        toast.error(`Upload failed — check file size (max 10MB)`);
+      } finally {
+        setUploadingPhotos(prev => {
+          const next = new Map(prev);
+          next.delete(fileKey);
+          return next;
+        });
+      }
+    }
+  }, [id]);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    handlePhotoUpload(e.dataTransfer.files);
+  }, [handlePhotoUpload]);
+
+  const removePhoto = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index),
+    }));
+  };
 
   useEffect(() => {
     if (existingDeal) {
@@ -725,14 +792,98 @@ export default function DispoDealForm() {
           <CardContent className="space-y-4">
             <div>
               <Label>Photos</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-8 text-center mt-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="hidden"
+                onChange={(e) => e.target.files && handlePhotoUpload(e.target.files)}
+              />
+              <div
+                className="border-2 border-dashed border-border rounded-lg p-8 text-center mt-2 cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+              >
                 <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                 <p className="text-sm text-muted-foreground">
                   Drag and drop photos here, or click to upload
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Photo upload coming soon - use URL input below for now
+                  JPG, PNG, WEBP — max 10MB each
                 </p>
+              </div>
+
+              {/* Upload progress */}
+              {uploadingPhotos.size > 0 && (
+                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading {uploadingPhotos.size} photo{uploadingPhotos.size > 1 ? 's' : ''}…
+                </div>
+              )}
+
+              {/* Photo thumbnails */}
+              {formData.photos.length > 0 && (
+                <div className="grid grid-cols-3 gap-3 mt-3">
+                  {formData.photos.map((photo, index) => (
+                    <div key={index} className="relative group rounded-lg overflow-hidden border border-border">
+                      <img
+                        src={photo.url}
+                        alt={photo.caption || `Photo ${index + 1}`}
+                        className="w-full h-24 object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-1 right-1 h-6 w-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Manual URL fallback */}
+              <div className="mt-3">
+                <Label className="text-xs text-muted-foreground">Or add photo by URL</Label>
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    placeholder="https://example.com/photo.jpg"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) {
+                          setFormData(prev => ({
+                            ...prev,
+                            photos: [...prev.photos, { url: val, caption: '' }],
+                          }));
+                          (e.target as HTMLInputElement).value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      const input = (e.currentTarget as HTMLElement).previousElementSibling as HTMLInputElement;
+                      const val = input?.value?.trim();
+                      if (val) {
+                        setFormData(prev => ({
+                          ...prev,
+                          photos: [...prev.photos, { url: val, caption: '' }],
+                        }));
+                        input.value = '';
+                      }
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
 
