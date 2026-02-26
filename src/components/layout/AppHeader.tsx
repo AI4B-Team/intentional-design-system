@@ -121,13 +121,11 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   const handleModeSwitch = (mode: "listings" | "intel") => {
     const query = searchQuery.trim();
     if (mode === "intel") {
-      // Badge clicked to go to Intel
       navigate(query ? `/intel?address=${encodeURIComponent(query)}` : "/intel");
     } else {
-      // Badge clicked to go to Listings
       navigate(query ? `/marketplace?address=${encodeURIComponent(query)}` : "/marketplace");
     }
-    setSearchQuery("");
+    // Don't clear searchQuery — keep location in the field
   };
 
   return (
@@ -158,6 +156,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
             } else {
               navigate(q ? `/marketplace?address=${encodeURIComponent(q)}` : "/marketplace");
             }
+            // Don't clear — location persists
           }}
           onLocationSelect={(loc) => {
             const params = new URLSearchParams({
