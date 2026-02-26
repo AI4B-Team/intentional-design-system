@@ -265,11 +265,11 @@ export function PropertyCard({
 
           {/* Price + ARV */}
           <div className="flex items-center gap-3 mt-2">
-            <div className="text-base font-bold text-success">
+            <div className="text-base font-bold text-success data-dense">
               {formatMoney(property.price)}
             </div>
             {property.arv != null && (
-              <div className="text-xs text-muted-foreground">
+              <div className="text-xs text-muted-foreground data-dense">
                 ARV: {formatMoney(property.arv)}
               </div>
             )}
