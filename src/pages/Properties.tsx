@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { EmptyPropertiesState, NoResultsState } from "@/components/ui/empty-state";
+import { EmptyPropertiesState, NoResultsState, EmptyState } from "@/components/ui/empty-state";
 import { SkeletonPropertyCard } from "@/components/ui/skeleton";
 import { AddPropertyModal } from "@/components/properties/AddPropertyModal";
 import { BulkOfferModal } from "@/components/properties/bulk-offer-modal";
@@ -767,7 +767,12 @@ export default function Properties() {
           ))}
         </div>
       ) : isEmpty ? (
-        <EmptyPropertiesState onAdd={() => setIsAddModalOpen(true)} />
+        <EmptyState
+          icon={<Building2 className="h-9 w-9 text-primary opacity-70" />}
+          title="No properties found"
+          description="Try adjusting your filters, or add your first property to get started."
+          action={{ label: "Add Property", onClick: () => setIsAddModalOpen(true) }}
+        />
       ) : hasNoResults ? (
         <NoResultsState query={searchQuery} onClear={clearFilters} />
       ) : viewMode === "cards" ? (
