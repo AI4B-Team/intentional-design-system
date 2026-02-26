@@ -316,7 +316,7 @@ export default function ImageEditor() {
     toast.success("Variation deleted");
   };
 
-  const handleDownload = (type: "before" | "after" | "comparison") => {
+  const handleDownload = async (type: "before" | "after" | "comparison") => {
     if (!currentImage) return;
 
     if (type === "before") {
@@ -330,7 +330,92 @@ export default function ImageEditor() {
       link.download = `${currentImage.area_label || currentImage.room_type || "room"}-${selectedVariation.style}-after.jpg`;
       link.click();
     } else if (type === "comparison") {
-      toast.info("Side-by-side download coming soon!");
+      if (!selectedVariation) return;
+      const toastId = toast.loading("Preparing download...");
+
+      try {
+        const loadImg = (src: string): Promise<HTMLImageElement> =>
+          new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+          });
+
+        const [beforeImg, afterImg] = await Promise.all([
+          loadImg(currentImage.original_image_url),
+          loadImg(selectedVariation.url),
+        ]);
+
+        const gap = 20;
+        const labelHeight = 40;
+        const bottomPadding = 20;
+        const addressLabel = currentImage.area_label || project?.property?.address || "";
+        const addressHeight = addressLabel ? 30 : 0;
+
+        const canvasW = beforeImg.naturalWidth + afterImg.naturalWidth + gap;
+        const canvasH = Math.max(beforeImg.naturalHeight, afterImg.naturalHeight) + labelHeight + bottomPadding + addressHeight;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        const ctx = canvas.getContext("2d")!;
+
+        // White background
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvasW, canvasH);
+
+        // Labels
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 18px sans-serif";
+        ctx.textBaseline = "top";
+        ctx.fillText("BEFORE", 0, 10);
+        const afterLabelX = beforeImg.naturalWidth + gap;
+        ctx.fillText("AFTER", afterLabelX, 10);
+
+        // Draw images
+        const imgY = labelHeight;
+        ctx.drawImage(beforeImg, 0, imgY);
+        ctx.drawImage(afterImg, beforeImg.naturalWidth + gap, imgY);
+
+        // Divider
+        const dividerX = beforeImg.naturalWidth + gap / 2;
+        ctx.strokeStyle = "#cccccc";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(dividerX, imgY);
+        ctx.lineTo(dividerX, imgY + Math.max(beforeImg.naturalHeight, afterImg.naturalHeight));
+        ctx.stroke();
+
+        // Address at bottom
+        if (addressLabel) {
+          ctx.fillStyle = "#666666";
+          ctx.font = "14px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText(addressLabel, canvasW / 2, canvasH - bottomPadding - 5);
+          ctx.textAlign = "start";
+        }
+
+        canvas.toBlob((blob) => {
+          toast.dismiss(toastId);
+          if (!blob) {
+            toast.error("Failed to create image");
+            return;
+          }
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          const name = (currentImage.area_label || project?.property?.address || "property").replace(/[^a-zA-Z0-9]/g, "-");
+          link.download = `before-after-${name}.png`;
+          link.click();
+          URL.revokeObjectURL(url);
+        }, "image/png");
+      } catch (err) {
+        toast.dismiss(toastId);
+        toast.error("Failed to create side-by-side image");
+        console.error("Side-by-side download error:", err);
+      }
     }
   };
 
