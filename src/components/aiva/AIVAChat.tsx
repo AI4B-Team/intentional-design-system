@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { 
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
   Send, 
   Trash2, 
   Sparkles, 
@@ -63,7 +63,8 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-// Panel views are now inline instead of dialogs (no modal components used)
+import { AttachContextPopover, AttachmentChips, type AttachedItem } from "./AttachContextPopover";
+
 type PanelView = "chat" | "history" | "settings";
 
 interface AIVAChatProps {
@@ -93,6 +94,7 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const [streamResponses, setStreamResponses] = useState(true);
   const [soundEffects, setSoundEffects] = useState(false);
   const [defaultVoice, setDefaultVoice] = useState("rachel");
+  const [attachedContext, setAttachedContext] = useState<AttachedItem[]>([]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -107,8 +109,16 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
-    sendMessage(input, searchType);
+    
+    let messageContent = input;
+    if (attachedContext.length > 0) {
+      const contextData = attachedContext.map(({ type, label, data }) => ({ type, label, ...data }));
+      messageContent = `[ATTACHED CONTEXT]\n${JSON.stringify(contextData, null, 2)}\n[END CONTEXT]\n\nUser message: ${input}`;
+    }
+    
+    sendMessage(messageContent, searchType);
     setInput("");
+    setAttachedContext([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -218,11 +228,13 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
     inputRef.current?.focus();
   };
 
-  const handleAttachContext = () => {
-    toast.info("Context attachments coming soon!", {
-      description: "You'll be able to attach property data, lists, or files."
-    });
-  };
+  const handleAttachItem = useCallback((item: AttachedItem) => {
+    setAttachedContext((prev) => [...prev, item]);
+  }, []);
+
+  const handleRemoveAttachment = useCallback((index: number) => {
+    setAttachedContext((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
   // Placeholder chat history
   const chatHistory = [
@@ -634,6 +646,9 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                     className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm py-2"
                   />
                   
+                  {/* Attachment Chips */}
+                  <AttachmentChips items={attachedContext} onRemove={handleRemoveAttachment} />
+                  
                   {/* Bottom Row */}
                   <div className="flex items-center justify-between">
                     {/* Left Side - Tools + Attach */}
@@ -706,22 +721,23 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
                       </DropdownMenu>
                       
                       {/* Attach Button - Chain Link Icon */}
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              type="button" 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 rounded-full text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
-                              onClick={handleAttachContext}
-                            >
-                              <Link2 className="h-4 w-4" strokeWidth={2} />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <AttachContextPopover onAttach={handleAttachItem}>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8 rounded-full text-muted-foreground/60 hover:text-primary hover:bg-transparent transition-colors"
+                              >
+                                <Link2 className="h-4 w-4" strokeWidth={2} />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-white text-gray-900 border shadow-md">Attach Context</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </AttachContextPopover>
                     </div>
                     
                     {/* Right Icons */}
