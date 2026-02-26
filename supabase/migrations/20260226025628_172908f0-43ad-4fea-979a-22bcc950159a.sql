@@ -1,0 +1,1 @@
+ALTER TABLE public.d4d_areas ADD COLUMN IF NOT EXISTS polygon_geojson JSONB;
