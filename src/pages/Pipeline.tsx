@@ -970,7 +970,8 @@ export default function Pipeline() {
       {/* Pipeline Value Cards - Collapsible */}
       {isKpiExpanded && (
         <div className="mb-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 min-w-0">
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '0ms' }}>
               <PipelineValueCard
                 title="Leads"
                 subtitle="New Opportunities"
@@ -985,6 +986,8 @@ export default function Pipeline() {
                 goal={goals.leadsGoal}
                 actionInsight={insights?.leadsInsight}
               />
+            </div>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '100ms' }}>
               <PipelineValueCard
                 title="Offers"
                 subtitle="Active Proposals"
@@ -1003,6 +1006,8 @@ export default function Pipeline() {
                 contextIcon={Hourglass}
                 contextSeverity="attention"
               />
+            </div>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '200ms' }}>
               <PipelineValueCard
                 title="Contracts"
                 subtitle="Secured Deals"
@@ -1019,6 +1024,8 @@ export default function Pipeline() {
                 variant="calm"
                 nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
               />
+            </div>
+            <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
               <PipelineValueCard
                 title="Sold"
                 subtitle="Closed Deals"
@@ -1035,6 +1042,7 @@ export default function Pipeline() {
                 variant="celebration"
               />
             </div>
+          </div>
         </div>
       )}
 
