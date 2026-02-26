@@ -1,132 +1,68 @@
 
 
-# Premium Design System for Real Estate Investing App
+# Project Status: What's Left Beyond GHL & Twilio API Keys
 
-A Linear/Stripe-quality design foundation that will make your real estate investing app look like it was built by a well-funded startup.
-
----
-
-## Phase 1: Design Tokens & Foundation
-
-### Color System Setup
-- Update CSS variables with your complete color palette (backgrounds, text, brand accents, status colors, heat scores)
-- Configure both **light and dark mode** variants with the same sophisticated aesthetic
-- Dark mode will use deep navy/slate backgrounds maintaining the premium feel
-
-### Typography System
-- Integrate **Inter** font (primary) and **JetBrains Mono** (numbers/code)
-- Create utility classes for the complete type scale (Display through Tiny)
-- Configure font weights, line heights, and letter spacing
-
-### Spacing & Layout Tokens
-- Set up 8px-based spacing system (4xs through 3xl)
-- Configure container max-widths and page margins
-- Define responsive breakpoints for mobile adaptation
-
-### Shadow & Border System
-- Create premium subtle shadow utilities (xs through xl)
-- Configure border colors and border-radius scale
-- Add hover state shadow transitions
+After a thorough audit of your codebase, database, secrets, and edge functions, here's a clear picture of what remains.
 
 ---
 
-## Phase 2: Core Components (Premium Styled)
-
-### Buttons
-- **Primary** (dark navy, white text)
-- **Secondary** (white with subtle border)
-- **Ghost** (transparent with hover state)
-- **Danger** (soft red background)
-- All with 150ms smooth transitions
-
-### Cards
-- Standard cards with subtle shadows and hover lift effect
-- **Stat Cards** for property metrics and portfolio summaries
-- Clickable card variants with micro-interactions
-
-### Form Elements
-- Premium text inputs with refined focus states
-- Custom select/dropdown styling
-- Search inputs with integrated icons
-
-### Badges & Tags
-- Status badges (pill-shaped, 10% opacity backgrounds)
-- **Heat Score badges** (Hot/Warm/Moderate/Cool/Cold) for lead scoring
-- Property type and deal status badges
-
-### Data Display
-- Premium table styling with hover states
-- Avatar components (circular, multiple sizes)
-- Loading skeletons with shimmer animation
+## Already Working (No Action Needed)
+- **All AI features** (AIVA chat, deal analyzer, property analysis, market analyzer, etc.) -- powered by Lovable AI, no external keys needed
+- **Database schema** -- 100+ tables fully created with RLS policies
+- **AIVA conversation persistence** -- table just created, hook is wired
+- **Auth, org management, team roles** -- fully functional
+- **Pipeline, campaigns, D4D, dispo, mail, contacts, lists** -- all wired
+- **Lob (direct mail)** -- API key configured
+- **ATTOM (property data)** -- API key configured
+- **BatchData (skip tracing)** -- API key configured
+- **Replicate (virtual staging/AI images)** -- API key configured
 
 ---
 
-## Phase 3: Layout System
+## Missing API Keys (Action Required from You)
 
-### Sidebar Navigation
-- 260px width, collapsible to 72px icon mode
-- Light background (#FAFAFA) with subtle border
-- Active state with left accent border
-- Smooth collapse/expand transitions
+### 1. Twilio (Dialer, SMS, Voice)
+You need **5 secrets** for full dialer functionality:
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_PHONE_NUMBER`
+- `TWILIO_API_KEY_SID`
+- `TWILIO_API_KEY_SECRET`
+- `TWILIO_TWIML_APP_SID`
 
-### Top Header Bar
-- 64px height, sticky positioning
-- Very subtle shadow for depth
-- Space for search, notifications, user menu
+These power: make-call, end-call, transfer-call, twilio-token, twilio-twiml, twilio-webhook, twilio-recording, and auto-SMS from seller websites.
 
-### Page Layout Structure
-- Max-width 1280px content area
-- Consistent 32px desktop / 16px mobile padding
-- Section spacing templates
+### 2. GoHighLevel (CRM Sync)
+The GHL integration stores the API key per-user in the `ghl_connections` table (not as a global secret), so this is configured through the Settings → Integrations UI -- no secret to add on our side. You just need a GHL account with API access.
 
 ---
 
-## Phase 4: Premium Patterns
+## Functional Gaps (No API Key Needed -- Just Code/Config)
 
-### Modal System
-- Backdrop blur with 40% overlay
-- Smooth scale-in animation
-- Consistent header/body/footer structure
+### 3. Stripe / Billing Not Wired
+The Billing page (`BillingSettings.tsx`) shows plan cards but has **no Stripe integration** -- no edge function, no checkout session, no webhook. Plan selection buttons are essentially decorative. If you plan to charge users, this needs a Stripe secret key and a checkout/webhook flow.
 
-### Toast Notifications
-- Slide-in from right animation
-- Success/Warning/Error/Info variants
-- Auto-dismiss with progress indicator
+### 4. Closebot Webhook -- Partial
+The `closebot-webhook` edge function exists but the `closebot_connections` table stores per-user credentials through the UI. This should work once a user configures it, but there's no automated test coverage.
 
-### Empty States
-- Centered layout with muted illustrations
-- Clear headline and description
-- Prominent CTA button
+### 5. Daily Report Email -- Not Wired
+The Daily Report page has a "Coming Soon" button for email delivery. There's no edge function to actually send a daily summary email (would need an email provider or Twilio SendGrid).
 
-### Loading States
-- Skeleton loaders matching component shapes
-- Shimmer animation (1.5s infinite)
-- Spinner components in multiple sizes
+### 6. Twilio Webhook URL Configuration
+Once you add the Twilio keys, you'll need to configure your Twilio console to point status callbacks and TwiML app request URLs to your edge function URLs. I can generate those URLs for you when ready.
 
 ---
 
-## Phase 5: Data Visualization Foundation
+## Summary Table
 
-### Chart Styling for Recharts
-- Clean grid lines using your palette
-- Refined axis labels and tooltips
-- Premium color sequence for multi-data charts
-- Hover states and clickable legends
+| Item | Status | Blocker |
+|------|--------|---------|
+| Twilio (dialer/SMS/voice) | Needs 6 secrets | You provide keys |
+| GHL (CRM sync) | Ready -- user configures in UI | You need GHL account |
+| Stripe (billing) | Not built | Needs Stripe key + checkout flow |
+| Daily report email | Not built | Needs email provider |
+| AIVA conversations | Just wired | Working |
+| All other features | Functional | None |
 
-*This prepares for property analytics, portfolio charts, and deal pipeline visualizations.*
-
----
-
-## What You'll Have After Implementation
-
-✅ Complete design token system in CSS variables  
-✅ Tailwind configuration matching your specifications  
-✅ All shadcn/ui components restyled to premium aesthetic  
-✅ Reusable layout components (Sidebar, Header, Page wrapper)  
-✅ Comprehensive dark mode that maintains the sophisticated feel  
-✅ Micro-interactions and animations throughout  
-✅ Real estate-specific components ready (heat scores, stat cards)  
-✅ Foundation for charts and data visualization  
-
-This gives you a rock-solid, premium foundation so every feature you build afterward automatically looks polished and professional.
+**Bottom line**: Beyond the Twilio and GHL keys, the only significant gap is **Stripe billing** if you intend to monetize. Everything else is functional or gracefully degrades when optional keys are missing.
 
