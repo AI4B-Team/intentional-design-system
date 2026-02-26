@@ -115,14 +115,13 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
           <main
             ref={mainRef}
             className={cn(
-              // Allow flex children (like split-view layouts) to properly constrain height and
-              // use internal scrolling without forcing the whole document to scroll.
               cn(
                 "flex-1 flex flex-col min-h-0",
                 lockViewportHeight ? "overflow-hidden" : "overflow-visible"
               ),
               fullWidth ? "" : "p-4 lg:p-6 max-w-7xl mx-auto w-full"
             )}
+            style={{ backgroundImage: 'var(--bg-gradient)' }}
           >
             {children}
           </main>
