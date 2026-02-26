@@ -165,14 +165,14 @@ function PipelineValueCard({
           : "bg-gradient-to-br from-transparent via-transparent to-primary/5"
       )} />
       
-      <div className="relative flex flex-col h-full">
+      <div className="relative flex flex-col h-full min-w-0">
         {/* Header with optional subtitle */}
         <div className="flex items-center justify-between">
-          <div>
+          <div className="min-w-0">
             <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
             {subtitle && (
               <p className={cn(
-                "text-tiny mt-0.5",
+                "text-tiny mt-0.5 truncate",
                 isCalmVariant ? "text-success/70" : "text-muted-foreground/70"
               )}>{subtitle}</p>
             )}
@@ -186,8 +186,8 @@ function PipelineValueCard({
         </div>
 
         {/* Count with Goal */}
-        <div className="mt-4">
-          <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
+        <div className="mt-3">
+          <p className="text-3xl font-bold text-foreground tabular-nums leading-none">
             {animatedCount}
           </p>
           {hasGoal && (
@@ -274,16 +274,16 @@ function PipelineValueCard({
         </div>
 
         {/* Value and Profit - Always at bottom with mt-auto */}
-        <div className="space-y-2 pt-2 border-t border-border-subtle mt-auto">
-          <div className="flex items-center justify-between">
-            <span className="text-tiny text-muted-foreground uppercase">{valueLabel}</span>
-            <span className="text-small font-semibold text-foreground tabular-nums">
+        <div className="space-y-1.5 pt-2 border-t border-border-subtle mt-auto">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-tiny text-muted-foreground uppercase truncate">{valueLabel}</span>
+            <span className="text-small font-semibold text-foreground tabular-nums whitespace-nowrap">
               {animatedValue}
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-tiny text-muted-foreground uppercase">{profitLabel}</span>
-            <span className="text-small font-bold text-success tabular-nums">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-tiny text-muted-foreground uppercase truncate">{profitLabel}</span>
+            <span className="text-small font-bold text-success tabular-nums whitespace-nowrap">
               {animatedProfit}
             </span>
           </div>
@@ -1151,8 +1151,8 @@ export default function Dashboard() {
       <TodaysFocus />
 
       {/* Pipeline Value Cards - Key Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="animate-fade-in" style={{ animationDelay: '0ms' }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 mb-8 min-w-0">
+        <div className="animate-fade-in min-w-0" style={{ animationDelay: '0ms' }}>
           <GradientCard glowColor="primary">
             <div className="p-md">
               <PipelineValueCard
@@ -1172,7 +1172,7 @@ export default function Dashboard() {
             </div>
           </GradientCard>
         </div>
-        <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+        <div className="animate-fade-in min-w-0" style={{ animationDelay: '100ms' }}>
           <GradientCard glowColor="warning">
             <div className="p-md">
               <PipelineValueCard
@@ -1196,7 +1196,7 @@ export default function Dashboard() {
             </div>
           </GradientCard>
         </div>
-        <div className="animate-fade-in" style={{ animationDelay: '200ms' }}>
+        <div className="animate-fade-in min-w-0" style={{ animationDelay: '200ms' }}>
           <GradientCard glowColor="primary">
             <div className="p-md">
               <PipelineValueCard
@@ -1218,7 +1218,7 @@ export default function Dashboard() {
             </div>
           </GradientCard>
         </div>
-        <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
           <GradientCard glowColor="success">
             <div className="p-md">
               <PipelineValueCard
