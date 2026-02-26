@@ -90,6 +90,7 @@ export interface PropertyCardData {
   /** Number of pending unified actions for this property */
   pendingActionsCount?: number;
   stageCategory?: "discovery" | "intent" | "commitment" | "outcome";
+  notesCount?: number;
 }
 
 function formatMoney(n?: number) {
@@ -417,11 +418,13 @@ export function PropertyCard({
                     aria-label="View Comments"
                   >
                     <StickyNote className="h-4 w-4" />
-                    <span className="text-xs tabular-nums">5</span>
+                    {(property.notesCount ?? 0) > 0 && (
+                      <span className="text-xs tabular-nums">{property.notesCount}</span>
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  <p>View Comments (5)</p>
+                  <p>{(property.notesCount ?? 0) > 0 ? `View Notes (${property.notesCount})` : "No Notes Yet"}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
