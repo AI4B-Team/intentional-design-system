@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import html2canvas from "html2canvas";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -72,6 +73,7 @@ export default function RenovationDetail() {
   const [editingName, setEditingName] = useState(false);
   const [newName, setNewName] = useState("");
   const [imageToDelete, setImageToDelete] = useState<string | null>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const handleNameEdit = () => {
     if (project) {
@@ -114,10 +116,79 @@ export default function RenovationDetail() {
     setImageToDelete(null);
   };
 
-  const handleDownloadAll = () => {
-    toast.info("Download feature coming soon!");
-    // TODO: Implement zip download
-  };
+  const handleDownloadAll = useCallback(async () => {
+    if (!project || !reportRef.current) return;
+
+    const toastId = toast.loading("Generating report...");
+
+    // Make the hidden div temporarily visible for html2canvas
+    const el = reportRef.current;
+    el.style.display = "block";
+
+    try {
+      const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
+      el.style.display = "none";
+
+      canvas.toBlob((blob) => {
+        toast.dismiss(toastId);
+        if (!blob) {
+          toast.error("Failed to generate report");
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const addr = (project.property?.address || project.name || "project").replace(/[^a-zA-Z0-9]/g, "-");
+        const date = new Date().toISOString().slice(0, 10);
+        link.href = url;
+        link.download = `renovation-report-${addr}-${date}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        toast.success("Report downloaded");
+      }, "image/png");
+    } catch (err) {
+      el.style.display = "none";
+      toast.dismiss(toastId);
+      console.error("Report generation error:", err);
+
+      // Fallback: open print window
+      const printWin = window.open("", "_blank");
+      if (printWin) {
+        printWin.document.write(`
+          <html><head><title>Renovation Report</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; color: #111; }
+            h1 { font-size: 22px; margin-bottom: 4px; }
+            h2 { font-size: 16px; margin-top: 24px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
+            .meta { color: #666; font-size: 13px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+            th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; }
+            th { font-weight: 600; }
+            .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+            .active { background: #d1fae5; color: #065f46; }
+            .completed { background: #dbeafe; color: #1e40af; }
+            .archived { background: #f3f4f6; color: #6b7280; }
+            @media print { body { padding: 20px; } }
+          </style></head><body>
+          <h1>${project.name}</h1>
+          <p class="meta">${project.property?.address || "No address"}</p>
+          <p><span class="badge ${project.status}">${project.status}</span></p>
+          <h2>Images (${images.length})</h2>
+          <table>
+            <tr><th>Room</th><th>Label</th><th>Variations</th></tr>
+            ${images.map(img => `<tr><td>${img.room_type || "—"}</td><td>${img.area_label || "—"}</td><td>${(img.generated_images || []).length}</td></tr>`).join("")}
+          </table>
+          <h2>Project Details</h2>
+          <p class="meta">Created: ${new Date(project.created_at).toLocaleDateString()}</p>
+          <p class="meta">Total Images: ${images.length}</p>
+          <p class="meta">Generated on ${new Date().toLocaleString()}</p>
+          </body></html>
+        `);
+        printWin.document.close();
+        printWin.print();
+      }
+      toast.info("Opened print dialog as fallback");
+    }
+  }, [project, images]);
 
   if (isLoading) {
     return (
@@ -386,6 +457,89 @@ export default function RenovationDetail() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Hidden Report Div for html2canvas */}
+      <div
+        ref={reportRef}
+        style={{ display: "none", position: "absolute", left: "-9999px", top: 0, width: "800px", background: "#fff", padding: "40px", fontFamily: "sans-serif", color: "#111" }}
+      >
+        <h1 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "4px" }}>
+          Renovation Summary Report
+        </h1>
+        <p style={{ color: "#666", fontSize: "14px", marginBottom: "2px" }}>
+          {project?.property?.address || project?.name || "Project"}
+        </p>
+        <p style={{ color: "#999", fontSize: "12px", marginBottom: "20px" }}>
+          Generated {new Date().toLocaleString()}
+        </p>
+
+        <div style={{ display: "flex", gap: "24px", marginBottom: "20px" }}>
+          <div>
+            <span style={{ fontSize: "11px", color: "#999", textTransform: "uppercase" as const }}>Status</span>
+            <p style={{ fontWeight: 600, textTransform: "capitalize" as const }}>{project?.status}</p>
+          </div>
+          <div>
+            <span style={{ fontSize: "11px", color: "#999", textTransform: "uppercase" as const }}>Created</span>
+            <p style={{ fontWeight: 600 }}>{project ? new Date(project.created_at).toLocaleDateString() : ""}</p>
+          </div>
+          <div>
+            <span style={{ fontSize: "11px", color: "#999", textTransform: "uppercase" as const }}>Total Images</span>
+            <p style={{ fontWeight: 600 }}>{images.length}</p>
+          </div>
+          <div>
+            <span style={{ fontSize: "11px", color: "#999", textTransform: "uppercase" as const }}>Variations</span>
+            <p style={{ fontWeight: 600 }}>{images.reduce((s, img) => s + (img.generated_images || []).length, 0)}</p>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {(() => {
+          const totalVariations = images.reduce((s, img) => s + (img.generated_images || []).length, 0);
+          const pct = images.length > 0 ? Math.round((images.filter(i => (i.generated_images || []).length > 0).length / images.length) * 100) : 0;
+          return (
+            <div style={{ marginBottom: "24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", marginBottom: "4px" }}>
+                <span>{pct}% of images staged</span>
+                <span>{images.filter(i => (i.generated_images || []).length > 0).length}/{images.length}</span>
+              </div>
+              <div style={{ height: "8px", background: "#e5e7eb", borderRadius: "4px", overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${pct}%`, background: "#22c55e", borderRadius: "4px" }} />
+              </div>
+            </div>
+          );
+        })()}
+
+        <h2 style={{ fontSize: "15px", fontWeight: 600, borderBottom: "1px solid #e5e7eb", paddingBottom: "4px", marginBottom: "8px" }}>
+          Room-By-Room Breakdown
+        </h2>
+        <table style={{ width: "100%", borderCollapse: "collapse" as const, fontSize: "13px", marginBottom: "24px" }}>
+          <thead>
+            <tr style={{ borderBottom: "2px solid #e5e7eb" }}>
+              <th style={{ textAlign: "left" as const, padding: "6px 8px" }}>Room / Area</th>
+              <th style={{ textAlign: "left" as const, padding: "6px 8px" }}>Type</th>
+              <th style={{ textAlign: "left" as const, padding: "6px 8px" }}>Variations</th>
+              <th style={{ textAlign: "left" as const, padding: "6px 8px" }}>Styles</th>
+            </tr>
+          </thead>
+          <tbody>
+            {images.map((img) => (
+              <tr key={img.id} style={{ borderBottom: "1px solid #f3f4f6" }}>
+                <td style={{ padding: "6px 8px", fontWeight: 500 }}>{img.area_label || "—"}</td>
+                <td style={{ padding: "6px 8px" }}>{img.room_type || "—"}</td>
+                <td style={{ padding: "6px 8px" }}>{(img.generated_images || []).length}</td>
+                <td style={{ padding: "6px 8px", color: "#666" }}>
+                  {(img.generated_images || []).map(g => g.style).filter(Boolean).join(", ") || "—"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <p style={{ fontSize: "11px", color: "#aaa", borderTop: "1px solid #e5e7eb", paddingTop: "12px" }}>
+          This report was auto-generated. All images and data are subject to the project's current state.
+        </p>
+      </div>
+
     </PageLayout>
   );
 }
