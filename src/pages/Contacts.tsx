@@ -43,6 +43,7 @@ import {
   Search,
   MoreHorizontal,
   Phone,
+  Mail,
   Edit,
   Trash2,
   Users,
@@ -296,12 +297,9 @@ export default function Contacts() {
             <TableHeader>
               <TableRow className="bg-muted/50">
                 <TableHead className="font-semibold">Contact</TableHead>
-                <TableHead className="font-semibold">City</TableHead>
                 <TableHead className="font-semibold">State</TableHead>
-                <TableHead className="font-semibold">Zip</TableHead>
                 <TableHead className="font-semibold">Phone</TableHead>
-                <TableHead className="font-semibold">Created</TableHead>
-                <TableHead className="font-semibold">Modified</TableHead>
+                <TableHead className="font-semibold">Email</TableHead>
                 <TableHead className="font-semibold">Type</TableHead>
                 <TableHead className="font-semibold">Status</TableHead>
                 <TableHead className="w-12"></TableHead>
@@ -313,12 +311,9 @@ export default function Contacts() {
                 Array.from({ length: 5 }).map((_, i) => (
                   <TableRow key={i}>
                     <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-10" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-14" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-5 w-32" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-5 w-8" /></TableCell>
@@ -326,7 +321,7 @@ export default function Contacts() {
                 ))
               ) : filteredContacts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="h-32 text-center">
+                  <TableCell colSpan={7} className="h-32 text-center">
                     <EmptyState
                       icon={<Users className="h-9 w-9 text-muted-foreground opacity-70" />}
                       title="No contacts yet"
@@ -351,9 +346,9 @@ export default function Contacts() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">—</TableCell>
-                    <TableCell className="text-muted-foreground">—</TableCell>
-                    <TableCell className="text-muted-foreground">—</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {contact.state || "—"}
+                    </TableCell>
                     <TableCell>
                       {contact.phone ? (
                         <a
@@ -368,15 +363,19 @@ export default function Contacts() {
                         <span className="text-muted-foreground">—</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {contact.created_at
-                        ? format(new Date(contact.created_at), "MMM d, yyyy")
-                        : "—"}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {contact.updated_at
-                        ? format(new Date(contact.updated_at), "MMM d, yyyy")
-                        : "—"}
+                    <TableCell>
+                      {contact.email ? (
+                        <a
+                          href={`mailto:${contact.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 text-foreground hover:text-primary transition-colors"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          {contact.email}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
                     </TableCell>
                     <TableCell>
                       <Badge className={cn("capitalize", getTypeColor(contact.type))}>
