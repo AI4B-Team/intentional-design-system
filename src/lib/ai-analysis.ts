@@ -320,7 +320,7 @@ export async function testAIConnection(_apiKey: string): Promise<{ success: bool
 }
 
 export const AI_MODELS = [
-  { id: 'gemini-3-flash-preview', name: 'Gemini 3 Flash', description: 'Fast and efficient' },
-  { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', description: 'Most capable' },
-  { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', description: 'Quick responses' },
+  { id: 'claude-sonnet-4-5', name: 'Claude Sonnet', description: 'Fast and capable' },
+  { id: 'google/gemini-3-flash-preview', name: 'Gemini Flash', description: 'Quick responses' },
+  { id: 'google/gemini-2.5-pro', name: 'Gemini 2.5 Pro', description: 'Most capable' },
 ] as const;

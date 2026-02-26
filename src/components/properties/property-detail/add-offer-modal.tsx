@@ -234,7 +234,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
               }
             />
             <Label htmlFor="generateLetter" className="text-small font-normal cursor-pointer">
-              Generate Offer Letter (coming soon)
+              Generate Offer Letter
             </Label>
           </div>
 

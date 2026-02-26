@@ -119,8 +119,7 @@ export function ListPresetsSection({ onSelectPreset }: ListPresetsSectionProps) 
           })}
         </div>
         <p className="text-xs text-muted-foreground text-center mt-4">
-          <Badge variant="outline" className="text-xs">Coming Soon</Badge>
-          {" "}Presets require a data provider integration
+          Presets require a <a href="/settings/integrations" className="text-primary hover:underline">data provider integration</a>
         </p>
       </CardContent>
     </Card>

@@ -2490,7 +2490,7 @@ function PlaceholderCalculator({ title }: { title: string }) {
           {title} Calculator
         </h3>
         <p className="text-body text-content-secondary max-w-md">
-          Coming soon! This creative financing calculator is under development.
+          This calculator is under development.
         </p>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, KeyboardEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -19,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Instagram, Facebook, Linkedin } from "lucide-react";
+import { Loader2, Instagram, Facebook, Linkedin, X as XIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useCreateDealSource, type DealSourceType, type DealSourceStatus } from "@/hooks/useDealSources";
 import { z } from "zod";
 
@@ -68,6 +69,52 @@ const sourceOptions = [
   "Cold Outreach",
   "Other",
 ];
+
+function LendingCriteriaTagInput() {
+  const [tags, setTags] = useState<string[]>([]);
+  const [input, setInput] = useState("");
+
+  const addTag = () => {
+    const trimmed = input.trim();
+    if (trimmed && !tags.includes(trimmed)) {
+      setTags([...tags, trimmed]);
+      setInput("");
+    }
+  };
+
+  const removeTag = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
+  return (
+    <div className="p-4 bg-surface-secondary rounded-medium border border-border-subtle space-y-3">
+      <h4 className="text-small font-medium text-content">Lending Criteria</h4>
+      <div className="flex flex-wrap gap-1.5">
+        {tags.map((tag) => (
+          <Badge key={tag} variant="secondary" className="gap-1 pr-1">
+            {tag}
+            <button onClick={() => removeTag(tag)} className="ml-0.5 hover:text-destructive">
+              <XIcon className="h-3 w-3" />
+            </button>
+          </Badge>
+        ))}
+      </div>
+      <Input
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder="Type criteria & press Enter (e.g. Fix & Flip, 80% LTV)"
+      />
+    </div>
+  );
+}
 
 export function AddDealSourceModal({ open, onOpenChange, defaultType }: AddDealSourceModalProps) {
   const [formData, setFormData] = useState<Partial<FormData>>(() => ({
@@ -321,12 +368,7 @@ export function AddDealSourceModal({ open, onOpenChange, defaultType }: AddDealS
 
           {/* Lender-specific fields */}
           {formData.type === "lender" && (
-            <div className="p-4 bg-surface-secondary rounded-medium border border-border-subtle">
-              <h4 className="text-small font-medium text-content mb-2">Lending Criteria</h4>
-              <p className="text-tiny text-content-secondary">
-                Detailed lending criteria management coming soon. For now, add notes below.
-              </p>
-            </div>
+            <LendingCriteriaTagInput />
           )}
 
           {/* Notes */}

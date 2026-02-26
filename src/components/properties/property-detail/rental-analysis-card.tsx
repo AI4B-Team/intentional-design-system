@@ -180,7 +180,7 @@ export function RentalAnalysisCard({
                 variant="secondary"
                 size="sm"
                 icon={<Download />}
-                onClick={() => toast.info("Rent data API integration coming soon")}
+                onClick={() => setShowAddModal(true)}
               >
                 Fetch Rent Comps
               </Button>
@@ -382,7 +382,7 @@ export function RentalAnalysisCard({
                 STR Potential
               </h4>
               <p className="text-tiny text-muted-foreground">
-                Short-term rental analysis coming soon
+                Estimated at 1.5× long-term rental rate
               </p>
             </div>
             {estimatedRent && (

@@ -208,23 +208,22 @@ export default function Onboarding() {
             {/* Tour Step */}
             {step.id === "tour" && (
               <div className="space-y-4">
-                <div className="aspect-video bg-muted/50 rounded-lg flex items-center justify-center border border-border-subtle">
-                  <div className="text-center">
-                    <BookOpen className="h-12 w-12 mx-auto mb-2 text-content-tertiary" />
-                    <p className="text-small text-content-secondary">Video tour coming soon</p>
+                <div className="p-6 bg-muted/30 rounded-lg text-center">
+                  <Check className="h-10 w-10 mx-auto mb-3 text-success" />
+                  <h3 className="text-body font-semibold mb-2">You're ready to go!</h3>
+                  <p className="text-small text-muted-foreground mb-4">Quick-start tips:</p>
+                  <div className="text-left space-y-2 max-w-xs mx-auto">
+                    {[
+                      "Add your first property from the dashboard",
+                      "Import leads via CSV for bulk tracking",
+                      "Connect GHL & Closebot in Settings",
+                    ].map((tip) => (
+                      <div key={tip} className="flex items-start gap-2 text-small text-muted-foreground">
+                        <Sparkles className="h-4 w-4 text-brand shrink-0 mt-0.5" />
+                        <span>{tip}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <a href="https://docs.lovable.dev" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      Read Docs
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    <BookOpen className="h-4 w-4 mr-1" />
-                    View FAQ
-                  </Button>
                 </div>
               </div>
             )}
