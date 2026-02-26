@@ -285,23 +285,23 @@ export function WizardLivePreview({
         {/* Founders Featured On bar */}
         {showCredibilityBar && displayLogos.length > 0 && (
           <div className="border-t border-border py-3 overflow-hidden" style={{ backgroundColor: "hsl(48 16% 92%)" }}>
-            <div className={cn("px-5 flex items-center justify-center gap-4", credibilityAnimated && "animate-marquee-wrapper")}>
-              <span className="text-[8px] text-muted-foreground uppercase tracking-wider font-semibold whitespace-nowrap">
+            <div className={cn("px-5 flex flex-col items-center gap-2", credibilityAnimated && "animate-marquee-wrapper")}>
+              <span className="text-[7px] text-muted-foreground uppercase tracking-wider font-semibold whitespace-nowrap">
                 Founders Featured On
               </span>
               <div className={cn(
-                "flex items-center justify-center gap-6 opacity-60",
+                "flex items-center justify-center gap-8 opacity-60",
                 credibilityAnimated && "animate-marquee"
               )}>
                 {(credibilityAnimated ? [...displayLogos, ...displayLogos] : displayLogos).map((name, i) => {
                   const origIdx = i % displayLogos.length;
                   const imgUrl = credibilityLogoImages?.[String(origIdx)];
                   return (
-                    <div key={i} className="flex items-center justify-center" style={{ width: 60, height: 16 }}>
+                    <div key={i} className="flex items-center justify-center shrink-0" style={{ height: 20 }}>
                       {imgUrl ? (
-                        <img src={imgUrl} alt={name} className="max-h-[14px] max-w-[56px] object-contain" />
+                        <img src={imgUrl} alt={name} className="h-[18px] object-contain" />
                       ) : (
-                        <NetworkLogo name={name} sizeClass="text-[10px]" colorClass="text-foreground" />
+                        <NetworkLogo name={name} sizeClass="text-xs" colorClass="text-foreground" />
                       )}
                     </div>
                   );
