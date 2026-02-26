@@ -94,7 +94,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
                 "flex-1 flex flex-col min-h-0",
                 lockViewportHeight ? "overflow-hidden" : "overflow-visible"
               ),
-              fullWidth ? "" : "p-3 sm:p-4 lg:p-6 max-w-[100rem] w-full"
+              fullWidth ? "" : "p-3 sm:p-4 lg:p-6 w-full max-w-none"
             )}
             style={{ backgroundImage: 'var(--bg-gradient)' }}
           >
