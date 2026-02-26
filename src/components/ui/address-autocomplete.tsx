@@ -245,9 +245,19 @@ export function AddressAutocomplete({
           </PopoverTrigger>
           <PopoverContent
             className="p-0 bg-white border-2 border-border shadow-xl z-[200] rounded-lg"
-            align="end"
+            align="center"
             style={{ width: wrapperRef.current?.offsetWidth ? `${wrapperRef.current.offsetWidth}px` : '400px' }}
             sideOffset={6}
+            alignOffset={(() => {
+              // The trigger is the small chevron button on the right; shift the popover left
+              // so it centers under the full search wrapper instead.
+              if (!wrapperRef.current) return 0;
+              const wrapperRect = wrapperRef.current.getBoundingClientRect();
+              const wrapperCenter = wrapperRect.left + wrapperRect.width / 2;
+              // Find the trigger button center (chevron is ~12px from right edge of wrapper)
+              const triggerCenter = wrapperRect.right - 12;
+              return Math.round(wrapperCenter - triggerCenter);
+            })()}
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
             {/* Tab bar */}
