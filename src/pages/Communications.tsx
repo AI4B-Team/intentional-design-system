@@ -1026,7 +1026,7 @@ function CoPilotPanel({
 
   return (
     <div className={cn(
-      "w-[400px] border-l-2 flex flex-col overflow-hidden transition-all duration-300",
+      "hidden lg:flex w-[400px] border-l-2 flex-col overflow-hidden transition-all duration-300",
       isLiveCall
         ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
         : "border-primary/15 bg-background shadow-[-4px_0_20px_-5px_hsl(var(--primary)/0.06)]"
@@ -2254,8 +2254,8 @@ export default function Communications() {
       <TooltipProvider delayDuration={0}>
       <div className="flex flex-col h-full min-h-0 overflow-hidden bg-background">
         {/* Top Bar */}
-        <div className="px-6 py-3.5 border-b border-border flex items-center justify-between bg-background">
-          <div className="flex items-center gap-5">
+        <div className="px-4 md:px-6 py-3.5 border-b border-border flex items-center justify-between bg-background overflow-x-auto gap-3">
+          <div className="flex items-center gap-3 md:gap-5 shrink-0">
             <h1 className="text-2xl font-bold text-foreground">
               Communications
             </h1>
@@ -2292,7 +2292,7 @@ export default function Communications() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 overflow-x-auto">
             {/* Mode Buttons */}
             {(Object.entries(MODE_THEME) as [CallingModeKey, typeof MODE_THEME[CallingModeKey]][]).map(([key, theme]) => (
               <button
@@ -2303,7 +2303,7 @@ export default function Communications() {
                   if (key === "listen") toast.info("Hybrid mode — AI assists during your calls");
                 }}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border whitespace-nowrap",
                   callingMode === key
                     ? cn(theme.badge, theme.border, theme.badgeText)
                     : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -2316,7 +2316,7 @@ export default function Communications() {
               </button>
             ))}
 
-            <div className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
+            <div className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-lg bg-muted border border-border">
               <Search className="h-3.5 w-3.5 text-muted-foreground" />
               <input
                 placeholder="Search contacts, messages..."
@@ -2375,7 +2375,7 @@ export default function Communications() {
               ) : (
                 <div className={cn(
                   "border-r border-border flex flex-col overflow-hidden bg-background transition-all duration-200",
-                  leftPanelOpen ? "w-[420px]" : "w-0"
+                  leftPanelOpen ? "hidden md:flex w-full md:w-[420px]" : "w-0"
                 )}>
                   {leftPanelOpen && (
                     <>

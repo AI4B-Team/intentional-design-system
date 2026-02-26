@@ -1130,8 +1130,8 @@ export default function Dashboard() {
   return (
     <AppLayout>
       {/* Greeting Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-8">
+        <div className="min-w-0">
           <p className="text-small text-muted-foreground font-medium">
             {format(new Date(), "EEEE, MMMM d, yyyy")}
           </p>
@@ -1140,7 +1140,7 @@ export default function Dashboard() {
           </h1>
         </div>
         <GoalSettingsDialog>
-          <Button variant="outline" size="sm" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-2 shrink-0">
             <Target className="h-4 w-4" />
             Goal Settings
           </Button>

@@ -74,7 +74,7 @@ function FocusItemRow({ item, onComplete, isAnimatingOut }: FocusItemRowProps) {
   return (
     <div
       className={cn(
-        "flex items-center gap-4 px-4 py-3.5 hover:bg-background-secondary transition-all cursor-pointer group border-b border-border-subtle last:border-b-0",
+        "flex items-center gap-3 md:gap-4 px-3 md:px-4 py-3.5 hover:bg-background-secondary transition-all cursor-pointer group border-b border-border-subtle last:border-b-0",
         isAnimatingOut && "animate-fade-out",
         !isAnimatingOut && "animate-fade-in"
       )}
@@ -126,7 +126,7 @@ function FocusItemRow({ item, onComplete, isAnimatingOut }: FocusItemRowProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-primary"
+            className="hidden sm:inline-flex opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-primary"
             onClick={(e) => {
               e.stopPropagation();
               if (item.actionRoute) navigate(item.actionRoute);
@@ -252,7 +252,7 @@ export function TodaysFocus() {
     >
       {/* Header */}
       <div className={cn(
-        "flex items-center gap-3 px-4 py-3 border-b",
+        "flex flex-wrap items-center gap-3 px-4 py-3 border-b",
         isAllComplete 
           ? "bg-gradient-to-r from-success/5 to-transparent border-success/20" 
           : "bg-gradient-to-r from-primary/5 via-primary/3 to-transparent border-border-subtle"

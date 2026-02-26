@@ -316,7 +316,7 @@ export default function Apps() {
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-muted-foreground">{app.description}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-3">{app.description}</p>
                     </div>
                     <ArrowRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
