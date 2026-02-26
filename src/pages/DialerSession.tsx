@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { PageLayout } from '@/components/layout/page-layout';
 import { SessionSidebar, SessionCallView, type TranscriptMessage, type CallPhase } from '@/components/dialer/session';
+import { TransferCallDialog } from '@/components/dialer/TransferCallDialog';
 
 export default function DialerSession() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function DialerSession() {
   const [isSpeakerOn, setIsSpeakerOn] = React.useState(false);
   const [callDuration, setCallDuration] = React.useState(311); // 05:11 in seconds
   const [activeSection, setActiveSection] = React.useState('calls');
+  const [showTransferDialog, setShowTransferDialog] = React.useState(false);
 
   // Demo transcript data matching the reference image
   const [transcript] = React.useState<TranscriptMessage[]>([
@@ -90,7 +92,7 @@ export default function DialerSession() {
   };
 
   const handleTransfer = () => {
-    toast.info('Transfer feature coming soon');
+    setShowTransferDialog(true);
   };
 
   return (
@@ -121,6 +123,15 @@ export default function DialerSession() {
           onNextPhase={handleNextPhase}
         />
       </div>
+
+      <TransferCallDialog
+        open={showTransferDialog}
+        onOpenChange={setShowTransferDialog}
+        onTransferComplete={() => {
+          setIsLive(false);
+          navigate('/dialer');
+        }}
+      />
     </PageLayout>
   );
 }

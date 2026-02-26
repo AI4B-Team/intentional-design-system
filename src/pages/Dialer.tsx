@@ -25,6 +25,7 @@ import { DialerDashboard } from "@/components/dialer/dashboard";
 import { DialerCopilotPanel, type CallMode, type ContactContext } from "@/components/dialer/copilot";
 import { ActiveCallView, type TranscriptMessage, type CallPhase } from "@/components/dialer/active-call";
 import { Plus, Settings, Clock, ArrowLeft, Sparkles } from "lucide-react";
+import { TransferCallDialog } from "@/components/dialer/TransferCallDialog";
 
 interface SessionStats {
   callsMade: number;
@@ -66,6 +67,7 @@ export default function Dialer() {
   const [isSpeakerOn, setIsSpeakerOn] = React.useState(false);
   const [demoMode, setDemoMode] = React.useState(false);
   const [demoDuration, setDemoDuration] = React.useState(8);
+  const [showTransferDialog, setShowTransferDialog] = React.useState(false);
   
   // Mock transcript messages for demo
   const [transcriptMessages, setTranscriptMessages] = React.useState<TranscriptMessage[]>([]);
@@ -497,7 +499,7 @@ export default function Dialer() {
           isSpeakerOn={isSpeakerOn}
           onMuteToggle={() => setIsMuted(!isMuted)}
           onSpeakerToggle={() => setIsSpeakerOn(!isSpeakerOn)}
-          onTransfer={() => toast.info('Transfer coming soon')}
+          onTransfer={() => setShowTransferDialog(true)}
           onEndCall={() => {
             if (demoMode) {
               setDemoMode(false);
@@ -668,6 +670,16 @@ export default function Dialer() {
           onComplete={handleCountdownComplete}
         />
       )}
+
+      <TransferCallDialog
+        open={showTransferDialog}
+        onOpenChange={setShowTransferDialog}
+        callSid={dialer.currentCall?.twilioSid || null}
+        callId={dialer.currentCall?.id || null}
+        onTransferComplete={() => {
+          dialer.endCall?.();
+        }}
+      />
     </PageLayout>
   );
 }
