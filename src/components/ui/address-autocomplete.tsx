@@ -245,7 +245,7 @@ export function AddressAutocomplete({
           </PopoverTrigger>
           <PopoverContent
             className="p-0 bg-white border-2 border-border shadow-xl z-[200] rounded-lg"
-            align="start"
+            align="end"
             style={{ width: wrapperRef.current?.offsetWidth ? `${wrapperRef.current.offsetWidth}px` : '400px' }}
             sideOffset={6}
             onOpenAutoFocus={(e) => e.preventDefault()}
