@@ -945,7 +945,7 @@ export default function Calendar() {
                   ))}
                 </div>
                 {/* Month Grid */}
-                <div className="grid grid-cols-7 gap-px flex-1 bg-border/60 rounded-xl shadow-sm overflow-visible">
+                <div className="grid grid-cols-7 gap-px bg-border/60 rounded-xl shadow-sm overflow-visible">
                   {calendarDays.map((day) => {
                     const dateKey = format(day, "yyyy-MM-dd");
                     const dayEvents = filteredEventsByDate.get(dateKey) || [];
