@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-brand text-white hover:bg-brand-light hover:shadow-md active:bg-brand [&]:text-white",
+          "bg-brand text-white hover:bg-brand-light active:bg-brand shadow-sm hover:shadow-glow-sm active:shadow-inner-sm transition-all duration-200 [&]:text-white",
         secondary:
           "bg-white border border-border text-content hover:bg-surface-secondary hover:border-border active:bg-surface-tertiary",
         ghost:
@@ -19,7 +19,7 @@ const buttonVariants = cva(
           "bg-destructive-muted text-destructive border border-destructive/20 hover:bg-red-100 active:bg-red-200",
         // Keep existing variants for backwards compatibility
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 active:shadow-inner [&]:text-primary-foreground",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-glow-sm active:shadow-inner-sm transition-all duration-200 [&]:text-primary-foreground",
         destructive:
           "bg-destructive-muted text-destructive border border-destructive/20 hover:bg-destructive/10",
         outline:
