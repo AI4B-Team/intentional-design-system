@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as XLSX from "xlsx";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -224,7 +225,59 @@ export function MarketTrendsTab() {
           <RecentSalesTable
             sales={recentSales}
             onViewMap={() => toast.info("Map view coming soon")}
-            onExport={() => toast.info("Export coming soon")}
+            onExport={() => {
+              toast("Exporting market data...");
+              try {
+                const wb = XLSX.utils.book_new();
+
+                // Sheet 1: Price Trends
+                const priceSheet = XLSX.utils.json_to_sheet(
+                  priceHistory.map((p) => ({
+                    Month: p.month,
+                    Median_Price: p.price,
+                  }))
+                );
+                XLSX.utils.book_append_sheet(wb, priceSheet, "Price Trends");
+
+                // Sheet 2: Inventory
+                const invSheet = XLSX.utils.json_to_sheet(
+                  inventoryData.map((d) => ({
+                    Month: d.month,
+                    Active_Listings: d.activeListings,
+                    Months_of_Supply: d.monthsOfSupply,
+                  }))
+                );
+                XLSX.utils.book_append_sheet(wb, invSheet, "Inventory");
+
+                // Sheet 3: Market Metrics (DOM + key stats)
+                const metricsSheet = XLSX.utils.json_to_sheet([
+                  ...domDistribution.map((d) => ({
+                    DOM_Range: d.range,
+                    Percentage: d.percentage,
+                  })),
+                ]);
+                XLSX.utils.book_append_sheet(wb, metricsSheet, "Market Metrics");
+
+                // Sheet 4: Rental Market
+                const rentalSheet = XLSX.utils.json_to_sheet(
+                  rentalData.map((r) => ({
+                    Property_Type: r.beds,
+                    Avg_Rent: r.rent,
+                    Price_Per_SqFt: r.pricePerSqft,
+                    YoY_Change: r.yoyChange,
+                  }))
+                );
+                XLSX.utils.book_append_sheet(wb, rentalSheet, "Rental Market");
+
+                const dateSuffix = new Date().toISOString().slice(0, 10);
+                const safeName = currentLocation.replace(/[^a-zA-Z0-9]/g, "-");
+                XLSX.writeFile(wb, `market-trends-${safeName}-${dateSuffix}.xlsx`);
+                toast.success("Export complete");
+              } catch (err) {
+                console.error("Export error:", err);
+                toast.error("Export failed");
+              }
+            }}
           />
         </>
       )}
