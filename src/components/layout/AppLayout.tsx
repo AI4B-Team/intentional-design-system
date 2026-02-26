@@ -123,7 +123,9 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
             )}
             style={{ backgroundImage: 'var(--bg-gradient)' }}
           >
-            {children}
+            <div key={location.pathname} className="page-transition flex-1 flex flex-col">
+              {children}
+            </div>
           </main>
         </div>
       </div>

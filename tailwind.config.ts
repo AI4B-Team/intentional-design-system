@@ -18,6 +18,24 @@ export default {
       },
     },
     extend: {
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'spring-in': 'cubic-bezier(0.7, 0, 0.84, 0)',
+        'bouncy': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'snap': 'cubic-bezier(0.2, 0, 0, 1)',
+      },
+      transitionDuration: {
+        '50': '50ms',
+        '80': '80ms',
+        '150': '150ms',
+        '250': '250ms',
+        '350': '350ms',
+        '400': '400ms',
+      },
+      transitionProperty: {
+        'DEFAULT': 'color, background-color, border-color, box-shadow, transform, opacity',
+      },
       fontFamily: {
         sans: ['Sora', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Courier New', 'monospace'],

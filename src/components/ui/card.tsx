@@ -5,12 +5,12 @@ import { cn } from "@/lib/utils";
 const cardVariants = cva("rounded-medium text-card-foreground card-inner-highlight", {
   variants: {
     variant: {
-      default: "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)]",
-      elevated: "bg-white shadow-lg border border-border/40 dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)]",
+      default: "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-0.5 dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)] [transition:all_250ms_cubic-bezier(0.16,1,0.3,1)]",
+      elevated: "bg-white shadow-lg border border-border/40 dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)] [transition:all_250ms_cubic-bezier(0.16,1,0.3,1)]",
       bordered: "bg-white border border-border",
       interactive:
-        "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-1 hover:border-primary/20 cursor-pointer transition-all duration-200 card-gloss dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)]",
-      premium: "relative bg-gradient-to-b from-white to-gray-50/50 overflow-hidden dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)]",
+        "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-1 hover:border-primary/20 cursor-pointer card-gloss hover-lift dark:bg-gradient-to-b dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)] [transition:all_250ms_cubic-bezier(0.16,1,0.3,1)]",
+      premium: "relative bg-gradient-to-b from-white to-gray-50/50 overflow-hidden dark:from-[hsl(222,47%,10%)] dark:to-[hsl(222,47%,8%)] [transition:all_250ms_cubic-bezier(0.16,1,0.3,1)]",
     },
     padding: {
       none: "p-0",
