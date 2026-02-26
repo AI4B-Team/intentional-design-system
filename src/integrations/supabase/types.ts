@@ -8453,7 +8453,9 @@ export type Database = {
       }
       unified_actions: {
         Row: {
+          channel: string | null
           completed_at: string | null
+          contact_id: string | null
           contact_name: string | null
           created_at: string
           description: string | null
@@ -8463,6 +8465,7 @@ export type Database = {
           id: string
           meta: Json | null
           organization_id: string | null
+          owner_mode: string
           priority: string
           property_address: string | null
           property_id: string | null
@@ -8476,7 +8479,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          channel?: string | null
           completed_at?: string | null
+          contact_id?: string | null
           contact_name?: string | null
           created_at?: string
           description?: string | null
@@ -8486,6 +8491,7 @@ export type Database = {
           id?: string
           meta?: Json | null
           organization_id?: string | null
+          owner_mode?: string
           priority?: string
           property_address?: string | null
           property_id?: string | null
@@ -8499,7 +8505,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          channel?: string | null
           completed_at?: string | null
+          contact_id?: string | null
           contact_name?: string | null
           created_at?: string
           description?: string | null
@@ -8509,6 +8517,7 @@ export type Database = {
           id?: string
           meta?: Json | null
           organization_id?: string | null
+          owner_mode?: string
           priority?: string
           property_address?: string | null
           property_id?: string | null
