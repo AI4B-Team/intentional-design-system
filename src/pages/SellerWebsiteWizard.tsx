@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { CustomFormField } from "@/types/custom-form-fields";
 import { getSiteTypeDefaults } from "@/components/seller-website/siteTypeConfig";
 import { WizardLivePreview } from "@/components/seller-website/WizardLivePreview";
 import { useNavigate } from "react-router-dom";
@@ -225,6 +226,7 @@ interface WizardData {
   heroSubheadline: string;
   heroImageUrl: string;
   formFields: string[];
+  customFormFields: CustomFormField[];
   formSubmitText: string;
   formHeadline: string;
   formSubheadline: string;
@@ -510,6 +512,7 @@ export default function SellerWebsiteWizard() {
     heroSubheadline: "Get a free cash offer on your house regardless of location, condition, size, price & equity.",
     heroImageUrl: "",
     formFields: FORM_FIELD_OPTIONS.filter((f) => f.default).map((f) => f.id),
+    customFormFields: [],
     formSubmitText: "Get My Cash Offer →",
     formHeadline: "Get Your Free Cash Offer",
     formSubheadline: "No Obligation. No Pressure. Takes 7 Minutes.",
@@ -1475,6 +1478,7 @@ export default function SellerWebsiteWizard() {
                 formSubheadline={data.formSubheadline}
                 formPrivacyText={data.formPrivacyText}
                 formFields={data.formFields}
+                customFormFields={data.customFormFields}
                 logoUrl={data.logoUrl}
                 selectedIcon={data.selectedIcon}
                 showCredibilityBar={data.showCredibilityBar}

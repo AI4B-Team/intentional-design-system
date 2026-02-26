@@ -143,6 +143,7 @@ export default function SellerWebsitePage() {
   const faqs = (website.faqs as unknown as FAQ[] | null) || [];
   const socialLinks = (website.social_links as unknown as SocialLinks | null) || {};
   const formFields = (website.form_fields as unknown as string[] | null) || ["address", "name", "phone", "email"];
+  const customFormFields = (website.custom_form_fields as unknown as any[] | null) || [];
   const primaryColor = website.primary_color || "#2563EB";
   const accentColor = website.accent_color || "#10B981";
 
@@ -174,6 +175,7 @@ export default function SellerWebsitePage() {
           formHeadline={website.form_headline || defaults.formHeadline}
           formSubheadline={website.form_subheadline || defaults.formSubheadline}
           formFields={formFields}
+          customFormFields={customFormFields}
           formSubmitText={website.form_submit_text || defaults.formSubmitText}
           onFormSubmit={handleFormSubmit}
           isFormSubmitting={submitting}
