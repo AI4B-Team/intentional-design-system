@@ -40,7 +40,7 @@ export function PageLayout({
         {fullWidth ? (
           children
         ) : (
-          <div className={cn("animate-fade-in flex-1 flex flex-col", className)}>
+          <div className={cn("animate-fade-in flex-1 flex flex-col w-full min-w-0", className)}>
             {children}
           </div>
         )}
