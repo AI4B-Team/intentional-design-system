@@ -137,7 +137,7 @@ export function AppSidebar({
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
+      <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
         <div className="flex items-center gap-2">
           <button
             onClick={collapsed ? onToggle : undefined}
@@ -177,7 +177,7 @@ export function AppSidebar({
       </div>
 
       {/* Workspace Switcher */}
-      <div className="py-2 border-b border-slate-700">
+      <div className="py-2" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
         <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 
@@ -196,8 +196,8 @@ export function AppSidebar({
                     }}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full",
-                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                      aivaOpen && "bg-gradient-to-r from-primary to-primary/60 text-white font-medium",
+                       "text-slate-400 hover:text-white hover:bg-white/5",
+                       aivaOpen && "bg-gradient-to-r from-primary/25 via-primary/15 to-transparent border border-primary/30 text-white shadow-glow-sm font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
@@ -236,8 +236,8 @@ export function AppSidebar({
                         onClick={onMobileClose}
                         className={cn(
                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                          "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                          isActive && "bg-brand-accent text-white font-medium",
+                           "text-slate-400 hover:text-white hover:bg-white/5",
+                           isActive && "nav-item-glow text-white font-semibold",
                           collapsed && "justify-center"
                         )}
                       >
@@ -269,7 +269,7 @@ export function AppSidebar({
 
             {/* Divider after top nav items */}
             <li className="py-2">
-              <div className="border-t border-slate-700" />
+              <div className="border-t border-white/[0.06]" />
             </li>
 
             {/* Contacts - Direct Link */}
@@ -281,8 +281,8 @@ export function AppSidebar({
                     onClick={onMobileClose}
                     className={cn(
                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                      isContactsActive && "bg-brand-accent text-white font-medium",
+                       "text-slate-400 hover:text-white hover:bg-white/5",
+                       isContactsActive && "nav-item-glow text-white font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
@@ -309,8 +309,8 @@ export function AppSidebar({
                     onClick={onMobileClose}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                      "text-slate-300 hover:text-white hover:bg-slate-700/50",
-                      isAppsActive && "bg-brand-accent text-white font-medium",
+                       "text-slate-400 hover:text-white hover:bg-white/5",
+                       isAppsActive && "nav-item-glow text-white font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
@@ -345,7 +345,7 @@ export function AppSidebar({
       <aside
         data-sidebar
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col bg-slate-900 transition-all duration-200",
+          "fixed inset-y-0 left-0 z-50 flex flex-col sidebar-premium noise-texture transition-all duration-200",
           collapsed ? "lg:w-16" : "lg:w-64",
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
         )}
