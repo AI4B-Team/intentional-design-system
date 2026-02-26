@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { Search, MapPin, Loader2, X, ChevronDown, Star, Clock, Zap, TrendingUp, BarChart3, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +28,13 @@ interface MarketplaceSearchBarProps {
 }
 
 export function MarketplaceSearchBar({ onLocationSelect, onModeSwitch, onQueryChange, defaultMode = "listings", className, placeholder }: MarketplaceSearchBarProps) {
-  const [query, setQuery] = React.useState("");
+  const location = useLocation();
+  // Initialize query from URL params so location persists across page switches
+  const initialQuery = React.useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("address") || params.get("search") || "";
+  }, []);
+  const [query, setQuery] = React.useState(initialQuery);
   const [suggestions, setSuggestions] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
@@ -36,6 +43,16 @@ export function MarketplaceSearchBar({ onLocationSelect, onModeSwitch, onQueryCh
   const debounceRef = React.useRef<NodeJS.Timeout>();
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+
+  // Sync query from URL when navigating between pages
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const urlQuery = params.get("address") || params.get("search") || "";
+    if (urlQuery && urlQuery !== query) {
+      setQuery(urlQuery);
+      onQueryChange?.(urlQuery);
+    }
+  }, [location.search]);
 
   React.useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
