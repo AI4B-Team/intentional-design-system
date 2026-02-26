@@ -359,14 +359,6 @@
 }
 
 /* Custom scrollbar (webkit) */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: hsl(var(--background-tertiary));
-}
 
 ::-webkit-scrollbar-thumb {
   background: hsl(var(--border));
