@@ -86,19 +86,17 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
             breadcrumbs={breadcrumbs}
           />
 
-          {/* Page Content - normal flow, browser handles scrolling */}
+          {/* Page Content */}
           <main
             ref={mainRef}
             className={cn(
-              cn(
-                "flex-1 flex flex-col min-h-0",
-                lockViewportHeight ? "overflow-hidden" : "overflow-visible"
-              ),
-              fullWidth ? "" : "p-3 sm:p-4 lg:p-6 w-full max-w-none"
+              "flex-1 min-w-0 flex flex-col min-h-0",
+              lockViewportHeight ? "overflow-hidden" : "overflow-auto",
+              fullWidth ? "" : "p-3 sm:p-4 lg:p-6"
             )}
             style={{ backgroundImage: 'var(--bg-gradient)' }}
           >
-            <div key={location.pathname} className="page-transition flex-1 flex flex-col">
+            <div key={location.pathname} className="page-transition flex-1 flex flex-col min-w-0">
               {children}
             </div>
           </main>
