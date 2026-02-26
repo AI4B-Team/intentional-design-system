@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Sparkles, Bot, Brain, MessageSquare, Zap, TrendingUp } from "lucide-react";
 import { AIVAChat } from "@/components/aiva/AIVAChat";
 import { AIActionsLog } from "@/components/ai/AIActionsLog";
+import { AIVASmartAlerts } from "@/components/aiva/AIVASmartAlerts";
 
 export default function AIVA() {
   return (
@@ -28,6 +29,9 @@ export default function AIVA() {
 
         {/* Capabilities Sidebar */}
         <div className="lg:w-80 flex-shrink-0 space-y-4">
+          {/* Smart Alerts */}
+          <AIVASmartAlerts />
+
           <Card className="p-4 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
             <div className="flex items-center gap-3 mb-3">
               <Bot className="h-5 w-5 text-primary" />
@@ -40,19 +44,11 @@ export default function AIVA() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">•</span>
-                Research market conditions online
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
                 Analyze deals and calculate ARV
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary mt-1">•</span>
                 Score and prioritize leads
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                Draft outreach messages
               </li>
             </ul>
           </Card>
