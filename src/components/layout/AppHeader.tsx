@@ -121,7 +121,7 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
 
   return (
     <header className={cn(
-      "h-14 flex items-center gap-2 px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300",
+      "h-14 flex items-center gap-2 px-3 sm:px-4 lg:px-6 sticky top-0 z-30 transition-all duration-300",
       isScrolled
         ? "bg-background/85 backdrop-blur-md border-b border-border/50 shadow-sm header-frosted dark:bg-[hsl(222_47%_6%_/_0.85)] dark:border-white/5"
         : "bg-background border-b border-border/30"
