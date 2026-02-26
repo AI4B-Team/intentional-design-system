@@ -101,10 +101,12 @@ export function WebsiteHero({
           {/* Left: Headlines & Trust */}
           <div className="pt-4">
             {/* Trust Badge */}
-            <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 mb-8">
-              <span className="text-sm" style={{ color: accentColor }}>✦</span>
-              <span className="text-sm text-gray-600 font-medium">{trustBadgeText || "Rated 4.9★ By 2,400+ Homeowners"}</span>
-            </div>
+            {trustBadgeText && (
+              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-1.5 mb-8">
+                <span className="text-sm" style={{ color: accentColor }}>✦</span>
+                <span className="text-sm text-gray-600 font-medium">{trustBadgeText}</span>
+              </div>
+            )}
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-2 leading-tight">
               {headline.split(/(?=Fast|Fair|Simple|Cash)/i).map((part, i) => {
@@ -118,17 +120,23 @@ export function WebsiteHero({
               })}
             </h1>
 
-            <p className="text-lg text-gray-600 mt-6 mb-6 max-w-lg">
-              {subheadline}
-            </p>
+            {subheadline && (
+              <p className="text-lg text-gray-600 mt-6 mb-6 max-w-lg">
+                {subheadline}
+              </p>
+            )}
 
             {/* Bold Benefits */}
-            <p className="font-bold text-gray-900 text-lg mb-1">
-              {benefitsLine || "NO Commissions! NO Repairs! NO Listing Fees! NO Hassles!"}
-            </p>
-            <p className="text-gray-500 mb-10">
-              {benefitsSubline || "Simply our cash for your house in 3 days."}
-            </p>
+            {benefitsLine && (
+              <p className="font-bold text-gray-900 text-lg mb-1">
+                {benefitsLine}
+              </p>
+            )}
+            {benefitsSubline && (
+              <p className="text-gray-500 mb-10">
+                {benefitsSubline}
+              </p>
+            )}
 
             {/* Quick Stats */}
             {quickStats && quickStats.length > 0 && (
