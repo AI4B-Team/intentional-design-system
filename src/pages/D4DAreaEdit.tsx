@@ -6,18 +6,11 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ChevronLeft,
-  MapPin,
-  Trash2,
-  Locate,
-  Loader2,
-  Square,
-  Circle,
-  Pentagon,
-} from 'lucide-react';
+import { ChevronLeft, Loader2 } from 'lucide-react';
 import { useD4DAreas } from '@/hooks/useD4DAreas';
+import { AreaDrawingMap } from '@/components/d4d/AreaDrawingMap';
 import { cn } from '@/lib/utils';
+import type { LatLngTuple } from 'leaflet';
 
 const colorOptions = [
   { value: 'hsl(220, 90%, 56%)', label: 'Blue' },
@@ -27,8 +20,6 @@ const colorOptions = [
   { value: 'hsl(280, 87%, 60%)', label: 'Purple' },
   { value: 'hsl(50, 98%, 50%)', label: 'Yellow' },
 ];
-
-type DrawingTool = 'polygon' | 'circle' | 'rectangle';
 
 export default function D4DAreaEdit() {
   const { id } = useParams<{ id: string }>();
@@ -41,7 +32,7 @@ export default function D4DAreaEdit() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [color, setColor] = useState(colorOptions[0].value);
-  const [drawingTool, setDrawingTool] = useState<DrawingTool>('polygon');
+  const [polygonCoords, setPolygonCoords] = useState<LatLngTuple[]>([]);
   const [saving, setSaving] = useState(false);
 
   // Load existing area data
@@ -50,21 +41,38 @@ export default function D4DAreaEdit() {
       setName(existingArea.name);
       setDescription(existingArea.description || '');
       setColor(existingArea.color || colorOptions[0].value);
+      // Load saved polygon
+      const saved = (existingArea as any).polygon_geojson as any;
+      if (saved?.coordinates?.[0]) {
+        // GeoJSON uses [lng, lat], convert to [lat, lng]
+        setPolygonCoords(
+          saved.coordinates[0].map((c: number[]) => [c[1], c[0]] as LatLngTuple)
+        );
+      }
     }
   }, [existingArea]);
+
+  // Convert [lat, lng] coords to GeoJSON Polygon geometry
+  const toGeoJSON = (coords: LatLngTuple[]) => {
+    if (coords.length < 3) return null;
+    const ring = coords.map((c) => [c[1], c[0]]); // [lng, lat]
+    ring.push(ring[0]); // close ring
+    return { type: 'Polygon', coordinates: [ring] };
+  };
 
   const handleSave = async () => {
     if (!name.trim()) return;
 
     setSaving(true);
     try {
+      const geoJson = toGeoJSON(polygonCoords);
       if (isNew) {
         await createArea.mutateAsync({
           name: name.trim(),
           description: description.trim() || null,
           color,
-          // In a real implementation, we'd include the boundary_coordinates here
-        });
+          boundary_coordinates: geoJson,
+        } as any);
       } else if (id) {
         await updateArea.mutateAsync({
           id,
@@ -72,7 +80,8 @@ export default function D4DAreaEdit() {
             name: name.trim(),
             description: description.trim() || null,
             color,
-          },
+            polygon_geojson: geoJson,
+          } as any,
         });
       }
       navigate('/d4d/areas');
@@ -143,59 +152,12 @@ export default function D4DAreaEdit() {
           <div>
             <label className="text-sm font-medium mb-2 block">Area Boundary</label>
             <Card>
-              <CardContent className="p-0">
-                {/* Drawing toolbar */}
-                <div className="flex items-center justify-between p-3 border-b">
-                  <div className="flex gap-2">
-                    <Button
-                      variant={drawingTool === 'polygon' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() => setDrawingTool('polygon')}
-                    >
-                      <Pentagon className="h-4 w-4 mr-1" />
-                      Polygon
-                    </Button>
-                    <Button
-                      variant={drawingTool === 'circle' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() => setDrawingTool('circle')}
-                    >
-                      <Circle className="h-4 w-4 mr-1" />
-                      Circle
-                    </Button>
-                    <Button
-                      variant={drawingTool === 'rectangle' ? 'secondary' : 'ghost'}
-                      size="sm"
-                      onClick={() => setDrawingTool('rectangle')}
-                    >
-                      <Square className="h-4 w-4 mr-1" />
-                      Rectangle
-                    </Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="ghost" size="sm">
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      Clear
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      <Locate className="h-4 w-4 mr-1" />
-                      My Location
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Map placeholder */}
-                <div className="h-64 bg-muted flex items-center justify-center">
-                  <div className="text-center">
-                    <MapPin className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                      Tap to draw {drawingTool} boundary
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Map integration coming soon
-                    </p>
-                  </div>
-                </div>
+              <CardContent className="p-0 overflow-hidden">
+                <AreaDrawingMap
+                  polygonCoords={polygonCoords}
+                  onPolygonChange={setPolygonCoords}
+                  fillColor={color}
+                />
               </CardContent>
             </Card>
           </div>

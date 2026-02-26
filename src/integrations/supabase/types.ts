@@ -2138,6 +2138,7 @@ export type Database = {
           last_driven_at: string | null
           name: string
           organization_id: string | null
+          polygon_geojson: Json | null
           properties_tagged: number | null
           times_driven: number | null
           total_miles_driven: number | null
@@ -2156,6 +2157,7 @@ export type Database = {
           last_driven_at?: string | null
           name: string
           organization_id?: string | null
+          polygon_geojson?: Json | null
           properties_tagged?: number | null
           times_driven?: number | null
           total_miles_driven?: number | null
@@ -2174,6 +2176,7 @@ export type Database = {
           last_driven_at?: string | null
           name?: string
           organization_id?: string | null
+          polygon_geojson?: Json | null
           properties_tagged?: number | null
           times_driven?: number | null
           total_miles_driven?: number | null
