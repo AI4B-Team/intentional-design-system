@@ -94,7 +94,6 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
               lockViewportHeight ? "overflow-hidden" : "overflow-auto",
               fullWidth ? "" : "p-3 sm:p-4 lg:p-6"
             )}
-            style={{ backgroundImage: 'var(--bg-gradient)' }}
           >
             <div key={location.pathname} className="page-transition flex-1 flex flex-col min-w-0">
               {children}
