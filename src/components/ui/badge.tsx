@@ -3,24 +3,24 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-lg font-medium transition-colors",
+  "inline-flex items-center gap-1 rounded-md font-semibold transition-colors ring-1 ring-inset",
   {
     variants: {
       variant: {
-        default: "bg-primary/10 text-primary",
-        secondary: "bg-muted text-muted-foreground",
-        success: "bg-success/10 text-success",
-        warning: "bg-warning/10 text-warning",
-        error: "bg-destructive/10 text-destructive",
-        destructive: "bg-destructive/10 text-destructive",
-        info: "bg-info/10 text-info",
-        outline: "border border-border text-foreground-secondary",
+        default: "bg-primary/8 text-primary ring-primary/20",
+        secondary: "bg-muted text-muted-foreground ring-border",
+        success: "bg-success/8 text-success ring-success/20",
+        warning: "bg-warning/8 text-warning ring-warning/20",
+        error: "bg-destructive/8 text-destructive ring-destructive/20",
+        destructive: "bg-destructive/8 text-destructive ring-destructive/20",
+        info: "bg-blue-500/8 text-blue-600 ring-blue-500/20",
+        outline: "bg-transparent border border-border text-foreground-secondary ring-0",
         // Heat Score Variants
-        hot: "bg-score-hot/10 text-score-hot",
-        warm: "bg-score-warm/10 text-score-warm",
-        moderate: "bg-score-moderate/10 text-score-moderate",
-        cool: "bg-score-cool/10 text-score-cool",
-        cold: "bg-score-cold/10 text-score-cold",
+        hot: "bg-score-hot/10 text-score-hot ring-score-hot/20",
+        warm: "bg-score-warm/10 text-score-warm ring-score-warm/20",
+        moderate: "bg-score-moderate/10 text-score-moderate ring-score-moderate/20",
+        cool: "bg-score-cool/10 text-score-cool ring-score-cool/20",
+        cold: "bg-score-cold/10 text-score-cold ring-score-cold/20",
       },
       size: {
         sm: "px-2 py-0.5 text-tiny",
@@ -36,11 +36,29 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+    VariantProps<typeof badgeVariants> {
+  dot?: boolean;
+}
 
-function Badge({ className, variant, size, ...props }: BadgeProps) {
+function Badge({ className, variant, size, dot, children, ...props }: BadgeProps) {
   return (
-    <div className={cn(badgeVariants({ variant, size }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
+      {dot && (
+        <span
+          className={cn(
+            "w-1.5 h-1.5 rounded-full",
+            variant === "success" && "bg-success",
+            variant === "warning" && "bg-warning",
+            variant === "error" && "bg-destructive",
+            variant === "destructive" && "bg-destructive",
+            variant === "default" && "bg-primary",
+            variant === "info" && "bg-blue-500",
+            (!variant || !["success", "warning", "error", "destructive", "info"].includes(variant)) && variant === "default" && "bg-primary"
+          )}
+        />
+      )}
+      {children}
+    </div>
   );
 }
 
