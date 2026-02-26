@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_websites ADD COLUMN custom_form_fields JSONB DEFAULT '[]'::jsonb;
