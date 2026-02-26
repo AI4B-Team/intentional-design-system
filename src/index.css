@@ -397,7 +397,6 @@
 
 /* Noise texture for dark surfaces */
 .noise-texture {
-  position: relative;
   overflow: hidden;
 }
 .noise-texture::before {
