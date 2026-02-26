@@ -30,6 +30,7 @@ import { DialerQuickAccess } from "@/components/dialer/DialerQuickAccess";
 import { NotificationsDropdown } from "./NotificationsDropdown";
 
 import { AddressAutocomplete } from "@/components/ui/address-autocomplete";
+import { MarketplaceSearchBar } from "@/components/marketplace-deals/MarketplaceSearchBar";
 
 interface Breadcrumb {
   label: string;
@@ -144,15 +145,30 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       </button>
 
       {/* Search with Address Autocomplete */}
-      <AddressAutocomplete
-        value={searchQuery}
-        onChange={setSearchQuery}
-        onSelect={handleAddressSelect}
-        className="hidden md:block flex-1 min-w-[240px] max-w-md"
-        showModeBadge
-        defaultMode={defaultSearchMode}
-        onModeSwitch={handleModeSwitch}
-      />
+      {isMarketplacePage ? (
+        <MarketplaceSearchBar
+          className="hidden md:block flex-1 min-w-[240px] max-w-md"
+          onLocationSelect={(loc) => {
+            const params = new URLSearchParams({
+              address: loc.displayName,
+              lat: loc.lat.toString(),
+              lng: loc.lng.toString(),
+            });
+            if (loc.bbox) params.set("bbox", loc.bbox.join(","));
+            navigate(`/marketplace?${params.toString()}`);
+          }}
+        />
+      ) : (
+        <AddressAutocomplete
+          value={searchQuery}
+          onChange={setSearchQuery}
+          onSelect={handleAddressSelect}
+          className="hidden md:block flex-1 min-w-[240px] max-w-md"
+          showModeBadge
+          defaultMode={defaultSearchMode}
+          onModeSwitch={handleModeSwitch}
+        />
+      )}
 
       {/* Cmd+K hint */}
       <button
