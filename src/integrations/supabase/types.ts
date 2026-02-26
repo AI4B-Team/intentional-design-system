@@ -8319,6 +8319,97 @@ export type Database = {
           },
         ]
       }
+      transaction_checklist: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          deal_id: string
+          id: string
+          item_key: string
+          organization_id: string | null
+          stage: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          deal_id: string
+          id?: string
+          item_key: string
+          organization_id?: string | null
+          stage: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          deal_id?: string
+          id?: string
+          item_key?: string
+          organization_id?: string | null
+          stage?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_checklist_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transaction_stage_notes: {
+        Row: {
+          created_at: string
+          deal_id: string
+          id: string
+          notes: string
+          organization_id: string | null
+          stage: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deal_id: string
+          id?: string
+          notes?: string
+          organization_id?: string | null
+          stage: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deal_id?: string
+          id?: string
+          notes?: string
+          organization_id?: string | null
+          stage?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transaction_stage_notes_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unified_actions: {
         Row: {
           completed_at: string | null
