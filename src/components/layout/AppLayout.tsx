@@ -3,7 +3,9 @@ import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "./AppSidebar";
 import { AppHeader } from "./AppHeader";
+import { CommandPalette } from "./CommandPalette";
 import { SidebarProvider } from "@/contexts/SidebarContext";
+import { useCommandPalette } from "@/hooks/useCommandPalette";
 
 interface Breadcrumb {
   label: string;
@@ -26,6 +28,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
   const shouldCollapseByDefault = collapsedByDefaultRoutes.includes(location.pathname) ||
     collapsedByDefaultPrefixes.some(prefix => location.pathname.startsWith(prefix));
   
+  const { open: cmdOpen, setOpen: setCmdOpen } = useCommandPalette();
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(shouldCollapseByDefault);
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const mainRef = React.useRef<HTMLElement>(null);
@@ -84,6 +87,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
           <AppHeader
             onMenuClick={() => setMobileMenuOpen(true)}
             breadcrumbs={breadcrumbs}
+            onOpenCommandPalette={() => setCmdOpen(true)}
           />
 
           {/* Page Content */}
@@ -101,6 +105,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
           </main>
         </div>
       </div>
+      <CommandPalette open={cmdOpen} onOpenChange={setCmdOpen} />
     </SidebarProvider>
   );
 }
