@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useQuery } from "@tanstack/react-query";
@@ -48,6 +48,7 @@ import {
   Rss,
   ChevronDown,
   X,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -62,6 +63,22 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Calendar as CalendarPicker } from "@/components/ui/calendar";
+import {
+  Select as UISelect,
+  SelectContent as UISelectContent,
+  SelectItem as UISelectItem,
+  SelectTrigger as UISelectTrigger,
+  SelectValue as UISelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -274,6 +291,7 @@ function handleQuickAction(
   action: "call" | "sms" | "reschedule" | "complete" | "snooze",
   completeAction?: ReturnType<typeof useCompleteAction>,
   updateAction?: ReturnType<typeof useUpdateAction>,
+  onReschedule?: (event: CalendarEvent) => void,
 ) {
   if (action === "call") {
     navigate(getEventNavigation(event));
@@ -283,9 +301,8 @@ function handleQuickAction(
     params.set("channel", "sms");
     navigate(`/communications?${params.toString()}`);
   } else if (action === "reschedule") {
-    toast.info("Reschedule coming soon", { description: "This will open a date picker" });
+    onReschedule?.(event);
   } else if (action === "complete") {
-    // Extract unified action ID from event id (prefixed with "ua-")
     const unifiedId = event.id.startsWith("ua-") ? event.id.slice(3) : null;
     if (unifiedId && completeAction) {
       completeAction.mutate(unifiedId);
@@ -312,11 +329,12 @@ function handleQuickAction(
 }
 
 // ─── Event Action Buttons ─────────────────────────────────
-function EventActions({ event, navigate, completeAction, updateAction }: { 
+function EventActions({ event, navigate, completeAction, updateAction, onReschedule }: { 
   event: CalendarEvent; 
   navigate: ReturnType<typeof useNavigate>;
   completeAction?: ReturnType<typeof useCompleteAction>;
   updateAction?: ReturnType<typeof useUpdateAction>;
+  onReschedule?: (event: CalendarEvent) => void;
 }) {
   const isActionable = event.isOverdue || event.type === "followup" || event.type === "offer_deadline";
   if (!isActionable) return null;
@@ -326,7 +344,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
       <div className="flex items-center justify-center gap-1 pt-1.5 border-t border-border mt-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-emerald-300 text-emerald-600 hover:bg-emerald-50 shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call", completeAction, updateAction); }}>
+            <Button size="sm" variant="outline" className="h-7 w-7 p-0 border-emerald-300 text-emerald-600 hover:bg-emerald-50 shadow-sm" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "call", completeAction, updateAction, onReschedule); }}>
               <Phone className="h-3.5 w-3.5" />
             </Button>
           </TooltipTrigger>
@@ -334,7 +352,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms", completeAction, updateAction); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "sms", completeAction, updateAction, onReschedule); }}>
               <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -342,7 +360,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule", completeAction, updateAction); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "reschedule", completeAction, updateAction, onReschedule); }}>
               <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -350,7 +368,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "complete", completeAction, updateAction); }}>
+            <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "complete", completeAction, updateAction, onReschedule); }}>
               <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
@@ -359,7 +377,7 @@ function EventActions({ event, navigate, completeAction, updateAction }: {
         {event.id.startsWith("ua-") && (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "snooze", completeAction, updateAction); }}>
+              <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, event, "snooze", completeAction, updateAction, onReschedule); }}>
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </TooltipTrigger>
@@ -406,6 +424,75 @@ export default function Calendar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [rescheduleEvent, setRescheduleEvent] = useState<CalendarEvent | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState<Date | undefined>();
+  const [rescheduleHour, setRescheduleHour] = useState("9");
+  const [rescheduleMinute, setRescheduleMinute] = useState("00");
+  const [rescheduleAmPm, setRescheduleAmPm] = useState<"AM" | "PM">("AM");
+  const [rescheduling, setRescheduling] = useState(false);
+
+  const openRescheduleDialog = useCallback((event: CalendarEvent) => {
+    setRescheduleEvent(event);
+    setRescheduleDate(event.date);
+    const h = event.date.getHours();
+    const m = event.date.getMinutes();
+    setRescheduleAmPm(h >= 12 ? "PM" : "AM");
+    setRescheduleHour(String(h === 0 ? 12 : h > 12 ? h - 12 : h));
+    setRescheduleMinute(String(m).padStart(2, "0"));
+  }, []);
+
+  const handleRescheduleConfirm = useCallback(async () => {
+    if (!rescheduleEvent || !rescheduleDate) return;
+    setRescheduling(true);
+
+    let hour24 = parseInt(rescheduleHour);
+    if (rescheduleAmPm === "PM" && hour24 !== 12) hour24 += 12;
+    if (rescheduleAmPm === "AM" && hour24 === 12) hour24 = 0;
+    const newDate = new Date(rescheduleDate);
+    newDate.setHours(hour24, parseInt(rescheduleMinute), 0, 0);
+    const newISO = newDate.toISOString();
+
+    try {
+      const eventId = rescheduleEvent.id;
+
+      if (eventId.startsWith("ua-")) {
+        // Unified action
+        const uaId = eventId.slice(3);
+        const { error } = await supabase
+          .from("unified_actions")
+          .update({ due_at: newISO, status: "pending" as const })
+          .eq("id", uaId);
+        if (error) throw error;
+      } else if (eventId.startsWith("followup-")) {
+        // Legacy call follow-up
+        const callId = eventId.replace("followup-", "");
+        const { error } = await supabase
+          .from("calls")
+          .update({
+            follow_up_date: format(newDate, "yyyy-MM-dd"),
+            follow_up_time: format(newDate, "h:mm a"),
+          })
+          .eq("id", callId);
+        if (error) throw error;
+      } else if (!eventId.startsWith("demo-") && !eventId.startsWith("stale-")) {
+        // Legacy appointment
+        const { error } = await supabase
+          .from("appointments")
+          .update({ scheduled_time: newISO })
+          .eq("id", eventId);
+        if (error) throw error;
+      }
+
+      toast.success(`Event rescheduled to ${format(newDate, "MMM d, yyyy 'at' h:mm a")}`);
+      setRescheduleEvent(null);
+      // Invalidate calendar queries to re-fetch
+      window.dispatchEvent(new Event("focus")); // triggers refetch
+    } catch (err: any) {
+      toast.error("Failed to reschedule", { description: err?.message || "Please try again" });
+    } finally {
+      setRescheduling(false);
+    }
+  }, [rescheduleEvent, rescheduleDate, rescheduleHour, rescheduleMinute, rescheduleAmPm]);
 
   const { data: fetchedEvents = [] } = useCalendarEvents(currentDate);
 
@@ -1274,7 +1361,7 @@ export default function Calendar() {
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <button
-                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule", completeAction, updateAction); }}
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule", completeAction, updateAction, openRescheduleDialog); }}
                                           className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
                                         >
                                           <CalendarClock className="h-3 w-3" />
@@ -1461,7 +1548,7 @@ export default function Calendar() {
                         <AIContext event={evt} />
 
                         {/* Actions */}
-                        <EventActions event={evt} navigate={navigate} completeAction={completeAction} updateAction={updateAction} />
+                        <EventActions event={evt} navigate={navigate} completeAction={completeAction} updateAction={updateAction} onReschedule={openRescheduleDialog} />
                       </div>
                     );
                   })}
@@ -1488,6 +1575,79 @@ export default function Calendar() {
           )}
         </div>
       </div>
+      {/* Reschedule Dialog */}
+      <Dialog open={!!rescheduleEvent} onOpenChange={(open) => { if (!open) setRescheduleEvent(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-lg">Reschedule Event</DialogTitle>
+          </DialogHeader>
+          {rescheduleEvent && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <p className="text-sm font-medium text-foreground">{rescheduleEvent.title}</p>
+                {rescheduleEvent.propertyAddress && (
+                  <p className="text-xs text-muted-foreground mt-0.5">{rescheduleEvent.propertyAddress}</p>
+                )}
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">New Date</Label>
+                <CalendarPicker
+                  mode="single"
+                  selected={rescheduleDate}
+                  onSelect={setRescheduleDate}
+                  className={cn("p-3 pointer-events-auto rounded-md border border-border")}
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">New Time</Label>
+                <div className="flex items-center gap-2">
+                  <UISelect value={rescheduleHour} onValueChange={setRescheduleHour}>
+                    <UISelectTrigger className="w-20">
+                      <UISelectValue />
+                    </UISelectTrigger>
+                    <UISelectContent>
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                        <UISelectItem key={h} value={String(h)}>{h}</UISelectItem>
+                      ))}
+                    </UISelectContent>
+                  </UISelect>
+                  <span className="text-muted-foreground font-medium">:</span>
+                  <UISelect value={rescheduleMinute} onValueChange={setRescheduleMinute}>
+                    <UISelectTrigger className="w-20">
+                      <UISelectValue />
+                    </UISelectTrigger>
+                    <UISelectContent>
+                      {["00", "15", "30", "45"].map((m) => (
+                        <UISelectItem key={m} value={m}>{m}</UISelectItem>
+                      ))}
+                    </UISelectContent>
+                  </UISelect>
+                  <UISelect value={rescheduleAmPm} onValueChange={(v) => setRescheduleAmPm(v as "AM" | "PM")}>
+                    <UISelectTrigger className="w-20">
+                      <UISelectValue />
+                    </UISelectTrigger>
+                    <UISelectContent>
+                      <UISelectItem value="AM">AM</UISelectItem>
+                      <UISelectItem value="PM">PM</UISelectItem>
+                    </UISelectContent>
+                  </UISelect>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setRescheduleEvent(null)} disabled={rescheduling}>
+              Cancel
+            </Button>
+            <Button onClick={handleRescheduleConfirm} disabled={!rescheduleDate || rescheduling}>
+              {rescheduling && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Reschedule
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
