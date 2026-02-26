@@ -978,7 +978,7 @@ Best regards,
                     disabled={isSubmitting}
                     icon={<Save />}
                   >
-                    Save as Draft
+                    Save As Draft
                   </Button>
                 )}
 
