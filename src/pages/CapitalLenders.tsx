@@ -587,7 +587,7 @@ export default function CapitalLenders() {
           ) : !filteredLenders || filteredLenders.length === 0 ? (
             <Card variant="default" padding="lg">
               <EmptyState
-                icon={<Building2 className="h-10 w-10 text-content-tertiary" />}
+                variant="search"
                 title="No lenders found"
                 description="Try adjusting your search or filters to find lenders."
               />

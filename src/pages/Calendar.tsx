@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { EmptyState } from "@/components/ui/empty-state";
 import {
   format,
   startOfMonth,
@@ -1131,10 +1132,12 @@ export default function Calendar() {
             {viewTab === "plan" && (
               <div className="space-y-5">
                 {filteredEvents.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <CalendarIcon className="h-12 w-12 text-muted-foreground/20 mb-4" />
-                    <p className="text-sm text-muted-foreground">No events found</p>
-                  </div>
+                  <EmptyState
+                    size="sm"
+                    variant="inbox"
+                    title="No events found"
+                    description="No events match your current filters. Try adjusting your view."
+                  />
                 ) : (
                   (() => {
                     const grouped = new Map<string, typeof filteredEvents>();

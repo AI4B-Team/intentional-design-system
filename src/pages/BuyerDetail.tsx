@@ -2,6 +2,7 @@ import * as React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -231,9 +232,13 @@ function BuyBoxTab({ buyer }: { buyer: Buyer }) {
 function DealHistoryTab({ buyer }: { buyer: Buyer }) {
   // Placeholder for deal history - would connect to actual deal data
   return (
-    <Card variant="default" padding="lg" className="text-center">
-      <Building2 className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
-      <p className="text-muted-foreground">No deals sent to this buyer yet</p>
+    <Card variant="default" padding="lg">
+      <EmptyState
+        size="sm"
+        variant="properties"
+        title="No deals sent yet"
+        description="Send deals from your pipeline to this buyer to start tracking interest."
+      />
     </Card>
   );
 }
@@ -241,9 +246,13 @@ function DealHistoryTab({ buyer }: { buyer: Buyer }) {
 function ActivityTab({ buyer }: { buyer: Buyer }) {
   // Placeholder for activity timeline
   return (
-    <Card variant="default" padding="lg" className="text-center">
-      <Clock className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
-      <p className="text-muted-foreground">No activity recorded yet</p>
+    <Card variant="default" padding="lg">
+      <EmptyState
+        size="sm"
+        variant="inbox"
+        title="No activity yet"
+        description="Activity will appear here once you interact with this buyer."
+      />
     </Card>
   );
 }
