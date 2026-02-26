@@ -49,6 +49,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useRealtimeNotifications, type RealtimeNotificationType } from "@/hooks/useRealtimeNotifications";
 
 // Notification types specific to real estate
 type NotificationType =
@@ -554,6 +555,7 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
 export function NotificationsDropdown() {
   const navigate = useNavigate();
   const { data: realNotifications = [], isLoading } = useRealNotifications();
+  const { notifications: realtimeNotifs, unreadCount: rtUnread, markAsRead: rtMarkRead, markAllAsRead: rtMarkAllRead } = useRealtimeNotifications();
   const [localNotifications, setLocalNotifications] = React.useState<Notification[]>([]);
   const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
   const [dismissedIds, setDismissedIds] = React.useState<Set<string>>(new Set());
@@ -561,15 +563,40 @@ export function NotificationsDropdown() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [isMuted, setIsMuted] = React.useState(false);
 
-  // Merge real notifications with local read/dismissed state
+  // Map realtime notification types to existing categories
+  const realtimeTypeMap: Record<RealtimeNotificationType, { notifType: NotificationType; category: NotificationCategory }> = {
+    new_message: { notifType: "sms_received", category: "messages" },
+    property_update: { notifType: "deal_stage", category: "deals" },
+    buyer_activity: { notifType: "buyer_interest", category: "deals" },
+    new_appointment: { notifType: "appointment", category: "tasks" },
+  };
+
+  // Merge real notifications + realtime notifications with local read/dismissed state
   const notifications = React.useMemo(() => {
-    return realNotifications
+    const mapped = realtimeNotifs.map((rt) => {
+      const mapping = realtimeTypeMap[rt.type];
+      return {
+        id: rt.id,
+        type: mapping.notifType,
+        title: rt.title,
+        message: rt.description,
+        timestamp: rt.timestamp,
+        read: rt.read,
+        priority: "high" as NotificationPriority,
+        category: mapping.category,
+        actionUrl: rt.href,
+        actionLabel: "View",
+      } satisfies Notification;
+    });
+
+    return [...mapped, ...realNotifications]
       .filter((n) => !dismissedIds.has(n.id))
       .map((n) => ({
         ...n,
         read: n.read || readIds.has(n.id),
-      }));
-  }, [realNotifications, readIds, dismissedIds]);
+      }))
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }, [realNotifications, realtimeNotifs, readIds, dismissedIds]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -580,10 +607,12 @@ export function NotificationsDropdown() {
 
   const handleMarkRead = (id: string) => {
     setReadIds((prev) => new Set([...prev, id]));
+    if (id.startsWith("rt-")) rtMarkRead(id);
   };
 
   const handleMarkAllRead = () => {
     setReadIds((prev) => new Set([...prev, ...notifications.map((n) => n.id)]));
+    rtMarkAllRead();
   };
 
   const handleDismiss = (id: string) => {
