@@ -89,6 +89,7 @@ export interface PropertyCardData {
   images?: string[];
   /** Number of pending unified actions for this property */
   pendingActionsCount?: number;
+  stageCategory?: "discovery" | "intent" | "commitment" | "outcome";
 }
 
 function formatMoney(n?: number) {
@@ -136,10 +137,18 @@ export function PropertyCard({
     <TooltipProvider delayDuration={300}>
       <div
         className={cn(
-          "bg-card rounded-2xl border border-border-subtle shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer"
+          "bg-card rounded-2xl border border-border-subtle shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer relative overflow-hidden"
         )}
         onClick={() => onOpenDetails?.(property.id)}
       >
+        <div className={cn(
+          "absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl",
+          property.stageCategory === "discovery" && "bg-red-400",
+          property.stageCategory === "intent" && "bg-amber-400",
+          property.stageCategory === "commitment" && "bg-blue-400",
+          property.stageCategory === "outcome" && "bg-emerald-400",
+          !property.stageCategory && "bg-border"
+        )} />
         {/* Top row: homeType badge + actions badge + time badge + menu */}
         <div className="p-3 pb-0">
           <div className="flex items-center justify-between">
