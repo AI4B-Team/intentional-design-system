@@ -1297,13 +1297,13 @@ export default function SellerWebsiteWizard() {
         </div>
 
         {/* Preview Content */}
-        <div className="flex-1 overflow-auto p-4 flex justify-center">
+        <div className="flex-1 overflow-hidden p-4 flex justify-center">
           <div
-            className="bg-background rounded-lg border border-border shadow-sm overflow-hidden transition-all duration-300"
+            className="bg-background rounded-lg border border-border shadow-sm overflow-hidden transition-all duration-300 flex flex-col"
             style={{
               width: getDeviceWidth(),
               maxWidth: "100%",
-              minHeight: "500px",
+              height: "100%",
             }}
           >
             {/* Mock browser chrome */}
@@ -1321,7 +1321,7 @@ export default function SellerWebsiteWizard() {
             </div>
 
             {/* Preview Body */}
-            <div className="p-0">
+            <div className="flex-1 overflow-y-auto">
               {/* Nav */}
               <div className="flex items-center justify-between px-6 py-3 border-b border-border">
                 <div className="flex items-center gap-2">
