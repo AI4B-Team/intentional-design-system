@@ -1,44 +1,25 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
-  label?: string;
+export interface FloatingInputProps
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "placeholder"> {
+  label: string;
   error?: string;
   hint?: string;
-  icon?: React.ReactNode;
   onChange?: ((value: string) => void) | ((e: React.ChangeEvent<HTMLInputElement>) => void);
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      className,
-      type,
-      label,
-      error,
-      hint,
-      icon,
-      onChange,
-      disabled,
-      required,
-      id,
-      ...props
-    },
-    ref
-  ) => {
+const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
+  ({ className, type, label, error, hint, onChange, disabled, required, id, value, defaultValue, ...props }, ref) => {
     const generatedId = React.useId();
     const inputId = id || generatedId;
     const hasError = Boolean(error);
+    const [isFocused, setIsFocused] = React.useState(false);
+    const hasValue = value !== undefined ? Boolean(value) : Boolean(defaultValue);
+    const isFloating = isFocused || hasValue;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!onChange) return;
-
-      // Support both styles:
-      // 1) onChange={(e) => ... e.target.value}
-      // 2) onChange={(value) => ...}
-      // We attempt the value-first call for compatibility.
-      // NOTE: Call sites that use a functional state updater must NOT read from `e` later.
       if (onChange.length === 1) {
         try {
           (onChange as (value: string) => void)(e.target.value);
@@ -52,52 +33,55 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="w-full">
-        {label && (
-          <label
-            htmlFor={inputId}
-            className="block text-small font-medium text-content mb-1.5"
-          >
-            {label}
-            {required && <span className="text-destructive ml-1">*</span>}
-          </label>
-        )}
         <div className="relative">
-          {icon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-content-tertiary [&>svg]:h-4 [&>svg]:w-4">
-              {icon}
-            </div>
-          )}
           <input
             type={type}
             id={inputId}
             className={cn(
-              "flex w-full px-3.5 py-2.5 rounded-lg border bg-background text-body transition-all duration-150",
-              "min-h-[44px]",
+              "peer flex w-full px-3.5 pt-5 pb-1.5 rounded-lg border bg-background text-body transition-all duration-150",
+              "min-h-[52px]",
               "shadow-inner-sm",
-              "placeholder:text-muted-foreground/40",
+              "placeholder:text-transparent",
               "focus-visible:outline-none focus-visible:border-primary/60",
               "focus-visible:shadow-[0_0_0_3px_hsl(160_84%_39%_/_0.12),inset_0_1px_2px_rgba(0,0,0,0.04)]",
               "hover:border-border/80 hover:shadow-inner-sm",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/30",
               "read-only:bg-muted/20",
-              icon && "pl-10",
               hasError
-                ? "border-destructive ring-2 ring-destructive/10 animate-shake"
+                ? "border-destructive ring-2 ring-destructive/10"
                 : "border-border",
               className
             )}
             ref={ref}
             disabled={disabled}
+            value={value}
+            defaultValue={defaultValue}
             onChange={handleChange}
+            onFocus={(e) => { setIsFocused(true); props.onFocus?.(e); }}
+            onBlur={(e) => { setIsFocused(false); props.onBlur?.(e); }}
+            placeholder={label}
             aria-invalid={hasError}
             aria-describedby={
               hasError ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
             }
             {...props}
           />
+          <label
+            htmlFor={inputId}
+            className={cn(
+              "absolute left-3.5 transition-all duration-200 pointer-events-none origin-left",
+              isFloating
+                ? "top-1.5 text-tiny font-medium text-primary/70 scale-100"
+                : "top-1/2 -translate-y-1/2 text-body text-muted-foreground/50",
+              hasError && isFloating && "text-destructive/70"
+            )}
+          >
+            {label}
+            {required && <span className="text-destructive ml-0.5">*</span>}
+          </label>
         </div>
         {hint && !error && (
-          <p id={`${inputId}-hint`} className="text-small text-content-tertiary mt-1.5">
+          <p id={`${inputId}-hint`} className="text-small text-muted-foreground mt-1.5">
             {hint}
           </p>
         )}
@@ -110,6 +94,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   }
 );
-Input.displayName = "Input";
+FloatingInput.displayName = "FloatingInput";
 
-export { Input };
+export { FloatingInput };
