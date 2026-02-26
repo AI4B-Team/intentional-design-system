@@ -85,6 +85,7 @@ export function PipelineDealCard({
     images: [], // TODO: Add images when available
     pendingActionsCount,
     stageCategory: stageConfig.category as "discovery" | "intent" | "commitment" | "outcome",
+    notesCount: deal.notes ? 1 : 0,
   };
 
   return (
