@@ -22,6 +22,7 @@ import {
   CheckSquare,
   Home,
   Calendar,
+  Command,
 } from "lucide-react";
 import { ProfileDropdown } from "./ProfileDropdown";
 import { HelpButton } from "@/components/help";
@@ -38,10 +39,11 @@ interface Breadcrumb {
 interface AppHeaderProps {
   onMenuClick: () => void;
   breadcrumbs?: Breadcrumb[];
+  onOpenCommandPalette?: () => void;
 }
 
 
-export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
+export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: AppHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -144,6 +146,15 @@ export function AppHeader({ onMenuClick, breadcrumbs }: AppHeaderProps) {
         defaultMode={defaultSearchMode}
         onModeSwitch={handleModeSwitch}
       />
+
+      {/* Cmd+K hint */}
+      <button
+        onClick={onOpenCommandPalette}
+        className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border/60 bg-surface-secondary hover:bg-surface-tertiary transition-colors text-xs text-content-secondary"
+      >
+        <Command className="h-3 w-3" />
+        <span>K</span>
+      </button>
 
       {/* Breadcrumbs (only if provided and has multiple items) */}
       {breadcrumbs && breadcrumbs.length > 1 && (
