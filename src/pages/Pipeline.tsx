@@ -1,4 +1,5 @@
 import * as React from "react";
+import confetti from "canvas-confetti";
 import { useNavigate } from "react-router-dom";
 import { PageLayout, PageHeader } from "@/components/layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -799,6 +800,9 @@ export default function Pipeline() {
       const activeDeal = deals.find(d => d.id === activeId);
       if (activeDeal && activeDeal.stage !== stageId) {
         updateDealStage.mutate({ id: activeId, stage: stageId });
+        if (stageId === "closed" || stageId === "sold") {
+          setTimeout(() => confetti({ particleCount: 60, spread: 80, origin: { x: 0.5, y: 0.4 }, colors: ["#10b981", "#34d399", "#ffffff", "#f59e0b"], zIndex: 9999 }), 100);
+        }
       }
       return;
     }
@@ -809,6 +813,9 @@ export default function Pipeline() {
       const activeDeal = deals.find(d => d.id === activeId);
       if (activeDeal && activeDeal.stage !== overDeal.stage) {
         updateDealStage.mutate({ id: activeId, stage: overDeal.stage });
+        if (overDeal.stage === "closed" || overDeal.stage === "sold") {
+          setTimeout(() => confetti({ particleCount: 60, spread: 80, origin: { x: 0.5, y: 0.4 }, colors: ["#10b981", "#34d399", "#ffffff", "#f59e0b"], zIndex: 9999 }), 100);
+        }
       }
     }
   };
@@ -819,6 +826,9 @@ export default function Pipeline() {
 
   const handleMoveDeal = (dealId: string, newStage: string) => {
     updateDealStage.mutate({ id: dealId, stage: newStage });
+    if (newStage === "closed" || newStage === "sold") {
+      setTimeout(() => confetti({ particleCount: 60, spread: 80, origin: { x: 0.5, y: 0.4 }, colors: ["#10b981", "#34d399", "#ffffff", "#f59e0b"], zIndex: 9999 }), 100);
+    }
   };
 
   const handleNavigateToProperty = () => {

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 export interface PipelineDeal {
   id: string;
@@ -116,10 +117,17 @@ export function useUpdatePipelineDealStage() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["pipeline-deals"] });
       queryClient.invalidateQueries({ queryKey: ["pipeline-stats"] });
       queryClient.invalidateQueries({ queryKey: ["pipeline-value-stats"] });
+
+      if (variables.stage === "closed" || variables.stage === "sold") {
+        confetti({ particleCount: 80, spread: 70, origin: { x: 0.2, y: 0.6 }, colors: ["#10b981", "#34d399", "#6ee7b7", "#ffffff", "#f59e0b"], zIndex: 9999 });
+        setTimeout(() => confetti({ particleCount: 80, spread: 70, origin: { x: 0.8, y: 0.6 }, colors: ["#10b981", "#34d399", "#6ee7b7", "#ffffff", "#f59e0b"], zIndex: 9999 }), 200);
+        setTimeout(() => confetti({ particleCount: 50, spread: 100, origin: { x: 0.5, y: 0.5 }, colors: ["#10b981", "#34d399", "#6ee7b7", "#ffffff", "#f59e0b"], startVelocity: 45, zIndex: 9999 }), 400);
+        toast.success("🎉 Deal Closed!", { description: "Congratulations! This deal has been marked as closed.", duration: 5000 });
+      }
     },
     onError: (error: Error) => {
       toast.error("Failed to update deal: " + error.message);
