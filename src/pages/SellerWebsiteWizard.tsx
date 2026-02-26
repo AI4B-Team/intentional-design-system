@@ -150,27 +150,27 @@ const CREATION_METHODS = [
 ];
 
 // ── Templates per site type ──
-const TEMPLATES: Record<string, Array<{ id: string; name: string; color: string; description: string }>> = {
+const TEMPLATES: Record<string, Array<{ id: string; name: string; color: string; accent: string; description: string }>> = {
   seller: [
-    { id: "modern-seller", name: "Modern Clean", color: "#2563EB", description: "Clean blue tones, trust-focused" },
-    { id: "bold-seller", name: "Bold & Urgent", color: "#DC2626", description: "Red/orange urgency design" },
-    { id: "friendly-seller", name: "Friendly & Warm", color: "#16A34A", description: "Welcoming green tones" },
-    { id: "professional-seller", name: "Professional", color: "#1E293B", description: "Dark/slate executive" },
+    { id: "modern-seller", name: "Modern Clean", color: "#2563EB", accent: "#10B981", description: "Clean blue tones, trust-focused" },
+    { id: "bold-seller", name: "Bold & Urgent", color: "#DC2626", accent: "#F97316", description: "Red/orange urgency design" },
+    { id: "friendly-seller", name: "Friendly & Warm", color: "#16A34A", accent: "#10B981", description: "Welcoming green tones" },
+    { id: "professional-seller", name: "Professional", color: "#1E293B", accent: "#3B82F6", description: "Dark/slate executive" },
   ],
   buyer: [
-    { id: "investor-modern", name: "Investor Modern", color: "#0EA5E9", description: "Clean sky blue investor appeal" },
-    { id: "deal-flow", name: "Deal Flow", color: "#8B5CF6", description: "Purple-accented deal showcase" },
-    { id: "marketplace", name: "Marketplace", color: "#059669", description: "Green grid-based listing view" },
+    { id: "investor-modern", name: "Investor Modern", color: "#0EA5E9", accent: "#10B981", description: "Clean sky blue investor appeal" },
+    { id: "deal-flow", name: "Deal Flow", color: "#8B5CF6", accent: "#EC4899", description: "Purple-accented deal showcase" },
+    { id: "marketplace", name: "Marketplace", color: "#059669", accent: "#10B981", description: "Green grid-based listing view" },
   ],
   company: [
-    { id: "corporate", name: "Corporate", color: "#1E293B", description: "Sleek dark professional" },
-    { id: "modern-brand", name: "Modern Brand", color: "#2563EB", description: "Clean blue branding" },
-    { id: "warm-company", name: "Warm & Personal", color: "#D97706", description: "Warm amber tones" },
+    { id: "corporate", name: "Corporate", color: "#1E293B", accent: "#3B82F6", description: "Sleek dark professional" },
+    { id: "modern-brand", name: "Modern Brand", color: "#2563EB", accent: "#10B981", description: "Clean blue branding" },
+    { id: "warm-company", name: "Warm & Personal", color: "#D97706", accent: "#F59E0B", description: "Warm amber tones" },
   ],
   squeeze: [
-    { id: "minimal-dark", name: "Minimal Dark", color: "#18181B", description: "Dark, high contrast" },
-    { id: "minimal-light", name: "Minimal Light", color: "#2563EB", description: "Clean white with accent" },
-    { id: "urgency", name: "Urgency", color: "#DC2626", description: "Red countdown style" },
+    { id: "minimal-dark", name: "Minimal Dark", color: "#18181B", accent: "#FAFAFA", description: "Dark, high contrast" },
+    { id: "minimal-light", name: "Minimal Light", color: "#2563EB", accent: "#10B981", description: "Clean white with accent" },
+    { id: "urgency", name: "Urgency", color: "#DC2626", accent: "#F97316", description: "Red countdown style" },
   ],
 };
 
@@ -734,6 +734,7 @@ export default function SellerWebsiteWizard() {
     updateData({
       template: templateId,
       primaryColor: template?.color || "#2563EB",
+      accentColor: template?.accent || "#10B981",
     });
   };
 
