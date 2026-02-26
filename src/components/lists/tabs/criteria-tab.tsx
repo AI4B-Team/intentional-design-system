@@ -47,25 +47,29 @@ export function CriteriaTab({ onSuccess }: CriteriaTabProps) {
 
   return (
     <div className="space-y-6">
-      {/* Coming Soon Notice */}
-      <Card className="border-dashed bg-muted/30">
+      {/* Connect a Data Provider */}
+      <Card className="border-primary/20 bg-primary/5">
         <CardContent className="p-6">
           <div className="flex items-start gap-4">
             <div className="p-3 rounded-full bg-primary/10">
-              <AlertCircle className="h-6 w-6 text-primary" />
+              <Landmark className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold mb-1">Data Integration Coming Soon</h3>
+              <h3 className="font-semibold mb-1">Connect a Data Provider</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                Building lists from property criteria will require integration with a data provider 
-                like PropStream, BatchLeads, or ATTOM. This feature is coming soon!
+                Link a data provider to build lists from property criteria like tax delinquency, pre-foreclosure, vacancy, and more.
               </p>
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline">PropStream</Badge>
-                <Badge variant="outline">BatchLeads</Badge>
-                <Badge variant="outline">ATTOM</Badge>
-                <Badge variant="outline">DataTree</Badge>
+              <div className="flex flex-wrap gap-2 mb-4">
+                <Badge variant="secondary">PropStream</Badge>
+                <Badge variant="secondary">BatchLeads</Badge>
+                <Badge variant="secondary">ATTOM</Badge>
+                <Badge variant="secondary">DataTree</Badge>
               </div>
+              <a href="/settings/integrations">
+                <Button variant="default" size="sm">
+                  Go to Integrations →
+                </Button>
+              </a>
             </div>
           </div>
         </CardContent>
@@ -75,7 +79,7 @@ export function CriteriaTab({ onSuccess }: CriteriaTabProps) {
       <div>
         <h3 className="font-medium mb-3">Available Presets</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          These presets will be available once a data provider is connected.
+          These presets will activate once a data provider is connected.
         </p>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

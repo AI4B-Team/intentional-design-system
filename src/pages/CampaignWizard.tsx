@@ -425,11 +425,13 @@ Best regards,
                 </div>
 
                 <div className="p-4 bg-surface-secondary rounded-medium">
-                  <p className="text-small font-medium text-content">Campaign Type</p>
-                  <p className="text-small text-content-secondary mt-1">Agent Outreach</p>
-                  <p className="text-tiny text-content-tertiary mt-2">
-                    More campaign types coming soon (expired listings, FSBOs, etc.)
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-small font-medium text-content">Campaign Type</p>
+                      <p className="text-small text-content-secondary mt-1">Agent Outreach</p>
+                    </div>
+                    <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">More types soon</span>
+                  </div>
                 </div>
               </div>
             )}

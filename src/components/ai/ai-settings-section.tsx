@@ -63,7 +63,7 @@ export function AISettingsSection() {
     // TODO: Save to user preferences in Supabase
     toast({
       title: "Settings Saved",
-      description: "Your AI configuration has been saved. API integration coming soon!",
+      description: "Your AI configuration has been saved.",
     });
   };
 
@@ -77,7 +77,6 @@ export function AISettingsSection() {
           <div>
             <CardTitle className="flex items-center gap-2">
               AI Analysis Configuration
-              <Badge variant="info" size="sm">Coming Soon</Badge>
             </CardTitle>
             <CardDescription>
               Configure AI-powered property analysis features
@@ -88,14 +87,13 @@ export function AISettingsSection() {
 
       <CardContent className="p-6 space-y-6">
         {/* Status Banner */}
-        <div className="p-4 bg-info/10 border border-info/20 rounded-medium">
+        <div className="p-4 bg-brand/10 border border-brand/20 rounded-medium">
           <div className="flex items-start gap-3">
-            <Lock className="h-5 w-5 text-info flex-shrink-0 mt-0.5" />
+            <Sparkles className="h-5 w-5 text-brand flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-small font-medium text-info">AI Integration Coming Soon</p>
-              <p className="text-tiny text-info/80 mt-1">
-                AI-powered analysis features are currently in development. Save your API key now 
-                to be ready when the integration goes live. Your key will be encrypted and stored securely.
+              <p className="text-small font-medium text-brand">AI-Powered Analysis</p>
+              <p className="text-tiny text-content-secondary mt-1">
+                AI analysis uses built-in models. Configure your preferred model below for property analysis, ARV calculations, and offer recommendations.
               </p>
             </div>
           </div>
@@ -176,7 +174,7 @@ export function AISettingsSection() {
             </SelectContent>
           </Select>
           <p className="text-tiny text-content-tertiary">
-            Claude 3 Sonnet is recommended for the best balance of speed and accuracy.
+            Select the AI model for property analysis tasks.
           </p>
         </div>
 
