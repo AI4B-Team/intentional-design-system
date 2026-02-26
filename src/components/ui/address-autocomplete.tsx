@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { Search, MapPin, Loader2, BarChart3, Store, ChevronDown, Star, Clock, Zap, TrendingUp } from "lucide-react";
+import { Search, MapPin, Loader2, BarChart3, Store, ChevronDown, Heart, Clock, Zap, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -253,7 +253,7 @@ export function AddressAutocomplete({
             {/* Tab bar */}
             <div className="flex border-b border-border">
               {([
-                { key: "saved" as const, label: "Saved", icon: Star },
+                { key: "saved" as const, label: "Saved", icon: Heart },
                 { key: "recent" as const, label: "Recent", icon: Clock },
                 { key: "quick" as const, label: "Quick", icon: Zap },
                 { key: "popular" as const, label: "Markets", icon: MapPin },
@@ -299,7 +299,7 @@ export function AddressAutocomplete({
                       className="w-full text-left px-3 py-2.5 text-sm hover:bg-muted transition-colors flex items-center gap-2"
                       onClick={() => handleDropdownSelect(saved.name)}
                     >
-                      <Star className="h-3.5 w-3.5 flex-shrink-0 fill-amber-400 text-amber-400" />
+                      <Heart className="h-3.5 w-3.5 flex-shrink-0 fill-red-400 text-red-400" />
                       <span className="flex-1 truncate">{saved.name}</span>
                       <Badge variant="secondary" className="h-5 px-1.5 text-[10px] font-medium bg-muted text-muted-foreground">
                         {saved.count}
