@@ -38,33 +38,8 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
     userToggledRef.current = false; // Reset user toggle on route change
   }, [location.pathname, shouldCollapseByDefault]);
 
-  // Auto-expand sidebar when scrolling down (only if collapsed and user hasn't manually toggled)
-  React.useEffect(() => {
-    const mainElement = mainRef.current;
-    if (!mainElement) return;
-
-    let lastScrollY = 0;
-    let ticking = false;
-
-    const handleScroll = () => {
-      const currentScrollY = mainElement.scrollTop;
-
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          // If scrolling down past 100px threshold and sidebar is collapsed, expand it
-          if (currentScrollY > 100 && sidebarCollapsed && !userToggledRef.current) {
-            setSidebarCollapsed(false);
-          }
-          lastScrollY = currentScrollY;
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    mainElement.addEventListener("scroll", handleScroll, { passive: true });
-    return () => mainElement.removeEventListener("scroll", handleScroll);
-  }, [sidebarCollapsed]);
+  // Scroll-based auto-expand removed — it caused unexpected layout shifts
+  // when switching tabs or navigating within collapsed-sidebar routes.
 
   const handleSidebarToggle = () => {
     userToggledRef.current = true; // Mark that user manually toggled
