@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
 import { NetworkLogo } from "./NetworkLogos";
 import { LeadCaptureForm, type FormData } from "./LeadCaptureForm";
+import type { CustomFormField } from "@/types/custom-form-fields";
 
 interface WebsiteHeroProps {
   companyName: string;
@@ -20,6 +21,7 @@ interface WebsiteHeroProps {
   formFields?: string[];
   formSubmitText?: string;
   formPrivacyText?: string;
+  customFormFields?: CustomFormField[];
   onFormSubmit?: (data: FormData) => Promise<void>;
   isFormSubmitting?: boolean;
   isFormSubmitted?: boolean;
@@ -46,6 +48,7 @@ export function WebsiteHero({
   formFields,
   formSubmitText,
   formPrivacyText,
+  customFormFields,
   onFormSubmit,
   isFormSubmitting,
   isFormSubmitted,
@@ -167,6 +170,7 @@ export function WebsiteHero({
                 onSubmit={onFormSubmit}
                 isSubmitting={isFormSubmitting}
                 isSubmitted={isFormSubmitted}
+                customFormFields={customFormFields}
               />
             </div>
           )}

@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -10,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Lock, Loader2 } from "lucide-react";
+import { Lock, Loader2, Star } from "lucide-react";
+import type { CustomFormField } from "@/types/custom-form-fields";
 
 const US_STATES = [
   "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
@@ -58,6 +61,7 @@ interface LeadCaptureFormProps {
   onSubmit: (data: FormData) => Promise<void>;
   isSubmitting?: boolean;
   isSubmitted?: boolean;
+  customFormFields?: CustomFormField[];
 }
 
 export interface FormData {
@@ -74,6 +78,7 @@ export interface FormData {
   sellTimeline: string;
   reasonSelling: string;
   notes: string;
+  customFields?: Record<string, string | string[]>;
 }
 
 export function LeadCaptureForm({
@@ -87,6 +92,7 @@ export function LeadCaptureForm({
   onSubmit,
   isSubmitting = false,
   isSubmitted = false,
+  customFormFields = [],
 }: LeadCaptureFormProps) {
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -102,7 +108,15 @@ export function LeadCaptureForm({
     sellTimeline: "",
     reasonSelling: "",
     notes: "",
+    customFields: {},
   });
+
+  const handleCustomChange = (fieldId: string, value: string | string[]) => {
+    setFormData((prev) => ({
+      ...prev,
+      customFields: { ...prev.customFields, [fieldId]: value },
+    }));
+  };
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -327,6 +341,111 @@ export function LeadCaptureForm({
             />
           </div>
         )}
+
+        {/* Custom Fields */}
+        {fields.filter((f) => f.startsWith("custom_")).map((fieldId) => {
+          const customField = customFormFields.find((cf) => cf.id === fieldId);
+          if (!customField) return null;
+          const customValue = formData.customFields?.[fieldId] || "";
+          return (
+            <div key={fieldId}>
+              <Label htmlFor={fieldId} className="text-sm font-medium">
+                {customField.label} {customField.required && "*"}
+              </Label>
+              {customField.type === "text" || customField.type === "email" || customField.type === "phone" || customField.type === "url" || customField.type === "number" ? (
+                <Input
+                  id={fieldId}
+                  type={customField.type === "number" ? "number" : customField.type === "email" ? "email" : customField.type === "phone" ? "tel" : customField.type === "url" ? "url" : "text"}
+                  required={customField.required}
+                  placeholder={customField.placeholder}
+                  value={typeof customValue === "string" ? customValue : ""}
+                  onChange={(e) => handleCustomChange(fieldId, e.target.value)}
+                  className="mt-1"
+                />
+              ) : customField.type === "textarea" ? (
+                <Textarea
+                  id={fieldId}
+                  required={customField.required}
+                  placeholder={customField.placeholder}
+                  value={typeof customValue === "string" ? customValue : ""}
+                  onChange={(e) => handleCustomChange(fieldId, e.target.value)}
+                  className="mt-1"
+                  rows={3}
+                />
+              ) : customField.type === "date" ? (
+                <Input
+                  id={fieldId}
+                  type="date"
+                  required={customField.required}
+                  value={typeof customValue === "string" ? customValue : ""}
+                  onChange={(e) => handleCustomChange(fieldId, e.target.value)}
+                  className="mt-1"
+                />
+              ) : customField.type === "dropdown" ? (
+                <Select
+                  value={typeof customValue === "string" ? customValue : ""}
+                  onValueChange={(v) => handleCustomChange(fieldId, v)}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={customField.placeholder || "Select..."} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(customField.options || []).map((opt) => (
+                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : customField.type === "radio" ? (
+                <RadioGroup
+                  value={typeof customValue === "string" ? customValue : ""}
+                  onValueChange={(v) => handleCustomChange(fieldId, v)}
+                  className="mt-2 space-y-1.5"
+                >
+                  {(customField.options || []).map((opt) => (
+                    <div key={opt} className="flex items-center gap-2">
+                      <RadioGroupItem value={opt} id={`${fieldId}-${opt}`} />
+                      <Label htmlFor={`${fieldId}-${opt}`} className="text-sm font-normal cursor-pointer">{opt}</Label>
+                    </div>
+                  ))}
+                </RadioGroup>
+              ) : customField.type === "checkbox" ? (
+                <div className="mt-2 space-y-1.5">
+                  {(customField.options || []).map((opt) => {
+                    const checked = Array.isArray(customValue) ? customValue.includes(opt) : false;
+                    return (
+                      <div key={opt} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${fieldId}-${opt}`}
+                          checked={checked}
+                          onCheckedChange={(v) => {
+                            const current = Array.isArray(customValue) ? customValue : [];
+                            handleCustomChange(fieldId, v ? [...current, opt] : current.filter((o) => o !== opt));
+                          }}
+                        />
+                        <Label htmlFor={`${fieldId}-${opt}`} className="text-sm font-normal cursor-pointer">{opt}</Label>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : customField.type === "rating" ? (
+                <div className="flex gap-1 mt-2">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      type="button"
+                      onClick={() => handleCustomChange(fieldId, String(n))}
+                      className="transition-colors"
+                    >
+                      <Star
+                        className={`h-6 w-6 ${Number(customValue) >= n ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
 
         {/* Submit Button */}
         <Button

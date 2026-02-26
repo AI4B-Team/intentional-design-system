@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import { CustomFieldBuilder } from "./CustomFieldBuilder";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -344,6 +345,14 @@ function OptInFormEditor({
             </div>
           </div>
         )}
+
+        {/* Custom Fields */}
+        <CustomFieldBuilder
+          customFields={data.customFormFields || []}
+          onUpdate={(fields) => onUpdate({ customFormFields: fields })}
+          formFields={formFields}
+          onUpdateFormFields={(fields) => onUpdate({ formFields: fields })}
+        />
       </div>
       <AIWriterField
         label="Submit Button Text"

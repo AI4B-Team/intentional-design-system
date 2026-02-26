@@ -33,6 +33,7 @@ interface WizardLivePreviewProps {
   formSubheadline?: string;
   formPrivacyText?: string;
   formFields?: string[];
+  customFormFields?: Array<{ id: string; type: string; label: string; placeholder?: string; options?: string[] }>;
   logoUrl?: string;
   selectedIcon?: string;
   showCredibilityBar?: boolean;
@@ -116,6 +117,7 @@ export function WizardLivePreview({
   formSubheadline: formSubheadlineProp,
   formPrivacyText: formPrivacyTextProp,
   formFields: formFieldsProp,
+  customFormFields = [],
   logoUrl,
   selectedIcon,
   showCredibilityBar = true,
@@ -282,7 +284,24 @@ export function WizardLivePreview({
                 return fields.map((fieldId) => {
                   if (rendered.has(fieldId)) return null;
                   const meta = FIELD_META[fieldId];
-                  if (!meta) return null;
+                  
+                  // Handle custom fields
+                  if (!meta) {
+                    const customField = customFormFields.find((cf: any) => cf.id === fieldId);
+                    if (!customField) return null;
+                    rendered.add(fieldId);
+                    return (
+                      <div key={fieldId}>
+                        <label className="text-[8px] font-medium text-foreground">{customField.label}</label>
+                        <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">
+                          {customField.type === "checkbox" || customField.type === "radio"
+                            ? (customField.options || []).slice(0, 2).join(", ") + ((customField.options?.length || 0) > 2 ? "..." : "")
+                            : customField.placeholder || customField.label}
+                        </div>
+                      </div>
+                    );
+                  }
+                  
                   // Check if this field and its pair are both in fields
                   if (meta.half && meta.pairWith && fields.includes(meta.pairWith) && !rendered.has(meta.pairWith)) {
                     const pairMeta = FIELD_META[meta.pairWith];
