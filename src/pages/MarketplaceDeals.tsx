@@ -7,6 +7,7 @@ import { MarketplaceListings } from "@/components/marketplace-deals/marketplace-
 import { LeadTypeBadges } from "@/components/marketplace-deals/lead-type-badges";
 import { useMockDeals } from "@/hooks/useMockDeals";
 import { useSavedDeals } from "@/hooks/useSavedDeals";
+import { useGeocodeSearch } from "@/hooks/useGeocodeSearch";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
 import { cn } from "@/lib/utils";
 
@@ -34,6 +35,9 @@ export default function MarketplaceDeals() {
   const zipsFromIntel = searchParams.get("zips");
   const addressFromSearch = searchParams.get("address");
   const leadTypeFromIntel = searchParams.get("leadType");
+  const latParam = searchParams.get("lat");
+  const lngParam = searchParams.get("lng");
+  const bboxParam = searchParams.get("bbox");
 
   const [viewMode, setViewMode] = useState<"list" | "grid">("grid");
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("map");
@@ -44,6 +48,15 @@ export default function MarketplaceDeals() {
   
   // Global card view mode state
   const [globalCardViewMode, setGlobalCardViewMode] = useState<CardViewMode>(() => getStoredGlobalViewMode());
+
+  // Search location state for map
+  const [searchLocation, setSearchLocation] = useState<{
+    lat: number;
+    lng: number;
+    bbox?: [string, string, string, string];
+    zoom?: number;
+  } | null>(null);
+  const { geocode } = useGeocodeSearch();
   
   const handleGlobalCardViewModeChange = (mode: CardViewMode) => {
     setGlobalCardViewMode(mode);
@@ -119,6 +132,41 @@ export default function MarketplaceDeals() {
     ];
   }, [filters.address]);
 
+  // Initialize searchLocation from URL params if present
+  useEffect(() => {
+    if (latParam && lngParam) {
+      const bbox = bboxParam ? bboxParam.split(',') as [string, string, string, string] : undefined;
+      setSearchLocation({
+        lat: parseFloat(latParam),
+        lng: parseFloat(lngParam),
+        bbox,
+      });
+    }
+  }, [latParam, lngParam, bboxParam]);
+
+  // Geocode when filters.address changes (fallback if no URL coords)
+  useEffect(() => {
+    if (!filters.address || filters.address.trim().length < 2) return;
+    // Skip if we already have coords from URL
+    if (latParam && lngParam) return;
+    
+    const timer = setTimeout(async () => {
+      const result = await geocode(filters.address);
+      if (result) {
+        setSearchLocation({
+          lat: result.lat,
+          lng: result.lng,
+          bbox: result.bbox,
+          zoom: result.type === 'house' || result.type === 'residential' ? 16 
+            : result.type === 'postcode' ? 13 
+            : 11,
+        });
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [filters.address, geocode, latParam, lngParam]);
+
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedDeals(deals.map((d) => d.id));
@@ -165,7 +213,7 @@ export default function MarketplaceDeals() {
               "h-full",
               layoutMode === "map" ? "w-full" : "w-1/2 hidden lg:block"
             )}>
-              <MarketplaceMap deals={deals} />
+              <MarketplaceMap deals={deals} searchLocation={searchLocation} />
             </div>
           )}
 

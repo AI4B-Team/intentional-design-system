@@ -89,7 +89,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   // Detect if input looks like a full address (starts with a number)
   const isFullAddress = (input: string) => /^\d+\s/.test(input.trim());
 
-  const handleAddressSelect = (address: string, placeId?: string) => {
+  const handleAddressSelect = (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => {
     if (!address.trim()) return;
     const query = address.trim();
 
@@ -100,11 +100,18 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       return;
     }
 
+    const params = new URLSearchParams({ address: query });
+    if (coords) {
+      params.set('lat', coords.lat.toString());
+      params.set('lng', coords.lng.toString());
+      if (coords.bbox) params.set('bbox', coords.bbox.join(','));
+    }
+
     // Context-aware routing: Intel page → intel results, everywhere else → marketplace listings
     if (isIntelPage) {
-      navigate(`/intel?address=${encodeURIComponent(query)}`);
+      navigate(`/intel?${params.toString()}`);
     } else {
-      navigate(`/marketplace?address=${encodeURIComponent(query)}`);
+      navigate(`/marketplace?${params.toString()}`);
     }
     setSearchQuery("");
   };

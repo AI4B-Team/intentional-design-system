@@ -8,46 +8,15 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-// Type declaration for Google Maps API on window
-declare global {
-  interface Window {
-    google?: {
-      maps: {
-        places: {
-          AutocompleteService: new () => {
-            getPlacePredictions: (
-              request: {
-                input: string;
-                types?: string[];
-                componentRestrictions?: { country: string };
-              },
-              callback: (
-                predictions: Array<{
-                  place_id: string;
-                  description: string;
-                  structured_formatting?: {
-                    main_text: string;
-                    secondary_text: string;
-                  };
-                }> | null,
-                status: string
-              ) => void
-            ) => void;
-          };
-          PlacesServiceStatus: {
-            OK: string;
-          };
-        };
-      };
-    };
-  }
-}
-
 interface AddressSuggestion {
   placeId: string;
   description: string;
   mainText: string;
   secondaryText: string;
+  lat?: number;
+  lng?: number;
+  bbox?: [string, string, string, string];
+  type?: string;
 }
 
 type SearchMode = "listings" | "intel";
@@ -55,15 +24,12 @@ type SearchMode = "listings" | "intel";
 interface AddressAutocompleteProps {
   value: string;
   onChange: (value: string) => void;
-  onSelect: (address: string, placeId?: string) => void;
+  onSelect: (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => void;
   placeholder?: string;
   className?: string;
   inputClassName?: string;
-  /** Current default mode based on page context */
   defaultMode?: SearchMode;
-  /** Callback when user clicks the alternate mode badge */
   onModeSwitch?: (mode: SearchMode) => void;
-  /** Whether to show the mode badge */
   showModeBadge?: boolean;
 }
 
@@ -94,77 +60,50 @@ export function AddressAutocomplete({
     setSavedDropdownOpen(false);
   };
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
-  // Fetch suggestions from Google Places API
+  // Fetch suggestions from Nominatim (OpenStreetMap)
   const fetchSuggestions = React.useCallback(async (query: string) => {
-    if (!query.trim() || query.length < 2 || !apiKey) {
+    if (!query.trim() || query.length < 2) {
       setSuggestions([]);
       return;
     }
-
     setIsLoading(true);
-
     try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=geocode&components=country:us&key=${apiKey}`
-      );
-      
-      // If CORS blocks the direct call, use the Places Service from the Maps JavaScript API
-      // For now, we'll use a fallback to simulated suggestions based on query
-      if (!response.ok) {
-        throw new Error("API call failed");
-      }
-      
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=us&addressdetails=1&limit=6&dedupe=1`;
+      const response = await fetch(url, {
+        headers: { 'Accept-Language': 'en-US,en' }
+      });
       const data = await response.json();
-      
-      if (data.predictions) {
-        const formatted: AddressSuggestion[] = data.predictions.map((p: {
-          place_id: string;
-          description: string;
-          structured_formatting: {
-            main_text: string;
-            secondary_text: string;
+      const formatted: AddressSuggestion[] = data
+        .filter((r: any) => r.lat && r.lon)
+        .map((r: any) => {
+          const a = r.address || {};
+          const main = a.house_number && a.road
+            ? `${a.house_number} ${a.road}`
+            : a.road || a.suburb || a.city || a.county || r.display_name.split(',')[0];
+          const secondary = r.display_name
+            .split(',')
+            .slice(1)
+            .join(',')
+            .trim()
+            .replace(/, United States$/, '');
+          return {
+            placeId: r.place_id?.toString() || r.osm_id?.toString() || Math.random().toString(),
+            description: r.display_name.replace(', United States', ''),
+            mainText: main,
+            secondaryText: secondary,
+            lat: parseFloat(r.lat),
+            lng: parseFloat(r.lon),
+            bbox: r.boundingbox as [string, string, string, string] | undefined,
+            type: r.type || r.class,
           };
-        }) => ({
-          placeId: p.place_id,
-          description: p.description,
-          mainText: p.structured_formatting.main_text,
-          secondaryText: p.structured_formatting.secondary_text,
-        }));
-        setSuggestions(formatted);
-      }
+        });
+      setSuggestions(formatted);
     } catch {
-      // Fallback: Use the Google Places script if loaded in the page
-      if (window.google?.maps?.places) {
-        const service = new window.google.maps.places.AutocompleteService();
-        service.getPlacePredictions(
-          {
-            input: query,
-            types: ["geocode"],
-            componentRestrictions: { country: "us" },
-          },
-          (predictions, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-              const formatted: AddressSuggestion[] = predictions.map((p) => ({
-                placeId: p.place_id,
-                description: p.description,
-                mainText: p.structured_formatting?.main_text || p.description,
-                secondaryText: p.structured_formatting?.secondary_text || "",
-              }));
-              setSuggestions(formatted);
-            } else {
-              setSuggestions([]);
-            }
-          }
-        );
-      } else {
-        setSuggestions([]);
-      }
+      setSuggestions([]);
     } finally {
       setIsLoading(false);
     }
-  }, [apiKey]);
+  }, []);
 
   // Debounced search
   React.useEffect(() => {
@@ -235,7 +174,11 @@ export function AddressAutocomplete({
 
   const handleSelect = (suggestion: AddressSuggestion) => {
     onChange(suggestion.description);
-    onSelect(suggestion.description, suggestion.placeId);
+    onSelect(
+      suggestion.description,
+      suggestion.placeId,
+      suggestion.lat != null ? { lat: suggestion.lat, lng: suggestion.lng!, bbox: suggestion.bbox } : undefined
+    );
     setShowSuggestions(false);
     setSelectedIndex(-1);
     inputRef.current?.blur();
