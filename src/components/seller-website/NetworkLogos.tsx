@@ -34,14 +34,14 @@ function normalise(name: string) {
 
 function ForbesLogo({ height, color }: { height: number; color: string }) {
   return (
-    <svg height={height} viewBox="0 0 200 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg height={height} viewBox="0 0 130 42" fill="none" xmlns="http://www.w3.org/2000/svg">
       <text
         x="0"
-        y="42"
+        y="36"
         fontFamily="Georgia, 'Times New Roman', serif"
         fontWeight="bold"
         fontStyle="italic"
-        fontSize="50"
+        fontSize="42"
         fill={color}
         letterSpacing="-1"
       >
@@ -53,17 +53,16 @@ function ForbesLogo({ height, color }: { height: number; color: string }) {
 
 function NBCLogo({ height }: { height: number }) {
   return (
-    <svg height={height} viewBox="0 0 160 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg height={height} viewBox="0 0 130 42" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Peacock feathers */}
-      <path d="M20 2 L28 18 L22 18Z" fill="#F6BE00" />
-      <path d="M28 18 L34 18 L28 2Z" fill="#FF6600" />
-      <path d="M34 18 L40 6 L28 18Z" fill="#CC0000" />
-      <path d="M34 18 L40 26 L34 18Z" fill="#6600CC" />
-      <path d="M28 18 L22 26 L16 18Z" fill="#009900" />
-      <path d="M28 18 L22 18 L16 10Z" fill="#0066CC" />
-      {/* Body */}
-      <ellipse cx="28" cy="20" rx="3" ry="4" fill="#999" />
-      <text x="52" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="22" fill="currentColor" letterSpacing="3">
+      <path d="M16 2 L24 18 L18 18Z" fill="#F6BE00" />
+      <path d="M24 18 L30 18 L24 2Z" fill="#FF6600" />
+      <path d="M30 18 L36 6 L24 18Z" fill="#CC0000" />
+      <path d="M30 18 L36 26 L30 18Z" fill="#6600CC" />
+      <path d="M24 18 L18 26 L12 18Z" fill="#009900" />
+      <path d="M24 18 L18 18 L12 10Z" fill="#0066CC" />
+      <ellipse cx="24" cy="20" rx="2.5" ry="3.5" fill="#999" />
+      <text x="46" y="30" fontFamily="Arial, sans-serif" fontWeight="900" fontSize="22" fill="currentColor" letterSpacing="3">
         NBC
       </text>
     </svg>
@@ -72,11 +71,11 @@ function NBCLogo({ height }: { height: number }) {
 
 function CBSLogo({ height, color }: { height: number; color: string }) {
   return (
-    <svg height={height} viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg height={height} viewBox="0 0 130 42" fill="none" xmlns="http://www.w3.org/2000/svg">
       {/* Eye icon */}
-      <ellipse cx="20" cy="20" rx="14" ry="10" fill="none" stroke={color} strokeWidth="2.5" />
-      <circle cx="20" cy="20" r="5" fill={color} />
-      <text x="40" y="28" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="22" fill={color} letterSpacing="2">
+      <ellipse cx="22" cy="21" rx="16" ry="11" fill="none" stroke={color} strokeWidth="2.5" />
+      <circle cx="22" cy="21" r="6" fill={color} />
+      <text x="48" y="30" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="24" fill={color} letterSpacing="2">
         CBS
       </text>
     </svg>
@@ -85,9 +84,9 @@ function CBSLogo({ height, color }: { height: number; color: string }) {
 
 function FoxLogo({ height, color }: { height: number; color: string }) {
   return (
-    <svg height={height} viewBox="0 0 100 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg height={height} viewBox="0 0 130 42" fill="none" xmlns="http://www.w3.org/2000/svg">
       <text
-        x="0"
+        x="10"
         y="36"
         fontFamily="Arial Black, Impact, sans-serif"
         fontWeight="900"
