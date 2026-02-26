@@ -43,6 +43,7 @@ import { cn } from "@/lib/utils";
 import { useAIVAChat } from "@/hooks/useAIVAChat";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Tooltip,
   TooltipContent,
@@ -132,11 +133,33 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
         stream.getTracks().forEach(track => track.stop());
         
-        // For now, show a toast that voice transcription is coming soon
-        // In production, you would send this to a speech-to-text service
-        toast.info("Voice input captured! Transcription coming soon.", {
-          description: "Voice-to-text will be available in a future update."
-        });
+        try {
+          // Upload to storage
+          const fileName = `voice-${Date.now()}.webm`;
+          const { error: uploadError } = await supabase.storage
+            .from('voice-recordings')
+            .upload(fileName, audioBlob, { contentType: 'audio/webm' });
+          
+          if (uploadError) throw uploadError;
+          
+          const { data: { publicUrl } } = supabase.storage
+            .from('voice-recordings')
+            .getPublicUrl(fileName);
+          
+          // Transcribe
+          const { data, error: fnError } = await supabase.functions.invoke('transcribe-audio', {
+            body: { audioUrl: publicUrl }
+          });
+          
+          if (fnError || !data?.transcript) throw fnError || new Error('No transcript');
+          
+          setInput(data.transcript);
+          setTimeout(() => inputRef.current?.focus(), 50);
+          toast.success("Voice captured — review and send");
+        } catch (err) {
+          console.error('Transcription failed:', err);
+          toast.error("Transcription failed — please try again");
+        }
       };
 
       recorder.start();
