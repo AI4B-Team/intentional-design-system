@@ -2,7 +2,7 @@ import * as React from "react";
 import { useSearchParams } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { DashboardLayout, PageHeader } from "@/components/layout";
-import { WholesaleCalculator, FixFlipCalculator, RentalCalculator, BRRRRCalculator, CreativeCalculator } from "@/components/calculators";
+import { WholesaleCalculator, FixFlipCalculator, RentalCalculator, BRRRRCalculator, CreativeCalculator, STRCalculator } from "@/components/calculators";
 import { useProperty } from "@/hooks/useProperty";
 import { Calculator, Home, TrendingUp, Building, Bed, Sparkles, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -184,23 +184,7 @@ export default function Calculators() {
           />
         )}
         {activeCalculator === "creative" && <CreativeCalculator />}
-        
-        {/* Placeholder for other calculators */}
-        {!["wholesale", "flip", "rental", "brrrr", "creative"].includes(activeCalculator) && (
-          <div className="flex items-center justify-center min-h-[400px] bg-surface-secondary/50 rounded-medium border border-border-subtle">
-            <div className="text-center">
-              <div className="h-16 w-16 rounded-full bg-surface-tertiary flex items-center justify-center mx-auto mb-4">
-                {activeType && <activeType.icon className="h-8 w-8 text-content-tertiary" />}
-              </div>
-              <h3 className="text-h3 font-medium text-content mb-2">
-                {activeType?.label} Calculator
-              </h3>
-              <p className="text-body text-content-secondary max-w-md">
-                This calculator is coming soon. For now, try the Wholesale, Fix & Flip, or Creative Finance calculators.
-              </p>
-            </div>
-          </div>
-        )}
+        {activeCalculator === "str" && <STRCalculator />}
       </div>
     </DashboardLayout>
   );

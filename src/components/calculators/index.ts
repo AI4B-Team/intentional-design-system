@@ -10,3 +10,4 @@ export { CreativeCalculator } from "./creative-calculator";
 export { ComplianceCheckCard } from "./compliance-check-card";
 export { StateComplianceBadge } from "./state-compliance-badge";
 export { ComplianceQuickCheck } from "./compliance-quick-check";
+export { STRCalculator } from "./str-calculator";
