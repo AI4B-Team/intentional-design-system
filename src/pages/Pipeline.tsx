@@ -417,61 +417,75 @@ function StageColumn({
       )}>
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
-          {/* Full-width white box containing all header elements */}
-          <div className="flex items-center justify-between bg-white px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
-            {/* Left: icon, label, count */}
-            <div className="flex items-center gap-2">
-              <stage.icon className={cn(
-                "h-4 w-4",
-                stage.category === "discovery" && "text-red-500",
-                stage.category === "intent" && "text-amber-500",
-                stage.category === "commitment" && "text-blue-500",
-                stage.category === "outcome" && "text-emerald-500"
-              )} />
-              <span className="text-small font-semibold">{stage.label}</span>
-              <Badge variant="secondary" size="sm">{deals.length}</Badge>
-            </div>
-            
-            {/* Right: + and 3-dot icons aligned far right */}
-            <div className="flex items-center gap-1">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button 
-                      className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-brand transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAddDeal(stage.id);
-                      }}
+          <div className="space-y-2">
+            {/* Top row: icon, label, count, actions */}
+            <div className="flex items-center justify-between bg-white dark:bg-card px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
+              <div className="flex items-center gap-2">
+                <stage.icon className={cn(
+                  "h-4 w-4",
+                  stage.category === "discovery" && "text-red-500",
+                  stage.category === "intent" && "text-amber-500",
+                  stage.category === "commitment" && "text-blue-500",
+                  stage.category === "outcome" && "text-emerald-500"
+                )} />
+                <span className="text-small font-semibold">{stage.label}</span>
+                <Badge variant="secondary" size="sm">{deals.length}</Badge>
+              </div>
+              <div className="flex items-center gap-1">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-brand transition-colors"
+                        onClick={(e) => { e.stopPropagation(); onAddDeal(stage.id); }}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">
+                      <p className="text-tiny">Add deal to {stage.label}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Plus className="h-4 w-4" />
+                      <MoreVertical className="h-4 w-4" />
                     </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p className="text-tiny">Add deal to {stage.label}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button 
-                    className="h-5 w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => onAddDeal(stage.id)}>
-                    Add Deal
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    View All in {stage.label}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => onAddDeal(stage.id)}>Add Deal</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>View All in {stage.label}</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
+
+            {/* Value stats row */}
+            {deals.length > 0 && (
+              <div className="flex items-center justify-between px-1">
+                <span className="text-tiny text-muted-foreground font-mono tabular-nums">
+                  ${totalValue >= 1000000
+                    ? `${(totalValue / 1000000).toFixed(1)}M`
+                    : totalValue >= 1000
+                    ? `${(totalValue / 1000).toFixed(0)}K`
+                    : totalValue.toLocaleString()}
+                </span>
+                {overdueCount > 0 ? (
+                  <span className="text-tiny text-destructive font-medium">
+                    {overdueCount} overdue
+                  </span>
+                ) : (
+                  <span className="text-tiny text-muted-foreground">
+                    avg {avgDaysInStage}d
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
