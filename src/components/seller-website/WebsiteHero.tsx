@@ -19,6 +19,7 @@ interface WebsiteHeroProps {
   formSubheadline?: string;
   formFields?: string[];
   formSubmitText?: string;
+  formPrivacyText?: string;
   onFormSubmit?: (data: FormData) => Promise<void>;
   isFormSubmitting?: boolean;
   isFormSubmitted?: boolean;
@@ -44,6 +45,7 @@ export function WebsiteHero({
   formSubheadline,
   formFields,
   formSubmitText,
+  formPrivacyText,
   onFormSubmit,
   isFormSubmitting,
   isFormSubmitted,
@@ -159,6 +161,7 @@ export function WebsiteHero({
                 formSubheadline={formSubheadline || "No Obligation. No Pressure. Takes 7 Minutes."}
                 formFields={formFields || ["address", "name", "phone", "email"]}
                 formSubmitText={formSubmitText || "Get My Cash Offer →"}
+                formPrivacyText={formPrivacyText}
                 accentColor={accentColor}
                 primaryColor={primaryColor}
                 onSubmit={onFormSubmit}

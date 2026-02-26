@@ -39,6 +39,7 @@ interface PageSection {
 
 const PAGE_SECTIONS: PageSection[] = [
   { id: "hero", label: "Hero Section", icon: LayoutTemplate, toggleKey: "", locked: true },
+  { id: "optinForm", label: "Opt-In Form", icon: Lock, toggleKey: "", locked: true },
   { id: "credibility", label: "Credibility Section", icon: Award, toggleKey: "showCredibilityBar" },
   { id: "stats", label: "Stats Bar", icon: BarChart3, toggleKey: "showStats" },
   { id: "howItWorks", label: "How It Works", icon: Wrench, toggleKey: "showHowItWorks" },
@@ -183,6 +184,165 @@ export function PageBuilderStep({ data, onUpdate, aiWriter, selectedSiteType }: 
   );
 }
 
+const FORM_FIELD_OPTIONS = [
+  { id: "address", label: "Property Address", icon: "📍" },
+  { id: "name", label: "Name (First & Last)", icon: "👤" },
+  { id: "phone", label: "Phone Number", icon: "📞" },
+  { id: "email", label: "Email Address", icon: "✉️" },
+  { id: "condition", label: "Property Condition", icon: "🏠" },
+  { id: "timeline", label: "Selling Timeline", icon: "📅" },
+  { id: "reason", label: "Reason for Selling", icon: "❓" },
+  { id: "property_type", label: "Property Type", icon: "🏘️" },
+  { id: "beds_baths", label: "Beds / Baths", icon: "🛏️" },
+  { id: "notes", label: "Additional Notes", icon: "📝" },
+  { id: "how_heard", label: "How Did You Hear About Us", icon: "📣" },
+];
+
+function OptInFormEditor({
+  data,
+  onUpdate,
+  aiWriter,
+}: {
+  data: Record<string, any>;
+  onUpdate: (updates: Record<string, any>) => void;
+  aiWriter: any;
+}) {
+  const formFields: string[] = data.formFields || ["address", "name", "phone", "email"];
+
+  const toggleField = (fieldId: string) => {
+    const current = [...formFields];
+    if (current.includes(fieldId)) {
+      onUpdate({ formFields: current.filter((f) => f !== fieldId) });
+    } else {
+      onUpdate({ formFields: [...current, fieldId] });
+    }
+  };
+
+  const moveField = (fieldId: string, direction: "up" | "down") => {
+    const current = [...formFields];
+    const idx = current.indexOf(fieldId);
+    if (idx < 0) return;
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= current.length) return;
+    [current[idx], current[swapIdx]] = [current[swapIdx], current[idx]];
+    onUpdate({ formFields: current });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Form Headline */}
+      <AIWriterField
+        label="Form Headline"
+        fieldType="formHeadline"
+        value={data.formHeadline || ""}
+        onChange={(v: string) => onUpdate({ formHeadline: v })}
+        placeholder="Get Your Free Cash Offer"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+      {/* Form Subheadline */}
+      <AIWriterField
+        label="Form Subheadline"
+        fieldType="formSubheadline"
+        value={data.formSubheadline || ""}
+        onChange={(v: string) => onUpdate({ formSubheadline: v })}
+        placeholder="No Obligation. No Pressure. Takes 7 Minutes."
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+
+      {/* Form Fields */}
+      <div>
+        <Label className="text-xs font-medium mb-2 block">Form Fields</Label>
+        <p className="text-[10px] text-muted-foreground mb-2">Toggle fields on/off and reorder them.</p>
+        <div className="space-y-1">
+          {/* Active fields first, in order */}
+          {formFields.map((fieldId, idx) => {
+            const opt = FORM_FIELD_OPTIONS.find((f) => f.id === fieldId);
+            if (!opt) return null;
+            return (
+              <div
+                key={fieldId}
+                className="flex items-center gap-2 rounded-md border bg-background px-2 py-1.5"
+              >
+                <span className="text-sm">{opt.icon}</span>
+                <span className="text-xs flex-1">{opt.label}</span>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  disabled={idx === 0}
+                  onClick={() => moveField(fieldId, "up")}
+                >
+                  <ChevronUp className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  disabled={idx === formFields.length - 1}
+                  onClick={() => moveField(fieldId, "down")}
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  className="text-destructive hover:text-destructive/80"
+                  onClick={() => toggleField(fieldId)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Inactive fields */}
+        {FORM_FIELD_OPTIONS.filter((f) => !formFields.includes(f.id)).length > 0 && (
+          <div className="mt-2">
+            <p className="text-[10px] text-muted-foreground mb-1">Available fields:</p>
+            <div className="flex flex-wrap gap-1">
+              {FORM_FIELD_OPTIONS.filter((f) => !formFields.includes(f.id)).map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-full border bg-muted/50 px-2.5 py-1 text-[10px] hover:bg-muted transition-colors"
+                  onClick={() => toggleField(opt.id)}
+                >
+                  <Plus className="h-3 w-3" />
+                  {opt.icon} {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Submit Button Text */}
+      <AIWriterField
+        label="Submit Button Text"
+        fieldType="formSubmitText"
+        value={data.formSubmitText || ""}
+        onChange={(v: string) => onUpdate({ formSubmitText: v })}
+        placeholder="Get My Cash Offer →"
+        loadingField={aiWriter.loadingField}
+        onGenerate={aiWriter.generateCopy}
+      />
+
+      {/* Privacy Text */}
+      <div>
+        <Label className="text-xs font-medium mb-1 block">Privacy Notice (below button)</Label>
+        <Input
+          value={data.formPrivacyText ?? "🔒 Your info is safe. We never share or sell your data."}
+          onChange={(e) => onUpdate({ formPrivacyText: e.target.value })}
+          placeholder="🔒 Your info is safe. We never share or sell your data."
+          className="text-xs"
+        />
+        <p className="text-[10px] text-muted-foreground mt-1">Leave blank to hide.</p>
+      </div>
+    </div>
+  );
+}
+
+
 function renderSectionEditor(
   sectionId: string,
   data: Record<string, any>,
@@ -233,17 +393,11 @@ function renderSectionEditor(
             loadingField={aiWriter.loadingField}
             onGenerate={aiWriter.generateCopy}
           />
-          <AIWriterField
-            label="Submit Button Text"
-            fieldType="formSubmitText"
-            value={data.formSubmitText || ""}
-            onChange={(v: string) => onUpdate({ formSubmitText: v })}
-            placeholder={selectedSiteType?.defaultCta || "Submit"}
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
-          />
         </div>
       );
+
+    case "optinForm":
+      return <OptInFormEditor data={data} onUpdate={onUpdate} aiWriter={aiWriter} />;
 
     case "credibility":
       return (

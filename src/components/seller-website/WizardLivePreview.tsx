@@ -29,6 +29,10 @@ interface WizardLivePreviewProps {
   heroHeadline: string;
   heroSubheadline: string;
   formSubmitText: string;
+  formHeadline?: string;
+  formSubheadline?: string;
+  formPrivacyText?: string;
+  formFields?: string[];
   logoUrl?: string;
   selectedIcon?: string;
   showCredibilityBar?: boolean;
@@ -108,6 +112,10 @@ export function WizardLivePreview({
   heroHeadline,
   heroSubheadline,
   formSubmitText,
+  formHeadline: formHeadlineProp,
+  formSubheadline: formSubheadlineProp,
+  formPrivacyText: formPrivacyTextProp,
+  formFields: formFieldsProp,
   logoUrl,
   selectedIcon,
   showCredibilityBar = true,
@@ -250,34 +258,69 @@ export function WizardLivePreview({
 
           {/* Right: Lead Form */}
           <div className="w-[200px] flex-shrink-0 rounded-xl p-3 bg-background shadow-lg border border-border">
-            <h3 className="text-[12px] font-bold text-center mb-0.5">{defaults.formHeadline}</h3>
-            <p className="text-[8px] text-muted-foreground text-center mb-2">{defaults.formSubheadline}</p>
+            <h3 className="text-[12px] font-bold text-center mb-0.5">{formHeadlineProp || defaults.formHeadline}</h3>
+            {(formSubheadlineProp || defaults.formSubheadline) && (
+              <p className="text-[8px] text-muted-foreground text-center mb-2">{formSubheadlineProp || defaults.formSubheadline}</p>
+            )}
             <div className="space-y-1.5">
-              <div>
-                <label className="text-[8px] font-medium text-foreground">Property Address</label>
-                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">123 Main St, City, State</div>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                <div>
-                  <label className="text-[8px] font-medium text-foreground">Your Name</label>
-                  <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">Full Name</div>
-                </div>
-                <div>
-                  <label className="text-[8px] font-medium text-foreground">Phone</label>
-                  <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">(555) 000-0000</div>
-                </div>
-              </div>
-              <div>
-                <label className="text-[8px] font-medium text-foreground">Email</label>
-                <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">you@example.com</div>
-              </div>
+              {(() => {
+                const fields = formFieldsProp || ["address", "name", "phone", "email"];
+                const FIELD_META: Record<string, { label: string; placeholder: string; half?: boolean; pairWith?: string }> = {
+                  address: { label: "Property Address", placeholder: "123 Main St, City, State" },
+                  name: { label: "Your Name", placeholder: "Full Name", half: true, pairWith: "phone" },
+                  phone: { label: "Phone", placeholder: "(555) 000-0000", half: true, pairWith: "name" },
+                  email: { label: "Email", placeholder: "you@example.com" },
+                  condition: { label: "Property Condition", placeholder: "Select condition" },
+                  timeline: { label: "Selling Timeline", placeholder: "Select timeline" },
+                  reason: { label: "Reason for Selling", placeholder: "Select reason" },
+                  property_type: { label: "Property Type", placeholder: "Select type" },
+                  beds_baths: { label: "Beds / Baths", placeholder: "e.g. 3/2" },
+                  notes: { label: "Additional Notes", placeholder: "Tell us more..." },
+                  how_heard: { label: "How Did You Hear About Us", placeholder: "Select" },
+                };
+                const rendered = new Set<string>();
+                return fields.map((fieldId) => {
+                  if (rendered.has(fieldId)) return null;
+                  const meta = FIELD_META[fieldId];
+                  if (!meta) return null;
+                  // Check if this field and its pair are both in fields
+                  if (meta.half && meta.pairWith && fields.includes(meta.pairWith) && !rendered.has(meta.pairWith)) {
+                    const pairMeta = FIELD_META[meta.pairWith];
+                    rendered.add(fieldId);
+                    rendered.add(meta.pairWith);
+                    return (
+                      <div key={fieldId} className="grid grid-cols-2 gap-1.5">
+                        <div>
+                          <label className="text-[8px] font-medium text-foreground">{meta.label}</label>
+                          <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">{meta.placeholder}</div>
+                        </div>
+                        <div>
+                          <label className="text-[8px] font-medium text-foreground">{pairMeta.label}</label>
+                          <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">{pairMeta.placeholder}</div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  rendered.add(fieldId);
+                  return (
+                    <div key={fieldId}>
+                      <label className="text-[8px] font-medium text-foreground">{meta.label}</label>
+                      <div className="border rounded px-2 py-1 text-[8px] text-muted-foreground bg-muted/30">{meta.placeholder}</div>
+                    </div>
+                  );
+                });
+              })()}
               <button
                 className="w-full rounded-lg py-1.5 text-[10px] font-bold text-white"
                 style={{ backgroundColor: accentColor }}
               >
                 {submitText}
               </button>
-              <p className="text-[7px] text-muted-foreground text-center">🔒 Your info is safe. We never share or sell your data.</p>
+              {(formPrivacyTextProp === undefined ? true : !!formPrivacyTextProp) && (
+                <p className="text-[7px] text-muted-foreground text-center">
+                  {formPrivacyTextProp || "🔒 Your info is safe. We never share or sell your data."}
+                </p>
+              )}
             </div>
           </div>
         </div>
