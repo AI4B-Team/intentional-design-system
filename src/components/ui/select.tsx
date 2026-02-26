@@ -37,10 +37,13 @@ const SelectTrigger = React.forwardRef<
         ref={ref}
         id={id}
         className={cn(
-          "flex w-full items-center justify-between px-3.5 rounded-small border bg-background text-body transition-all duration-150",
-          "placeholder:text-content-tertiary",
-          "focus:outline-none focus:border-brand-accent focus:ring-2 focus:ring-brand-accent/10",
-          "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-surface-secondary",
+          "flex w-full items-center justify-between px-3.5 rounded-lg border bg-background text-body transition-all duration-150",
+          "shadow-inner-sm",
+          "placeholder:text-muted-foreground/40",
+          "focus:outline-none focus:border-primary/60",
+          "focus:shadow-[0_0_0_3px_hsl(160_84%_39%_/_0.12),inset_0_1px_2px_rgba(0,0,0,0.04)]",
+          "hover:border-border/80",
+          "disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted/30",
           "[&>span]:line-clamp-1",
           hasError
             ? "border-destructive ring-2 ring-destructive/10"
