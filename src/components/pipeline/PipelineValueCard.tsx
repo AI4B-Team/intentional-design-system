@@ -3,6 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, AlertTriangle, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useCountUp } from "@/hooks/useCountUp";
+import { useCountUpCurrency } from "@/hooks/useCountUpCurrency";
 
 // Format currency helper
 function formatCurrency(value: number): string {
@@ -64,6 +66,11 @@ export function PipelineValueCard({
   contextIcon: ContextIcon,
   contextSeverity = "reminder",
 }: PipelineValueCardProps) {
+  const shouldAnimate = !isLoading;
+  const animatedCount = useCountUp(count, 1000, 100, shouldAnimate);
+  const animatedValue = useCountUpCurrency(totalValue, 1200, 150, shouldAnimate);
+  const animatedProfit = useCountUpCurrency(profitPotential, 1300, 200, shouldAnimate);
+
   const goalProgress = goal > 0 ? Math.min(Math.round((count / goal) * 100), 100) : 0;
   const hasGoal = goal > 0;
   const goalGap = goal > 0 && count < goal ? goal - count : 0;
@@ -127,7 +134,7 @@ export function PipelineValueCard({
 
         <div className="mt-4">
           <p className="text-[2.5rem] font-bold text-foreground tabular-nums leading-none">
-            {count}
+            {animatedCount}
           </p>
           {hasGoal && (
             <div className="mt-2">
@@ -210,13 +217,13 @@ export function PipelineValueCard({
           <div className="flex items-center justify-between">
             <span className="text-tiny text-muted-foreground uppercase">{valueLabel}</span>
             <span className="text-small font-semibold text-foreground tabular-nums">
-              {formatCurrency(totalValue)}
+              {animatedValue}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-tiny text-muted-foreground uppercase">{profitLabel}</span>
             <span className="text-small font-bold text-success tabular-nums">
-              {formatCurrency(profitPotential)}
+              {animatedProfit}
             </span>
           </div>
         </div>
