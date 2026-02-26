@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 const cardVariants = cva("rounded-medium text-card-foreground", {
   variants: {
     variant: {
-      default: "bg-white shadow-sm border border-border-subtle",
-      elevated: "bg-white shadow-md border border-border-subtle",
+      default: "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200",
+      elevated: "bg-white shadow-lg border border-border/40",
       bordered: "bg-white border border-border",
       interactive:
-        "bg-white shadow-sm border border-border-subtle hover:shadow-md hover:-translate-y-0.5 cursor-pointer transition-all duration-200",
+        "bg-white shadow-card border border-border/60 hover:shadow-card-hover hover:-translate-y-1 hover:border-primary/20 cursor-pointer transition-all duration-200",
     },
     padding: {
       none: "p-0",
