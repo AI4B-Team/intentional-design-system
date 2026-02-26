@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, ScanSearch, Loader2 } from "lucide-react";
+import { Layers, ChevronUp, ChevronDown, MapPin, PenTool, X, TrendingUp, Percent, Zap, RotateCcw, BarChart3, Brain, Home, DollarSign, ScanSearch, Loader2, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
@@ -26,6 +26,12 @@ interface AnalysisResult {
 
 interface MarketplaceMapProps {
   deals: MarketplaceDeal[];
+  searchLocation?: {
+    lat: number;
+    lng: number;
+    bbox?: [string, string, string, string];
+    zoom?: number;
+  } | null;
 }
 
 // Grouped heat map options with section headers
@@ -71,7 +77,110 @@ const parcelMapGroups = [
   },
 ];
 
-export function MarketplaceMap({ deals }: MarketplaceMapProps) {
+// ── Map search bar overlay ──────────────────────────────────────────
+function MapSearchBar({ onLocationSelect }: { 
+  onLocationSelect: (loc: { lat: number; lng: number; bbox?: [string, string, string, string] }) => void 
+}) {
+  const [query, setQuery] = React.useState("");
+  const [suggestions, setSuggestions] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const debounceRef = React.useRef<NodeJS.Timeout>();
+  const wrapperRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const search = React.useCallback(async (q: string) => {
+    if (!q.trim() || q.length < 2) { setSuggestions([]); return; }
+    setIsLoading(true);
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=us&addressdetails=1&limit=5`;
+      const res = await fetch(url, { headers: { 'Accept-Language': 'en-US,en' } });
+      const data = await res.json();
+      setSuggestions(data || []);
+    } catch { setSuggestions([]); }
+    finally { setIsLoading(false); }
+  }, []);
+
+  const handleChange = (val: string) => {
+    setQuery(val);
+    setShowSuggestions(true);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => search(val), 300);
+  };
+
+  const handleSelect = (r: any) => {
+    setQuery(r.display_name.replace(', United States', ''));
+    setShowSuggestions(false);
+    onLocationSelect({
+      lat: parseFloat(r.lat),
+      lng: parseFloat(r.lon),
+      bbox: r.boundingbox,
+    });
+  };
+
+  return (
+    <div ref={wrapperRef} className="absolute top-3 left-3 right-3 z-20 max-w-md">
+      <div className="bg-card rounded-lg shadow-lg border border-border/60 overflow-hidden">
+        <div className="flex items-center">
+          <Search className="ml-3 h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => handleChange(e.target.value)}
+            onFocus={() => query.length >= 2 && setShowSuggestions(true)}
+            placeholder="Search address, city, ZIP, or county..."
+            className="flex-1 h-11 px-3 text-sm outline-none bg-transparent placeholder:text-muted-foreground"
+          />
+          {isLoading && <Loader2 className="mr-3 h-4 w-4 animate-spin text-muted-foreground" />}
+          {query && !isLoading && (
+            <button
+              onClick={() => { setQuery(""); setSuggestions([]); }}
+              className="mr-2 h-5 w-5 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 text-muted-foreground"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="mt-1 bg-card rounded-lg shadow-lg border border-border/60 overflow-hidden max-h-72 overflow-y-auto">
+          {suggestions.map((r: any, i: number) => {
+            const a = r.address || {};
+            const main = a.house_number && a.road
+              ? `${a.house_number} ${a.road}`
+              : a.road || a.suburb || a.city || a.county || r.display_name.split(',')[0];
+            const secondary = r.display_name.replace(', United States', '').split(',').slice(1).join(',').trim();
+            return (
+              <button
+                key={r.place_id || i}
+                onClick={() => handleSelect(r)}
+                className="w-full px-4 py-3 flex items-start gap-3 hover:bg-muted/50 text-left transition-colors"
+              >
+                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate">{main}</p>
+                  <p className="text-xs text-muted-foreground truncate">{secondary}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function MarketplaceMap({ deals, searchLocation }: MarketplaceMapProps) {
   const [mapType, setMapType] = useState<"map" | "satellite">("map");
   const [isReady, setIsReady] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -331,6 +440,34 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
     });
   }, [filteredDeals, isReady]);
 
+  // Fly map to searchLocation when it changes
+  useEffect(() => {
+    if (!mapInstanceRef.current || !isReady || !searchLocation) return;
+    const { map } = mapInstanceRef.current;
+
+    if (searchLocation.bbox) {
+      const [south, north, west, east] = searchLocation.bbox.map(parseFloat);
+      try {
+        map.fitBounds([[south, west], [north, east]], { 
+          animate: true, 
+          duration: 0.8,
+          maxZoom: 14,
+          padding: [40, 40]
+        });
+      } catch {
+        map.flyTo([searchLocation.lat, searchLocation.lng], searchLocation.zoom || 11, {
+          animate: true,
+          duration: 0.8
+        });
+      }
+    } else {
+      map.flyTo([searchLocation.lat, searchLocation.lng], searchLocation.zoom || 13, {
+        animate: true,
+        duration: 0.8
+      });
+    }
+  }, [searchLocation, isReady]);
+
   // D4D Scan handler
   const handleScan = useCallback(() => {
     if (scanActive) {
@@ -537,8 +674,24 @@ export function MarketplaceMap({ deals }: MarketplaceMapProps) {
   return (
     <div className="flex h-full">
     <div className="relative flex-1 z-0">
+      {/* Map search bar overlay */}
+      <MapSearchBar onLocationSelect={(loc) => {
+        if (!mapInstanceRef.current || !isReady) return;
+        const { map } = mapInstanceRef.current;
+        if (loc.bbox) {
+          const [south, north, west, east] = loc.bbox.map(parseFloat);
+          try {
+            map.fitBounds([[south, west], [north, east]], { animate: true, maxZoom: 14, padding: [40, 40] });
+          } catch {
+            map.flyTo([loc.lat, loc.lng], 13, { animate: true });
+          }
+        } else {
+          map.flyTo([loc.lat, loc.lng], 13, { animate: true });
+        }
+      }} />
+
       {/* Map Type Toggle */}
-      <div className="absolute top-3 left-3 z-10">
+      <div className="absolute top-16 left-3 z-10">
         <div className="bg-white rounded-lg shadow-md overflow-hidden flex">
           <button
             onClick={() => setMapType("map")}
