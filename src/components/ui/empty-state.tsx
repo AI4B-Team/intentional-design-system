@@ -12,6 +12,8 @@ import {
   Plus,
   RefreshCw,
   LucideIcon,
+  Kanban,
+  Phone,
 } from "lucide-react";
 
 type EmptyStateVariant =
@@ -38,16 +40,44 @@ interface EmptyStateProps {
     onClick: () => void;
   };
   className?: string;
+  size?: "sm" | "md" | "lg";
 }
 
 const variantConfig: Record<EmptyStateVariant, { icon: LucideIcon; color: string }> = {
-  default: { icon: FileX, color: "text-content-tertiary" },
-  search: { icon: Search, color: "text-content-tertiary" },
+  default: { icon: FileX, color: "text-muted-foreground" },
+  search: { icon: Search, color: "text-muted-foreground" },
   error: { icon: AlertCircle, color: "text-destructive" },
-  inbox: { icon: Inbox, color: "text-content-tertiary" },
-  properties: { icon: Building2, color: "text-brand-accent" },
-  contacts: { icon: Users, color: "text-brand-accent" },
-  documents: { icon: FileText, color: "text-brand-accent" },
+  inbox: { icon: Inbox, color: "text-muted-foreground" },
+  properties: { icon: Building2, color: "text-primary" },
+  contacts: { icon: Users, color: "text-primary" },
+  documents: { icon: FileText, color: "text-primary" },
+};
+
+const sizeConfig = {
+  sm: {
+    container: "py-8 px-4",
+    iconOuter: "h-14 w-14",
+    iconInner: "h-6 w-6",
+    title: "text-sm font-semibold",
+    description: "text-xs max-w-xs",
+    gap: "mb-3",
+  },
+  md: {
+    container: "py-16 px-6",
+    iconOuter: "h-20 w-20",
+    iconInner: "h-9 w-9",
+    title: "text-h3 font-semibold",
+    description: "text-body max-w-sm",
+    gap: "mb-4",
+  },
+  lg: {
+    container: "py-24 px-8",
+    iconOuter: "h-28 w-28",
+    iconInner: "h-12 w-12",
+    title: "text-h2 font-semibold",
+    description: "text-body max-w-md",
+    gap: "mb-6",
+  },
 };
 
 export function EmptyState({
@@ -58,50 +88,67 @@ export function EmptyState({
   action,
   secondaryAction,
   className,
+  size = "md",
 }: EmptyStateProps) {
   const config = variantConfig[variant];
   const Icon = config.icon;
   const ActionIcon = action?.icon || Plus;
+  const s = sizeConfig[size];
+
+  const isError = variant === "error";
 
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center py-16 px-6 text-center",
+        "flex flex-col items-center justify-center text-center",
+        s.container,
         className
       )}
     >
-      {/* Illustration */}
-      <div className="relative mb-6">
+      {/* Icon container with gradient background */}
+      <div className={cn("relative", s.gap)}>
         <div
           className={cn(
-            "h-20 w-20 rounded-full flex items-center justify-center",
-            variant === "error" ? "bg-destructive/10" : "bg-surface-tertiary"
+            "rounded-2xl flex items-center justify-center",
+            s.iconOuter,
+            isError
+              ? "bg-destructive/10"
+              : "bg-gradient-to-b from-muted/80 to-muted/40 border border-border/50"
           )}
         >
-          {icon || <Icon className={cn("h-10 w-10", config.color)} />}
+          {icon || <Icon className={cn(s.iconInner, config.color, "opacity-70")} />}
         </div>
-        {/* Decorative rings */}
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 rounded-full border border-border-subtle scale-125 opacity-50" />
-          <div className="absolute inset-0 rounded-full border border-border-subtle scale-150 opacity-25" />
-        </div>
+
+        {/* Subtle glow behind icon */}
+        {!isError && (
+          <div
+            className="absolute inset-0 -z-10 rounded-2xl opacity-40 blur-xl"
+            style={{
+              background:
+                "radial-gradient(circle, hsl(var(--primary) / 0.15), transparent 70%)",
+            }}
+          />
+        )}
       </div>
 
       {/* Title */}
-      <h3 className="text-h3 font-semibold text-content mb-2">{title}</h3>
+      <h3 className={cn(s.title, "text-foreground", s.gap)}>{title}</h3>
 
       {/* Description */}
-      <p className="text-body text-content-secondary max-w-sm mb-6">{description}</p>
+      <p className={cn(s.description, "text-muted-foreground mb-6 leading-relaxed")}>
+        {description}
+      </p>
 
       {/* Actions */}
       {(action || secondaryAction) && (
         <div className="flex flex-col sm:flex-row items-center gap-3">
           {action && (
             <Button
-              variant="primary"
+              variant="default"
               onClick={action.onClick}
-              icon={<ActionIcon className="h-4 w-4" />}
+              className="gap-2"
             >
+              <ActionIcon className="h-4 w-4" />
               {action.label}
             </Button>
           )}
@@ -154,7 +201,7 @@ export function NoDataState({
   return (
     <EmptyState
       variant="inbox"
-      title={`No ${entityName} Yet`}
+      title={`No ${entityName} yet`}
       description={`Get started by adding your first ${entityName.replace(/s$/, "")}.`}
       action={
         onAdd
@@ -173,8 +220,8 @@ export function EmptyPropertiesState({ onAdd }: { onAdd?: () => void }) {
   return (
     <EmptyState
       variant="properties"
-      title="No Properties Yet"
-      description="Start building your pipeline by adding your first property."
+      title="No properties yet"
+      description="Start building your portfolio by adding your first property or importing a list."
       action={onAdd ? { label: "Add Property", onClick: onAdd, icon: Plus } : undefined}
     />
   );
@@ -184,8 +231,8 @@ export function EmptyContactsState({ onAdd }: { onAdd?: () => void }) {
   return (
     <EmptyState
       variant="contacts"
-      title="No Contacts Yet"
-      description="Add your first contact to start building relationships."
+      title="No contacts yet"
+      description="Import a list or add contacts manually to start building your database."
       action={onAdd ? { label: "Add Contact", onClick: onAdd, icon: Plus } : undefined}
     />
   );
