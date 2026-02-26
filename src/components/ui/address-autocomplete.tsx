@@ -205,7 +205,7 @@ export function AddressAutocomplete({
           className={cn(
             "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white",
+            "focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-white",
             showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
               ? "pr-[7.5rem]"
               : "pr-10",
