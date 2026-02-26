@@ -84,6 +84,7 @@ export function PipelineDealCard({
     sellerEmail: deal.contact_email || undefined,
     images: [], // TODO: Add images when available
     pendingActionsCount,
+    stageCategory: stageConfig.category as "discovery" | "intent" | "commitment" | "outcome",
   };
 
   return (
