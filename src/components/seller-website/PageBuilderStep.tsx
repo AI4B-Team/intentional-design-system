@@ -195,6 +195,15 @@ function renderSectionEditor(
       return (
         <div className="space-y-3">
           <AIWriterField
+            label="Trust Badge Text"
+            fieldType="trustBadgeText"
+            value={data.trustBadgeText || ""}
+            onChange={(v: string) => onUpdate({ trustBadgeText: v })}
+            placeholder="Rated 4.9★ By 2,400+ Homeowners"
+            loadingField={aiWriter.loadingField}
+            onGenerate={aiWriter.generateCopy}
+          />
+          <AIWriterField
             label="Headline"
             fieldType="heroHeadline"
             value={data.heroHeadline || ""}
@@ -214,15 +223,6 @@ function renderSectionEditor(
             loadingField={aiWriter.loadingField}
             onGenerate={aiWriter.generateCopy}
             context={data.heroHeadline}
-          />
-          <AIWriterField
-            label="Trust Badge Text"
-            fieldType="trustBadgeText"
-            value={data.trustBadgeText || ""}
-            onChange={(v: string) => onUpdate({ trustBadgeText: v })}
-            placeholder="Rated 4.9★ By 2,400+ Homeowners"
-            loadingField={aiWriter.loadingField}
-            onGenerate={aiWriter.generateCopy}
           />
           <AIWriterField
             label="Benefits Line"
