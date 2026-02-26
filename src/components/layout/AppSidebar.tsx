@@ -150,7 +150,7 @@ export function AppSidebar({
             <Building2 className="h-5 w-5 text-white" />
           </button>
           {!collapsed && (
-            <span className="text-lg font-bold text-white whitespace-nowrap">
+            <span className="text-lg font-bold whitespace-nowrap bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
               Real Elite
             </span>
           )}
