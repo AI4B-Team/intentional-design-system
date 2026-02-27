@@ -299,7 +299,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                         className={cn("rounded-md object-cover", isExpanded ? "w-20 h-20" : "w-16 h-16")}
                       />
                       <div
-                        className="absolute -top-1 -right-1 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white"
+                        className="absolute -top-1 -left-1 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white"
                         style={{ backgroundColor: color, color: "white" }}
                       >
                         {property.distressScore}
