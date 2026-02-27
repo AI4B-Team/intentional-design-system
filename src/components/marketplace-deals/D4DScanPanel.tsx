@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap, Bed, Bath, Tag } from "lucide-react";
+import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap, Bed, Bath, Tag, RefreshCw, ScanSearch } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,6 +17,7 @@ interface D4DScanPanelProps {
   properties: D4DProperty[];
   onClose: () => void;
   onFocusProperty: (property: D4DProperty) => void;
+  onRescan?: () => void;
   totalScanned: number;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
@@ -25,7 +26,7 @@ interface D4DScanPanelProps {
 type SortMode = "distress" | "equity" | "value" | "spread";
 type FilterLevel = "all" | "high" | "moderate" | "mild";
 
-export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanned, isExpanded = false, onToggleExpand }: D4DScanPanelProps) {
+export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, totalScanned, isExpanded = false, onToggleExpand }: D4DScanPanelProps) {
   const [sortMode, setSortMode] = useState<SortMode>("distress");
   const [filterLevel, setFilterLevel] = useState<FilterLevel>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -124,11 +125,11 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
         <div className="p-3 border-b bg-muted/30">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
-                <Flame className="h-4 w-4 text-destructive" />
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <ScanSearch className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">AI D4D Scanner</h3>
+                <h3 className="font-semibold text-sm">AI Scanner</h3>
                 <p className="text-xs text-muted-foreground">{totalScanned.toLocaleString()} properties scanned</p>
               </div>
             </div>
@@ -141,6 +142,12 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleExportCSV} title="Export CSV">
                 <Download className="h-4 w-4" />
               </Button>
+              {onRescan && (
+                <Button variant="default" size="sm" className="h-7 gap-1 text-xs" onClick={onRescan}>
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  Rescan
+                </Button>
+              )}
               <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onClose}>
                 <X className="h-4 w-4" />
               </Button>

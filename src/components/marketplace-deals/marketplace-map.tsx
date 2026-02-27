@@ -982,6 +982,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
         totalScanned={scanProperties.length}
         isExpanded={scanPanelExpanded}
         onToggleExpand={() => setScanPanelExpanded(!scanPanelExpanded)}
+        onRescan={handleScan}
       />
     )}
     </div>
