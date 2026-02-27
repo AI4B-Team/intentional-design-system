@@ -374,44 +374,51 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                             </div>
                           </>
                         ) : (
-                          <>
-                            <div className="h-5 w-28 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px] flex-shrink-0" />
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
-                            >
-                              <Lock className="h-3.5 w-3.5" />
-                              <span className="font-medium">Unlock Contact</span>
-                            </button>
-                          </>
+                          <div className="h-5 w-28 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px] flex-shrink-0" />
                         )}
                       </div>
                     </div>
 
-                    {/* Right column: Tags + Chevron */}
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                      <button className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors">
+                    {/* Right column: Tags, Chevron, Unlock */}
+                    <div className="flex flex-col items-end justify-between flex-shrink-0 self-stretch">
+                      {/* Top: Chevron */}
+                      <button className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors border border-border">
                         {isItemExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                       </button>
-                      {property.vacant && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-amber-300 text-amber-700 bg-amber-50 font-medium">
-                          Vacant
-                        </Badge>
-                      )}
-                      {property.preForeclosure && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-red-300 text-red-700 bg-red-50 font-medium">
-                          Pre-FC
-                        </Badge>
-                      )}
-                      {property.taxLien && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-orange-300 text-orange-700 bg-orange-50 font-medium">
-                          Tax Lien
-                        </Badge>
-                      )}
-                      {property.probate && (
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-purple-300 text-purple-700 bg-purple-50 font-medium">
-                          Probate
-                        </Badge>
+
+                      {/* Middle: Tags */}
+                      <div className="flex flex-col items-end gap-1">
+                        {property.vacant && (
+                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-amber-300 text-amber-700 bg-amber-50 font-medium">
+                            Vacant
+                          </Badge>
+                        )}
+                        {property.preForeclosure && (
+                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-red-300 text-red-700 bg-red-50 font-medium">
+                            Pre-FC
+                          </Badge>
+                        )}
+                        {property.taxLien && (
+                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-orange-300 text-orange-700 bg-orange-50 font-medium">
+                            Tax Lien
+                          </Badge>
+                        )}
+                        {property.probate && (
+                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-purple-300 text-purple-700 bg-purple-50 font-medium">
+                            Probate
+                          </Badge>
+                        )}
+                      </div>
+
+                      {/* Bottom: Unlock Contact (non-top-plan only) */}
+                      {!isTopPlan && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
+                        >
+                          <Lock className="h-3.5 w-3.5" />
+                          <span className="font-medium">Unlock Contact</span>
+                        </button>
                       )}
                     </div>
                   </div>
