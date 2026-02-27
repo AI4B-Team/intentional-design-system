@@ -106,7 +106,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
     <>
       <div className={cn(
         "h-full flex flex-col bg-background border-l relative transition-all duration-300",
-        isExpanded ? "w-full min-w-0" : "w-[460px] min-w-[460px]"
+        isExpanded ? "w-full min-w-0" : "w-[520px] min-w-[520px]"
       )}>
         {/* Property detail overlay */}
         {detailProperty && (
