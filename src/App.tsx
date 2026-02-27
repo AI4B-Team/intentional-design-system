@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { AIVAProvider } from "@/contexts/AIVAContext";
 import { CallProvider } from "@/contexts/CallContext";
+import { D4DScanProvider } from "@/contexts/D4DScanContext";
 import { LiveCallOverlay } from "@/components/calling/LiveCallOverlay";
 import { FloatingCallBanner } from "@/components/calling/FloatingCallBanner";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -152,6 +153,7 @@ const App = () => (
         <OrganizationProvider>
           <AIVAProvider>
             <CallProvider>
+            <D4DScanProvider>
             <TooltipProvider>
               <PWAProvider>
                 <Toaster />
@@ -1143,6 +1145,7 @@ const App = () => (
               </BrowserRouter>
               </PWAProvider>
             </TooltipProvider>
+            </D4DScanProvider>
             </CallProvider>
           </AIVAProvider>
         </OrganizationProvider>

@@ -15,6 +15,7 @@ import { generateD4DProperties, getDistressColor, type D4DProperty } from "./d4d
 import { D4DScanPanel } from "./D4DScanPanel";
 import { D4DScanOverlay } from "./D4DScanOverlay";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useD4DScan } from "@/contexts/D4DScanContext";
 
 interface AnalysisResult {
   propertyCount: number;
@@ -157,11 +158,8 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
   const [showLocationOutline, setShowLocationOutline] = useState(true);
   const [showClusters, setShowClusters] = useState(true);
   
-  // D4D Scan states
-  const [scanActive, setScanActive] = useState(false);
-  const [scanLoading, setScanLoading] = useState(false);
-  const [scanProperties, setScanProperties] = useState<D4DProperty[]>([]);
-  const [scanPanelExpanded, setScanPanelExpanded] = useState(false);
+  // D4D Scan states — persisted in context so results survive tab switches
+  const { scanActive, setScanActive, scanLoading, setScanLoading, scanProperties, setScanProperties, scanPanelExpanded, setScanPanelExpanded, clearScan } = useD4DScan();
   const scanMarkersRef = useRef<any[]>([]);
 
   const loadedRef = useRef(false);
@@ -983,7 +981,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
         onFocusProperty={handleFocusScanProperty}
         totalScanned={scanProperties.length}
         isExpanded={scanPanelExpanded}
-        onToggleExpand={() => setScanPanelExpanded(prev => !prev)}
+        onToggleExpand={() => setScanPanelExpanded(!scanPanelExpanded)}
       />
     )}
     </div>
