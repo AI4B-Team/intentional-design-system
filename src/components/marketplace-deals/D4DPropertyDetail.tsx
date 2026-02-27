@@ -213,17 +213,7 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
                   <Users className="h-3 w-3" />
                   View Matched Buyers
                 </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 text-[10px] gap-1 mt-2 bg-stone-800 text-white hover:bg-stone-700 border-stone-800"
-                  onClick={() => setShowUpgrade(true)}
-                >
-                  <Crown className="h-3 w-3" />
-                  Upgrade To Connect With These Buyers
-                </Button>
-              )}
+              ) : null}
             </div>
           </Section>
 
