@@ -493,7 +493,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                         </div>
                         <div className="flex flex-wrap gap-1 mb-1.5">
                           {buyerTypes.map(type => (
-                            <Badge key={type} variant="outline" className="text-[9px] px-1.5 py-0 bg-background/80 border-amber-200 text-amber-800">
+                            <Badge key={type} variant="outline" className="text-[9px] px-1.5 py-0 bg-white border-amber-200 text-amber-800">
                               {type}
                             </Badge>
                           ))}
