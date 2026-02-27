@@ -410,11 +410,11 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                         )}
                       </div>
 
-                      {/* Bottom: Unlock Contact (non-top-plan only) */}
+                      {/* Bottom: Unlock Contact (always shown for non-top-plan) */}
                       {!isTopPlan && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
+                          className="flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 transition-colors mt-auto"
                         >
                           <Lock className="h-3.5 w-3.5" />
                           <span className="font-medium">Unlock Contact</span>
