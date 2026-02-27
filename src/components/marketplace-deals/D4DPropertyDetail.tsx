@@ -1,10 +1,14 @@
-import React from "react";
-import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2, PhoneCall, MailPlus, Brain, Eye, Landmark } from "lucide-react";
+import React, { useState } from "react";
+import { X, MapPin, User, Mail, Phone, AtSign, Droplets, FileText, Shield, DollarSign, Home, Ruler, Calendar, TrendingUp, AlertTriangle, Building2, PhoneCall, MailPlus, Brain, Eye, Landmark, Lock, Crown, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { D4DProperty } from "./d4d-scan-data";
 import { getDistressColor, getDistressLabel } from "./d4d-scan-data";
+import { getPropertyBuyerCount, getBuyerMatchReason, getBuyerTypes } from "./D4DBuyerBanner";
+import { D4DUpgradeModal } from "./D4DUpgradeModal";
+import { useIsTopPlan } from "@/hooks/useIsTopPlan";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 interface D4DPropertyDetailProps {
@@ -15,8 +19,20 @@ interface D4DPropertyDetailProps {
 
 export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDetailProps) {
   const color = getDistressColor(property.distressScore);
+  const { isTopPlan } = useIsTopPlan();
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const buyerCount = getPropertyBuyerCount(property);
+  const buyerReason = getBuyerMatchReason(property);
+  const buyerTypes = getBuyerTypes(property);
+
+  const handleGatedAction = () => {
+    if (isTopPlan) return true;
+    setShowUpgrade(true);
+    return false;
+  };
 
   return (
+    <>
     <div className="absolute inset-0 z-30 bg-background flex flex-col">
       {/* Header with street view */}
       <div className="relative">
@@ -78,57 +94,78 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
             </div>
           </Section>
 
-          {/* Owner info */}
+          {/* Owner info — gated */}
           <Section title="Owner / Skip Trace">
-            <div className="space-y-1.5 text-xs">
-              <Detail icon={User} label="Owner" value={property.ownerName} />
-              <Detail icon={Building2} label="Type" value={property.ownerType.charAt(0).toUpperCase() + property.ownerType.slice(1)} />
-              <Detail icon={MapPin} label="Mailing" value={property.mailingAddress} />
-              <div className="flex items-center gap-2 mt-1">
-                <Badge
-                  variant={property.mailStatus === "deliverable" ? "default" : "destructive"}
-                  className="text-[10px] px-1.5 py-0 cursor-pointer"
-                  onClick={() => {
-                    if (property.mailStatus === "deliverable") {
-                      toast.success(`Preparing mailer to ${property.ownerName}`, { description: property.mailingAddress });
-                    } else {
-                      toast.error("Address not deliverable");
-                    }
-                  }}
-                >
-                  <Mail className="h-2.5 w-2.5 mr-1" />
-                  {property.mailStatus}
-                </Badge>
-                <Badge
-                  variant={property.phoneAvailable ? "default" : "outline"}
-                  className="text-[10px] px-1.5 py-0 cursor-pointer"
-                  onClick={() => {
-                    if (property.phoneAvailable) {
-                      toast.success(`Calling ${property.ownerName}...`, { description: property.address });
-                    } else {
-                      toast.error("No phone number available");
-                    }
-                  }}
-                >
-                  <Phone className="h-2.5 w-2.5 mr-1" />
-                  {property.phoneAvailable ? "Phone found" : "No phone"}
-                </Badge>
-                <Badge
-                  variant={property.emailAvailable ? "default" : "outline"}
-                  className="text-[10px] px-1.5 py-0 cursor-pointer"
-                  onClick={() => {
-                    if (property.emailAvailable) {
-                      toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
-                    } else {
-                      toast.error("No email available");
-                    }
-                  }}
-                >
-                  <AtSign className="h-2.5 w-2.5 mr-1" />
-                  {property.emailAvailable ? "Email found" : "No email"}
-                </Badge>
+            {isTopPlan ? (
+              <div className="space-y-1.5 text-xs">
+                <Detail icon={User} label="Owner" value={property.ownerName} />
+                <Detail icon={Building2} label="Type" value={property.ownerType.charAt(0).toUpperCase() + property.ownerType.slice(1)} />
+                <Detail icon={MapPin} label="Mailing" value={property.mailingAddress} />
+                <div className="flex items-center gap-2 mt-1">
+                  <Badge
+                    variant={property.mailStatus === "deliverable" ? "default" : "destructive"}
+                    className="text-[10px] px-1.5 py-0 cursor-pointer"
+                    onClick={() => {
+                      if (property.mailStatus === "deliverable") {
+                        toast.success(`Preparing mailer to ${property.ownerName}`, { description: property.mailingAddress });
+                      } else {
+                        toast.error("Address not deliverable");
+                      }
+                    }}
+                  >
+                    <Mail className="h-2.5 w-2.5 mr-1" />
+                    {property.mailStatus}
+                  </Badge>
+                  <Badge
+                    variant={property.phoneAvailable ? "default" : "outline"}
+                    className="text-[10px] px-1.5 py-0 cursor-pointer"
+                    onClick={() => {
+                      if (property.phoneAvailable) {
+                        toast.success(`Calling ${property.ownerName}...`, { description: property.address });
+                      } else {
+                        toast.error("No phone number available");
+                      }
+                    }}
+                  >
+                    <Phone className="h-2.5 w-2.5 mr-1" />
+                    {property.phoneAvailable ? "Phone found" : "No phone"}
+                  </Badge>
+                  <Badge
+                    variant={property.emailAvailable ? "default" : "outline"}
+                    className="text-[10px] px-1.5 py-0 cursor-pointer"
+                    onClick={() => {
+                      if (property.emailAvailable) {
+                        toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
+                      } else {
+                        toast.error("No email available");
+                      }
+                    }}
+                  >
+                    <AtSign className="h-2.5 w-2.5 mr-1" />
+                    {property.emailAvailable ? "Email found" : "No email"}
+                  </Badge>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 text-xs">
+                  <User className="h-3 w-3 text-muted-foreground" />
+                  <span className="text-muted-foreground">Owner:</span>
+                  <span className="blur-sm select-none font-medium">{property.ownerName}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
+                    <Lock className="h-2.5 w-2.5 mr-1" /> Phone Locked
+                  </Badge>
+                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-muted-foreground">
+                    <Lock className="h-2.5 w-2.5 mr-1" /> Email Locked
+                  </Badge>
+                </div>
+                <Button size="sm" className="h-7 text-xs gap-1 bg-stone-800 text-white hover:bg-stone-700" onClick={() => setShowUpgrade(true)}>
+                  <Crown className="h-3 w-3" /> Upgrade To Access Contact Info
+                </Button>
+              </div>
+            )}
           </Section>
 
           {/* AI Overall Score Reasoning */}
@@ -144,6 +181,49 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">{property.overallReasoning}</p>
               </div>
+            </div>
+          </Section>
+
+          {/* Buyer Intelligence Panel */}
+          <Section title="Buyer Interest">
+            <div className="p-2.5 rounded-lg bg-amber-50/60 border border-amber-200">
+              <div className="flex items-center gap-1.5 mb-1">
+                <Users className="h-3.5 w-3.5 text-amber-600" />
+                <span className={cn(
+                  "text-xs font-bold",
+                  buyerCount >= 15 ? "text-amber-700" : buyerCount >= 8 ? "text-blue-700" : "text-stone-700"
+                )}>
+                  {buyerCount} Matched Buyers
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1 mb-1.5">
+                {buyerTypes.map(type => (
+                  <Badge key={type} variant="outline" className="text-[9px] px-1.5 py-0 bg-background/80 border-amber-200 text-amber-800">
+                    {type}
+                  </Badge>
+                ))}
+              </div>
+              <p className="text-[10px] text-amber-900/80 leading-relaxed">{buyerReason}</p>
+              {isTopPlan ? (
+                <Button
+                  size="sm"
+                  className="h-6 text-[10px] gap-1 mt-2 bg-primary hover:bg-primary/90"
+                  onClick={() => toast.success(`Viewing ${buyerCount} matched buyers for ${property.address}`)}
+                >
+                  <Users className="h-3 w-3" />
+                  View Matched Buyers
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 text-[10px] gap-1 mt-2 bg-stone-800 text-white hover:bg-stone-700 border-stone-800"
+                  onClick={() => setShowUpgrade(true)}
+                >
+                  <Crown className="h-3 w-3" />
+                  Upgrade To Connect With These Buyers
+                </Button>
+              )}
             </div>
           </Section>
 
@@ -205,11 +285,11 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
             <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-muted/50 rounded-lg p-2">
                 <p className="text-muted-foreground text-[10px]">Est. Rehab</p>
-                <p className="font-semibold">${property.estimatedRehab.toLocaleString()}</p>
+                <p className="font-semibold tabular-nums">${property.estimatedRehab.toLocaleString()}</p>
               </div>
               <div className="bg-muted/50 rounded-lg p-2">
                 <p className="text-muted-foreground text-[10px]">Equity</p>
-                <p className="font-semibold">{property.estimatedEquityPct}%</p>
+                <p className="font-semibold tabular-nums">{property.estimatedEquityPct}%</p>
               </div>
               <div className="bg-muted/50 rounded-lg p-2">
                 <p className="text-muted-foreground text-[10px]">Neighborhood</p>
@@ -217,56 +297,87 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
                 <p className="text-[10px] text-muted-foreground">{property.neighborhoodRating}/10 rating</p>
               </div>
               <div className="bg-green-50 border border-green-200 rounded-lg p-2">
-                <p className="text-green-700 text-[10px]">Wholesale Spread</p>
-                <p className="font-semibold text-green-800">${property.wholesaleSpread.toLocaleString()}</p>
+                <p className="text-green-700 text-[10px]">Spread</p>
+                <p className="font-semibold text-green-800 tabular-nums">${property.wholesaleSpread.toLocaleString()}</p>
               </div>
             </div>
           </Section>
 
-          {/* Actions */}
-          <div className="grid grid-cols-2 gap-2">
-            <Button size="sm" className="text-xs h-8" onClick={onLocate}>
-              <MapPin className="h-3 w-3 mr-1" />
-              Locate on Map
-            </Button>
-            <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => toast.success("Adding to list...")}>
-              <FileText className="h-3 w-3 mr-1" />
-              Add to List
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-xs h-8"
-              onClick={() => {
-                if (property.phoneAvailable) {
-                  toast.success(`Calling ${property.ownerName}...`, { description: property.address });
-                } else {
-                  toast.error("No phone number available");
-                }
-              }}
-            >
-              <PhoneCall className="h-3 w-3 mr-1" />
-              Call Owner
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="text-xs h-8"
-              onClick={() => {
-                if (property.emailAvailable) {
-                  toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
-                } else {
-                  toast.error("No email available");
-                }
-              }}
-            >
-              <MailPlus className="h-3 w-3 mr-1" />
-              Email Owner
-            </Button>
-          </div>
+          {/* Actions — gated */}
+          {isTopPlan ? (
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" className="text-xs h-8" onClick={onLocate}>
+                <MapPin className="h-3 w-3 mr-1" />
+                Locate On Map
+              </Button>
+              <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => toast.success("Adding to list...")}>
+                <FileText className="h-3 w-3 mr-1" />
+                Add To List
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs h-8"
+                onClick={() => {
+                  if (property.phoneAvailable) {
+                    toast.success(`Calling ${property.ownerName}...`, { description: property.address });
+                  } else {
+                    toast.error("No phone number available");
+                  }
+                }}
+              >
+                <PhoneCall className="h-3 w-3 mr-1" />
+                Call Owner
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs h-8"
+                onClick={() => {
+                  if (property.emailAvailable) {
+                    toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
+                  } else {
+                    toast.error("No email available");
+                  }
+                }}
+              >
+                <MailPlus className="h-3 w-3 mr-1" />
+                Email Owner
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Button size="sm" className="text-xs h-8" onClick={onLocate}>
+                <MapPin className="h-3 w-3 mr-1" />
+                Locate On Map
+              </Button>
+              <Button size="sm" variant="outline" className="text-xs h-8" onClick={() => toast.success("Adding to list...")}>
+                <FileText className="h-3 w-3 mr-1" />
+                Add To List
+              </Button>
+              <Button
+                size="sm"
+                className="text-xs h-8 col-span-2 bg-stone-800 text-white hover:bg-stone-700"
+                onClick={() => setShowUpgrade(true)}
+              >
+                <Crown className="h-3 w-3 mr-1" />
+                Upgrade To Access Contact Info
+              </Button>
+            </div>
+          )}
         </div>
       </ScrollArea>
     </div>
+
+    <D4DUpgradeModal
+      open={showUpgrade}
+      onOpenChange={setShowUpgrade}
+      propertyAddress={property.address}
+      ownerName={property.ownerName}
+      buyerCount={buyerCount}
+      cityZip={`${property.city}, ${property.zip}`}
+    />
+    </>
   );
 }
 
@@ -283,7 +394,7 @@ function StatBox({ icon: Icon, label, value, accent }: { icon: any; label: strin
   return (
     <div className={`rounded-lg p-2 text-center ${accent ? "bg-green-50 border border-green-200" : "bg-muted/50"}`}>
       <Icon className={`h-3.5 w-3.5 mx-auto mb-0.5 ${accent ? "text-green-600" : "text-muted-foreground"}`} />
-      <p className={`text-sm font-bold ${accent ? "text-green-700" : ""}`}>{value}</p>
+      <p className={`text-sm font-bold tabular-nums ${accent ? "text-green-700" : ""}`}>{value}</p>
       <p className="text-[10px] text-muted-foreground">{label}</p>
     </div>
   );
