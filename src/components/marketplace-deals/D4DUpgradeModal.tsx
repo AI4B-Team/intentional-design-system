@@ -32,7 +32,7 @@ export function D4DUpgradeModal({ open, onOpenChange, propertyAddress, ownerName
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 px-6 pb-6 overflow-y-auto max-h-[60vh]">
           {/* What's locked preview */}
           {propertyAddress && (
             <div className="p-3 rounded-lg bg-muted/50 border space-y-1.5">
