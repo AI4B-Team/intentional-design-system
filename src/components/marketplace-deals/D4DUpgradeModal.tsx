@@ -94,7 +94,7 @@ export function D4DUpgradeModal({ open, onOpenChange, propertyAddress, ownerName
             <Crown className="h-4 w-4 mr-2" />
             Upgrade to Pro
           </Button>
-          <p className="text-xs text-center text-muted-foreground">No commitment · Cancel anytime</p>
+          <p className="text-xs text-center text-muted-foreground">No Commitment · Cancel Anytime</p>
         </div>
       </DialogContent>
     </Dialog>
