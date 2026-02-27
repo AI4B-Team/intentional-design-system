@@ -546,16 +546,16 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex gap-1.5 mt-2">
+                        <div className="flex flex-col gap-1.5 mt-2">
                           <Button
                             size="sm"
-                            className="h-7 text-xs flex-1 gap-1 bg-stone-800 text-white hover:bg-stone-700"
+                            className="w-full h-10 text-sm gap-2 rounded-full bg-stone-900 text-white hover:bg-stone-800"
                             onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
                           >
-                            <Lock className="h-3 w-3" />
-                            Upgrade To Access
+                            <Lock className="h-4 w-4" />
+                            Unlock Homeowner Contact & Potential Buyers
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); onFocusProperty(property); }}>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1 w-full" onClick={(e) => { e.stopPropagation(); onFocusProperty(property); }}>
                             <MapPin className="h-3 w-3" />
                             Map
                           </Button>

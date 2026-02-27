@@ -161,8 +161,8 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
                     <Lock className="h-2.5 w-2.5 mr-1" /> Email Locked
                   </Badge>
                 </div>
-                <Button size="sm" className="h-7 text-xs gap-1 bg-stone-800 text-white hover:bg-stone-700" onClick={() => setShowUpgrade(true)}>
-                  <Crown className="h-3 w-3" /> Upgrade To Access Contact Info
+                <Button size="sm" className="w-full h-10 text-sm gap-2 rounded-full bg-stone-900 text-white hover:bg-stone-800" onClick={() => setShowUpgrade(true)}>
+                  <Lock className="h-4 w-4" /> Unlock Homeowner Contact & Potential Buyers
                 </Button>
               </div>
             )}
@@ -357,11 +357,11 @@ export function D4DPropertyDetail({ property, onClose, onLocate }: D4DPropertyDe
               </Button>
               <Button
                 size="sm"
-                className="text-xs h-8 col-span-2 bg-stone-800 text-white hover:bg-stone-700"
+                className="text-sm h-10 col-span-2 rounded-full bg-stone-900 text-white hover:bg-stone-800 gap-2"
                 onClick={() => setShowUpgrade(true)}
               >
-                <Crown className="h-3 w-3 mr-1" />
-                Upgrade To Access Contact Info
+                <Lock className="h-4 w-4" />
+                Unlock Homeowner Contact & Potential Buyers
               </Button>
             </div>
           )}
