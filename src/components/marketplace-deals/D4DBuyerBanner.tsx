@@ -23,7 +23,7 @@ export function D4DBuyerBanner({ properties }: D4DBuyerBannerProps) {
     <div className="mx-3 mt-2 p-2.5 rounded-lg bg-amber-50 border border-amber-200">
       <p className="text-xs text-amber-900 leading-relaxed">
         <Zap className="h-3.5 w-3.5 inline text-amber-600 mr-1 -mt-0.5" />
-        <span className="font-bold text-amber-700">{buyerCount} buyers</span> in our system are actively buying in these zip codes. See which buyers may be interested in properties from this scan — based on their verified purchase history, flip history, and market activity.
+        <span className="font-bold text-amber-700">{buyerCount} buyers</span> in our system are actively buying in these zip codes. Access homeowner contact info, pursue deals directly, and see which buyers may be interested in properties you secure — based on their verified purchase history and activity.
       </p>
     </div>
   );
