@@ -379,38 +379,38 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                       </div>
                     </div>
 
-                    {/* Right column: Tags, Chevron, Unlock */}
+                    {/* Right column: Tags + Chevron row, then Unlock */}
                     <div className="flex flex-col items-end justify-between flex-shrink-0 self-stretch">
-                      {/* Top: Chevron */}
-                      <button className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors border border-border">
-                        {isItemExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                      </button>
-
-                      {/* Middle: Tags */}
-                      <div className="flex flex-col items-end gap-1">
-                        {property.vacant && (
-                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-amber-300 text-amber-700 bg-amber-50 font-medium">
-                            Vacant
-                          </Badge>
-                        )}
-                        {property.preForeclosure && (
-                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-red-300 text-red-700 bg-red-50 font-medium">
-                            Pre-FC
-                          </Badge>
-                        )}
-                        {property.taxLien && (
-                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-orange-300 text-orange-700 bg-orange-50 font-medium">
-                            Tax Lien
-                          </Badge>
-                        )}
-                        {property.probate && (
-                          <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-purple-300 text-purple-700 bg-purple-50 font-medium">
-                            Probate
-                          </Badge>
-                        )}
+                      {/* Top row: Tags + Chevron side by side */}
+                      <div className="flex items-start gap-1.5">
+                        <div className="flex flex-wrap items-center gap-1 justify-end">
+                          {property.vacant && (
+                            <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-amber-300 text-amber-700 bg-amber-50 font-medium">
+                              Vacant
+                            </Badge>
+                          )}
+                          {property.preForeclosure && (
+                            <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-red-300 text-red-700 bg-red-50 font-medium">
+                              Pre-FC
+                            </Badge>
+                          )}
+                          {property.taxLien && (
+                            <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-orange-300 text-orange-700 bg-orange-50 font-medium">
+                              Tax Lien
+                            </Badge>
+                          )}
+                          {property.probate && (
+                            <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-purple-300 text-purple-700 bg-purple-50 font-medium">
+                              Probate
+                            </Badge>
+                          )}
+                        </div>
+                        <button className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted transition-colors border border-border flex-shrink-0">
+                          {isItemExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        </button>
                       </div>
 
-                      {/* Bottom: Unlock Contact (always shown for non-top-plan) */}
+                      {/* Bottom: Unlock Contact */}
                       {!isTopPlan && (
                         <button
                           onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
