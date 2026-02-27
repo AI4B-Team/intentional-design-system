@@ -374,7 +374,16 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                             </div>
                           </>
                         ) : (
-                          <div className="h-5 w-28 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px] flex-shrink-0" />
+                          <div className="flex items-center gap-3">
+                            <div className="h-5 w-28 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px] flex-shrink-0" />
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                              className="flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 transition-colors flex-shrink-0"
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                              <span className="font-medium">Unlock Contact</span>
+                            </button>
+                          </div>
                         )}
                       </div>
                     </div>
@@ -410,16 +419,6 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                         </button>
                       </div>
 
-                      {/* Bottom: Unlock Contact */}
-                      {!isTopPlan && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                          className="flex items-center gap-1.5 text-xs text-emerald-600 hover:text-emerald-700 transition-colors mt-auto"
-                        >
-                          <Lock className="h-3.5 w-3.5" />
-                          <span className="font-medium">Unlock Contact</span>
-                        </button>
-                      )}
                     </div>
                   </div>
 
