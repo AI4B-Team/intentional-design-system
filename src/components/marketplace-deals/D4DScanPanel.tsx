@@ -538,7 +538,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                         <div className="flex flex-col gap-1.5 mt-2">
                           <Button
                             size="sm"
-                            className="w-full h-10 text-sm gap-2 rounded-full bg-stone-900 text-white hover:bg-stone-800"
+                            className="w-full h-10 text-sm gap-2 rounded-lg bg-stone-900 text-white hover:bg-stone-800"
                             onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
                           >
                             <Lock className="h-4 w-4" />
