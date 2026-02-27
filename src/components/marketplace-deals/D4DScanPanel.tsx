@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain } from "lucide-react";
+import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,8 +7,11 @@ import { cn } from "@/lib/utils";
 import type { D4DProperty } from "./d4d-scan-data";
 import { getDistressColor } from "./d4d-scan-data";
 import { D4DPropertyDetail } from "./D4DPropertyDetail";
+import { D4DBuyerBanner, getPropertyBuyerCount, getBuyerMatchReason, getBuyerTypes } from "./D4DBuyerBanner";
+import { D4DUpgradeModal } from "./D4DUpgradeModal";
 import { toast } from "sonner";
 import { CreateListModal } from "@/components/lists/create-list-modal";
+import { useIsTopPlan } from "@/hooks/useIsTopPlan";
 
 interface D4DScanPanelProps {
   properties: D4DProperty[];
@@ -28,6 +31,8 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [detailProperty, setDetailProperty] = useState<D4DProperty | null>(null);
   const [showCreateList, setShowCreateList] = useState(false);
+  const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; property?: D4DProperty }>({ open: false });
+  const { isTopPlan } = useIsTopPlan();
 
   const filtered = properties.filter(p => {
     if (filterLevel === "all") return true;
@@ -47,16 +52,13 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
   const highCount = properties.filter(p => p.distressScore >= 70).length;
   const modCount = properties.filter(p => p.distressScore >= 45 && p.distressScore < 70).length;
 
-  const totalValue = useMemo(() => sorted.reduce((s, p) => s + p.estimatedValue, 0), [sorted]);
   const avgEquity = useMemo(() => sorted.length ? Math.round(sorted.reduce((s, p) => s + p.estimatedEquityPct, 0) / sorted.length) : 0, [sorted]);
   const avgSpread = useMemo(() => sorted.length ? Math.round(sorted.reduce((s, p) => s + p.wholesaleSpread, 0) / sorted.length) : 0, [sorted]);
 
   const handleExportCSV = () => {
-    const headers = ["Address", "City", "State", "Zip", "Distress Score", "Est. Value", "ARV", "Wholesale Spread", "Owner", "Owner Type", "Phone Available", "Email Available", "Vacant", "Pre-Foreclosure", "Tax Lien", "Probate", "Equity %", "Est. Rehab", "Neighborhood"];
+    const headers = ["Address", "City", "State", "Zip", "Distress Score", "Est. Value", "ARV", "Wholesale Spread", "Equity %", "Est. Rehab", "Neighborhood"];
     const rows = sorted.map(p => [
       p.address, p.city, p.state, p.zip, p.distressScore, p.estimatedValue, p.arvEstimate, p.wholesaleSpread,
-      p.ownerName, p.ownerType, p.phoneAvailable ? "Yes" : "No", p.emailAvailable ? "Yes" : "No",
-      p.vacant ? "Yes" : "No", p.preForeclosure ? "Yes" : "No", p.taxLien ? "Yes" : "No", p.probate ? "Yes" : "No",
       p.estimatedEquityPct, p.estimatedRehab, p.neighborhoodName,
     ]);
     const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
@@ -74,36 +76,29 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
     setShowCreateList(true);
   };
 
-  const handleLaunchCampaign = () => {
-    const withContact = sorted.filter(p => p.phoneAvailable || p.emailAvailable).length;
-    toast.success(`Launching campaign for ${withContact} contactable leads`, {
-      description: `${sorted.length} total leads, ${withContact} with contact info`,
-    });
+  const handleGatedAction = (property?: D4DProperty) => {
+    if (isTopPlan) return true;
+    setUpgradeModal({ open: true, property });
+    return false;
   };
 
   const handleCallProperty = (e: React.MouseEvent, property: D4DProperty) => {
     e.stopPropagation();
+    if (!handleGatedAction(property)) return;
     if (property.phoneAvailable) {
-      toast.success(`Calling ${property.ownerName}...`, {
-        description: property.address,
-      });
+      toast.success(`Calling ${property.ownerName}...`, { description: property.address });
     } else {
-      toast.error("No phone number available", {
-        description: "Run skip trace to find contact info",
-      });
+      toast.error("No phone number available", { description: "Run skip trace to find contact info" });
     }
   };
 
   const handleEmailProperty = (e: React.MouseEvent, property: D4DProperty) => {
     e.stopPropagation();
+    if (!handleGatedAction(property)) return;
     if (property.emailAvailable) {
-      toast.success(`Composing email to ${property.ownerName}...`, {
-        description: property.address,
-      });
+      toast.success(`Composing email to ${property.ownerName}...`, { description: property.address });
     } else {
-      toast.error("No email available", {
-        description: "Run skip trace to find contact info",
-      });
+      toast.error("No email available", { description: "Run skip trace to find contact info" });
     }
   };
 
@@ -184,6 +179,9 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
             )}
           </div>
 
+          {/* Buyer Interest Banner */}
+          <D4DBuyerBanner properties={properties} />
+
           {/* Action buttons bar */}
           <div className="flex gap-1.5 mt-2">
             <Button
@@ -195,20 +193,32 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
               <ListPlus className="h-3 w-3" />
               Create List ({sorted.length})
             </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-7 text-xs gap-1 flex-1"
-              onClick={() => {
-                const withPhone = sorted.filter(p => p.phoneAvailable).length;
-                toast.success(`Adding ${withPhone} leads to Dial Queue`, {
-                  description: `${withPhone} of ${sorted.length} leads have phone numbers`,
-                });
-              }}
-            >
-              <Phone className="h-3 w-3" />
-              Add All To Dial Queue
-            </Button>
+            {isTopPlan ? (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs gap-1 flex-1"
+                onClick={() => {
+                  const withPhone = sorted.filter(p => p.phoneAvailable).length;
+                  toast.success(`Adding ${withPhone} leads to Dial Queue`, {
+                    description: `${withPhone} of ${sorted.length} leads have phone numbers`,
+                  });
+                }}
+              >
+                <Phone className="h-3 w-3" />
+                Add All To Dial Queue
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 text-xs gap-1 flex-1"
+                onClick={() => setUpgradeModal({ open: true })}
+              >
+                <Lock className="h-3 w-3" />
+                Upgrade For Dial Queue Access
+              </Button>
+            )}
           </div>
 
           {/* Filter chips */}
@@ -260,6 +270,9 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
             {sorted.map(property => {
               const isItemExpanded = expandedId === property.id;
               const color = getDistressColor(property.distressScore);
+              const buyerCount = getPropertyBuyerCount(property);
+              const buyerReason = getBuyerMatchReason(property);
+              const buyerTypes = getBuyerTypes(property);
 
               return (
                 <div
@@ -304,36 +317,61 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                           {property.beds}bd/{property.baths}ba • {property.sqft.toLocaleString()}sf
                         </span>
                       </div>
-                      {/* Owner & contact badges */}
+                      {/* Owner & contact badges — gated */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
-                          <User className="h-2.5 w-2.5 inline mr-0.5" />
-                          {property.ownerName}
-                        </span>
-                        <button
-                          onClick={(e) => handleCallProperty(e, property)}
-                          className={cn(
-                            "p-0.5 rounded transition-colors",
-                            property.phoneAvailable
-                              ? "text-green-600 hover:bg-green-100"
-                              : "text-muted-foreground/40 cursor-not-allowed"
-                          )}
-                          title={property.phoneAvailable ? `Call ${property.ownerName}` : "No phone available"}
-                        >
-                          <Phone className="h-3 w-3" />
-                        </button>
-                        <button
-                          onClick={(e) => handleEmailProperty(e, property)}
-                          className={cn(
-                            "p-0.5 rounded transition-colors",
-                            property.emailAvailable
-                              ? "text-blue-600 hover:bg-blue-100"
-                              : "text-muted-foreground/40 cursor-not-allowed"
-                          )}
-                          title={property.emailAvailable ? `Email ${property.ownerName}` : "No email available"}
-                        >
-                          <Mail className="h-3 w-3" />
-                        </button>
+                        {isTopPlan ? (
+                          <>
+                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                              <User className="h-2.5 w-2.5 inline mr-0.5" />
+                              {property.ownerName}
+                            </span>
+                            <button
+                              onClick={(e) => handleCallProperty(e, property)}
+                              className={cn(
+                                "p-0.5 rounded transition-colors",
+                                property.phoneAvailable
+                                  ? "text-green-600 hover:bg-green-100"
+                                  : "text-muted-foreground/40 cursor-not-allowed"
+                              )}
+                              title={property.phoneAvailable ? `Call ${property.ownerName}` : "No phone available"}
+                            >
+                              <Phone className="h-3 w-3" />
+                            </button>
+                            <button
+                              onClick={(e) => handleEmailProperty(e, property)}
+                              className={cn(
+                                "p-0.5 rounded transition-colors",
+                                property.emailAvailable
+                                  ? "text-blue-600 hover:bg-blue-100"
+                                  : "text-muted-foreground/40 cursor-not-allowed"
+                              )}
+                              title={property.emailAvailable ? `Email ${property.ownerName}` : "No email available"}
+                            >
+                              <Mail className="h-3 w-3" />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px] blur-sm select-none">
+                              <User className="h-2.5 w-2.5 inline mr-0.5" />
+                              {property.ownerName}
+                            </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                              className="p-0.5 rounded text-muted-foreground/50"
+                              title="Upgrade to access contact info"
+                            >
+                              <Lock className="h-3 w-3" />
+                            </button>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                              className="p-0.5 rounded text-muted-foreground/50"
+                              title="Upgrade to access contact info"
+                            >
+                              <Lock className="h-3 w-3" />
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
@@ -378,16 +416,20 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
 
                       <div className="grid grid-cols-3 gap-1.5 mt-2 text-center">
                         <div className="bg-muted/50 rounded p-1.5">
+                          <p className="text-[10px] text-muted-foreground">Value</p>
+                          <p className="text-xs font-bold tabular-nums">${(property.estimatedValue / 1000).toFixed(0)}K</p>
+                        </div>
+                        <div className="bg-muted/50 rounded p-1.5">
                           <p className="text-[10px] text-muted-foreground">ARV</p>
-                          <p className="text-xs font-bold">${(property.arvEstimate / 1000).toFixed(0)}K</p>
+                          <p className="text-xs font-bold tabular-nums">${(property.arvEstimate / 1000).toFixed(0)}K</p>
                         </div>
                         <div className="bg-muted/50 rounded p-1.5">
                           <p className="text-[10px] text-muted-foreground">Rehab</p>
-                          <p className="text-xs font-bold">${(property.estimatedRehab / 1000).toFixed(0)}K</p>
+                          <p className="text-xs font-bold tabular-nums">${(property.estimatedRehab / 1000).toFixed(0)}K</p>
                         </div>
                         <div className="bg-green-50 rounded p-1.5">
                           <p className="text-[10px] text-green-700">Spread</p>
-                          <p className="text-xs font-bold text-green-800">${(property.wholesaleSpread / 1000).toFixed(0)}K</p>
+                          <p className="text-xs font-bold text-green-800 tabular-nums">${(property.wholesaleSpread / 1000).toFixed(0)}K</p>
                         </div>
                       </div>
 
@@ -420,24 +462,86 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                         </div>
                       </div>
 
-                      <div className="flex gap-1.5 mt-2">
-                        <Button size="sm" className="h-7 text-xs flex-1 gap-1" onClick={(e) => { e.stopPropagation(); setDetailProperty(property); }}>
-                          <Eye className="h-3 w-3" />
-                          Full Details
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); handleCallProperty(e, property); }}>
-                          <PhoneCall className="h-3 w-3" />
-                          Call
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); handleEmailProperty(e, property); }}>
-                          <MailPlus className="h-3 w-3" />
-                          Email
-                        </Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); onFocusProperty(property); }}>
-                          <MapPin className="h-3 w-3" />
-                          Map
-                        </Button>
+                      {/* Buyer Intelligence Panel */}
+                      <div className="mt-2 p-2 rounded-lg bg-amber-50/60 border border-amber-200">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Users className="h-3.5 w-3.5 text-amber-600" />
+                          <span className={cn(
+                            "text-xs font-bold",
+                            buyerCount >= 15 ? "text-amber-700" : buyerCount >= 8 ? "text-blue-700" : "text-stone-700"
+                          )}>
+                            {buyerCount} Matched Buyers
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-1.5">
+                          {buyerTypes.map(type => (
+                            <Badge key={type} variant="outline" className="text-[9px] px-1.5 py-0 bg-background/80 border-amber-200 text-amber-800">
+                              {type}
+                            </Badge>
+                          ))}
+                        </div>
+                        <p className="text-[10px] text-amber-900/80 leading-relaxed">{buyerReason}</p>
+                        {isTopPlan ? (
+                          <Button
+                            size="sm"
+                            className="h-6 text-[10px] gap-1 mt-1.5 bg-primary hover:bg-primary/90"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toast.success(`Viewing ${buyerCount} matched buyers for ${property.address}`);
+                            }}
+                          >
+                            <Users className="h-3 w-3" />
+                            View Matched Buyers
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-6 text-[10px] gap-1 mt-1.5 bg-stone-800 text-white hover:bg-stone-700 border-stone-800"
+                            onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                          >
+                            <Crown className="h-3 w-3" />
+                            Upgrade To Connect With These Buyers
+                          </Button>
+                        )}
                       </div>
+
+                      {/* Action buttons — gated */}
+                      {isTopPlan ? (
+                        <div className="flex gap-1.5 mt-2">
+                          <Button size="sm" className="h-7 text-xs flex-1 gap-1" onClick={(e) => { e.stopPropagation(); setDetailProperty(property); }}>
+                            <Eye className="h-3 w-3" />
+                            Full Details
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); handleCallProperty(e, property); }}>
+                            <PhoneCall className="h-3 w-3" />
+                            Call
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); handleEmailProperty(e, property); }}>
+                            <MailPlus className="h-3 w-3" />
+                            Email
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); onFocusProperty(property); }}>
+                            <MapPin className="h-3 w-3" />
+                            Map
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-1.5 mt-2">
+                          <Button
+                            size="sm"
+                            className="h-7 text-xs flex-1 gap-1 bg-stone-800 text-white hover:bg-stone-700"
+                            onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                          >
+                            <Lock className="h-3 w-3" />
+                            Upgrade To Access
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 text-xs gap-1" onClick={(e) => { e.stopPropagation(); onFocusProperty(property); }}>
+                            <MapPin className="h-3 w-3" />
+                            Map
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -452,6 +556,16 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
         open={showCreateList}
         onOpenChange={setShowCreateList}
         defaultTab="manual"
+      />
+
+      {/* Upgrade Modal */}
+      <D4DUpgradeModal
+        open={upgradeModal.open}
+        onOpenChange={(open) => setUpgradeModal({ open })}
+        propertyAddress={upgradeModal.property?.address}
+        ownerName={upgradeModal.property?.ownerName}
+        buyerCount={upgradeModal.property ? getPropertyBuyerCount(upgradeModal.property) : undefined}
+        cityZip={upgradeModal.property ? `${upgradeModal.property.city}, ${upgradeModal.property.zip}` : undefined}
       />
     </>
   );
