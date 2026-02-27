@@ -383,7 +383,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                     <div className="flex flex-col items-end justify-between flex-shrink-0 self-stretch">
                       {/* Top row: Tags + Chevron side by side */}
                       <div className="flex items-start gap-1.5">
-                        <div className="flex flex-wrap items-center gap-1 justify-end">
+                        <div className="flex flex-col items-end gap-1">
                           {property.vacant && (
                             <Badge variant="outline" className="text-[10px] px-2.5 py-1 rounded-full border-amber-300 text-amber-700 bg-amber-50 font-medium">
                               Vacant
