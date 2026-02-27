@@ -106,7 +106,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
     <>
       <div className={cn(
         "h-full flex flex-col bg-background border-l relative transition-all duration-300",
-        isExpanded ? "w-full min-w-0" : "w-[400px] min-w-[400px]"
+        isExpanded ? "w-full min-w-0" : "w-[460px] min-w-[460px]"
       )}>
         {/* Property detail overlay */}
         {detailProperty && (
@@ -328,58 +328,55 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                         </span>
                       </div>
 
-                      {/* Price - blurred for non-top-plan */}
-                      <div className="mt-2">
+                      {/* Price + Contact row */}
+                      <div className="flex items-center gap-3 mt-2">
                         {isTopPlan ? (
-                          <span className="text-sm font-bold text-primary tabular-nums">
-                            ${(property.estimatedValue / 1000).toFixed(0)}K
-                          </span>
-                        ) : (
-                          <div className="h-5 w-32 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px]" />
-                        )}
-                      </div>
-
-                      {/* Contact section */}
-                      <div className="mt-2">
-                        {isTopPlan ? (
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
-                              <User className="h-3 w-3 inline mr-0.5" />
-                              {property.ownerName}
+                          <>
+                            <span className="text-sm font-bold text-primary tabular-nums">
+                              ${(property.estimatedValue / 1000).toFixed(0)}K
                             </span>
-                            <button
-                              onClick={(e) => handleCallProperty(e, property)}
-                              className={cn(
-                                "p-0.5 rounded transition-colors",
-                                property.phoneAvailable
-                                  ? "text-green-600 hover:bg-green-100"
-                                  : "text-muted-foreground/40 cursor-not-allowed"
-                              )}
-                              title={property.phoneAvailable ? `Call ${property.ownerName}` : "No phone available"}
-                            >
-                              <Phone className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={(e) => handleEmailProperty(e, property)}
-                              className={cn(
-                                "p-0.5 rounded transition-colors",
-                                property.emailAvailable
-                                  ? "text-blue-600 hover:bg-blue-100"
-                                  : "text-muted-foreground/40 cursor-not-allowed"
-                              )}
-                              title={property.emailAvailable ? `Email ${property.ownerName}` : "No email available"}
-                            >
-                              <Mail className="h-3 w-3" />
-                            </button>
-                          </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
+                                <User className="h-3 w-3 inline mr-0.5" />
+                                {property.ownerName}
+                              </span>
+                              <button
+                                onClick={(e) => handleCallProperty(e, property)}
+                                className={cn(
+                                  "p-0.5 rounded transition-colors",
+                                  property.phoneAvailable
+                                    ? "text-green-600 hover:bg-green-100"
+                                    : "text-muted-foreground/40 cursor-not-allowed"
+                                )}
+                                title={property.phoneAvailable ? `Call ${property.ownerName}` : "No phone available"}
+                              >
+                                <Phone className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={(e) => handleEmailProperty(e, property)}
+                                className={cn(
+                                  "p-0.5 rounded transition-colors",
+                                  property.emailAvailable
+                                    ? "text-blue-600 hover:bg-blue-100"
+                                    : "text-muted-foreground/40 cursor-not-allowed"
+                                )}
+                                title={property.emailAvailable ? `Email ${property.ownerName}` : "No email available"}
+                              >
+                                <Mail className="h-3 w-3" />
+                              </button>
+                            </div>
+                          </>
                         ) : (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                          >
-                            <Lock className="h-3.5 w-3.5" />
-                            <span className="font-medium">Unlock Contact</span>
-                          </button>
+                          <>
+                            <div className="h-5 w-28 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px] flex-shrink-0" />
+                            <button
+                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors flex-shrink-0"
+                            >
+                              <Lock className="h-3.5 w-3.5" />
+                              <span className="font-medium">Unlock Contact</span>
+                            </button>
+                          </>
                         )}
                       </div>
                     </div>
