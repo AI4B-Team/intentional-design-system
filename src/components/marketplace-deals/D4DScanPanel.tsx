@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap } from "lucide-react";
+import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap, Bed, Bath, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -278,14 +278,14 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                 <div
                   key={property.id}
                   className={cn(
-                    "rounded-lg border bg-card overflow-hidden transition-all cursor-pointer hover:shadow-sm",
+                    "rounded-xl border bg-card overflow-hidden transition-all cursor-pointer hover:shadow-md",
                     isItemExpanded && "shadow-md",
                     isExpanded && "flex flex-col",
                   )}
                 >
-                  {/* Main row with street view thumbnail */}
+                  {/* Main card layout */}
                   <div
-                    className="flex items-start gap-2 p-2"
+                    className="flex items-start gap-3 p-3"
                     onClick={() => {
                       setExpandedId(isItemExpanded ? null : property.id);
                       onFocusProperty(property);
@@ -296,33 +296,55 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                       <img
                         src={property.streetViewUrl}
                         alt=""
-                        className={cn("rounded-md object-cover", isExpanded ? "w-20 h-20" : "w-16 h-16")}
+                        className={cn("rounded-lg object-cover", isExpanded ? "w-[140px] h-[110px]" : "w-[120px] h-[96px]")}
                       />
                       <div
-                        className="absolute -top-1 -left-1 h-6 w-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white"
+                        className="absolute -top-1.5 -left-1.5 h-7 w-7 rounded-full flex items-center justify-center text-[11px] font-bold border-2 border-white shadow-sm"
                         style={{ backgroundColor: color, color: "white" }}
                       >
                         {property.distressScore}
                       </div>
                     </div>
 
+                    {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold truncate">{property.address}</p>
-                      <p className="text-[10px] text-muted-foreground">{property.city}, {property.state} {property.zip}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-xs font-bold text-primary">
-                          ${(property.estimatedValue / 1000).toFixed(0)}K
+                      {/* Address */}
+                      <p className="text-sm font-bold truncate leading-tight">{property.address}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{property.city}, {property.state} {property.zip}</p>
+
+                      {/* Specs row with icons */}
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-0.5">
+                          <Bed className="h-3.5 w-3.5" />
+                          {property.beds}bd
                         </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {property.beds}bd/{property.baths}ba • {property.sqft.toLocaleString()}sf
+                        <span className="flex items-center gap-0.5">
+                          <Bath className="h-3.5 w-3.5" />
+                          {property.baths}ba
+                        </span>
+                        <span className="flex items-center gap-0.5">
+                          <Tag className="h-3.5 w-3.5" />
+                          {property.sqft.toLocaleString()}sf
                         </span>
                       </div>
-                      {/* Owner & contact badges — gated */}
-                      <div className="flex items-center gap-1 mt-1">
+
+                      {/* Price - blurred for non-top-plan */}
+                      <div className="mt-2">
                         {isTopPlan ? (
-                          <>
-                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
-                              <User className="h-2.5 w-2.5 inline mr-0.5" />
+                          <span className="text-sm font-bold text-primary tabular-nums">
+                            ${(property.estimatedValue / 1000).toFixed(0)}K
+                          </span>
+                        ) : (
+                          <div className="h-5 w-32 rounded-full bg-gradient-to-r from-emerald-100 to-emerald-50 blur-[6px]" />
+                        )}
+                      </div>
+
+                      {/* Contact section */}
+                      <div className="mt-2">
+                        {isTopPlan ? (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
+                              <User className="h-3 w-3 inline mr-0.5" />
                               {property.ownerName}
                             </span>
                             <button
@@ -349,59 +371,45 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, totalScanne
                             >
                               <Mail className="h-3 w-3" />
                             </button>
-                          </>
+                          </div>
                         ) : (
-                          <>
-                            <span className="text-[10px] text-muted-foreground truncate max-w-[120px] blur-sm select-none">
-                              <User className="h-2.5 w-2.5 inline mr-0.5" />
-                              {property.ownerName}
-                            </span>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                              className="p-0.5 rounded text-muted-foreground/50"
-                              title="Upgrade to access contact info"
-                            >
-                              <Lock className="h-3 w-3" />
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                              className="p-0.5 rounded text-muted-foreground/50"
-                              title="Upgrade to access contact info"
-                            >
-                              <Lock className="h-3 w-3" />
-                            </button>
-                          </>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
+                            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            <Lock className="h-3.5 w-3.5" />
+                            <span className="font-medium">Unlock Contact</span>
+                          </button>
                         )}
                       </div>
                     </div>
 
-                    {/* Tags */}
-                    <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    {/* Right column: Tags + Chevron */}
+                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                      <button className="p-1 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors">
+                        {isItemExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </button>
                       {property.vacant && (
-                        <Badge variant="outline" className="text-[9px] px-1 py-0 border-amber-300 text-amber-700 bg-amber-50">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-amber-300 text-amber-700 bg-amber-50 font-medium">
                           Vacant
                         </Badge>
                       )}
                       {property.preForeclosure && (
-                        <Badge variant="outline" className="text-[9px] px-1 py-0 border-red-300 text-red-700 bg-red-50">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-red-300 text-red-700 bg-red-50 font-medium">
                           Pre-FC
                         </Badge>
                       )}
                       {property.taxLien && (
-                        <Badge variant="outline" className="text-[9px] px-1 py-0 border-orange-300 text-orange-700 bg-orange-50">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-orange-300 text-orange-700 bg-orange-50 font-medium">
                           Tax Lien
                         </Badge>
                       )}
                       {property.probate && (
-                        <Badge variant="outline" className="text-[9px] px-1 py-0 border-purple-300 text-purple-700 bg-purple-50">
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0.5 border-purple-300 text-purple-700 bg-purple-50 font-medium">
                           Probate
                         </Badge>
                       )}
                     </div>
-
-                    <button className="p-0.5 text-muted-foreground flex-shrink-0 mt-1">
-                      {isItemExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                    </button>
                   </div>
 
                   {/* Expanded details */}
