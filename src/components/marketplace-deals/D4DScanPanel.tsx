@@ -512,17 +512,7 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                             <Users className="h-3 w-3" />
                             View Matched Buyers
                           </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="h-6 text-[10px] gap-1 mt-1.5 bg-stone-800 text-white hover:bg-stone-700 border-stone-800"
-                            onClick={(e) => { e.stopPropagation(); handleGatedAction(property); }}
-                          >
-                            <Crown className="h-3 w-3" />
-                            Upgrade To Connect With These Buyers
-                          </Button>
-                        )}
+                        ) : null}
                       </div>
 
                       {/* Action buttons — gated */}
