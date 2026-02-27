@@ -40,13 +40,13 @@ export function D4DUpgradeModal({ open, onOpenChange, propertyAddress, ownerName
               <p className="text-sm font-medium">{propertyAddress}</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3" /> <User className="h-3 w-3" /> {ownerName ? "Owner Name" : "Owner Info"}
+                  <Lock className="h-3 w-3" /> {ownerName ? "Owner Name" : "Owner Info"}
                 </span>
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3" /> <Phone className="h-3 w-3" /> Phone
+                  <Lock className="h-3 w-3" /> Phone
                 </span>
                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Lock className="h-3 w-3" /> <Mail className="h-3 w-3" /> Email
+                  <Lock className="h-3 w-3" /> Email
                 </span>
               </div>
             </div>
