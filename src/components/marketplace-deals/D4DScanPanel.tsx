@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap, Bed, Bath, Tag, RefreshCw, ScanSearch } from "lucide-react";
+import { X, AlertTriangle, DollarSign, MapPin, Eye, ChevronDown, ChevronUp, Flame, Scale, Download, User, Phone, Mail, SlidersHorizontal, Maximize2, Minimize2, ListPlus, Megaphone, PhoneCall, MailPlus, Brain, Lock, Crown, Users, Zap, Bed, Bath, Tag, RefreshCw, ScanSearch, Hammer, TrendingUp, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,7 +23,7 @@ interface D4DScanPanelProps {
   onToggleExpand?: () => void;
 }
 
-type SortMode = "distress" | "equity" | "value" | "spread";
+type SortMode = "distress" | "equity" | "value" | "spread" | "rehab" | "arv" | "newest";
 type FilterLevel = "all" | "high" | "moderate" | "mild";
 
 export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, totalScanned, isExpanded = false, onToggleExpand }: D4DScanPanelProps) {
@@ -47,6 +47,9 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
     if (sortMode === "distress") return b.distressScore - a.distressScore;
     if (sortMode === "equity") return b.estimatedEquityPct - a.estimatedEquityPct;
     if (sortMode === "spread") return b.wholesaleSpread - a.wholesaleSpread;
+    if (sortMode === "rehab") return a.estimatedRehab - b.estimatedRehab;
+    if (sortMode === "arv") return b.arvEstimate - a.arvEstimate;
+    if (sortMode === "newest") return 0; // maintain original order
     return a.estimatedValue - b.estimatedValue;
   });
 
@@ -247,12 +250,15 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
           </div>
 
           {/* Sort */}
-          <div className="flex gap-1.5 mt-2">
+          <div className="flex gap-1 mt-2">
             {([
               { key: "distress", label: "Distress", icon: AlertTriangle },
               { key: "equity", label: "Equity", icon: Scale },
               { key: "spread", label: "Spread", icon: DollarSign },
               { key: "value", label: "Value", icon: DollarSign },
+              { key: "rehab", label: "Rehab", icon: Hammer },
+              { key: "arv", label: "ARV", icon: TrendingUp },
+              { key: "newest", label: "Newest", icon: Clock },
             ] as const).map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
