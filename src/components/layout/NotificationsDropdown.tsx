@@ -1,16 +1,7 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,18 +23,8 @@ import {
   TrendingUp,
   MapPin,
   Star,
-  Check,
-  X,
-  Settings,
   Volume2,
-  VolumeX,
-  Sparkles,
-  Loader2,
-  Zap,
-  Target,
-  MessageCircle,
-  ChevronDown,
-  ChevronUp,
+  X,
 } from "lucide-react";
 import { formatDistanceToNow, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
@@ -99,11 +80,6 @@ interface Notification {
   };
 }
 
-interface AISuggestion {
-  text: string;
-  type: "response" | "offer" | "action" | "tactic";
-  priority: "high" | "medium" | "low";
-}
 
 // Hook to fetch real notifications from database
 function useRealNotifications() {
@@ -282,69 +258,34 @@ function useRealNotifications() {
 }
 
 const getNotificationIcon = (type: NotificationType) => {
-  const iconMap: Record<NotificationType, React.ReactNode> = {
-    lead_new: <Home className="h-4 w-4" />,
-    lead_response: <MessageSquare className="h-4 w-4" />,
-    lead_hot: <TrendingUp className="h-4 w-4 text-orange-500" />,
-    offer_received: <DollarSign className="h-4 w-4 text-green-500" />,
-    offer_accepted: <CheckCircle2 className="h-4 w-4 text-green-500" />,
-    offer_rejected: <X className="h-4 w-4 text-red-500" />,
-    offer_counter: <DollarSign className="h-4 w-4 text-yellow-500" />,
-    deal_stage: <TrendingUp className="h-4 w-4" />,
-    deal_closed: <Star className="h-4 w-4 text-yellow-500" />,
-    appointment: <Calendar className="h-4 w-4 text-blue-500" />,
-    task_due: <Clock className="h-4 w-4 text-orange-500" />,
-    document_signed: <FileText className="h-4 w-4 text-green-500" />,
-    document_uploaded: <FileText className="h-4 w-4" />,
-    call_missed: <Phone className="h-4 w-4 text-red-500" />,
-    call_voicemail: <Volume2 className="h-4 w-4" />,
-    sms_received: <MessageSquare className="h-4 w-4 text-blue-500" />,
-    email_opened: <Eye className="h-4 w-4" />,
-    buyer_interest: <Users className="h-4 w-4 text-purple-500" />,
-    price_drop: <TrendingUp className="h-4 w-4 text-green-500" />,
-    market_alert: <MapPin className="h-4 w-4" />,
-    contract_expiring: <AlertTriangle className="h-4 w-4 text-yellow-500" />,
-    inspection_scheduled: <Calendar className="h-4 w-4" />,
-    closing_reminder: <Clock className="h-4 w-4 text-blue-500" />,
+  const iconMap: Record<NotificationType, { icon: React.ReactNode; bg: string }> = {
+    lead_new: { icon: <Home className="h-5 w-5 text-white" />, bg: "bg-emerald-500" },
+    lead_response: { icon: <MessageSquare className="h-5 w-5 text-white" />, bg: "bg-blue-500" },
+    lead_hot: { icon: <TrendingUp className="h-5 w-5 text-white" />, bg: "bg-red-500" },
+    offer_received: { icon: <DollarSign className="h-5 w-5 text-white" />, bg: "bg-red-400" },
+    offer_accepted: { icon: <CheckCircle2 className="h-5 w-5 text-white" />, bg: "bg-emerald-500" },
+    offer_rejected: { icon: <X className="h-5 w-5 text-white" />, bg: "bg-red-500" },
+    offer_counter: { icon: <DollarSign className="h-5 w-5 text-white" />, bg: "bg-amber-500" },
+    deal_stage: { icon: <TrendingUp className="h-5 w-5 text-white" />, bg: "bg-emerald-500" },
+    deal_closed: { icon: <Star className="h-5 w-5 text-white" />, bg: "bg-amber-500" },
+    appointment: { icon: <Calendar className="h-5 w-5 text-white" />, bg: "bg-blue-500" },
+    task_due: { icon: <Clock className="h-5 w-5 text-white" />, bg: "bg-amber-500" },
+    document_signed: { icon: <FileText className="h-5 w-5 text-white" />, bg: "bg-red-400" },
+    document_uploaded: { icon: <FileText className="h-5 w-5 text-white" />, bg: "bg-slate-500" },
+    call_missed: { icon: <Phone className="h-5 w-5 text-white" />, bg: "bg-red-500" },
+    call_voicemail: { icon: <Volume2 className="h-5 w-5 text-white" />, bg: "bg-slate-500" },
+    sms_received: { icon: <MessageSquare className="h-5 w-5 text-white" />, bg: "bg-blue-500" },
+    email_opened: { icon: <Eye className="h-5 w-5 text-white" />, bg: "bg-slate-500" },
+    buyer_interest: { icon: <Users className="h-5 w-5 text-white" />, bg: "bg-purple-500" },
+    price_drop: { icon: <TrendingUp className="h-5 w-5 text-white" />, bg: "bg-emerald-500" },
+    market_alert: { icon: <MapPin className="h-5 w-5 text-white" />, bg: "bg-emerald-500" },
+    contract_expiring: { icon: <AlertTriangle className="h-5 w-5 text-white" />, bg: "bg-amber-500" },
+    inspection_scheduled: { icon: <Calendar className="h-5 w-5 text-white" />, bg: "bg-blue-500" },
+    closing_reminder: { icon: <Clock className="h-5 w-5 text-white" />, bg: "bg-blue-500" },
   };
-  return iconMap[type] || <Bell className="h-4 w-4" />;
+  return iconMap[type] || { icon: <Bell className="h-5 w-5 text-white" />, bg: "bg-slate-500" };
 };
 
-// Get left border color by notification type category
-const getTypeBorderStyles = (type: NotificationType) => {
-  // 🔥 Red = Hot Lead / Lead types
-  if (type === "lead_hot" || type === "lead_new" || type === "lead_response") {
-    return "border-l-4 border-l-red-500";
-  }
-  // 💰 Green = Offer types
-  if (type.startsWith("offer_") || type === "deal_closed" || type === "price_drop") {
-    return "border-l-4 border-l-green-500";
-  }
-  // 📞 Blue = Call / Message types
-  if (type.startsWith("call_") || type === "sms_received" || type === "email_opened") {
-    return "border-l-4 border-l-blue-500";
-  }
-  // 📅 Purple = Appointments / Tasks
-  if (type === "appointment" || type === "task_due" || type === "inspection_scheduled" || type === "closing_reminder") {
-    return "border-l-4 border-l-purple-500";
-  }
-  // 📄 Amber = Documents / Contracts
-  if (type.startsWith("document_") || type === "contract_expiring") {
-    return "border-l-4 border-l-amber-500";
-  }
-  // Default - subtle border
-  return "border-l-4 border-l-muted-foreground/30";
-};
-
-const getSuggestionIcon = (type: string) => {
-  switch (type) {
-    case "response": return <MessageCircle className="h-3 w-3" />;
-    case "offer": return <DollarSign className="h-3 w-3" />;
-    case "action": return <Zap className="h-3 w-3" />;
-    case "tactic": return <Target className="h-3 w-3" />;
-    default: return <Sparkles className="h-3 w-3" />;
-  }
-};
 
 interface NotificationItemProps {
   notification: Notification;
@@ -354,65 +295,12 @@ interface NotificationItemProps {
 }
 
 function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: NotificationItemProps) {
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
-  const [suggestions, setSuggestions] = React.useState<AISuggestion[]>([]);
-  const [isLoadingSuggestions, setIsLoadingSuggestions] = React.useState(false);
-  const [hasLoadedSuggestions, setHasLoadedSuggestions] = React.useState(false);
 
-  const loadSuggestions = async () => {
-    if (hasLoadedSuggestions || isLoadingSuggestions) return;
-    
-    setIsLoadingSuggestions(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('ai-deal-suggestions', {
-        body: { 
-          notification: {
-            type: notification.type,
-            title: notification.title,
-            message: notification.message,
-            metadata: notification.metadata
-          }
-        }
-      });
-
-      if (error) {
-        console.error('Error fetching suggestions:', error);
-        toast.error('Failed to load AI suggestions');
-        return;
-      }
-
-      if (data?.suggestions) {
-        setSuggestions(data.suggestions);
-        setHasLoadedSuggestions(true);
-      }
-    } catch (err) {
-      console.error('Error:', err);
-    } finally {
-      setIsLoadingSuggestions(false);
-    }
-  };
-
-  const handleToggleSuggestions = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!showSuggestions && !hasLoadedSuggestions) {
-      loadSuggestions();
-    }
-    setShowSuggestions(!showSuggestions);
-  };
-
-  const handleSuggestionClick = (suggestion: AISuggestion, e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Copy suggestion to clipboard
-    navigator.clipboard.writeText(suggestion.text);
-    toast.success('Suggestion copied to clipboard!');
-  };
+  const iconData = getNotificationIcon(notification.type);
 
   return (
     <div
-      className={cn(
-        "relative p-3 bg-background hover:bg-muted/50 transition-colors cursor-pointer group",
-        getTypeBorderStyles(notification.type)
-      )}
+      className="relative px-4 py-4 bg-background hover:bg-muted/30 transition-colors cursor-pointer group border-b last:border-b-0"
       onClick={() => {
         onMarkRead(notification.id);
         if (notification.actionUrl) {
@@ -420,133 +308,46 @@ function NotificationItem({ notification, onMarkRead, onDismiss, onAction }: Not
         }
       }}
     >
-      <div className="flex gap-3">
-        <div className="flex-shrink-0 mt-0.5 p-2 rounded-full bg-muted">
-          {getNotificationIcon(notification.type)}
+      <div className="flex gap-3.5">
+        {/* Colored icon circle */}
+        <div className={cn("flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center", iconData.bg)}>
+          {iconData.icon}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
-            <p className={cn("text-sm font-medium leading-tight", !notification.read && "text-foreground")}>
+            <p className={cn("text-[15px] font-semibold leading-tight text-foreground")}>
               {notification.title}
             </p>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDismiss(notification.id);
-              }}
-              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-muted rounded transition-opacity"
-            >
-              <X className="h-3 w-3 text-muted-foreground" />
-            </button>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs text-muted-foreground whitespace-nowrap">
+                {formatDistanceToNow(notification.timestamp, { addSuffix: false })}
+              </span>
+              <span className={cn(
+                "h-2.5 w-2.5 rounded-full flex-shrink-0",
+                notification.read ? "bg-emerald-500" : "bg-red-500"
+              )} />
+            </div>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-1 leading-snug">
             {notification.message}
           </p>
           
-          {/* AI Suggestions Toggle */}
-          <div className="flex items-center justify-between mt-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground/70">
-                {formatDistanceToNow(notification.timestamp, { addSuffix: true })}
-              </span>
-              <button
-                onClick={handleToggleSuggestions}
-                className={cn(
-                  "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors",
-                  showSuggestions 
-                    ? "bg-primary text-primary-foreground" 
-                    : "bg-primary/10 text-primary hover:bg-primary/20"
-                )}
-              >
-                {isLoadingSuggestions ? (
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                ) : (
-                  <Sparkles className="h-3 w-3" />
-                )}
-                <span>AI Tips</span>
-                {showSuggestions ? (
-                  <ChevronUp className="h-3 w-3" />
-                ) : (
-                  <ChevronDown className="h-3 w-3" />
-                )}
-              </button>
-            </div>
-            {notification.actionLabel && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 px-2 text-xs text-primary hover:text-primary"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onMarkRead(notification.id);
-                  if (notification.actionUrl) {
-                    onAction(notification.actionUrl);
-                  }
-                }}
-              >
-                {notification.actionLabel}
-              </Button>
-            )}
-          </div>
-
-          {/* AI Suggestions Panel */}
-          {showSuggestions && (
-            <div className="mt-2 p-2 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-              <div className="flex items-center gap-1.5 mb-2">
-                <Sparkles className="h-3.5 w-3.5 text-primary" />
-                <span className="text-xs font-medium text-primary">AI Suggestions To Win</span>
-              </div>
-              {isLoadingSuggestions ? (
-                <div className="flex items-center justify-center py-3">
-                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                  <span className="ml-2 text-xs text-muted-foreground">Analyzing opportunity...</span>
-                </div>
-              ) : suggestions.length > 0 ? (
-                <div className="space-y-1.5">
-                  {suggestions.map((suggestion, idx) => (
-                    <button
-                      key={idx}
-                      onClick={(e) => handleSuggestionClick(suggestion, e)}
-                      className={cn(
-                        "w-full flex items-start gap-2 p-2 rounded-md text-left text-xs transition-colors",
-                        "hover:bg-background/80 group/suggestion",
-                        suggestion.priority === "high" && "bg-background/60"
-                      )}
-                    >
-                      <span className={cn(
-                        "flex-shrink-0 p-1 rounded",
-                        suggestion.type === "response" && "bg-blue-100 text-blue-600",
-                        suggestion.type === "offer" && "bg-green-100 text-green-600",
-                        suggestion.type === "action" && "bg-orange-100 text-orange-600",
-                        suggestion.type === "tactic" && "bg-purple-100 text-purple-600"
-                      )}>
-                        {getSuggestionIcon(suggestion.type)}
-                      </span>
-                      <span className="flex-1 text-foreground leading-snug">
-                        {suggestion.text}
-                      </span>
-                      {suggestion.priority === "high" && (
-                        <Badge variant="secondary" className="text-[10px] px-1 py-0 bg-destructive/10 text-destructive">
-                          Priority
-                        </Badge>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground py-2 text-center">
-                  No suggestions available
-                </p>
-              )}
-              <p className="text-[10px] text-muted-foreground/60 mt-2 text-center">
-                Click A Suggestion To Copy
-              </p>
-            </div>
+          {/* CTA Button */}
+          {notification.actionLabel && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onMarkRead(notification.id);
+                if (notification.actionUrl) {
+                  onAction(notification.actionUrl);
+                }
+              }}
+              className="mt-2.5 inline-flex items-center gap-1 px-3.5 py-1.5 text-sm font-semibold text-primary border border-primary/30 rounded-md hover:bg-primary/5 transition-colors"
+            >
+              {notification.actionLabel} <span aria-hidden>→</span>
+            </button>
           )}
         </div>
-        {!notification.read && (
-          <div className="absolute top-3 right-10 h-2 w-2 bg-primary rounded-full" />
-        )}
       </div>
     </div>
   );
@@ -559,9 +360,7 @@ export function NotificationsDropdown() {
   const [localNotifications, setLocalNotifications] = React.useState<Notification[]>([]);
   const [readIds, setReadIds] = React.useState<Set<string>>(new Set());
   const [dismissedIds, setDismissedIds] = React.useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = React.useState<NotificationCategory>("all");
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isMuted, setIsMuted] = React.useState(false);
 
   // Map realtime notification types to existing categories
   const realtimeTypeMap: Record<RealtimeNotificationType, { notifType: NotificationType; category: NotificationCategory }> = {
@@ -600,10 +399,6 @@ export function NotificationsDropdown() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const filteredNotifications = React.useMemo(() => {
-    if (activeTab === "all") return notifications;
-    return notifications.filter((n) => n.category === activeTab);
-  }, [notifications, activeTab]);
 
   const handleMarkRead = (id: string) => {
     setReadIds((prev) => new Set([...prev, id]));
@@ -619,23 +414,9 @@ export function NotificationsDropdown() {
     setDismissedIds((prev) => new Set([...prev, id]));
   };
 
-  const handleClearAll = () => {
-    if (activeTab === "all") {
-      setDismissedIds((prev) => new Set([...prev, ...notifications.map((n) => n.id)]));
-    } else {
-      const idsToRemove = notifications.filter((n) => n.category === activeTab).map((n) => n.id);
-      setDismissedIds((prev) => new Set([...prev, ...idsToRemove]));
-    }
-  };
-
   const handleAction = (url: string) => {
     setIsOpen(false);
     navigate(url);
-  };
-
-  const getCategoryCount = (category: NotificationCategory) => {
-    if (category === "all") return notifications.filter((n) => !n.read).length;
-    return notifications.filter((n) => n.category === category && !n.read).length;
   };
 
   return (
@@ -656,145 +437,70 @@ export function NotificationsDropdown() {
         sideOffset={8}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b">
-          <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-base">Notifications</h3>
+        <div className="flex items-center justify-between px-5 py-4 border-b">
+          <div className="flex items-center gap-2.5">
+            <h3 className="font-bold text-lg tracking-tight">Notifications</h3>
             {unreadCount > 0 && (
-              <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-                {unreadCount} New
-              </Badge>
+              <span className="flex items-center justify-center min-w-[24px] h-6 px-1.5 text-xs font-bold text-white bg-primary rounded-full">
+                {unreadCount}
+              </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => {
-                setIsMuted(!isMuted);
-                toast.success(isMuted ? "Notifications unmuted" : "Notifications muted");
-              }}
-              title={isMuted ? "Unmute notifications" : "Mute notifications"}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleMarkAllRead}
+              className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
             >
-              {isMuted ? (
-                <VolumeX className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <Volume2 className="h-4 w-4 text-muted-foreground" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => {
-                setIsOpen(false);
-                navigate("/settings/notifications");
-              }}
-              title="Notification settings"
+              Mark All Read
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-muted rounded-md transition-colors"
             >
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </Button>
+              <X className="h-5 w-5 text-muted-foreground" />
+            </button>
           </div>
         </div>
 
-        {/* AI Feature Banner */}
-        <div className="px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 border-b flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span className="text-xs text-primary font-medium">AI-Powered Suggestions To Help You Win Deals</span>
-        </div>
-
-        {/* Category Tabs */}
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as NotificationCategory)}>
-          <div className="border-b px-2">
-            <TabsList className="h-10 w-full bg-transparent gap-0">
-              {(["all", "leads", "deals", "tasks", "messages"] as NotificationCategory[]).map((tab) => {
-                const count = getCategoryCount(tab);
-                return (
-                  <TabsTrigger
-                    key={tab}
-                    value={tab}
-                    className="flex-1 capitalize text-xs data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none"
-                  >
-                    {tab}
-                    {count > 0 && (
-                      <span className="ml-1 text-[10px] text-muted-foreground">({count})</span>
-                    )}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-          </div>
-
-          {/* Notification List */}
-          <TabsContent value={activeTab} className="m-0">
-            {filteredNotifications.length > 0 ? (
-              <ScrollArea className="h-[400px]">
-                <div className="divide-y">
-                  {filteredNotifications.map((notification) => (
-                    <NotificationItem
-                      key={notification.id}
-                      notification={notification}
-                      onMarkRead={handleMarkRead}
-                      onDismiss={handleDismiss}
-                      onAction={handleAction}
-                    />
-                  ))}
-                </div>
-              </ScrollArea>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="p-3 rounded-full bg-muted mb-3">
-                  <Bell className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <p className="text-sm font-medium text-muted-foreground">No notifications</p>
-                <p className="text-xs text-muted-foreground/70 mt-1">
-                  You're all caught up!
-                </p>
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
-
-        {/* Footer Actions */}
-        {filteredNotifications.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-2 border-t bg-muted/30">
-            <TooltipProvider delayDuration={300}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-7"
-                    onClick={handleMarkAllRead}
-                  >
-                    <Check className="h-3 w-3 mr-1" />
-                    Mark All Read
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="bg-background text-foreground border shadow-md">
-                  <p className="text-xs">Marks all as read but keeps history</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <TooltipProvider delayDuration={300}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs h-7 text-muted-foreground hover:text-destructive"
-                    onClick={handleClearAll}
-                  >
-                    Clear Messages
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="bg-background text-foreground border shadow-md">
-                  <p className="text-xs">Removes notifications from this view</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+        {/* Notification List */}
+        {notifications.length > 0 ? (
+          <ScrollArea className="max-h-[480px]">
+            <div>
+              {notifications.map((notification) => (
+                <NotificationItem
+                  key={notification.id}
+                  notification={notification}
+                  onMarkRead={handleMarkRead}
+                  onDismiss={handleDismiss}
+                  onAction={handleAction}
+                />
+              ))}
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="p-3 rounded-full bg-muted mb-3">
+              <Bell className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">No notifications</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">
+              You're all caught up!
+            </p>
           </div>
         )}
+
+        {/* Footer */}
+        <div className="border-t py-3 text-center">
+          <button
+            onClick={() => {
+              setIsOpen(false);
+              navigate("/notifications");
+            }}
+            className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+          >
+            View All Notifications →
+          </button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
