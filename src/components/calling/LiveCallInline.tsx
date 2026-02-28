@@ -171,7 +171,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
   };
 
   return (
-    <div className={cn("flex-1 flex flex-col overflow-hidden bg-background transition-colors duration-300", className)}>
+    <div className={cn("flex-1 flex flex-col overflow-hidden bg-background transition-colors duration-300", className)} style={{ maxHeight: 'calc(100vh - 120px)' }}>
       {/* Header — mode-tinted */}
       <div className={cn("px-5 py-4 border-b border-border flex items-center justify-between transition-colors duration-300", mc.headerBg)}>
         <div className="flex items-center gap-3">
@@ -275,10 +275,10 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
       </div>
 
       {/* Content - Focused Layout */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 min-h-0 flex flex-col" style={{ overflow: 'hidden' }}>
         {/* Live Transcript - Clean, focused */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <ScrollArea className="flex-1 p-5">
+        <div className="flex-1 min-h-0 flex flex-col" style={{ overflow: 'hidden' }}>
+          <div className="flex-1 min-h-0 overflow-y-auto p-5">
             <div className="space-y-3">
               {transcript.map(entry => (
                 <div key={entry.id} className={cn(
@@ -307,7 +307,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                 </div>
               )}
             </div>
-          </ScrollArea>
+          </div>
 
           {/* SMS Slide-Up Composer */}
           {smsComposerOpen && (
