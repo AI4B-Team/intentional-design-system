@@ -457,7 +457,7 @@ Best regards,
 
   return (
     <AppLayout fullWidth>
-      <div className="min-h-full flex flex-col bg-white">
+      <div className="h-full flex flex-col bg-white">
         {/* Header */}
         <div className="flex-shrink-0 border-b border-border bg-white px-6 py-4">
           <div className="flex items-center justify-between">
