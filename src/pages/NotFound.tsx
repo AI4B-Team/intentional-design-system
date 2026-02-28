@@ -63,7 +63,7 @@ const NotFound = () => {
           <Button
             variant="outline"
             onClick={() => navigate(-1)}
-            className="border-white/20 text-white/70 hover:bg-white/5 hover:text-white gap-2"
+            className="border-white/40 text-white hover:bg-white/10 gap-2"
             size="lg"
           >
             <ArrowLeft className="h-4 w-4" />
