@@ -1031,19 +1031,19 @@ function CoPilotPanel({
       "hidden lg:flex w-[400px] border-l-2 flex-col min-h-0 h-full overflow-hidden transition-all duration-300",
       isLiveCall
         ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
-        : "border-primary/15 bg-background shadow-[-4px_0_20px_-5px_hsl(var(--primary)/0.06)]"
+        : "border-border-subtle bg-white shadow-[-4px_0_20px_-5px_rgba(0,0,0,0.04)]"
     )}>
       {/* Header */}
       <div className={cn(
         "p-4 border-b flex items-center justify-between transition-colors duration-300",
-        isLiveCall ? cn("border-border/50", theme.headerBg) : "border-primary/10 bg-primary/[0.02]"
+        isLiveCall ? cn("border-border/50", theme.headerBg) : "border-border-subtle bg-muted/30"
       )}>
         <div className="flex items-center gap-2">
           <div className={cn(
             "w-7 h-7 rounded-md flex items-center justify-center transition-colors duration-300",
-            isLiveCall ? theme.badge : "bg-primary/10"
+            isLiveCall ? theme.badge : "bg-muted"
           )}>
-            <Sparkles className={cn("h-3.5 w-3.5 transition-colors duration-300", isLiveCall ? theme.accent : "text-primary")} />
+            <Sparkles className={cn("h-3.5 w-3.5 transition-colors duration-300", isLiveCall ? theme.accent : "text-muted-foreground")} />
           </div>
           <div>
             <div className="text-[13px] font-semibold text-foreground">AI Command Center</div>
