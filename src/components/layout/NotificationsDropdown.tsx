@@ -465,7 +465,7 @@ export function NotificationsDropdown() {
         {/* Notification List */}
         {notifications.length > 0 ? (
           <ScrollArea className="max-h-[480px]">
-            <div>
+            <div className="pb-1">
               {notifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
