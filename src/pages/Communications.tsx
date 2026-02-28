@@ -1239,57 +1239,6 @@ function CoPilotPanel({
               </div>
             </CollapsiblePanel>
 
-            {/* 3b. Say This Next — AI Coaching Cards */}
-            <CollapsiblePanel title="Say This Next" icon={<MessageSquare className="h-3 w-3" />} defaultOpen={true} headerClassName="text-primary">
-              <div className="space-y-2">
-                {[
-                  { type: 'question' as const, text: `"What's your timeline for making a decision on ${contact.address?.split(',')[0] || 'the property'}?"`, label: 'Discovery' },
-                  { type: 'response' as const, text: '"I completely understand your concern. Many sellers I work with felt the same way initially — let me share what made the difference for them."', label: 'Reframe' },
-                  { type: 'close' as const, text: '"Based on everything we\'ve discussed, would it make sense to schedule a quick walkthrough this week?"', label: 'Close Test' },
-                ].map((card, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      navigator.clipboard.writeText(card.text.replace(/^"|"$/g, ''));
-                      toast.success('Copied to clipboard');
-                    }}
-                    className="w-full text-left p-2.5 rounded-lg border border-border/60 hover:border-primary/30 hover:bg-primary/5 transition-all group"
-                  >
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <span className={cn(
-                        "text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded",
-                        card.type === 'question' ? 'bg-blue-100 text-blue-700' :
-                        card.type === 'response' ? 'bg-amber-100 text-amber-700' :
-                        'bg-emerald-100 text-emerald-700'
-                      )}>
-                        {card.label}
-                      </span>
-                      <Copy className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ml-auto" />
-                    </div>
-                    <p className="text-xs text-foreground leading-relaxed">{card.text}</p>
-                  </button>
-                ))}
-              </div>
-            </CollapsiblePanel>
-
-            {/* 3c. Objection Handler */}
-            <CollapsiblePanel title="Objection Handler" icon={<Shield className="h-3 w-3" />} defaultOpen={true}>
-              <div className="space-y-2">
-                <p className="text-[11px] text-muted-foreground">Type or select an objection to get a suggested response:</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {['Price too high', 'Not interested', 'Bad timing', 'Need to think'].map((obj) => (
-                    <button
-                      key={obj}
-                      onClick={() => toast.info(`Handling: "${obj}" — AI generating response...`)}
-                      className="px-2.5 py-1 rounded-full text-[11px] font-medium border border-border hover:border-primary/30 hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all"
-                    >
-                      {obj}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </CollapsiblePanel>
-
             {/* 4. Take Over Call (only when AI Agent or Hybrid active) */}
             {callingMode !== "start" && (
               <button

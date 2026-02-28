@@ -397,7 +397,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
         </div>
 
         {/* SAY THIS NEXT — Horizontal suggestion cards anchored at bottom */}
-        {aiSuggestions.length > 0 && (
+        {callStatus === "connected" && (
           <div className="border-t border-border bg-muted/20 px-5 py-3 flex-shrink-0 space-y-3">
             {/* Say This Next + Action Buttons */}
             <div className="flex items-center justify-between">
@@ -485,7 +485,11 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
               </div>
             )}
             <div className="flex gap-3">
-              {aiSuggestions.slice(0, 3).map(s => (
+              {(aiSuggestions.length > 0 ? aiSuggestions.slice(0, 3) : [
+                { id: "fallback-1", type: "question" as const, text: `What's your timeline for making a decision on ${currentContact?.address?.split(",")[0] || "the property"}?`, confidence: 85 },
+                { id: "fallback-2", type: "response" as const, text: "I completely understand your concern. Many sellers I work with felt the same way — let me share what made the difference for them.", confidence: 78 },
+                { id: "fallback-3", type: "coach" as const, text: "Based on everything we've discussed, would it make sense to schedule a quick walkthrough this week?", confidence: 72 },
+              ]).map(s => (
                 <div key={s.id} className="flex-1 flex flex-col bg-background rounded-lg border border-border/80 hover:border-primary/30 transition-all overflow-hidden">
                   <div className="p-3 flex-1 flex flex-col">
                     <div className="flex items-center justify-between mb-2">
@@ -494,7 +498,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                         s.type === "question" ? "bg-blue-500/10 text-blue-600" :
                         s.type === "response" ? "bg-emerald-500/10 text-emerald-600" :
                         "bg-muted text-muted-foreground"
-                      )}>{s.type}</span>
+                      )}>{s.type === "coach" ? "close test" : s.type}</span>
                       <span className="text-[10px] font-mono font-semibold text-muted-foreground">{s.confidence}%</span>
                     </div>
                     <p className="text-xs text-foreground leading-relaxed flex-1">{s.text}</p>
