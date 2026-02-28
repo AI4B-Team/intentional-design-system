@@ -698,7 +698,7 @@ Best regards,
           </div>
 
           {/* Right Side - Offer Wizard */}
-          <div className="flex-1 bg-white overflow-hidden flex flex-col">
+          <div className="flex-1 min-h-0 bg-white overflow-hidden flex flex-col">
             {/* Step Indicator */}
             <div className="px-6 py-3 border-b bg-muted/30">
               <div className="flex items-center w-full">
