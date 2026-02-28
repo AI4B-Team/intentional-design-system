@@ -1028,7 +1028,7 @@ function CoPilotPanel({
 
   return (
     <div className={cn(
-      "hidden lg:flex w-[400px] border-l-2 flex-col overflow-hidden transition-all duration-300",
+      "hidden lg:flex w-[400px] border-l-2 flex-col min-h-0 h-full overflow-hidden transition-all duration-300",
       isLiveCall
         ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
         : "border-primary/15 bg-background shadow-[-4px_0_20px_-5px_hsl(var(--primary)/0.06)]"
