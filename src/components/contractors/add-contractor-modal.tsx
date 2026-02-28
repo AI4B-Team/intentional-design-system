@@ -95,12 +95,13 @@ export function AddContractorModal({ open, onOpenChange }: AddContractorModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Add Contractor</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0 flex-1">
+          <div className="space-y-4 overflow-y-auto px-6 pb-4 flex-1 min-h-0">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Name *</Label>
@@ -221,7 +222,8 @@ export function AddContractorModal({ open, onOpenChange }: AddContractorModalPro
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-4 border-t border-border-subtle">
+          </div>
+          <div className="flex justify-end gap-3 pt-4 px-6 pb-4 border-t border-border-subtle flex-shrink-0">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
