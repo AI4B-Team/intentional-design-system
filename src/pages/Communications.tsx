@@ -1070,7 +1070,7 @@ function CoPilotPanel({
         )}
       </div>
 
-      <div className="flex-1 overflow-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4">
         {/* ===== DIALER VIEW (No contact needed) — Intelligence Stack ===== */}
         {isDialerView && !isLiveCall ? (
           <div className="space-y-3">
