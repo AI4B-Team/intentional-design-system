@@ -1,7 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Building2, ArrowLeft, Gauge } from "lucide-react";
+import { ArrowLeft, Gauge } from "lucide-react";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 
 const NotFound = () => {
   const location = useLocation();
@@ -26,13 +27,8 @@ const NotFound = () => {
 
       <div className="relative text-center px-6">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-3 mb-12">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-            <Building2 className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-            RealElite
-          </span>
+        <div className="flex items-center justify-center mb-12">
+          <RealEliteLogo height={28} color="white" />
         </div>
 
         {/* 404 Number */}

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
   Tooltip,
@@ -139,20 +140,16 @@ export function AppSidebar({
       {/* Logo */}
       <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
         <div className="flex items-center gap-2">
-          <button
-            onClick={collapsed ? onToggle : undefined}
-            className={cn(
-              "h-8 w-8 rounded-lg bg-brand-accent flex items-center justify-center flex-shrink-0",
-              collapsed && "cursor-pointer hover:bg-brand-accent/80 transition-colors"
-            )}
-            title={collapsed ? "Expand sidebar" : undefined}
-          >
-            <Building2 className="h-5 w-5 text-white" />
-          </button>
-          {!collapsed && (
-            <span className="text-lg font-bold whitespace-nowrap bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-              Real Elite
-            </span>
+          {collapsed ? (
+            <button
+              onClick={onToggle}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              title="Expand sidebar"
+            >
+              <RealEliteLogo iconOnly height={24} color="white" />
+            </button>
+          ) : (
+            <RealEliteLogo height={20} color="white" />
           )}
         </div>
         <div className="flex items-center gap-1">
