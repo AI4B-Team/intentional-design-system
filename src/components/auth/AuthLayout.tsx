@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { Building2, TrendingUp, Shield, Zap, Users } from "lucide-react";
+import { TrendingUp, Shield, Zap, Users } from "lucide-react";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -29,13 +30,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         />
 
         {/* Logo */}
-        <div className="relative flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
-            <Building2 className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">
-            RealElite
-          </span>
+        <div className="relative">
+          <RealEliteLogo height={26} color="white" />
         </div>
 
         {/* Main Content */}
@@ -97,11 +93,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       {/* Right Side - Auth Form */}
       <div className="flex-1 flex flex-col bg-background">
         {/* Mobile Logo */}
-        <div className="lg:hidden flex items-center gap-3 p-6 border-b border-slate-100">
-          <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-white" />
-          </div>
-          <span className="text-xl font-bold text-slate-900">RealElite</span>
+        <div className="lg:hidden flex items-center p-6 border-b border-slate-100">
+          <RealEliteLogo height={22} color="hsl(222 47% 11%)" />
         </div>
 
         {/* Form Container */}

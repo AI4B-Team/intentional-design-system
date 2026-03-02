@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import {
   Building2,
   Check,
@@ -232,11 +233,8 @@ export default function SignupFlow() {
       <aside className="hidden lg:flex lg:w-[300px] bg-slate-900 text-white flex-col overflow-hidden">
         <div className="p-5 flex-1 overflow-hidden flex flex-col">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold">RealElite</span>
+          <div className="flex items-center mb-6">
+            <RealEliteLogo height={22} color="white" />
           </div>
 
           {/* Welcome Message */}
@@ -338,10 +336,7 @@ export default function SignupFlow() {
       <main className="flex-1 flex flex-col bg-white overflow-hidden">
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center gap-3 p-3 border-b border-slate-100">
-          <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center">
-            <Building2 className="h-4 w-4 text-white" />
-          </div>
-          <span className="text-base font-bold text-slate-900">RealElite</span>
+          <RealEliteLogo height={18} color="hsl(222 47% 11%)" />
           <div className="ml-auto text-sm text-slate-500">
             Step {currentStepIndex + 1} of {STEPS.length}
           </div>

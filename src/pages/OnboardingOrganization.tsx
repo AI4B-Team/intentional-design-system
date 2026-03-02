@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LoadingPage, Spinner } from "@/components/ui/spinner";
 import { Building2, Users, ArrowRight, Mail } from "lucide-react";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 
 export default function OnboardingOrganization() {
   const navigate = useNavigate();
@@ -33,12 +34,10 @@ export default function OnboardingOrganization() {
       <div className="w-full max-w-2xl">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="h-12 w-12 rounded-xl bg-brand-accent flex items-center justify-center">
-              <Building2 className="h-7 w-7 text-content-inverse" />
-            </div>
+          <div className="inline-flex items-center mb-4">
+            <RealEliteLogo height={30} color="hsl(222 47% 11%)" />
           </div>
-          <h1 className="text-h1 font-bold text-content mb-2">Welcome to Real Elite!</h1>
+          <h1 className="text-h1 font-bold text-content mb-2">Welcome to RealElite!</h1>
           <p className="text-body text-content-secondary">
             Let's get you set up. Choose how you'd like to get started.
           </p>

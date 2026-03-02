@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Spinner, LoadingPage } from "@/components/ui/spinner";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { Building2, Globe, Phone } from "lucide-react";
 
 export default function CreateOrganization() {
@@ -50,11 +51,8 @@ export default function CreateOrganization() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-2">
-            <div className="h-10 w-10 rounded-lg bg-brand-accent flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-content-inverse" />
-            </div>
-            <span className="text-2xl font-bold text-content">RealElite</span>
+          <div className="inline-flex items-center mb-2">
+            <RealEliteLogo height={26} color="hsl(222 47% 11%)" />
           </div>
           <p className="text-content-secondary">Create Your Organization</p>
         </div>

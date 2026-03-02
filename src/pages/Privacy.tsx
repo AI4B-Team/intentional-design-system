@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Building2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { Button } from "@/components/ui/button";
 
 export default function Privacy() {
@@ -9,11 +10,8 @@ export default function Privacy() {
       {/* Header */}
       <header className="border-b border-slate-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-lg bg-brand flex items-center justify-center">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-slate-900">RealElite</span>
+          <Link to="/" className="flex items-center">
+            <RealEliteLogo height={22} color="hsl(222 47% 11%)" />
           </Link>
           <Button variant="ghost" size="sm" asChild>
             <Link to="/login">
