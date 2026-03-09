@@ -22,10 +22,10 @@ const MOCK_RECENT_CALLS: RecentCall[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  connected: { icon: Phone, color: "text-emerald-500", label: "Connected" },
+  connected: { icon: Phone, color: "text-success", label: "Connected" },
   no_answer: { icon: PhoneOff, color: "text-muted-foreground", label: "No Answer" },
-  voicemail: { icon: Voicemail, color: "text-amber-500", label: "Voicemail" },
-  busy: { icon: PhoneOff, color: "text-red-500", label: "Busy" },
+  voicemail: { icon: Voicemail, color: "text-warning", label: "Voicemail" },
+  busy: { icon: PhoneOff, color: "text-destructive", label: "Busy" },
 };
 
 export function RecentCallLog() {
