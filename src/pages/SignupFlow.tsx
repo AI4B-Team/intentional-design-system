@@ -421,8 +421,8 @@ export default function SignupFlow() {
                             : "border-border hover:border-border/80"
                         )}
                       >
-                        <p className="font-semibold text-slate-900">{role.label}</p>
-                        <p className="text-sm text-slate-500">{role.description}</p>
+                        <p className="font-semibold text-foreground">{role.label}</p>
+                        <p className="text-sm text-muted-foreground">{role.description}</p>
                       </button>
                     ))}
                   </div>
@@ -430,7 +430,7 @@ export default function SignupFlow() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">
-                    Phone Number <span className="text-slate-400">(optional)</span>
+                    Phone Number <span className="text-muted-foreground">(optional)</span>
                   </Label>
                   <Input
                     id="phone"
