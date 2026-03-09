@@ -507,8 +507,8 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                         <div className="flex items-center gap-1.5 shrink-0">
                           <span className={cn(
                             "text-[10px] px-2 py-0.5 rounded-full font-medium",
-                            item.type === "Callback" ? "bg-amber-500/10 text-amber-600" :
-                            item.type === "Follow-up" ? "bg-blue-500/10 text-blue-600" :
+                            item.type === "Callback" ? "bg-warning/10 text-warning" :
+                            item.type === "Follow-up" ? "bg-info/10 text-info" :
                             "bg-muted text-muted-foreground"
                           )}>
                             {item.type}
@@ -520,7 +520,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                               "flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors",
                               isCalled
                                 ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                : "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
+                                : "bg-success/10 text-success hover:bg-success/20"
                             )}
                           >
                             <Phone className="h-3 w-3" /> Call

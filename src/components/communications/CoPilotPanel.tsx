@@ -272,13 +272,13 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
               <div className="flex items-center gap-2.5">
                 <div className="h-1.5 flex-1 rounded-full bg-border overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                    className="h-full rounded-full bg-success transition-all duration-500"
                     style={{ width: contact.sentiment === "positive" ? "75%" : contact.sentiment === "neutral" ? "50%" : "25%" }}
                   />
                 </div>
                 <span className={cn(
                   "text-xs font-semibold capitalize",
-                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                  contact.sentiment === "positive" ? "text-success" : contact.sentiment === "negative" ? "text-destructive" : "text-warning"
                 )}>
                   {contact.sentiment}
                 </span>
