@@ -1410,7 +1410,7 @@ export default function Dashboard() {
                   const outcomePct = (outcomeCount / totalPipeline) * 100;
                   return outcomePct > 0 ? (
                     <div
-                      className="bg-emerald-500 transition-all duration-500"
+                      className="bg-success transition-all duration-500"
                       style={{ width: `${outcomePct}%` }}
                       title={`Outcome: ${outcomeCount} (${Math.round(outcomePct)}%)`}
                     />
