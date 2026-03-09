@@ -230,7 +230,9 @@ export default function SignupFlow() {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left Sidebar - Dark */}
-      <aside className="hidden lg:flex lg:w-[300px] bg-slate-900 text-white flex-col overflow-hidden">
+      <aside className="hidden lg:flex lg:w-[300px] flex-col overflow-hidden"
+        style={{ background: "linear-gradient(160deg, hsl(222 47% 8%) 0%, hsl(220 43% 6%) 50%, hsl(225 50% 7%) 100%)" }}
+      >
         <div className="p-5 flex-1 overflow-hidden flex flex-col">
           {/* Logo */}
           <div className="flex items-center mb-6">
@@ -239,17 +241,17 @@ export default function SignupFlow() {
 
           {/* Welcome Message */}
           <div className="mb-5">
-            <h2 className="text-lg font-semibold mb-1.5">
+            <h2 className="text-lg font-semibold text-white/90 mb-1.5">
               Welcome to RealElite! 👋
             </h2>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-white/40 leading-relaxed">
               We'll guide you through a quick setup to personalize your real estate investing command center.
             </p>
           </div>
 
           {/* Setup Progress */}
           <div className="flex-1 overflow-hidden">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+            <p className="text-xs font-medium text-white/30 uppercase tracking-wide mb-3">
               Setup Progress
             </p>
             <div className="space-y-0.5">
@@ -262,16 +264,16 @@ export default function SignupFlow() {
                     key={s.id}
                     className={cn(
                       "flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-colors",
-                      isCurrent && "bg-slate-800"
+                      isCurrent && "bg-white/10"
                     )}
                   >
                     <div className="flex flex-col items-center">
                       <div
                         className={cn(
                           "h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium",
-                          isCompleted && "bg-emerald-500 text-white",
-                          isCurrent && "bg-primary text-white",
-                          !isCompleted && !isCurrent && "bg-slate-700 text-slate-400"
+                          isCompleted && "bg-success text-success-foreground",
+                          isCurrent && "bg-primary text-primary-foreground",
+                          !isCompleted && !isCurrent && "bg-white/10 text-white/30"
                         )}
                       >
                         {isCompleted ? (
@@ -283,20 +285,20 @@ export default function SignupFlow() {
                       {idx < STEPS.length - 1 && (
                         <div className={cn(
                           "w-0.5 h-3 my-0.5",
-                          isCompleted ? "bg-emerald-500" : "bg-slate-700"
+                          isCompleted ? "bg-success" : "bg-white/10"
                         )} />
                       )}
                     </div>
                     <div>
                       <p className={cn(
                         "text-sm font-medium",
-                        isCurrent ? "text-white" : isCompleted ? "text-slate-300" : "text-slate-500"
+                        isCurrent ? "text-white" : isCompleted ? "text-white/70" : "text-white/30"
                       )}>
                         {s.label}
                       </p>
                       <p className={cn(
                         "text-xs",
-                        isCurrent ? "text-primary" : "text-slate-600"
+                        isCurrent ? "text-primary" : "text-white/20"
                       )}>
                         {isCompleted ? "Completed" : isCurrent ? "Current Step" : ""}
                       </p>
@@ -312,20 +314,20 @@ export default function SignupFlow() {
         <div className="p-5 pt-0 space-y-3">
           {/* Progress Bar */}
           <div>
-            <div className="flex justify-between text-xs text-slate-400 mb-1.5">
+            <div className="flex justify-between text-xs text-white/30 mb-1.5">
               <span>Progress</span>
               <span>{currentStepIndex + 1} of {STEPS.length}</span>
             </div>
-            <Progress value={progressPercent} className="h-1 bg-slate-700" />
+            <Progress value={progressPercent} className="h-1 bg-white/10" />
           </div>
 
           {/* Pro Tip */}
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-3">
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs font-medium">Pro Tip:</span>
+              <Sparkles className="h-3.5 w-3.5 text-warning" />
+              <span className="text-xs font-medium text-white/70">Pro Tip:</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-white/40 leading-relaxed">
               This only takes a minute—you can adjust settings anytime.
             </p>
           </div>
@@ -333,11 +335,11 @@ export default function SignupFlow() {
       </aside>
 
       {/* Right Content Area */}
-      <main className="flex-1 flex flex-col bg-white overflow-hidden">
+      <main className="flex-1 flex flex-col bg-background overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center gap-3 p-3 border-b border-slate-100">
+        <div className="lg:hidden flex items-center gap-3 p-3 border-b border-border">
           <RealEliteLogo height={18} color="hsl(222 47% 11%)" />
-          <div className="ml-auto text-sm text-slate-500">
+          <div className="ml-auto text-sm text-muted-foreground">
             Step {currentStepIndex + 1} of {STEPS.length}
           </div>
         </div>
