@@ -56,7 +56,7 @@ export function FocusStrip({
         label: `${newLeadsNeedContact.length} New Lead${newLeadsNeedContact.length > 1 ? "s Need" : " Needs"} First Contact`,
         count: newLeadsNeedContact.length,
         deals: newLeadsNeedContact,
-        color: "bg-red-100 text-red-600 border-red-200",
+        color: "bg-destructive/10 text-destructive border-destructive/30",
         filterStage: "new",
       });
     }
@@ -73,7 +73,7 @@ export function FocusStrip({
         label: `${appointmentsScheduled.length} Appointment${appointmentsScheduled.length > 1 ? "s" : ""} Scheduled`,
         count: appointmentsScheduled.length,
         deals: appointmentsScheduled,
-        color: "bg-purple-100 text-purple-600 border-purple-200",
+        color: "bg-accent/10 text-accent border-accent/30",
         filterStage: "appointment",
       });
     }
@@ -142,7 +142,7 @@ export function FocusStrip({
         label: `${highValueDeals.length} High-Value Deal${highValueDeals.length > 1 ? "s" : ""} ($250K+)`,
         count: highValueDeals.length,
         deals: highValueDeals,
-        color: "bg-emerald-100 text-emerald-600 border-emerald-200",
+        color: "bg-success/10 text-success border-success/30",
       });
     }
 
