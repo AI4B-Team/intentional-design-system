@@ -572,9 +572,8 @@ export function PropertyDetailMap({
         isOpen={showCompsPanel}
         onClose={() => setShowCompsPanel(false)}
         comps={comps}
-        onCompClick={(comp) => {
-          // Center map on the comp when clicked in panel
-          console.log("Comp clicked:", comp);
+        onCompClick={(_comp) => {
+          // TODO: Center map on the comp when clicked in panel
         }}
       />
 
