@@ -13,7 +13,7 @@ const badgeVariants = cva(
         warning: "bg-warning/8 text-warning ring-warning/20",
         error: "bg-destructive/8 text-destructive ring-destructive/20",
         destructive: "bg-destructive/8 text-destructive ring-destructive/20",
-        info: "bg-blue-500/8 text-blue-600 ring-blue-500/20",
+        info: "bg-info/8 text-info ring-info/20",
         outline: "bg-transparent border border-border text-foreground-secondary ring-0",
         // Heat Score Variants
         hot: "bg-score-hot/10 text-score-hot ring-score-hot/20",
