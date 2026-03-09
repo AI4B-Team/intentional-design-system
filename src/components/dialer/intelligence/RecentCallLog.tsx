@@ -22,10 +22,10 @@ const MOCK_RECENT_CALLS: RecentCall[] = [
 ];
 
 const STATUS_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  connected: { icon: Phone, color: "text-emerald-500", label: "Connected" },
+  connected: { icon: Phone, color: "text-success", label: "Connected" },
   no_answer: { icon: PhoneOff, color: "text-muted-foreground", label: "No Answer" },
-  voicemail: { icon: Voicemail, color: "text-amber-500", label: "Voicemail" },
-  busy: { icon: PhoneOff, color: "text-red-500", label: "Busy" },
+  voicemail: { icon: Voicemail, color: "text-warning", label: "Voicemail" },
+  busy: { icon: PhoneOff, color: "text-destructive", label: "Busy" },
 };
 
 export function RecentCallLog() {
@@ -42,7 +42,7 @@ export function RecentCallLog() {
             className="flex items-center gap-2.5 py-1.5 group"
           >
             <div className={cn("w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0", 
-              call.status === "connected" ? "bg-emerald-500/10" : "bg-muted"
+              call.status === "connected" ? "bg-success/10" : "bg-muted"
             )}>
               <Icon className={cn("h-2.5 w-2.5", config.color)} />
             </div>
