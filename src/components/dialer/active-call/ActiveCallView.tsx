@@ -131,7 +131,7 @@ export function ActiveCallView({
             stats={stats}
             onUseSuggestion={handleUseSuggestion}
             onCopySuggestion={handleCopySuggestion}
-            onRefresh={() => console.log('Refresh suggestions')}
+            onRefresh={() => { /* TODO: implement suggestion refresh */ }}
           />
         </div>
       </div>

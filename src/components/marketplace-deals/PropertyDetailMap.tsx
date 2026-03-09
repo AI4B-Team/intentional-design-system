@@ -582,9 +582,8 @@ export function PropertyDetailMap({
         isOpen={showBuyersPanel}
         onClose={() => setShowBuyersPanel(false)}
         buyers={buyers}
-        onBuyerClick={(buyer) => {
-          // Handle buyer click
-          console.log("Buyer clicked:", buyer);
+        onBuyerClick={(_buyer) => {
+          // TODO: Handle buyer click — navigate or open detail panel
         }}
       />
 

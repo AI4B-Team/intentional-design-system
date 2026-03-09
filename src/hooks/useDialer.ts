@@ -361,7 +361,6 @@ export function useDialer() {
         });
 
       if (rpcError || !contactId) {
-        console.log('No more contacts in queue');
         return null;
       }
 
