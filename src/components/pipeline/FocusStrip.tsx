@@ -73,7 +73,7 @@ export function FocusStrip({
         label: `${appointmentsScheduled.length} Appointment${appointmentsScheduled.length > 1 ? "s" : ""} Scheduled`,
         count: appointmentsScheduled.length,
         deals: appointmentsScheduled,
-        color: "bg-purple-100 text-purple-600 border-purple-200",
+        color: "bg-accent/10 text-accent border-accent/30",
         filterStage: "appointment",
       });
     }
