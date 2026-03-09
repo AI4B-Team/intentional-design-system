@@ -223,7 +223,7 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
             {callingMode !== "start" && (
               <button
                 onClick={() => toast.info("Taking over call...")}
-                className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-lg border-2 border-warning/30 bg-warning/5 text-warning font-semibold text-sm hover:bg-warning/10 hover:border-warning/40 transition-all flex items-center justify-center gap-2"
               >
                 <Hand className="h-4 w-4" />
                 Take Over Call

@@ -658,8 +658,8 @@ export default function SignupFlow() {
         </div>
 
         {/* Footer */}
-        <div className="p-3 text-center border-t border-slate-100">
-          <p className="text-xs text-slate-400">
+        <div className="p-3 text-center border-t border-border">
+          <p className="text-xs text-muted-foreground">
             Enterprise Ready — Your Data Is Encrypted And Secure At Every Step.
           </p>
         </div>

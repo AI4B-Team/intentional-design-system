@@ -325,7 +325,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                   )}
                 >
                   {beta && (
-                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-bold tracking-wider">BETA</span>
+                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-foreground/20 text-[9px] font-bold tracking-wider">BETA</span>
                   )}
                   <Icon className="h-6 w-6 mx-auto mb-2.5" />
                   <div className="text-sm font-semibold">{label}</div>
