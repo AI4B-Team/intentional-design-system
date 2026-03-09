@@ -121,7 +121,7 @@ export function ActiveCallView({
             phases={phases}
             currentPhaseId={currentPhaseId}
             onNextPhase={onNextPhase}
-            onSwitchTemplate={() => console.log('Switch template')}
+            onSwitchTemplate={() => { /* TODO: implement template switching */ }}
             callTemplate={callTemplate}
           />
 
