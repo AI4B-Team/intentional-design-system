@@ -596,15 +596,15 @@ export default function SignupFlow() {
               <div className="space-y-6 text-center">
                 <div className="flex justify-center">
                   <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center">
-                    <Rocket className="h-10 w-10 text-white" />
+                    <Rocket className="h-10 w-10 text-primary-foreground" />
                   </div>
                 </div>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     You're Ready To Launch
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Your workspace is set up and ready to help you find deals.
                     <br />
                     Think big — RealElite handles the complexity.
@@ -613,20 +613,20 @@ export default function SignupFlow() {
 
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-left">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-4 w-4 text-amber-500" />
-                    <span className="font-semibold text-slate-900">Pro Tip</span>
+                    <Sparkles className="h-4 w-4 text-warning" />
+                    <span className="font-semibold text-foreground">Pro Tip</span>
                   </div>
-                  <p className="text-sm text-slate-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Don't start with small tasks. Give RealElite something ambitious:
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <X className="h-4 w-4 text-slate-400" />
-                      <span className="text-slate-400 line-through">"Look up a property"</span>
+                      <X className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground line-through">"Look up a property"</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-emerald-500" />
-                      <span className="text-emerald-700 font-medium">"Analyze 123 Oak St, find comps, and draft an offer at 70% ARV"</span>
+                      <Check className="h-4 w-4 text-success" />
+                      <span className="text-success font-medium">"Analyze 123 Oak St, find comps, and draft an offer at 70% ARV"</span>
                     </div>
                   </div>
                 </div>
