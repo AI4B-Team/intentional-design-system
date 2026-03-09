@@ -1,18 +1,10 @@
 import * as React from "react";
-import { DashboardLayout } from "@/components/layout";
-import { Card } from "@/components/ui/card";
-import {
-  DashboardStatCard,
-  HotOpportunitiesList,
-  PipelineFunnel,
-  TasksList,
-  RecentActivityList,
-  RecentAnalysesWidget,
-} from "@/components/dashboard";
-import { WorkflowShowcase, RenovationDemo } from "@/components/landing";
-import { Users, Calendar, FileText, DollarSign } from "lucide-react";
-import { FloatingActionButton } from "@/components/mobile/floating-action-button";
-import { AddLeadModal } from "@/components/leads/AddLeadModal";
+import { Navigate } from "react-router-dom";
+
+// Index page redirects to the main Dashboard
+export default function Index() {
+  return <Navigate to="/dashboard" replace />;
+}
 
 // Get greeting based on time of day
 function getGreeting(): string {
