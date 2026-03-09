@@ -58,13 +58,13 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-colors duration-300",
             isLiveCall
               ? cn(theme.badge, theme.border)
-              : "bg-emerald-500/10 border-emerald-500/20"
+              : "bg-success/10 border-success/20"
           )}>
             <span className="relative flex h-2 w-2">
-              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors", isLiveCall ? theme.dot : "bg-emerald-400")} />
-              <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
+              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors", isLiveCall ? theme.dot : "bg-success/70")} />
+              <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-success")} />
             </span>
-            <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
+            <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-success")}>
               {isLiveCall ? theme.label : "AI ACTIVE"}
             </span>
           </div>
