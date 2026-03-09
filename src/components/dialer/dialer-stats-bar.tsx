@@ -107,13 +107,13 @@ export function DialerStatsBar({
             label: "Avg Conversation",
             value: formatTime(avgConversationLength),
             icon: Clock,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Success Rate",
             value: `${successRate}%`,
             icon: CheckCircle,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
       case 'listen':
