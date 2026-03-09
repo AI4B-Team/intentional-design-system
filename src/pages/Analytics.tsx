@@ -176,7 +176,7 @@ function OverviewTab({ dateRange }: { dateRange: DateRange }) {
         />
         <AIInsightsCard
           insights={insights}
-          onInsightClick={(insight) => console.log("Insight clicked:", insight)}
+          onInsightClick={() => {}}
           className="animate-fade-in"
         />
       </div>
