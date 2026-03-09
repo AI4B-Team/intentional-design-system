@@ -157,7 +157,7 @@ export default function LenderBrowser() {
   }, [filters, searchQuery, sortBy]);
 
   const handleViewDetails = (id: string) => {
-    console.log("View details:", id);
+    navigate(`/capital/lenders?lender=${id}`);
   };
 
   const handleRequestQuote = (id: string) => {

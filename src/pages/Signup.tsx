@@ -69,7 +69,6 @@ export default function Signup() {
       setLoading(false);
     } else {
       toast.success("Account created successfully!");
-      // Redirect to the new signup flow to complete onboarding
       navigate("/signup/flow", { replace: true });
     }
   };
@@ -87,16 +86,16 @@ export default function Signup() {
     <AuthLayout>
       {/* Tab Switcher */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex bg-slate-100 rounded-full p-1">
+        <div className="inline-flex bg-muted rounded-full p-1">
           <Link
             to="/login"
-            className="px-6 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900"
+            className="px-6 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             Login
           </Link>
           <Link
             to="/signup"
-            className="px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-900 shadow-sm"
+            className="px-6 py-2 rounded-full text-sm font-medium bg-background text-foreground shadow-sm"
           >
             Sign Up
           </Link>
@@ -105,8 +104,8 @@ export default function Signup() {
 
       {/* Welcome Text */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Create Account</h1>
-        <p className="text-slate-500">Get started with RealElite</p>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Create Account</h1>
+        <p className="text-muted-foreground">Get started with RealElite</p>
       </div>
 
       {/* Signup Form */}
@@ -123,10 +122,10 @@ export default function Signup() {
               className="h-12 pr-10"
               error={errors.fullName}
             />
-            <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-brand" />
+            <User className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
           </div>
           {errors.fullName && (
-            <p className="text-sm text-red-500">{errors.fullName}</p>
+            <p className="text-sm text-destructive">{errors.fullName}</p>
           )}
         </div>
 
@@ -142,10 +141,10 @@ export default function Signup() {
               className="h-12 pr-10"
               error={errors.email}
             />
-            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-brand" />
+            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
           </div>
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email}</p>
+            <p className="text-sm text-destructive">{errors.email}</p>
           )}
         </div>
 
@@ -162,18 +161,18 @@ export default function Signup() {
               error={errors.password}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-brand" />
+              <Lock className="h-5 w-5 text-primary" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
           {errors.password && (
-            <p className="text-sm text-red-500">{errors.password}</p>
+            <p className="text-sm text-destructive">{errors.password}</p>
           )}
         </div>
 
@@ -190,18 +189,18 @@ export default function Signup() {
               error={errors.confirmPassword}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-brand" />
+              <Lock className="h-5 w-5 text-primary" />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
           </div>
           {errors.confirmPassword && (
-            <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+            <p className="text-sm text-destructive">{errors.confirmPassword}</p>
           )}
         </div>
 
@@ -209,7 +208,7 @@ export default function Signup() {
           type="submit"
           fullWidth
           disabled={loading}
-          className="h-12 bg-brand hover:bg-brand/90 text-white"
+          className="h-12"
         >
           {loading ? <Spinner size="sm" className="mr-2" /> : null}
           {loading ? "Creating account..." : "Create Account"}
@@ -219,10 +218,10 @@ export default function Signup() {
       {/* Divider */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200" />
+          <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-slate-500">OR</span>
+          <span className="px-4 bg-background text-muted-foreground">OR</span>
         </div>
       </div>
 
@@ -233,7 +232,7 @@ export default function Signup() {
         fullWidth
         onClick={handleGoogleSignIn}
         disabled={googleLoading}
-        className="h-12 border-slate-200 hover:bg-slate-50"
+        className="h-12"
       >
         {googleLoading ? (
           <Spinner size="sm" className="mr-2" />
@@ -261,9 +260,9 @@ export default function Signup() {
       </Button>
 
       {/* Sign In Link */}
-      <p className="text-center mt-6 text-sm text-slate-600">
+      <p className="text-center mt-6 text-sm text-muted-foreground">
         Already Have An Account?{" "}
-        <Link to="/login" className="text-brand hover:underline font-medium">
+        <Link to="/login" className="text-primary hover:underline font-medium">
           Sign In
         </Link>
       </p>

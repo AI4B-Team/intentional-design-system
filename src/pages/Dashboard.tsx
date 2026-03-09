@@ -1368,7 +1368,7 @@ export default function Dashboard() {
                   const discoveryPct = (discoveryCount / totalPipeline) * 100;
                   return discoveryPct > 0 ? (
                     <div
-                      className="bg-red-500 transition-all duration-500"
+                      className="bg-destructive transition-all duration-500"
                       style={{ width: `${discoveryPct}%` }}
                       title={`Discovery: ${discoveryCount} (${Math.round(discoveryPct)}%)`}
                     />
@@ -1382,7 +1382,7 @@ export default function Dashboard() {
                   const intentPct = (intentCount / totalPipeline) * 100;
                   return intentPct > 0 ? (
                     <div
-                      className="bg-amber-500 transition-all duration-500"
+                      className="bg-warning transition-all duration-500"
                       style={{ width: `${intentPct}%` }}
                       title={`Intent: ${intentCount} (${Math.round(intentPct)}%)`}
                     />
@@ -1396,7 +1396,7 @@ export default function Dashboard() {
                   const commitmentPct = (commitmentCount / totalPipeline) * 100;
                   return commitmentPct > 0 ? (
                     <div
-                      className="bg-blue-500 transition-all duration-500"
+                      className="bg-info transition-all duration-500"
                       style={{ width: `${commitmentPct}%` }}
                       title={`Commitment: ${commitmentCount} (${Math.round(commitmentPct)}%)`}
                     />
@@ -1410,7 +1410,7 @@ export default function Dashboard() {
                   const outcomePct = (outcomeCount / totalPipeline) * 100;
                   return outcomePct > 0 ? (
                     <div
-                      className="bg-emerald-500 transition-all duration-500"
+                      className="bg-success transition-all duration-500"
                       style={{ width: `${outcomePct}%` }}
                       title={`Outcome: ${outcomeCount} (${Math.round(outcomePct)}%)`}
                     />
@@ -1420,19 +1420,19 @@ export default function Dashboard() {
               {/* Legend */}
               <div className="flex items-start justify-between w-full mt-2 text-tiny text-muted-foreground">
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-destructive shrink-0 mt-1" />
                   <span className="text-center leading-tight">Discovery<br/>(Leads)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-warning shrink-0 mt-1" />
                   <span className="text-center leading-tight">Intent<br/>(Offers)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-info shrink-0 mt-1" />
                   <span className="text-center leading-tight">Commitment<br/>(Contracts)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-success shrink-0 mt-1" />
                   <span className="text-center leading-tight">Outcome<br/>(Sold)</span>
                 </div>
               </div>

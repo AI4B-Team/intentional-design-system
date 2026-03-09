@@ -3,8 +3,8 @@ import { DashboardLayout } from "@/components/layout";
 import { FundingWizard } from "@/components/marketplace";
 
 export default function FundingRequest() {
-  const handleComplete = (request: any) => {
-    console.log("Funding request submitted:", request);
+  const handleComplete = (_request: any) => {
+    // Request handled by FundingWizard
   };
 
   return (

@@ -55,16 +55,16 @@ export default function Login() {
     <AuthLayout>
       {/* Tab Switcher */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex bg-slate-100 rounded-full p-1">
+        <div className="inline-flex bg-muted rounded-full p-1">
           <Link
             to="/login"
-            className="px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-900 shadow-sm"
+            className="px-6 py-2 rounded-full text-sm font-medium bg-background text-foreground shadow-sm"
           >
             Login
           </Link>
           <Link
             to="/signup"
-            className="px-6 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-slate-900"
+            className="px-6 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground"
           >
             Sign Up
           </Link>
@@ -73,8 +73,8 @@ export default function Login() {
 
       {/* Welcome Text */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Welcome</h1>
-        <p className="text-slate-500">Please Enter Your Details</p>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Welcome</h1>
+        <p className="text-muted-foreground">Please Enter Your Details</p>
       </div>
 
       {/* Login Form */}
@@ -91,7 +91,7 @@ export default function Login() {
               className="h-12 pr-10"
               required
             />
-            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-brand" />
+            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
           </div>
         </div>
 
@@ -108,11 +108,11 @@ export default function Login() {
               required
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-brand" />
+              <Lock className="h-5 w-5 text-primary" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -121,7 +121,7 @@ export default function Login() {
         </div>
 
         <div className="flex justify-end">
-          <Link to="/forgot-password" className="text-sm text-brand hover:underline">
+          <Link to="/forgot-password" className="text-sm text-primary hover:underline">
             Forgot Password?
           </Link>
         </div>
@@ -130,7 +130,7 @@ export default function Login() {
           type="submit"
           fullWidth
           disabled={loading}
-          className="h-12 bg-brand hover:bg-brand/90 text-white"
+          className="h-12"
         >
           {loading ? <Spinner size="sm" className="mr-2" /> : null}
           {loading ? "Signing in..." : "Sign In"}
@@ -140,10 +140,10 @@ export default function Login() {
       {/* Divider */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-slate-200" />
+          <div className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white text-slate-500">OR</span>
+          <span className="px-4 bg-background text-muted-foreground">OR</span>
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function Login() {
         fullWidth
         onClick={handleGoogleSignIn}
         disabled={googleLoading}
-        className="h-12 border-slate-200 hover:bg-slate-50"
+        className="h-12"
       >
         {googleLoading ? (
           <Spinner size="sm" className="mr-2" />
@@ -182,9 +182,9 @@ export default function Login() {
       </Button>
 
       {/* Sign Up Link */}
-      <p className="text-center mt-6 text-sm text-slate-600">
+      <p className="text-center mt-6 text-sm text-muted-foreground">
         Don't Have An Account?{" "}
-        <Link to="/signup" className="text-brand hover:underline font-medium">
+        <Link to="/signup" className="text-primary hover:underline font-medium">
           Create Your Account
         </Link>
       </p>
