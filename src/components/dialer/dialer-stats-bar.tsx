@@ -140,13 +140,13 @@ export function DialerStatsBar({
             label: "Buying Signals",
             value: buyingSignals.toString(),
             icon: TrendingUp,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Suggestions Used",
             value: suggestionsUsed.toString(),
             icon: BarChart3,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
       default: // human mode
