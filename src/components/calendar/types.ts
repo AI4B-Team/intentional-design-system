@@ -20,15 +20,15 @@ export type ViewMode = "month" | "week" | "day";
 
 export const EVENT_COLORS: Record<string, { bg: string; text: string; dot: string; label: string }> = {
   appointment: { bg: "bg-primary/10", text: "text-primary", dot: "bg-primary", label: "Appointment" },
-  followup: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500", label: "Follow-Up" },
+  followup: { bg: "bg-warning/10", text: "text-warning", dot: "bg-warning", label: "Follow-Up" },
   offer_deadline: { bg: "bg-destructive/10", text: "text-destructive", dot: "bg-destructive", label: "Deadline" },
-  closing: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Closing" },
-  inspection: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500", label: "Inspection" },
+  closing: { bg: "bg-success/10", text: "text-success", dot: "bg-success", label: "Closing" },
+  inspection: { bg: "bg-info/10", text: "text-info", dot: "bg-info", label: "Inspection" },
 };
 
 export const URGENCY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   low: { bg: "bg-muted/50", text: "text-muted-foreground", border: "border-border" },
-  medium: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200" },
+  medium: { bg: "bg-warning/10", text: "text-warning", border: "border-warning/30" },
   high: { bg: "bg-destructive/10", text: "text-destructive", border: "border-destructive/30" },
   critical: { bg: "bg-destructive/15", text: "text-destructive", border: "border-destructive/40" },
 };

@@ -19,7 +19,7 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 
 const SOURCE_LABEL: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   ai: { label: "AI", icon: Sparkles, color: "text-primary" },
-  automation: { label: "Automation", icon: Zap, color: "text-amber-600" },
+  automation: { label: "Automation", icon: Zap, color: "text-warning" },
 };
 
 function AIActionItem({ action, onComplete }: { action: UnifiedAction; onComplete: (id: string) => void }) {
@@ -43,9 +43,9 @@ function AIActionItem({ action, onComplete }: { action: UnifiedAction; onComplet
     )}>
       <div className={cn(
         "h-8 w-8 rounded-lg flex items-center justify-center shrink-0",
-        isCompleted ? "bg-emerald-500/10" : "bg-primary/10",
+        isCompleted ? "bg-success/10" : "bg-primary/10",
       )}>
-        <Icon className={cn("h-4 w-4", isCompleted ? "text-emerald-500" : "text-primary")} />
+        <Icon className={cn("h-4 w-4", isCompleted ? "text-success" : "text-primary")} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -77,7 +77,7 @@ function AIActionItem({ action, onComplete }: { action: UnifiedAction; onComplet
         <Button
           size="icon"
           variant="ghost"
-          className="h-7 w-7 shrink-0 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50"
+          className="h-7 w-7 shrink-0 text-muted-foreground hover:text-success hover:bg-success/10"
           onClick={() => onComplete(action.id)}
         >
           <CheckCircle2 className="h-4 w-4" />
