@@ -93,7 +93,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       {/* Right Side - Auth Form */}
       <div className="flex-1 flex flex-col bg-background">
         {/* Mobile Logo */}
-        <div className="lg:hidden flex items-center p-6 border-b border-slate-100">
+        <div className="lg:hidden flex items-center p-6 border-b border-border">
           <RealEliteLogo height={22} color="hsl(222 47% 11%)" />
         </div>
 
@@ -105,14 +105,14 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         </div>
 
         {/* Footer */}
-        <div className="p-6 text-center border-t border-slate-100">
-          <p className="text-sm text-slate-500">
+        <div className="p-6 text-center border-t border-border">
+          <p className="text-sm text-muted-foreground">
             By continuing, you agree to our{" "}
-            <Link to="/terms" className="text-brand hover:underline">
+            <Link to="/terms" className="text-primary hover:underline">
               Terms of Service
             </Link>
             {" "}&{" "}
-            <Link to="/privacy" className="text-brand hover:underline">
+            <Link to="/privacy" className="text-primary hover:underline">
               Privacy Policy
             </Link>
             .
