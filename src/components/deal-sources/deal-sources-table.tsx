@@ -83,7 +83,7 @@ function formatDate(dateStr: string | null): string {
 function TableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th className={cn(
-      "px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500",
+      "px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground",
       className
     )}>
       {children}

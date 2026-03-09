@@ -99,9 +99,9 @@ export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
 
   const statusColors: Record<string, string> = {
     new: "bg-muted text-muted-foreground",
-    contacted: "bg-blue-100 text-blue-700",
-    follow_up: "bg-amber-100 text-amber-700",
-    negotiating: "bg-purple-100 text-purple-700",
+    contacted: "bg-info/10 text-info",
+    follow_up: "bg-warning/10 text-warning",
+    negotiating: "bg-accent text-accent-foreground",
     offer_made: "bg-brand/10 text-brand",
     under_contract: "bg-success/10 text-success",
   };
