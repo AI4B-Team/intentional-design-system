@@ -440,11 +440,11 @@ export default function SignupFlow() {
                     onChange={(e) => setPhone(e.target.value)}
                     className="h-12"
                   />
-                  <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg">
-                    <Zap className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                    <Zap className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-amber-900">Real-Time Updates</p>
-                      <p className="text-xs text-amber-700">
+                      <p className="text-sm font-medium text-foreground">Real-Time Updates</p>
+                      <p className="text-xs text-muted-foreground">
                         Get notified about new motivated seller leads, counter-offers, and deals matching your criteria.
                       </p>
                     </div>
