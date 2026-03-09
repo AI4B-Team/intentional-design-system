@@ -175,92 +175,9 @@ export function DialerCopilotPanel({
               </>
             )}
 
-            {activeTab === 'templates' && (
-              <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">Quick conversation templates</p>
-                {[
-                  { label: 'Opening - Cold Lead', category: 'Opening' },
-                  { label: 'Opening - Warm Lead', category: 'Opening' },
-                  { label: 'Price Discovery', category: 'Discovery' },
-                  { label: 'Motivation Questions', category: 'Discovery' },
-                  { label: 'Seller Financing Pitch', category: 'Negotiation' },
-                  { label: 'Subject-To Explanation', category: 'Negotiation' },
-                  { label: 'Close - Set Appointment', category: 'Closing' },
-                  { label: 'Close - Send Offer', category: 'Closing' },
-                ].map((template, i) => (
-                  <button
-                    key={i}
-                    className="w-full text-left p-3 rounded-lg border border-border-subtle hover:border-primary/50 hover:bg-primary/5 transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">{template.label}</span>
-                      <Badge variant="secondary" className="text-[10px]">{template.category}</Badge>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {activeTab === 'knowledge' && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Train the AI on your processes</p>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: 'Company Info', count: 3 },
-                    { label: 'Pricing Rules', count: 5 },
-                    { label: 'Market Data', count: 12 },
-                    { label: 'Scripts', count: 8 },
-                  ].map((kb, i) => (
-                    <div key={i} className="p-3 rounded-lg border border-border-subtle bg-muted/30">
-                      <p className="text-sm font-medium">{kb.label}</p>
-                      <p className="text-xs text-muted-foreground">{kb.count} documents</p>
-                    </div>
-                  ))}
-                </div>
-                <Button variant="outline" className="w-full">
-                  <Settings2 className="h-4 w-4 mr-2" />
-                  Manage Knowledge Base
-                </Button>
-              </div>
-            )}
-
-            {activeTab === 'practice' && (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">Practice with AI role-play</p>
-                <div className="grid gap-3">
-                  {[
-                    { scenario: 'Cold Call - Absentee Owner', difficulty: 'Easy' },
-                    { scenario: 'Handling "Too Low" Objection', difficulty: 'Medium' },
-                    { scenario: 'Negotiating with Agent', difficulty: 'Hard' },
-                    { scenario: 'Subject-To Pitch', difficulty: 'Medium' },
-                  ].map((practice, i) => (
-                    <button
-                      key={i}
-                      className="w-full text-left p-3 rounded-lg border border-border-subtle hover:border-primary/50 hover:bg-primary/5 transition-colors"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{practice.scenario}</span>
-                        <Badge 
-                          variant="outline" 
-                          className={cn(
-                            "text-[10px]",
-                            practice.difficulty === 'Easy' && "border-success/50 text-success",
-                            practice.difficulty === 'Medium' && "border-warning/50 text-warning",
-                            practice.difficulty === 'Hard' && "border-destructive/50 text-destructive"
-                          )}
-                        >
-                          {practice.difficulty}
-                        </Badge>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-                <Button variant="default" className="w-full">
-                  <GraduationCap className="h-4 w-4 mr-2" />
-                  Start Practice Session
-                </Button>
-              </div>
-            )}
+            {activeTab === 'templates' && <CopilotTemplatesTab />}
+            {activeTab === 'knowledge' && <CopilotKnowledgeTab />}
+            {activeTab === 'practice' && <CopilotPracticeTab />}
           </div>
         </>
       )}
