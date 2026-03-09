@@ -27,11 +27,11 @@ export function PostCallActions() {
   if (callStatus !== "ended" || postCallActions.length === 0) return null;
 
   return (
-    <div className="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/20">
+    <div className="p-4 bg-success/5 rounded-xl border border-success/20">
       <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="h-4 w-4 text-emerald-600" />
+        <Sparkles className="h-4 w-4 text-success" />
         <span className="text-[13px] font-semibold text-foreground">Post-Call Automation</span>
-        <span className="ml-auto px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+        <span className="ml-auto px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-bold">
           {postCallActions.filter(a => a.completed).length}/{postCallActions.length} Complete
         </span>
       </div>
