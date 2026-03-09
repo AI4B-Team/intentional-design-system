@@ -399,11 +399,11 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Tell Us About Yourself
                   </h1>
-                  <p className="text-slate-600">
-                    We'll customize your experience based on your investing strategy. <span className="text-slate-400">(you can change this later)</span>
+                  <p className="text-foreground-secondary">
+                    We'll customize your experience based on your investing strategy. <span className="text-muted-foreground">(you can change this later)</span>
                   </p>
                 </div>
 
@@ -418,7 +418,7 @@ export default function SignupFlow() {
                           "p-4 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
                             ? "border-primary bg-primary/5"
-                            : "border-slate-200 hover:border-slate-300"
+                            : "border-border hover:border-border/80"
                         )}
                       >
                         <p className="font-semibold text-slate-900">{role.label}</p>
