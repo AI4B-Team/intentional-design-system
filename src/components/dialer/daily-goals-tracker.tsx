@@ -31,7 +31,7 @@ function GoalBar({ label, current, target, icon: Icon, color }: {
         <div
           className={cn(
             "h-full rounded-full transition-all duration-500",
-            isComplete ? "bg-emerald-500" : color.replace("text-", "bg-")
+            isComplete ? "bg-success" : color.replace("text-", "bg-")
           )}
           style={{ width: `${pct}%` }}
         />
