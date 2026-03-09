@@ -56,7 +56,7 @@ export function FocusStrip({
         label: `${newLeadsNeedContact.length} New Lead${newLeadsNeedContact.length > 1 ? "s Need" : " Needs"} First Contact`,
         count: newLeadsNeedContact.length,
         deals: newLeadsNeedContact,
-        color: "bg-red-100 text-red-600 border-red-200",
+        color: "bg-destructive/10 text-destructive border-destructive/30",
         filterStage: "new",
       });
     }
