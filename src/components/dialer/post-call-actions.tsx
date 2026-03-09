@@ -43,7 +43,7 @@ export function PostCallActions() {
             <div key={action.id} className="flex items-start gap-2.5 py-1.5">
               <div className={cn("w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5", colorClass)}>
                 {action.completed ? (
-                  <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                  <CheckCircle className="h-3.5 w-3.5 text-success" />
                 ) : (
                   <Icon className="h-3.5 w-3.5" />
                 )}
