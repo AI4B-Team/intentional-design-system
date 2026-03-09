@@ -65,10 +65,10 @@ export function DailyGoalsTracker() {
         </div>
       </div>
       <div className="flex gap-4">
-        <GoalBar label="Calls" current={dailyGoals.callsMade} target={dailyGoals.callsTarget} icon={Phone} color="text-blue-500" />
-        <GoalBar label="Connects" current={dailyGoals.connectionsMade} target={dailyGoals.connectionsTarget} icon={Users} color="text-violet-500" />
-        <GoalBar label="Appts" current={dailyGoals.appointmentsSet} target={dailyGoals.appointmentsTarget} icon={Calendar} color="text-emerald-500" />
-        <GoalBar label="Offers" current={dailyGoals.offersSent} target={dailyGoals.offersTarget} icon={FileText} color="text-amber-500" />
+        <GoalBar label="Calls" current={dailyGoals.callsMade} target={dailyGoals.callsTarget} icon={Phone} color="text-info" />
+        <GoalBar label="Connects" current={dailyGoals.connectionsMade} target={dailyGoals.connectionsTarget} icon={Users} color="text-accent-foreground" />
+        <GoalBar label="Appts" current={dailyGoals.appointmentsSet} target={dailyGoals.appointmentsTarget} icon={Calendar} color="text-success" />
+        <GoalBar label="Offers" current={dailyGoals.offersSent} target={dailyGoals.offersTarget} icon={FileText} color="text-warning" />
       </div>
     </div>
   );

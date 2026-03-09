@@ -173,13 +173,13 @@ export function DialerStatsBar({
             label: "Talk Time",
             value: formatTime(totalTalkTime),
             icon: Clock,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Calls/Hour",
             value: callsPerHour,
             icon: TrendingUp,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
     }
