@@ -37,8 +37,8 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
 
   const modes = [
     { key: "start", label: "Call Now", desc: "CALL WITH REAL-TIME AI COACHING", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
-    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
-    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white", inactiveClass: "bg-blue-500/5 text-foreground border-blue-500/20" },
+    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-info text-info-foreground", inactiveClass: "bg-info/5 text-foreground border-info/20", beta: true },
+    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-secondary text-secondary-foreground border border-border", inactiveClass: "bg-background text-foreground border-border" },
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
