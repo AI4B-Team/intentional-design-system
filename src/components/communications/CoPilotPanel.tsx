@@ -76,10 +76,10 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
           <div className="space-y-3">
             {isPowerHour ? (
               <>
-                <div className="p-3 rounded-lg border-2 border-amber-500/30 bg-amber-500/5">
+                <div className="p-3 rounded-lg border-2 border-warning/30 bg-warning/5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-4 w-4 text-amber-500" />
-                    <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour Active</span>
+                    <Zap className="h-4 w-4 text-warning" />
+                    <span className="text-xs font-bold text-warning uppercase tracking-wider">Power Hour Active</span>
                   </div>
                   <div className="text-xs text-muted-foreground">Focus mode — stats locked to session metrics. Campaign switching disabled.</div>
                 </div>
