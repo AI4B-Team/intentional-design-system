@@ -1382,7 +1382,7 @@ export default function Dashboard() {
                   const intentPct = (intentCount / totalPipeline) * 100;
                   return intentPct > 0 ? (
                     <div
-                      className="bg-amber-500 transition-all duration-500"
+                      className="bg-warning transition-all duration-500"
                       style={{ width: `${intentPct}%` }}
                       title={`Intent: ${intentCount} (${Math.round(intentPct)}%)`}
                     />
