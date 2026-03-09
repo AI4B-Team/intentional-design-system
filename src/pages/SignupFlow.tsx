@@ -356,10 +356,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Name Your Command Center
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
                   </p>
                 </div>
@@ -373,7 +373,7 @@ export default function SignupFlow() {
                     onChange={(e) => setOrgName(e.target.value)}
                     className="h-12"
                   />
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     You can always change this later in settings.
                   </p>
                 </div>
