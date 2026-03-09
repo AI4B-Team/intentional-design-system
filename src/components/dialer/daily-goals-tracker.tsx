@@ -22,7 +22,7 @@ function GoalBar({ label, current, target, icon: Icon, color }: {
         </div>
         <span className={cn(
           "text-xs font-bold tabular-nums",
-          isComplete ? "text-emerald-600" : "text-foreground"
+          isComplete ? "text-success" : "text-foreground"
         )}>
           {current}/{target}
         </span>
@@ -31,7 +31,7 @@ function GoalBar({ label, current, target, icon: Icon, color }: {
         <div
           className={cn(
             "h-full rounded-full transition-all duration-500",
-            isComplete ? "bg-emerald-500" : color.replace("text-", "bg-")
+            isComplete ? "bg-success" : color.replace("text-", "bg-")
           )}
           style={{ width: `${pct}%` }}
         />
@@ -61,14 +61,14 @@ export function DailyGoalsTracker() {
           <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
             <span className="text-[9px] font-bold text-primary">{totalProgress}%</span>
           </div>
-          <TrendingUp className={cn("h-3.5 w-3.5", totalProgress >= 75 ? "text-emerald-500" : "text-muted-foreground")} />
+          <TrendingUp className={cn("h-3.5 w-3.5", totalProgress >= 75 ? "text-success" : "text-muted-foreground")} />
         </div>
       </div>
       <div className="flex gap-4">
-        <GoalBar label="Calls" current={dailyGoals.callsMade} target={dailyGoals.callsTarget} icon={Phone} color="text-blue-500" />
-        <GoalBar label="Connects" current={dailyGoals.connectionsMade} target={dailyGoals.connectionsTarget} icon={Users} color="text-violet-500" />
-        <GoalBar label="Appts" current={dailyGoals.appointmentsSet} target={dailyGoals.appointmentsTarget} icon={Calendar} color="text-emerald-500" />
-        <GoalBar label="Offers" current={dailyGoals.offersSent} target={dailyGoals.offersTarget} icon={FileText} color="text-amber-500" />
+        <GoalBar label="Calls" current={dailyGoals.callsMade} target={dailyGoals.callsTarget} icon={Phone} color="text-info" />
+        <GoalBar label="Connects" current={dailyGoals.connectionsMade} target={dailyGoals.connectionsTarget} icon={Users} color="text-accent-foreground" />
+        <GoalBar label="Appts" current={dailyGoals.appointmentsSet} target={dailyGoals.appointmentsTarget} icon={Calendar} color="text-success" />
+        <GoalBar label="Offers" current={dailyGoals.offersSent} target={dailyGoals.offersTarget} icon={FileText} color="text-warning" />
       </div>
     </div>
   );

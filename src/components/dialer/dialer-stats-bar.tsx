@@ -107,13 +107,13 @@ export function DialerStatsBar({
             label: "Avg Conversation",
             value: formatTime(avgConversationLength),
             icon: Clock,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Success Rate",
             value: `${successRate}%`,
             icon: CheckCircle,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
       case 'listen':
@@ -140,13 +140,13 @@ export function DialerStatsBar({
             label: "Buying Signals",
             value: buyingSignals.toString(),
             icon: TrendingUp,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Suggestions Used",
             value: suggestionsUsed.toString(),
             icon: BarChart3,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
       default: // human mode
@@ -173,13 +173,13 @@ export function DialerStatsBar({
             label: "Talk Time",
             value: formatTime(totalTalkTime),
             icon: Clock,
-            color: "text-purple-500",
+            color: "text-accent-foreground",
           },
           {
             label: "Calls/Hour",
             value: callsPerHour,
             icon: TrendingUp,
-            color: "text-accent",
+            color: "text-primary",
           },
         ];
     }
