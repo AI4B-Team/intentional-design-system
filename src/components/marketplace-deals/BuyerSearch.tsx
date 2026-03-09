@@ -206,7 +206,7 @@ function BuyerCard({ buyer, isExpanded, onToggle }: { buyer: Buyer; isExpanded: 
           <div className="flex items-center gap-2 mb-1">
             <div className={cn(
               "p-1.5 rounded-md",
-              buyer.type === "flipper" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+              buyer.type === "flipper" ? "bg-warning/10 text-warning" : "bg-info/10 text-info"
             )}>
               {buyer.type === "flipper" ? (
                 <Hammer className="h-4 w-4" />
