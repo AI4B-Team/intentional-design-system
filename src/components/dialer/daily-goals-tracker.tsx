@@ -61,7 +61,7 @@ export function DailyGoalsTracker() {
           <div className="h-6 w-6 rounded-full border-2 border-primary flex items-center justify-center">
             <span className="text-[9px] font-bold text-primary">{totalProgress}%</span>
           </div>
-          <TrendingUp className={cn("h-3.5 w-3.5", totalProgress >= 75 ? "text-emerald-500" : "text-muted-foreground")} />
+          <TrendingUp className={cn("h-3.5 w-3.5", totalProgress >= 75 ? "text-success" : "text-muted-foreground")} />
         </div>
       </div>
       <div className="flex gap-4">
