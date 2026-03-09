@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "sonner";
-import type { CallingModeKey } from "@/pages/Communications";
+import type { CallingModeKey } from "@/components/communications/comms-config";
 
 function CallControlButtons({ callingMode }: { callingMode: CallingModeKey }) {
   const { isMuted, isOnHold, isRecording, toggleMute, toggleHold, toggleRecording, endCall } = useCallState();
