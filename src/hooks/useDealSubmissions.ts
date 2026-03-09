@@ -254,13 +254,7 @@ export function useSubmitDeal() {
 
       if (submissionError) throw submissionError;
 
-      // 6. Log notification (placeholder)
-      console.log("📬 New deal submission received!", {
-        submitter: data.submitterName,
-        email: data.submitterEmail,
-        property: data.address,
-        submissionId: submission.id,
-      });
+      // TODO: Send notification email via edge function for new deal submissions
 
       return { submission, property };
     },

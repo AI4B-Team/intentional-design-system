@@ -382,9 +382,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
       const center = mapInstanceRef.current?.map?.getCenter?.();
       const lat = center?.lat ?? 27.9944;
       const lng = center?.lng ?? -81.7603;
-      console.log("[D4D] handleScanComplete called, center:", lat, lng);
       const properties = generateD4DProperties(lat, lng, 200);
-      console.log("[D4D] Generated properties:", properties.length);
       setScanProperties(properties);
       setScanActive(true);
       setScanLoading(false);

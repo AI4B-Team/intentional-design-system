@@ -111,10 +111,8 @@ export function BuyerAuthProvider({ children }: { children: React.ReactNode }) {
         return { success: false, error: 'Failed to create login session' };
       }
 
-      // In production, send email via edge function
-      // For now, we'll log the magic link
-      const magicLink = `${window.location.origin}/buyer/auth?token=${magicToken}`;
-      console.log('Magic link (would be emailed):', magicLink);
+      // TODO: In production, send magic link email via edge function
+      // const magicLink = `${window.location.origin}/buyer/auth?token=${magicToken}`;
 
       return { success: true };
     } catch (error) {

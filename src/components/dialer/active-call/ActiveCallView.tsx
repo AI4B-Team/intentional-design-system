@@ -68,8 +68,8 @@ export function ActiveCallView({
     description: 'Generate interest and book next steps',
   };
 
-  const handleUseSuggestion = (suggestion: any) => {
-    console.log('Using suggestion:', suggestion);
+  const handleUseSuggestion = (_suggestion: any) => {
+    // TODO: implement suggestion usage (e.g. populate input field)
   };
 
   const handleCopySuggestion = (text: string) => {
@@ -121,7 +121,7 @@ export function ActiveCallView({
             phases={phases}
             currentPhaseId={currentPhaseId}
             onNextPhase={onNextPhase}
-            onSwitchTemplate={() => console.log('Switch template')}
+            onSwitchTemplate={() => { /* TODO: implement template switching */ }}
             callTemplate={callTemplate}
           />
 
@@ -131,7 +131,7 @@ export function ActiveCallView({
             stats={stats}
             onUseSuggestion={handleUseSuggestion}
             onCopySuggestion={handleCopySuggestion}
-            onRefresh={() => console.log('Refresh suggestions')}
+            onRefresh={() => { /* TODO: implement suggestion refresh */ }}
           />
         </div>
       </div>

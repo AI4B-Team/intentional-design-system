@@ -572,9 +572,8 @@ export function PropertyDetailMap({
         isOpen={showCompsPanel}
         onClose={() => setShowCompsPanel(false)}
         comps={comps}
-        onCompClick={(comp) => {
-          // Center map on the comp when clicked in panel
-          console.log("Comp clicked:", comp);
+        onCompClick={(_comp) => {
+          // TODO: Center map on the comp when clicked in panel
         }}
       />
 
@@ -583,9 +582,8 @@ export function PropertyDetailMap({
         isOpen={showBuyersPanel}
         onClose={() => setShowBuyersPanel(false)}
         buyers={buyers}
-        onBuyerClick={(buyer) => {
-          // Handle buyer click
-          console.log("Buyer clicked:", buyer);
+        onBuyerClick={(_buyer) => {
+          // TODO: Handle buyer click — navigate or open detail panel
         }}
       />
 
