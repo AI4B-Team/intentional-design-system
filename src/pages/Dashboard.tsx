@@ -1424,7 +1424,7 @@ export default function Dashboard() {
                   <span className="text-center leading-tight">Discovery<br/>(Leads)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-amber-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-warning shrink-0 mt-1" />
                   <span className="text-center leading-tight">Intent<br/>(Offers)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
