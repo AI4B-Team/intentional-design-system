@@ -68,8 +68,8 @@ export function ActiveCallView({
     description: 'Generate interest and book next steps',
   };
 
-  const handleUseSuggestion = (suggestion: any) => {
-    console.log('Using suggestion:', suggestion);
+  const handleUseSuggestion = (_suggestion: any) => {
+    // TODO: implement suggestion usage (e.g. populate input field)
   };
 
   const handleCopySuggestion = (text: string) => {
