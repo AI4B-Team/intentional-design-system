@@ -1420,7 +1420,7 @@ export default function Dashboard() {
               {/* Legend */}
               <div className="flex items-start justify-between w-full mt-2 text-tiny text-muted-foreground">
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-red-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-destructive shrink-0 mt-1" />
                   <span className="text-center leading-tight">Discovery<br/>(Leads)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
