@@ -13,12 +13,12 @@ const ACTION_ICONS: Record<string, React.ElementType> = {
 };
 
 const ACTION_COLORS: Record<string, string> = {
-  follow_up_task: "text-blue-500 bg-blue-500/10",
-  sms_draft: "text-violet-500 bg-violet-500/10",
-  email_summary: "text-amber-500 bg-amber-500/10",
-  reminder: "text-emerald-500 bg-emerald-500/10",
+  follow_up_task: "text-info bg-info/10",
+  sms_draft: "text-accent-foreground bg-accent/30",
+  email_summary: "text-warning bg-warning/10",
+  reminder: "text-success bg-success/10",
   pipeline_update: "text-primary bg-primary/10",
-  offer_logged: "text-rose-500 bg-rose-500/10",
+  offer_logged: "text-destructive bg-destructive/10",
 };
 
 export function PostCallActions() {
@@ -27,11 +27,11 @@ export function PostCallActions() {
   if (callStatus !== "ended" || postCallActions.length === 0) return null;
 
   return (
-    <div className="p-4 bg-emerald-500/5 rounded-xl border border-emerald-500/20">
+    <div className="p-4 bg-success/5 rounded-xl border border-success/20">
       <div className="flex items-center gap-2 mb-3">
-        <Sparkles className="h-4 w-4 text-emerald-600" />
+        <Sparkles className="h-4 w-4 text-success" />
         <span className="text-[13px] font-semibold text-foreground">Post-Call Automation</span>
-        <span className="ml-auto px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+        <span className="ml-auto px-2 py-0.5 rounded-full bg-success/10 text-success text-[10px] font-bold">
           {postCallActions.filter(a => a.completed).length}/{postCallActions.length} Complete
         </span>
       </div>
@@ -43,7 +43,7 @@ export function PostCallActions() {
             <div key={action.id} className="flex items-start gap-2.5 py-1.5">
               <div className={cn("w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5", colorClass)}>
                 {action.completed ? (
-                  <CheckCircle className="h-3.5 w-3.5 text-emerald-500" />
+                  <CheckCircle className="h-3.5 w-3.5 text-success" />
                 ) : (
                   <Icon className="h-3.5 w-3.5" />
                 )}
