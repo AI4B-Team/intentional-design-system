@@ -16,6 +16,9 @@ import { CopilotBeforeCall } from './CopilotBeforeCall';
 import { CopilotDuringCall } from './CopilotDuringCall';
 import { CopilotAfterCall } from './CopilotAfterCall';
 import { CallModeSelector } from './CallModeSelector';
+import { CopilotTemplatesTab } from './tabs/CopilotTemplatesTab';
+import { CopilotKnowledgeTab } from './tabs/CopilotKnowledgeTab';
+import { CopilotPracticeTab } from './tabs/CopilotPracticeTab';
 import type { 
   ContactContext, 
   BriefingData, 
