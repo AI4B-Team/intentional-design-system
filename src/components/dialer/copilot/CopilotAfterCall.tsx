@@ -52,8 +52,8 @@ export function CopilotAfterCall({
 
   const stageColors: Record<string, string> = {
     lead: 'bg-muted text-muted-foreground',
-    prospect: 'bg-blue-100 text-blue-700',
-    negotiating: 'bg-amber-100 text-amber-700',
+    prospect: 'bg-info/10 text-info',
+    negotiating: 'bg-warning/10 text-warning',
     under_contract: 'bg-primary/20 text-primary',
     closed: 'bg-success/20 text-success',
     dead: 'bg-destructive/20 text-destructive',
@@ -188,15 +188,15 @@ export function CopilotAfterCall({
 
         {/* Offer Adjustment */}
         {postCallActions.offerAdjustment && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="bg-warning/5 border border-warning/20 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <DollarSign className="h-4 w-4 text-amber-600 mt-0.5" />
+              <DollarSign className="h-4 w-4 text-warning mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-amber-800">
+                <p className="text-sm font-medium text-foreground">
                   Consider {postCallActions.offerAdjustment.direction === 'increase' ? 'increasing' : 
                     postCallActions.offerAdjustment.direction === 'decrease' ? 'decreasing' : 'adjusting'} your offer
                 </p>
-                <p className="text-xs text-amber-700 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {postCallActions.offerAdjustment.reason}
                 </p>
               </div>
