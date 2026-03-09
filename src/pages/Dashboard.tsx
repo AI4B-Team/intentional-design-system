@@ -1396,7 +1396,7 @@ export default function Dashboard() {
                   const commitmentPct = (commitmentCount / totalPipeline) * 100;
                   return commitmentPct > 0 ? (
                     <div
-                      className="bg-blue-500 transition-all duration-500"
+                      className="bg-info transition-all duration-500"
                       style={{ width: `${commitmentPct}%` }}
                       title={`Commitment: ${commitmentCount} (${Math.round(commitmentPct)}%)`}
                     />
