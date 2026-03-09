@@ -1432,7 +1432,7 @@ export default function Dashboard() {
                   <span className="text-center leading-tight">Commitment<br/>(Contracts)</span>
                 </div>
                 <div className="flex items-start gap-1.5">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 mt-1" />
+                  <div className="w-2 h-2 rounded-full bg-success shrink-0 mt-1" />
                   <span className="text-center leading-tight">Outcome<br/>(Sold)</span>
                 </div>
               </div>
