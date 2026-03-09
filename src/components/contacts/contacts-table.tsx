@@ -68,7 +68,7 @@ function formatDate(dateStr: string | null): string {
 function TableHeader({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <th className={cn(
-      "px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-slate-500",
+      "px-4 py-3.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground",
       className
     )}>
       {children}
@@ -108,7 +108,7 @@ export function ContactsTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="p-4 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-14 rounded-lg" />
@@ -120,13 +120,13 @@ export function ContactsTable({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border overflow-hidden">
         <div className="flex flex-col items-center justify-center py-16 px-4">
-          <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-            <Users className="h-8 w-8 text-slate-400" />
+          <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
+            <Users className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-1">No Contacts Found</h3>
-          <p className="text-sm text-slate-500 mb-6">
+          <h3 className="text-lg font-semibold text-foreground mb-1">No Contacts Found</h3>
+          <p className="text-sm text-muted-foreground mb-6">
             Add your first contact to get started
           </p>
           {onAddContact && (
@@ -140,11 +140,11 @@ export function ContactsTable({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50/80">
+            <tr className="border-b border-border bg-muted/50">
               <th className="w-12 px-4 py-3.5">
                 <Checkbox
                   checked={allSelected}
@@ -170,7 +170,7 @@ export function ContactsTable({
               <th className="w-12"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border/50">
             {data.map((contact) => {
               const isSelected = selectedIds.includes(contact.id);
               const status = (contact.status || "cold") as ContactStatus;
@@ -186,7 +186,7 @@ export function ContactsTable({
                     "group transition-colors cursor-pointer",
                     isSelected 
                       ? "bg-primary/5" 
-                      : "hover:bg-slate-50/80"
+                      : "hover:bg-muted/50"
                   )}
                   onClick={() => navigate(`/contacts/${contact.id}`)}
                 >
@@ -210,11 +210,11 @@ export function ContactsTable({
                         {getInitials(contact.name)}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">
+                        <p className="text-sm font-medium text-foreground truncate">
                           {contact.name}
                         </p>
                         {contact.company && (
-                          <p className="text-xs text-slate-500 truncate">
+                          <p className="text-xs text-muted-foreground truncate">
                             {contact.company}
                           </p>
                         )}
@@ -224,7 +224,7 @@ export function ContactsTable({
 
                   {/* Location */}
                   <TableCell>
-                    <span className="text-sm text-slate-600">
+                    <span className="text-sm text-muted-foreground">
                       {[contact.city, contact.state].filter(Boolean).join(", ") || "—"}
                     </span>
                   </TableCell>
@@ -234,19 +234,19 @@ export function ContactsTable({
                     {contact.phone ? (
                       <a
                         href={`tel:${contact.phone}`}
-                        className="inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-primary transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors"
                       >
                         <Phone className="h-3.5 w-3.5" />
                         {formatPhone(contact.phone)}
                       </a>
                     ) : (
-                      <span className="text-sm text-slate-400">—</span>
+                      <span className="text-sm text-muted-foreground/50">—</span>
                     )}
                   </TableCell>
 
                   {/* Deals */}
                   <TableCell>
-                    <span className="text-sm font-medium text-slate-900 tabular-nums">
+                    <span className="text-sm font-medium text-foreground tabular-nums">
                       {contact.deals_closed || 0}
                     </span>
                   </TableCell>
@@ -259,13 +259,13 @@ export function ContactsTable({
                         <span className="text-sm font-medium">{contact.rating.toFixed(1)}</span>
                       </div>
                     ) : (
-                      <span className="text-sm text-slate-400">—</span>
+                      <span className="text-sm text-muted-foreground/50">—</span>
                     )}
                   </TableCell>
 
                   {/* Last Contact */}
                   <TableCell>
-                    <span className="text-sm text-slate-600 tabular-nums">
+                    <span className="text-sm text-muted-foreground tabular-nums">
                       {formatDate(contact.last_contact_date)}
                     </span>
                   </TableCell>
@@ -295,7 +295,7 @@ export function ContactsTable({
                     {isVerified ? (
                       <CheckCircle2 className="h-4 w-4 text-success mx-auto" />
                     ) : (
-                      <span className="text-slate-400">—</span>
+                      <span className="text-muted-foreground/50">—</span>
                     )}
                   </TableCell>
 
@@ -303,26 +303,26 @@ export function ContactsTable({
                   <TableCell onClick={(e: React.MouseEvent) => e.stopPropagation()}>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-slate-100 transition-all">
-                          <MoreHorizontal className="h-4 w-4 text-slate-500" />
+                        <button className="p-1.5 rounded-md opacity-0 group-hover:opacity-100 hover:bg-muted transition-all">
+                          <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-white shadow-lg border border-slate-200">
+                      <DropdownMenuContent align="end" className="w-44 bg-card shadow-lg border border-border">
                         <DropdownMenuItem 
                           onClick={() => navigate(`/deal-sources/${contact.id}`)}
                           className="text-sm"
                         >
-                          <Eye className="h-4 w-4 mr-2 text-slate-500" />
+                          <Eye className="h-4 w-4 mr-2 text-muted-foreground" />
                           View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem className="text-sm">
-                          <Pencil className="h-4 w-4 mr-2 text-slate-500" />
+                          <Pencil className="h-4 w-4 mr-2 text-muted-foreground" />
                           Edit
                         </DropdownMenuItem>
                         {contact.email && (
                           <DropdownMenuItem asChild>
                             <a href={`mailto:${contact.email}`} className="text-sm">
-                              <Mail className="h-4 w-4 mr-2 text-slate-500" />
+                              <Mail className="h-4 w-4 mr-2 text-muted-foreground" />
                               Send Email
                             </a>
                           </DropdownMenuItem>
@@ -331,13 +331,13 @@ export function ContactsTable({
                           onClick={() => onLogContact(contact.id)}
                           className="text-sm"
                         >
-                          <Phone className="h-4 w-4 mr-2 text-slate-500" />
+                          <Phone className="h-4 w-4 mr-2 text-muted-foreground" />
                           Log Contact
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           onClick={() => onDelete(contact.id)}
-                          className="text-sm text-red-600 focus:text-red-600 focus:bg-red-50"
+                          className="text-sm text-destructive focus:text-destructive focus:bg-destructive/10"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Delete
