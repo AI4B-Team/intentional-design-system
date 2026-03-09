@@ -542,10 +542,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Your Investing Arsenal
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Powerful tools that work together seamlessly to help you find, analyze, and close more deals.
                   </p>
                 </div>
@@ -556,7 +556,7 @@ export default function SignupFlow() {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors"
+                        className="p-4 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
                       >
                         <div className={cn(
                           "h-10 w-10 rounded-lg flex items-center justify-center mb-3",
@@ -569,8 +569,8 @@ export default function SignupFlow() {
                         )}>
                           <Icon className={cn("h-5 w-5", feature.color)} />
                         </div>
-                        <p className="font-semibold text-slate-900 mb-1">{feature.label}</p>
-                        <p className="text-xs text-slate-500 leading-relaxed">{feature.description}</p>
+                        <p className="font-semibold text-foreground mb-1">{feature.label}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                       </div>
                     );
                   })}
