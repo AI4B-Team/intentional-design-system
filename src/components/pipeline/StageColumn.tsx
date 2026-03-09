@@ -122,7 +122,7 @@ export function StageColumn({
         {/* Stage Header */}
         <div className="p-3 border-b border-border-subtle">
           <div className="space-y-2">
-            <div className="flex items-center justify-between bg-white dark:bg-card px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
+            <div className="flex items-center justify-between bg-card px-3 py-1.5 rounded-md shadow-sm border border-border-subtle">
               <div className="flex items-center gap-2">
                 <stage.icon className={cn(
                   "h-4 w-4",

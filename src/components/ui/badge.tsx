@@ -52,7 +52,7 @@ function Badge({ className, variant, size, dot, children, ...props }: BadgeProps
             variant === "error" && "bg-destructive",
             variant === "destructive" && "bg-destructive",
             variant === "default" && "bg-primary",
-            variant === "info" && "bg-blue-500",
+            variant === "info" && "bg-info",
             (!variant || !["success", "warning", "error", "destructive", "info"].includes(variant)) && variant === "default" && "bg-primary"
           )}
         />

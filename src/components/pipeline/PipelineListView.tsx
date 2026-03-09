@@ -80,7 +80,7 @@ export function PipelineListView({ deals, stages, onViewDeal, onAddDeal }: Pipel
                     onClick={() => onViewDeal(deal)}
                     className={cn(
                       "h-14 cursor-pointer transition-colors group",
-                      index % 2 === 0 ? "bg-white" : "bg-surface-secondary/50",
+                      index % 2 === 0 ? "bg-card" : "bg-surface-secondary/50",
                       "hover:bg-brand-accent/5"
                     )}
                   >

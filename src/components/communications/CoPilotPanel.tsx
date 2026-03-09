@@ -30,7 +30,7 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
       "hidden lg:flex w-[400px] border-l-2 flex-col min-h-0 h-full overflow-hidden transition-all duration-300",
       isLiveCall
         ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
-        : "border-border-subtle bg-white shadow-[-4px_0_20px_-5px_rgba(0,0,0,0.04)]"
+        : "border-border-subtle bg-background shadow-[-4px_0_20px_-5px_rgba(0,0,0,0.04)]"
     )}>
       {/* Header */}
       <div className={cn(
