@@ -241,7 +241,7 @@ function BuyerCard({ buyer, isExpanded, onToggle }: { buyer: Buyer; isExpanded: 
           <div className={cn(
             "text-lg font-bold",
             buyer.matchScore >= 90 ? "text-success" 
-              : buyer.matchScore >= 75 ? "text-amber-600" 
+              : buyer.matchScore >= 75 ? "text-warning" 
               : "text-muted-foreground"
           )}>
             {buyer.matchScore}%
