@@ -37,8 +37,8 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
 
   const modes = [
     { key: "start", label: "Call Now", desc: "CALL WITH REAL-TIME AI COACHING", icon: Play, colorClass: "bg-primary text-primary-foreground", inactiveClass: "bg-primary/5 text-foreground border-primary/20" },
-    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-violet-500 text-white", inactiveClass: "bg-violet-500/5 text-foreground border-violet-500/20", beta: true },
-    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-blue-500 text-white", inactiveClass: "bg-blue-500/5 text-foreground border-blue-500/20" },
+    { key: "voice", label: "Voice Agent", desc: "AI HANDLES THE CALL AUTONOMOUSLY", icon: Mic, colorClass: "bg-info text-info-foreground", inactiveClass: "bg-info/5 text-foreground border-info/20", beta: true },
+    { key: "listen", label: "Listen Mode", desc: "CAPTURE EXTERNAL CALLS (ZOOM, MEET, ETC.)", icon: Phone, colorClass: "bg-secondary text-secondary-foreground border border-border", inactiveClass: "bg-background text-foreground border-border" },
   ];
 
   const handleCallFromQueue = (item: typeof MOCK_DIALER_QUEUE[0]) => {
@@ -226,14 +226,14 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 rounded-lg border",
           isPowerHour
-            ? "bg-amber-500/5 border-amber-500/20"
+            ? "bg-warning/5 border-warning/20"
             : "bg-primary/5 border-primary/20"
         )}>
           <div className="flex items-center gap-2.5">
             {isPowerHour ? (
               <>
-                <Zap className="h-4 w-4 text-amber-500" />
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour</span>
+                <Zap className="h-4 w-4 text-warning" />
+                <span className="text-xs font-bold text-warning uppercase tracking-wider">Power Hour</span>
                 <span className="text-[11px] text-muted-foreground">· Locked in. One queue. One goal.</span>
               </>
             ) : (
@@ -325,7 +325,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                   )}
                 >
                   {beta && (
-                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-bold tracking-wider">BETA</span>
+                    <span className="absolute top-2 right-2 px-1.5 py-0.5 rounded-full bg-foreground/20 text-[9px] font-bold tracking-wider">BETA</span>
                   )}
                   <Icon className="h-6 w-6 mx-auto mb-2.5" />
                   <div className="text-sm font-semibold">{label}</div>
@@ -507,8 +507,8 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                         <div className="flex items-center gap-1.5 shrink-0">
                           <span className={cn(
                             "text-[10px] px-2 py-0.5 rounded-full font-medium",
-                            item.type === "Callback" ? "bg-amber-500/10 text-amber-600" :
-                            item.type === "Follow-up" ? "bg-blue-500/10 text-blue-600" :
+                            item.type === "Callback" ? "bg-warning/10 text-warning" :
+                            item.type === "Follow-up" ? "bg-info/10 text-info" :
                             "bg-muted text-muted-foreground"
                           )}>
                             {item.type}
@@ -520,7 +520,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                               "flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors",
                               isCalled
                                 ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                : "bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20"
+                                : "bg-success/10 text-success hover:bg-success/20"
                             )}
                           >
                             <Phone className="h-3 w-3" /> Call

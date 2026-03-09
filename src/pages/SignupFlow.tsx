@@ -230,7 +230,9 @@ export default function SignupFlow() {
   return (
     <div className="h-screen flex overflow-hidden">
       {/* Left Sidebar - Dark */}
-      <aside className="hidden lg:flex lg:w-[300px] bg-slate-900 text-white flex-col overflow-hidden">
+      <aside className="hidden lg:flex lg:w-[300px] flex-col overflow-hidden"
+        style={{ background: "linear-gradient(160deg, hsl(222 47% 8%) 0%, hsl(220 43% 6%) 50%, hsl(225 50% 7%) 100%)" }}
+      >
         <div className="p-5 flex-1 overflow-hidden flex flex-col">
           {/* Logo */}
           <div className="flex items-center mb-6">
@@ -239,17 +241,17 @@ export default function SignupFlow() {
 
           {/* Welcome Message */}
           <div className="mb-5">
-            <h2 className="text-lg font-semibold mb-1.5">
+            <h2 className="text-lg font-semibold text-white/90 mb-1.5">
               Welcome to RealElite! 👋
             </h2>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-white/40 leading-relaxed">
               We'll guide you through a quick setup to personalize your real estate investing command center.
             </p>
           </div>
 
           {/* Setup Progress */}
           <div className="flex-1 overflow-hidden">
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+            <p className="text-xs font-medium text-white/30 uppercase tracking-wide mb-3">
               Setup Progress
             </p>
             <div className="space-y-0.5">
@@ -262,16 +264,16 @@ export default function SignupFlow() {
                     key={s.id}
                     className={cn(
                       "flex items-center gap-2.5 px-2.5 py-2 rounded-lg transition-colors",
-                      isCurrent && "bg-slate-800"
+                      isCurrent && "bg-white/10"
                     )}
                   >
                     <div className="flex flex-col items-center">
                       <div
                         className={cn(
                           "h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium",
-                          isCompleted && "bg-emerald-500 text-white",
-                          isCurrent && "bg-primary text-white",
-                          !isCompleted && !isCurrent && "bg-slate-700 text-slate-400"
+                          isCompleted && "bg-success text-success-foreground",
+                          isCurrent && "bg-primary text-primary-foreground",
+                          !isCompleted && !isCurrent && "bg-white/10 text-white/30"
                         )}
                       >
                         {isCompleted ? (
@@ -283,20 +285,20 @@ export default function SignupFlow() {
                       {idx < STEPS.length - 1 && (
                         <div className={cn(
                           "w-0.5 h-3 my-0.5",
-                          isCompleted ? "bg-emerald-500" : "bg-slate-700"
+                          isCompleted ? "bg-success" : "bg-white/10"
                         )} />
                       )}
                     </div>
                     <div>
                       <p className={cn(
                         "text-sm font-medium",
-                        isCurrent ? "text-white" : isCompleted ? "text-slate-300" : "text-slate-500"
+                        isCurrent ? "text-white" : isCompleted ? "text-white/70" : "text-white/30"
                       )}>
                         {s.label}
                       </p>
                       <p className={cn(
                         "text-xs",
-                        isCurrent ? "text-primary" : "text-slate-600"
+                        isCurrent ? "text-primary" : "text-white/20"
                       )}>
                         {isCompleted ? "Completed" : isCurrent ? "Current Step" : ""}
                       </p>
@@ -312,20 +314,20 @@ export default function SignupFlow() {
         <div className="p-5 pt-0 space-y-3">
           {/* Progress Bar */}
           <div>
-            <div className="flex justify-between text-xs text-slate-400 mb-1.5">
+            <div className="flex justify-between text-xs text-white/30 mb-1.5">
               <span>Progress</span>
               <span>{currentStepIndex + 1} of {STEPS.length}</span>
             </div>
-            <Progress value={progressPercent} className="h-1 bg-slate-700" />
+            <Progress value={progressPercent} className="h-1 bg-white/10" />
           </div>
 
           {/* Pro Tip */}
-          <div className="bg-slate-800/50 rounded-lg p-3">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-3">
             <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-              <span className="text-xs font-medium">Pro Tip:</span>
+              <Sparkles className="h-3.5 w-3.5 text-warning" />
+              <span className="text-xs font-medium text-white/70">Pro Tip:</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-white/40 leading-relaxed">
               This only takes a minute—you can adjust settings anytime.
             </p>
           </div>
@@ -333,11 +335,11 @@ export default function SignupFlow() {
       </aside>
 
       {/* Right Content Area */}
-      <main className="flex-1 flex flex-col bg-white overflow-hidden">
+      <main className="flex-1 flex flex-col bg-background overflow-hidden">
         {/* Mobile Header */}
-        <div className="lg:hidden flex items-center gap-3 p-3 border-b border-slate-100">
+        <div className="lg:hidden flex items-center gap-3 p-3 border-b border-border">
           <RealEliteLogo height={18} color="hsl(222 47% 11%)" />
-          <div className="ml-auto text-sm text-slate-500">
+          <div className="ml-auto text-sm text-muted-foreground">
             Step {currentStepIndex + 1} of {STEPS.length}
           </div>
         </div>
@@ -354,10 +356,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Name Your Command Center
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
                   </p>
                 </div>
@@ -371,7 +373,7 @@ export default function SignupFlow() {
                     onChange={(e) => setOrgName(e.target.value)}
                     className="h-12"
                   />
-                  <p className="text-sm text-slate-500">
+                  <p className="text-sm text-muted-foreground">
                     You can always change this later in settings.
                   </p>
                 </div>
@@ -397,11 +399,11 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Tell Us About Yourself
                   </h1>
-                  <p className="text-slate-600">
-                    We'll customize your experience based on your investing strategy. <span className="text-slate-400">(you can change this later)</span>
+                  <p className="text-foreground-secondary">
+                    We'll customize your experience based on your investing strategy. <span className="text-muted-foreground">(you can change this later)</span>
                   </p>
                 </div>
 
@@ -416,11 +418,11 @@ export default function SignupFlow() {
                           "p-4 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
                             ? "border-primary bg-primary/5"
-                            : "border-slate-200 hover:border-slate-300"
+                            : "border-border hover:border-border/80"
                         )}
                       >
-                        <p className="font-semibold text-slate-900">{role.label}</p>
-                        <p className="text-sm text-slate-500">{role.description}</p>
+                        <p className="font-semibold text-foreground">{role.label}</p>
+                        <p className="text-sm text-muted-foreground">{role.description}</p>
                       </button>
                     ))}
                   </div>
@@ -428,7 +430,7 @@ export default function SignupFlow() {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">
-                    Phone Number <span className="text-slate-400">(optional)</span>
+                    Phone Number <span className="text-muted-foreground">(optional)</span>
                   </Label>
                   <Input
                     id="phone"
@@ -438,11 +440,11 @@ export default function SignupFlow() {
                     onChange={(e) => setPhone(e.target.value)}
                     className="h-12"
                   />
-                  <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg">
-                    <Zap className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex items-start gap-2 p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                    <Zap className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-medium text-amber-900">Real-Time Updates</p>
-                      <p className="text-xs text-amber-700">
+                      <p className="text-sm font-medium text-foreground">Real-Time Updates</p>
+                      <p className="text-xs text-muted-foreground">
                         Get notified about new motivated seller leads, counter-offers, and deals matching your criteria.
                       </p>
                     </div>
@@ -474,10 +476,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     What Brings You Here?
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Select your primary goals and we'll prioritize the right tools for you.
                   </p>
                 </div>
@@ -494,18 +496,18 @@ export default function SignupFlow() {
                           "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all border-2",
                           isSelected
                             ? "border-primary bg-primary/5"
-                            : "border-slate-200 hover:border-slate-300"
+                            : "border-border hover:border-border/80"
                         )}
                       >
                         <div className={cn(
                           "h-10 w-10 rounded-lg flex items-center justify-center",
-                          isSelected ? "bg-primary text-white" : "bg-slate-100 text-slate-600"
+                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
                           <Icon className="h-5 w-5" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-semibold text-slate-900">{goal.label}</p>
-                          <p className="text-sm text-slate-500">{goal.description}</p>
+                          <p className="font-semibold text-foreground">{goal.label}</p>
+                          <p className="text-sm text-muted-foreground">{goal.description}</p>
                         </div>
                         {isSelected && (
                           <Check className="h-5 w-5 text-primary flex-shrink-0" />
@@ -540,10 +542,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     Your Investing Arsenal
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Powerful tools that work together seamlessly to help you find, analyze, and close more deals.
                   </p>
                 </div>
@@ -554,7 +556,7 @@ export default function SignupFlow() {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl border border-slate-200 hover:border-slate-300 transition-colors"
+                        className="p-4 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
                       >
                         <div className={cn(
                           "h-10 w-10 rounded-lg flex items-center justify-center mb-3",
@@ -567,8 +569,8 @@ export default function SignupFlow() {
                         )}>
                           <Icon className={cn("h-5 w-5", feature.color)} />
                         </div>
-                        <p className="font-semibold text-slate-900 mb-1">{feature.label}</p>
-                        <p className="text-xs text-slate-500 leading-relaxed">{feature.description}</p>
+                        <p className="font-semibold text-foreground mb-1">{feature.label}</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                       </div>
                     );
                   })}
@@ -594,15 +596,15 @@ export default function SignupFlow() {
               <div className="space-y-6 text-center">
                 <div className="flex justify-center">
                   <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center">
-                    <Rocket className="h-10 w-10 text-white" />
+                    <Rocket className="h-10 w-10 text-primary-foreground" />
                   </div>
                 </div>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     You're Ready To Launch
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Your workspace is set up and ready to help you find deals.
                     <br />
                     Think big — RealElite handles the complexity.
@@ -611,20 +613,20 @@ export default function SignupFlow() {
 
                 <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-left">
                   <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="h-4 w-4 text-amber-500" />
-                    <span className="font-semibold text-slate-900">Pro Tip</span>
+                    <Sparkles className="h-4 w-4 text-warning" />
+                    <span className="font-semibold text-foreground">Pro Tip</span>
                   </div>
-                  <p className="text-sm text-slate-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Don't start with small tasks. Give RealElite something ambitious:
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
-                      <X className="h-4 w-4 text-slate-400" />
-                      <span className="text-slate-400 line-through">"Look up a property"</span>
+                      <X className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground line-through">"Look up a property"</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-emerald-500" />
-                      <span className="text-emerald-700 font-medium">"Analyze 123 Oak St, find comps, and draft an offer at 70% ARV"</span>
+                      <Check className="h-4 w-4 text-success" />
+                      <span className="text-success font-medium">"Analyze 123 Oak St, find comps, and draft an offer at 70% ARV"</span>
                     </div>
                   </div>
                 </div>
@@ -656,8 +658,8 @@ export default function SignupFlow() {
         </div>
 
         {/* Footer */}
-        <div className="p-3 text-center border-t border-slate-100">
-          <p className="text-xs text-slate-400">
+        <div className="p-3 text-center border-t border-border">
+          <p className="text-xs text-muted-foreground">
             Enterprise Ready — Your Data Is Encrypted And Secure At Every Step.
           </p>
         </div>

@@ -99,8 +99,8 @@ export function VerticalPipeline({ stages, activeStage, className }: VerticalPip
                 className={cn(
                   "relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all",
                   isActive
-                    ? "border-brand-accent bg-brand-accent text-white"
-                    : "border-border bg-white text-content-secondary"
+                    ? "border-brand-accent bg-brand-accent text-primary-foreground"
+                    : "border-border bg-background text-content-secondary"
                 )}
               >
                 <span className="text-small font-semibold">{index + 1}</span>

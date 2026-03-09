@@ -45,8 +45,8 @@ export default function ResetPassword() {
   return (
     <AuthLayout>
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Set New Password</h1>
-        <p className="text-slate-500">Enter your new password below</p>
+        <h1 className="text-2xl font-bold text-foreground mb-2">Set New Password</h1>
+        <p className="text-muted-foreground">Enter your new password below</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -65,7 +65,7 @@ export default function ResetPassword() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground-secondary"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>

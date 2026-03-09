@@ -30,7 +30,7 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
       "hidden lg:flex w-[400px] border-l-2 flex-col min-h-0 h-full overflow-hidden transition-all duration-300",
       isLiveCall
         ? cn(theme.border, theme.bg, "shadow-[-6px_0_24px_-8px_rgba(0,0,0,0.08)]")
-        : "border-border-subtle bg-white shadow-[-4px_0_20px_-5px_rgba(0,0,0,0.04)]"
+        : "border-border-subtle bg-background shadow-[-4px_0_20px_-5px_rgba(0,0,0,0.04)]"
     )}>
       {/* Header */}
       <div className={cn(
@@ -58,13 +58,13 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
             "flex items-center gap-1.5 px-2.5 py-1 rounded-full border transition-colors duration-300",
             isLiveCall
               ? cn(theme.badge, theme.border)
-              : "bg-emerald-500/10 border-emerald-500/20"
+              : "bg-success/10 border-success/20"
           )}>
             <span className="relative flex h-2 w-2">
-              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors", isLiveCall ? theme.dot : "bg-emerald-400")} />
-              <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-emerald-500")} />
+              <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 transition-colors", isLiveCall ? theme.dot : "bg-success/70")} />
+              <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-colors", isLiveCall ? theme.dot : "bg-success")} />
             </span>
-            <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-emerald-600")}>
+            <span className={cn("text-[10px] font-bold tracking-wider uppercase transition-colors", isLiveCall ? theme.badgeText : "text-success")}>
               {isLiveCall ? theme.label : "AI ACTIVE"}
             </span>
           </div>
@@ -76,10 +76,10 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
           <div className="space-y-3">
             {isPowerHour ? (
               <>
-                <div className="p-3 rounded-lg border-2 border-amber-500/30 bg-amber-500/5">
+                <div className="p-3 rounded-lg border-2 border-warning/30 bg-warning/5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Zap className="h-4 w-4 text-amber-500" />
-                    <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour Active</span>
+                    <Zap className="h-4 w-4 text-warning" />
+                    <span className="text-xs font-bold text-warning uppercase tracking-wider">Power Hour Active</span>
                   </div>
                   <div className="text-xs text-muted-foreground">Focus mode — stats locked to session metrics. Campaign switching disabled.</div>
                 </div>
@@ -186,15 +186,15 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
                   <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
                     <div
                       className={cn("h-full rounded-full transition-all duration-500",
-                        callState.sentiment === "positive" ? "bg-emerald-500" :
-                        callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                        callState.sentiment === "positive" ? "bg-success" :
+                        callState.sentiment === "negative" ? "bg-destructive" : "bg-warning"
                       )}
                       style={{ width: `${callState.sentimentScore}%` }}
                     />
                   </div>
                   <span className={cn(
                     "text-xs font-bold capitalize",
-                    callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                    callState.sentiment === "positive" ? "text-success" : callState.sentiment === "negative" ? "text-destructive" : "text-warning"
                   )}>
                     {callState.sentiment}
                   </span>
@@ -223,7 +223,7 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
             {callingMode !== "start" && (
               <button
                 onClick={() => toast.info("Taking over call...")}
-                className="w-full py-3 rounded-lg border-2 border-amber-300 bg-amber-50/80 text-amber-700 font-semibold text-sm hover:bg-amber-100 hover:border-amber-400 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-lg border-2 border-warning/30 bg-warning/5 text-warning font-semibold text-sm hover:bg-warning/10 hover:border-warning/40 transition-all flex items-center justify-center gap-2"
               >
                 <Hand className="h-4 w-4" />
                 Take Over Call
@@ -272,13 +272,13 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
               <div className="flex items-center gap-2.5">
                 <div className="h-1.5 flex-1 rounded-full bg-border overflow-hidden">
                   <div
-                    className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                    className="h-full rounded-full bg-success transition-all duration-500"
                     style={{ width: contact.sentiment === "positive" ? "75%" : contact.sentiment === "neutral" ? "50%" : "25%" }}
                   />
                 </div>
                 <span className={cn(
                   "text-xs font-semibold capitalize",
-                  contact.sentiment === "positive" ? "text-emerald-600" : contact.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                  contact.sentiment === "positive" ? "text-success" : contact.sentiment === "negative" ? "text-destructive" : "text-warning"
                 )}>
                   {contact.sentiment}
                 </span>

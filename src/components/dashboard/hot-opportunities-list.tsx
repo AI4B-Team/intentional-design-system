@@ -36,7 +36,7 @@ function getScoreColor(score: number): { border: string; text: string; bg: strin
 function getVelocityColor(level: string): { bg: string; text: string } {
   switch (level) {
     case "CRITICAL":
-      return { bg: "bg-destructive", text: "text-white" };
+      return { bg: "bg-destructive", text: "text-destructive-foreground" };
     case "HIGH":
       return { bg: "bg-warning", text: "text-warning-foreground" };
     case "STANDARD":
@@ -105,7 +105,7 @@ export function HotOpportunitiesList({
             {criticalItems.map((opportunity, index) => (
               <div
                 key={opportunity.id}
-                className="flex items-center gap-4 p-3 rounded-medium bg-white transition-colors hover:bg-destructive/5 group animate-fade-in"
+                className="flex items-center gap-4 p-3 rounded-medium bg-card transition-colors hover:bg-destructive/5 group animate-fade-in"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Score Circle */}
