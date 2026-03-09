@@ -186,15 +186,15 @@ export function CoPilotPanel({ contact, activeView, onQuickReply, callingMode = 
                   <div className="h-2 flex-1 rounded-full bg-border overflow-hidden">
                     <div
                       className={cn("h-full rounded-full transition-all duration-500",
-                        callState.sentiment === "positive" ? "bg-emerald-500" :
-                        callState.sentiment === "negative" ? "bg-red-500" : "bg-amber-500"
+                        callState.sentiment === "positive" ? "bg-success" :
+                        callState.sentiment === "negative" ? "bg-destructive" : "bg-warning"
                       )}
                       style={{ width: `${callState.sentimentScore}%` }}
                     />
                   </div>
                   <span className={cn(
                     "text-xs font-bold capitalize",
-                    callState.sentiment === "positive" ? "text-emerald-600" : callState.sentiment === "negative" ? "text-red-500" : "text-amber-500"
+                    callState.sentiment === "positive" ? "text-success" : callState.sentiment === "negative" ? "text-destructive" : "text-warning"
                   )}>
                     {callState.sentiment}
                   </span>
