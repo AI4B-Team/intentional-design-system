@@ -188,15 +188,15 @@ export function CopilotAfterCall({
 
         {/* Offer Adjustment */}
         {postCallActions.offerAdjustment && (
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+          <div className="bg-warning/5 border border-warning/20 rounded-lg p-3">
             <div className="flex items-start gap-2">
-              <DollarSign className="h-4 w-4 text-amber-600 mt-0.5" />
+              <DollarSign className="h-4 w-4 text-warning mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-amber-800">
+                <p className="text-sm font-medium text-foreground">
                   Consider {postCallActions.offerAdjustment.direction === 'increase' ? 'increasing' : 
                     postCallActions.offerAdjustment.direction === 'decrease' ? 'decreasing' : 'adjusting'} your offer
                 </p>
-                <p className="text-xs text-amber-700 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {postCallActions.offerAdjustment.reason}
                 </p>
               </div>
