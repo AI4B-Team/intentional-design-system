@@ -22,7 +22,7 @@ function GoalBar({ label, current, target, icon: Icon, color }: {
         </div>
         <span className={cn(
           "text-xs font-bold tabular-nums",
-          isComplete ? "text-emerald-600" : "text-foreground"
+          isComplete ? "text-success" : "text-foreground"
         )}>
           {current}/{target}
         </span>
