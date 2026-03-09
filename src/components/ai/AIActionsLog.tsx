@@ -19,7 +19,7 @@ const TYPE_ICON: Record<string, React.ElementType> = {
 
 const SOURCE_LABEL: Record<string, { label: string; icon: React.ElementType; color: string }> = {
   ai: { label: "AI", icon: Sparkles, color: "text-primary" },
-  automation: { label: "Automation", icon: Zap, color: "text-amber-600" },
+  automation: { label: "Automation", icon: Zap, color: "text-warning" },
 };
 
 function AIActionItem({ action, onComplete }: { action: UnifiedAction; onComplete: (id: string) => void }) {
