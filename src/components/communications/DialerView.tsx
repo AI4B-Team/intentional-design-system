@@ -226,14 +226,14 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
         <div className={cn(
           "flex items-center justify-between px-4 py-2.5 rounded-lg border",
           isPowerHour
-            ? "bg-amber-500/5 border-amber-500/20"
+            ? "bg-warning/5 border-warning/20"
             : "bg-primary/5 border-primary/20"
         )}>
           <div className="flex items-center gap-2.5">
             {isPowerHour ? (
               <>
-                <Zap className="h-4 w-4 text-amber-500" />
-                <span className="text-xs font-bold text-amber-600 uppercase tracking-wider">Power Hour</span>
+                <Zap className="h-4 w-4 text-warning" />
+                <span className="text-xs font-bold text-warning uppercase tracking-wider">Power Hour</span>
                 <span className="text-[11px] text-muted-foreground">· Locked in. One queue. One goal.</span>
               </>
             ) : (
