@@ -494,7 +494,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
                             <span className={cn("text-[13px] font-medium truncate", isCalled ? "line-through text-muted-foreground" : "text-foreground")}>
                               {item.name}
                             </span>
-                            {item.campaign && <CampaignBadge name={item.campaign} />}
+                            {item.campaign && <CampaignBadge campaignName={item.campaign} />}
                             {isActive && (
                               <span className="px-1.5 py-0.5 rounded bg-primary text-primary-foreground text-[9px] font-bold">ACTIVE</span>
                             )}
