@@ -42,7 +42,7 @@ export function RecentCallLog() {
             className="flex items-center gap-2.5 py-1.5 group"
           >
             <div className={cn("w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0", 
-              call.status === "connected" ? "bg-emerald-500/10" : "bg-muted"
+              call.status === "connected" ? "bg-success/10" : "bg-muted"
             )}>
               <Icon className={cn("h-2.5 w-2.5", config.color)} />
             </div>
