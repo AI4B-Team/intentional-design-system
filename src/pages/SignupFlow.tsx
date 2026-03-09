@@ -476,10 +476,10 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
+                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
                     What Brings You Here?
                   </h1>
-                  <p className="text-slate-600">
+                  <p className="text-foreground-secondary">
                     Select your primary goals and we'll prioritize the right tools for you.
                   </p>
                 </div>
@@ -496,18 +496,18 @@ export default function SignupFlow() {
                           "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all border-2",
                           isSelected
                             ? "border-primary bg-primary/5"
-                            : "border-slate-200 hover:border-slate-300"
+                            : "border-border hover:border-border/80"
                         )}
                       >
                         <div className={cn(
                           "h-10 w-10 rounded-lg flex items-center justify-center",
-                          isSelected ? "bg-primary text-white" : "bg-slate-100 text-slate-600"
+                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
                           <Icon className="h-5 w-5" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-semibold text-slate-900">{goal.label}</p>
-                          <p className="text-sm text-slate-500">{goal.description}</p>
+                          <p className="font-semibold text-foreground">{goal.label}</p>
+                          <p className="text-sm text-muted-foreground">{goal.description}</p>
                         </div>
                         {isSelected && (
                           <Check className="h-5 w-5 text-primary flex-shrink-0" />
