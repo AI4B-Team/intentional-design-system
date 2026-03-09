@@ -77,7 +77,7 @@ function AIActionItem({ action, onComplete }: { action: UnifiedAction; onComplet
         <Button
           size="icon"
           variant="ghost"
-          className="h-7 w-7 shrink-0 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-50"
+          className="h-7 w-7 shrink-0 text-muted-foreground hover:text-success hover:bg-success/10"
           onClick={() => onComplete(action.id)}
         >
           <CheckCircle2 className="h-4 w-4" />
