@@ -36,7 +36,7 @@ function getScoreColor(score: number): { border: string; text: string; bg: strin
 function getVelocityColor(level: string): { bg: string; text: string } {
   switch (level) {
     case "CRITICAL":
-      return { bg: "bg-destructive", text: "text-white" };
+      return { bg: "bg-destructive", text: "text-destructive-foreground" };
     case "HIGH":
       return { bg: "bg-warning", text: "text-warning-foreground" };
     case "STANDARD":
