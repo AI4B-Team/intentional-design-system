@@ -38,17 +38,17 @@ interface DealSourcesTableProps {
 
 // Monday.com style status colors with left border accent
 const statusConfig: Record<string, { bg: string; text: string; border: string }> = {
-  cold: { bg: "bg-slate-100", text: "text-slate-600", border: "border-l-slate-400" },
-  contacted: { bg: "bg-sky-100", text: "text-sky-700", border: "border-l-sky-500" },
-  responded: { bg: "bg-amber-100", text: "text-amber-700", border: "border-l-amber-500" },
-  active: { bg: "bg-emerald-100", text: "text-emerald-700", border: "border-l-emerald-500" },
-  inactive: { bg: "bg-red-100", text: "text-red-700", border: "border-l-red-500" },
+  cold: { bg: "bg-muted", text: "text-muted-foreground", border: "border-l-muted-foreground" },
+  contacted: { bg: "bg-info/10", text: "text-info", border: "border-l-info" },
+  responded: { bg: "bg-warning/10", text: "text-warning", border: "border-l-warning" },
+  active: { bg: "bg-success/10", text: "text-success", border: "border-l-success" },
+  inactive: { bg: "bg-destructive/10", text: "text-destructive", border: "border-l-destructive" },
 };
 
 const typeConfig: Record<string, { bg: string; text: string }> = {
-  agent: { bg: "bg-violet-100", text: "text-violet-700" },
-  wholesaler: { bg: "bg-cyan-100", text: "text-cyan-700" },
-  lender: { bg: "bg-rose-100", text: "text-rose-700" },
+  agent: { bg: "bg-accent", text: "text-accent-foreground" },
+  wholesaler: { bg: "bg-info/10", text: "text-info" },
+  lender: { bg: "bg-destructive/10", text: "text-destructive" },
 };
 
 function getInitials(name: string): string {
