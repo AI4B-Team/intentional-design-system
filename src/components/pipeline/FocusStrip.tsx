@@ -142,7 +142,7 @@ export function FocusStrip({
         label: `${highValueDeals.length} High-Value Deal${highValueDeals.length > 1 ? "s" : ""} ($250K+)`,
         count: highValueDeals.length,
         deals: highValueDeals,
-        color: "bg-emerald-100 text-emerald-600 border-emerald-200",
+        color: "bg-success/10 text-success border-success/30",
       });
     }
 

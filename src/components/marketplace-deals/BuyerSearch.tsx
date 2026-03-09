@@ -305,7 +305,7 @@ function BuyerCard({ buyer, isExpanded, onToggle }: { buyer: Buyer; isExpanded: 
                       variant="outline" 
                       className={cn(
                         "text-xs",
-                        deal.arvPercent <= 70 ? "border-success text-success" : "border-amber-500 text-amber-700"
+                        deal.arvPercent <= 70 ? "border-success text-success" : "border-warning text-warning"
                       )}
                     >
                       {deal.arvPercent}% ARV

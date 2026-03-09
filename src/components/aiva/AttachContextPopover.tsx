@@ -249,9 +249,9 @@ export function AttachmentChips({
           key={i}
           className={cn(
             "inline-flex items-center gap-1 text-[11px] font-medium rounded-full px-2.5 py-1 border",
-            item.type === "property" && "bg-blue-50 border-blue-200 text-blue-700",
-            item.type === "list" && "bg-purple-50 border-purple-200 text-purple-700",
-            item.type === "file" && "bg-amber-50 border-amber-200 text-amber-700",
+            item.type === "property" && "bg-info/10 border-info/30 text-info",
+            item.type === "list" && "bg-accent/10 border-accent/30 text-accent",
+            item.type === "file" && "bg-warning/10 border-warning/30 text-warning",
           )}
         >
           <Paperclip className="h-3 w-3" />
