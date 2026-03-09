@@ -13,12 +13,12 @@ const ACTION_ICONS: Record<string, React.ElementType> = {
 };
 
 const ACTION_COLORS: Record<string, string> = {
-  follow_up_task: "text-blue-500 bg-blue-500/10",
-  sms_draft: "text-violet-500 bg-violet-500/10",
-  email_summary: "text-amber-500 bg-amber-500/10",
-  reminder: "text-emerald-500 bg-emerald-500/10",
+  follow_up_task: "text-info bg-info/10",
+  sms_draft: "text-accent-foreground bg-accent/30",
+  email_summary: "text-warning bg-warning/10",
+  reminder: "text-success bg-success/10",
   pipeline_update: "text-primary bg-primary/10",
-  offer_logged: "text-rose-500 bg-rose-500/10",
+  offer_logged: "text-destructive bg-destructive/10",
 };
 
 export function PostCallActions() {
