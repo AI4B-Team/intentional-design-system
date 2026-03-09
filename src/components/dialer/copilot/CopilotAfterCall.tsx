@@ -52,8 +52,8 @@ export function CopilotAfterCall({
 
   const stageColors: Record<string, string> = {
     lead: 'bg-muted text-muted-foreground',
-    prospect: 'bg-blue-100 text-blue-700',
-    negotiating: 'bg-amber-100 text-amber-700',
+    prospect: 'bg-info/10 text-info',
+    negotiating: 'bg-warning/10 text-warning',
     under_contract: 'bg-primary/20 text-primary',
     closed: 'bg-success/20 text-success',
     dead: 'bg-destructive/20 text-destructive',
