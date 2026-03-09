@@ -1368,7 +1368,7 @@ export default function Dashboard() {
                   const discoveryPct = (discoveryCount / totalPipeline) * 100;
                   return discoveryPct > 0 ? (
                     <div
-                      className="bg-red-500 transition-all duration-500"
+                      className="bg-destructive transition-all duration-500"
                       style={{ width: `${discoveryPct}%` }}
                       title={`Discovery: ${discoveryCount} (${Math.round(discoveryPct)}%)`}
                     />
