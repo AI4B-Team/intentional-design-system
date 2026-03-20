@@ -226,8 +226,8 @@ const apps: AppItem[] = [
   // Documents & Templates
   {
     id: "templates",
-    name: "Templates",
-    description: "Create and manage reusable message, email, and document templates",
+    name: "Agreements",
+    description: "Create and manage reusable agreements, contracts, and document templates",
     icon: FileText,
     iconBg: "bg-fuchsia-100",
     iconColor: "text-fuchsia-600",
