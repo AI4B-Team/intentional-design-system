@@ -242,13 +242,11 @@ export default function AIAgentSettings() {
 
   if (isLoading) {
     return (
-      <AppLayout>
-        <PageLayout title="AI Acquisition Agent">
-          <div className="flex items-center justify-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          </div>
-        </PageLayout>
-      </AppLayout>
+      <PageLayout title="AI Acquisition Agent">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </PageLayout>
     );
   }
 
