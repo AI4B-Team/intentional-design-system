@@ -251,7 +251,7 @@ export default function AIAgentSettings() {
   }
 
   return (
-    <AppLayout>
+    <>
       <PageLayout
         title="AI Acquisition Agent"
         headerActions={
