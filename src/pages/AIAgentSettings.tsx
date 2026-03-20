@@ -243,7 +243,7 @@ export default function AIAgentSettings() {
   if (isLoading) {
     return (
       <AppLayout>
-        <PageLayout title="AI Acquisition Agent" icon={<Bot className="h-6 w-6" />}>
+        <PageLayout title="AI Acquisition Agent">
           <div className="flex items-center justify-center h-64">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
@@ -256,9 +256,7 @@ export default function AIAgentSettings() {
     <AppLayout>
       <PageLayout
         title="AI Acquisition Agent"
-        subtitle="Configure your autonomous voice AI that qualifies leads, books appointments, and transfers hot prospects"
-        icon={<Bot className="h-6 w-6" />}
-        action={
+        headerActions={
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className={`h-2 w-2 rounded-full ${config.is_active ? "bg-success animate-pulse" : "bg-muted-foreground/40"}`} />
