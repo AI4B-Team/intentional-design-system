@@ -650,6 +650,6 @@ export default function AIAgentSettings() {
           </TabsContent>
         </Tabs>
       </PageLayout>
-    </AppLayout>
+    </>
   );
 }
