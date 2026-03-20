@@ -344,6 +344,7 @@ const App = () => (
             <Route path="/dialer/scripts/:id" element={<ProtectedRoute><DialerScriptDetail /></ProtectedRoute>} />
             <Route path="/dialer/history" element={<ProtectedRoute><DialerHistory /></ProtectedRoute>} />
             <Route path="/settings/dialer" element={<ProtectedRoute><DialerSettings /></ProtectedRoute>} />
+            <Route path="/settings/ai-agent" element={<ProtectedRoute><AIAgentSettings /></ProtectedRoute>} />
             
             {/* Pipeline */}
             <Route path="/pipeline" element={<ProtectedRoute><Pipeline /></ProtectedRoute>} />
