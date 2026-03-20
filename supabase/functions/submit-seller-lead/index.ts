@@ -223,6 +223,50 @@ serve(async (req) => {
       }
     }
 
+    // Trigger Speed-to-Lead AI call if phone is available
+    if (formattedPhone && website.organization_id) {
+      try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        
+        // Check if AI agent is configured and speed-to-lead is enabled
+        const { data: agentConfig } = await supabase
+          .from('voice_agent_config')
+          .select('is_active, speed_to_lead_enabled, speed_to_lead_delay_seconds')
+          .eq('organization_id', website.organization_id)
+          .single()
+
+        if (agentConfig?.is_active && agentConfig?.speed_to_lead_enabled) {
+          const delayMs = (agentConfig.speed_to_lead_delay_seconds || 60) * 1000
+          
+          // Trigger the speed-to-lead call after the configured delay
+          setTimeout(async () => {
+            try {
+              await fetch(`${supabaseUrl}/functions/v1/speed-to-lead`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${serviceKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  phone_number: formattedPhone,
+                  contact_name: lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
+                  property_address: sanitizedAddress,
+                  organization_id: website.organization_id,
+                  user_id: website.user_id,
+                }),
+              })
+              console.log('Speed-to-lead AI call triggered')
+            } catch (stlError) {
+              console.error('Speed-to-lead trigger failed:', stlError)
+            }
+          }, delayMs)
+        }
+      } catch (stlCheckError) {
+        console.error('Speed-to-lead config check failed:', stlCheckError)
+      }
+    }
+
     return new Response(JSON.stringify({
       success: true,
       leadId: lead.id,

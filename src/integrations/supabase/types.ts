@@ -8671,6 +8671,213 @@ export type Database = {
           },
         ]
       }
+      voice_agent_calls: {
+        Row: {
+          actions_taken: Json | null
+          appointment_scheduled: boolean | null
+          appointment_time: string | null
+          call_id: string | null
+          contact_name: string | null
+          created_at: string
+          direction: string
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          lead_score: number | null
+          motivation_level: string | null
+          organization_id: string
+          outcome: string | null
+          phone_number: string
+          property_address: string | null
+          property_id: string | null
+          sentiment: string | null
+          started_at: string | null
+          summary: string | null
+          tasks_created: string[] | null
+          transcript: string | null
+          transferred_at: string | null
+          transferred_to: string | null
+          updated_at: string
+          user_id: string
+          vapi_assistant_id: string | null
+          vapi_call_id: string | null
+        }
+        Insert: {
+          actions_taken?: Json | null
+          appointment_scheduled?: boolean | null
+          appointment_time?: string | null
+          call_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          direction?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          lead_score?: number | null
+          motivation_level?: string | null
+          organization_id: string
+          outcome?: string | null
+          phone_number: string
+          property_address?: string | null
+          property_id?: string | null
+          sentiment?: string | null
+          started_at?: string | null
+          summary?: string | null
+          tasks_created?: string[] | null
+          transcript?: string | null
+          transferred_at?: string | null
+          transferred_to?: string | null
+          updated_at?: string
+          user_id: string
+          vapi_assistant_id?: string | null
+          vapi_call_id?: string | null
+        }
+        Update: {
+          actions_taken?: Json | null
+          appointment_scheduled?: boolean | null
+          appointment_time?: string | null
+          call_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          direction?: string
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          lead_score?: number | null
+          motivation_level?: string | null
+          organization_id?: string
+          outcome?: string | null
+          phone_number?: string
+          property_address?: string | null
+          property_id?: string | null
+          sentiment?: string | null
+          started_at?: string | null
+          summary?: string | null
+          tasks_created?: string[] | null
+          transcript?: string | null
+          transferred_at?: string | null
+          transferred_to?: string | null
+          updated_at?: string
+          user_id?: string
+          vapi_assistant_id?: string | null
+          vapi_call_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_agent_calls_call_id_fkey"
+            columns: ["call_id"]
+            isOneToOne: false
+            referencedRelation: "calls"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voice_agent_calls_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "voice_agent_calls_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_agent_config: {
+        Row: {
+          agent_name: string
+          agent_prompt: string | null
+          agent_voice: string
+          created_at: string
+          first_message: string | null
+          followup_enabled: boolean
+          followup_interval_hours: number
+          followup_max_attempts: number
+          hot_lead_transfer_enabled: boolean
+          id: string
+          inbound_enabled: boolean
+          is_active: boolean
+          organization_id: string
+          speed_to_lead_delay_seconds: number
+          speed_to_lead_enabled: boolean
+          timezone: string | null
+          transfer_phone_number: string | null
+          transfer_threshold: string
+          updated_at: string
+          user_id: string
+          vapi_assistant_id: string | null
+          vapi_phone_number_id: string | null
+          working_days: string[] | null
+          working_hours_end: string | null
+          working_hours_start: string | null
+        }
+        Insert: {
+          agent_name?: string
+          agent_prompt?: string | null
+          agent_voice?: string
+          created_at?: string
+          first_message?: string | null
+          followup_enabled?: boolean
+          followup_interval_hours?: number
+          followup_max_attempts?: number
+          hot_lead_transfer_enabled?: boolean
+          id?: string
+          inbound_enabled?: boolean
+          is_active?: boolean
+          organization_id: string
+          speed_to_lead_delay_seconds?: number
+          speed_to_lead_enabled?: boolean
+          timezone?: string | null
+          transfer_phone_number?: string | null
+          transfer_threshold?: string
+          updated_at?: string
+          user_id: string
+          vapi_assistant_id?: string | null
+          vapi_phone_number_id?: string | null
+          working_days?: string[] | null
+          working_hours_end?: string | null
+          working_hours_start?: string | null
+        }
+        Update: {
+          agent_name?: string
+          agent_prompt?: string | null
+          agent_voice?: string
+          created_at?: string
+          first_message?: string | null
+          followup_enabled?: boolean
+          followup_interval_hours?: number
+          followup_max_attempts?: number
+          hot_lead_transfer_enabled?: boolean
+          id?: string
+          inbound_enabled?: boolean
+          is_active?: boolean
+          organization_id?: string
+          speed_to_lead_delay_seconds?: number
+          speed_to_lead_enabled?: boolean
+          timezone?: string | null
+          transfer_phone_number?: string | null
+          transfer_threshold?: string
+          updated_at?: string
+          user_id?: string
+          vapi_assistant_id?: string | null
+          vapi_phone_number_id?: string | null
+          working_days?: string[] | null
+          working_hours_end?: string | null
+          working_hours_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_agent_config_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       website_analytics: {
         Row: {
           browser: string | null

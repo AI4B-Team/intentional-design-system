@@ -124,6 +124,7 @@ const DialerScripts = React.lazy(() => import("./pages/DialerScripts"));
 const DialerScriptDetail = React.lazy(() => import("./pages/DialerScriptDetail"));
 const DialerHistory = React.lazy(() => import("./pages/DialerHistory"));
 const DialerSettings = React.lazy(() => import("./pages/DialerSettings"));
+const AIAgentSettings = React.lazy(() => import("./pages/AIAgentSettings"));
 const SellerWebsitePage = React.lazy(() => import("./pages/SellerWebsitePage"));
 const SellerWebsites = React.lazy(() => import("./pages/SellerWebsites"));
 const SellerWebsiteWizard = React.lazy(() => import("./pages/SellerWebsiteWizard"));
@@ -343,6 +344,7 @@ const App = () => (
             <Route path="/dialer/scripts/:id" element={<ProtectedRoute><DialerScriptDetail /></ProtectedRoute>} />
             <Route path="/dialer/history" element={<ProtectedRoute><DialerHistory /></ProtectedRoute>} />
             <Route path="/settings/dialer" element={<ProtectedRoute><DialerSettings /></ProtectedRoute>} />
+            <Route path="/settings/ai-agent" element={<ProtectedRoute><AIAgentSettings /></ProtectedRoute>} />
             
             {/* Pipeline */}
             <Route path="/pipeline" element={<ProtectedRoute><Pipeline /></ProtectedRoute>} />
