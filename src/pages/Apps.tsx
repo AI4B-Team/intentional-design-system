@@ -42,6 +42,19 @@ interface AppItem {
 }
 
 const apps: AppItem[] = [
+  // AI Acquisition Agent
+  {
+    id: "ai-agent",
+    name: "AI Acquisition Agent",
+    description: "Autonomous voice agent that answers calls, qualifies leads, schedules appointments, and hands off hot leads live",
+    icon: Bot,
+    iconBg: "bg-amber-100",
+    iconColor: "text-amber-600",
+    href: "/settings/ai-agent",
+    category: "operations",
+    isFeatured: true,
+    isNew: true,
+  },
   // Documents & Signatures
   {
     id: "signatures",
