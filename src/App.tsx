@@ -124,6 +124,7 @@ const DialerScripts = React.lazy(() => import("./pages/DialerScripts"));
 const DialerScriptDetail = React.lazy(() => import("./pages/DialerScriptDetail"));
 const DialerHistory = React.lazy(() => import("./pages/DialerHistory"));
 const DialerSettings = React.lazy(() => import("./pages/DialerSettings"));
+const AIAgentSettings = React.lazy(() => import("./pages/AIAgentSettings"));
 const SellerWebsitePage = React.lazy(() => import("./pages/SellerWebsitePage"));
 const SellerWebsites = React.lazy(() => import("./pages/SellerWebsites"));
 const SellerWebsiteWizard = React.lazy(() => import("./pages/SellerWebsiteWizard"));
