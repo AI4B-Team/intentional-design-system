@@ -29,3 +29,12 @@ verify_jwt = false
 
 [functions.ai-property-analysis]
 verify_jwt = false
+
+[functions.vapi-webhook]
+verify_jwt = false
+
+[functions.vapi-create-assistant]
+verify_jwt = false
+
+[functions.speed-to-lead]
+verify_jwt = false
