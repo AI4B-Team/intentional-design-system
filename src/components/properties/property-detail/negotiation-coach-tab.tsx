@@ -545,6 +545,28 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
     setCounterAnalysis(analysis);
   };
 
+  const handleAIAnalyze = async () => {
+    const askAmount = parseFloat(sellerAsks.replace(/[^0-9.-]+/g, ""));
+    if (isNaN(askAmount) || askAmount <= 0) {
+      toast.error("Please enter a valid seller counter amount");
+      return;
+    }
+
+    const result = await negotiationAI.mutateAsync({
+      property_address: property.address || "",
+      arv: property.arv || 0,
+      our_offer: initialOffer,
+      seller_counter: askAmount,
+      walk_away_price: counterAnalysis?.walkAwayMax,
+      repair_estimate: property.repairs || 0,
+      lead_type: property.source,
+      distress_signals: property.distressSignals,
+      motivation_score: property.score,
+      mortgage_balance: property.mortgageBalance,
+    });
+    setAiAnalysis(result);
+  };
+
   const handleCopyScript = async (scriptId: string, scriptText: string) => {
     try {
       await navigator.clipboard.writeText(scriptText);
