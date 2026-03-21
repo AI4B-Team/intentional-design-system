@@ -24,6 +24,7 @@ import {
   Star,
   DollarSign,
   Bot,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -128,6 +129,17 @@ const apps: AppItem[] = [
     iconBg: "bg-red-100",
     iconColor: "text-red-600",
     href: "/tools/offer-blaster",
+    category: "marketing",
+    isNew: true,
+  },
+  {
+    id: "direct-mail",
+    name: "Direct Mail",
+    description: "Send postcards and letters to property owners via Lob",
+    icon: Mail,
+    iconBg: "bg-sky-100",
+    iconColor: "text-sky-600",
+    href: "/mail",
     category: "marketing",
     isNew: true,
   },
