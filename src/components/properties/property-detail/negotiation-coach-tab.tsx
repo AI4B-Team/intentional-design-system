@@ -760,6 +760,14 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
               <Button variant="primary" onClick={handleAnalyzeCounter} icon={<Calculator />}>
                 Analyze
               </Button>
+              <Button 
+                variant="secondary" 
+                onClick={handleAIAnalyze} 
+                icon={<Sparkles />}
+                disabled={negotiationAI.isPending}
+              >
+                {negotiationAI.isPending ? "Analyzing..." : "AI Deep Analysis"}
+              </Button>
             </div>
           </div>
         </div>
