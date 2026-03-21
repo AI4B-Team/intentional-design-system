@@ -133,6 +133,17 @@ const apps: AppItem[] = [
     isNew: true,
   },
   {
+    id: "direct-mail",
+    name: "Direct Mail",
+    description: "Send postcards and letters to property owners via Lob",
+    icon: Mail,
+    iconBg: "bg-sky-100",
+    iconColor: "text-sky-600",
+    href: "/mail",
+    category: "marketing",
+    isNew: true,
+  },
+  {
     id: "websites",
     name: "Websites",
     description: "Build landing pages for sellers, buyers, listings, and more",
