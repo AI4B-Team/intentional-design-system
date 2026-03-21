@@ -146,7 +146,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       {/* Search with Address Autocomplete */}
       {(isMarketplacePage || isIntelPage) ? (
         <MarketplaceSearchBar
-          className="hidden md:block flex-1 min-w-[240px] max-w-md"
+          className="hidden md:block flex-1 min-w-[240px] max-w-xl"
           defaultMode={defaultSearchMode}
           onQueryChange={(q) => { marketplaceQueryRef.current = q; }}
           onModeSwitch={(mode) => {
