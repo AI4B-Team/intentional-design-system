@@ -24,6 +24,7 @@ import {
   Star,
   DollarSign,
   Bot,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
