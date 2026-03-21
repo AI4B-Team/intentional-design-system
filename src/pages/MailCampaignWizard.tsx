@@ -277,7 +277,7 @@ export default function MailCampaignWizard() {
   const handleLaunch = async () => {
     try {
       const isFuture = new Date(state.sendDate) > new Date();
-      await createCampaign.mutateAsync({
+      const newCampaign = await createCampaign.mutateAsync({
         name: state.name,
         description: state.description || null,
         template_id: state.templateId,
@@ -298,7 +298,48 @@ export default function MailCampaignWizard() {
         cost_per_piece: pricePerPiece,
         total_cost: totalCost,
       });
-      toast.success("Campaign launched! 🚀");
+
+      // Create mail_pieces from matching properties
+      if (matchingProperties && matchingProperties.length > 0 && newCampaign?.id) {
+        const pieces = matchingProperties.map((p: any) => ({
+          campaign_id: newCampaign.id,
+          property_id: p.id,
+          recipient_name: p.owner_name || "Current Resident",
+          recipient_address: p.owner_mailing_address || p.address || null,
+          recipient_city: p.city || null,
+          recipient_state: p.state || null,
+          recipient_zip: null,
+          status: "pending",
+        }));
+
+        const { error: insertErr } = await supabase.from("mail_pieces").insert(pieces);
+        if (insertErr) {
+          console.error("Failed to create mail pieces:", insertErr);
+          toast.error("Campaign created but failed to create mail pieces");
+          navigate("/mail/campaigns");
+          return;
+        }
+
+        // If not scheduled for future, send now via Lob
+        if (!isFuture) {
+          toast.info("Sending mail pieces to Lob...");
+          const { data: sendResult, error: sendError } = await supabase.functions.invoke("lob-send-campaign", {
+            body: { campaign_id: newCampaign.id },
+          });
+
+          if (sendError) {
+            console.error("Lob send error:", sendError);
+            toast.error("Campaign created but Lob sending failed. You can retry from the campaign page.");
+          } else {
+            toast.success(`Campaign launched! 🚀 ${sendResult?.sent || 0} pieces sent to Lob.`);
+          }
+        } else {
+          toast.success("Campaign scheduled! 🚀 Mail will be sent on the scheduled date.");
+        }
+      } else {
+        toast.success("Campaign created! Add recipients to send.");
+      }
+
       navigate("/mail/campaigns");
     } catch (error) {
       // Error handled by mutation
