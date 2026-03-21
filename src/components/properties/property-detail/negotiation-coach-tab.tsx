@@ -474,9 +474,11 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
   const [showTimingDetails, setShowTimingDetails] = useState(false);
   const [sellerAsks, setSellerAsks] = useState<string>("");
   const [counterAnalysis, setCounterAnalysis] = useState<CounterAnalysis | null>(null);
+  const [aiAnalysis, setAiAnalysis] = useState<NegotiationAnalysis | null>(null);
   const [copiedScript, setCopiedScript] = useState<string | null>(null);
   const [customizingScript, setCustomizingScript] = useState<CallScript | null>(null);
   const [editedScript, setEditedScript] = useState<string>("");
+  const negotiationAI = useNegotiationAI();
   
   // Check if we have sufficient data
   const hasOwnerInfo = property.ownerName;
