@@ -937,7 +937,111 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
           </div>
         )}
 
-        {!counterAnalysis && (
+        {/* AI Deep Analysis Results */}
+        {aiAnalysis && (
+          <div className="space-y-4 mt-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="h-5 w-5 text-brand-accent" />
+              <h3 className="text-h4 font-semibold text-content">AI Negotiation Analysis</h3>
+            </div>
+
+            {/* AI Recommendation */}
+            <div className={cn(
+              "p-4 rounded-medium border-2",
+              aiAnalysis.recommendation === "accept" ? "bg-success/5 border-success/20" :
+              aiAnalysis.recommendation === "decline" ? "bg-destructive/5 border-destructive/20" :
+              "bg-warning/5 border-warning/20"
+            )}>
+              <div className="flex items-center gap-2 mb-2">
+                {aiAnalysis.recommendation === "accept" ? (
+                  <><CheckCircle2 className="h-5 w-5 text-success" /><span className="text-body font-semibold text-success">AI Says: Accept</span></>
+                ) : aiAnalysis.recommendation === "decline" ? (
+                  <><XCircle className="h-5 w-5 text-destructive" /><span className="text-body font-semibold text-destructive">AI Says: Walk Away</span></>
+                ) : (
+                  <><Target className="h-5 w-5 text-warning" /><span className="text-body font-semibold text-warning">AI Says: Counter{aiAnalysis.counter_amount ? ` at ${formatCurrency(aiAnalysis.counter_amount)}` : ""}</span></>
+                )}
+                {aiAnalysis.risk_level && (
+                  <Badge variant={aiAnalysis.risk_level === "low" ? "default" : aiAnalysis.risk_level === "high" ? "destructive" : "secondary"} size="sm">
+                    {aiAnalysis.risk_level} risk
+                  </Badge>
+                )}
+              </div>
+              <p className="text-small text-content-secondary">{aiAnalysis.reasoning}</p>
+              {aiAnalysis.profit_at_counter != null && (
+                <p className="text-small text-content mt-2">Est. profit at counter: <span className="font-bold text-success">{formatCurrency(aiAnalysis.profit_at_counter)}</span></p>
+              )}
+            </div>
+
+            {/* Talking Points */}
+            {aiAnalysis.talking_points?.length > 0 && (
+              <div>
+                <h4 className="text-small font-medium text-content mb-2">AI Talking Points</h4>
+                <div className="space-y-1.5">
+                  {aiAnalysis.talking_points.map((point, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-success mt-0.5 flex-shrink-0" />
+                      <span className="text-small text-content-secondary">{point}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Draft Responses */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {aiAnalysis.draft_sms && (
+                <div className="p-3 bg-background-secondary rounded-small">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-tiny font-medium text-content-tertiary">Draft SMS</span>
+                    <Button variant="ghost" size="sm" onClick={() => { navigator.clipboard.writeText(aiAnalysis.draft_sms!); toast.success("SMS copied"); }}>
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-small text-content">{aiAnalysis.draft_sms}</p>
+                </div>
+              )}
+              {aiAnalysis.draft_response && (
+                <div className="p-3 bg-background-secondary rounded-small">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-tiny font-medium text-content-tertiary">Draft Response</span>
+                    <Button variant="ghost" size="sm" onClick={() => { navigator.clipboard.writeText(aiAnalysis.draft_response!); toast.success("Response copied"); }}>
+                      <Copy className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-small text-content">{aiAnalysis.draft_response}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Creative Terms */}
+            {aiAnalysis.creative_terms && (
+              <div className="p-3 bg-brand/5 border border-brand/20 rounded-small">
+                <div className="flex items-center gap-2 mb-1">
+                  <Lightbulb className="h-4 w-4 text-brand" />
+                  <span className="text-small font-medium text-content">Creative Deal Structure</span>
+                </div>
+                <p className="text-small text-content-secondary">{aiAnalysis.creative_terms}</p>
+              </div>
+            )}
+
+            {/* Next Steps */}
+            {aiAnalysis.next_steps?.length > 0 && (
+              <div>
+                <h4 className="text-small font-medium text-content mb-2">Next Steps</h4>
+                <div className="space-y-1.5">
+                  {aiAnalysis.next_steps.map((step, i) => (
+                    <div key={i} className="flex items-start gap-2">
+                      <Badge variant="secondary" size="sm" className="mt-0.5">{i + 1}</Badge>
+                      <span className="text-small text-content-secondary">{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!counterAnalysis && !aiAnalysis && (
           <div className="text-center py-6 bg-muted/20 rounded-medium">
             <Calculator className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-small text-content-secondary">Enter the seller's counter to see strategy recommendations</p>
