@@ -182,6 +182,35 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
               )}
             </div>
           </div>
+        ) : showThemes ? (
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 p-3 border-b border-border">
+              <button
+                onClick={() => setShowThemes(false)}
+                className="p-1 hover:bg-muted rounded-md transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+              </button>
+              <span className="text-sm font-semibold text-foreground">Select Theme</span>
+            </div>
+            <div className="py-1">
+              {THEMES.map(t => (
+                <button
+                  key={t.value}
+                  onClick={() => handleSelectTheme(t.value)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    {t.icon}
+                    <span className="text-sm font-medium text-foreground">{t.label}</span>
+                  </div>
+                  {selectedTheme === t.value && (
+                    <Check className="h-4 w-4 text-primary" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
         ) : (
           <>
             {/* User Info */}
