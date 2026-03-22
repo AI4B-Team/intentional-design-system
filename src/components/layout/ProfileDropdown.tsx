@@ -292,19 +292,15 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
                 </div>
               </button>
               <button
-                onClick={toggleTheme}
+                onClick={() => setShowThemes(true)}
                 className="w-full flex items-center justify-between py-2.5 hover:bg-muted px-2 rounded-md transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  {theme === "light" ? (
-                    <Sun className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <Moon className="h-5 w-5 text-muted-foreground" />
-                  )}
+                  {selectedThemeObj.icon}
                   <span className="text-sm font-medium">Theme:</span>
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <span className="text-sm capitalize">{theme}</span>
+                  <span className="text-sm">{selectedThemeObj.label}</span>
                   <ChevronRight className="h-4 w-4" />
                 </div>
               </button>
