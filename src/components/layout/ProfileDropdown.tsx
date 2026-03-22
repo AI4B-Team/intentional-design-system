@@ -112,6 +112,10 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   );
 
   const handleOpenChange = (isOpen: boolean) => {
+    // Don't close if a sub-panel is open (clicks on sub-panels are outside PopoverContent bounds)
+    if (!isOpen && (showLanguages || showThemes)) {
+      return;
+    }
     setOpen(isOpen);
     if (!isOpen) {
       setShowLanguages(false);
