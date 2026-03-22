@@ -38,6 +38,14 @@ const LANGUAGES = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
 ];
 
+type ThemeOption = "light" | "dark" | "split";
+
+const THEMES: { value: ThemeOption; label: string; icon: React.ReactNode }[] = [
+  { value: "light", label: "Light", icon: <Sun className="h-5 w-5 text-muted-foreground" /> },
+  { value: "dark", label: "Dark", icon: <Moon className="h-5 w-5 text-muted-foreground" /> },
+  { value: "split", label: "Split", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
+];
+
 interface ProfileDropdownProps {
   className?: string;
 }
@@ -46,11 +54,14 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showLanguages, setShowLanguages] = useState(false);
+  const [showThemes, setShowThemes] = useState(false);
   const [langSearch, setLangSearch] = useState("");
   const [selectedLang, setSelectedLang] = useState(() => 
     localStorage.getItem("app-language") || "en"
+  );
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => 
+    (localStorage.getItem("app-theme") as ThemeOption) || "light"
   );
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
