@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   Mail,
   Languages,
   Sun,
+  SunMoon,
   Moon,
   Power,
   UserPlus,
@@ -37,6 +38,14 @@ const LANGUAGES = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
 ];
 
+type ThemeOption = "light" | "dark" | "split";
+
+const THEMES: { value: ThemeOption; label: string; icon: React.ReactNode }[] = [
+  { value: "light", label: "Light", icon: <Sun className="h-5 w-5 text-muted-foreground" /> },
+  { value: "dark", label: "Dark", icon: <Moon className="h-5 w-5 text-muted-foreground" /> },
+  { value: "split", label: "Split", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
+];
+
 interface ProfileDropdownProps {
   className?: string;
 }
@@ -45,11 +54,14 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showLanguages, setShowLanguages] = useState(false);
+  const [showThemes, setShowThemes] = useState(false);
   const [langSearch, setLangSearch] = useState("");
   const [selectedLang, setSelectedLang] = useState(() => 
     localStorage.getItem("app-language") || "en"
+  );
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => 
+    (localStorage.getItem("app-theme") as ThemeOption) || "light"
   );
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
@@ -67,9 +79,26 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     setOpen(false);
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+  const handleSelectTheme = (value: ThemeOption) => {
+    setSelectedTheme(value);
+    localStorage.setItem("app-theme", value);
+    // Apply theme to document
+    const root = document.documentElement;
+    if (value === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    setShowThemes(false);
   };
+
+  // Apply theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("app-theme") as ThemeOption;
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
 
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
@@ -86,9 +115,12 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     setOpen(isOpen);
     if (!isOpen) {
       setShowLanguages(false);
+      setShowThemes(false);
       setLangSearch("");
     }
   };
+
+  const selectedThemeObj = THEMES.find(t => t.value === selectedTheme) || THEMES[0];
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -148,6 +180,35 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
               {filteredLanguages.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-4">No languages found</p>
               )}
+            </div>
+          </div>
+        ) : showThemes ? (
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 p-3 border-b border-border">
+              <button
+                onClick={() => setShowThemes(false)}
+                className="p-1 hover:bg-muted rounded-md transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+              </button>
+              <span className="text-sm font-semibold text-foreground">Select Theme</span>
+            </div>
+            <div className="py-1">
+              {THEMES.map(t => (
+                <button
+                  key={t.value}
+                  onClick={() => handleSelectTheme(t.value)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    {t.icon}
+                    <span className="text-sm font-medium text-foreground">{t.label}</span>
+                  </div>
+                  {selectedTheme === t.value && (
+                    <Check className="h-4 w-4 text-primary" />
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         ) : (
@@ -231,19 +292,15 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
                 </div>
               </button>
               <button
-                onClick={toggleTheme}
+                onClick={() => setShowThemes(true)}
                 className="w-full flex items-center justify-between py-2.5 hover:bg-muted px-2 rounded-md transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  {theme === "light" ? (
-                    <Sun className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <Moon className="h-5 w-5 text-muted-foreground" />
-                  )}
+                  {selectedThemeObj.icon}
                   <span className="text-sm font-medium">Theme:</span>
                 </div>
                 <div className="flex items-center gap-1 text-muted-foreground">
-                  <span className="text-sm capitalize">{theme}</span>
+                  <span className="text-sm">{selectedThemeObj.label}</span>
                   <ChevronRight className="h-4 w-4" />
                 </div>
               </button>
