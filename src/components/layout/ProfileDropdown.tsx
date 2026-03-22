@@ -123,101 +123,101 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const selectedThemeObj = THEMES.find(t => t.value === selectedTheme) || THEMES[0];
 
   return (
-    <div className="relative">
-      {/* Language Sub-Popover - positioned to the left */}
-      {showLanguages && open && (
-        <div className="absolute right-full top-0 mr-2 w-64 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
-          <div className="flex items-center gap-2 p-3 border-b border-border">
-            <button
-              onClick={() => { setShowLanguages(false); setLangSearch(""); }}
-              className="p-1 hover:bg-muted rounded-md transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <span className="text-sm font-semibold text-foreground">Select Language</span>
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
+        <button className={cn(
+          "flex items-center justify-center p-1 hover:bg-surface-secondary rounded-full transition-colors border-2 border-primary",
+          className
+        )}>
+          <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+            <User className="h-5 w-5 text-muted-foreground" />
           </div>
-          <div className="p-2">
-            <input
-              type="text"
-              placeholder="Search languages..."
-              value={langSearch}
-              onChange={e => setLangSearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-              autoFocus
-            />
-          </div>
-          <div className="max-h-[280px] overflow-y-auto py-1">
-            {filteredLanguages.map(lang => (
-              <button
-                key={lang.code}
-                onClick={() => handleSelectLanguage(lang.code)}
-                className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{lang.flag}</span>
-                  <span className="text-sm font-medium text-foreground">{lang.name}</span>
-                </div>
-                {selectedLang === lang.code && (
-                  <Check className="h-4 w-4 text-primary" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent 
+        side="bottom"
+        align="end" 
+        className="w-80 p-0 bg-background shadow-xl border z-[200] overflow-visible"
+        sideOffset={8}
+      >
+        <div className="relative">
+          {/* Language Sub-Panel - floats to the left */}
+          {showLanguages && (
+            <div className="absolute right-full top-0 mr-2 w-64 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
+              <div className="flex items-center gap-2 p-3 border-b border-border">
+                <button
+                  onClick={() => { setShowLanguages(false); setLangSearch(""); }}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <span className="text-sm font-semibold text-foreground">Select Language</span>
+              </div>
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Search languages..."
+                  value={langSearch}
+                  onChange={e => setLangSearch(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  autoFocus
+                />
+              </div>
+              <div className="max-h-[280px] overflow-y-auto py-1">
+                {filteredLanguages.map(lang => (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleSelectLanguage(lang.code)}
+                    className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">{lang.flag}</span>
+                      <span className="text-sm font-medium text-foreground">{lang.name}</span>
+                    </div>
+                    {selectedLang === lang.code && (
+                      <Check className="h-4 w-4 text-primary" />
+                    )}
+                  </button>
+                ))}
+                {filteredLanguages.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">No languages found</p>
                 )}
-              </button>
-            ))}
-            {filteredLanguages.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-4">No languages found</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Theme Sub-Popover - positioned to the left */}
-      {showThemes && open && (
-        <div className="absolute right-full top-0 mr-2 w-52 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
-          <div className="flex items-center gap-2 p-3 border-b border-border">
-            <button
-              onClick={() => setShowThemes(false)}
-              className="p-1 hover:bg-muted rounded-md transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <span className="text-sm font-semibold text-foreground">Select Theme</span>
-          </div>
-          <div className="py-1">
-            {THEMES.map(t => (
-              <button
-                key={t.value}
-                onClick={() => handleSelectTheme(t.value)}
-                className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
-              >
-                <div className="flex items-center gap-3">
-                  {t.icon}
-                  <span className="text-sm font-medium text-foreground">{t.label}</span>
-                </div>
-                {selectedTheme === t.value && (
-                  <Check className="h-4 w-4 text-primary" />
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <Popover open={open} onOpenChange={handleOpenChange}>
-        <PopoverTrigger asChild>
-          <button className={cn(
-            "flex items-center justify-center p-1 hover:bg-surface-secondary rounded-full transition-colors border-2 border-primary",
-            className
-          )}>
-            <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
-              <User className="h-5 w-5 text-muted-foreground" />
+              </div>
             </div>
-          </button>
-        </PopoverTrigger>
-        <PopoverContent 
-          side="bottom"
-          align="end" 
-          className="w-80 p-0 bg-background shadow-xl border z-[100]"
-          sideOffset={8}
-        >
+          )}
+
+          {/* Theme Sub-Panel - floats to the left */}
+          {showThemes && (
+            <div className="absolute right-full top-0 mr-2 w-52 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
+              <div className="flex items-center gap-2 p-3 border-b border-border">
+                <button
+                  onClick={() => setShowThemes(false)}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4 text-muted-foreground" />
+                </button>
+                <span className="text-sm font-semibold text-foreground">Select Theme</span>
+              </div>
+              <div className="py-1">
+                {THEMES.map(t => (
+                  <button
+                    key={t.value}
+                    onClick={() => handleSelectTheme(t.value)}
+                    className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      {t.icon}
+                      <span className="text-sm font-medium text-foreground">{t.label}</span>
+                    </div>
+                    {selectedTheme === t.value && (
+                      <Check className="h-4 w-4 text-primary" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* User Info */}
           <div className="p-4 flex items-center gap-3">
             <div className="relative">
@@ -360,8 +360,8 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
               </a>
             </div>
           </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
