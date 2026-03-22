@@ -79,9 +79,26 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     setOpen(false);
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+  const handleSelectTheme = (value: ThemeOption) => {
+    setSelectedTheme(value);
+    localStorage.setItem("app-theme", value);
+    // Apply theme to document
+    const root = document.documentElement;
+    if (value === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    setShowThemes(false);
   };
+
+  // Apply theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("app-theme") as ThemeOption;
+    if (saved === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  }, []);
 
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
