@@ -100,6 +100,23 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     }
   }, []);
 
+  // Close sub-panels on outside click (since they extend beyond popover bounds)
+  useEffect(() => {
+    if (!open || (!showLanguages && !showThemes)) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // If clicking outside the entire popover area, close everything
+      if (!target.closest('[data-profile-dropdown]')) {
+        setOpen(false);
+        setShowLanguages(false);
+        setShowThemes(false);
+        setLangSearch("");
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open, showLanguages, showThemes]);
+
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
     localStorage.setItem("app-language", code);
