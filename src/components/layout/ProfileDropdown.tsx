@@ -14,6 +14,7 @@ import {
   Mail,
   Languages,
   Sun,
+  SunMoon,
   Moon,
   Power,
   UserPlus,
