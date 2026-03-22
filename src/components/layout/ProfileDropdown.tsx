@@ -115,9 +115,12 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     setOpen(isOpen);
     if (!isOpen) {
       setShowLanguages(false);
+      setShowThemes(false);
       setLangSearch("");
     }
   };
+
+  const selectedThemeObj = THEMES.find(t => t.value === selectedTheme) || THEMES[0];
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
