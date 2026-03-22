@@ -100,6 +100,23 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     }
   }, []);
 
+  // Close sub-panels on outside click (since they extend beyond popover bounds)
+  useEffect(() => {
+    if (!open || (!showLanguages && !showThemes)) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // If clicking outside the entire popover area, close everything
+      if (!target.closest('[data-profile-dropdown]')) {
+        setOpen(false);
+        setShowLanguages(false);
+        setShowThemes(false);
+        setLangSearch("");
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open, showLanguages, showThemes]);
+
   const handleSelectLanguage = (code: string) => {
     setSelectedLang(code);
     localStorage.setItem("app-language", code);
@@ -112,6 +129,10 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   );
 
   const handleOpenChange = (isOpen: boolean) => {
+    // Don't close if a sub-panel is open (clicks on sub-panels are outside PopoverContent bounds)
+    if (!isOpen && (showLanguages || showThemes)) {
+      return;
+    }
     setOpen(isOpen);
     if (!isOpen) {
       setShowLanguages(false);
@@ -140,7 +161,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
         className="w-80 p-0 bg-background shadow-xl border z-[200] overflow-visible"
         sideOffset={8}
       >
-        <div className="relative">
+        <div className="relative" data-profile-dropdown>
           {/* Language Sub-Panel - floats to the left */}
           {showLanguages && (
             <div className="absolute right-full top-0 mr-2 w-64 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
