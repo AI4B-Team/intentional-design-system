@@ -161,7 +161,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
         className="w-80 p-0 bg-background shadow-xl border z-[200] overflow-visible"
         sideOffset={8}
       >
-        <div className="relative">
+        <div className="relative" data-profile-dropdown>
           {/* Language Sub-Panel - floats to the left */}
           {showLanguages && (
             <div className="absolute right-full top-0 mr-2 w-64 bg-background border border-border rounded-lg shadow-xl z-[200] animate-in fade-in-0 slide-in-from-right-2 duration-200">
