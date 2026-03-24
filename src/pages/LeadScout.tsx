@@ -178,23 +178,20 @@ export default function LeadScout() {
       },
       {
         onSuccess: (job) => {
-          runScrape.mutate({
-            query: searchQuery,
-            sources: selectedSources,
-            jobId: job.id,
-          });
+          runScrape.mutate(
+            {
+              query: searchQuery,
+              sources: selectedSources,
+              jobId: job.id,
+            },
+            {
+              onSuccess: () => setActiveTab("leads"),
+            }
+          );
         },
       }
     );
   };
-
-  return (
-    <PageLayout>
-      <PageHeader
-        title="AI Lead Scout"
-        description="Describe what leads you're looking for and AI will search the web, scrape listings, and deliver enriched leads"
-        className="mb-6"
-      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-6">
