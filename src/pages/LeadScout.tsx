@@ -38,10 +38,13 @@ import { useScrapeJobs, ScrapeJob, ScrapedLead } from "@/hooks/useScrapeJobs";
 import { cn } from "@/lib/utils";
 
 const SOURCE_OPTIONS = [
+  { value: "all_web", label: "All Web (Any Site)", icon: "🌐" },
   { value: "craigslist", label: "Craigslist", icon: "🏠" },
   { value: "facebook", label: "Facebook Marketplace", icon: "📘" },
   { value: "zillow", label: "Zillow FSBO", icon: "🏡" },
   { value: "realtor", label: "Realtor.com", icon: "🔑" },
+  { value: "offerup", label: "OfferUp", icon: "🛒" },
+  { value: "forsalebyowner", label: "ForSaleByOwner.com", icon: "🏘️" },
 ];
 
 function LeadCard({ lead, onImport }: { lead: ScrapedLead; onImport: () => void }) {
