@@ -516,6 +516,65 @@ export type Database = {
           },
         ]
       }
+      buy_boxes: {
+        Row: {
+          created_at: string | null
+          criteria: Json | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          max_daily_offers: number | null
+          name: string
+          offer_formula: string | null
+          offer_percentage: number | null
+          organization_id: string | null
+          total_deals_closed: number | null
+          total_offers_sent: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          criteria?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          max_daily_offers?: number | null
+          name: string
+          offer_formula?: string | null
+          offer_percentage?: number | null
+          organization_id?: string | null
+          total_deals_closed?: number | null
+          total_offers_sent?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          criteria?: Json | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          max_daily_offers?: number | null
+          name?: string
+          offer_formula?: string | null
+          offer_percentage?: number | null
+          organization_id?: string | null
+          total_deals_closed?: number | null
+          total_offers_sent?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buy_boxes_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       buyer_portal_sessions: {
         Row: {
           buyer_id: string
@@ -6324,6 +6383,7 @@ export type Database = {
       organizations: {
         Row: {
           address: string | null
+          automation_mode: string | null
           billing_email: string | null
           city: string | null
           created_at: string | null
@@ -6345,6 +6405,7 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          automation_mode?: string | null
           billing_email?: string | null
           city?: string | null
           created_at?: string | null
@@ -6366,6 +6427,7 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          automation_mode?: string | null
           billing_email?: string | null
           city?: string | null
           created_at?: string | null
@@ -7725,6 +7787,189 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      scrape_jobs: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          filters: Json | null
+          id: string
+          is_active: boolean | null
+          is_shared: boolean | null
+          last_run_at: string | null
+          last_run_results: number | null
+          name: string
+          organization_id: string | null
+          query: string | null
+          schedule_interval: string | null
+          sources: string[] | null
+          total_leads_found: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_shared?: boolean | null
+          last_run_at?: string | null
+          last_run_results?: number | null
+          name: string
+          organization_id?: string | null
+          query?: string | null
+          schedule_interval?: string | null
+          sources?: string[] | null
+          total_leads_found?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          filters?: Json | null
+          id?: string
+          is_active?: boolean | null
+          is_shared?: boolean | null
+          last_run_at?: string | null
+          last_run_results?: number | null
+          name?: string
+          organization_id?: string | null
+          query?: string | null
+          schedule_interval?: string | null
+          sources?: string[] | null
+          total_leads_found?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scrape_jobs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scraped_leads: {
+        Row: {
+          address: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          city: string | null
+          contact_email: string | null
+          contact_name: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          enrichment_data: Json | null
+          id: string
+          images: string[] | null
+          is_enriched: boolean | null
+          is_imported: boolean | null
+          organization_id: string | null
+          price: number | null
+          property_id: string | null
+          property_type: string | null
+          raw_data: Json | null
+          scrape_job_id: string | null
+          source_name: string | null
+          source_url: string | null
+          sqft: number | null
+          state: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          zip: string | null
+        }
+        Insert: {
+          address?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          images?: string[] | null
+          is_enriched?: boolean | null
+          is_imported?: boolean | null
+          organization_id?: string | null
+          price?: number | null
+          property_id?: string | null
+          property_type?: string | null
+          raw_data?: Json | null
+          scrape_job_id?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          zip?: string | null
+        }
+        Update: {
+          address?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          contact_email?: string | null
+          contact_name?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          enrichment_data?: Json | null
+          id?: string
+          images?: string[] | null
+          is_enriched?: boolean | null
+          is_imported?: boolean | null
+          organization_id?: string | null
+          price?: number | null
+          property_id?: string | null
+          property_type?: string | null
+          raw_data?: Json | null
+          scrape_job_id?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          sqft?: number | null
+          state?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          zip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scraped_leads_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scraped_leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scraped_leads_scrape_job_id_fkey"
+            columns: ["scrape_job_id"]
+            isOneToOne: false
+            referencedRelation: "scrape_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_leads: {
         Row: {
