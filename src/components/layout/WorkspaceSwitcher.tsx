@@ -24,8 +24,8 @@ interface Workspace {
 
 // Mock workspaces - in real implementation, fetch from database
 const mockWorkspaces: Workspace[] = [
-  { id: "1", name: "Brian's Space", initial: "B", color: "bg-emerald-500" },
-  { id: "2", name: "Dolmar", initial: "D", color: "bg-orange-500" },
+  { id: "1", name: "Dolmar", initial: "D", color: "bg-orange-500" },
+  { id: "2", name: "Brian's Space", initial: "B", color: "bg-emerald-500" },
 ];
 
 interface WorkspaceSwitcherProps {
