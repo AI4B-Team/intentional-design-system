@@ -43,6 +43,32 @@ interface AppItem {
 }
 
 const apps: AppItem[] = [
+  // AI Lead Scout
+  {
+    id: "lead-scout",
+    name: "AI Lead Scout",
+    description: "Describe what leads you want and AI scrapes Craigslist, Facebook, Zillow and more — auto-enriched and ready to import",
+    icon: Search,
+    iconBg: "bg-cyan-100",
+    iconColor: "text-cyan-600",
+    href: "/tools/lead-scout",
+    category: "data",
+    isFeatured: true,
+    isNew: true,
+  },
+  // Auto-Offer Engine
+  {
+    id: "auto-offer",
+    name: "Auto-Offer Engine",
+    description: "Define buy boxes and let AI match properties, generate offers, and send them automatically",
+    icon: Sparkles,
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+    href: "/tools/auto-offer",
+    category: "operations",
+    isFeatured: true,
+    isNew: true,
+  },
   // AI Acquisition Agent
   {
     id: "ai-agent",

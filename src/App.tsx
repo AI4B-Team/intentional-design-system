@@ -148,6 +148,8 @@ const Documents = React.lazy(() => import("./pages/Documents"));
 const Apps = React.lazy(() => import("./pages/Apps"));
 const Signatures = React.lazy(() => import("./pages/apps/Signatures"));
 const AppTemplates = React.lazy(() => import("./pages/AppTemplates"));
+const AutoOfferEngine = React.lazy(() => import("./pages/AutoOfferEngine"));
+const LeadScout = React.lazy(() => import("./pages/LeadScout"));
 const BuyerRegisterLazy = React.lazy(() => import("./pages/buyer").then(m => ({ default: m.BuyerRegister })));
 const BuyerLoginLazy = React.lazy(() => import("./pages/buyer").then(m => ({ default: m.BuyerLogin })));
 const BuyerAuthCallbackLazy = React.lazy(() => import("./pages/buyer").then(m => ({ default: m.BuyerAuthCallback })));
@@ -300,6 +302,8 @@ const App = () => (
             <Route path="/tools/offer-blaster" element={<ProtectedRoute><OfferBlaster /></ProtectedRoute>} />
             <Route path="/tools/offer-templates" element={<ProtectedRoute><OfferTemplates /></ProtectedRoute>} />
             <Route path="/tools/property-scout" element={<ProtectedRoute><PropertyScout /></ProtectedRoute>} />
+            <Route path="/tools/auto-offer" element={<ProtectedRoute><AutoOfferEngine /></ProtectedRoute>} />
+            <Route path="/tools/lead-scout" element={<ProtectedRoute><LeadScout /></ProtectedRoute>} />
             <Route path="/d4d" element={<ProtectedRoute><D4D /></ProtectedRoute>} />
             <Route path="/d4d/properties" element={<ProtectedRoute><D4DProperties /></ProtectedRoute>} />
             <Route path="/d4d/properties/:id" element={<ProtectedRoute><D4DPropertyDetail /></ProtectedRoute>} />
