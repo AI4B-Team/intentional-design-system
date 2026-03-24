@@ -60,10 +60,37 @@ Deno.serve(async (req) => {
 
     const orgId = membership?.organization_id;
 
-    // Use Firecrawl search to find listings
-    const searchTerms = sources?.length
-      ? sources.map((s: string) => `site:${s === 'craigslist' ? 'craigslist.org' : s === 'facebook' ? 'facebook.com/marketplace' : s} ${query}`)
-      : [query];
+    // Build search terms - map source names to site: filters
+    const siteMap: Record<string, string> = {
+      craigslist: 'craigslist.org',
+      facebook: 'facebook.com/marketplace',
+      zillow: 'zillow.com',
+      realtor: 'realtor.com',
+      offerup: 'offerup.com',
+      forsalebyowner: 'forsalebyowner.com',
+    };
+
+    let searchTerms: string[];
+    const filteredSources = (sources || []).filter((s: string) => s !== 'all_web');
+    const includesAllWeb = !sources?.length || sources.includes('all_web');
+
+    if (includesAllWeb && filteredSources.length === 0) {
+      // Search the entire web with no site restriction
+      searchTerms = [query];
+    } else {
+      searchTerms = [];
+      // Add site-specific searches
+      for (const s of filteredSources) {
+        const site = siteMap[s];
+        if (site) {
+          searchTerms.push(`site:${site} ${query}`);
+        }
+      }
+      // Add a general web search if "All Web" is also selected
+      if (includesAllWeb) {
+        searchTerms.push(query);
+      }
+    }
 
     let allLeads: any[] = [];
 
