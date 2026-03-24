@@ -156,10 +156,15 @@ export default function LeadScout() {
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
-    runScrape.mutate({
-      query: searchQuery,
-      sources: selectedSources,
-    });
+    runScrape.mutate(
+      {
+        query: searchQuery,
+        sources: selectedSources,
+      },
+      {
+        onSuccess: () => setActiveTab("leads"),
+      }
+    );
   };
 
   const handleSaveAndRun = () => {
@@ -173,11 +178,16 @@ export default function LeadScout() {
       },
       {
         onSuccess: (job) => {
-          runScrape.mutate({
-            query: searchQuery,
-            sources: selectedSources,
-            jobId: job.id,
-          });
+          runScrape.mutate(
+            {
+              query: searchQuery,
+              sources: selectedSources,
+              jobId: job.id,
+            },
+            {
+              onSuccess: () => setActiveTab("leads"),
+            }
+          );
         },
       }
     );
