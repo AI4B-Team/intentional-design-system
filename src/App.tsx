@@ -302,6 +302,8 @@ const App = () => (
             <Route path="/tools/offer-blaster" element={<ProtectedRoute><OfferBlaster /></ProtectedRoute>} />
             <Route path="/tools/offer-templates" element={<ProtectedRoute><OfferTemplates /></ProtectedRoute>} />
             <Route path="/tools/property-scout" element={<ProtectedRoute><PropertyScout /></ProtectedRoute>} />
+            <Route path="/tools/auto-offer" element={<ProtectedRoute><AutoOfferEngine /></ProtectedRoute>} />
+            <Route path="/tools/lead-scout" element={<ProtectedRoute><LeadScout /></ProtectedRoute>} />
             <Route path="/d4d" element={<ProtectedRoute><D4D /></ProtectedRoute>} />
             <Route path="/d4d/properties" element={<ProtectedRoute><D4DProperties /></ProtectedRoute>} />
             <Route path="/d4d/properties/:id" element={<ProtectedRoute><D4DPropertyDetail /></ProtectedRoute>} />
