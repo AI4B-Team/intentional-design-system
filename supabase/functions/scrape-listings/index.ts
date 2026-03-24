@@ -141,7 +141,13 @@ Deno.serve(async (req) => {
         if (url.includes('craigslist')) sourceName = 'craigslist';
         else if (url.includes('facebook')) sourceName = 'facebook';
         else if (url.includes('zillow')) sourceName = 'zillow';
-        else if (url.includes('realtor')) sourceName = 'realtor';
+        else if (url.includes('realtor.com')) sourceName = 'realtor';
+        else if (url.includes('offerup')) sourceName = 'offerup';
+        else if (url.includes('forsalebyowner')) sourceName = 'forsalebyowner';
+        else if (url.includes('trulia')) sourceName = 'trulia';
+        else if (url.includes('redfin')) sourceName = 'redfin';
+        else if (url.includes('homesnap')) sourceName = 'homesnap';
+        else if (url.includes('movoto')) sourceName = 'movoto';
 
         allLeads.push({
           user_id: userId,
