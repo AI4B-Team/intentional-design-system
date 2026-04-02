@@ -234,8 +234,6 @@ export default function Landing() {
 
       {/* ─── Hero (KEPT AS-IS) ─── */}
       <section className="relative pt-20 pb-24 md:pt-32 md:pb-36 overflow-hidden">
-        <div className="absolute top-0 left-1/4 h-[600px] w-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 h-[500px] w-[500px] rounded-full bg-info/5 blur-[100px] pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-semibold mb-8 animate-fade-in">
