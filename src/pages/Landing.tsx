@@ -250,7 +250,7 @@ export default function Landing() {
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "200ms" }}>
-            AI agents that find leads, call sellers, analyze deals, send offers, and close contracts — while you focus on cashing checks.
+            AI agents that find leads, call sellers, analyze deals, send offers, close contracts, and sell deals — while you focus on cashing checks.
             Replace 8+ tools with one platform built for serious investors.
           </p>
 
