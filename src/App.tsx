@@ -361,7 +361,6 @@ const App = () => (
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
 
             {/* Redirects */}
-            <Route path="/" element={<Landing />} />
             <Route path="/landing" element={<Landing />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
             <Route path="/deal-sources" element={<Navigate to="/contacts" replace />} />
