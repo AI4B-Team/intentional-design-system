@@ -19,7 +19,8 @@ interface RealEliteLogoProps {
  * Matches the REAL CREATOR logo style from AI4B-Team/real-art.
  */
 export const RealEliteLogo = React.forwardRef<HTMLDivElement, RealEliteLogoProps>(
-  ({ className, width = 140, iconOnly = false }, ref) => {
+  ({ className, width: widthProp, height, iconOnly = false, color: _color }, ref) => {
+    const width = widthProp ?? (height ? height * (140 / 24) : 140);
     const scale = width / 140;
 
     if (iconOnly) {
