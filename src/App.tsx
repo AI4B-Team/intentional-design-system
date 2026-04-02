@@ -22,6 +22,7 @@ import { BuyerAuthProvider } from "./contexts/BuyerAuthContext";
 // ---------------------------------------------------------------------------
 // Lazy-loaded page imports — each page is code-split into its own chunk.
 // ---------------------------------------------------------------------------
+const Landing = React.lazy(() => import("./pages/Landing"));
 const Login = React.lazy(() => import("./pages/Login"));
 const Signup = React.lazy(() => import("./pages/Signup"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
