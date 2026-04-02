@@ -5,6 +5,10 @@ interface RealEliteLogoProps {
   className?: string;
   /** Width of the logo badge in pixels */
   width?: number;
+  /** @deprecated Use width instead. Kept for backward compat — maps to width. */
+  height?: number;
+  /** Color prop kept for backward compat (ignored — uses design tokens) */
+  color?: string;
   /** Show icon-only mode (just the "RE" mark) */
   iconOnly?: boolean;
 }
