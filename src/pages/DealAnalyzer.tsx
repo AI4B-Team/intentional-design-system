@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,57 +8,73 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Sparkles,
   BarChart3,
-  TrendingUp,
-  Users,
-  Home,
-  Zap,
   History,
-  BookmarkPlus,
-  FileText,
+  Home,
+  MapPin,
+  Calendar,
+  TrendingUp,
+  Building,
+  DollarSign,
+  Plus,
+  RefreshCw,
+  Download,
+  Share2,
+  ArrowRight,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
+import { cn } from "@/lib/utils";
+import { AddressInput } from "@/components/deal-analyzer/AddressInput";
 import {
-  CalculatorSelector,
-  AddressInput,
-  DealInputForm,
-  AnalysisReportComponent,
-  AnalyzingState,
-  StrategyComparison,
-  ScoreBreakdown,
-  QuickRulesCheck,
-  RecentComps,
-  ScenarioSliders,
-  CalculatorType,
-  DealInput,
-  AnalysisReport,
-  CALCULATOR_OPTIONS,
-  ScenarioAdjustments,
-} from "@/components/deal-analyzer";
+  CinematicLoading,
+  ARVHero,
+  StrategyScorecard,
+  EditableMetricsPanel,
+} from "@/components/deal-intelligence";
+import type { DealIntelligenceResult, EditableMetrics, DealStrategy } from "@/components/deal-intelligence/types";
 
 type ViewState = "input" | "analyzing" | "report";
-type InputTab = "details" | "scenarios" | "rules";
 
-const DEFAULT_INPUT: DealInput = {
-  address: "",
-  askingPrice: 0,
-  propertyType: "single_family",
-};
+function fmt(value: number): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value);
+}
 
 export default function DealAnalyzer() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [viewState, setViewState] = useState<ViewState>("input");
-  const [calculatorType, setCalculatorType] = useState<CalculatorType>("flip");
-  const [dealInput, setDealInput] = useState<DealInput>(DEFAULT_INPUT);
-  const [report, setReport] = useState<AnalysisReport | null>(null);
-  const [inputTab, setInputTab] = useState<InputTab>("details");
-  const [scenarioAdjustments, setScenarioAdjustments] = useState<ScenarioAdjustments | null>(null);
+  const [address, setAddress] = useState("");
+  const [activeTab, setActiveTab] = useState("analysis");
+  const [result, setResult] = useState<DealIntelligenceResult | null>(null);
+  const [editableMetrics, setEditableMetrics] = useState<EditableMetrics>({
+    arv: 0,
+    asIsValue: 0,
+    mortgageBalance: 0,
+    repairEstimate: 0,
+  });
 
-  const handleInputChange = (data: Partial<DealInput>) => {
-    setDealInput((prev) => ({ ...prev, ...data }));
-  };
+  // Analysis history
+  const { data: historyItems, refetch: refetchHistory } = useQuery({
+    queryKey: ["deal-analyses-history", user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from("deal_analyses")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
 
-  const handleAnalyze = async () => {
-    if (!dealInput.address.trim()) {
+  const handleAnalyze = useCallback(async () => {
+    if (!address.trim()) {
       toast.error("Please enter a property address");
       return;
     }
@@ -65,76 +82,120 @@ export default function DealAnalyzer() {
     setViewState("analyzing");
 
     try {
-      const response = await supabase.functions.invoke("ai-deal-analyzer", {
+      const response = await supabase.functions.invoke("ai-deal-intelligence", {
         body: {
-          dealData: {
-            address: dealInput.address,
-            askingPrice: dealInput.askingPrice || 0,
-            arv: dealInput.arv,
-            repairEstimate: dealInput.repairEstimate,
-            propertyType: dealInput.propertyType,
-            exitStrategy: calculatorType,
-            monthlyRent: dealInput.monthlyRent,
-            beds: dealInput.beds,
-            baths: dealInput.baths,
-            sqft: dealInput.sqft,
-            notes: dealInput.notes,
-          },
+          address,
+          asIsValue: editableMetrics.asIsValue || null,
+          arv: editableMetrics.arv || null,
+          mortgageBalance: editableMetrics.mortgageBalance || null,
+          repairEstimate: editableMetrics.repairEstimate || null,
         },
       });
 
       if (response.error) throw response.error;
+      if (response.data?.error) throw new Error(response.data.error);
 
-      const aiResult = response.data;
-      const mappedReport: AnalysisReport = {
-        calculator: calculatorType,
-        verdict: aiResult.verdict || "moderate",
-        score: aiResult.score || 65,
-        confidence: 92,
-        summary: aiResult.summary || "Analysis complete.",
-        estimatedProfit: parseMoneyString(aiResult.estimatedProfit) || 0,
-        roi: aiResult.roi || 15,
-        maxOffer: calculateMaxOffer(dealInput, calculatorType),
-        pros: aiResult.pros || [],
-        cons: aiResult.cons || [],
-        recommendation: aiResult.recommendation || "",
-        riskLevel: aiResult.riskLevel || "Medium",
-        assignmentFee: calculatorType === "wholesale" ? 10000 : undefined,
-        monthlyCashFlow: ["rental", "brrrr", "str"].includes(calculatorType)
-          ? calculateCashFlow(dealInput)
-          : undefined,
-        capRate: ["rental", "brrrr"].includes(calculatorType)
-          ? calculateCapRate(dealInput)
-          : undefined,
-        cashOnCash: ["rental", "brrrr", "str"].includes(calculatorType) ? 12 : undefined,
-        holdingCosts: calculatorType === "flip" ? 15000 : undefined,
-        closingCosts: 8000,
-        cashOutRefi: calculatorType === "brrrr" ? calculateRefiAmount(dealInput) : undefined,
-        strRevenue: calculatorType === "str" ? (dealInput.monthlyRent || 4500) : undefined,
-        occupancyRate: calculatorType === "str" ? 72 : undefined,
-        compsUsed: 12,
-        arvEstimate: dealInput.arv || (dealInput.askingPrice ? dealInput.askingPrice * 1.3 : undefined),
-        rentEstimate: dealInput.monthlyRent || (dealInput.askingPrice ? Math.round(dealInput.askingPrice * 0.008) : undefined),
-      };
+      const data = response.data as DealIntelligenceResult;
+      setResult(data);
 
-      setReport(mappedReport);
+      // Set editable metrics from AI response
+      setEditableMetrics({
+        arv: data.arvAnalysis.arvEstimate,
+        asIsValue: data.propertyProfile.estimatedValue,
+        mortgageBalance: data.mortgageEstimate.estimatedBalance,
+        repairEstimate: data.strategies[0]?.dealNumbers.repairCosts || 25000,
+      });
+
+      // Save to deal_analyses
+      if (user?.id) {
+        const topStrategy = [...data.strategies].sort((a, b) => b.score - a.score)[0];
+        await supabase.from("deal_analyses").insert({
+          user_id: user.id,
+          name: `${address} Intelligence Report`,
+          analysis_type: "creative" as any,
+          address,
+          arv: data.arvAnalysis.arvEstimate,
+          purchase_price: topStrategy?.offerPrice || data.propertyProfile.estimatedValue,
+          repair_estimate: topStrategy?.dealNumbers.repairCosts || 0,
+          net_profit: topStrategy?.projectedProfit || 0,
+          roi_percentage: topStrategy ? (topStrategy.projectedProfit / (topStrategy.cashNeeded || 1)) * 100 : 0,
+          status: "analyzing",
+          beds: data.propertyProfile.beds,
+          baths: data.propertyProfile.baths,
+          sqft: data.propertyProfile.sqft,
+          year_built: data.propertyProfile.yearBuilt,
+          property_type: data.propertyProfile.propertyType,
+        });
+        refetchHistory();
+      }
+
       setViewState("report");
-      toast.success("Analysis complete!");
+      toast.success("Deal intelligence report ready!");
     } catch (error) {
       console.error("Analysis error:", error);
       toast.error("Failed to analyze deal. Please try again.");
       setViewState("input");
     }
+  }, [address, editableMetrics, user?.id, refetchHistory]);
+
+  const handleSendOffer = (strategy: DealStrategy) => {
+    // Write deal data to localStorage for Offer Blaster
+    const offerData = {
+      address,
+      strategy: strategy.name,
+      offerPrice: strategy.offerPrice,
+      projectedProfit: strategy.projectedProfit,
+      ownerName: "",
+      arv: editableMetrics.arv,
+      repairEstimate: editableMetrics.repairEstimate,
+      mortgageBalance: editableMetrics.mortgageBalance,
+      sellerPitch: strategy.sellerPitch,
+      closeTimeline: strategy.closeTimeline,
+      documents: getDocumentsForStrategy(strategy.name),
+      createdAt: new Date().toISOString(),
+    };
+    localStorage.setItem("offerBlasterDeal", JSON.stringify(offerData));
+    toast.success(`Deal loaded for ${strategy.name} offer — redirecting to Offer Blaster`);
+    navigate("/tools/offer-blaster");
+  };
+
+  const handleAddToPipeline = async () => {
+    if (!user?.id || !result) return;
+    try {
+      const { error } = await supabase.from("properties").insert({
+        user_id: user.id,
+        address,
+        arv: result.arvAnalysis.arvEstimate,
+        asking_price: result.propertyProfile.estimatedValue,
+        repair_estimate: editableMetrics.repairEstimate,
+        beds: result.propertyProfile.beds,
+        baths: result.propertyProfile.baths,
+        sqft: result.propertyProfile.sqft,
+        year_built: result.propertyProfile.yearBuilt,
+        property_type: result.propertyProfile.propertyType,
+        status: "new",
+        source: "deal_analyzer",
+      });
+      if (error) throw error;
+      toast.success("Property added to pipeline!");
+    } catch (error) {
+      toast.error("Failed to add to pipeline");
+    }
   };
 
   const handleNewAnalysis = () => {
     setViewState("input");
-    setDealInput(DEFAULT_INPUT);
-    setReport(null);
+    setAddress("");
+    setResult(null);
+    setActiveTab("analysis");
   };
 
-  const calculatorInfo = CALCULATOR_OPTIONS.find((c) => c.id === calculatorType);
-  const hasInputData = dealInput.askingPrice > 0 || (dealInput.arv && dealInput.arv > 0);
+  const verdictColors = {
+    strong: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    moderate: "bg-amber-100 text-amber-700 border-amber-200",
+    weak: "bg-orange-100 text-orange-700 border-orange-200",
+    pass: "bg-red-100 text-red-700 border-red-200",
+  };
 
   return (
     <AppLayout>
@@ -146,192 +207,210 @@ export default function DealAnalyzer() {
               <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">Deal Analyzer</h1>
+              <h1 className="text-2xl font-bold text-foreground">Deal Intelligence</h1>
               <p className="text-muted-foreground">
-                AI-powered investment analysis in under 30 seconds
+                Drop an address, get a complete deal report with 6 exit strategies
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-4 text-small text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-4 w-4 text-primary" />
-                <span><strong className="text-foreground">247</strong> analyzed today</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" />
-                <span><strong className="text-foreground">2,000+</strong> investors</span>
-              </div>
+          {viewState === "report" && (
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" icon={<Download className="h-4 w-4" />}>Export</Button>
+              <Button variant="outline" size="sm" icon={<Share2 className="h-4 w-4" />}>Share</Button>
+              <Button variant="outline" size="sm" onClick={handleNewAnalysis} icon={<RefreshCw className="h-4 w-4" />}>
+                New Analysis
+              </Button>
             </div>
-            <Button variant="outline" size="sm" icon={<History className="h-4 w-4" />}>
-              History
-            </Button>
-          </div>
+          )}
         </div>
 
+        {/* Address Input - Always visible at top */}
+        <Card className="p-6">
+          <AddressInput
+            value={address}
+            onChange={setAddress}
+            onAnalyze={handleAnalyze}
+            isAnalyzing={viewState === "analyzing"}
+          />
+        </Card>
+
+        {/* Content based on view state */}
         {viewState === "input" && (
-          <>
-            {/* Calculator Selection */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-foreground">
-                  Select Analysis Type
-                </h2>
-                <Badge variant="secondary" size="sm" className="gap-1">
-                  <Zap className="h-3 w-3" />
-                  AI-Powered
-                </Badge>
-              </div>
-              <CalculatorSelector
-                selected={calculatorType}
-                onSelect={setCalculatorType}
-              />
-            </div>
-
-            {/* Address Input */}
-            <Card className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <div
-                  className={`h-8 w-8 rounded-lg bg-gradient-to-br ${calculatorInfo?.color} flex items-center justify-center`}
-                >
-                  <Home className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">{calculatorInfo?.name} Analysis</h3>
-                  <p className="text-tiny text-muted-foreground">{calculatorInfo?.description}</p>
-                </div>
-              </div>
-
-              <AddressInput
-                value={dealInput.address}
-                onChange={(address) => handleInputChange({ address })}
-                onAnalyze={handleAnalyze}
-                isAnalyzing={false}
-              />
-            </Card>
-
-            {/* Main Content Grid */}
-            <div className="grid lg:grid-cols-3 gap-6">
-              {/* Left Column - Input & Options */}
-              <div className="lg:col-span-2 space-y-6">
-                <Tabs value={inputTab} onValueChange={(v) => setInputTab(v as InputTab)}>
-                  <TabsList className="mb-4">
-                    <TabsTrigger value="details" className="gap-2">
-                      <FileText className="h-4 w-4" />
-                      Deal Details
-                    </TabsTrigger>
-                    <TabsTrigger value="scenarios" className="gap-2">
-                      <TrendingUp className="h-4 w-4" />
-                      Scenarios
-                    </TabsTrigger>
-                    <TabsTrigger value="rules" className="gap-2">
-                      <BarChart3 className="h-4 w-4" />
-                      Rules Check
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value="details" className="mt-0 space-y-6">
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <DealInputForm
-                        data={dealInput}
-                        onChange={handleInputChange}
-                        calculatorType={calculatorType}
-                      />
-                      
-                      {/* Quick Tips */}
-                      <Card className="p-5 bg-surface-secondary/50">
-                        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                          <Sparkles className="h-4 w-4 text-primary" />
-                          {calculatorInfo?.name} Quick Tips
-                        </h3>
-                        <div className="space-y-3">
-                          {getTipsForCalculator(calculatorType).map((tip, i) => (
-                            <div key={i} className="flex items-start gap-2 text-small">
-                              <Badge variant="secondary" size="sm" className="mt-0.5 flex-shrink-0">
-                                {i + 1}
-                              </Badge>
-                              <span className="text-muted-foreground">{tip}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </Card>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="scenarios" className="mt-0">
-                    <ScenarioSliders
-                      dealInput={dealInput}
-                      calculatorType={calculatorType}
-                      onChange={setScenarioAdjustments}
-                    />
-                  </TabsContent>
-
-                  <TabsContent value="rules" className="mt-0">
-                    <QuickRulesCheck
-                      dealInput={dealInput}
-                      calculatorType={calculatorType}
-                    />
-                  </TabsContent>
-                </Tabs>
-
-                {/* Strategy Comparison */}
-                {hasInputData && (
-                  <StrategyComparison
-                    dealInput={dealInput}
-                    onSelectStrategy={setCalculatorType}
-                  />
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-4">
+              <TabsTrigger value="analysis" className="gap-2">
+                <Sparkles className="h-4 w-4" />
+                New Analysis
+              </TabsTrigger>
+              <TabsTrigger value="history" className="gap-2">
+                <History className="h-4 w-4" />
+                Analysis History
+                {historyItems && historyItems.length > 0 && (
+                  <Badge variant="secondary" size="sm" className="ml-1">{historyItems.length}</Badge>
                 )}
-              </div>
+              </TabsTrigger>
+            </TabsList>
 
-              {/* Right Column - Comps & Analysis Preview */}
-              <div className="space-y-6">
-                <RecentComps subjectAddress={dealInput.address} />
-
-                {/* Analyze CTA */}
-                <Card className="p-5 bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
-                  <div className="text-center">
-                    <Sparkles className="h-8 w-8 text-primary mx-auto mb-3" />
-                    <h3 className="font-semibold text-foreground mb-2">Ready to Analyze?</h3>
-                    <p className="text-small text-muted-foreground mb-4">
-                      Get AI-powered insights with ARV estimates, profit projections, and risk assessment.
+            <TabsContent value="analysis" className="mt-0">
+              {/* Getting Started */}
+              <div className="grid md:grid-cols-3 gap-6">
+                <Card className="p-6 text-center col-span-full bg-gradient-to-br from-surface-secondary/50 to-background">
+                  <div className="max-w-2xl mx-auto">
+                    <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <Sparkles className="h-8 w-8 text-primary" />
+                    </div>
+                    <h2 className="text-xl font-bold text-foreground mb-2">
+                      Enter Any Property Address
+                    </h2>
+                    <p className="text-muted-foreground mb-6 max-w-lg mx-auto">
+                      Our AI pulls public records, calculates ARV from comparable sales, estimates the mortgage balance, 
+                      and scores 6 creative financing strategies — all in under 15 seconds.
                     </p>
-                    <Button
-                      onClick={handleAnalyze}
-                      disabled={!dealInput.address.trim()}
-                      className="w-full"
-                      icon={<Sparkles className="h-4 w-4" />}
-                    >
-                      Analyze Deal
-                    </Button>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left max-w-lg mx-auto">
+                      {[
+                        { icon: Home, label: "Property Profile" },
+                        { icon: BarChart3, label: "ARV & Comps" },
+                        { icon: DollarSign, label: "Mortgage Estimate" },
+                        { icon: TrendingUp, label: "6 Exit Strategies" },
+                        { icon: Building, label: "Seller Pitch Scripts" },
+                        { icon: ArrowRight, label: "Offer Blaster Bridge" },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-2 text-small text-muted-foreground">
+                          <item.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                          {item.label}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </Card>
-
-                {/* Save Template */}
-                <Button variant="outline" className="w-full" icon={<BookmarkPlus className="h-4 w-4" />}>
-                  Save as Template
-                </Button>
               </div>
-            </div>
-          </>
+            </TabsContent>
+
+            <TabsContent value="history" className="mt-0">
+              <AnalysisHistory
+                items={historyItems || []}
+                onSelect={(item) => {
+                  setAddress(item.address || "");
+                  // Re-run analysis for this address
+                }}
+                onDelete={async (id) => {
+                  await supabase.from("deal_analyses").delete().eq("id", id);
+                  refetchHistory();
+                  toast.success("Analysis deleted");
+                }}
+              />
+            </TabsContent>
+          </Tabs>
         )}
 
         {viewState === "analyzing" && (
-          <AnalyzingState address={dealInput.address} />
+          <CinematicLoading address={address} />
         )}
 
-        {viewState === "report" && report && (
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <AnalysisReportComponent
-                report={report}
-                address={dealInput.address}
-                onNewAnalysis={handleNewAnalysis}
-              />
+        {viewState === "report" && result && (
+          <div className="space-y-6">
+            {/* Verdict Banner */}
+            <div className="flex items-center gap-4">
+              <Badge className={cn("text-sm px-3 py-1 border", verdictColors[result.overallVerdict])}>
+                {result.overallVerdict === "strong" ? "🔥 Strong Deal" :
+                 result.overallVerdict === "moderate" ? "⚡ Moderate Deal" :
+                 result.overallVerdict === "weak" ? "⚠️ Weak Deal" : "🚫 Pass"}
+              </Badge>
+              <span className="text-muted-foreground text-small">{result.summary}</span>
+              <div className="ml-auto flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={handleAddToPipeline} icon={<Plus className="h-4 w-4" />}>
+                  Add to Pipeline
+                </Button>
+              </div>
             </div>
-            <div className="space-y-6">
-              <ScoreBreakdown totalScore={report.score} />
-              <RecentComps subjectAddress={dealInput.address} />
+
+            {/* Property Profile Bar */}
+            <Card className="p-4">
+              <div className="flex flex-wrap items-center gap-4 text-small">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-foreground">{address}</span>
+                </div>
+                <div className="flex items-center gap-4 text-muted-foreground">
+                  <span>{result.propertyProfile.beds} bed / {result.propertyProfile.baths} bath</span>
+                  <span>{result.propertyProfile.sqft?.toLocaleString()} sqft</span>
+                  <span>Built {result.propertyProfile.yearBuilt}</span>
+                  <span className="capitalize">{result.propertyProfile.propertyType}</span>
+                  <Badge variant={result.propertyProfile.marketTrend === "appreciating" ? "success" : result.propertyProfile.marketTrend === "stable" ? "secondary" : "warning"} size="sm">
+                    {result.propertyProfile.marketTrend === "appreciating" ? "↑" : result.propertyProfile.marketTrend === "stable" ? "→" : "↓"} {result.propertyProfile.marketTrend}
+                  </Badge>
+                </div>
+                <div className="ml-auto flex items-center gap-3">
+                  <div className="text-right">
+                    <div className="text-tiny text-muted-foreground">Mortgage Est.</div>
+                    <div className="font-semibold text-foreground tabular-nums">{fmt(result.mortgageEstimate.estimatedBalance)}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-tiny text-muted-foreground">{result.mortgageEstimate.estimatedRate}% / {result.mortgageEstimate.loanType}</div>
+                    <div className="font-medium text-muted-foreground tabular-nums">{fmt(result.mortgageEstimate.estimatedPayment)}/mo</div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Main Content */}
+            <div className="grid lg:grid-cols-[1fr_280px] gap-6">
+              <div className="space-y-6">
+                {/* ARV Hero */}
+                <ARVHero arvAnalysis={result.arvAnalysis} />
+
+                {/* Strategy Scorecards */}
+                <StrategyScorecard
+                  strategies={result.strategies}
+                  address={address}
+                  onSendOffer={handleSendOffer}
+                />
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-4">
+                {/* Editable Metrics */}
+                <EditableMetricsPanel
+                  metrics={editableMetrics}
+                  onChange={(updated) => {
+                    setEditableMetrics(updated);
+                    toast.info("Metrics updated — re-analyze to recalculate strategies");
+                  }}
+                />
+
+                {/* Overall Score */}
+                <Card className="p-4 text-center">
+                  <div className="text-tiny text-muted-foreground uppercase tracking-wide mb-1">Deal Score</div>
+                  <div className="text-4xl font-bold text-foreground">{result.overallScore}</div>
+                  <div className="text-tiny text-muted-foreground">/100</div>
+                  <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-all",
+                        result.overallScore >= 70 ? "bg-emerald-500" : result.overallScore >= 50 ? "bg-amber-500" : "bg-red-500"
+                      )}
+                      style={{ width: `${result.overallScore}%` }}
+                    />
+                  </div>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card className="p-4 space-y-2">
+                  <h4 className="text-small font-semibold text-foreground">Quick Actions</h4>
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleAddToPipeline}>
+                    <Plus className="h-4 w-4 mr-2" /> Add to Pipeline
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={handleNewAnalysis}>
+                    <RefreshCw className="h-4 w-4 mr-2" /> Re-Analyze with Updated Metrics
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start" size="sm" onClick={() => {
+                    const top = [...result.strategies].sort((a, b) => b.score - a.score)[0];
+                    if (top) handleSendOffer(top);
+                  }}>
+                    <ArrowRight className="h-4 w-4 mr-2" /> Send Top Strategy Offer
+                  </Button>
+                </Card>
+              </div>
             </div>
           </div>
         )}
@@ -340,83 +419,85 @@ export default function DealAnalyzer() {
   );
 }
 
-// Helper functions
-function parseMoneyString(str: string | undefined): number {
-  if (!str) return 0;
-  const match = str.match(/[\d,]+/);
-  return match ? parseInt(match[0].replace(/,/g, "")) : 0;
-}
+// ---------- Analysis History Component ----------
 
-function calculateMaxOffer(input: DealInput, type: CalculatorType): number {
-  const arv = input.arv || input.askingPrice * 1.3;
-  const repairs = input.repairEstimate || 0;
-  
-  switch (type) {
-    case "wholesale":
-      return Math.round(arv * 0.7 - repairs - 10000);
-    case "flip":
-      return Math.round(arv * 0.7 - repairs);
-    case "rental":
-    case "brrrr":
-      return Math.round(arv * 0.75 - repairs);
-    default:
-      return Math.round(arv * 0.7 - repairs);
+function AnalysisHistory({
+  items,
+  onSelect,
+  onDelete,
+}: {
+  items: any[];
+  onSelect: (item: any) => void;
+  onDelete: (id: string) => void;
+}) {
+  if (items.length === 0) {
+    return (
+      <Card className="p-12 text-center">
+        <div className="h-16 w-16 rounded-full bg-surface-secondary flex items-center justify-center mx-auto mb-4">
+          <History className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold text-foreground mb-2">No Analyses Yet</h3>
+        <p className="text-muted-foreground max-w-md mx-auto">
+          Enter a property address above to create your first deal intelligence report.
+        </p>
+      </Card>
+    );
   }
+
+  return (
+    <div className="space-y-2">
+      {items.map((item) => (
+        <Card
+          key={item.id}
+          className="p-4 hover:shadow-md transition-shadow cursor-pointer"
+          onClick={() => onSelect(item)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Home className="h-5 w-5 text-primary" />
+              </div>
+              <div className="min-w-0">
+                <div className="font-medium text-foreground truncate">{item.address || item.name}</div>
+                <div className="flex items-center gap-3 text-tiny text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {formatDistanceToNow(new Date(item.created_at), { addSuffix: true })}
+                  </span>
+                  {item.arv && <span>ARV: {fmt(Number(item.arv))}</span>}
+                  {item.net_profit && (
+                    <span className={Number(item.net_profit) > 0 ? "text-emerald-600" : "text-red-600"}>
+                      Profit: {fmt(Number(item.net_profit))}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-destructive"
+              onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+            >
+              ×
+            </Button>
+          </div>
+        </Card>
+      ))}
+    </div>
+  );
 }
 
-function calculateCashFlow(input: DealInput): number {
-  const rent = input.monthlyRent || (input.askingPrice ? input.askingPrice * 0.008 : 1500);
-  const expenses = rent * 0.45;
-  const mortgage = input.askingPrice ? input.askingPrice * 0.005 : 1000;
-  return Math.round(rent - expenses - mortgage);
-}
+// ---------- Helpers ----------
 
-function calculateCapRate(input: DealInput): number {
-  const rent = input.monthlyRent || (input.askingPrice ? input.askingPrice * 0.008 : 1500);
-  const annualNOI = rent * 12 * 0.55;
-  const price = input.askingPrice || 200000;
-  return Number(((annualNOI / price) * 100).toFixed(1));
-}
-
-function calculateRefiAmount(input: DealInput): number {
-  const arv = input.arv || (input.askingPrice ? input.askingPrice * 1.3 : 300000);
-  const refiLTV = 0.75;
-  const totalInvestment = (input.askingPrice || 200000) + (input.repairEstimate || 30000);
-  return Math.round(arv * refiLTV - totalInvestment);
-}
-
-function getTipsForCalculator(type: CalculatorType): string[] {
-  const tips: Record<CalculatorType, string[]> = {
-    flip: [
-      "Use the 70% rule: Max offer = ARV × 0.7 - Repairs",
-      "Factor in 6+ months of holding costs for realistic projections",
-      "Always get multiple contractor bids before committing",
-      "Account for unexpected repairs (10-15% contingency)",
-    ],
-    wholesale: [
-      "Standard assignment fees range from $5,000 to $15,000",
-      "Build relationships with reliable cash buyers",
-      "Lock up deals at 60-65% ARV for maximum margin",
-      "Verify seller motivation before making offers",
-    ],
-    rental: [
-      "Target 1% rule: Monthly rent = 1% of purchase price",
-      "Use 8-10% vacancy rate in calculations",
-      "Include property management (8-10%) even if self-managing",
-      "Consider neighborhood appreciation potential",
-    ],
-    brrrr: [
-      "Aim to recover 100%+ of cash invested after refinance",
-      "Season loans typically require 6-12 month ownership",
-      "Conservative ARV estimates protect your cash out",
-      "Build in reserves for unexpected rehab costs",
-    ],
-    str: [
-      "Research local regulations and HOA restrictions first",
-      "Seasonality can swing income by 40-60%",
-      "Factor in furnishing costs ($15-30k typical)",
-      "Consider professional management (20-25% of revenue)",
-    ],
+function getDocumentsForStrategy(strategyName: string): string[] {
+  const docs: Record<string, string[]> = {
+    "Novation": ["LOI", "Novation Agreement", "POF"],
+    "Subject-To": ["LOI", "Subject-To Agreement", "POF"],
+    "Hybrid": ["LOI", "Novation Agreement", "Subject-To Addendum", "POF"],
+    "Seller Finance": ["LOI", "Seller Finance Agreement", "POF"],
+    "Wholesale": ["LOI", "Assignment Contract", "POF"],
+    "Fix & Flip": ["LOI", "Purchase Agreement", "POF"],
   };
-  return tips[type] || tips.flip;
+  return docs[strategyName] || ["LOI", "POF"];
 }
