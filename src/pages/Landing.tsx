@@ -203,8 +203,10 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ─── Nav ─── */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
-          <RealEliteLogo height={28} />
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-14">
+          <div className="relative z-10 -my-2">
+            <RealEliteLogo height={28} />
+          </div>
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
             <a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a>
             <a href="#features" className="hover:text-foreground transition-colors">Features</a>
