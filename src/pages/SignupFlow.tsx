@@ -392,8 +392,8 @@ export default function SignupFlow() {
 
             {/* Step: Role */}
             {step === "role" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-warning/10 text-warning border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-warning/10 text-warning border-0 text-xs">
                   <Users className="h-3 w-3 mr-1" />
                   Personalization
                 </Badge>
