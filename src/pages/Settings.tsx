@@ -39,6 +39,8 @@ import { useGHLConnection } from "@/hooks/useGHLIntegration";
 export default function Settings() {
   const { user } = useAuth();
   const { data: ghlConnection } = useGHLConnection();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "organization";
 
   const handleSaveProfile = () => {
     toast({
