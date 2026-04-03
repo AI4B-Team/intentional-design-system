@@ -593,10 +593,10 @@ export default function SignupFlow() {
 
             {/* Step: Launch */}
             {step === "launch" && (
-              <div className="space-y-6 text-center">
+              <div className="space-y-4 text-center">
                 <div className="flex justify-center">
-                  <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center">
-                    <Rocket className="h-10 w-10 text-primary-foreground" />
+                  <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center">
+                    <Rocket className="h-8 w-8 text-primary-foreground" />
                   </div>
                 </div>
                 
