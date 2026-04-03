@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { OrganizationProvider } from "@/contexts/OrganizationContext";
 import { AIVAProvider } from "@/contexts/AIVAContext";
 import { CallProvider } from "@/contexts/CallContext";
@@ -173,6 +173,13 @@ const queryClient = new QueryClient({
 // Suspense fallback — minimal loading indicator
 function SuspenseFallback() {
   return <LoadingPage />;
+}
+
+// Root redirect — landing if not logged in, dashboard if logged in
+function RootRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingPage />;
+  return <Navigate to={user ? "/dashboard" : "/landing"} replace />;
 }
 
 const App = () => (
@@ -361,7 +368,7 @@ const App = () => (
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
 
             {/* Redirects */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/landing" element={<Landing />} />
             <Route path="/markets" element={<Navigate to="/settings" replace />} />
             <Route path="/deal-sources" element={<Navigate to="/contacts" replace />} />
