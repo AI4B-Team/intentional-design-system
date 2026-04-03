@@ -206,6 +206,18 @@ export default function MarketplaceDeals() {
         {/* Lead Type Badges - shown when location is searched */}
         <LeadTypeBadges counts={leadTypeCounts} />
 
+        {/* Web Scout - inline scraping when searching */}
+        {filters.address && filters.address.trim().length > 2 && (
+          <div className="px-4 py-2">
+            <WebScoutPanel
+              compact
+              defaultQuery={`${filters.address} properties for sale`}
+              context={{ type: "general", name: filters.address }}
+              showResults
+            />
+          </div>
+        )}
+
         {/* Main Content - fills remaining height */}
         <div className="flex-1 flex overflow-hidden">
           {/* Map Section */}
