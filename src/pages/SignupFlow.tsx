@@ -550,7 +550,7 @@ export default function SignupFlow() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {FEATURES.map((feature, idx) => {
                     const Icon = feature.icon;
                     return (
