@@ -61,7 +61,7 @@ export default function Settings() {
         </div>
 
         {/* Settings Tabs */}
-        <Tabs defaultValue="organization" className="space-y-lg">
+        <Tabs defaultValue={defaultTab} className="space-y-lg">
           <TabsList className="flex-wrap">
             <TabsTrigger value="organization" className="gap-2">
               <Building2 className="h-4 w-4" />
@@ -75,10 +75,19 @@ export default function Settings() {
               <User className="h-4 w-4" />
               Profile
             </TabsTrigger>
+            <TabsTrigger value="account-defaults" className="gap-2">
+              <Building2 className="h-4 w-4" />
+              Account Defaults
+              <Badge variant="info" size="sm">New</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="gap-2">
+              <Briefcase className="h-4 w-4" />
+              Documents
+              <Badge variant="info" size="sm">New</Badge>
+            </TabsTrigger>
             <TabsTrigger value="ai" className="gap-2">
               <SettingsIcon className="h-4 w-4" />
               AI Analysis
-              <Badge variant="info" size="sm">New</Badge>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell className="h-4 w-4" />

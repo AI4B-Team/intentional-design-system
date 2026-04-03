@@ -261,6 +261,7 @@ const App = () => (
             <Route path="/capital/lenders" element={<ProtectedRoute><CapitalLenders /></ProtectedRoute>} />
             <Route path="/capital/request/new" element={<ProtectedRoute><CapitalRequestNew /></ProtectedRoute>} />
             <Route path="/capital/request/:id" element={<ProtectedRoute><CapitalRequestDetail /></ProtectedRoute>} />
+            <Route path="/setup" element={<ProtectedRoute><SetupHub /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/settings/integrations" element={<ProtectedRoute><SettingsIntegrations /></ProtectedRoute>} />
             <Route path="/settings/team" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />
