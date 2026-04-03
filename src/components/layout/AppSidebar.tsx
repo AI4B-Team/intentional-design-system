@@ -138,8 +138,8 @@ export function AppSidebar({
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between py-3 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+        <div className="flex-1 flex justify-center">
           {collapsed ? (
             <button
               onClick={onToggle}
@@ -149,12 +149,11 @@ export function AppSidebar({
               <RealEliteLogo iconOnly height={24} color="white" />
             </button>
           ) : (
-            <RealEliteLogo height={20} color="white" />
+            <RealEliteLogo width={100} color="white" />
           )}
         </div>
-        <div className="flex items-center gap-1">
-          {/* Collapse Toggle - Desktop Only */}
-          {!collapsed && (
+        {!collapsed && (
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={onToggle}
               className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
@@ -162,15 +161,14 @@ export function AppSidebar({
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>
-          )}
-          {/* Mobile close button */}
-          <button
-            onClick={onMobileClose}
-            className="lg:hidden p-1 text-slate-400 hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+            <button
+              onClick={onMobileClose}
+              className="lg:hidden p-1 text-slate-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Workspace Switcher */}
