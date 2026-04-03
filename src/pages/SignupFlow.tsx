@@ -611,7 +611,7 @@ export default function SignupFlow() {
                   </p>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-left">
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-left">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="h-4 w-4 text-warning" />
                     <span className="font-semibold text-foreground">Pro Tip</span>
