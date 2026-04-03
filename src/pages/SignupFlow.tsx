@@ -469,8 +469,8 @@ export default function SignupFlow() {
 
             {/* Step: Goals */}
             {step === "goals" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-success/10 text-success border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
                   <Target className="h-3 w-3 mr-1" />
                   Your Focus
                 </Badge>
