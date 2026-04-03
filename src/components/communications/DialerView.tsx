@@ -220,7 +220,7 @@ export function DialerView({ callingMode, setCallingMode, focusMode = false, isP
   const showAutoAdvance = callState.isDialerSessionActive && callState.autoAdvanceCountdown !== null;
 
   return (
-    <div className="flex-1 overflow-auto p-6 flex flex-col gap-5">
+    <div className="flex-1 min-h-0 overflow-y-auto p-6 flex flex-col gap-5">
       {/* Focus Mode / Power Hour Header Banner */}
       {(focusMode || isPowerHour) && (
         <div className={cn(
