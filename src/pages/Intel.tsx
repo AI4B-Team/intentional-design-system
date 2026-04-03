@@ -216,6 +216,7 @@ const TABS = [
   { key: "buyers", label: "Buyer Activity", icon: Users },
   { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
+  { key: "public-records", label: "Public Records", icon: Eye },
 ] as const;
 
 type TabKey = typeof TABS[number]["key"];
@@ -567,6 +568,15 @@ export default function Intel() {
         {activeTab === "buyers" && <BuyerIntelTab />}
         {activeTab === "compare" && <MarketCompareTab />}
         {activeTab === "campaign" && <CampaignLauncherTab />}
+        {activeTab === "public-records" && (
+          <div className="py-8 text-center">
+            <p className="text-body text-content-secondary mb-4">Full county records intelligence view</p>
+            <a href="/intel/public-records" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors">
+              <Eye size={16} />
+              Open Public Records Intelligence
+            </a>
+          </div>
+        )}
       </div>
     </PageLayout>
   );

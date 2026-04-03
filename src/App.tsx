@@ -75,6 +75,7 @@ const GHLSnapshot = React.lazy(() => import("./pages/GHLSnapshot"));
 const Install = React.lazy(() => import("./pages/Install"));
 const Onboarding = React.lazy(() => import("./pages/Onboarding"));
 const SetupHub = React.lazy(() => import("./pages/SetupHub"));
+const PublicRecords = React.lazy(() => import("./pages/PublicRecords"));
 const MailDashboard = React.lazy(() => import("./pages/MailDashboard"));
 const MailCampaigns = React.lazy(() => import("./pages/MailCampaigns"));
 const MailCampaignWizard = React.lazy(() => import("./pages/MailCampaignWizard"));
@@ -248,6 +249,7 @@ const App = () => (
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/financing" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
             <Route path="/intel" element={<ProtectedRoute><Intel /></ProtectedRoute>} />
+            <Route path="/intel/public-records" element={<ProtectedRoute><PublicRecords /></ProtectedRoute>} />
             <Route path="/marketplace" element={<ProtectedRoute><MarketplaceDeals /></ProtectedRoute>} />
             <Route path="/marketplace/deal/:id" element={<ProtectedRoute><MarketplaceDealDetail /></ProtectedRoute>} />
             <Route path="/marketplace/deal/:id/make-offer" element={<ProtectedRoute><OfferCampaignWizard /></ProtectedRoute>} />
