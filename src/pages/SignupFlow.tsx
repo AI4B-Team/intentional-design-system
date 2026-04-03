@@ -440,7 +440,7 @@ export default function SignupFlow() {
                     onChange={(e) => setPhone(e.target.value)}
                     className="h-10"
                   />
-                  <div className="flex items-start gap-2 p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <div className="flex items-start gap-2 p-2.5 bg-warning/5 border border-warning/20 rounded-lg">
                     <Zap className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-foreground">Real-Time Updates</p>
