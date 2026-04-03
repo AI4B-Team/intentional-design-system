@@ -421,8 +421,8 @@ export default function SignupFlow() {
                             : "border-border hover:border-border/80"
                         )}
                       >
-                        <p className="font-semibold text-foreground">{role.label}</p>
-                        <p className="text-sm text-muted-foreground">{role.description}</p>
+                        <p className="font-semibold text-sm text-foreground">{role.label}</p>
+                        <p className="text-xs text-muted-foreground">{role.description}</p>
                       </button>
                     ))}
                   </div>
