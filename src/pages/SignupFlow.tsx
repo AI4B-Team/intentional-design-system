@@ -503,7 +503,7 @@ export default function SignupFlow() {
                           "h-8 w-8 rounded-lg flex items-center justify-center",
                           isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex-1">
                           <p className="font-semibold text-foreground">{goal.label}</p>
