@@ -62,6 +62,7 @@ const pipelineSteps = [
   { icon: Send, label: "Offer", desc: "Auto-Offer Engine matches properties to your buy box, generates LOIs with your terms, and blasts offers to agents and owners — single or bulk." },
   { icon: FileText, label: "Contract", desc: "One click generates purchase agreements, novation contracts, POFs, and assignment docs — pre-filled with deal data, ready for e-signature." },
   { icon: Megaphone, label: "Market", desc: "Instantly blast deals to your verified cash buyer list, post to the buyer marketplace, and track interest — turning contracts into closings." },
+  { icon: DollarSign, label: "Sold", desc: "Track closings, collect assignment fees or double-close profits, and watch your dashboard update in real time — the only step where you actually show up." },
 ];
 
 /* ────────────────────────── Feature Categories (FreedomSoft-style) ────────────────────────── */
