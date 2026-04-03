@@ -216,6 +216,7 @@ const TABS = [
   { key: "buyers", label: "Buyer Activity", icon: Users },
   { key: "compare", label: "Compare Markets", icon: TrendingUp },
   { key: "campaign", label: "Campaign Launcher", icon: Megaphone },
+  { key: "public-records", label: "Public Records", icon: Eye },
 ] as const;
 
 type TabKey = typeof TABS[number]["key"];
