@@ -74,6 +74,7 @@ const ClosebotTemplates = React.lazy(() => import("./pages/ClosebotTemplates"));
 const GHLSnapshot = React.lazy(() => import("./pages/GHLSnapshot"));
 const Install = React.lazy(() => import("./pages/Install"));
 const Onboarding = React.lazy(() => import("./pages/Onboarding"));
+const SetupHub = React.lazy(() => import("./pages/SetupHub"));
 const MailDashboard = React.lazy(() => import("./pages/MailDashboard"));
 const MailCampaigns = React.lazy(() => import("./pages/MailCampaigns"));
 const MailCampaignWizard = React.lazy(() => import("./pages/MailCampaignWizard"));
