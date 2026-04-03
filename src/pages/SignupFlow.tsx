@@ -484,7 +484,7 @@ export default function SignupFlow() {
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {GOALS.map(goal => {
                     const Icon = goal.icon;
                     const isSelected = selectedGoals.includes(goal.id);
