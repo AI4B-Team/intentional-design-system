@@ -1,9 +1,12 @@
+import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout";
 import { AISettingsSection } from "@/components/ai";
 import { PortfolioPropertiesSection } from "@/components/settings/portfolio-properties-section";
 import { TeamManagementSection } from "@/components/settings/team-management-section";
 import { OrganizationSettingsSection } from "@/components/settings/organization-settings-section";
 import { BuyerProfilesSection } from "@/components/settings/buyer-profiles-section";
+import { AccountDefaultsSection } from "@/components/settings/account-defaults-section";
+import { DocumentDefaultsSection } from "@/components/settings/document-defaults-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
