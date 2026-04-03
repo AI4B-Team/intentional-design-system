@@ -371,7 +371,7 @@ export default function SignupFlow() {
                     placeholder="e.g., ABC Investments, Home Buyers LLC"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                   />
                   <p className="text-sm text-muted-foreground">
                     You can always change this later in settings.
