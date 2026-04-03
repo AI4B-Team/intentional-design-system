@@ -409,7 +409,7 @@ export default function SignupFlow() {
 
                 <div className="space-y-3">
                   <Label>Choose The One That Best Fits</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {INVESTOR_ROLES.map(role => (
                       <button
                         key={role.id}
