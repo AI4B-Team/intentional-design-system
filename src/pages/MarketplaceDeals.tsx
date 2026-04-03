@@ -9,6 +9,7 @@ import { useMockDeals } from "@/hooks/useMockDeals";
 import { useSavedDeals } from "@/hooks/useSavedDeals";
 import { useGeocodeSearch } from "@/hooks/useGeocodeSearch";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
+import { WebScoutPanel } from "@/components/lead-scout";
 import { cn } from "@/lib/utils";
 
 export type LayoutMode = "cards" | "split" | "map";
