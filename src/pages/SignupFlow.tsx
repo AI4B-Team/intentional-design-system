@@ -569,7 +569,7 @@ export default function SignupFlow() {
                         )}>
                           <Icon className={cn("h-4 w-4", feature.color)} />
                         </div>
-                        <p className="font-semibold text-foreground mb-1">{feature.label}</p>
+                        <p className="font-semibold text-sm text-foreground mb-0.5">{feature.label}</p>
                         <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                       </div>
                     );
