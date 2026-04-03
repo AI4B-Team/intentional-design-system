@@ -415,7 +415,7 @@ export default function SignupFlow() {
                         key={role.id}
                         onClick={() => setSelectedRole(role.id)}
                         className={cn(
-                          "p-4 rounded-xl text-left transition-all border-2",
+                          "p-3 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-border/80"
