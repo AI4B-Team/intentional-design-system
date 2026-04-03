@@ -138,20 +138,18 @@ export function AppSidebar({
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
-        <div className="flex items-center gap-2">
-          {collapsed ? (
-            <button
-              onClick={onToggle}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-              title="Expand sidebar"
-            >
-              <RealEliteLogo iconOnly height={24} color="white" />
-            </button>
-          ) : (
-            <RealEliteLogo height={20} color="white" />
-          )}
-        </div>
+      <div className="flex items-center justify-center py-4 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+        {collapsed ? (
+          <button
+            onClick={onToggle}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            title="Expand sidebar"
+          >
+            <RealEliteLogo iconOnly height={24} color="white" />
+          </button>
+        ) : (
+          <RealEliteLogo width={100} color="white" />
+        )}
         <div className="flex items-center gap-1">
           {/* Collapse Toggle - Desktop Only */}
           {!collapsed && (
