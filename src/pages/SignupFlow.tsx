@@ -500,7 +500,7 @@ export default function SignupFlow() {
                         )}
                       >
                         <div className={cn(
-                          "h-10 w-10 rounded-lg flex items-center justify-center",
+                          "h-8 w-8 rounded-lg flex items-center justify-center",
                           isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
                           <Icon className="h-5 w-5" />
