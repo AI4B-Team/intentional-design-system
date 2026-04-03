@@ -556,7 +556,7 @@ export default function SignupFlow() {
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
+                        className="p-3 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
                       >
                         <div className={cn(
                           "h-10 w-10 rounded-lg flex items-center justify-center mb-3",
