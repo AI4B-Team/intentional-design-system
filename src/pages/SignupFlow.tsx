@@ -506,8 +506,8 @@ export default function SignupFlow() {
                           <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-semibold text-foreground">{goal.label}</p>
-                          <p className="text-sm text-muted-foreground">{goal.description}</p>
+                          <p className="font-semibold text-sm text-foreground">{goal.label}</p>
+                          <p className="text-xs text-muted-foreground">{goal.description}</p>
                         </div>
                         {isSelected && (
                           <Check className="h-5 w-5 text-primary flex-shrink-0" />
