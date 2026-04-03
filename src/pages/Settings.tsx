@@ -320,6 +320,16 @@ export default function Settings() {
               </CardHeader>
             </Card>
           </TabsContent>
+
+          {/* Account Defaults Tab */}
+          <TabsContent value="account-defaults">
+            <AccountDefaultsSection />
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents">
+            <DocumentDefaultsSection />
+          </TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>
