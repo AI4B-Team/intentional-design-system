@@ -438,7 +438,7 @@ export default function SignupFlow() {
                     placeholder="(555) 000-0000"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                   />
                   <div className="flex items-start gap-2 p-3 bg-warning/5 border border-warning/20 rounded-lg">
                     <Zap className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
