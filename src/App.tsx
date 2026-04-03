@@ -74,6 +74,7 @@ const ClosebotTemplates = React.lazy(() => import("./pages/ClosebotTemplates"));
 const GHLSnapshot = React.lazy(() => import("./pages/GHLSnapshot"));
 const Install = React.lazy(() => import("./pages/Install"));
 const Onboarding = React.lazy(() => import("./pages/Onboarding"));
+const SetupHub = React.lazy(() => import("./pages/SetupHub"));
 const MailDashboard = React.lazy(() => import("./pages/MailDashboard"));
 const MailCampaigns = React.lazy(() => import("./pages/MailCampaigns"));
 const MailCampaignWizard = React.lazy(() => import("./pages/MailCampaignWizard"));
@@ -260,6 +261,7 @@ const App = () => (
             <Route path="/capital/lenders" element={<ProtectedRoute><CapitalLenders /></ProtectedRoute>} />
             <Route path="/capital/request/new" element={<ProtectedRoute><CapitalRequestNew /></ProtectedRoute>} />
             <Route path="/capital/request/:id" element={<ProtectedRoute><CapitalRequestDetail /></ProtectedRoute>} />
+            <Route path="/setup" element={<ProtectedRoute><SetupHub /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/settings/integrations" element={<ProtectedRoute><SettingsIntegrations /></ProtectedRoute>} />
             <Route path="/settings/team" element={<ProtectedRoute><TeamManagement /></ProtectedRoute>} />

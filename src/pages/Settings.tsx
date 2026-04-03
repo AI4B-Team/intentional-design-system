@@ -1,9 +1,12 @@
+import { useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout";
 import { AISettingsSection } from "@/components/ai";
 import { PortfolioPropertiesSection } from "@/components/settings/portfolio-properties-section";
 import { TeamManagementSection } from "@/components/settings/team-management-section";
 import { OrganizationSettingsSection } from "@/components/settings/organization-settings-section";
 import { BuyerProfilesSection } from "@/components/settings/buyer-profiles-section";
+import { AccountDefaultsSection } from "@/components/settings/account-defaults-section";
+import { DocumentDefaultsSection } from "@/components/settings/document-defaults-section";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +39,8 @@ import { useGHLConnection } from "@/hooks/useGHLIntegration";
 export default function Settings() {
   const { user } = useAuth();
   const { data: ghlConnection } = useGHLConnection();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "organization";
 
   const handleSaveProfile = () => {
     toast({
@@ -56,7 +61,7 @@ export default function Settings() {
         </div>
 
         {/* Settings Tabs */}
-        <Tabs defaultValue="organization" className="space-y-lg">
+        <Tabs defaultValue={defaultTab} className="space-y-lg">
           <TabsList className="flex-wrap">
             <TabsTrigger value="organization" className="gap-2">
               <Building2 className="h-4 w-4" />
@@ -70,10 +75,19 @@ export default function Settings() {
               <User className="h-4 w-4" />
               Profile
             </TabsTrigger>
+            <TabsTrigger value="account-defaults" className="gap-2">
+              <Building2 className="h-4 w-4" />
+              Account Defaults
+              <Badge variant="info" size="sm">New</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="gap-2">
+              <Briefcase className="h-4 w-4" />
+              Documents
+              <Badge variant="info" size="sm">New</Badge>
+            </TabsTrigger>
             <TabsTrigger value="ai" className="gap-2">
               <SettingsIcon className="h-4 w-4" />
               AI Analysis
-              <Badge variant="info" size="sm">New</Badge>
             </TabsTrigger>
             <TabsTrigger value="notifications" className="gap-2">
               <Bell className="h-4 w-4" />
@@ -305,6 +319,16 @@ export default function Settings() {
                 </div>
               </CardHeader>
             </Card>
+          </TabsContent>
+
+          {/* Account Defaults Tab */}
+          <TabsContent value="account-defaults">
+            <AccountDefaultsSection />
+          </TabsContent>
+
+          {/* Documents Tab */}
+          <TabsContent value="documents">
+            <DocumentDefaultsSection />
           </TabsContent>
         </Tabs>
       </div>

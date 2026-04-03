@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
+import { SidebarRewardsWidget } from "./SidebarRewardsWidget";
 import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
 import {
@@ -323,6 +324,9 @@ export function AppSidebar({
           </ul>
         </TooltipProvider>
       </nav>
+
+      {/* Rewards Widget */}
+      <SidebarRewardsWidget collapsed={collapsed} onMobileClose={onMobileClose} />
     </>
   );
 
