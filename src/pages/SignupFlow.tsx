@@ -345,7 +345,7 @@ export default function SignupFlow() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center p-4 lg:p-8 overflow-auto">
+        <div className="flex-1 flex items-start justify-center p-4 lg:p-8 overflow-auto">
           <div className="w-full max-w-lg">
             {/* Step: Organization */}
             {step === "organization" && (
