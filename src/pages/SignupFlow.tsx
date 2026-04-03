@@ -476,7 +476,7 @@ export default function SignupFlow() {
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     What Brings You Here?
                   </h1>
                   <p className="text-foreground-secondary">
