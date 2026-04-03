@@ -604,7 +604,7 @@ export default function SignupFlow() {
                   <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     You're Ready To Launch
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     Your workspace is set up and ready to help you find deals.
                     <br />
                     Think big — RealElite handles the complexity.
