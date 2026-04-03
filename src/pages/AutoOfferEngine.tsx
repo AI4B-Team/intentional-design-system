@@ -38,6 +38,8 @@ import { useOrganization } from "@/contexts/OrganizationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { WebScoutPanel } from "@/components/lead-scout";
+import { useScrapeJobs } from "@/hooks/useScrapeJobs";
 
 const PROPERTY_TYPES = [
   { value: "sfr", label: "Single Family" },
@@ -152,7 +154,30 @@ function CreateBuyBoxDialog({ onCreated }: { onCreated: () => void }) {
 
 function BuyBoxCard({ buyBox }: { buyBox: BuyBox }) {
   const { updateBuyBox, deleteBuyBox, runEngine } = useBuyBoxes();
+  const { runScrape } = useScrapeJobs();
   const criteria = buyBox.criteria || {};
+  const [scoutLeads, setScoutLeads] = React.useState<number | null>(null);
+
+  const handleRunWithScout = () => {
+    // Run the offer engine
+    runEngine.mutate(buyBox.id);
+    
+    // Also auto-trigger web scraping based on buy box criteria
+    const parts: string[] = [];
+    if (criteria.property_types?.length) parts.push(criteria.property_types.join(" or "));
+    if (criteria.markets?.length) parts.push(`in ${criteria.markets.join(", ")}`);
+    if (criteria.price_max) parts.push(`under $${(criteria.price_max / 1000).toFixed(0)}k`);
+    if (criteria.price_min) parts.push(`over $${(criteria.price_min / 1000).toFixed(0)}k`);
+    
+    const scoutQuery = parts.length > 0 
+      ? `${parts.join(" ")} for sale` 
+      : `${buyBox.name} properties for sale`;
+    
+    runScrape.mutate(
+      { query: scoutQuery, sources: ["craigslist", "facebook", "all_web"] },
+      { onSuccess: (data) => setScoutLeads(data?.leads_found || 0) }
+    );
+  };
 
   return (
     <Card padding="md" className="relative">
@@ -211,12 +236,17 @@ function BuyBoxCard({ buyBox }: { buyBox: BuyBox }) {
           size="sm"
           variant="default"
           className="flex-1"
-          onClick={() => runEngine.mutate(buyBox.id)}
-          disabled={runEngine.isPending}
+          onClick={handleRunWithScout}
+          disabled={runEngine.isPending || runScrape.isPending}
         >
           <Play className="h-3 w-3 mr-1" />
-          {runEngine.isPending ? "Running..." : "Run Now"}
+          {runEngine.isPending || runScrape.isPending ? "Running..." : "Run + Scout"}
         </Button>
+        {scoutLeads !== null && (
+          <Badge variant="secondary" className="text-xs self-center">
+            +{scoutLeads} web leads
+          </Badge>
+        )}
         <Button
           size="sm"
           variant="ghost"
@@ -319,6 +349,16 @@ export default function AutoOfferEngine() {
           <CreateBuyBoxDialog onCreated={() => {}} />
         </Card>
       )}
+
+      {/* Web Scout - Auto Lead Discovery */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Web Lead Scout</h2>
+        <WebScoutPanel
+          context={{ type: "buybox", name: "Auto-Offer Engine" }}
+          showResults
+          defaultSources={["craigslist", "facebook", "all_web"]}
+        />
+      </div>
     </PageLayout>
   );
 }
