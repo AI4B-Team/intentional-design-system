@@ -267,7 +267,7 @@ export function DocumentDefaultsSection() {
                 {template.source === "uploaded" && (
                   <Button
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
                     onClick={() => removeTemplate(template.id)}
                     className="text-destructive"
                   >
