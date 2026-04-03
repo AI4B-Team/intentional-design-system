@@ -175,6 +175,13 @@ function SuspenseFallback() {
   return <LoadingPage />;
 }
 
+// Root redirect — landing if not logged in, dashboard if logged in
+function RootRedirect() {
+  const { user, loading } = useAuth();
+  if (loading) return <LoadingPage />;
+  return <Navigate to={user ? "/dashboard" : "/landing"} replace />;
+}
+
 const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
