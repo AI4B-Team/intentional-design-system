@@ -345,21 +345,21 @@ export default function SignupFlow() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 flex items-start justify-center p-4 lg:p-8 overflow-auto">
-          <div className="w-full max-w-lg my-auto">
+        <div className="flex-1 flex items-start justify-center p-4 lg:py-4 lg:px-8 overflow-auto">
+          <div className="w-full max-w-lg my-auto space-y-0">
             {/* Step: Organization */}
             {step === "organization" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs">
                   <Building2 className="h-3 w-3 mr-1" />
                   Organization Setup
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Name Your Command Center
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
                   </p>
                 </div>
@@ -371,7 +371,7 @@ export default function SignupFlow() {
                     placeholder="e.g., ABC Investments, Home Buyers LLC"
                     value={orgName}
                     onChange={(e) => setOrgName(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                   />
                   <p className="text-sm text-muted-foreground">
                     You can always change this later in settings.
@@ -392,37 +392,37 @@ export default function SignupFlow() {
 
             {/* Step: Role */}
             {step === "role" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-warning/10 text-warning border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-warning/10 text-warning border-0 text-xs">
                   <Users className="h-3 w-3 mr-1" />
                   Personalization
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Tell Us About Yourself
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     We'll customize your experience based on your investing strategy. <span className="text-muted-foreground">(you can change this later)</span>
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <Label>Choose The One That Best Fits</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     {INVESTOR_ROLES.map(role => (
                       <button
                         key={role.id}
                         onClick={() => setSelectedRole(role.id)}
                         className={cn(
-                          "p-4 rounded-xl text-left transition-all border-2",
+                          "p-3 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-border/80"
                         )}
                       >
-                        <p className="font-semibold text-foreground">{role.label}</p>
-                        <p className="text-sm text-muted-foreground">{role.description}</p>
+                        <p className="font-semibold text-sm text-foreground">{role.label}</p>
+                        <p className="text-xs text-muted-foreground">{role.description}</p>
                       </button>
                     ))}
                   </div>
@@ -438,9 +438,9 @@ export default function SignupFlow() {
                     placeholder="(555) 000-0000"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="h-12"
+                    className="h-10"
                   />
-                  <div className="flex items-start gap-2 p-3 bg-warning/5 border border-warning/20 rounded-lg">
+                  <div className="flex items-start gap-2 p-2.5 bg-warning/5 border border-warning/20 rounded-lg">
                     <Zap className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-foreground">Real-Time Updates</p>
@@ -469,22 +469,22 @@ export default function SignupFlow() {
 
             {/* Step: Goals */}
             {step === "goals" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-success/10 text-success border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-success/10 text-success border-0 text-xs">
                   <Target className="h-3 w-3 mr-1" />
                   Your Focus
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     What Brings You Here?
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     Select your primary goals and we'll prioritize the right tools for you.
                   </p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {GOALS.map(goal => {
                     const Icon = goal.icon;
                     const isSelected = selectedGoals.includes(goal.id);
@@ -493,21 +493,21 @@ export default function SignupFlow() {
                         key={goal.id}
                         onClick={() => toggleGoal(goal.id)}
                         className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all border-2",
+                          "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all border-2",
                           isSelected
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-border/80"
                         )}
                       >
                         <div className={cn(
-                          "h-10 w-10 rounded-lg flex items-center justify-center",
+                          "h-8 w-8 rounded-lg flex items-center justify-center",
                           isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                         )}>
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-4 w-4" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-semibold text-foreground">{goal.label}</p>
-                          <p className="text-sm text-muted-foreground">{goal.description}</p>
+                          <p className="font-semibold text-sm text-foreground">{goal.label}</p>
+                          <p className="text-xs text-muted-foreground">{goal.description}</p>
                         </div>
                         {isSelected && (
                           <Check className="h-5 w-5 text-primary flex-shrink-0" />
@@ -535,31 +535,31 @@ export default function SignupFlow() {
 
             {/* Step: Features */}
             {step === "features" && (
-              <div className="space-y-6">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0">
+              <div className="space-y-4">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs">
                   <Sparkles className="h-3 w-3 mr-1" />
                   Your Toolkit
                 </Badge>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Your Investing Arsenal
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     Powerful tools that work together seamlessly to help you find, analyze, and close more deals.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {FEATURES.map((feature, idx) => {
                     const Icon = feature.icon;
                     return (
                       <div
                         key={idx}
-                        className="p-4 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
+                        className="p-3 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
                       >
                         <div className={cn(
-                          "h-10 w-10 rounded-lg flex items-center justify-center mb-3",
+                          "h-8 w-8 rounded-lg flex items-center justify-center mb-2",
                           feature.color === "text-primary" && "bg-primary/10",
                           feature.color === "text-success" && "bg-success/10",
                           feature.color === "text-warning" && "bg-warning/10",
@@ -567,9 +567,9 @@ export default function SignupFlow() {
                           feature.color === "text-destructive" && "bg-destructive/10",
                           feature.color === "text-brand" && "bg-brand/10"
                         )}>
-                          <Icon className={cn("h-5 w-5", feature.color)} />
+                          <Icon className={cn("h-4 w-4", feature.color)} />
                         </div>
-                        <p className="font-semibold text-foreground mb-1">{feature.label}</p>
+                        <p className="font-semibold text-sm text-foreground mb-0.5">{feature.label}</p>
                         <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
                       </div>
                     );
@@ -593,25 +593,25 @@ export default function SignupFlow() {
 
             {/* Step: Launch */}
             {step === "launch" && (
-              <div className="space-y-6 text-center">
+              <div className="space-y-4 text-center">
                 <div className="flex justify-center">
-                  <div className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center">
-                    <Rocket className="h-10 w-10 text-primary-foreground" />
+                  <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center">
+                    <Rocket className="h-8 w-8 text-primary-foreground" />
                   </div>
                 </div>
                 
                 <div>
-                  <h1 className="text-2xl lg:text-3xl font-bold text-foreground mb-2">
+                  <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     You're Ready To Launch
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     Your workspace is set up and ready to help you find deals.
                     <br />
                     Think big — RealElite handles the complexity.
                   </p>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 text-left">
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-left">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="h-4 w-4 text-warning" />
                     <span className="font-semibold text-foreground">Pro Tip</span>
