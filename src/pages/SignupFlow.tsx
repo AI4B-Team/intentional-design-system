@@ -402,7 +402,7 @@ export default function SignupFlow() {
                   <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Tell Us About Yourself
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     We'll customize your experience based on your investing strategy. <span className="text-muted-foreground">(you can change this later)</span>
                   </p>
                 </div>
