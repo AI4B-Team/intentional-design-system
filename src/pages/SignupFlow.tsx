@@ -359,7 +359,7 @@ export default function SignupFlow() {
                   <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Name Your Command Center
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     This is your main workspace where all your deals, contacts, and campaigns live. Choose a name that represents your brand or mission.
                   </p>
                 </div>
