@@ -545,7 +545,7 @@ export default function SignupFlow() {
                   <h1 className="text-xl lg:text-2xl font-bold text-foreground mb-1">
                     Your Investing Arsenal
                   </h1>
-                  <p className="text-foreground-secondary">
+                  <p className="text-sm text-foreground-secondary">
                     Powerful tools that work together seamlessly to help you find, analyze, and close more deals.
                   </p>
                 </div>
