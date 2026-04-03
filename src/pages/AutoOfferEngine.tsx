@@ -38,6 +38,8 @@ import { useOrganization } from "@/contexts/OrganizationContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { WebScoutPanel } from "@/components/lead-scout";
+import { useScrapeJobs } from "@/hooks/useScrapeJobs";
 
 const PROPERTY_TYPES = [
   { value: "sfr", label: "Single Family" },
