@@ -324,6 +324,9 @@ export function AppSidebar({
           </ul>
         </TooltipProvider>
       </nav>
+
+      {/* Rewards Widget */}
+      <SidebarRewardsWidget collapsed={collapsed} onMobileClose={onMobileClose} />
     </>
   );
 
