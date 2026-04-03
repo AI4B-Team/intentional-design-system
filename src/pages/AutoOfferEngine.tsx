@@ -349,6 +349,16 @@ export default function AutoOfferEngine() {
           <CreateBuyBoxDialog onCreated={() => {}} />
         </Card>
       )}
+
+      {/* Web Scout - Auto Lead Discovery */}
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Web Lead Scout</h2>
+        <WebScoutPanel
+          context={{ type: "buybox", name: "Auto-Offer Engine" }}
+          showResults
+          defaultSources={["craigslist", "facebook", "all_web"]}
+        />
+      </div>
     </PageLayout>
   );
 }
