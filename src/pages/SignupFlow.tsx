@@ -567,7 +567,7 @@ export default function SignupFlow() {
                           feature.color === "text-destructive" && "bg-destructive/10",
                           feature.color === "text-brand" && "bg-brand/10"
                         )}>
-                          <Icon className={cn("h-5 w-5", feature.color)} />
+                          <Icon className={cn("h-4 w-4", feature.color)} />
                         </div>
                         <p className="font-semibold text-foreground mb-1">{feature.label}</p>
                         <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
