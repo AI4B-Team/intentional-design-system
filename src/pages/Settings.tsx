@@ -78,12 +78,10 @@ export default function Settings() {
             <TabsTrigger value="account-defaults" className="gap-2">
               <Building2 className="h-4 w-4" />
               Account Defaults
-              <Badge variant="info" size="sm">New</Badge>
             </TabsTrigger>
             <TabsTrigger value="documents" className="gap-2">
               <Briefcase className="h-4 w-4" />
               Documents
-              <Badge variant="info" size="sm">New</Badge>
             </TabsTrigger>
             <TabsTrigger value="ai" className="gap-2">
               <SettingsIcon className="h-4 w-4" />
