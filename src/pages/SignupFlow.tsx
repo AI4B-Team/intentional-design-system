@@ -493,7 +493,7 @@ export default function SignupFlow() {
                         key={goal.id}
                         onClick={() => toggleGoal(goal.id)}
                         className={cn(
-                          "w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all border-2",
+                          "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all border-2",
                           isSelected
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-border/80"
