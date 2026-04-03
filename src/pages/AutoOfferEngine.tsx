@@ -154,7 +154,30 @@ function CreateBuyBoxDialog({ onCreated }: { onCreated: () => void }) {
 
 function BuyBoxCard({ buyBox }: { buyBox: BuyBox }) {
   const { updateBuyBox, deleteBuyBox, runEngine } = useBuyBoxes();
+  const { runScrape } = useScrapeJobs();
   const criteria = buyBox.criteria || {};
+  const [scoutLeads, setScoutLeads] = React.useState<number | null>(null);
+
+  const handleRunWithScout = () => {
+    // Run the offer engine
+    runEngine.mutate(buyBox.id);
+    
+    // Also auto-trigger web scraping based on buy box criteria
+    const parts: string[] = [];
+    if (criteria.property_types?.length) parts.push(criteria.property_types.join(" or "));
+    if (criteria.markets?.length) parts.push(`in ${criteria.markets.join(", ")}`);
+    if (criteria.price_max) parts.push(`under $${(criteria.price_max / 1000).toFixed(0)}k`);
+    if (criteria.price_min) parts.push(`over $${(criteria.price_min / 1000).toFixed(0)}k`);
+    
+    const scoutQuery = parts.length > 0 
+      ? `${parts.join(" ")} for sale` 
+      : `${buyBox.name} properties for sale`;
+    
+    runScrape.mutate(
+      { query: scoutQuery, sources: ["craigslist", "facebook", "all_web"] },
+      { onSuccess: (data) => setScoutLeads(data?.leads_found || 0) }
+    );
+  };
 
   return (
     <Card padding="md" className="relative">
