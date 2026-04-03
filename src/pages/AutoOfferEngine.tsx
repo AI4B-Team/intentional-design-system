@@ -236,12 +236,17 @@ function BuyBoxCard({ buyBox }: { buyBox: BuyBox }) {
           size="sm"
           variant="default"
           className="flex-1"
-          onClick={() => runEngine.mutate(buyBox.id)}
-          disabled={runEngine.isPending}
+          onClick={handleRunWithScout}
+          disabled={runEngine.isPending || runScrape.isPending}
         >
           <Play className="h-3 w-3 mr-1" />
-          {runEngine.isPending ? "Running..." : "Run Now"}
+          {runEngine.isPending || runScrape.isPending ? "Running..." : "Run + Scout"}
         </Button>
+        {scoutLeads !== null && (
+          <Badge variant="secondary" className="text-xs self-center">
+            +{scoutLeads} web leads
+          </Badge>
+        )}
         <Button
           size="sm"
           variant="ghost"
