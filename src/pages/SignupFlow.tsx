@@ -559,7 +559,7 @@ export default function SignupFlow() {
                         className="p-3 rounded-xl border border-border hover:border-border/80 hover:shadow-card transition-all"
                       >
                         <div className={cn(
-                          "h-10 w-10 rounded-lg flex items-center justify-center mb-3",
+                          "h-8 w-8 rounded-lg flex items-center justify-center mb-2",
                           feature.color === "text-primary" && "bg-primary/10",
                           feature.color === "text-success" && "bg-success/10",
                           feature.color === "text-warning" && "bg-warning/10",
