@@ -138,21 +138,22 @@ export function AppSidebar({
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-center py-4 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
-        {collapsed ? (
-          <button
-            onClick={onToggle}
-            className="cursor-pointer hover:opacity-80 transition-opacity"
-            title="Expand sidebar"
-          >
-            <RealEliteLogo iconOnly height={24} color="white" />
-          </button>
-        ) : (
-          <RealEliteLogo width={100} color="white" />
-        )}
-        <div className="flex items-center gap-1">
-          {/* Collapse Toggle - Desktop Only */}
-          {!collapsed && (
+      <div className="flex items-center justify-between py-3 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+        <div className="flex-1 flex justify-center">
+          {collapsed ? (
+            <button
+              onClick={onToggle}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              title="Expand sidebar"
+            >
+              <RealEliteLogo iconOnly height={24} color="white" />
+            </button>
+          ) : (
+            <RealEliteLogo width={100} color="white" />
+          )}
+        </div>
+        {!collapsed && (
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={onToggle}
               className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
@@ -160,15 +161,14 @@ export function AppSidebar({
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>
-          )}
-          {/* Mobile close button */}
-          <button
-            onClick={onMobileClose}
-            className="lg:hidden p-1 text-slate-400 hover:text-white"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+            <button
+              onClick={onMobileClose}
+              className="lg:hidden p-1 text-slate-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Workspace Switcher */}
