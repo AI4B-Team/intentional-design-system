@@ -78,7 +78,7 @@ const featureCategories = [
     badge: "Included Free",
     desc: "6 autonomous AI agents working your pipeline 24/7 — no per-minute charges, no add-ons.",
     features: [
-      { icon: Bot, name: "Speed-To-Lead AI", desc: "Calls new leads in under 15 seconds — before competitors even check their inbox." },
+      { icon: MailCheck, name: "Auto Follow-Up", desc: "AI-powered multi-channel follow-up sequences that adapt timing and messaging based on lead behavior — no leads slip through the cracks." },
       { icon: Phone, name: "Voice Agent AI", desc: "Answers & makes calls 24/7. Qualifies sellers, books appointments, transfers hot leads live." },
       { icon: MessageSquare, name: "Conversational AI", desc: "Two-way SMS that nurtures leads with full context from your CRM and deal history." },
       { icon: Brain, name: "Deal Intelligence AI", desc: "Auto-calculates ARV, scores 6 creative strategies, and writes seller pitch scripts with real numbers." },
