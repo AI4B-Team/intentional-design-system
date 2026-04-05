@@ -47,6 +47,11 @@ import {
   Handshake,
   Rocket,
   CircleDot,
+  Car,
+  Headphones,
+  Package,
+  Wrench,
+  SearchCheck,
 } from "lucide-react";
 import { useCountUp } from "@/hooks/useCountUp";
 import { useInView } from "react-intersection-observer";
