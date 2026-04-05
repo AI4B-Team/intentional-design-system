@@ -392,7 +392,7 @@ export default function Landing() {
               { icon: Send, name: "Offer Blaster", premium: true },
               { icon: FileText, name: "Digital Signature", premium: true },
               { icon: Wrench, name: "Rehab Manager" },
-              { icon: Users, name: "Cash Buyers" },
+              { icon: Users, name: "Buyer Leads" },
               { icon: Layers, name: "List Stacking" },
               { icon: SearchCheck, name: "Free Skip Tracing" },
               { icon: Mail, name: "Drip Campaigns" },
