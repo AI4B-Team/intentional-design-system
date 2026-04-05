@@ -61,7 +61,7 @@ import { cn } from "@/lib/utils";
 
 const pipelineSteps = [
   { icon: Search, label: "Find", desc: "AI scrapes every corner of the web — Zillow, Craigslist, Facebook, FSBO, MLS, and sites you don't even know exist — to surface motivated sellers before your competition." },
-  { icon: PhoneCall, label: "Contact", desc: "Speed-To-Lead AI calls new leads within 15 seconds. Voice AI answers inbound 24/7, qualifies sellers, and books appointments — no human needed." },
+  { icon: PhoneCall, label: "Contact", desc: "Voice AI answers inbound 24/7, qualifies sellers, books appointments, and transfers hot leads live — no human needed." },
   { icon: MessageSquare, label: "Follow Up", desc: "Conversational AI sends personalized SMS, email, and ringless voicemail drip sequences — relentlessly nurturing every lead until they convert or opt out." },
   { icon: Brain, label: "Analyze", desc: "Deal Intelligence AI auto-pulls comps, calculates ARV, scores 6 exit strategies (Novation, Sub-To, Wholesale, Flip, Seller Finance, Hybrid), and writes the pitch script." },
   { icon: Send, label: "Offer", desc: "Auto-Offer Engine matches properties to your buy box, generates LOIs with your terms, and blasts offers to agents and owners — single or bulk." },
@@ -78,7 +78,7 @@ const featureCategories = [
     badge: "Included Free",
     desc: "6 autonomous AI agents working your pipeline 24/7 — no per-minute charges, no add-ons.",
     features: [
-      { icon: Bot, name: "Speed-To-Lead AI", desc: "Calls new leads in under 15 seconds — before competitors even check their inbox." },
+      { icon: MailCheck, name: "Auto Follow-Up", desc: "AI-powered multi-channel follow-up sequences that adapt timing and messaging based on lead behavior — no leads slip through the cracks." },
       { icon: Phone, name: "Voice Agent AI", desc: "Answers & makes calls 24/7. Qualifies sellers, books appointments, transfers hot leads live." },
       { icon: MessageSquare, name: "Conversational AI", desc: "Two-way SMS that nurtures leads with full context from your CRM and deal history." },
       { icon: Brain, name: "Deal Intelligence AI", desc: "Auto-calculates ARV, scores 6 creative strategies, and writes seller pitch scripts with real numbers." },
@@ -142,7 +142,7 @@ const stats = [
   { value: 2847, suffix: "+", label: "Deals Closed" },
   { value: 487, prefix: "$", suffix: "M", label: "Total Funded" },
   { value: 98, suffix: "%", label: "Satisfaction" },
-  { value: 15, suffix: "s", label: "Speed-To-Lead" },
+  { value: 100, suffix: "%", label: "Auto Follow-Up" },
 ];
 
 const testimonials = [
@@ -151,12 +151,12 @@ const testimonials = [
   { name: "David R.", role: "Investor, Phoenix AZ", quote: "The deal analyzer scored a Novation strategy I never would have considered. $47K profit.", rating: 5 },
   { name: "Sarah K.", role: "Wholesaler, Houston TX", quote: "The AI Lead Scout found 43 off-market mobile homes in my market that nobody else was targeting. Closed 5 in 60 days.", rating: 5 },
   { name: "Carlos M.", role: "Novation Specialist, Miami FL", quote: "Auto-Offer Engine sent 200 offers while I slept. Woke up to 3 signed LOIs. This is the future.", rating: 5 },
-  { name: "Angela W.", role: "Land Investor, Nashville TN", quote: "Speed-to-lead AI called my inbound leads before I even saw the notification. My close rate tripled.", rating: 5 },
+  { name: "Angela W.", role: "Land Investor, Nashville TN", quote: "Auto Follow-Up kept nurturing a cold lead for 3 weeks — they finally called back and we closed a $52K deal.", rating: 5 },
 ];
 
 const comparisonRows = [
   { feature: "AI Voice Agent (24/7 Inbound + Outbound)", us: true, them: false },
-  { feature: "Speed-To-Lead (15-Second Auto-Call)", us: true, them: false },
+  { feature: "Auto Follow-Up (AI Multi-Channel)", us: true, them: false },
   { feature: "Deal Intelligence & 6-Strategy Scoring", us: true, them: false },
   { feature: "AI Lead Scout (Web Scraping)", us: true, them: false },
   { feature: "Auto-Offer Engine", us: true, them: false },
