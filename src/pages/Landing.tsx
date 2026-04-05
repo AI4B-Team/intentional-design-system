@@ -151,7 +151,7 @@ const testimonials = [
   { name: "David R.", role: "Investor, Phoenix AZ", quote: "The deal analyzer scored a Novation strategy I never would have considered. $47K profit.", rating: 5 },
   { name: "Sarah K.", role: "Wholesaler, Houston TX", quote: "The AI Lead Scout found 43 off-market mobile homes in my market that nobody else was targeting. Closed 5 in 60 days.", rating: 5 },
   { name: "Carlos M.", role: "Novation Specialist, Miami FL", quote: "Auto-Offer Engine sent 200 offers while I slept. Woke up to 3 signed LOIs. This is the future.", rating: 5 },
-  { name: "Angela W.", role: "Land Investor, Nashville TN", quote: "Speed-to-lead AI called my inbound leads before I even saw the notification. My close rate tripled.", rating: 5 },
+  { name: "Angela W.", role: "Land Investor, Nashville TN", quote: "Auto Follow-Up kept nurturing a cold lead for 3 weeks — they finally called back and we closed a $52K deal.", rating: 5 },
 ];
 
 const comparisonRows = [
