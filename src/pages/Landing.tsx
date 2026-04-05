@@ -142,7 +142,7 @@ const stats = [
   { value: 2847, suffix: "+", label: "Deals Closed" },
   { value: 487, prefix: "$", suffix: "M", label: "Total Funded" },
   { value: 98, suffix: "%", label: "Satisfaction" },
-  { value: 15, suffix: "s", label: "Speed-To-Lead" },
+  { value: 100, suffix: "%", label: "Auto Follow-Up" },
 ];
 
 const testimonials = [
