@@ -61,7 +61,7 @@ import { cn } from "@/lib/utils";
 
 const pipelineSteps = [
   { icon: Search, label: "Find", desc: "AI scrapes every corner of the web — Zillow, Craigslist, Facebook, FSBO, MLS, and sites you don't even know exist — to surface motivated sellers before your competition." },
-  { icon: PhoneCall, label: "Contact", desc: "Speed-To-Lead AI calls new leads within 15 seconds. Voice AI answers inbound 24/7, qualifies sellers, and books appointments — no human needed." },
+  { icon: PhoneCall, label: "Contact", desc: "Voice AI answers inbound 24/7, qualifies sellers, books appointments, and transfers hot leads live — no human needed." },
   { icon: MessageSquare, label: "Follow Up", desc: "Conversational AI sends personalized SMS, email, and ringless voicemail drip sequences — relentlessly nurturing every lead until they convert or opt out." },
   { icon: Brain, label: "Analyze", desc: "Deal Intelligence AI auto-pulls comps, calculates ARV, scores 6 exit strategies (Novation, Sub-To, Wholesale, Flip, Seller Finance, Hybrid), and writes the pitch script." },
   { icon: Send, label: "Offer", desc: "Auto-Offer Engine matches properties to your buy box, generates LOIs with your terms, and blasts offers to agents and owners — single or bulk." },
