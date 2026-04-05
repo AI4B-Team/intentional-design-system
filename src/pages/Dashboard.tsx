@@ -10,6 +10,7 @@ import { useRecentActivity } from "@/hooks/useRecentActivity";
 import { useDashboardInsights } from "@/hooks/useDashboardInsights";
 
 import { GoalSettingsDialog, useGoals } from "@/components/dashboard/GoalSettingsDialog";
+import { WelcomeSection } from "@/components/dashboard/WelcomeSection";
 import { TodaysFocus } from "@/components/dashboard/TodaysFocus";
 import { TodaysTasks } from "@/components/dashboard/TodaysTasks";
 import { FollowUpIntelligenceCard } from "@/components/dashboard/FollowUpIntelligenceCard";
@@ -77,6 +78,9 @@ export default function Dashboard() {
           </Button>
         </GoalSettingsDialog>
       </div>
+
+      {/* Welcome Section */}
+      <WelcomeSection />
 
       {/* Today's Focus */}
       <TodaysFocus />
