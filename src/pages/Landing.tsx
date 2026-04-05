@@ -156,7 +156,7 @@ const testimonials = [
 
 const comparisonRows = [
   { feature: "AI Voice Agent (24/7 Inbound + Outbound)", us: true, them: false },
-  { feature: "Speed-To-Lead (15-Second Auto-Call)", us: true, them: false },
+  { feature: "Auto Follow-Up (AI Multi-Channel)", us: true, them: false },
   { feature: "Deal Intelligence & 6-Strategy Scoring", us: true, them: false },
   { feature: "AI Lead Scout (Web Scraping)", us: true, them: false },
   { feature: "Auto-Offer Engine", us: true, them: false },
