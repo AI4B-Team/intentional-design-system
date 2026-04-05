@@ -401,7 +401,7 @@ export default function Landing() {
               { icon: MapPin, name: "Heat Maps" },
               { icon: Hammer, name: "Repair Estimator" },
               { icon: DollarSign, name: "Comp Analysis" },
-              { icon: ListChecks, name: "Pipeline CRM" },
+              
               { icon: Workflow, name: "Automation", premium: true },
               { icon: PieChart, name: "KPIs & Reports" },
               { icon: CalendarCheck, name: "Task Manager" },
