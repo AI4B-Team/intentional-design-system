@@ -79,6 +79,9 @@ export default function Dashboard() {
         </GoalSettingsDialog>
       </div>
 
+      {/* Welcome Section */}
+      <WelcomeSection />
+
       {/* Today's Focus */}
       <TodaysFocus />
 
