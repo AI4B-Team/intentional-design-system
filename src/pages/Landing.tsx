@@ -376,36 +376,49 @@ export default function Landing() {
           {/* Quick icon grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
             {[
-              { icon: Bot, name: "Voice Agent AI" },
-              { icon: PhoneCall, name: "Speed-To-Lead" },
-              { icon: Brain, name: "Deal Intelligence" },
-              { icon: MessageSquare, name: "Conversational AI" },
-              { icon: Target, name: "Lead Score AI" },
+              { icon: Bot, name: "Voice Agent AI", premium: true },
+              { icon: PhoneCall, name: "Speed-To-Lead", premium: true },
+              { icon: Brain, name: "Deal Intelligence", premium: true },
+              { icon: MessageSquare, name: "Conversational AI", premium: true },
+              { icon: Target, name: "Lead Score AI", premium: true },
               { icon: BarChart3, name: "Call Grade AI" },
               { icon: Layers, name: "List Stacking" },
               { icon: Search, name: "Skip Tracing" },
-              { icon: Radar, name: "AI Lead Scout" },
-              { icon: Send, name: "Offer Blaster" },
+              { icon: Radar, name: "AI Lead Scout", premium: true },
+              { icon: Send, name: "Auto-Offer Engine", premium: true },
               { icon: Mail, name: "Drip Campaigns" },
               { icon: Globe, name: "Seller Websites" },
               { icon: MapPin, name: "Heat Maps" },
               { icon: Hammer, name: "Repair Estimator" },
               { icon: DollarSign, name: "Comp Analysis" },
-              { icon: Building, name: "Auto-Offer Engine" },
-              { icon: FileText, name: "Contract Gen" },
+              { icon: FileText, name: "Contract Gen", premium: true },
               { icon: Users, name: "Cash Buyer CRM" },
               { icon: ListChecks, name: "Pipeline CRM" },
-              { icon: Workflow, name: "Automation" },
+              { icon: Workflow, name: "Automation", premium: true },
               { icon: PieChart, name: "KPIs & Reports" },
               { icon: CalendarCheck, name: "Task Manager" },
               { icon: Megaphone, name: "Direct Mail" },
               { icon: Shield, name: "Full Accounting" },
+              { icon: Sparkles, name: "Web Scout AI", premium: true },
             ].map((item) => (
               <div
                 key={item.name}
-                className="bg-card border border-border rounded-xl p-4 flex flex-col items-center gap-2 hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
+                className={cn(
+                  "bg-card border rounded-xl p-4 flex flex-col items-center gap-2 hover:shadow-md transition-all duration-200 group relative",
+                  item.premium
+                    ? "border-primary/30 hover:border-primary/50 hover:shadow-primary/10"
+                    : "border-border hover:border-primary/30"
+                )}
               >
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                {item.premium && (
+                  <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                    <Sparkles className="h-2.5 w-2.5 text-primary-foreground" />
+                  </span>
+                )}
+                <div className={cn(
+                  "h-10 w-10 rounded-lg flex items-center justify-center transition-colors",
+                  item.premium ? "bg-primary/15 group-hover:bg-primary/20" : "bg-primary/10 group-hover:bg-primary/15"
+                )}>
                   <item.icon className="h-5 w-5 text-primary" />
                 </div>
                 <span className="text-xs font-medium text-center leading-tight">{item.name}</span>
