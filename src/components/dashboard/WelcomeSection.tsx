@@ -88,8 +88,8 @@ export function WelcomeSection() {
 
         <div 
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-1"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-proximity pb-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none", direction: "ltr", overscrollBehaviorX: "contain" }}
         >
           {/* Meet AIVA Card */}
           <Card className="min-w-[280px] max-w-[320px] p-5 snap-start flex flex-col shrink-0">
