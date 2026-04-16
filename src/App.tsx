@@ -66,6 +66,8 @@ const BuyerDetail = React.lazy(() => import("./pages/BuyerDetail"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
+const TelecomTerms = React.lazy(() => import("./pages/TelecomTerms"));
+const DPA = React.lazy(() => import("./pages/DPA"));
 const JVPartners = React.lazy(() => import("./pages/JVPartners"));
 const DailyReport = React.lazy(() => import("./pages/DailyReport"));
 const Achievements = React.lazy(() => import("./pages/Achievements"));
@@ -215,6 +217,8 @@ const App = () => (
                   <Route path="/onboarding-old" element={<Onboarding />} />
                   <Route path="/terms" element={<Terms />} />
                   <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/telecom-terms" element={<TelecomTerms />} />
+                  <Route path="/dpa" element={<DPA />} />
 
                   {/* Buyer Portal Routes */}
                   <Route path="/register/buyer" element={<BuyerAuthProvider><BuyerRegisterLazy /></BuyerAuthProvider>} />
