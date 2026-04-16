@@ -422,29 +422,9 @@
   );
 }
 
-/* Glowing active nav indicator */
+/* Active nav indicator */
 .nav-item-glow {
-  position: relative;
-  overflow: hidden;
-}
-.nav-item-glow::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, hsl(160 84% 39% / 0.15), transparent);
-  border-radius: inherit;
-}
-.nav-item-glow::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 60%;
-  background: linear-gradient(180deg, hsl(160 84% 55%), hsl(160 84% 39%));
-  border-radius: 0 2px 2px 0;
-  box-shadow: 0 0 8px hsl(160 84% 39% / 0.6);
+  background: hsl(0 0% 100% / 0.08);
 }
 
 /* Frosted glass header enhancement */
