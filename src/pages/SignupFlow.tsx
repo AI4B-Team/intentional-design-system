@@ -202,7 +202,7 @@ export default function SignupFlow() {
         });
         await refreshOrganization();
       }
-      navigate("/dashboard");
+      navigate("/welcome");
     } catch (error) {
       console.error("Error creating organization:", error);
       toast.error("Failed to create organization. Please try again.");

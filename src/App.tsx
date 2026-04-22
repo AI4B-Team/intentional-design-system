@@ -28,6 +28,7 @@ const Signup = React.lazy(() => import("./pages/Signup"));
 const ForgotPassword = React.lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./pages/ResetPassword"));
 const SignupFlow = React.lazy(() => import("./pages/SignupFlow"));
+const Welcome = React.lazy(() => import("./pages/Welcome"));
 const OnboardingOrganization = React.lazy(() => import("./pages/OnboardingOrganization"));
 const OnboardingCreate = React.lazy(() => import("./pages/OnboardingCreate"));
 const OnboardingJoin = React.lazy(() => import("./pages/OnboardingJoin"));
@@ -230,6 +231,7 @@ const App = () => (
                   {/* Organization onboarding - requires auth but not organization */}
                   <Route path="/onboarding" element={<ProtectedRoute requireOrganization={false}><OnboardingOrganization /></ProtectedRoute>} />
                   <Route path="/signup/flow" element={<ProtectedRoute requireOrganization={false}><SignupFlow /></ProtectedRoute>} />
+                  <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
                   <Route path="/onboarding/create" element={<ProtectedRoute requireOrganization={false}><OnboardingCreate /></ProtectedRoute>} />
                   <Route path="/onboarding/join" element={<ProtectedRoute requireOrganization={false}><OnboardingJoin /></ProtectedRoute>} />
                   <Route path="/create-organization" element={<ProtectedRoute requireOrganization={false}><CreateOrganization /></ProtectedRoute>} />
