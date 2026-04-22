@@ -84,7 +84,7 @@ const initialData: WelcomeData = {
 
 const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: "intro", label: "Welcome", icon: Sparkles },
-  { id: "vendors", label: "Vendors", icon: Building2 },
+  { id: "vendors", label: "Team", icon: Building2 },
   { id: "documents", label: "Documents", icon: FileText },
   { id: "entity", label: "Entity & Signature", icon: PenLine },
   { id: "markets", label: "Markets", icon: MapPin },
@@ -94,11 +94,11 @@ const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
 ];
 
 const TEMPLATES = [
-  { id: "purchase", label: "Purchase & Sale Agreement", description: "Standard wholesale-friendly contract" },
-  { id: "loi", label: "Letter of Intent (LOI)", description: "Soft offer to test seller interest" },
-  { id: "assignment", label: "Assignment of Contract", description: "Assign your contract to an end buyer" },
-  { id: "jv", label: "JV Agreement", description: "Partner with another investor on a deal" },
-  { id: "addendum", label: "Inspection Addendum", description: "Standard inspection contingency" },
+  { id: "purchase", label: "Purchase & Sale Agreement", description: "Standard Wholesale-Friendly Contract" },
+  { id: "loi", label: "Letter Of Intent (LOI)", description: "Soft Offer To Test Seller Interest" },
+  { id: "assignment", label: "Assignment Of Contract", description: "Assign Your Contract To An End Buyer" },
+  { id: "jv", label: "JV Agreement", description: "Partner With Another Investor On A Deal" },
+  { id: "addendum", label: "Inspection Addendum", description: "Standard Inspection Contingency" },
 ];
 
 const US_STATES = [
@@ -299,7 +299,7 @@ export default function Welcome() {
             </span>
             <Button variant="ghost" size="sm" onClick={skipAll} className="gap-1.5 text-muted-foreground">
               <X className="h-3.5 w-3.5" />
-              Skip setup
+              Skip Setup
             </Button>
           </div>
         </div>
@@ -342,7 +342,7 @@ export default function Welcome() {
                 <Sparkles className="h-8 w-8 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl font-semibold text-foreground">Welcome to RealElite 🎉</h1>
+                <h1 className="text-3xl font-semibold text-foreground">Welcome To RealElite 🎉</h1>
                 <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
                   Let's set up your account so the platform can run on autopilot — sending offers, routing contracts to title,
                   and signing agreements with your information already filled in.
@@ -350,9 +350,9 @@ export default function Welcome() {
               </div>
               <div className="grid sm:grid-cols-3 gap-3 text-left max-w-2xl mx-auto pt-4">
                 {[
-                  { icon: Zap, title: "5 minutes", desc: "Each step is optional and skippable" },
-                  { icon: ShieldCheck, title: "Private & secure", desc: "Only your team sees this data" },
-                  { icon: Rocket, title: "Unlock automation", desc: "Auto-offers, e-sign, title routing" },
+                  { icon: Zap, title: "5 Minutes", desc: "Each Step Is Optional And Skippable" },
+                  { icon: ShieldCheck, title: "Private & Secure", desc: "Only Your Team Sees This Data" },
+                  { icon: Rocket, title: "Unlock Automation", desc: "Auto-Offers, E-Sign, Title Routing" },
                 ].map((b) => (
                   <Card key={b.title} className="p-4">
                     <b.icon className="h-5 w-5 text-primary mb-2" />
@@ -367,11 +367,11 @@ export default function Welcome() {
           {step.id === "vendors" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Add your closing team</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Build Your Deal Team</h2>
                 <p className="text-muted-foreground mt-2">Title company, lender, and agent details auto-fill on every contract you send.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> When the platform sends an LOI or executes a contract, it automatically routes
+                <strong>Why This Matters:</strong> When the platform sends an LOI or executes a contract, it automatically routes
                 a copy to your title company and CCs your lender. Without this, you'll have to forward each one manually.
               </WhyCard>
 
@@ -393,30 +393,30 @@ export default function Welcome() {
           {step.id === "documents" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Set up your documents</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Set Up Your Documents</h2>
                 <p className="text-muted-foreground mt-2">Use our state-aware templates, upload your own, or do both.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> Your documents power Auto-Offer Engine, the Offer Blaster, and one-click
+                <strong>Why This Matters:</strong> Your documents power Auto-Offer Engine, the Offer Blaster, and one-click
                 e-signature. The faster they're in place, the faster you send compliant contracts.
               </WhyCard>
 
               <div className="grid sm:grid-cols-2 gap-3">
                 <Card className={cn("p-5 cursor-pointer transition", data.docMode === "templates" && "ring-2 ring-primary")} onClick={() => update("docMode", "templates")}>
                   <FileText className="h-5 w-5 text-primary mb-3" />
-                  <h3 className="font-semibold mb-1">Use our templates</h3>
+                  <h3 className="font-semibold mb-1">Use Our Templates</h3>
                   <p className="text-xs text-muted-foreground">Attorney-reviewed, state-aware, ready in seconds.</p>
                 </Card>
                 <Card className={cn("p-5 cursor-pointer transition", data.docMode === "upload" && "ring-2 ring-primary")} onClick={() => update("docMode", "upload")}>
                   <Upload className="h-5 w-5 text-primary mb-3" />
-                  <h3 className="font-semibold mb-1">Upload my own</h3>
+                  <h3 className="font-semibold mb-1">Upload My Own</h3>
                   <p className="text-xs text-muted-foreground">Bring your existing PDFs / Word docs.</p>
                 </Card>
               </div>
 
               {data.docMode === "templates" && (
                 <Card className="p-5 space-y-3">
-                  <p className="text-sm font-medium text-foreground">Pick the templates to enable:</p>
+                  <p className="text-sm font-medium text-foreground">Pick The Templates To Enable:</p>
                   {TEMPLATES.map((t) => {
                     const checked = data.selectedTemplates.includes(t.id);
                     return (
@@ -468,11 +468,11 @@ export default function Welcome() {
           {step.id === "entity" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Business entity & signature</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Business Entity & Signature</h2>
                 <p className="text-muted-foreground mt-2">Used on every contract, LOI, and agreement we send on your behalf.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> Your e-signature, LLC, and signing authority will be auto-applied across
+                <strong>Why This Matters:</strong> Your e-signature, LLC, and signing authority will be auto-applied across
                 LOIs, purchase agreements, and JV docs in the Agreements app — no need to sign manually each time.
               </WhyCard>
 
@@ -499,7 +499,7 @@ export default function Welcome() {
 
               <Card className="p-5 space-y-3">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">Your e-signature</p>
+                  <p className="text-sm font-semibold text-foreground">Your E-Signature</p>
                   <p className="text-xs text-muted-foreground">Draw once — applied automatically to every signed document.</p>
                 </div>
                 <SignaturePad value={data.entity.signatureDataUrl} onChange={(v) => update("entity", { ...data.entity, signatureDataUrl: v })} />
@@ -510,16 +510,16 @@ export default function Welcome() {
           {step.id === "markets" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Where do you invest?</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Where Do You Invest?</h2>
                 <p className="text-muted-foreground mt-2">We'll surface deals, scrape leads, and run AI Scanner in your markets.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> Markets + buy box power the AI Lead Scout, Offer Blaster, and AI Scanner.
+                <strong>Why This Matters:</strong> Markets + buy box power the AI Lead Scout, Offer Blaster, and AI Scanner.
                 Without them, you'll see deals from everywhere instead of just your zone.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
-                <p className="text-sm font-medium text-foreground">Select your states</p>
+                <p className="text-sm font-medium text-foreground">Select Your States</p>
                 <div className="flex flex-wrap gap-2">
                   {US_STATES.map((s) => {
                     const active = data.markets.includes(s);
@@ -540,18 +540,18 @@ export default function Welcome() {
               </Card>
 
               <Card className="p-5 space-y-4">
-                <p className="text-sm font-medium text-foreground">Quick buy box (optional)</p>
+                <p className="text-sm font-medium text-foreground">Quick Buy Box (Optional)</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Min price ($)</Label>
+                    <Label className="text-xs">Min Price ($)</Label>
                     <Input type="number" placeholder="50,000" value={data.buyBox.minPrice} onChange={(e) => update("buyBox", { ...data.buyBox, minPrice: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Max price ($)</Label>
+                    <Label className="text-xs">Max Price ($)</Label>
                     <Input type="number" placeholder="350,000" value={data.buyBox.maxPrice} onChange={(e) => update("buyBox", { ...data.buyBox, maxPrice: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Property type</Label>
+                    <Label className="text-xs">Property Type</Label>
                     <select
                       className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
                       value={data.buyBox.propertyType}
@@ -571,35 +571,35 @@ export default function Welcome() {
           {step.id === "comms" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Communications setup</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Communications Setup</h2>
                 <p className="text-muted-foreground mt-2">Get a dedicated business number for the dialer, SMS, and AI Voice Agent.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> A dedicated number protects your personal cell, enables call recording &
+                <strong>Why This Matters:</strong> A dedicated number protects your personal cell, enables call recording &
                 AI coaching, and unlocks SMS sequences. Required for the AI Voice Acquisition Agent.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-foreground">Provision a business number</p>
+                    <p className="text-sm font-medium text-foreground">Provision A Business Number</p>
                     <p className="text-xs text-muted-foreground">We'll set this up in the dialer after launch.</p>
                   </div>
                   <Switch checked={data.comms.wantsNumber} onCheckedChange={(v) => update("comms", { ...data.comms, wantsNumber: v })} />
                 </div>
                 {data.comms.wantsNumber && (
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Preferred area code</Label>
+                    <Label className="text-xs">Preferred Area Code</Label>
                     <Input placeholder="305" maxLength={3} value={data.comms.areaCode} onChange={(e) => update("comms", { ...data.comms, areaCode: e.target.value.replace(/\D/g, "") })} />
                   </div>
                 )}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Business hours start</Label>
+                    <Label className="text-xs">Business Hours Start</Label>
                     <Input type="time" value={data.comms.businessHoursStart} onChange={(e) => update("comms", { ...data.comms, businessHoursStart: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Business hours end</Label>
+                    <Label className="text-xs">Business Hours End</Label>
                     <Input type="time" value={data.comms.businessHoursEnd} onChange={(e) => update("comms", { ...data.comms, businessHoursEnd: e.target.value })} />
                   </div>
                 </div>
@@ -610,18 +610,18 @@ export default function Welcome() {
           {step.id === "buyers" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Import your cash buyers</h2>
+                <h2 className="text-2xl font-semibold text-foreground">Import Your Cash Buyers</h2>
                 <p className="text-muted-foreground mt-2">Drop a CSV so dispositions can fire from day one.</p>
               </div>
               <WhyCard>
-                <strong>Why this matters:</strong> The moment you lock up a deal, the platform can blast it to matched buyers
+                <strong>Why This Matters:</strong> The moment you lock up a deal, the platform can blast it to matched buyers
                 in your list — no manual list-building required. Skip if you're starting from scratch.
               </WhyCard>
 
               <Card className="p-5">
                 <label className="block border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition">
                   <Users className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm font-medium text-foreground">Click to upload cash buyers CSV</p>
+                  <p className="text-sm font-medium text-foreground">Click To Upload Cash Buyers CSV</p>
                   <p className="text-xs text-muted-foreground mt-1">Name, Email, Phone, Markets, Max Price</p>
                   <input type="file" accept=".csv" className="hidden" onChange={handleBuyersCsv} />
                 </label>
@@ -642,7 +642,7 @@ export default function Welcome() {
                 <Check className="h-8 w-8 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl font-semibold text-foreground">You're ready to launch 🚀</h1>
+                <h1 className="text-3xl font-semibold text-foreground">You're Ready To Launch 🚀</h1>
                 <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
                   Your defaults are saved. The platform will start using them automatically — and you can edit anything any time
                   from <strong>Settings</strong> or your <strong>Setup Hub</strong>.
@@ -654,11 +654,11 @@ export default function Welcome() {
                   { label: "Title Company", val: data.titleCompany.company || "Skipped" },
                   { label: "Preferred Lender", val: data.lender.company || "Skipped" },
                   { label: "Default Agent", val: data.agent.company || "Skipped" },
-                  { label: "Documents", val: data.docMode === "upload" ? `${data.uploadedDocs.length} uploaded` : `${data.selectedTemplates.length} templates` },
+                  { label: "Documents", val: data.docMode === "upload" ? `${data.uploadedDocs.length} Uploaded` : `${data.selectedTemplates.length} Templates` },
                   { label: "Signature", val: data.entity.signatureDataUrl ? "Saved" : "Skipped" },
-                  { label: "Markets", val: data.markets.length ? `${data.markets.length} states` : "Skipped" },
-                  { label: "Business number", val: data.comms.wantsNumber ? `Area ${data.comms.areaCode || "any"}` : "Skipped" },
-                  { label: "Cash buyers", val: data.buyersCsv ? `${data.buyersCsv.rows} imported` : "Skipped" },
+                  { label: "Markets", val: data.markets.length ? `${data.markets.length} States` : "Skipped" },
+                  { label: "Business Number", val: data.comms.wantsNumber ? `Area ${data.comms.areaCode || "Any"}` : "Skipped" },
+                  { label: "Cash Buyers", val: data.buyersCsv ? `${data.buyersCsv.rows} Imported` : "Skipped" },
                 ].map((r) => (
                   <div key={r.label} className="flex items-center justify-between p-3 rounded-lg border border-border-subtle bg-surface">
                     <span className="text-xs text-muted-foreground">{r.label}</span>
@@ -680,16 +680,16 @@ export default function Welcome() {
           <div className="flex items-center gap-2">
             {step.id !== "intro" && step.id !== "done" && (
               <Button variant="ghost" onClick={next} className="text-muted-foreground">
-                Skip this step
+                Skip This Step
               </Button>
             )}
             {step.id === "done" ? (
               <Button onClick={finish} className="gap-2">
-                Go to dashboard <Rocket className="h-4 w-4" />
+                Go To Dashboard <Rocket className="h-4 w-4" />
               </Button>
             ) : (
               <Button onClick={next} className="gap-2">
-                {step.id === "intro" ? "Let's go" : "Continue"} <ArrowRight className="h-4 w-4" />
+                {step.id === "intro" ? "Let's Go" : "Continue"} <ArrowRight className="h-4 w-4" />
               </Button>
             )}
           </div>
