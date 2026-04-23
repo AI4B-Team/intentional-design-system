@@ -303,7 +303,7 @@ export default function Welcome() {
             </Button>
           </div>
         </div>
-        <Progress value={progress} className="h-1 rounded-none" />
+        <Progress value={progress} className="h-1 rounded-none mt-3" />
       </header>
 
       {/* Stepper rail */}
