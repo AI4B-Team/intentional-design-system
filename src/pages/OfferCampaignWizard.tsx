@@ -752,7 +752,7 @@ Best regards,
             </div>
 
             {/* Step Content */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 h-full min-h-0">
               <div className="p-6 max-w-3xl mx-auto">
                 {/* Step 1: Deal Setup */}
                 {currentStep === 1 && (
