@@ -1556,7 +1556,7 @@ Best regards,
             </ScrollArea>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t flex items-center justify-between bg-white">
+            <div className="flex-shrink-0 px-6 py-4 border-t flex items-center justify-between bg-white shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
               <Button
                 variant="outline"
                 onClick={handleBack}
