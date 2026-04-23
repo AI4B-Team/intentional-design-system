@@ -368,7 +368,7 @@ export default function Communications() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex min-h-0 overflow-hidden">
+        <div className="flex-1 flex min-h-0 w-full overflow-hidden">
           {activeView === "activity" ? (
             <>
               {/* Left: Contact List */}
