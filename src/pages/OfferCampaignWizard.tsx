@@ -752,7 +752,7 @@ Best regards,
             </div>
 
             {/* Step Content */}
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 h-full min-h-0">
               <div className="p-6 max-w-3xl mx-auto">
                 {/* Step 1: Deal Setup */}
                 {currentStep === 1 && (
@@ -1556,7 +1556,7 @@ Best regards,
             </ScrollArea>
 
             {/* Footer */}
-            <div className="px-6 py-4 border-t flex items-center justify-between bg-white">
+            <div className="flex-shrink-0 px-6 py-4 border-t flex items-center justify-between bg-white shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
               <Button
                 variant="outline"
                 onClick={handleBack}
