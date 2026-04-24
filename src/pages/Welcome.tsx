@@ -291,19 +291,21 @@ export default function Welcome() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border-subtle bg-surface/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <RealEliteLogo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground hidden sm:inline">
               Step {stepIdx + 1} of {STEPS.length}
             </span>
-            <Button variant="ghost" size="sm" onClick={skipAll} className="gap-1.5 text-muted-foreground">
-              <X className="h-3.5 w-3.5" />
+            <button
+              onClick={skipAll}
+              className="text-xs text-muted-foreground/70 hover:text-foreground underline-offset-4 hover:underline transition-colors"
+            >
               Skip Setup
-            </Button>
+            </button>
           </div>
         </div>
-        <Progress value={progress} className="h-1 rounded-none mt-3" />
+        <Progress value={progress} className="h-1 rounded-none mt-2" />
       </header>
 
       {/* Stepper rail */}
@@ -335,29 +337,29 @@ export default function Welcome() {
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-6 py-10 pb-32">
+        <div className={cn("max-w-3xl mx-auto px-6", step.id === "intro" || step.id === "done" ? "py-6 pb-28" : "py-10 pb-32")}>
           {step.id === "intro" && (
-            <div className="space-y-6 text-center">
-              <div className="inline-flex h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 items-center justify-center mx-auto">
-                <Sparkles className="h-8 w-8 text-primary-foreground" />
+            <div className="space-y-4 text-center">
+              <div className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/60 items-center justify-center mx-auto">
+                <Sparkles className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl font-semibold text-foreground">Welcome To RealElite 🎉</h1>
-                <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
+                <h1 className="text-2xl font-semibold text-foreground">Welcome To RealElite 🎉</h1>
+                <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
                   Let's set up your account so the platform can run on autopilot — sending offers, routing contracts to title,
                   and signing agreements with your information already filled in.
                 </p>
               </div>
-              <div className="grid sm:grid-cols-3 gap-3 text-left max-w-2xl mx-auto pt-4">
+              <div className="grid sm:grid-cols-3 gap-3 text-left max-w-2xl mx-auto pt-2">
                 {[
                   { icon: Zap, title: "5 Minutes", desc: "Each Step Is Optional And Skippable" },
                   { icon: ShieldCheck, title: "Private & Secure", desc: "Only Your Team Sees This Data" },
                   { icon: Rocket, title: "Unlock Automation", desc: "Auto-Offers, E-Sign, Title Routing" },
                 ].map((b) => (
-                  <Card key={b.title} className="p-4">
-                    <b.icon className="h-5 w-5 text-primary mb-2" />
+                  <Card key={b.title} className="p-3">
+                    <b.icon className="h-4 w-4 text-primary mb-1.5" />
                     <p className="text-sm font-semibold text-foreground">{b.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{b.desc}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>
                   </Card>
                 ))}
               </div>
