@@ -291,9 +291,9 @@ export default function Welcome() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="border-b border-border-subtle bg-surface/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
           <RealEliteLogo />
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground hidden sm:inline">
               Step {stepIdx + 1} of {STEPS.length}
             </span>
@@ -305,7 +305,7 @@ export default function Welcome() {
             </button>
           </div>
         </div>
-        <Progress value={progress} className="h-1 rounded-none mt-3" />
+        <Progress value={progress} className="h-1 rounded-none mt-2" />
       </header>
 
       {/* Stepper rail */}
