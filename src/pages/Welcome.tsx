@@ -297,10 +297,12 @@ export default function Welcome() {
             <span className="text-xs text-muted-foreground hidden sm:inline">
               Step {stepIdx + 1} of {STEPS.length}
             </span>
-            <Button variant="ghost" size="sm" onClick={skipAll} className="gap-1.5 text-muted-foreground">
-              <X className="h-3.5 w-3.5" />
+            <button
+              onClick={skipAll}
+              className="text-xs text-muted-foreground/70 hover:text-foreground underline-offset-4 hover:underline transition-colors"
+            >
               Skip Setup
-            </Button>
+            </button>
           </div>
         </div>
         <Progress value={progress} className="h-1 rounded-none mt-3" />
