@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -28,8 +27,8 @@ import {
   Zap,
   ShieldCheck,
   Rocket,
-  Mail,
-  X,
+  Bot,
+  Gauge,
 } from "lucide-react";
 
 const WELCOME_KEY = "realelite_welcome_setup";
@@ -43,6 +42,7 @@ type StepId =
   | "markets"
   | "comms"
   | "buyers"
+  | "automation"
   | "done";
 
 interface Vendor {
@@ -50,6 +50,19 @@ interface Vendor {
   company: string;
   email: string;
   phone: string;
+}
+
+type ApprovalMode = "manual" | "assisted" | "autopilot";
+
+interface AutomationRules {
+  approvalMode: ApprovalMode;
+  autoSendLOIs: boolean;
+  autoSendContracts: boolean;
+  autoNotifyTeam: boolean;
+  autoBlastBuyers: boolean;
+  aiFollowUpFrequency: "off" | "low" | "normal" | "aggressive";
+  dailySendLimit: string;
+  respectBusinessHours: boolean;
 }
 
 interface WelcomeData {
@@ -64,6 +77,7 @@ interface WelcomeData {
   buyBox: { minPrice: string; maxPrice: string; propertyType: string };
   comms: { wantsNumber: boolean; areaCode: string; businessHoursStart: string; businessHoursEnd: string };
   buyersCsv: { name: string; size: number; rows: number } | null;
+  automation: AutomationRules;
 }
 
 const emptyVendor = (): Vendor => ({ name: "", company: "", email: "", phone: "" });
@@ -80,17 +94,28 @@ const initialData: WelcomeData = {
   buyBox: { minPrice: "", maxPrice: "", propertyType: "single_family" },
   comms: { wantsNumber: false, areaCode: "", businessHoursStart: "09:00", businessHoursEnd: "18:00" },
   buyersCsv: null,
+  automation: {
+    approvalMode: "assisted",
+    autoSendLOIs: false,
+    autoSendContracts: false,
+    autoNotifyTeam: true,
+    autoBlastBuyers: false,
+    aiFollowUpFrequency: "normal",
+    dailySendLimit: "25",
+    respectBusinessHours: true,
+  },
 };
 
 const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: "intro", label: "Welcome", icon: Sparkles },
   { id: "vendors", label: "Team", icon: Building2 },
   { id: "documents", label: "Documents", icon: FileText },
-  { id: "entity", label: "Entity & Signature", icon: PenLine },
-  { id: "markets", label: "Markets", icon: MapPin },
+  { id: "entity", label: "Business Info", icon: PenLine },
+  { id: "markets", label: "Buy Box", icon: MapPin },
   { id: "comms", label: "Communications", icon: Phone },
   { id: "buyers", label: "Cash Buyers", icon: Users },
-  { id: "done", label: "Launch", icon: Rocket },
+  { id: "automation", label: "Automation Rules", icon: Bot },
+  { id: "done", label: "Review", icon: Rocket },
 ];
 
 const TEMPLATES = [
@@ -116,11 +141,23 @@ function WhyCard({ children }: { children: React.ReactNode }) {
   );
 }
 
+function AutomationPreview({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-success/20 bg-success/5 p-4 flex gap-3">
+      <Bot className="h-5 w-5 text-success shrink-0 mt-0.5" />
+      <div className="text-sm text-foreground/90">
+        <p className="text-xs uppercase tracking-wide text-success font-semibold mb-1">After Setup</p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function VendorForm({ vendor, onChange, prefix }: { vendor: Vendor; onChange: (v: Vendor) => void; prefix: string }) {
   return (
     <div className="grid grid-cols-2 gap-3">
       <div className="space-y-1.5">
-        <Label className="text-xs">Contact name</Label>
+        <Label className="text-xs">Contact Name</Label>
         <Input placeholder="Jane Smith" value={vendor.name} onChange={(e) => onChange({ ...vendor, name: e.target.value })} />
       </div>
       <div className="space-y-1.5">
@@ -203,7 +240,7 @@ function SignaturePad({ value, onChange }: { value: string; onChange: (v: string
         />
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-xs text-muted-foreground">Sign with mouse, finger, or stylus</p>
+        <p className="text-xs text-muted-foreground">Sign With Mouse, Finger, Or Stylus</p>
         <Button type="button" variant="ghost" size="sm" onClick={clear}>Clear</Button>
       </div>
     </div>
@@ -224,6 +261,7 @@ export default function Welcome() {
 
   const step = STEPS[stepIdx];
   const progress = ((stepIdx + 1) / STEPS.length) * 100;
+  const isIntro = step.id === "intro";
 
   const update = <K extends keyof WelcomeData>(key: K, value: WelcomeData[K]) => {
     setData((d) => ({ ...d, [key]: value }));
@@ -231,7 +269,6 @@ export default function Welcome() {
 
   const persist = React.useCallback(() => {
     localStorage.setItem(WELCOME_KEY, JSON.stringify(data));
-    // Mirror vendor + entity into Account Defaults so settings UI picks them up
     const existingDefaults = (() => {
       try { return JSON.parse(localStorage.getItem("realelite_account_defaults") || "{}"); }
       catch { return {}; }
@@ -242,6 +279,7 @@ export default function Welcome() {
       lender: { ...existingDefaults.lender, ...data.lender, isDefault: true },
       agent: { ...existingDefaults.agent, ...data.agent, isDefault: true },
       entity: data.entity,
+      automation: data.automation,
     }));
     if (data.entity.signatureDataUrl) {
       localStorage.setItem("realelite_signature", data.entity.signatureDataUrl);
@@ -258,13 +296,13 @@ export default function Welcome() {
   const finish = () => {
     persist();
     localStorage.setItem(WELCOME_DONE_KEY, "true");
-    toast.success("Setup saved! Welcome to RealElite.");
+    toast.success("Automations Live! Welcome To RealElite.");
     navigate("/dashboard");
   };
 
   const skipAll = () => {
     localStorage.setItem(WELCOME_DONE_KEY, "skipped");
-    toast.info("You can finish setup any time from Settings.");
+    toast.info("You Can Finish Setup Any Time From Settings.");
     navigate("/dashboard");
   };
 
@@ -272,7 +310,7 @@ export default function Welcome() {
     const files = Array.from(e.target.files ?? []);
     update("uploadedDocs", [...data.uploadedDocs, ...files.map((f) => ({ name: f.name, size: f.size }))]);
     update("docMode", "upload");
-    toast.success(`${files.length} document(s) ready to upload`);
+    toast.success(`${files.length} Document(s) Ready To Upload`);
   };
 
   const handleBuyersCsv = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,20 +320,25 @@ export default function Welcome() {
     reader.onload = () => {
       const rows = (reader.result as string).split("\n").filter(Boolean).length - 1;
       update("buyersCsv", { name: f.name, size: f.size, rows: Math.max(0, rows) });
-      toast.success(`${rows} buyers detected — we'll import on launch`);
+      toast.success(`${rows} Buyers Detected — We'll Import On Launch`);
     };
     reader.readAsText(f);
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
+      {/* Header — compact after intro to reclaim vertical space */}
       <header className="border-b border-border-subtle bg-surface/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
-          <RealEliteLogo />
+        <div className={cn(
+          "max-w-5xl mx-auto px-6 flex items-center justify-between transition-all",
+          isIntro ? "py-3" : "py-2"
+        )}>
+          <div className={cn("transition-all", isIntro ? "scale-100" : "scale-75 origin-left")}>
+            <RealEliteLogo />
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-xs text-muted-foreground hidden sm:inline">
-              Step {stepIdx + 1} of {STEPS.length}
+              Step {stepIdx + 1} Of {STEPS.length}
             </span>
             <button
               onClick={skipAll}
@@ -305,12 +348,12 @@ export default function Welcome() {
             </button>
           </div>
         </div>
-        <Progress value={progress} className="h-1 rounded-none mt-2" />
+        <Progress value={progress} className="h-1 rounded-none" />
       </header>
 
       {/* Stepper rail */}
       <div className="border-b border-border-subtle bg-surface/30">
-        <div className="max-w-5xl mx-auto px-6 py-3 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+        <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
           {STEPS.map((s, i) => {
             const Icon = s.icon;
             const isActive = i === stepIdx;
@@ -337,17 +380,16 @@ export default function Welcome() {
 
       {/* Content */}
       <main className="flex-1 overflow-y-auto">
-        <div className={cn("max-w-3xl mx-auto px-6", step.id === "intro" || step.id === "done" ? "py-6 pb-28" : "py-10 pb-32")}>
+        <div className={cn("max-w-3xl mx-auto px-6", step.id === "intro" || step.id === "done" ? "py-6 pb-28" : "py-8 pb-32")}>
           {step.id === "intro" && (
             <div className="space-y-4 text-center">
               <div className="inline-flex h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-primary/60 items-center justify-center mx-auto">
                 <Sparkles className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold text-foreground">Welcome To RealElite 🎉</h1>
+                <h1 className="text-2xl font-semibold text-foreground">Set Up Your Deal Automations</h1>
                 <p className="text-sm text-muted-foreground mt-2 max-w-xl mx-auto">
-                  Let's set up your account so the platform can run on autopilot — sending offers, routing contracts to title,
-                  and signing agreements with your information already filled in.
+                  Tell RealElite How To Send Offers, Route Contracts, Contact Buyers, And Follow Up Automatically — So Your Acquisition Machine Runs On Its Own.
                 </p>
               </div>
               <div className="grid sm:grid-cols-3 gap-3 text-left max-w-2xl mx-auto pt-2">
@@ -370,11 +412,11 @@ export default function Welcome() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-semibold text-foreground">Build Your Deal Team</h2>
-                <p className="text-muted-foreground mt-2">Title company, lender, and agent details auto-fill on every contract you send.</p>
+                <p className="text-muted-foreground mt-2">Title Company, Lender, And Agent Details Auto-Fill On Every Contract You Send.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> When the platform sends an LOI or executes a contract, it automatically routes
-                a copy to your title company and CCs your lender. Without this, you'll have to forward each one manually.
+                <strong>Why This Matters:</strong> When The Platform Sends An LOI Or Executes A Contract, It Automatically Routes
+                A Copy To Your Title Company And CCs Your Lender. Without This, You'll Have To Forward Each One Manually.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
@@ -389,6 +431,10 @@ export default function Welcome() {
                 <div className="flex items-center gap-2"><UserCheck className="h-4 w-4 text-primary" /><h3 className="font-semibold">Default Agent</h3></div>
                 <VendorForm vendor={data.agent} onChange={(v) => update("agent", v)} prefix="Realty" />
               </Card>
+
+              <AutomationPreview>
+                Every Contract You Send Will Auto-Route To <strong>{data.titleCompany.company || "Your Title Company"}</strong> And CC <strong>{data.lender.company || "Your Lender"}</strong> — No Manual Forwarding.
+              </AutomationPreview>
             </div>
           )}
 
@@ -396,23 +442,23 @@ export default function Welcome() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-semibold text-foreground">Set Up Your Documents</h2>
-                <p className="text-muted-foreground mt-2">Use our state-aware templates, upload your own, or do both.</p>
+                <p className="text-muted-foreground mt-2">Use Our State-Aware Templates, Upload Your Own, Or Do Both.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> Your documents power Auto-Offer Engine, the Offer Blaster, and one-click
-                e-signature. The faster they're in place, the faster you send compliant contracts.
+                <strong>Why This Matters:</strong> Your Documents Power Auto-Offer Engine, The Offer Blaster, And One-Click
+                E-Signature. The Faster They're In Place, The Faster You Send Compliant Contracts.
               </WhyCard>
 
               <div className="grid sm:grid-cols-2 gap-3">
                 <Card className={cn("p-5 cursor-pointer transition", data.docMode === "templates" && "ring-2 ring-primary")} onClick={() => update("docMode", "templates")}>
                   <FileText className="h-5 w-5 text-primary mb-3" />
                   <h3 className="font-semibold mb-1">Use Our Templates</h3>
-                  <p className="text-xs text-muted-foreground">Attorney-reviewed, state-aware, ready in seconds.</p>
+                  <p className="text-xs text-muted-foreground">Attorney-Reviewed, State-Aware, Ready In Seconds.</p>
                 </Card>
                 <Card className={cn("p-5 cursor-pointer transition", data.docMode === "upload" && "ring-2 ring-primary")} onClick={() => update("docMode", "upload")}>
                   <Upload className="h-5 w-5 text-primary mb-3" />
                   <h3 className="font-semibold mb-1">Upload My Own</h3>
-                  <p className="text-xs text-muted-foreground">Bring your existing PDFs / Word docs.</p>
+                  <p className="text-xs text-muted-foreground">Bring Your Existing PDFs / Word Docs.</p>
                 </Card>
               </div>
 
@@ -447,8 +493,8 @@ export default function Welcome() {
                 <Card className="p-5">
                   <label className="block border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition">
                     <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-sm font-medium text-foreground">Click to upload contracts, LOIs, or agreements</p>
-                    <p className="text-xs text-muted-foreground mt-1">PDF, DOC, or DOCX</p>
+                    <p className="text-sm font-medium text-foreground">Click To Upload Contracts, LOIs, Or Agreements</p>
+                    <p className="text-xs text-muted-foreground mt-1">PDF, DOC, Or DOCX</p>
                     <input type="file" multiple accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileUpload} />
                   </label>
                   {data.uploadedDocs.length > 0 && (
@@ -464,32 +510,36 @@ export default function Welcome() {
                   )}
                 </Card>
               )}
+
+              <AutomationPreview>
+                Every LOI Will Auto-Fill With Your Entity, Signer, Title Company, And Selected Contract Template — Ready To Send In Two Clicks.
+              </AutomationPreview>
             </div>
           )}
 
           {step.id === "entity" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Business Entity & Signature</h2>
-                <p className="text-muted-foreground mt-2">Used on every contract, LOI, and agreement we send on your behalf.</p>
+                <h2 className="text-2xl font-semibold text-foreground">Business Info</h2>
+                <p className="text-muted-foreground mt-2">Used On Every Contract, LOI, And Agreement We Send On Your Behalf.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> Your e-signature, LLC, and signing authority will be auto-applied across
-                LOIs, purchase agreements, and JV docs in the Agreements app — no need to sign manually each time.
+                <strong>Why This Matters:</strong> Your E-Signature, LLC, And Signing Authority Will Be Auto-Applied Across
+                LOIs, Purchase Agreements, And JV Docs In The Agreements App — No Need To Sign Manually Each Time.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Business / LLC name</Label>
+                    <Label className="text-xs">Business / LLC Name</Label>
                     <Input placeholder="Acme Holdings LLC" value={data.entity.llcName} onChange={(e) => update("entity", { ...data.entity, llcName: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">EIN (optional)</Label>
+                    <Label className="text-xs">EIN (Optional)</Label>
                     <Input placeholder="XX-XXXXXXX" value={data.entity.ein} onChange={(e) => update("entity", { ...data.entity, ein: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label className="text-xs">Signer name</Label>
+                    <Label className="text-xs">Signer Name</Label>
                     <Input placeholder="Jane Smith" value={data.entity.signerName} onChange={(e) => update("entity", { ...data.entity, signerName: e.target.value })} />
                   </div>
                   <div className="space-y-1.5">
@@ -502,22 +552,26 @@ export default function Welcome() {
               <Card className="p-5 space-y-3">
                 <div>
                   <p className="text-sm font-semibold text-foreground">Your E-Signature</p>
-                  <p className="text-xs text-muted-foreground">Draw once — applied automatically to every signed document.</p>
+                  <p className="text-xs text-muted-foreground">Draw Once — Applied Automatically To Every Signed Document.</p>
                 </div>
                 <SignaturePad value={data.entity.signatureDataUrl} onChange={(v) => update("entity", { ...data.entity, signatureDataUrl: v })} />
               </Card>
+
+              <AutomationPreview>
+                Your Signature And Entity Block Will Be Stamped Onto Every Outbound Contract — Including Auto-Generated LOIs From The Offer Blaster.
+              </AutomationPreview>
             </div>
           )}
 
           {step.id === "markets" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Where Do You Invest?</h2>
-                <p className="text-muted-foreground mt-2">We'll surface deals, scrape leads, and run AI Scanner in your markets.</p>
+                <h2 className="text-2xl font-semibold text-foreground">Define Your Buy Box</h2>
+                <p className="text-muted-foreground mt-2">We'll Surface Deals, Scrape Leads, And Run AI Scanner In Your Markets.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> Markets + buy box power the AI Lead Scout, Offer Blaster, and AI Scanner.
-                Without them, you'll see deals from everywhere instead of just your zone.
+                <strong>Why This Matters:</strong> Markets + Buy Box Power The AI Lead Scout, Offer Blaster, And AI Scanner.
+                Without Them, You'll See Deals From Everywhere Instead Of Just Your Zone.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
@@ -567,6 +621,10 @@ export default function Welcome() {
                   </div>
                 </div>
               </Card>
+
+              <AutomationPreview>
+                The AI Lead Scout Will Scrape New Listings Daily In <strong>{data.markets.length || "Your"} States</strong> And Auto-Queue Matches For Offer.
+              </AutomationPreview>
             </div>
           )}
 
@@ -574,18 +632,18 @@ export default function Welcome() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-semibold text-foreground">Communications Setup</h2>
-                <p className="text-muted-foreground mt-2">Get a dedicated business number for the dialer, SMS, and AI Voice Agent.</p>
+                <p className="text-muted-foreground mt-2">Get A Dedicated Business Number For The Dialer, SMS, And AI Voice Agent.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> A dedicated number protects your personal cell, enables call recording &
-                AI coaching, and unlocks SMS sequences. Required for the AI Voice Acquisition Agent.
+                <strong>Why This Matters:</strong> A Dedicated Number Protects Your Personal Cell, Enables Call Recording &
+                AI Coaching, And Unlocks SMS Sequences. Required For The AI Voice Acquisition Agent.
               </WhyCard>
 
               <Card className="p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-foreground">Provision A Business Number</p>
-                    <p className="text-xs text-muted-foreground">We'll set this up in the dialer after launch.</p>
+                    <p className="text-xs text-muted-foreground">We'll Set This Up In The Dialer After Launch.</p>
                   </div>
                   <Switch checked={data.comms.wantsNumber} onCheckedChange={(v) => update("comms", { ...data.comms, wantsNumber: v })} />
                 </div>
@@ -606,6 +664,10 @@ export default function Welcome() {
                   </div>
                 </div>
               </Card>
+
+              <AutomationPreview>
+                AI Voice Agent And SMS Sequences Will Only Fire Between <strong>{data.comms.businessHoursStart}</strong> And <strong>{data.comms.businessHoursEnd}</strong> — Sellers Get Contacted At The Right Time.
+              </AutomationPreview>
             </div>
           )}
 
@@ -613,11 +675,11 @@ export default function Welcome() {
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-semibold text-foreground">Import Your Cash Buyers</h2>
-                <p className="text-muted-foreground mt-2">Drop a CSV so dispositions can fire from day one.</p>
+                <p className="text-muted-foreground mt-2">Drop A CSV So Dispositions Can Fire From Day One.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> The moment you lock up a deal, the platform can blast it to matched buyers
-                in your list — no manual list-building required. Skip if you're starting from scratch.
+                <strong>Why This Matters:</strong> The Moment You Lock Up A Deal, The Platform Can Blast It To Matched Buyers
+                In Your List — No Manual List-Building Required. Skip If You're Starting From Scratch.
               </WhyCard>
 
               <Card className="p-5">
@@ -631,10 +693,122 @@ export default function Welcome() {
                   <div className="mt-4 flex items-center gap-2 text-sm p-3 rounded bg-success/5 border border-success/20">
                     <Check className="h-4 w-4 text-success" />
                     <span className="flex-1">{data.buyersCsv.name}</span>
-                    <Badge variant="secondary">{data.buyersCsv.rows} buyers</Badge>
+                    <Badge variant="secondary">{data.buyersCsv.rows} Buyers</Badge>
                   </div>
                 )}
               </Card>
+
+              <AutomationPreview>
+                When You Lock A Deal, Matching Buyers Will Be Notified Instantly Based On Markets And Price Range.
+              </AutomationPreview>
+            </div>
+          )}
+
+          {step.id === "automation" && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-semibold text-foreground">Set Your Automation Rules</h2>
+                <p className="text-muted-foreground mt-2">Decide What The Platform Does On Its Own — And What Needs Your Approval First.</p>
+              </div>
+              <WhyCard>
+                <strong>Why This Matters:</strong> These Rules Govern Every Outbound Action — From LOIs To Buyer Blasts.
+                Choose Manual If You Want To Review Everything, Or Autopilot To Let The Machine Run.
+              </WhyCard>
+
+              {/* Approval mode */}
+              <Card className="p-5 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Gauge className="h-4 w-4 text-primary" />
+                  <h3 className="font-semibold">Approval Mode</h3>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {([
+                    { id: "manual", label: "Manual", desc: "I Review And Approve Every Action." },
+                    { id: "assisted", label: "Assisted", desc: "AI Drafts, I Approve With One Click." },
+                    { id: "autopilot", label: "Autopilot", desc: "AI Sends Automatically Within My Rules." },
+                  ] as const).map((m) => {
+                    const active = data.automation.approvalMode === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => update("automation", { ...data.automation, approvalMode: m.id })}
+                        className={cn(
+                          "p-4 rounded-lg border text-left transition",
+                          active ? "border-primary bg-primary/5 ring-2 ring-primary/30" : "border-border hover:border-primary/50",
+                        )}
+                      >
+                        <p className="text-sm font-semibold text-foreground">{m.label}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{m.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </Card>
+
+              {/* Action toggles */}
+              <Card className="p-5 space-y-4">
+                <h3 className="font-semibold">Outbound Actions</h3>
+                {[
+                  { key: "autoSendLOIs" as const, label: "Send LOIs Automatically", desc: "Auto-Send Letters Of Intent To Matched Properties." },
+                  { key: "autoSendContracts" as const, label: "Send Contracts Automatically", desc: "Auto-Execute Purchase Agreements On Accepted Offers." },
+                  { key: "autoNotifyTeam" as const, label: "Notify Team Automatically", desc: "Auto-Notify Title, Lender, And Agent On Every Deal." },
+                  { key: "autoBlastBuyers" as const, label: "Blast Cash Buyers Automatically", desc: "Push Locked Deals To Matched Buyers Instantly." },
+                ].map((row) => (
+                  <div key={row.key} className="flex items-center justify-between gap-4 py-2 border-b border-border-subtle last:border-0">
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{row.label}</p>
+                      <p className="text-xs text-muted-foreground">{row.desc}</p>
+                    </div>
+                    <Switch
+                      checked={data.automation[row.key]}
+                      onCheckedChange={(v) => update("automation", { ...data.automation, [row.key]: v })}
+                    />
+                  </div>
+                ))}
+              </Card>
+
+              {/* Limits */}
+              <Card className="p-5 space-y-4">
+                <h3 className="font-semibold">Guardrails</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">AI Follow-Up Frequency</Label>
+                    <select
+                      className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                      value={data.automation.aiFollowUpFrequency}
+                      onChange={(e) => update("automation", { ...data.automation, aiFollowUpFrequency: e.target.value as AutomationRules["aiFollowUpFrequency"] })}
+                    >
+                      <option value="off">Off</option>
+                      <option value="low">Low (Every 5 Days)</option>
+                      <option value="normal">Normal (Every 2 Days)</option>
+                      <option value="aggressive">Aggressive (Daily)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Daily Send Limit</Label>
+                    <Input
+                      type="number"
+                      placeholder="25"
+                      value={data.automation.dailySendLimit}
+                      onChange={(e) => update("automation", { ...data.automation, dailySendLimit: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-2">
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Respect Business Hours</p>
+                    <p className="text-xs text-muted-foreground">Hold All Outbound Calls/SMS Outside Of Set Hours.</p>
+                  </div>
+                  <Switch
+                    checked={data.automation.respectBusinessHours}
+                    onCheckedChange={(v) => update("automation", { ...data.automation, respectBusinessHours: v })}
+                  />
+                </div>
+              </Card>
+
+              <AutomationPreview>
+                Mode: <strong className="capitalize">{data.automation.approvalMode}</strong> · Up To <strong>{data.automation.dailySendLimit || 0}</strong> Sends/Day · Follow-Up <strong className="capitalize">{data.automation.aiFollowUpFrequency}</strong>. You Can Change This Any Time In Settings.
+              </AutomationPreview>
             </div>
           )}
 
@@ -644,10 +818,9 @@ export default function Welcome() {
                 <Check className="h-8 w-8 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-3xl font-semibold text-foreground">You're Ready To Launch 🚀</h1>
+                <h1 className="text-3xl font-semibold text-foreground">Review & Launch Your Automations 🚀</h1>
                 <p className="text-muted-foreground mt-3 max-w-xl mx-auto">
-                  Your defaults are saved. The platform will start using them automatically — and you can edit anything any time
-                  from <strong>Settings</strong> or your <strong>Setup Hub</strong>.
+                  Your Defaults Are Saved. Once You Launch, RealElite Will Start Sending Offers, Routing Contracts, And Following Up Based On Your Rules. Edit Anything Any Time From <strong>Settings</strong>.
                 </p>
               </div>
 
@@ -658,9 +831,11 @@ export default function Welcome() {
                   { label: "Default Agent", val: data.agent.company || "Skipped" },
                   { label: "Documents", val: data.docMode === "upload" ? `${data.uploadedDocs.length} Uploaded` : `${data.selectedTemplates.length} Templates` },
                   { label: "Signature", val: data.entity.signatureDataUrl ? "Saved" : "Skipped" },
-                  { label: "Markets", val: data.markets.length ? `${data.markets.length} States` : "Skipped" },
+                  { label: "Buy Box", val: data.markets.length ? `${data.markets.length} States` : "Skipped" },
                   { label: "Business Number", val: data.comms.wantsNumber ? `Area ${data.comms.areaCode || "Any"}` : "Skipped" },
                   { label: "Cash Buyers", val: data.buyersCsv ? `${data.buyersCsv.rows} Imported` : "Skipped" },
+                  { label: "Approval Mode", val: data.automation.approvalMode.charAt(0).toUpperCase() + data.automation.approvalMode.slice(1) },
+                  { label: "Daily Limit", val: `${data.automation.dailySendLimit || 0} Sends/Day` },
                 ].map((r) => (
                   <div key={r.label} className="flex items-center justify-between p-3 rounded-lg border border-border-subtle bg-surface">
                     <span className="text-xs text-muted-foreground">{r.label}</span>
@@ -686,9 +861,17 @@ export default function Welcome() {
               </Button>
             )}
             {step.id === "done" ? (
-              <Button onClick={finish} className="gap-2">
-                Go To Dashboard <Rocket className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => { persist(); localStorage.setItem(WELCOME_DONE_KEY, "true"); navigate("/dashboard"); }}
+                  className="text-xs text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                >
+                  Go To Dashboard
+                </button>
+                <Button onClick={finish} className="gap-2">
+                  Launch My Automations <Rocket className="h-4 w-4" />
+                </Button>
+              </div>
             ) : (
               <Button onClick={next} className="gap-2">
                 {step.id === "intro" ? "Let's Go" : "Continue"} <ArrowRight className="h-4 w-4" />
