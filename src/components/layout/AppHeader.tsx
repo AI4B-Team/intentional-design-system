@@ -189,28 +189,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
         <span>K</span>
       </button>
 
-      {/* Breadcrumbs (only if provided and has multiple items) */}
-      {breadcrumbs && breadcrumbs.length > 1 && (
-        <nav className="flex items-center gap-1 text-small min-w-0">
-          {breadcrumbs.map((crumb, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && (
-                <ChevronRight className="h-4 w-4 text-content-tertiary" />
-              )}
-              {crumb.href ? (
-                <button
-                  onClick={() => navigate(crumb.href!)}
-                  className="text-content-secondary hover:text-content transition-colors"
-                >
-                  {crumb.label}
-                </button>
-              ) : (
-                <span className="text-content font-medium">{crumb.label}</span>
-              )}
-            </React.Fragment>
-          ))}
-        </nav>
-      )}
+      {/* Breadcrumbs intentionally omitted from top header — page bodies render their own breadcrumbs when needed. */}
 
       {/* Spacer */}
       <div className="flex-1" />
