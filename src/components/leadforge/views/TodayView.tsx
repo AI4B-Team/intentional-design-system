@@ -66,11 +66,6 @@ const DISTRESS_TYPES = [
   { key: "bankruptcy", label: "Bankruptcy", count: 203, icon: PiggyBank, color: "hsl(280 65% 50%)" },
   { key: "inheritance", label: "Inheritance / Heir", count: 156, icon: HeartCrack, color: "hsl(340 70% 55%)" },
   { key: "evictions", label: "Evictions", count: 312, icon: PackageOpen, color: "hsl(45 90% 48%)" },
-  { key: "auctions", label: "Auctions", count: 87, icon: Gavel, color: "hsl(0 65% 40%)" },
-  { key: "absenteeOoS", label: "Out-Of-State Owner", count: 1842, icon: Home, color: "hsl(180 70% 40%)" },
-  { key: "highEquity", label: "High Equity (70%+)", count: 2104, icon: TrendingUp, color: "hsl(140 65% 40%)" },
-  { key: "freeAndClear", label: "Free & Clear", count: 1521, icon: ShieldAlert, color: "hsl(160 70% 35%)" },
-  { key: "longTermOwner", label: "Long-Term Owner (15Y+)", count: 1873, icon: Building2, color: "hsl(220 50% 45%)" },
   { key: "permitsRepair", label: "Open Permits / Repairs", count: 245, icon: Wrench, color: "hsl(30 80% 50%)" },
 ] as const;
 
