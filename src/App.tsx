@@ -101,7 +101,7 @@ const AutomationSettings = React.lazy(() => import("./pages/settings/AutomationS
 const SearchLayout = React.lazy(() => import("./pages/search/SearchLayout"));
 const SearchLookup = React.lazy(() => import("./pages/search/SearchLookup"));
 const SearchMap = React.lazy(() => import("./pages/search/SearchMap"));
-const SearchAIScan = React.lazy(() => import("./pages/search/SearchAIScan"));
+// SearchAIScan merged into LeadScout (AI Scan tab)
 const MarketplaceDeals = React.lazy(() => import("./pages/MarketplaceDeals"));
 const MarketplaceDealDetail = React.lazy(() => import("./pages/MarketplaceDealDetail"));
 const OfferCampaignWizard = React.lazy(() => import("./pages/OfferCampaignWizard"));
