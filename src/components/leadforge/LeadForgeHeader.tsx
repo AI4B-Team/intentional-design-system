@@ -6,18 +6,13 @@ export function LeadForgeHeader() {
   return (
     <div className="px-6 pt-6 pb-4 border-b border-border bg-background">
       <div className="flex items-center justify-between gap-6 flex-wrap">
-        <div className="flex items-center gap-3">
-          <div className="h-11 w-11 rounded-xl bg-primary flex items-center justify-center">
-            <Zap className="h-6 w-6 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground leading-none">
-              Automated Lead Machine
-            </h1>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground mt-1.5 font-medium">
-              <span className="text-primary">RE Reset</span> · Distress Intelligence
-            </p>
-          </div>
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground leading-none">
+            Automated Leads
+          </h1>
+          <p className="text-sm text-muted-foreground font-medium mt-2">
+            Distress signals scanned and scored across your county feeds.
+          </p>
         </div>
 
         <div className="flex items-center gap-3">
