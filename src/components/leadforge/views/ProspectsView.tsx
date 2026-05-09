@@ -9,8 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck } from "lucide-react";
+import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
+import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
 
 type SubTab = "all" | "hot" | "urgency" | "investors";
 
