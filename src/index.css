@@ -647,7 +647,13 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
+  /* Marquee ticker scroll */
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
   /* Active/pressed state for touch */
   .active-scale {
     @apply transition-transform duration-100;
