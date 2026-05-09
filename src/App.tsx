@@ -97,6 +97,10 @@ const HarvestFocusList = React.lazy(() => import("./pages/harvest/HarvestFocusLi
 const HarvestActiveBuyers = React.lazy(() => import("./pages/harvest/HarvestActiveBuyers"));
 const HarvestOutreach = React.lazy(() => import("./pages/harvest/HarvestOutreach"));
 const EngineHealth = React.lazy(() => import("./pages/settings/EngineHealth"));
+const SearchLayout = React.lazy(() => import("./pages/search/SearchLayout"));
+const SearchLookup = React.lazy(() => import("./pages/search/SearchLookup"));
+const SearchMap = React.lazy(() => import("./pages/search/SearchMap"));
+const SearchAIScan = React.lazy(() => import("./pages/search/SearchAIScan"));
 const MarketplaceDeals = React.lazy(() => import("./pages/MarketplaceDeals"));
 const MarketplaceDealDetail = React.lazy(() => import("./pages/MarketplaceDealDetail"));
 const OfferCampaignWizard = React.lazy(() => import("./pages/OfferCampaignWizard"));
@@ -384,7 +388,23 @@ const App = () => (
             {/* Power Hour */}
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
 
-            {/* HARVEST — Autonomous Lead Engine */}
+            {/* SEARCH — User-driven lookup, map, on-demand scan */}
+            <Route path="/search" element={<ProtectedRoute><SearchLayout /></ProtectedRoute>}>
+              <Route index element={<SearchLookup />} />
+              <Route path="map" element={<SearchMap />} />
+              <Route path="ai-scan" element={<SearchAIScan />} />
+            </Route>
+
+            {/* LEADS — Autonomous Lead Engine (was /harvest) */}
+            <Route path="/leads" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
+            <Route path="/leads/prospects" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
+              <Route index element={<HarvestAllLeads />} />
+              <Route path="focus" element={<HarvestFocusList />} />
+              <Route path="buyers" element={<HarvestActiveBuyers />} />
+            </Route>
+            <Route path="/leads/outreach" element={<ProtectedRoute><HarvestOutreach /></ProtectedRoute>} />
+
+            {/* HARVEST — kept for back-compat, redirects to /leads/* */}
             <Route path="/harvest" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
             <Route path="/harvest/leads" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
               <Route index element={<HarvestAllLeads />} />

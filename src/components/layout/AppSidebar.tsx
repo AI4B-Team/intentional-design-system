@@ -70,9 +70,9 @@ interface NavGroup {
 const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: Gauge },
   { label: "Intel", href: "/intel", icon: Radar },
-  { label: "Search", href: "/marketplace", icon: Search },
+  { label: "Search", href: "/search", icon: Search },
+  { label: "Leads", href: "/leads", icon: Sprout },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
-  { label: "HARVEST", href: "/harvest", icon: Sprout },
   { label: "Transactions", href: "/transactions", icon: Handshake },
   { label: "Communications", href: "/communications", icon: Phone },
 ];
