@@ -16,6 +16,11 @@ import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
 
 type SubTab = "all" | "hot" | "urgency" | "investors";
 
+const GraduationCtx = React.createContext<{
+  graduated: Set<string>;
+  request: (c: PipelineCandidate) => void;
+}>({ graduated: new Set(), request: () => {} });
+
 const SUBTABS: { v: SubTab; label: string; icon?: React.ElementType }[] = [
   { v: "all", label: "All Prospects" },
   { v: "hot", label: "Hot Sheet", icon: Flame },
