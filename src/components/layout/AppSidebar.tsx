@@ -51,6 +51,7 @@ import {
   FolderOpen,
   PenTool,
   AppWindow,
+  Sprout,
 } from "lucide-react";
 
 interface NavItem {
