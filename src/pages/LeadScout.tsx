@@ -155,7 +155,23 @@ export default function LeadScout() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedSources, setSelectedSources] = React.useState<string[]>(["craigslist", "facebook"]);
   const [isShared, setIsShared] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("search");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "search";
+  const [activeTab, setActiveTab] = React.useState(initialTab);
+
+  React.useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t && t !== activeTab) setActiveTab(t);
+  }, [searchParams]);
+
+  const handleTabChange = (v: string) => {
+    setActiveTab(v);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("tab", v);
+      return p;
+    }, { replace: true });
+  };
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
