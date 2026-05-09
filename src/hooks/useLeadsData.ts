@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useOrganizationId } from "@/hooks/useOrganizationId";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 /**
  * Phase 3 hooks for the unified Leads engine.
@@ -9,7 +9,7 @@ import { useOrganizationId } from "@/hooks/useOrganizationId";
  */
 
 export function useLeadsProperties(filters?: { minScore?: number; status?: string }) {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
     queryKey: ["leads_properties", organizationId, filters],
@@ -30,7 +30,7 @@ export function useLeadsProperties(filters?: { minScore?: number; status?: strin
 }
 
 export function useLeadsToday() {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["leads_today", organizationId],
     enabled: !!organizationId,
@@ -51,7 +51,7 @@ export function useLeadsToday() {
 }
 
 export function useLeadsScores(propertyId?: string) {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["leads_scores", organizationId, propertyId],
     enabled: !!organizationId,
@@ -69,7 +69,7 @@ export function useLeadsScores(propertyId?: string) {
 }
 
 export function useLeadOutreach(propertyId?: string) {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["leads_outreach", organizationId, propertyId],
     enabled: !!organizationId,
@@ -87,7 +87,7 @@ export function useLeadOutreach(propertyId?: string) {
 }
 
 export function useScanJobs() {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["leads_scan_jobs", organizationId],
     enabled: !!organizationId,
@@ -105,7 +105,7 @@ export function useScanJobs() {
 }
 
 export function useScraperHealth() {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["leads_scraper_health", organizationId],
     enabled: !!organizationId,
@@ -123,7 +123,7 @@ export function useScraperHealth() {
 }
 
 export function useAutomationSettings() {
-  const { organizationId } = useOrganizationId();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
     queryKey: ["automation_settings", organizationId],
     enabled: !!organizationId,
