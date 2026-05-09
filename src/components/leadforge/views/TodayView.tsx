@@ -38,10 +38,10 @@ import {
 } from "recharts";
 
 const UTILITY_TILES = [
+  { label: "New Today", count: 38, sub: "Since Yesterday" },
+  { label: "Phone-Ready", count: 2871, sub: "Skip-Traced" },
   { label: "With Equity", count: 5104, sub: "Owner-Held" },
   { label: "Absentee", count: 3219, sub: "Off-Market Likely" },
-  { label: "Phone-Ready", count: 2871, sub: "Skip-Traced" },
-  { label: "New Today", count: 38, sub: "Since Yesterday" },
 ];
 
 const DISTRESS_TYPES = [
