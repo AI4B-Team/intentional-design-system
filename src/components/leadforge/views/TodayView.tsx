@@ -276,25 +276,53 @@ export function TodayView() {
             <Flame className="h-4 w-4 text-red-500" /> Top Hot Leads
           </h3>
           <div className="space-y-2">
-            {TOP_LEADS.map((l) => (
-              <div
-                key={l.addr}
-                className="flex items-center justify-between gap-2 py-2 border-b border-border last:border-0"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{l.addr}</p>
-                  <p className="text-[11px] text-muted-foreground truncate">
-                    {l.city} · {l.owner}
-                  </p>
+            {TOP_LEADS.map((l) => {
+              const isGraduated = graduated.has(l.addr);
+              return (
+                <div
+                  key={l.addr}
+                  className={cn(
+                    "flex items-center justify-between gap-2 py-2 border-b border-border last:border-0 transition-opacity",
+                    isGraduated && "opacity-70"
+                  )}
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">{l.addr}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {l.city} · {l.owner}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isGraduated ? (
+                      <InPipelineBadge />
+                    ) : (
+                      <>
+                        <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">
+                          {l.score}
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 px-2 gap-1 text-primary hover:text-primary"
+                          onClick={() =>
+                            setPipelineTarget({
+                              id: l.addr,
+                              address: l.addr,
+                              city: l.city,
+                              score: l.score,
+                              signals: ["distress", "absentee"],
+                            })
+                          }
+                        >
+                          <Workflow className="h-3.5 w-3.5" />
+                          Pipeline
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">
-                    {l.score}
-                  </Badge>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </Card>
 
