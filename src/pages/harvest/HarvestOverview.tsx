@@ -13,12 +13,27 @@ import { useHarvestStats } from "@/hooks/useHarvestStats";
 import {
   LineChart,
   Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
+import { LineChart as LineIcon, BarChart3, AreaChart as AreaIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type ChartKind = "line" | "area" | "bar";
+const SERIES = [
+  { key: "tax_default", label: "Tax Default", color: "hsl(var(--primary))" },
+  { key: "property_citation", label: "Citation", color: "hsl(var(--muted-foreground))" },
+  { key: "notice_of_default", label: "NOD", color: "#ef4444" },
+  { key: "estate_filing", label: "Estate", color: "#f59e0b" },
+] as const;
 
 export default function HarvestOverview() {
   const { stats, signals, trend, integrations, feed } = useHarvestStats();
