@@ -214,23 +214,41 @@ export default function PropertyScout() {
           </TabsContent>
 
           <TabsContent value="routes" className="mt-0">
-            <Card>
-              <CardHeader>
-                <CardTitle>Saved Routes</CardTitle>
-                <CardDescription>
-                  Your driving routes and their statistics
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Route className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <h3 className="font-medium text-foreground">No routes saved</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Complete a driving session to save your route
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer" onClick={() => window.location.assign("/d4d")}>
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
+                      <Car className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Driving for Dollars Map</CardTitle>
+                      <CardDescription>Track your route, drop pins as you drive.</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" size="sm">Open D4D Map →</Button>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:border-primary/50 transition-colors cursor-pointer" onClick={() => window.location.assign("/d4d/heatmap")}>
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-lg bg-accent/10 text-accent">
+                      <Map className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">Coverage Heat Map</CardTitle>
+                      <CardDescription>See where you've driven, find gaps, plan the next route.</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" size="sm">Open Heat Map →</Button>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           <TabsContent value="history" className="mt-0">
