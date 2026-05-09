@@ -326,20 +326,7 @@ export function TodayView() {
         </Card>
       </div>
 
-      {/* JUST IN ticker */}
-      <Card className="p-3 border-border">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <Badge className="bg-amber-500 text-white hover:bg-amber-500 shrink-0">JUST IN</Badge>
-          <div className="flex gap-8 text-xs text-foreground/80 whitespace-nowrap animate-[scroll_45s_linear_infinite]">
-            {[...TICKER, ...TICKER].map((t, i) => (
-              <span key={i} className="flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </Card>
+
 
       {/* 2-col footer */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
