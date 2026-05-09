@@ -280,9 +280,15 @@ export function TodayView() {
 
         {/* Lead types list */}
         <Card className="p-5">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-foreground">Lead Types</h3>
-            <span className="text-[11px] text-muted-foreground">Last 7 Days</span>
+            <span className="text-[11px] text-muted-foreground">Updated 2 Min Ago</span>
+          </div>
+          <div className="flex items-baseline justify-between mb-3 pb-3 border-b border-border">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Total Leads</span>
+            <span className="text-lg font-bold tabular-nums text-foreground">
+              {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+            </span>
           </div>
           <div className="space-y-1">
             {DISTRESS_TYPES.map((d) => {
