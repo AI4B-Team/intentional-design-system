@@ -372,37 +372,56 @@ function AllProspectsView() {
 
 export function ProspectsView() {
   const [sub, setSub] = React.useState<SubTab>("all");
+  const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
+  const [target, setTarget] = React.useState<PipelineCandidate | null>(null);
+
+  const ctxValue = React.useMemo(
+    () => ({ graduated, request: (c: PipelineCandidate) => setTarget(c) }),
+    [graduated]
+  );
+
   return (
-    <div className="pt-4">
-      <div className="flex items-center gap-2">
-        {SUBTABS.map((t) => {
-          const active = sub === t.v;
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.v}
-              onClick={() => setSub(t.v)}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
-              )}
-            >
-              {Icon && <Icon className="h-3.5 w-3.5" />}
-              {t.label}
-            </button>
-          );
-        })}
+    <GraduationCtx.Provider value={ctxValue}>
+      <div className="pt-4">
+        <div className="flex items-center gap-2">
+          {SUBTABS.map((t) => {
+            const active = sub === t.v;
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.v}
+                onClick={() => setSub(t.v)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                )}
+              >
+                {Icon && <Icon className="h-3.5 w-3.5" />}
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+        {sub === "all" && <AllProspectsView />}
+        {sub === "hot" && <HotSheetView />}
+        {sub === "urgency" && (
+          <Card className="p-12 text-center mt-6 text-muted-foreground">Urgency view — coming next</Card>
+        )}
+        {sub === "investors" && (
+          <Card className="p-12 text-center mt-6 text-muted-foreground">Investors view — coming next</Card>
+        )}
+
+        <MoveToPipelineModal
+          open={!!target}
+          onOpenChange={(o) => !o && setTarget(null)}
+          candidate={target}
+          onConfirm={() => {
+            if (target) setGraduated((g) => new Set(g).add(target.id));
+          }}
+        />
       </div>
-      {sub === "all" && <AllProspectsView />}
-      {sub === "hot" && <HotSheetView />}
-      {sub === "urgency" && (
-        <Card className="p-12 text-center mt-6 text-muted-foreground">Urgency view — coming next</Card>
-      )}
-      {sub === "investors" && (
-        <Card className="p-12 text-center mt-6 text-muted-foreground">Investors view — coming next</Card>
-      )}
-    </div>
+    </GraduationCtx.Provider>
   );
 }
