@@ -51,7 +51,7 @@ import {
   FolderOpen,
   PenTool,
   AppWindow,
-  Sprout,
+  Flame,
 } from "lucide-react";
 
 interface NavItem {
@@ -71,7 +71,7 @@ const topNavItems: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: Gauge },
   { label: "Intel", href: "/intel", icon: Radar },
   { label: "Search", href: "/search", icon: Search },
-  { label: "Leads", href: "/leads", icon: Sprout },
+  { label: "Leads", href: "/leads", icon: Flame },
   { label: "Pipeline", href: "/pipeline", icon: Kanban },
   { label: "Transactions", href: "/transactions", icon: Handshake },
   { label: "Communications", href: "/communications", icon: Phone },
