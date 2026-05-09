@@ -59,7 +59,7 @@ export function MoveToPipelineModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[85vh]">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Workflow className="h-4 w-4 text-primary" />
