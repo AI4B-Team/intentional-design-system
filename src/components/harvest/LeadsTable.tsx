@@ -142,11 +142,6 @@ export function LeadsTable({ variant = "all" }: LeadsTableProps) {
                   <td className="px-3 py-2 hidden lg:table-cell text-right tabular-nums">
                     {l.arvEstimate ? `$${l.arvEstimate.toLocaleString()}` : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right">
-                    <Button size="sm" variant="ghost" className="h-7 gap-1.5">
-                      <Eye className="h-3.5 w-3.5" /> View
-                    </Button>
-                  </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
