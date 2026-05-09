@@ -343,6 +343,16 @@ export function TodayView() {
           </div>
         </Card>
       </div>
+
+      <MoveToPipelineModal
+        open={!!pipelineTarget}
+        onOpenChange={(o) => !o && setPipelineTarget(null)}
+        candidate={pipelineTarget}
+        onConfirm={() => {
+          if (pipelineTarget)
+            setGraduated((g) => new Set(g).add(pipelineTarget.id));
+        }}
+      />
     </div>
   );
 }
