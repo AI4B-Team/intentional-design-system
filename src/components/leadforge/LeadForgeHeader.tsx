@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Zap, Settings } from "lucide-react";
+import { Zap, Settings, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function LeadForgeHeader() {
