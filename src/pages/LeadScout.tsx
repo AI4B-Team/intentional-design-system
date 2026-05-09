@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 import { PageLayout, PageHeader } from "@/components/layout/page-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,11 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle,
+  ScanLine,
 } from "lucide-react";
 import { useScrapeJobs, ScrapeJob, ScrapedLead } from "@/hooks/useScrapeJobs";
 import { cn } from "@/lib/utils";
+import SearchAIScan from "@/pages/search/SearchAIScan";
 
 const SOURCE_OPTIONS = [
   { value: "all_web", label: "All Web (Any Site)", icon: "🌐" },
