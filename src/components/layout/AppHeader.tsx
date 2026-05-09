@@ -15,7 +15,7 @@ import {
   Menu,
   Plus,
   User,
-  ChevronRight,
+  
   ChevronDown,
   UserPlus,
   Hammer,
@@ -91,12 +91,27 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   // Detect if input looks like a full address (starts with a number)
   const isFullAddress = (input: string) => /^\d+\s/.test(input.trim());
 
-  const handleAddressSelect = (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => {
+  const handleAddressSelect = async (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => {
     if (!address.trim()) return;
     const query = address.trim();
 
-    // Full address → property analysis
+    // Lookup-tab behavior: full address → try existing property first, fall back to analyzer.
     if (isFullAddress(query)) {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: existing } = await supabase
+          .from("properties")
+          .select("id")
+          .ilike("address", `%${query}%`)
+          .limit(1);
+        if (existing && existing.length > 0) {
+          navigate(`/properties/${existing[0].id}`);
+          setSearchQuery("");
+          return;
+        }
+      } catch {
+        /* fall through to analyzer */
+      }
       navigate(`/market-analyzer?tab=deals&address=${encodeURIComponent(query)}`);
       setSearchQuery("");
       return;
@@ -109,7 +124,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       if (coords.bbox) params.set('bbox', coords.bbox.join(','));
     }
 
-    // Context-aware routing: Intel page → intel results, everywhere else → marketplace listings
+    // Context-aware routing: Intel page → intel results, everywhere else → marketplace map.
     if (isIntelPage) {
       navigate(`/intel?${params.toString()}`);
     } else {
@@ -189,28 +204,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
         <span>K</span>
       </button>
 
-      {/* Breadcrumbs (only if provided and has multiple items) */}
-      {breadcrumbs && breadcrumbs.length > 1 && (
-        <nav className="flex items-center gap-1 text-small min-w-0">
-          {breadcrumbs.map((crumb, index) => (
-            <React.Fragment key={index}>
-              {index > 0 && (
-                <ChevronRight className="h-4 w-4 text-content-tertiary" />
-              )}
-              {crumb.href ? (
-                <button
-                  onClick={() => navigate(crumb.href!)}
-                  className="text-content-secondary hover:text-content transition-colors"
-                >
-                  {crumb.label}
-                </button>
-              ) : (
-                <span className="text-content font-medium">{crumb.label}</span>
-              )}
-            </React.Fragment>
-          ))}
-        </nav>
-      )}
+      {/* Breadcrumbs intentionally omitted from top header — page bodies render their own breadcrumbs when needed. */}
 
       {/* Spacer */}
       <div className="flex-1" />
