@@ -18,8 +18,11 @@ import {
   BarChart3,
   LineChart as LineIcon,
   AreaChart as AreaIcon,
+  Workflow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
+import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
 import {
   ResponsiveContainer,
   BarChart,
