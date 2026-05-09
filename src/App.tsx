@@ -322,7 +322,6 @@ const App = () => (
             <Route path="/websites" element={<ProtectedRoute><SellerWebsites /></ProtectedRoute>} />
             <Route path="/websites/new" element={<ProtectedRoute><AppLayout fullWidth><SellerWebsiteWizard /></AppLayout></ProtectedRoute>} />
             <Route path="/websites/:id/edit" element={<ProtectedRoute><SellerWebsiteEditor /></ProtectedRoute>} />
-            <Route path="/leads" element={<ProtectedRoute><SellerLeads /></ProtectedRoute>} />
             <Route path="/websites/:websiteId/leads" element={<ProtectedRoute><SellerLeads /></ProtectedRoute>} />
             <Route path="/websites/:id/analytics" element={<ProtectedRoute><WebsiteAnalytics /></ProtectedRoute>} />
             
