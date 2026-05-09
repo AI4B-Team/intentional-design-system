@@ -143,6 +143,66 @@ function HotSheetRows() {
   );
 }
 
+function ProspectRows() {
+  const { graduated, request } = React.useContext(GraduationCtx);
+  return (
+    <>
+      {ROWS.map((r) => {
+        const isGraduated = graduated.has(r.addr);
+        return (
+          <tr key={r.addr} className={cn("border-t border-border hover:bg-muted/30", isGraduated && "opacity-70")}>
+            <td className="px-3 py-2.5 font-medium text-foreground">{r.addr}</td>
+            <td className="px-3 py-2.5 text-foreground/80">{r.city}</td>
+            <td className="px-3 py-2.5 text-foreground/80">{r.owner}</td>
+            <td className="px-3 py-2.5"><TierBadge tier={r.tier} /></td>
+            <td className="px-3 py-2.5">
+              {r.asset === "Unknown" ? (
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Unknown</span>
+              ) : (
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{r.asset}</span>
+              )}
+            </td>
+            <td className="px-3 py-2.5"><DistressBar value={r.distress} /></td>
+            <td className="px-3 py-2.5 text-right tabular-nums">{r.signals}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.beds}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.baths}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.sqft}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.year}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums font-medium text-foreground">{r.value}</td>
+            <td className="px-3 py-2.5 text-right">
+              {isGraduated ? (
+                <InPipelineBadge />
+              ) : (
+                <div className="flex items-center justify-end gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 text-primary hover:text-primary gap-1"
+                    onClick={() =>
+                      request({
+                        id: r.addr,
+                        address: r.addr,
+                        city: r.city,
+                        score: r.distress,
+                        signals: ["distress"],
+                      })
+                    }
+                  >
+                    <Workflow className="h-3.5 w-3.5" /> Pipeline
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-7 text-primary hover:text-primary gap-1">
+                    View <ArrowUpRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </td>
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
 function HotSheetView() {
   return (
     <div className="space-y-4 pt-6">
