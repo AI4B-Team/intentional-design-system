@@ -13,16 +13,32 @@ import { useHarvestStats } from "@/hooks/useHarvestStats";
 import {
   LineChart,
   Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from "recharts";
+import { LineChart as LineIcon, BarChart3, AreaChart as AreaIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type ChartKind = "line" | "area" | "bar";
+const SERIES = [
+  { key: "tax_default", label: "Tax Default", color: "hsl(var(--primary))" },
+  { key: "property_citation", label: "Citation", color: "hsl(var(--muted-foreground))" },
+  { key: "notice_of_default", label: "NOD", color: "#ef4444" },
+  { key: "estate_filing", label: "Estate", color: "#f59e0b" },
+] as const;
 
 export default function HarvestOverview() {
   const { stats, signals, trend, integrations, feed } = useHarvestStats();
   const [showTrend, setShowTrend] = React.useState(true);
+  const [chartKind, setChartKind] = React.useState<ChartKind>("line");
 
   const dateLabel = new Date().toLocaleDateString(undefined, {
     weekday: "long",
@@ -83,46 +99,98 @@ export default function HarvestOverview() {
 
       {/* E — Trend chart (collapsible) */}
       <Card className="p-4 mb-4">
-        <button
-          type="button"
-          onClick={() => setShowTrend((v) => !v)}
-          className="flex items-center justify-between w-full text-left mb-2"
-        >
-          <div>
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <button
+            type="button"
+            onClick={() => setShowTrend((v) => !v)}
+            className="flex-1 text-left"
+          >
             <div className="text-sm font-medium">Signal Trend — 30 Days</div>
             <div className="text-xs text-muted-foreground">
               Daily signal events across primary sources
             </div>
+          </button>
+          <div className="flex items-center gap-1">
+            {showTrend && (
+              <div className="flex rounded-md border border-border bg-card p-0.5">
+                {([
+                  { k: "line", icon: LineIcon, label: "Line" },
+                  { k: "area", icon: AreaIcon, label: "Area" },
+                  { k: "bar", icon: BarChart3, label: "Bar" },
+                ] as const).map(({ k, icon: Icon, label }) => (
+                  <button
+                    key={k}
+                    type="button"
+                    onClick={() => setChartKind(k)}
+                    aria-label={label}
+                    title={label}
+                    className={cn(
+                      "px-2 py-1 rounded-sm transition-colors",
+                      chartKind === k
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:bg-muted",
+                    )}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                  </button>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowTrend((v) => !v)}
+              className="p-1 text-muted-foreground hover:text-foreground"
+              aria-label={showTrend ? "Collapse" : "Expand"}
+            >
+              {showTrend ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
           </div>
-          {showTrend ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </button>
+        </div>
         {showTrend && (
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={trend} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(d) =>
-                    new Date(d).toLocaleDateString(undefined, { month: "numeric", day: "numeric" })
-                  }
-                  stroke="hsl(var(--muted-foreground))"
-                  fontSize={11}
-                />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                <Tooltip
-                  contentStyle={{
-                    background: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: 6,
-                    fontSize: 12,
-                  }}
-                />
-                <Line type="monotone" dataKey="tax_default" stroke="hsl(var(--primary))" dot={false} strokeWidth={2} />
-                <Line type="monotone" dataKey="property_citation" stroke="hsl(var(--muted-foreground))" dot={false} />
-                <Line type="monotone" dataKey="notice_of_default" stroke="#ef4444" dot={false} />
-                <Line type="monotone" dataKey="estate_filing" stroke="#f59e0b" dot={false} />
-              </LineChart>
+              {chartKind === "line" ? (
+                <LineChart data={trend} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString(undefined, { month: "numeric", day: "numeric" })} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {SERIES.map((s) => (
+                    <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} dot={false} strokeWidth={s.key === "tax_default" ? 2 : 1.5} />
+                  ))}
+                </LineChart>
+              ) : chartKind === "area" ? (
+                <AreaChart data={trend} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+                  <defs>
+                    {SERIES.map((s) => (
+                      <linearGradient key={s.key} id={`grad-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={s.color} stopOpacity={0.4} />
+                        <stop offset="95%" stopColor={s.color} stopOpacity={0} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString(undefined, { month: "numeric", day: "numeric" })} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {SERIES.map((s) => (
+                    <Area key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} fill={`url(#grad-${s.key})`} strokeWidth={1.5} />
+                  ))}
+                </AreaChart>
+              ) : (
+                <BarChart data={trend} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString(undefined, { month: "numeric", day: "numeric" })} stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 6, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  {SERIES.map((s) => (
+                    <Bar key={s.key} dataKey={s.key} name={s.label} stackId="a" fill={s.color} />
+                  ))}
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
         )}
