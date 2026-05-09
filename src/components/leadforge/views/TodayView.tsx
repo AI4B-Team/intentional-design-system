@@ -122,9 +122,6 @@ export function TodayView() {
       <Card className="border-border overflow-hidden">
         <div className="p-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <p className="text-xs uppercase tracking-wider text-primary font-semibold mb-1.5 flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5" /> Good Morning, Operator
-            </p>
             <h2 className="text-2xl font-bold text-foreground">
               <span className="text-primary tabular-nums">38</span> New Prospects Since Yesterday
             </h2>
