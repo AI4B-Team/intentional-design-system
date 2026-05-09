@@ -26,7 +26,6 @@ export default function LeadForge() {
         <div className="px-6 pb-12">
           {tab === "today" && <TodayView />}
           {tab === "prospects" && <ProspectsView />}
-          {tab === "pipeline" && <PipelineView />}
           {tab === "actions" && <ActionsView />}
           {tab === "system" && <SystemView />}
         </div>

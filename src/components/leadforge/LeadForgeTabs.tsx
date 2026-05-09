@@ -1,13 +1,12 @@
 import * as React from "react";
-import { Sparkles, Target, Workflow, Send, Activity } from "lucide-react";
+import { Sparkles, Target, Send, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type MainTab = "today" | "prospects" | "pipeline" | "actions" | "system";
+export type MainTab = "today" | "prospects" | "actions" | "system";
 
 const TABS: { value: MainTab; label: string; icon: React.ElementType }[] = [
   { value: "today", label: "Today", icon: Sparkles },
   { value: "prospects", label: "Prospects", icon: Target },
-  { value: "pipeline", label: "Pipeline", icon: Workflow },
   { value: "actions", label: "Actions", icon: Send },
 ];
 
