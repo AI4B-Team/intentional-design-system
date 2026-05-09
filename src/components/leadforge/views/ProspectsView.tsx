@@ -86,6 +86,63 @@ function DistressBar({ value }: { value: number }) {
   );
 }
 
+function HotSheetRows() {
+  const { graduated, request } = React.useContext(GraduationCtx);
+  return (
+    <>
+      {HOT_LEADS.map((l) => {
+        const isGraduated = graduated.has(l.addr);
+        return (
+          <tr key={l.rank} className={cn("border-t border-border hover:bg-muted/30", isGraduated && "opacity-70")}>
+            <td className="px-4 py-3 text-muted-foreground tabular-nums">{l.rank}</td>
+            <td className="px-4 py-3"><Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">{l.action}</Badge></td>
+            <td className="px-4 py-3 text-red-600 tabular-nums font-medium">{l.distress}</td>
+            <td className="px-4 py-3">
+              <p className="font-semibold text-foreground">{l.addr}</p>
+              <p className="text-[11px] text-muted-foreground">{l.line2}</p>
+              <p className="text-[11px] text-muted-foreground">{l.owner}</p>
+            </td>
+            <td className="px-4 py-3 text-foreground/80">{l.county}</td>
+            <td className="px-4 py-3">
+              <div className="flex flex-wrap gap-1">
+                {l.signals.map((s) => (
+                  <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{s}</span>
+                ))}
+              </div>
+            </td>
+            <td className="px-4 py-3"><TierBadge tier={l.tier} /></td>
+            <td className="px-4 py-3 text-right tabular-nums text-emerald-600 font-medium">{l.equity}</td>
+            <td className="px-4 py-3 text-right tabular-nums text-cyan-600 font-medium">{l.arv}</td>
+            <td className="px-4 py-3 text-right">
+              {isGraduated ? (
+                <InPipelineBadge />
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 px-2 gap-1 text-primary hover:text-primary"
+                  onClick={() =>
+                    request({
+                      id: l.addr,
+                      address: l.addr,
+                      city: l.line2,
+                      county: l.county,
+                      score: l.action,
+                      signals: l.signals,
+                    })
+                  }
+                >
+                  <Workflow className="h-3.5 w-3.5" /> Pipeline
+                </Button>
+              )}
+            </td>
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
 function HotSheetView() {
   return (
     <div className="space-y-4 pt-6">
