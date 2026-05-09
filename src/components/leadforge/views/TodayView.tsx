@@ -176,8 +176,8 @@ export function TodayView() {
             </div>
             <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
               {([
-                { v: "bar", icon: BarChart3, label: "Bar" },
                 { v: "line", icon: LineIcon, label: "Line" },
+                { v: "bar", icon: BarChart3, label: "Bar" },
                 { v: "area", icon: AreaIcon, label: "Area" },
               ] as { v: ChartType; icon: React.ElementType; label: string }[]).map((opt) => {
                 const Icon = opt.icon;
