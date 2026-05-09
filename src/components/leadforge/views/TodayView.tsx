@@ -88,6 +88,8 @@ type ChartType = "bar" | "line" | "area";
 
 export function TodayView() {
   const [chartType, setChartType] = React.useState<ChartType>("bar");
+  const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
+  const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
 
   return (
     <div className="space-y-6 pt-6">
