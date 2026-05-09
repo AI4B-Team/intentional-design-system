@@ -220,11 +220,15 @@ export default function LeadScout() {
         className="mb-6"
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="mb-6">
           <TabsTrigger value="search">
             <Search className="h-4 w-4 mr-2" />
-            Search
+            Web Search
+          </TabsTrigger>
+          <TabsTrigger value="ai-scan">
+            <ScanLine className="h-4 w-4 mr-2" />
+            AI Scan
           </TabsTrigger>
           <TabsTrigger value="leads">
             <Home className="h-4 w-4 mr-2" />
