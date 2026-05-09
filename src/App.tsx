@@ -395,7 +395,7 @@ const App = () => (
             <Route path="/search/ai-scan" element={<Navigate to="/lead-scout?tab=ai-scan" replace />} />
 
             {/* LEADS — Autonomous Lead Engine (was /harvest) */}
-            <Route path="/leads" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
+            <Route path="/leads" element={<ProtectedRoute><LeadForge /></ProtectedRoute>} />
             <Route path="/leads/prospects" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
               <Route index element={<HarvestAllLeads />} />
               <Route path="focus" element={<HarvestFocusList />} />
