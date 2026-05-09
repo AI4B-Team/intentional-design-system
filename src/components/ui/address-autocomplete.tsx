@@ -192,7 +192,7 @@ export function AddressAutocomplete({
 
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
-      <div className="relative flex items-center rounded-small border border-primary/40 ring-1 ring-primary/10 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+      <div className="relative flex items-center rounded-lg border-2 border-primary bg-surface-secondary transition-all">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
         <input
           ref={inputRef}
