@@ -304,12 +304,12 @@ export default function SellerLeads() {
           </div>
 
           {!websiteId && (
-            <Select value={websiteFilter} onValueChange={setWebsiteFilter}>
+            <Select value={websiteFilter || "__all__"} onValueChange={(v) => setWebsiteFilter(v === "__all__" ? "" : v)}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="All Websites" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Websites</SelectItem>
+                <SelectItem value="__all__">All Websites</SelectItem>
                 {websites?.map((w) => (
                   <SelectItem key={w.id} value={w.id}>
                     {w.name}
@@ -320,14 +320,14 @@ export default function SellerLeads() {
           )}
 
           <Select
-            value={statusFilter[0] || ""}
-            onValueChange={(val) => setStatusFilter(val ? [val] : [])}
+            value={statusFilter[0] || "__all__"}
+            onValueChange={(val) => setStatusFilter(val && val !== "__all__" ? [val] : [])}
           >
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Status</SelectItem>
+              <SelectItem value="__all__">All Status</SelectItem>
               {STATUS_OPTIONS.map((s) => (
                 <SelectItem key={s.value} value={s.value}>
                   {s.label}
@@ -336,12 +336,12 @@ export default function SellerLeads() {
             </SelectContent>
           </Select>
 
-          <Select value={timelineFilter} onValueChange={setTimelineFilter}>
+          <Select value={timelineFilter || "__all__"} onValueChange={(v) => setTimelineFilter(v === "__all__" ? "" : v)}>
             <SelectTrigger className="w-36">
               <SelectValue placeholder="Timeline" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Timelines</SelectItem>
+              <SelectItem value="__all__">All Timelines</SelectItem>
               {TIMELINE_OPTIONS.map((t) => (
                 <SelectItem key={t.value} value={t.value}>
                   {t.label}

@@ -526,7 +526,7 @@ export default function BulkOfferSender() {
                   </SelectTrigger>
                   <SelectContent>
                     {templatesLoading ? (
-                      <SelectItem value="" disabled>Loading...</SelectItem>
+                      <SelectItem value="__loading__" disabled>Loading...</SelectItem>
                     ) : templates && templates.length > 0 ? (
                       templates
                         .filter((t) => t.loi_type === loiType)

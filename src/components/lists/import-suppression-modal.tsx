@@ -281,12 +281,12 @@ export function ImportSuppressionModal({ open, onOpenChange }: ImportSuppression
 
               <div>
                 <Label>Zip Column</Label>
-                <Select value={zipCol} onValueChange={setZipCol}>
+                <Select value={zipCol || "__skip__"} onValueChange={(v) => setZipCol(v === "__skip__" ? "" : v)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Skip" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Skip</SelectItem>
+                    <SelectItem value="__skip__">Skip</SelectItem>
                     {headers.map((h, i) => (
                       <SelectItem key={i} value={String(i)}>
                         {h}
