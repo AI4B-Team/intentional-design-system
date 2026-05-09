@@ -15,7 +15,7 @@ import {
   Menu,
   Plus,
   User,
-  ChevronRight,
+  
   ChevronDown,
   UserPlus,
   Hammer,
