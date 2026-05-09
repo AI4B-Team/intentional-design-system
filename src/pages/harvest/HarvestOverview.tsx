@@ -38,6 +38,7 @@ const SERIES = [
 export default function HarvestOverview() {
   const { stats, signals, trend, integrations, feed } = useHarvestStats();
   const [showTrend, setShowTrend] = React.useState(true);
+  const [chartKind, setChartKind] = React.useState<ChartKind>("line");
 
   const dateLabel = new Date().toLocaleDateString(undefined, {
     weekday: "long",
