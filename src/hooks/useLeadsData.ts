@@ -34,7 +34,7 @@ export function useLeadsProperties(filters?: { minScore?: number; status?: strin
     queryFn: async () => {
       let q = supabase
         .from("leads_properties" as any)
-        .select("*, leads_scores(score, tier), leads_signals(signal_type, severity, detected_at)")
+        .select("*, leads_scores(opportunity_score, tier), leads_signals(signal_type, severity, detected_at)")
         .eq("organization_id", organizationId)
         .order("created_at", { ascending: false })
         .limit(200);
@@ -89,9 +89,9 @@ export function useLeadsFocus() {
       const rows = await safeFetch<any>(
         supabase
           .from("leads_properties" as any)
-          .select("*, leads_scores!inner(score, tier)")
+          .select("*, leads_scores!inner(opportunity_score, tier)")
           .eq("organization_id", organizationId)
-          .gte("leads_scores.score", 80)
+          .gte("leads_scores.opportunity_score", 80)
           .order("created_at", { ascending: false })
           .limit(50)
       );
@@ -112,7 +112,7 @@ export function useLeadsScores(propertyId?: string) {
         .select("*")
         .eq("organization_id", organizationId);
       if (propertyId) q = q.eq("lead_property_id", propertyId);
-      return safeFetch<any>(q.order("scored_at", { ascending: false }));
+      return safeFetch<any>(q.order("computed_at", { ascending: false }));
     },
   });
 }
@@ -164,7 +164,7 @@ export function useScraperHealth() {
           .from("leads_scraper_health" as any)
           .select("*")
           .eq("organization_id", organizationId)
-          .order("checked_at", { ascending: false })
+          .order("updated_at", { ascending: false })
       );
       if (rows.length > 0) return { rows, source: "live" as const };
       return { rows: feedHealth, source: "mock" as const };

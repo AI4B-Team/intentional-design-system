@@ -58,9 +58,9 @@ export default function HarvestOverview() {
 
   const stats = React.useMemo(() => {
     if (!isLive) return mockStats;
-    const hot = liveProps.filter((p: any) => (p.leads_scores?.[0]?.score ?? p.opportunityScore ?? 0) >= 80).length;
+    const hot = liveProps.filter((p: any) => (p.leads_scores?.[0]?.opportunity_score ?? p.opportunityScore ?? 0) >= 80).length;
     const warm = liveProps.filter((p: any) => {
-      const s = p.leads_scores?.[0]?.score ?? p.opportunityScore ?? 0;
+      const s = p.leads_scores?.[0]?.opportunity_score ?? p.opportunityScore ?? 0;
       return s >= 60 && s < 80;
     }).length;
     const watch = Math.max(0, liveProps.length - hot - warm);
