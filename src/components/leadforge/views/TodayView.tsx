@@ -284,9 +284,22 @@ export function TodayView() {
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <span
-                      className="h-2.5 w-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: d.color }}
-                    />
+                      className={cn(
+                        "h-4 w-4 rounded-[4px] border shrink-0 flex items-center justify-center transition-colors"
+                      )}
+                      style={{
+                        backgroundColor: active ? d.color : "transparent",
+                        borderColor: d.color,
+                      }}
+                      aria-checked={active}
+                      role="checkbox"
+                    >
+                      {active && (
+                        <svg viewBox="0 0 12 12" className="h-3 w-3 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M2.5 6.5L5 9l4.5-5.5" />
+                        </svg>
+                      )}
+                    </span>
                     <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span className="text-sm text-foreground truncate">{d.label}</span>
                   </div>
