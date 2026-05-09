@@ -101,7 +101,7 @@ const AutomationSettings = React.lazy(() => import("./pages/settings/AutomationS
 const SearchLayout = React.lazy(() => import("./pages/search/SearchLayout"));
 const SearchLookup = React.lazy(() => import("./pages/search/SearchLookup"));
 const SearchMap = React.lazy(() => import("./pages/search/SearchMap"));
-const SearchAIScan = React.lazy(() => import("./pages/search/SearchAIScan"));
+// SearchAIScan merged into LeadScout (AI Scan tab)
 const MarketplaceDeals = React.lazy(() => import("./pages/MarketplaceDeals"));
 const MarketplaceDealDetail = React.lazy(() => import("./pages/MarketplaceDealDetail"));
 const OfferCampaignWizard = React.lazy(() => import("./pages/OfferCampaignWizard"));
@@ -392,9 +392,7 @@ const App = () => (
             {/* SEARCH — merged into top header search + marketplace map. Keep redirect for back-compat. */}
             <Route path="/search" element={<Navigate to="/marketplace" replace />} />
             <Route path="/search/map" element={<Navigate to="/marketplace" replace />} />
-            <Route path="/search/ai-scan" element={<ProtectedRoute><SearchLayout /></ProtectedRoute>}>
-              <Route index element={<SearchAIScan />} />
-            </Route>
+            <Route path="/search/ai-scan" element={<Navigate to="/lead-scout?tab=ai-scan" replace />} />
 
             {/* LEADS — Autonomous Lead Engine (was /harvest) */}
             <Route path="/leads" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />

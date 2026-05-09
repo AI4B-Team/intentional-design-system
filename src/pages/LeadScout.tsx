@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSearchParams } from "react-router-dom";
 import { PageLayout, PageHeader } from "@/components/layout/page-layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,11 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle,
+  ScanLine,
 } from "lucide-react";
 import { useScrapeJobs, ScrapeJob, ScrapedLead } from "@/hooks/useScrapeJobs";
 import { cn } from "@/lib/utils";
+import SearchAIScan from "@/pages/search/SearchAIScan";
 
 const SOURCE_OPTIONS = [
   { value: "all_web", label: "All Web (Any Site)", icon: "🌐" },
@@ -152,7 +155,23 @@ export default function LeadScout() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [selectedSources, setSelectedSources] = React.useState<string[]>(["craigslist", "facebook"]);
   const [isShared, setIsShared] = React.useState(false);
-  const [activeTab, setActiveTab] = React.useState("search");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "search";
+  const [activeTab, setActiveTab] = React.useState(initialTab);
+
+  React.useEffect(() => {
+    const t = searchParams.get("tab");
+    if (t && t !== activeTab) setActiveTab(t);
+  }, [searchParams]);
+
+  const handleTabChange = (v: string) => {
+    setActiveTab(v);
+    setSearchParams((prev) => {
+      const p = new URLSearchParams(prev);
+      p.set("tab", v);
+      return p;
+    }, { replace: true });
+  };
 
   const handleSearch = () => {
     if (!searchQuery.trim()) return;
@@ -201,11 +220,15 @@ export default function LeadScout() {
         className="mb-6"
       />
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="mb-6">
           <TabsTrigger value="search">
             <Search className="h-4 w-4 mr-2" />
-            Search
+            Web Search
+          </TabsTrigger>
+          <TabsTrigger value="ai-scan">
+            <ScanLine className="h-4 w-4 mr-2" />
+            AI Scan
           </TabsTrigger>
           <TabsTrigger value="leads">
             <Home className="h-4 w-4 mr-2" />
@@ -323,6 +346,10 @@ export default function LeadScout() {
               ))}
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="ai-scan">
+          <SearchAIScan />
         </TabsContent>
 
         <TabsContent value="leads">
