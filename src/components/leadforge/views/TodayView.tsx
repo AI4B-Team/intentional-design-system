@@ -15,7 +15,7 @@ import {
   Gavel,
   Hammer,
   Flame as FireIcon,
-  Handcuffs,
+  Siren,
   HeartCrack,
   PiggyBank,
   Wrench,
