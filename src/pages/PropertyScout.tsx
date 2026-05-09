@@ -121,7 +121,7 @@ export default function PropertyScout() {
               </TabsTrigger>
               <TabsTrigger value="routes" className="gap-2">
                 <Map className="h-4 w-4" />
-                Routes
+                Maps
               </TabsTrigger>
               <TabsTrigger value="history" className="gap-2">
                 <History className="h-4 w-4" />
