@@ -106,7 +106,6 @@ export function LeadsTable({ variant = "all" }: LeadsTableProps) {
                 <th className="px-3 py-2 font-medium hidden lg:table-cell">Distress</th>
                 <th className="px-3 py-2 font-medium hidden xl:table-cell">Beds/Baths</th>
                 <th className="px-3 py-2 font-medium hidden lg:table-cell text-right">Est. Value</th>
-                <th className="px-3 py-2 font-medium" />
               </tr>
             </thead>
             <tbody>
@@ -143,16 +142,11 @@ export function LeadsTable({ variant = "all" }: LeadsTableProps) {
                   <td className="px-3 py-2 hidden lg:table-cell text-right tabular-nums">
                     {l.arvEstimate ? `$${l.arvEstimate.toLocaleString()}` : "—"}
                   </td>
-                  <td className="px-3 py-2 text-right">
-                    <Button size="sm" variant="ghost" className="h-7 gap-1.5">
-                      <Eye className="h-3.5 w-3.5" /> View
-                    </Button>
-                  </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-3 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={8} className="px-3 py-12 text-center text-sm text-muted-foreground">
                     No leads match your filters. Try widening the score range or removing filters.
                   </td>
                 </tr>
