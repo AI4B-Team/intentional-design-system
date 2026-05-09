@@ -3,11 +3,41 @@ import { PageLayout, PageHeader } from "@/components/layout/page-layout";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, AlertTriangle, XCircle, Activity } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, Activity, Loader2 } from "lucide-react";
 import { useEngineHealth } from "@/hooks/useHarvestStats";
+import { useScraperHealth } from "@/hooks/useLeadsData";
+import { formatDistanceToNow } from "date-fns";
 
 export default function EngineHealth() {
-  const { feedHealth, runLog } = useEngineHealth();
+  const { runLog } = useEngineHealth();
+  const { data, isLoading } = useScraperHealth();
+  const isLive = data?.source === "live";
+  const rows = (data?.rows ?? []) as any[];
+
+  const normalized = React.useMemo(
+    () =>
+      rows.map((r: any) => {
+        if (isLive) {
+          const status: "ok" | "warning" | "error" =
+            r.status === "healthy" || r.status === "ok"
+              ? "ok"
+              : r.status === "degraded" || r.status === "warning"
+              ? "warning"
+              : "error";
+          const lastTs = r.last_success_at || r.updated_at;
+          return {
+            county: r.metadata?.county || "—",
+            state: r.metadata?.state || "",
+            source: r.source_name,
+            lastRun: lastTs ? formatDistanceToNow(new Date(lastTs), { addSuffix: true }) : "—",
+            status,
+            recordsCaptured: r.records_last_run ?? 0,
+          };
+        }
+        return r;
+      }),
+    [rows, isLive]
+  );
 
   return (
     <PageLayout>
@@ -15,6 +45,13 @@ export default function EngineHealth() {
         title="Engine Health"
         description="Oversight Agent — monitors HARVEST scrapers, validation pipeline, and data quality."
       />
+
+      <div className="mb-3 flex items-center gap-2">
+        <Badge variant="outline" className={isLive ? "border-emerald-500/40 text-emerald-600" : "border-border text-muted-foreground"}>
+          {isLive ? "Live" : "Sample Data"}
+        </Badge>
+        {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+      </div>
 
       <Tabs defaultValue="feed">
         <TabsList>
@@ -37,11 +74,14 @@ export default function EngineHealth() {
                 </tr>
               </thead>
               <tbody>
-                {feedHealth.map((r, i) => (
+                {normalized.length === 0 && !isLoading && (
+                  <tr><td colSpan={5} className="px-3 py-6 text-center text-muted-foreground text-xs">No scraper data yet — agents will populate this on first run.</td></tr>
+                )}
+                {normalized.map((r: any, i: number) => (
                   <tr key={i} className="border-b border-border/40 hover:bg-muted/30">
                     <td className="px-3 py-2">
                       <span className="font-medium">{r.county}</span>
-                      <span className="text-muted-foreground"> · {r.state}</span>
+                      {r.state && <span className="text-muted-foreground"> · {r.state}</span>}
                     </td>
                     <td className="px-3 py-2 text-muted-foreground">{r.source}</td>
                     <td className="px-3 py-2 text-muted-foreground tabular-nums">{r.lastRun}</td>
