@@ -91,6 +91,7 @@ const UnifiedInbox = React.lazy(() => import("./pages/UnifiedInbox"));
 const Communications = React.lazy(() => import("./pages/Communications"));
 const Pipeline = React.lazy(() => import("./pages/Pipeline"));
 const HarvestOverview = React.lazy(() => import("./pages/harvest/HarvestOverview"));
+const LeadForge = React.lazy(() => import("./pages/LeadForge"));
 const HarvestLeadsLayout = React.lazy(() => import("./pages/harvest/HarvestLeadsLayout"));
 const HarvestAllLeads = React.lazy(() => import("./pages/harvest/HarvestAllLeads"));
 const HarvestFocusList = React.lazy(() => import("./pages/harvest/HarvestFocusList"));
@@ -321,7 +322,6 @@ const App = () => (
             <Route path="/websites" element={<ProtectedRoute><SellerWebsites /></ProtectedRoute>} />
             <Route path="/websites/new" element={<ProtectedRoute><AppLayout fullWidth><SellerWebsiteWizard /></AppLayout></ProtectedRoute>} />
             <Route path="/websites/:id/edit" element={<ProtectedRoute><SellerWebsiteEditor /></ProtectedRoute>} />
-            <Route path="/leads" element={<ProtectedRoute><SellerLeads /></ProtectedRoute>} />
             <Route path="/websites/:websiteId/leads" element={<ProtectedRoute><SellerLeads /></ProtectedRoute>} />
             <Route path="/websites/:id/analytics" element={<ProtectedRoute><WebsiteAnalytics /></ProtectedRoute>} />
             
@@ -395,7 +395,7 @@ const App = () => (
             <Route path="/search/ai-scan" element={<Navigate to="/lead-scout?tab=ai-scan" replace />} />
 
             {/* LEADS — Autonomous Lead Engine (was /harvest) */}
-            <Route path="/leads" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
+            <Route path="/leads" element={<ProtectedRoute><LeadForge /></ProtectedRoute>} />
             <Route path="/leads/prospects" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
               <Route index element={<HarvestAllLeads />} />
               <Route path="focus" element={<HarvestFocusList />} />
