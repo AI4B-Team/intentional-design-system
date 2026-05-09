@@ -1,155 +1,65 @@
-# RealElite Full Autonomy + Agent Support Roadmap
+# HARVEST — Autonomous Lead Engine
 
-## Vision
-Make RealElite the **only platform** needed for both real estate **investors** AND **agents** — fully autonomous from lead to close.
+A new top-level section in the Real Elite sidebar (between Pipeline and Mail) that scrapes public distress records every 2 hours, scores leads, and triggers outreach. The spec is 21 pages with 4+ pages, 4 Supabase tables, an agent pipeline, auto-trigger logic, and an oversight agent.
 
----
+Because this is large, I'll build it in two phases. Phase 1 is the **full UI scaffolding with mock data** so you can click through every screen immediately. Phase 2 wires up the backend.
 
-## Phase A: Agent Support (Role-Adaptive Platform)
-**Goal:** The platform adapts based on whether the user is an investor or agent.
+## Phase 1 — UI Scaffolding (this round)
 
-### A1. Role-Based UI Switching
-- Onboarding role selection already exists (Wholesaler, Fix & Flipper, etc.)
-- Add: **Agent**, **Broker**, **Team Lead** roles
-- Dashboard, sidebar labels, and terminology adapt based on role
-- Investors see: Leads, Deals, ARV, Equity, Exit Strategies
-- Agents see: Clients, Listings, CMA, Showings, Commissions
+### Navigation
+- Add **HARVEST** sidebar entry between Pipeline and Mail with sub-tabs: Overview · Leads · Outreach
+- Leads tab has nested tabs: All Leads · Focus List · Active Buyers
+- Outreach tab has nested tabs: Enrich · Mail · Sync
+- **Engine Health** lives only under Account/Settings (Feed Health · Deal Map · Agent Pipeline · Data Quality)
 
-### A2. Agent-Specific Tools
-- **CMA Generator** — AI-powered Comparative Market Analysis with PDF export
-- **Listing Presentation Builder** — Auto-generate branded listing presentations
-- **Client Portal** — Buyers/sellers see their transaction status, docs, timeline
-- **Showing Scheduler** — Calendar integration for property showings
-- **Commission Tracker** — Track GCI, splits, and projected income
+### Pages built
+1. `/harvest` → **Overview Dashboard** — greeting bar, primary "new leads" stat with CTA, 6 pipeline counters, 8 signal-type pills, 30-day trend chart (recharts), 4 quick-stat cards, integration status grid, live ticker
+2. `/harvest/leads` → **All Leads** table with collapsible filter bar, score badges (Hot/Warm/Watch/Archive), distress bar, lead detail slide-over modal with Property/Owner/Score/Signals tabs
+3. `/harvest/leads/focus` → **Focus List** (top-ranked, daily resort)
+4. `/harvest/leads/buyers` → **Active Buyers** sub-view
+5. `/harvest/outreach` → **Outreach** with Enrich/Mail/Sync sub-tabs and sync log
+6. `/settings/engine-health` → **Engine Health** oversight page (Feed Health · Deal Map · Agent Pipeline · Data Quality)
 
-### A3. Shared Infrastructure
-- Both investors and agents use the same: Pipeline, Calendar, Communications, Documents, AI Assistant
-- Role determines which features are highlighted and which terminology is used
+### Naming (strict — no borrowed terms)
+- HARVEST (not "Lead Forge"), Opportunity Score (0–100), Focus List, Confidence Score, Detect/Validate/Grade pipeline stages, Deal Map, Feed Health, Active Buyers, Outreach, Enrich, Sync, Engine Health
+- 8 signal types: Notice of Default · Estate Filing · Dissolution Record · Debt Recording · Tax Default · Property Citation · Vacancy Signal · Stale Listing
+- Score tiers: Hot 80–100 (red) · Warm 60–79 (orange) · Watch 40–59 (yellow) · Archive 0–39 (gray)
 
----
+### Design
+- Lighter than competitor: single hero stat, filters collapsed by default, score = badge + number (no inline bar charts), small muted pills for signals, modal for detail (not full-page nav)
+- Stick to existing **emerald + warm white** semantic tokens — no navy/cyan overhaul
+- Mobile: collapse to priority columns
 
-## Phase B: On-Market Scanner (Phase 8)
-**Goal:** Automatically find deals from MLS, Zillow, Redfin, FSBO sites.
+### Files (Phase 1)
+```
+src/types/harvest.ts                          // SignalType, Lead, FocusItem, OverviewStats types
+src/hooks/useHarvestStats.ts                  // returns mock data for now
+src/hooks/useHarvestLeads.ts                  // mock list + filters
+src/pages/harvest/HarvestLayout.tsx           // sub-tab shell
+src/pages/harvest/HarvestOverview.tsx
+src/pages/harvest/HarvestLeads.tsx            // wraps All / Focus / Buyers
+src/pages/harvest/HarvestOutreach.tsx         // Enrich / Mail / Sync sub-tabs
+src/pages/settings/EngineHealth.tsx
+src/components/harvest/ScoreBadge.tsx
+src/components/harvest/SignalPill.tsx
+src/components/harvest/LeadDetailModal.tsx
+src/components/harvest/LiveFeedTicker.tsx
+src/components/harvest/IntegrationStatusGrid.tsx
+```
+- Routes added in `src/App.tsx` (lazy-loaded)
+- Sidebar entry added with the existing nav pattern
 
-### B1. Scheduled Scraping
-- Firecrawl-powered scheduled scans (daily/hourly) of configured markets
-- Sources: Zillow, Redfin, Realtor.com, FSBO, Auction.com
-- Match against user's Buy Box criteria automatically
+## Phase 2 — Backend (next round, after you approve Phase 1)
 
-### B2. AI Scoring & Auto-Import
-- AI scores each listing for motivation signals (DOM, price drops, vacant, etc.)
-- Auto-import high-scoring leads into pipeline
-- For agents: Match listings to buyer client preferences
+- Supabase migrations: `harvest_properties`, `harvest_signals`, `harvest_enrichment`, `harvest_scores`, `harvest_integrations`, `harvest_runs` with RLS scoped to org
+- Edge functions: `harvest-detect` (scrape), `harvest-validate`, `harvest-grade`, `harvest-auto-trigger` (new lead → instant action), `harvest-engine-health`
+- Cron: every 2 hours
+- Replace mock hooks with real Supabase queries
+- Auto-trigger logic per spec §11 (Hot lead → enrich → mail/sync → daily-cap queue)
 
-### B3. Alert System
-- Push/SMS/email alerts for new matches
-- "Deal of the Day" auto-notification
+## Out of scope for this round
+- Real scraper scripts and county adapters (Phase 2)
+- Telegram broadcast (marked "future" in spec)
+- Self-healing scraper repair loop (Phase 2)
 
----
-
-## Phase C: Auto-Contracts & E-Signature
-**Goal:** One-click contract generation and sending.
-
-### C1. Contract Templates
-- Purchase Agreement, LOI, Novation, Assignment, Seller Finance
-- Agent templates: Listing Agreement, Buyer Rep, Addendums
-- AI pre-fills all fields from deal data (names, addresses, prices, terms)
-
-### C2. E-Signature Integration
-- Built-in e-signature system (existing Agreements/Signatures feature)
-- OR DocuSign/HelloSign connector
-- Auto-send contract when offer is accepted
-- Track signature status, send reminders
-
-### C3. AI Auto-Mode
-- When AI Auto is enabled: generate + send contract automatically
-- Human gets notification: "Contract sent to [seller] for [address]"
-
----
-
-## Phase D: Closing Coordination
-**Goal:** Automate everything from contract to closing.
-
-### D1. Transaction Milestone Tracking
-- Auto-create checklist: Earnest money, inspection, appraisal, title, survey, closing
-- Deadline tracking with auto-reminders to all parties
-- Integration with Transaction Roadmap (already built)
-
-### D2. Party Communication
-- Auto-notify title company, agent, buyer, seller at each milestone
-- Template-based communications per milestone
-- Escalation if deadlines are missed
-
-### D3. Title Company Integration
-- API connection to title companies (future)
-- Auto-order title search, request payoff letters
-- Track title status in real-time
-
----
-
-## Phase E: Closed-Loop Disposition
-**Goal:** Auto-sell deals to cash buyers.
-
-### E1. Smart Matching
-- When deal hits "under_contract", auto-match to verified cash buyers
-- Score buyers by: buy box fit, POF verification, close speed, reliability
-- Auto-blast deal to top matches
-
-### E2. Auto-Assignment
-- Generate assignment contracts automatically
-- Send to buyer for signature
-- Track and coordinate double-close if needed
-
-### E3. Buyer Marketplace Enhancement
-- Public deal pages auto-updated with status
-- Buyer interest tracking and auto-follow-up
-- "First to respond" priority system
-
----
-
-## Phase F: Revenue & ROI Dashboard
-**Goal:** Track profitability across all channels.
-
-### F1. Deal P&L
-- Track: acquisition cost, holding costs, rehab, assignment fee, sale price
-- Auto-calculate profit per deal
-- ROI per marketing channel
-
-### F2. Agent Commission Tracking
-- GCI tracking, team splits, brokerage fees
-- Projected vs actual income
-
-### F3. Cost-Per-Deal Analytics
-- Marketing spend per channel → leads → deals → profit
-- AI recommendations on budget allocation
-
----
-
-## Implementation Priority
-1. **Phase C** (Auto-Contracts) — Highest impact, extends existing Agreements feature
-2. **Phase B** (On-Market Scanner) — Leverages existing Firecrawl infrastructure
-3. **Phase A** (Agent Support) — Expands TAM significantly
-4. **Phase E** (Disposition Loop) — Extends existing dispo system
-5. **Phase D** (Closing Coordination) — Extends existing Transaction Roadmap
-6. **Phase F** (Revenue Dashboard) — Analytics layer on top
-
----
-
-## Current Status (Already Built)
-✅ AI Lead Scout (Firecrawl scraping)
-✅ AI Voice Agent (Vapi — inbound/outbound)
-✅ AI Deal Analyzer (ARV, comps, exit strategies)
-✅ AI Negotiation Engine
-✅ Auto-Offer Engine (buy box matching + LOI generation)
-✅ Campaign Engine (email/SMS/direct mail drips)
-✅ Disposition System (buyer management + public deal pages)
-✅ Agreements/Signatures (document templates + signing)
-✅ Transaction Roadmap (milestone tracking)
-✅ Communications Hub (calls, SMS, email)
-✅ Power Dialer + AI Co-Pilot
-✅ Pipeline Kanban + List views
-
-## Remaining API Key Dependencies
-- Twilio (6 secrets) — for live dialer/SMS
-- Stripe — for billing/monetization
-- GoHighLevel — optional CRM sync (user-configured)
+After Phase 1 you'll be able to click through every HARVEST screen with realistic mock data. Approve and I'll ship it.
