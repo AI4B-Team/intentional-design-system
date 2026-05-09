@@ -24,6 +24,8 @@ import {
   Gift,
   Check,
   ArrowLeft,
+  Bot,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
