@@ -1,65 +1,75 @@
-# HARVEST — Autonomous Lead Engine
+# Search + Leads — Phased Build Plan
 
-A new top-level section in the Real Elite sidebar (between Pipeline and Mail) that scrapes public distress records every 2 hours, scores leads, and triggers outreach. The spec is 21 pages with 4+ pages, 4 Supabase tables, an agent pipeline, auto-trigger logic, and an oversight agent.
+You picked the full build. This spec is large (8 tables, 4 background agents, automation cadence, settings panel, engine health). I'll deliver it across phases so each step is reviewable and reversible. Existing D4D map (`/d4d`) and Marketplace map UIs will not be touched — SEARCH > Map will only link into them.
 
-Because this is large, I'll build it in two phases. Phase 1 is the **full UI scaffolding with mock data** so you can click through every screen immediately. Phase 2 wires up the backend.
+## What stays as-is
+- Existing `harvest/*` pages (Overview, All Leads, Focus, Active Buyers, Outreach) — they become the LEADS section, just renamed/rerouted.
+- D4D map at `/d4d` and Marketplace map — unchanged.
+- Global top-nav search bar — keep current behavior, add deep-link to SEARCH > Lookup.
 
-## Phase 1 — UI Scaffolding (this round)
+## Phase 1 — Database (one migration)
+Create the unified data layer:
+- `leads_properties` (canonical record, `source` = auto_detect | manual | d4d_pin | manual_scan)
+- `leads_signals` (distress signals, type + detected_at + confidence)
+- `leads_enrichment` (owner data, phones, emails)
+- `leads_scores` (opportunity_score 0–100, computed by Grade agent)
+- `leads_outreach_log` (campaign sends; sms/mail/call/email; queued/sent/delivered/failed)
+- `leads_scan_jobs` (manual + scheduled scans, status + results)
+- `leads_scraper_health` (per-source status for Engine Health admin view)
+- `leads_pins` (D4D map pins from Search)
+- `automation_settings` (per-org switches: auto_campaigns, auto_enrich_hot, daily_cap, etc.)
 
-### Navigation
-- Add **HARVEST** sidebar entry between Pipeline and Mail with sub-tabs: Overview · Leads · Outreach
-- Leads tab has nested tabs: All Leads · Focus List · Active Buyers
-- Outreach tab has nested tabs: Enrich · Mail · Sync
-- **Engine Health** lives only under Account/Settings (Feed Health · Deal Map · Agent Pipeline · Data Quality)
+All organization-scoped, RLS-policied via `get_user_organization()` and `user_has_role()`. Indexes on (organization_id, created_at), source, score.
 
-### Pages built
-1. `/harvest` → **Overview Dashboard** — greeting bar, primary "new leads" stat with CTA, 6 pipeline counters, 8 signal-type pills, 30-day trend chart (recharts), 4 quick-stat cards, integration status grid, live ticker
-2. `/harvest/leads` → **All Leads** table with collapsible filter bar, score badges (Hot/Warm/Watch/Archive), distress bar, lead detail slide-over modal with Property/Owner/Score/Signals tabs
-3. `/harvest/leads/focus` → **Focus List** (top-ranked, daily resort)
-4. `/harvest/leads/buyers` → **Active Buyers** sub-view
-5. `/harvest/outreach` → **Outreach** with Enrich/Mail/Sync sub-tabs and sync log
-6. `/settings/engine-health` → **Engine Health** oversight page (Feed Health · Deal Map · Agent Pipeline · Data Quality)
+## Phase 2 — Routing + nav split
+- New top-level routes: `/search` and `/leads` (LEADS replaces `/harvest`, with redirect from `/harvest/*`).
+- `/search` tabs: Lookup, Map, AI Scan.
+  - Lookup → existing PropertyDetail flow (address search → analysis).
+  - Map → entry cards that route to `/d4d` and `/marketplace` (no map redesign).
+  - AI Scan → form to launch a scan job; writes to `leads_scan_jobs`.
+- `/leads` tabs: Today (default), Prospects. Prospects has Focus List + Active Buyers sub-views.
+- Sidebar gets two clean entries: "Search" and "Leads". `/harvest` removed from sidebar but kept routable via redirect.
 
-### Naming (strict — no borrowed terms)
-- HARVEST (not "Lead Forge"), Opportunity Score (0–100), Focus List, Confidence Score, Detect/Validate/Grade pipeline stages, Deal Map, Feed Health, Active Buyers, Outreach, Enrich, Sync, Engine Health
-- 8 signal types: Notice of Default · Estate Filing · Dissolution Record · Debt Recording · Tax Default · Property Citation · Vacancy Signal · Stale Listing
-- Score tiers: Hot 80–100 (red) · Warm 60–79 (orange) · Watch 40–59 (yellow) · Archive 0–39 (gray)
+## Phase 3 — Hooks + data wiring (mock-fallback)
+- `useLeadsToday`, `useLeadsProspects`, `useLeadsScores`, `useLeadOutreach`, `useScanJobs`, `useScraperHealth`, `useAutomationSettings`.
+- Each hook reads real Supabase tables; if empty, falls back to existing harvest mock so UI never looks dead before agents run.
 
-### Design
-- Lighter than competitor: single hero stat, filters collapsed by default, score = badge + number (no inline bar charts), small muted pills for signals, modal for detail (not full-page nav)
-- Stick to existing **emerald + warm white** semantic tokens — no navy/cyan overhaul
-- Mobile: collapse to priority columns
+## Phase 4 — Background agents (edge functions)
+- `agent-detect` — pulls/synthesizes signals, writes `leads_signals` + upserts `leads_properties`.
+- `agent-validate` — runs enrichment via existing `skip-trace` + ATTOM where possible.
+- `agent-grade` — computes `opportunity_score` (deterministic formula from spec) → `leads_scores`.
+- `agent-oversight` — pings each scraper, writes `leads_scraper_health`.
+- `auto-campaign-trigger` — when score ≥ threshold and `automation_settings.auto_campaigns` is on, creates `leads_outreach_log` row and dispatches via existing `lob-send-campaign` / Twilio.
+- pg_cron schedule per spec cadence (every 2h / daily / weekly).
 
-### Files (Phase 1)
-```
-src/types/harvest.ts                          // SignalType, Lead, FocusItem, OverviewStats types
-src/hooks/useHarvestStats.ts                  // returns mock data for now
-src/hooks/useHarvestLeads.ts                  // mock list + filters
-src/pages/harvest/HarvestLayout.tsx           // sub-tab shell
-src/pages/harvest/HarvestOverview.tsx
-src/pages/harvest/HarvestLeads.tsx            // wraps All / Focus / Buyers
-src/pages/harvest/HarvestOutreach.tsx         // Enrich / Mail / Sync sub-tabs
-src/pages/settings/EngineHealth.tsx
-src/components/harvest/ScoreBadge.tsx
-src/components/harvest/SignalPill.tsx
-src/components/harvest/LeadDetailModal.tsx
-src/components/harvest/LiveFeedTicker.tsx
-src/components/harvest/IntegrationStatusGrid.tsx
-```
-- Routes added in `src/App.tsx` (lazy-loaded)
-- Sidebar entry added with the existing nav pattern
+## Phase 5 — Settings
+- `/settings/automation` — toggles: auto-detect, auto-enrich hot leads, auto-campaigns, daily cap, score threshold, suppression rules.
+- `/settings/engine-health` (admin only) — already scaffolded; wire to `leads_scraper_health`.
 
-## Phase 2 — Backend (next round, after you approve Phase 1)
+## Phase 6 — Polish
+- LeadDetailModal upgraded to show signals, score, enrichment, outreach history.
+- Manual lead-add form writing `source='manual'`.
+- Delivery: per-phase commits so you can stop after any phase.
 
-- Supabase migrations: `harvest_properties`, `harvest_signals`, `harvest_enrichment`, `harvest_scores`, `harvest_integrations`, `harvest_runs` with RLS scoped to org
-- Edge functions: `harvest-detect` (scrape), `harvest-validate`, `harvest-grade`, `harvest-auto-trigger` (new lead → instant action), `harvest-engine-health`
-- Cron: every 2 hours
-- Replace mock hooks with real Supabase queries
-- Auto-trigger logic per spec §11 (Hot lead → enrich → mail/sync → daily-cap queue)
+---
 
-## Out of scope for this round
-- Real scraper scripts and county adapters (Phase 2)
-- Telegram broadcast (marked "future" in spec)
-- Self-healing scraper repair loop (Phase 2)
+## Technical notes (skip if not relevant)
+- Score formula (from spec): weighted blend of signal severity, equity, days-since-detected decay, enrichment completeness — clamped 0–100. HOT > 80, Warm 60–80, Cold < 60.
+- Auto-campaign quality gates: score ≥ threshold, valid contact data present, not in `suppression_list`, daily cap not hit, lead not already contacted within cooldown.
+- Cadence (cron):
+  ```text
+  detect (pre-foreclosure, tax, code)  every 2h
+  detect (probate, divorce, eviction)  daily 03:00
+  validate (enrich hot leads)          every 30m
+  grade                                after each detect/validate run
+  oversight                            every 15m
+  ```
+- All edge functions use Lovable AI Gateway where AI is needed (no extra keys).
+- Existing tables (`properties`, `cash_buyers`, `unified_actions`, `suppression_list`) will be referenced, not duplicated. `leads_properties` links to `properties` via `property_id` when a property already exists.
 
-After Phase 1 you'll be able to click through every HARVEST screen with realistic mock data. Approve and I'll ship it.
+---
+
+## What I'll do next if you approve
+Start with **Phase 1 (migration)**. After it's applied I'll continue straight into Phase 2 (routing) in the same loop. Phases 4+ will be follow-up messages so each agent can be reviewed independently.
+
+Reply with anything you want changed — otherwise I'll kick off Phase 1.

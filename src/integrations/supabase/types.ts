@@ -337,6 +337,48 @@ export type Database = {
           },
         ]
       }
+      automation_settings: {
+        Row: {
+          auto_campaign_score_threshold: number
+          auto_campaigns_enabled: boolean
+          auto_detect_enabled: boolean
+          auto_enrich_hot: boolean
+          cooldown_days: number
+          created_at: string
+          daily_campaign_cap: number
+          default_campaign_type: string
+          id: string
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          auto_campaign_score_threshold?: number
+          auto_campaigns_enabled?: boolean
+          auto_detect_enabled?: boolean
+          auto_enrich_hot?: boolean
+          cooldown_days?: number
+          created_at?: string
+          daily_campaign_cap?: number
+          default_campaign_type?: string
+          id?: string
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          auto_campaign_score_threshold?: number
+          auto_campaigns_enabled?: boolean
+          auto_detect_enabled?: boolean
+          auto_enrich_hot?: boolean
+          cooldown_days?: number
+          created_at?: string
+          daily_campaign_cap?: number
+          default_campaign_type?: string
+          id?: string
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       batch_offer_items: {
         Row: {
           batch_id: string
@@ -4646,6 +4688,442 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_enrichment: {
+        Row: {
+          created_at: string
+          emails: Json | null
+          enriched_at: string
+          enrichment_source: string | null
+          id: string
+          is_absentee: boolean | null
+          lead_property_id: string
+          mailing_address: string | null
+          mailing_city: string | null
+          mailing_state: string | null
+          mailing_zip: string | null
+          organization_id: string
+          owner_first_name: string | null
+          owner_last_name: string | null
+          owner_name: string | null
+          ownership_length_years: number | null
+          phones: Json | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          emails?: Json | null
+          enriched_at?: string
+          enrichment_source?: string | null
+          id?: string
+          is_absentee?: boolean | null
+          lead_property_id: string
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          organization_id: string
+          owner_first_name?: string | null
+          owner_last_name?: string | null
+          owner_name?: string | null
+          ownership_length_years?: number | null
+          phones?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          emails?: Json | null
+          enriched_at?: string
+          enrichment_source?: string | null
+          id?: string
+          is_absentee?: boolean | null
+          lead_property_id?: string
+          mailing_address?: string | null
+          mailing_city?: string | null
+          mailing_state?: string | null
+          mailing_zip?: string | null
+          organization_id?: string
+          owner_first_name?: string | null
+          owner_last_name?: string | null
+          owner_name?: string | null
+          ownership_length_years?: number | null
+          phones?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_enrichment_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_outreach_log: {
+        Row: {
+          campaign_type: string
+          created_at: string
+          delivered_at: string | null
+          error_message: string | null
+          external_ref: string | null
+          id: string
+          lead_property_id: string
+          organization_id: string
+          payload: Json | null
+          sent_at: string | null
+          status: string
+          trigger_mode: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          campaign_type: string
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          external_ref?: string | null
+          id?: string
+          lead_property_id: string
+          organization_id: string
+          payload?: Json | null
+          sent_at?: string | null
+          status?: string
+          trigger_mode?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          campaign_type?: string
+          created_at?: string
+          delivered_at?: string | null
+          error_message?: string | null
+          external_ref?: string | null
+          id?: string
+          lead_property_id?: string
+          organization_id?: string
+          payload?: Json | null
+          sent_at?: string | null
+          status?: string
+          trigger_mode?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_outreach_log_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_pins: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          latitude: number
+          lead_property_id: string | null
+          longitude: number
+          notes: string | null
+          organization_id: string
+          pinned_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          latitude: number
+          lead_property_id?: string | null
+          longitude: number
+          notes?: string | null
+          organization_id: string
+          pinned_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          latitude?: number
+          lead_property_id?: string | null
+          longitude?: number
+          notes?: string | null
+          organization_id?: string
+          pinned_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_pins_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_properties: {
+        Row: {
+          address: string
+          address_hash: string | null
+          asset_class: string | null
+          baths: number | null
+          beds: number | null
+          city: string | null
+          county: string | null
+          created_at: string
+          detected_at: string
+          estimated_equity: number | null
+          estimated_value: number | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          organization_id: string
+          property_id: string | null
+          source: string
+          sqft: number | null
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+          year_built: number | null
+          zip: string | null
+        }
+        Insert: {
+          address: string
+          address_hash?: string | null
+          asset_class?: string | null
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          detected_at?: string
+          estimated_equity?: number | null
+          estimated_value?: number | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          organization_id: string
+          property_id?: string | null
+          source: string
+          sqft?: number | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Update: {
+          address?: string
+          address_hash?: string | null
+          asset_class?: string | null
+          baths?: number | null
+          beds?: number | null
+          city?: string | null
+          county?: string | null
+          created_at?: string
+          detected_at?: string
+          estimated_equity?: number | null
+          estimated_value?: number | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          organization_id?: string
+          property_id?: string | null
+          source?: string
+          sqft?: number | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          year_built?: number | null
+          zip?: string | null
+        }
+        Relationships: []
+      }
+      leads_scan_jobs: {
+        Row: {
+          area: Json | null
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          job_type: string
+          organization_id: string
+          results_count: number
+          signal_types: string[] | null
+          started_at: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          area?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_type: string
+          organization_id: string
+          results_count?: number
+          signal_types?: string[] | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          area?: Json | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          job_type?: string
+          organization_id?: string
+          results_count?: number
+          signal_types?: string[] | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      leads_scores: {
+        Row: {
+          computed_at: string
+          created_at: string
+          id: string
+          lead_property_id: string
+          opportunity_score: number
+          organization_id: string
+          score_breakdown: Json | null
+          tier: string
+        }
+        Insert: {
+          computed_at?: string
+          created_at?: string
+          id?: string
+          lead_property_id: string
+          opportunity_score?: number
+          organization_id: string
+          score_breakdown?: Json | null
+          tier?: string
+        }
+        Update: {
+          computed_at?: string
+          created_at?: string
+          id?: string
+          lead_property_id?: string
+          opportunity_score?: number
+          organization_id?: string
+          score_breakdown?: Json | null
+          tier?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_scores_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leads_scraper_health: {
+        Row: {
+          created_at: string
+          failure_reason: string | null
+          id: string
+          last_failure_at: string | null
+          last_success_at: string | null
+          metadata: Json | null
+          organization_id: string
+          records_last_run: number
+          source_name: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          metadata?: Json | null
+          organization_id: string
+          records_last_run?: number
+          source_name: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          last_failure_at?: string | null
+          last_success_at?: string | null
+          metadata?: Json | null
+          organization_id?: string
+          records_last_run?: number
+          source_name?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      leads_signals: {
+        Row: {
+          confidence: number
+          created_at: string
+          detected_at: string
+          id: string
+          lead_property_id: string
+          organization_id: string
+          payload: Json | null
+          severity: string
+          signal_type: string
+          source: string | null
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          detected_at?: string
+          id?: string
+          lead_property_id: string
+          organization_id: string
+          payload?: Json | null
+          severity?: string
+          signal_type: string
+          source?: string | null
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          detected_at?: string
+          id?: string
+          lead_property_id?: string
+          organization_id?: string
+          payload?: Json | null
+          severity?: string
+          signal_type?: string
+          source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_signals_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
             referencedColumns: ["id"]
           },
         ]
