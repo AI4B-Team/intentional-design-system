@@ -159,7 +159,7 @@ export function MarketplaceSearchBar({ onLocationSelect, onModeSwitch, onQueryCh
 
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
-      <div className="flex items-center h-9 rounded-lg border border-border/60 bg-surface-secondary overflow-hidden">
+      <div className="flex items-center h-9 rounded-lg border-2 border-primary bg-surface-secondary overflow-hidden">
         <Search className="ml-2.5 h-4 w-4 text-muted-foreground flex-shrink-0" />
         <input
           ref={inputRef}
