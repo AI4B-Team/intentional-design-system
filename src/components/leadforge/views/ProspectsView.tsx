@@ -9,10 +9,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck } from "lucide-react";
+import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
+import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
 
 type SubTab = "all" | "hot" | "urgency" | "investors";
+
+const GraduationCtx = React.createContext<{
+  graduated: Set<string>;
+  request: (c: PipelineCandidate) => void;
+}>({ graduated: new Set(), request: () => {} });
 
 const SUBTABS: { v: SubTab; label: string; icon?: React.ElementType }[] = [
   { v: "all", label: "All Prospects" },
@@ -76,6 +83,123 @@ function DistressBar({ value }: { value: number }) {
       </div>
       <span className="text-xs tabular-nums text-foreground/80">{value}</span>
     </div>
+  );
+}
+
+function HotSheetRows() {
+  const { graduated, request } = React.useContext(GraduationCtx);
+  return (
+    <>
+      {HOT_LEADS.map((l) => {
+        const isGraduated = graduated.has(l.addr);
+        return (
+          <tr key={l.rank} className={cn("border-t border-border hover:bg-muted/30", isGraduated && "opacity-70")}>
+            <td className="px-4 py-3 text-muted-foreground tabular-nums">{l.rank}</td>
+            <td className="px-4 py-3"><Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">{l.action}</Badge></td>
+            <td className="px-4 py-3 text-red-600 tabular-nums font-medium">{l.distress}</td>
+            <td className="px-4 py-3">
+              <p className="font-semibold text-foreground">{l.addr}</p>
+              <p className="text-[11px] text-muted-foreground">{l.line2}</p>
+              <p className="text-[11px] text-muted-foreground">{l.owner}</p>
+            </td>
+            <td className="px-4 py-3 text-foreground/80">{l.county}</td>
+            <td className="px-4 py-3">
+              <div className="flex flex-wrap gap-1">
+                {l.signals.map((s) => (
+                  <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{s}</span>
+                ))}
+              </div>
+            </td>
+            <td className="px-4 py-3"><TierBadge tier={l.tier} /></td>
+            <td className="px-4 py-3 text-right tabular-nums text-emerald-600 font-medium">{l.equity}</td>
+            <td className="px-4 py-3 text-right tabular-nums text-cyan-600 font-medium">{l.arv}</td>
+            <td className="px-4 py-3 text-right">
+              {isGraduated ? (
+                <InPipelineBadge />
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 px-2 gap-1 text-primary hover:text-primary"
+                  onClick={() =>
+                    request({
+                      id: l.addr,
+                      address: l.addr,
+                      city: l.line2,
+                      county: l.county,
+                      score: l.action,
+                      signals: l.signals,
+                    })
+                  }
+                >
+                  <Workflow className="h-3.5 w-3.5" /> Pipeline
+                </Button>
+              )}
+            </td>
+          </tr>
+        );
+      })}
+    </>
+  );
+}
+
+function ProspectRows() {
+  const { graduated, request } = React.useContext(GraduationCtx);
+  return (
+    <>
+      {ROWS.map((r) => {
+        const isGraduated = graduated.has(r.addr);
+        return (
+          <tr key={r.addr} className={cn("border-t border-border hover:bg-muted/30", isGraduated && "opacity-70")}>
+            <td className="px-3 py-2.5 font-medium text-foreground">{r.addr}</td>
+            <td className="px-3 py-2.5 text-foreground/80">{r.city}</td>
+            <td className="px-3 py-2.5 text-foreground/80">{r.owner}</td>
+            <td className="px-3 py-2.5"><TierBadge tier={r.tier} /></td>
+            <td className="px-3 py-2.5">
+              {r.asset === "Unknown" ? (
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Unknown</span>
+              ) : (
+                <span className="text-[11px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{r.asset}</span>
+              )}
+            </td>
+            <td className="px-3 py-2.5"><DistressBar value={r.distress} /></td>
+            <td className="px-3 py-2.5 text-right tabular-nums">{r.signals}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.beds}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.baths}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.sqft}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.year}</td>
+            <td className="px-3 py-2.5 text-right tabular-nums font-medium text-foreground">{r.value}</td>
+            <td className="px-3 py-2.5 text-right">
+              {isGraduated ? (
+                <InPipelineBadge />
+              ) : (
+                <div className="flex items-center justify-end gap-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 px-2 text-primary hover:text-primary gap-1"
+                    onClick={() =>
+                      request({
+                        id: r.addr,
+                        address: r.addr,
+                        city: r.city,
+                        score: r.distress,
+                        signals: ["distress"],
+                      })
+                    }
+                  >
+                    <Workflow className="h-3.5 w-3.5" /> Pipeline
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-7 text-primary hover:text-primary gap-1">
+                    View <ArrowUpRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              )}
+            </td>
+          </tr>
+        );
+      })}
+    </>
   );
 }
 
@@ -149,34 +273,11 @@ function HotSheetView() {
                 <th className="px-4 py-2.5 text-left font-semibold">Tier</th>
                 <th className="px-4 py-2.5 text-right font-semibold">Equity</th>
                 <th className="px-4 py-2.5 text-right font-semibold">ARV</th>
-                <th className="px-4 py-2.5 text-center font-semibold">Absentee</th>
+                <th className="px-4 py-2.5 text-right font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
-              {HOT_LEADS.map((l) => (
-                <tr key={l.rank} className="border-t border-border hover:bg-muted/30">
-                  <td className="px-4 py-3 text-muted-foreground tabular-nums">{l.rank}</td>
-                  <td className="px-4 py-3"><Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">{l.action}</Badge></td>
-                  <td className="px-4 py-3 text-red-600 tabular-nums font-medium">{l.distress}</td>
-                  <td className="px-4 py-3">
-                    <p className="font-semibold text-foreground">{l.addr}</p>
-                    <p className="text-[11px] text-muted-foreground">{l.line2}</p>
-                    <p className="text-[11px] text-muted-foreground">{l.owner}</p>
-                  </td>
-                  <td className="px-4 py-3 text-foreground/80">{l.county}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-1">
-                      {l.signals.map((s) => (
-                        <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{s}</span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3"><TierBadge tier={l.tier} /></td>
-                  <td className="px-4 py-3 text-right tabular-nums text-emerald-600 font-medium">{l.equity}</td>
-                  <td className="px-4 py-3 text-right tabular-nums text-cyan-600 font-medium">{l.arv}</td>
-                  <td className="px-4 py-3 text-center text-emerald-600 text-xs">✓ absentee</td>
-                </tr>
-              ))}
+              <HotSheetRows />
             </tbody>
           </table>
         </div>
@@ -252,33 +353,7 @@ function AllProspectsView() {
               </tr>
             </thead>
             <tbody>
-              {ROWS.map((r) => (
-                <tr key={r.addr} className="border-t border-border hover:bg-muted/30">
-                  <td className="px-3 py-2.5 font-medium text-foreground">{r.addr}</td>
-                  <td className="px-3 py-2.5 text-foreground/80">{r.city}</td>
-                  <td className="px-3 py-2.5 text-foreground/80">{r.owner}</td>
-                  <td className="px-3 py-2.5"><TierBadge tier={r.tier} /></td>
-                  <td className="px-3 py-2.5">
-                    {r.asset === "Unknown" ? (
-                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">Unknown</span>
-                    ) : (
-                      <span className="text-[11px] px-1.5 py-0.5 rounded bg-violet-50 text-violet-700 border border-violet-200">{r.asset}</span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2.5"><DistressBar value={r.distress} /></td>
-                  <td className="px-3 py-2.5 text-right tabular-nums">{r.signals}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.beds}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.baths}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.sqft}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums text-muted-foreground">{r.year}</td>
-                  <td className="px-3 py-2.5 text-right tabular-nums font-medium text-foreground">{r.value}</td>
-                  <td className="px-3 py-2.5 text-right">
-                    <Button size="sm" variant="ghost" className="h-7 text-primary hover:text-primary gap-1">
-                      View <ArrowUpRight className="h-3 w-3" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+              <ProspectRows />
             </tbody>
           </table>
         </div>
@@ -297,37 +372,56 @@ function AllProspectsView() {
 
 export function ProspectsView() {
   const [sub, setSub] = React.useState<SubTab>("all");
+  const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
+  const [target, setTarget] = React.useState<PipelineCandidate | null>(null);
+
+  const ctxValue = React.useMemo(
+    () => ({ graduated, request: (c: PipelineCandidate) => setTarget(c) }),
+    [graduated]
+  );
+
   return (
-    <div className="pt-4">
-      <div className="flex items-center gap-2">
-        {SUBTABS.map((t) => {
-          const active = sub === t.v;
-          const Icon = t.icon;
-          return (
-            <button
-              key={t.v}
-              onClick={() => setSub(t.v)}
-              className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted/50 text-muted-foreground hover:bg-muted"
-              )}
-            >
-              {Icon && <Icon className="h-3.5 w-3.5" />}
-              {t.label}
-            </button>
-          );
-        })}
+    <GraduationCtx.Provider value={ctxValue}>
+      <div className="pt-4">
+        <div className="flex items-center gap-2">
+          {SUBTABS.map((t) => {
+            const active = sub === t.v;
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.v}
+                onClick={() => setSub(t.v)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors",
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted/50 text-muted-foreground hover:bg-muted"
+                )}
+              >
+                {Icon && <Icon className="h-3.5 w-3.5" />}
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+        {sub === "all" && <AllProspectsView />}
+        {sub === "hot" && <HotSheetView />}
+        {sub === "urgency" && (
+          <Card className="p-12 text-center mt-6 text-muted-foreground">Urgency view — coming next</Card>
+        )}
+        {sub === "investors" && (
+          <Card className="p-12 text-center mt-6 text-muted-foreground">Investors view — coming next</Card>
+        )}
+
+        <MoveToPipelineModal
+          open={!!target}
+          onOpenChange={(o) => !o && setTarget(null)}
+          candidate={target}
+          onConfirm={() => {
+            if (target) setGraduated((g) => new Set(g).add(target.id));
+          }}
+        />
       </div>
-      {sub === "all" && <AllProspectsView />}
-      {sub === "hot" && <HotSheetView />}
-      {sub === "urgency" && (
-        <Card className="p-12 text-center mt-6 text-muted-foreground">Urgency view — coming next</Card>
-      )}
-      {sub === "investors" && (
-        <Card className="p-12 text-center mt-6 text-muted-foreground">Investors view — coming next</Card>
-      )}
-    </div>
+    </GraduationCtx.Provider>
   );
 }
