@@ -190,9 +190,6 @@ function ProspectRows() {
                   >
                     <Workflow className="h-3.5 w-3.5" /> Pipeline
                   </Button>
-                  <Button size="sm" variant="ghost" className="h-7 text-primary hover:text-primary gap-1">
-                    View <ArrowUpRight className="h-3 w-3" />
-                  </Button>
                 </div>
               )}
             </td>
