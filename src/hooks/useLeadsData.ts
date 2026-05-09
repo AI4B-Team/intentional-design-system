@@ -10,7 +10,7 @@ import type { HarvestLead } from "@/types/harvest";
  * existing harvest mock so the UI never looks dead before agents run.
  */
 
-async function safeFetch<T>(promise: Promise<{ data: any; error: any }>): Promise<T[]> {
+async function safeFetch<T>(promise: any): Promise<T[]> {
   try {
     const { data, error } = await promise;
     if (error) {
