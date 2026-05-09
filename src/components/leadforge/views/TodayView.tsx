@@ -45,15 +45,17 @@ const UTILITY_TILES = [
 ];
 
 const DISTRESS_TYPES = [
-  { label: "Pre-Foreclosure", count: 412, icon: Gavel },
-  { label: "Tax Delinquency", count: 1203, icon: AlertTriangle },
-  { label: "Probate", count: 287, icon: FileText },
-  { label: "Code Violation", count: 564, icon: Building2 },
-  { label: "Divorce", count: 142, icon: Scale },
-  { label: "Vacant", count: 891, icon: Home },
-  { label: "Liens & Judgments", count: 647, icon: Skull },
-  { label: "Expired Listing", count: 358, icon: TrendingUp },
-];
+  { key: "preForeclosure", label: "Pre-Foreclosure", count: 412, icon: Gavel, color: "hsl(0 72% 51%)" },
+  { key: "taxDelinquency", label: "Tax Delinquency", count: 1203, icon: AlertTriangle, color: "hsl(38 92% 50%)" },
+  { key: "probate", label: "Probate", count: 287, icon: FileText, color: "hsl(258 70% 58%)" },
+  { key: "codeViolation", label: "Code Violation", count: 564, icon: Building2, color: "hsl(24 90% 52%)" },
+  { key: "divorce", label: "Divorce", count: 142, icon: Scale, color: "hsl(330 75% 55%)" },
+  { key: "vacant", label: "Vacant", count: 891, icon: Home, color: "hsl(199 88% 48%)" },
+  { key: "liens", label: "Liens & Judgments", count: 647, icon: Skull, color: "hsl(0 0% 35%)" },
+  { key: "expired", label: "Expired Listing", count: 358, icon: TrendingUp, color: "hsl(158 78% 36%)" },
+] as const;
+
+type LeadKey = typeof DISTRESS_TYPES[number]["key"];
 
 const TICKER = [
   "Phone-Ready Lead Pushed To Call Queue · 1m ago",
@@ -78,16 +80,41 @@ const ACTIVITY = [
   { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago" },
 ];
 
-// 30-day trend data
-const TREND_DATA = Array.from({ length: 30 }).map((_, i) => ({
-  day: `D${i + 1}`,
-  signals: Math.round(30 + Math.abs(Math.sin(i * 0.7)) * 70 + (i > 20 ? 15 : 0)),
-}));
+// 30-day trend data — per lead type
+const TREND_DATA = Array.from({ length: 30 }).map((_, i) => {
+  const row: Record<string, number | string> = { day: `D${i + 1}` };
+  DISTRESS_TYPES.forEach((t, idx) => {
+    const base = Math.max(4, t.count / 60);
+    const wave = Math.abs(Math.sin(i * 0.5 + idx)) * base;
+    row[t.key] = Math.round(base * 0.6 + wave + (i > 22 ? base * 0.2 : 0));
+  });
+  return row;
+});
 
 type ChartType = "bar" | "line" | "area";
 
 export function TodayView() {
-  const [chartType, setChartType] = React.useState<ChartType>("bar");
+  const [chartType, setChartType] = React.useState<ChartType>("line");
+  const [selected, setSelected] = React.useState<Set<LeadKey>>(
+    new Set(DISTRESS_TYPES.map((d) => d.key))
+  );
+  const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
+  const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
+
+  const activeTypes = DISTRESS_TYPES.filter((d) => selected.has(d.key));
+
+  const toggleType = (key: LeadKey) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        if (next.size > 1) next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
   const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
   const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
 
