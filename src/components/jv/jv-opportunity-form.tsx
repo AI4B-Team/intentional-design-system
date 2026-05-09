@@ -137,14 +137,14 @@ export function JVOpportunityForm({
             <div className="space-y-2">
               <Label>Link to Property (Optional)</Label>
               <Select
-                value={formData.property_id}
-                onValueChange={(v) => setFormData((p) => ({ ...p, property_id: v }))}
+                value={formData.property_id || "__none__"}
+                onValueChange={(v) => setFormData((p) => ({ ...p, property_id: v === "__none__" ? "" : v }))}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a property" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No property linked</SelectItem>
+                  <SelectItem value="__none__">No property linked</SelectItem>
                   {properties.map((prop) => (
                     <SelectItem key={prop.id} value={prop.id}>
                       {prop.address}, {prop.city}, {prop.state}

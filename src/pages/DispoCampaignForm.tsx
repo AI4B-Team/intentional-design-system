@@ -596,16 +596,16 @@ export default function DispoCampaignForm() {
                     <div>
                       <Label>Min Rating</Label>
                       <Select
-                        value={customFilter.minRating}
+                        value={customFilter.minRating || "__any__"}
                         onValueChange={(v) =>
-                          setCustomFilter((prev) => ({ ...prev, minRating: v }))
+                          setCustomFilter((prev) => ({ ...prev, minRating: v === "__any__" ? "" : v }))
                         }
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Any" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Any</SelectItem>
+                          <SelectItem value="__any__">Any</SelectItem>
                           <SelectItem value="5">5 stars</SelectItem>
                           <SelectItem value="4">4+ stars</SelectItem>
                           <SelectItem value="3">3+ stars</SelectItem>
