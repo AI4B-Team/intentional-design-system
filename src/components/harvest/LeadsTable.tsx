@@ -146,7 +146,7 @@ export function LeadsTable({ variant = "all" }: LeadsTableProps) {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-3 py-12 text-center text-sm text-muted-foreground">
+                  <td colSpan={8} className="px-3 py-12 text-center text-sm text-muted-foreground">
                     No leads match your filters. Try widening the score range or removing filters.
                   </td>
                 </tr>
