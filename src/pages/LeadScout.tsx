@@ -348,6 +348,10 @@ export default function LeadScout() {
           </div>
         </TabsContent>
 
+        <TabsContent value="ai-scan">
+          <SearchAIScan />
+        </TabsContent>
+
         <TabsContent value="leads">
           {isLoadingLeads ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
