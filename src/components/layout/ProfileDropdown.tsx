@@ -24,6 +24,8 @@ import {
   Gift,
   Check,
   ArrowLeft,
+  Bot,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -299,6 +301,20 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
             >
               <Mail className="h-5 w-5 text-muted-foreground" />
               <span className="text-sm font-medium">Invites</span>
+            </button>
+            <button
+              onClick={() => handleNavigate("/settings/automation")}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted transition-colors text-left"
+            >
+              <Bot className="h-5 w-5 text-muted-foreground" />
+              <span className="text-sm font-medium">Automation</span>
+            </button>
+            <button
+              onClick={() => handleNavigate("/settings/engine-health")}
+              className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-muted transition-colors text-left"
+            >
+              <Activity className="h-5 w-5 text-muted-foreground" />
+              <span className="text-sm font-medium">Engine Health</span>
             </button>
           </div>
 
