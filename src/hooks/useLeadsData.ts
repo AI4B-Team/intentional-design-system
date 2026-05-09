@@ -34,8 +34,8 @@ export function useLeadsProperties(filters?: { minScore?: number; status?: strin
     queryFn: async () => {
       let q = supabase
         .from("leads_properties" as any)
-        .select("*, leads_scores(score, tier), leads_signals(signal_type, severity, detected_at)")
-        .eq("org_id", organizationId)
+        .select("*, leads_scores(opportunity_score, tier), leads_signals(signal_type, severity, detected_at)")
+        .eq("organization_id", organizationId)
         .order("created_at", { ascending: false })
         .limit(200);
       if (filters?.status) q = q.eq("status", filters.status);
@@ -64,7 +64,7 @@ export function useLeadsToday() {
         supabase
           .from("leads_signals" as any)
           .select("*, leads_properties(*)")
-          .eq("org_id", organizationId)
+          .eq("organization_id", organizationId)
           .gte("detected_at", since.toISOString())
           .order("detected_at", { ascending: false })
           .limit(100)
@@ -89,9 +89,9 @@ export function useLeadsFocus() {
       const rows = await safeFetch<any>(
         supabase
           .from("leads_properties" as any)
-          .select("*, leads_scores!inner(score, tier)")
-          .eq("org_id", organizationId)
-          .gte("leads_scores.score", 80)
+          .select("*, leads_scores!inner(opportunity_score, tier)")
+          .eq("organization_id", organizationId)
+          .gte("leads_scores.opportunity_score", 80)
           .order("created_at", { ascending: false })
           .limit(50)
       );
@@ -110,9 +110,9 @@ export function useLeadsScores(propertyId?: string) {
       let q = supabase
         .from("leads_scores" as any)
         .select("*")
-        .eq("org_id", organizationId);
-      if (propertyId) q = q.eq("property_id", propertyId);
-      return safeFetch<any>(q.order("scored_at", { ascending: false }));
+        .eq("organization_id", organizationId);
+      if (propertyId) q = q.eq("lead_property_id", propertyId);
+      return safeFetch<any>(q.order("computed_at", { ascending: false }));
     },
   });
 }
@@ -126,8 +126,8 @@ export function useLeadOutreach(propertyId?: string) {
       let q = supabase
         .from("leads_outreach_log" as any)
         .select("*")
-        .eq("org_id", organizationId);
-      if (propertyId) q = q.eq("property_id", propertyId);
+        .eq("organization_id", organizationId);
+      if (propertyId) q = q.eq("lead_property_id", propertyId);
       return safeFetch<any>(q.order("sent_at", { ascending: false }).limit(100));
     },
   });
@@ -143,7 +143,7 @@ export function useScanJobs() {
         supabase
           .from("leads_scan_jobs" as any)
           .select("*")
-          .eq("org_id", organizationId)
+          .eq("organization_id", organizationId)
           .order("created_at", { ascending: false })
           .limit(50)
       ),
@@ -163,8 +163,8 @@ export function useScraperHealth() {
         supabase
           .from("leads_scraper_health" as any)
           .select("*")
-          .eq("org_id", organizationId)
-          .order("checked_at", { ascending: false })
+          .eq("organization_id", organizationId)
+          .order("updated_at", { ascending: false })
       );
       if (rows.length > 0) return { rows, source: "live" as const };
       return { rows: feedHealth, source: "mock" as const };
@@ -182,7 +182,7 @@ export function useAutomationSettings() {
         const { data, error } = await supabase
           .from("automation_settings" as any)
           .select("*")
-          .eq("org_id", organizationId)
+          .eq("organization_id", organizationId)
           .maybeSingle();
         if (error) return null;
         return data as any;

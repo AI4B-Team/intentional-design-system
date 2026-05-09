@@ -10,6 +10,8 @@ import { SignalPill } from "@/components/harvest/SignalPill";
 import { LiveFeedTicker } from "@/components/harvest/LiveFeedTicker";
 import { IntegrationStatusGrid } from "@/components/harvest/IntegrationStatusGrid";
 import { useHarvestStats } from "@/hooks/useHarvestStats";
+import { useLeadsProperties, useLeadsToday, useLeadsFocus } from "@/hooks/useLeadsData";
+import { Badge } from "@/components/ui/badge";
 import {
   LineChart,
   Line,
@@ -36,9 +38,43 @@ const SERIES = [
 ] as const;
 
 export default function HarvestOverview() {
-  const { stats, signals, trend, integrations, feed } = useHarvestStats();
+  const { stats: mockStats, signals, trend, integrations, feed } = useHarvestStats();
   const [showTrend, setShowTrend] = React.useState(true);
   const [chartKind, setChartKind] = React.useState<ChartKind>("line");
+
+  // Phase 3: live data from new leads_* tables (falls back to mock when empty)
+  const leadsProperties = useLeadsProperties();
+  const leadsToday = useLeadsToday();
+  const leadsFocus = useLeadsFocus();
+
+  const isLive =
+    leadsProperties.data?.source === "live" ||
+    leadsToday.data?.source === "live" ||
+    leadsFocus.data?.source === "live";
+
+  const liveProps = leadsProperties.data?.rows ?? [];
+  const liveToday = leadsToday.data?.rows ?? [];
+  const liveFocus = leadsFocus.data?.rows ?? [];
+
+  const stats = React.useMemo(() => {
+    if (!isLive) return mockStats;
+    const hot = liveProps.filter((p: any) => (p.leads_scores?.[0]?.opportunity_score ?? p.opportunityScore ?? 0) >= 80).length;
+    const warm = liveProps.filter((p: any) => {
+      const s = p.leads_scores?.[0]?.opportunity_score ?? p.opportunityScore ?? 0;
+      return s >= 60 && s < 80;
+    }).length;
+    const watch = Math.max(0, liveProps.length - hot - warm);
+    return {
+      ...mockStats,
+      totalInSystem: liveProps.length || mockStats.totalInSystem,
+      hot: hot || mockStats.hot,
+      warm: warm || mockStats.warm,
+      watch: watch || mockStats.watch,
+      focusListCount: liveFocus.length || mockStats.focusListCount,
+      newToday: liveToday.length || mockStats.newToday,
+      newSinceLastSession: liveToday.length || mockStats.newSinceLastSession,
+    };
+  }, [isLive, liveProps, liveToday, liveFocus, mockStats]);
 
   const dateLabel = new Date().toLocaleDateString(undefined, {
     weekday: "long",
@@ -51,12 +87,17 @@ export default function HarvestOverview() {
       <HarvestSubNav />
 
       {/* A — Greeting bar */}
-      <p className="text-sm text-muted-foreground mb-2">
-        Good morning · {dateLabel} —{" "}
-        <span className="text-foreground font-medium">
-          {stats.newSinceLastSession} new motivated sellers since yesterday
-        </span>
-      </p>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <p className="text-sm text-muted-foreground">
+          Good morning · {dateLabel} —{" "}
+          <span className="text-foreground font-medium">
+            {stats.newSinceLastSession} new motivated sellers since yesterday
+          </span>
+        </p>
+        <Badge variant={isLive ? "default" : "outline"} className="text-[10px] uppercase tracking-wider">
+          {isLive ? "Live" : "Sample Data"}
+        </Badge>
+      </div>
 
       {/* B — Primary stat */}
       <Card className="p-5 mb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4 bg-gradient-to-br from-primary/5 to-transparent border-primary/20">
