@@ -384,6 +384,16 @@ const App = () => (
             {/* Power Hour */}
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
 
+            {/* HARVEST — Autonomous Lead Engine */}
+            <Route path="/harvest" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
+            <Route path="/harvest/leads" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
+              <Route index element={<HarvestAllLeads />} />
+              <Route path="focus" element={<HarvestFocusList />} />
+              <Route path="buyers" element={<HarvestActiveBuyers />} />
+            </Route>
+            <Route path="/harvest/outreach" element={<ProtectedRoute><HarvestOutreach /></ProtectedRoute>} />
+            <Route path="/settings/engine-health" element={<ProtectedRoute><EngineHealth /></ProtectedRoute>} />
+
             {/* Redirects */}
             <Route path="/" element={<RootRedirect />} />
             <Route path="/landing" element={<Landing />} />
