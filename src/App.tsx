@@ -389,11 +389,11 @@ const App = () => (
             {/* Power Hour */}
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
 
-            {/* SEARCH — User-driven lookup, map, on-demand scan */}
-            <Route path="/search" element={<ProtectedRoute><SearchLayout /></ProtectedRoute>}>
-              <Route index element={<SearchLookup />} />
-              <Route path="map" element={<SearchMap />} />
-              <Route path="ai-scan" element={<SearchAIScan />} />
+            {/* SEARCH — merged into top header search + marketplace map. Keep redirect for back-compat. */}
+            <Route path="/search" element={<Navigate to="/marketplace" replace />} />
+            <Route path="/search/map" element={<Navigate to="/marketplace" replace />} />
+            <Route path="/search/ai-scan" element={<ProtectedRoute><SearchLayout /></ProtectedRoute>}>
+              <Route index element={<SearchAIScan />} />
             </Route>
 
             {/* LEADS — Autonomous Lead Engine (was /harvest) */}
