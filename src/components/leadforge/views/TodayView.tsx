@@ -13,7 +13,7 @@ import {
   Skull,
   Scale,
   Gavel,
-  ArrowUpRight,
+  
   Activity,
   BarChart3,
   LineChart as LineIcon,
