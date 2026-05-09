@@ -45,15 +45,17 @@ const UTILITY_TILES = [
 ];
 
 const DISTRESS_TYPES = [
-  { label: "Pre-Foreclosure", count: 412, icon: Gavel },
-  { label: "Tax Delinquency", count: 1203, icon: AlertTriangle },
-  { label: "Probate", count: 287, icon: FileText },
-  { label: "Code Violation", count: 564, icon: Building2 },
-  { label: "Divorce", count: 142, icon: Scale },
-  { label: "Vacant", count: 891, icon: Home },
-  { label: "Liens & Judgments", count: 647, icon: Skull },
-  { label: "Expired Listing", count: 358, icon: TrendingUp },
-];
+  { key: "preForeclosure", label: "Pre-Foreclosure", count: 412, icon: Gavel, color: "hsl(0 72% 51%)" },
+  { key: "taxDelinquency", label: "Tax Delinquency", count: 1203, icon: AlertTriangle, color: "hsl(38 92% 50%)" },
+  { key: "probate", label: "Probate", count: 287, icon: FileText, color: "hsl(258 70% 58%)" },
+  { key: "codeViolation", label: "Code Violation", count: 564, icon: Building2, color: "hsl(24 90% 52%)" },
+  { key: "divorce", label: "Divorce", count: 142, icon: Scale, color: "hsl(330 75% 55%)" },
+  { key: "vacant", label: "Vacant", count: 891, icon: Home, color: "hsl(199 88% 48%)" },
+  { key: "liens", label: "Liens & Judgments", count: 647, icon: Skull, color: "hsl(0 0% 35%)" },
+  { key: "expired", label: "Expired Listing", count: 358, icon: TrendingUp, color: "hsl(158 78% 36%)" },
+] as const;
+
+type LeadKey = typeof DISTRESS_TYPES[number]["key"];
 
 const TICKER = [
   "Phone-Ready Lead Pushed To Call Queue · 1m ago",
@@ -78,18 +80,41 @@ const ACTIVITY = [
   { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago" },
 ];
 
-// 30-day trend data
-const TREND_DATA = Array.from({ length: 30 }).map((_, i) => ({
-  day: `D${i + 1}`,
-  signals: Math.round(30 + Math.abs(Math.sin(i * 0.7)) * 70 + (i > 20 ? 15 : 0)),
-}));
+// 30-day trend data — per lead type
+const TREND_DATA = Array.from({ length: 30 }).map((_, i) => {
+  const row: Record<string, number | string> = { day: `D${i + 1}` };
+  DISTRESS_TYPES.forEach((t, idx) => {
+    const base = Math.max(4, t.count / 60);
+    const wave = Math.abs(Math.sin(i * 0.5 + idx)) * base;
+    row[t.key] = Math.round(base * 0.6 + wave + (i > 22 ? base * 0.2 : 0));
+  });
+  return row;
+});
 
 type ChartType = "bar" | "line" | "area";
 
 export function TodayView() {
-  const [chartType, setChartType] = React.useState<ChartType>("bar");
+  const [chartType, setChartType] = React.useState<ChartType>("line");
+  const [selected, setSelected] = React.useState<Set<LeadKey>>(
+    new Set(DISTRESS_TYPES.map((d) => d.key))
+  );
   const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
   const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
+
+  const activeTypes = DISTRESS_TYPES.filter((d) => selected.has(d.key));
+
+  const toggleType = (key: LeadKey) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        if (next.size > 1) next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
 
   return (
     <div className="space-y-6 pt-6">
@@ -177,7 +202,9 @@ export function TodayView() {
                       fontSize: 12,
                     }}
                   />
-                  <Bar dataKey="signals" fill="hsl(var(--primary))" radius={[3, 3, 0, 0]} />
+                  {activeTypes.map((t) => (
+                    <Bar key={t.key} dataKey={t.key} name={t.label} stackId="a" fill={t.color} />
+                  ))}
                 </BarChart>
               ) : chartType === "line" ? (
                 <LineChart data={TREND_DATA}>
@@ -192,13 +219,17 @@ export function TodayView() {
                       fontSize: 12,
                     }}
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="signals"
-                    stroke="hsl(var(--primary))"
-                    strokeWidth={2}
-                    dot={false}
-                  />
+                  {activeTypes.map((t) => (
+                    <Line
+                      key={t.key}
+                      type="monotone"
+                      dataKey={t.key}
+                      name={t.label}
+                      stroke={t.color}
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  ))}
                 </LineChart>
               ) : (
                 <AreaChart data={TREND_DATA}>
@@ -213,13 +244,19 @@ export function TodayView() {
                       fontSize: 12,
                     }}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="signals"
-                    stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary) / 0.15)"
-                    strokeWidth={2}
-                  />
+                  {activeTypes.map((t) => (
+                    <Area
+                      key={t.key}
+                      type="monotone"
+                      dataKey={t.key}
+                      name={t.label}
+                      stackId="a"
+                      stroke={t.color}
+                      fill={t.color}
+                      fillOpacity={0.18}
+                      strokeWidth={2}
+                    />
+                  ))}
                 </AreaChart>
               )}
             </ResponsiveContainer>
@@ -235,19 +272,28 @@ export function TodayView() {
           <div className="space-y-1">
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
+              const active = selected.has(d.key);
               return (
-                <div
+                <button
                   key={d.label}
-                  className="flex items-center justify-between gap-2 py-2 px-2 rounded hover:bg-muted/50 cursor-pointer transition-colors"
+                  onClick={() => toggleType(d.key)}
+                  className={cn(
+                    "w-full flex items-center justify-between gap-2 py-2 px-2 rounded hover:bg-muted/50 transition-colors text-left",
+                    !active && "opacity-40"
+                  )}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full shrink-0"
+                      style={{ backgroundColor: d.color }}
+                    />
                     <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span className="text-sm text-foreground truncate">{d.label}</span>
                   </div>
                   <span className="text-sm font-semibold tabular-nums text-foreground shrink-0">
                     {d.count.toLocaleString()}
                   </span>
-                </div>
+                </button>
               );
             })}
           </div>
