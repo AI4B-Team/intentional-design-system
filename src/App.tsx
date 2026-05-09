@@ -97,6 +97,10 @@ const HarvestFocusList = React.lazy(() => import("./pages/harvest/HarvestFocusLi
 const HarvestActiveBuyers = React.lazy(() => import("./pages/harvest/HarvestActiveBuyers"));
 const HarvestOutreach = React.lazy(() => import("./pages/harvest/HarvestOutreach"));
 const EngineHealth = React.lazy(() => import("./pages/settings/EngineHealth"));
+const SearchLayout = React.lazy(() => import("./pages/search/SearchLayout"));
+const SearchLookup = React.lazy(() => import("./pages/search/SearchLookup"));
+const SearchMap = React.lazy(() => import("./pages/search/SearchMap"));
+const SearchAIScan = React.lazy(() => import("./pages/search/SearchAIScan"));
 const MarketplaceDeals = React.lazy(() => import("./pages/MarketplaceDeals"));
 const MarketplaceDealDetail = React.lazy(() => import("./pages/MarketplaceDealDetail"));
 const OfferCampaignWizard = React.lazy(() => import("./pages/OfferCampaignWizard"));
