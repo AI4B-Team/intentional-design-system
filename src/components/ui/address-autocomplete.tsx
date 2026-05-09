@@ -192,7 +192,7 @@ export function AddressAutocomplete({
 
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
-      <div className="relative flex items-center">
+      <div className="relative flex items-center rounded-small border border-primary/40 ring-1 ring-primary/10 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-content-tertiary pointer-events-none z-10" />
         <input
           ref={inputRef}
@@ -205,7 +205,7 @@ export function AddressAutocomplete({
           className={cn(
             "flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-8 text-body transition-all duration-150",
             "placeholder:text-content-tertiary",
-            "focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-white",
+            "focus-visible:outline-none focus-visible:ring-0 focus-visible:bg-transparent",
             showModeBadge && onModeSwitch && value.trim().length >= 2 && !/^\d+\s/.test(value.trim())
               ? "pr-[7.5rem]"
               : "pr-10",
