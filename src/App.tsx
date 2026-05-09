@@ -90,6 +90,13 @@ const AIVA = React.lazy(() => import("./pages/AIVA"));
 const UnifiedInbox = React.lazy(() => import("./pages/UnifiedInbox"));
 const Communications = React.lazy(() => import("./pages/Communications"));
 const Pipeline = React.lazy(() => import("./pages/Pipeline"));
+const HarvestOverview = React.lazy(() => import("./pages/harvest/HarvestOverview"));
+const HarvestLeadsLayout = React.lazy(() => import("./pages/harvest/HarvestLeadsLayout"));
+const HarvestAllLeads = React.lazy(() => import("./pages/harvest/HarvestAllLeads"));
+const HarvestFocusList = React.lazy(() => import("./pages/harvest/HarvestFocusList"));
+const HarvestActiveBuyers = React.lazy(() => import("./pages/harvest/HarvestActiveBuyers"));
+const HarvestOutreach = React.lazy(() => import("./pages/harvest/HarvestOutreach"));
+const EngineHealth = React.lazy(() => import("./pages/settings/EngineHealth"));
 const MarketplaceDeals = React.lazy(() => import("./pages/MarketplaceDeals"));
 const MarketplaceDealDetail = React.lazy(() => import("./pages/MarketplaceDealDetail"));
 const OfferCampaignWizard = React.lazy(() => import("./pages/OfferCampaignWizard"));
@@ -376,6 +383,16 @@ const App = () => (
             
             {/* Power Hour */}
             <Route path="/power-hour" element={<ProtectedRoute><PowerHour /></ProtectedRoute>} />
+
+            {/* HARVEST — Autonomous Lead Engine */}
+            <Route path="/harvest" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
+            <Route path="/harvest/leads" element={<ProtectedRoute><HarvestLeadsLayout /></ProtectedRoute>}>
+              <Route index element={<HarvestAllLeads />} />
+              <Route path="focus" element={<HarvestFocusList />} />
+              <Route path="buyers" element={<HarvestActiveBuyers />} />
+            </Route>
+            <Route path="/harvest/outreach" element={<ProtectedRoute><HarvestOutreach /></ProtectedRoute>} />
+            <Route path="/settings/engine-health" element={<ProtectedRoute><EngineHealth /></ProtectedRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<RootRedirect />} />
