@@ -392,9 +392,7 @@ const App = () => (
             {/* SEARCH — merged into top header search + marketplace map. Keep redirect for back-compat. */}
             <Route path="/search" element={<Navigate to="/marketplace" replace />} />
             <Route path="/search/map" element={<Navigate to="/marketplace" replace />} />
-            <Route path="/search/ai-scan" element={<ProtectedRoute><SearchLayout /></ProtectedRoute>}>
-              <Route index element={<SearchAIScan />} />
-            </Route>
+            <Route path="/search/ai-scan" element={<Navigate to="/lead-scout?tab=ai-scan" replace />} />
 
             {/* LEADS — Autonomous Lead Engine (was /harvest) */}
             <Route path="/leads" element={<ProtectedRoute><HarvestOverview /></ProtectedRoute>} />
