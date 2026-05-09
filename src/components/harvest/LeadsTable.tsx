@@ -106,7 +106,6 @@ export function LeadsTable({ variant = "all" }: LeadsTableProps) {
                 <th className="px-3 py-2 font-medium hidden lg:table-cell">Distress</th>
                 <th className="px-3 py-2 font-medium hidden xl:table-cell">Beds/Baths</th>
                 <th className="px-3 py-2 font-medium hidden lg:table-cell text-right">Est. Value</th>
-                <th className="px-3 py-2 font-medium" />
               </tr>
             </thead>
             <tbody>
