@@ -129,7 +129,7 @@ export function TodayView() {
               <span className="text-primary tabular-nums">38</span> New Prospects Since Yesterday
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Distress Engine Runs Every 2 Hours · Last Run 14 Min Ago · 1,402 Properties Scanned Across 13 County Feeds.
+              Automated Lead Machine Runs Every 2 Hours · Last Run 14 Min Ago · 1,402 Properties Scanned Across 13 County Feeds.
             </p>
           </div>
           <Button className="gap-2">
