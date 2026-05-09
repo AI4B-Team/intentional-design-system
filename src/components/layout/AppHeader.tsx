@@ -91,12 +91,27 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   // Detect if input looks like a full address (starts with a number)
   const isFullAddress = (input: string) => /^\d+\s/.test(input.trim());
 
-  const handleAddressSelect = (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => {
+  const handleAddressSelect = async (address: string, placeId?: string, coords?: { lat: number; lng: number; bbox?: [string, string, string, string] }) => {
     if (!address.trim()) return;
     const query = address.trim();
 
-    // Full address → property analysis
+    // Lookup-tab behavior: full address → try existing property first, fall back to analyzer.
     if (isFullAddress(query)) {
+      try {
+        const { supabase } = await import("@/integrations/supabase/client");
+        const { data: existing } = await supabase
+          .from("properties")
+          .select("id")
+          .ilike("address", `%${query}%`)
+          .limit(1);
+        if (existing && existing.length > 0) {
+          navigate(`/properties/${existing[0].id}`);
+          setSearchQuery("");
+          return;
+        }
+      } catch {
+        /* fall through to analyzer */
+      }
       navigate(`/market-analyzer?tab=deals&address=${encodeURIComponent(query)}`);
       setSearchQuery("");
       return;
@@ -109,7 +124,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       if (coords.bbox) params.set('bbox', coords.bbox.join(','));
     }
 
-    // Context-aware routing: Intel page → intel results, everywhere else → marketplace listings
+    // Context-aware routing: Intel page → intel results, everywhere else → marketplace map.
     if (isIntelPage) {
       navigate(`/intel?${params.toString()}`);
     } else {
