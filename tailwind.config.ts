@@ -136,17 +136,17 @@ export default {
           cool: "#10B981",
           cold: "#6B7280",
         },
-        // Surface colors (direct values for convenience)
+        // Surface colors (theme-aware via CSS variables)
         surface: {
-          DEFAULT: "#FFFFFF",
-          secondary: "#FAFAFA",
-          tertiary: "#F5F5F7",
+          DEFAULT: "hsl(var(--background))",
+          secondary: "hsl(var(--background-secondary))",
+          tertiary: "hsl(var(--background-tertiary))",
         },
-        // Content/text colors (direct values)
+        // Content/text colors (theme-aware via CSS variables)
         content: {
-          DEFAULT: "#1A1A2E",
-          secondary: "#64748B",
-          tertiary: "#94A3B8",
+          DEFAULT: "hsl(var(--foreground))",
+          secondary: "hsl(var(--foreground-secondary))",
+          tertiary: "hsl(var(--foreground-tertiary))",
         },
         // Brand colors (direct values)
         brand: {
