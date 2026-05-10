@@ -16,6 +16,7 @@ export interface AcquisitionLead {
   summary: string;
   campaign: string;
   nextAction: { icon: "phone" | "sms" | "mail"; label: string };
+  image?: string;
 }
 
 const ACTION_ICON = { phone: Phone, sms: MessageSquare, mail: Mail };
@@ -47,9 +48,18 @@ export function AcquisitionLeadCard({
       <div className="flex gap-3 p-3">
         {/* Property thumb */}
         <div className="relative h-20 w-24 shrink-0 rounded-md overflow-hidden bg-gradient-to-br from-muted via-muted/60 to-muted-foreground/10 border border-border">
-          <div className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            Property
-          </div>
+          {lead.image ? (
+            <img
+              src={lead.image}
+              alt={lead.addr}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+              Property
+            </div>
+          )}
           <div
             className={cn(
               "absolute top-1 left-1 h-7 w-7 rounded-md text-white text-[11px] font-bold flex items-center justify-center bg-gradient-to-br tabular-nums shadow-md",

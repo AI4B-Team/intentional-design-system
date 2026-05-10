@@ -96,6 +96,7 @@ const TOP_LEADS: AcquisitionLead[] = [
     summary: "Likely inherited property with deferred maintenance and absentee owner — high motivation signal.",
     campaign: "AI SMS Sequence Active",
     nextAction: { icon: "sms", label: "SMS first · then call after 5pm" },
+    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=400&h=300&fit=crop",
   },
   {
     id: "119 Walnut Blvd",
@@ -108,6 +109,7 @@ const TOP_LEADS: AcquisitionLead[] = [
     summary: "Notice of default filed 18 days ago. Owner has 62% equity — strong save-the-deal candidate.",
     campaign: "Voice Agent + Mail",
     nextAction: { icon: "phone", label: "Call within 24h" },
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400&h=300&fit=crop",
   },
   {
     id: "9309 Peachtree Rd",
@@ -120,6 +122,7 @@ const TOP_LEADS: AcquisitionLead[] = [
     summary: "Out-of-state owner with active code violations. Property unoccupied for 8+ months.",
     campaign: "Direct Mail Cadence",
     nextAction: { icon: "mail", label: "Mail postcard · follow with SMS" },
+    image: "https://images.unsplash.com/photo-1597047084897-51e81819a499?w=400&h=300&fit=crop",
   },
   {
     id: "3155 Maple Ave",
@@ -132,6 +135,7 @@ const TOP_LEADS: AcquisitionLead[] = [
     summary: "Recent eviction, third in two years. Pattern matches landlords ready to exit portfolio.",
     campaign: "AI SMS · Hybrid",
     nextAction: { icon: "sms", label: "Empathy script · landlord exit" },
+    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=300&fit=crop",
   },
 ];
 
