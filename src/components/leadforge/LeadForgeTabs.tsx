@@ -7,7 +7,7 @@ export type MainTab = "today" | "prospects" | "actions" | "system";
 const TABS: { value: MainTab; label: string; icon: React.ElementType }[] = [
   { value: "today", label: "Today", icon: Sparkles },
   { value: "prospects", label: "Leads", icon: Target },
-  { value: "actions", label: "Actions", icon: Send },
+  { value: "actions", label: "Campaigns", icon: Send },
 ];
 
 export function LeadForgeTabs({
