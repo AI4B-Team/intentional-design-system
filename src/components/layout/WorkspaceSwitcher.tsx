@@ -57,21 +57,21 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
                 <button
                   className={cn(
                     "flex items-center justify-center w-full h-10 rounded-lg transition-colors",
-                    "hover:bg-slate-700/50 text-slate-400 hover:text-white"
+                    "hover:bg-muted text-muted-foreground hover:text-foreground"
                   )}
                 >
                   <LayoutGrid className="h-5 w-5" />
                 </button>
               </PopoverTrigger>
             </TooltipTrigger>
-            <TooltipContent side="right" sideOffset={8} className="bg-white text-slate-900 border-slate-200">
+            <TooltipContent side="right" sideOffset={8} className="bg-popover text-popover-foreground border-border">
               Workspace
             </TooltipContent>
           </Tooltip>
           <PopoverContent
             side="right"
             align="start"
-            className="w-64 p-0 bg-slate-800 border-slate-700"
+            className="w-64 p-0 bg-popover border-border"
             sideOffset={8}
           >
             <WorkspaceDropdownContent
@@ -90,8 +90,8 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   return (
     <div className="px-2">
       <div className="flex items-center gap-1.5 px-1 mb-1">
-        <LayoutGrid className="h-3.5 w-3.5 text-slate-500" />
-        <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+        <LayoutGrid className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
           Workspace
         </span>
       </div>
@@ -115,7 +115,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         <PopoverContent
           side="bottom"
           align="start"
-          className="w-[--radix-popover-trigger-width] p-0 bg-slate-800 border-slate-700"
+          className="w-[--radix-popover-trigger-width] p-0 bg-popover border-border"
           sideOffset={4}
         >
           <WorkspaceDropdownContent
@@ -150,12 +150,12 @@ function WorkspaceDropdownContent({
     <div className="p-2">
       {/* Search */}
       <div className="relative mb-2">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Search Spaces"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-8 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 h-9"
+          className="pl-8 bg-background border-border text-white placeholder:text-muted-foreground h-9"
         />
       </div>
 
@@ -167,8 +167,8 @@ function WorkspaceDropdownContent({
             onClick={() => onSelectWorkspace(workspace)}
             className={cn(
               "flex items-center gap-3 w-full px-2 py-2 rounded-lg transition-colors",
-              "text-slate-300 hover:bg-slate-700/50",
-              activeWorkspace.id === workspace.id && "bg-slate-700/50"
+              "text-foreground/80 hover:bg-muted",
+              activeWorkspace.id === workspace.id && "bg-muted"
             )}
           >
             <div
@@ -190,7 +190,7 @@ function WorkspaceDropdownContent({
       {/* Create New Space */}
       <Button
         variant="outline"
-        className="w-full mt-2 border-dashed border-slate-600 text-slate-300 hover:bg-slate-700/50 hover:text-white"
+        className="w-full mt-2 border-dashed border-border text-foreground/80 hover:bg-muted hover:text-foreground"
       >
         <Plus className="h-4 w-4 mr-2" />
         Create New Space

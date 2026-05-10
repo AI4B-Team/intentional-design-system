@@ -40,9 +40,9 @@ export function SidebarRewardsWidget({ collapsed, onMobileClose }: SidebarReward
               </div>
             </NavLink>
           </TooltipTrigger>
-          <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+          <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
             <p className="font-medium">Setup Progress</p>
-            <p className="text-xs text-slate-500">{earnedPoints}/{totalPoints} XP</p>
+            <p className="text-xs text-muted-foreground">{earnedPoints}/{totalPoints} XP</p>
           </TooltipContent>
         </Tooltip>
       </div>
@@ -61,16 +61,16 @@ export function SidebarRewardsWidget({ collapsed, onMobileClose }: SidebarReward
             <Trophy className="h-4 w-4 text-amber-400" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">
+            <p className="text-xs font-semibold text-foreground truncate">
               {isComplete ? "Setup Complete! 🎉" : "Complete Setup"}
             </p>
             <p className="text-[10px] text-amber-400/80 font-medium tabular-nums">
               {earnedPoints} / {totalPoints} XP
             </p>
           </div>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-500 group-hover:text-amber-400 transition-colors" />
+          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-amber-400 transition-colors" />
         </div>
-        <Progress value={progress} className="h-1.5 bg-white/5" />
+        <Progress value={progress} className="h-1.5 bg-foreground/10" />
       </NavLink>
     </div>
   );
