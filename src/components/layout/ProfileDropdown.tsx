@@ -40,12 +40,12 @@ const LANGUAGES = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
 ];
 
-type ThemeOption = "light" | "dark" | "split";
+type ThemeOption = "light" | "dark" | "system";
 
 const THEMES: { value: ThemeOption; label: string; icon: React.ReactNode }[] = [
+  { value: "system", label: "System", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
   { value: "light", label: "Light", icon: <Sun className="h-5 w-5 text-muted-foreground" /> },
   { value: "dark", label: "Dark", icon: <Moon className="h-5 w-5 text-muted-foreground" /> },
-  { value: "split", label: "Split", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
 ];
 
 interface ProfileDropdownProps {
@@ -62,9 +62,11 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const [selectedLang, setSelectedLang] = useState(() => 
     localStorage.getItem("app-language") || "en"
   );
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => 
-    (localStorage.getItem("app-theme") as ThemeOption) || "light"
-  );
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => {
+    const saved = localStorage.getItem("app-theme") as ThemeOption | null;
+    if (saved === "light" || saved === "dark" || saved === "system") return saved;
+    return "system";
+  });
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const userEmail = user?.email || "user@example.com";
@@ -84,7 +86,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const handleSelectTheme = (value: ThemeOption) => {
     setSelectedTheme(value);
     localStorage.setItem("app-theme", value);
-    // Apply theme to document
+    // Apply theme to document. "system" = light content + dark sidebar (sidebar is always dark).
     const root = document.documentElement;
     if (value === "dark") {
       root.classList.add("dark");
@@ -96,9 +98,11 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
 
   // Apply theme on mount
   useEffect(() => {
-    const saved = localStorage.getItem("app-theme") as ThemeOption;
+    const saved = localStorage.getItem("app-theme") as ThemeOption | null;
     if (saved === "dark") {
       document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
