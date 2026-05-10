@@ -1,19 +1,23 @@
 import * as React from "react";
 import { useScanJobs, useScraperHealth } from "@/hooks/useLeadsData";
-import { Activity, Radar, Bot, Zap, Clock } from "lucide-react";
+import {
+  Activity, Radar, Bot, Zap, Clock,
+  Search, MessageSquare, Home, Phone, Scale,
+  DollarSign, AlertTriangle, MapPin, Flame, Mail,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const SIM_EVENTS = [
-  { icon: "🔎", text: "AI detected new probate filing — Dallas County" },
-  { icon: "📩", text: "Seller replied to SMS — auto-routed to acquisitions" },
-  { icon: "🏚️", text: "Vacant property signal verified via utility shutoff" },
-  { icon: "📞", text: "AI voice agent qualified lead in 47s" },
-  { icon: "⚖️", text: "Ownership transfer detected — heir flagged motivated" },
-  { icon: "💰", text: "High-equity match pushed to Hot Sheet" },
-  { icon: "🚨", text: "Code violation lead escalated to human rep" },
-  { icon: "📍", text: "13 new tax-delinquent records added to queue" },
-  { icon: "🔥", text: "Motivation score crossed 90 — campaign accelerated" },
-  { icon: "✉️", text: "Direct mail batch of 124 candidates dispatched" },
+  { icon: Search, text: "AI detected new probate filing — Dallas County", color: "text-cyan-500" },
+  { icon: MessageSquare, text: "Seller replied to SMS — auto-routed to acquisitions", color: "text-primary" },
+  { icon: Home, text: "Vacant property signal verified via utility shutoff", color: "text-amber-500" },
+  { icon: Phone, text: "AI voice agent qualified lead in 47s", color: "text-violet-500" },
+  { icon: Scale, text: "Ownership transfer detected — heir flagged motivated", color: "text-blue-500" },
+  { icon: DollarSign, text: "High-equity match pushed to Hot Sheet", color: "text-emerald-500" },
+  { icon: AlertTriangle, text: "Code violation lead escalated to human rep", color: "text-destructive" },
+  { icon: MapPin, text: "13 new tax-delinquent records added to queue", color: "text-rose-500" },
+  { icon: Flame, text: "Motivation score crossed 90 — campaign accelerated", color: "text-orange-500" },
+  { icon: Mail, text: "Direct mail batch of 124 candidates dispatched", color: "text-sky-500" },
 ];
 
 function useTickingEvents() {
