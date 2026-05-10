@@ -263,8 +263,8 @@ export function AddressAutocomplete({
             {/* Tab bar */}
             <div className="flex border-b border-border">
               {([
-                { key: "saved" as const, label: "Saved", icon: Heart },
                 { key: "recent" as const, label: "Recent", icon: Clock },
+                { key: "saved" as const, label: "Saved", icon: Heart },
                 { key: "quick" as const, label: "Quick", icon: Zap },
                 { key: "popular" as const, label: "Markets", icon: MapPin },
               ]).map((tab) => (
