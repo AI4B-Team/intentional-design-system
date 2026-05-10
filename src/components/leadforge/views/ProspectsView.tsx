@@ -13,6 +13,7 @@ import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck, Workf
 import { cn } from "@/lib/utils";
 import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
 import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
+import { LiveProspectsTable } from "@/components/leadforge/LiveProspectsTable";
 
 type SubTab = "all" | "hot" | "urgency" | "investors";
 
