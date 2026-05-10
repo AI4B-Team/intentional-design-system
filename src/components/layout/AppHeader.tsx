@@ -153,7 +153,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       {/* Mobile Menu Button */}
       <button
         onClick={onMenuClick}
-        className="lg:hidden p-2 -ml-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors"
+        className="md:hidden p-2 -ml-2 text-content-secondary hover:text-content hover:bg-surface-secondary rounded-md transition-colors"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -198,7 +198,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       {/* Cmd+K hint */}
       <button
         onClick={onOpenCommandPalette}
-        className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border/60 bg-surface-secondary hover:bg-surface-tertiary transition-colors text-xs text-content-secondary"
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-border/60 bg-surface-secondary hover:bg-surface-tertiary transition-colors text-xs text-content-secondary"
       >
         <Command className="h-3 w-3" />
         <span>K</span>

@@ -159,14 +159,14 @@ export function AppSidebar({
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={onToggle}
-              className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="hidden md:flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>
             <button
               onClick={onMobileClose}
-              className="lg:hidden p-1 text-muted-foreground hover:text-foreground"
+              className="md:hidden p-1 text-muted-foreground hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -337,7 +337,7 @@ export function AppSidebar({
       {/* Mobile Overlay */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
           onClick={onMobileClose}
         />
       )}
@@ -347,8 +347,8 @@ export function AppSidebar({
         data-sidebar
         className={cn(
           "fixed inset-y-0 left-0 z-50 flex flex-col sidebar-premium noise-texture transition-all duration-200",
-          collapsed ? "lg:w-16" : "lg:w-64",
-          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
+          collapsed ? "md:w-16" : "md:w-64",
+          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0"
         )}
       >
         {sidebarContent}
