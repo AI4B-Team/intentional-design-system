@@ -65,7 +65,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         <div
           aria-hidden
           className={cn(
-            "hidden lg:block fixed inset-y-0 left-0 bg-slate-900 z-0",
+            "hidden md:block fixed inset-y-0 left-0 bg-sidebar z-0 border-r border-sidebar-border",
             sidebarCollapsed ? "w-16" : "w-64"
           )}
         />
@@ -81,7 +81,7 @@ export function AppLayout({ children, breadcrumbs, fullWidth }: AppLayoutProps) 
         {/* Main Content - offset for fixed sidebar on desktop */}
         <div className={cn(
           "flex-1 flex flex-col min-w-0 relative z-10",
-          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
+          sidebarCollapsed ? "md:ml-16" : "md:ml-64"
         )}>
           {/* Header - sticky at top */}
           <AppHeader
