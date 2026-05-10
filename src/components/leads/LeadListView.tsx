@@ -31,6 +31,7 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { SellerLead } from "@/hooks/useSellerLeads";
+import { STATUS_OPTIONS } from "@/lib/lead-constants";
 
 interface LeadListViewProps {
   leads: SellerLead[];
@@ -44,16 +45,6 @@ interface LeadListViewProps {
   onAddToProperties: (lead: SellerLead) => void;
   onDelete: (id: string) => void;
 }
-
-const STATUS_OPTIONS = [
-  { value: "new", label: "New", color: "bg-success" },
-  { value: "contacted", label: "Contacted", color: "bg-info" },
-  { value: "qualified", label: "Qualified", color: "bg-warning" },
-  { value: "appointment", label: "Appointment", color: "bg-purple-500" },
-  { value: "offer_made", label: "Offer Made", color: "bg-orange-500" },
-  { value: "closed", label: "Closed", color: "bg-success" },
-  { value: "lost", label: "Lost", color: "bg-destructive" },
-];
 
 export function LeadListView({
   leads,
