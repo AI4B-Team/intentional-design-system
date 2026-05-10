@@ -62,9 +62,11 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const [selectedLang, setSelectedLang] = useState(() => 
     localStorage.getItem("app-language") || "en"
   );
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => 
-    (localStorage.getItem("app-theme") as ThemeOption) || "light"
-  );
+  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>(() => {
+    const saved = localStorage.getItem("app-theme") as ThemeOption | null;
+    if (saved === "light" || saved === "dark" || saved === "system") return saved;
+    return "system";
+  });
   
   const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User";
   const userEmail = user?.email || "user@example.com";
