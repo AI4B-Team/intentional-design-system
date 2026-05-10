@@ -37,10 +37,10 @@ export const RealEliteLogo = React.forwardRef<HTMLDivElement, RealEliteLogoProps
           aria-label="RealElite"
         >
           <div
-            className="border-[2px] border-primary-foreground flex items-center justify-center w-full h-full"
+            className="border-[2px] border-white flex items-center justify-center w-full h-full"
           >
             <span
-              className="text-primary-foreground font-sans leading-none text-center block"
+              className="text-white font-sans leading-none text-center block"
               style={{
                 fontSize: `${iconSize * 0.45}px`,
                 fontWeight: 900,
@@ -65,7 +65,7 @@ export const RealEliteLogo = React.forwardRef<HTMLDivElement, RealEliteLogoProps
         aria-label="RealElite"
       >
         <div
-          className="border-primary-foreground flex flex-col items-center w-full"
+          className="border-white flex flex-col items-center w-full"
           style={{
             borderWidth: `${2.5 * scale}px`,
             borderStyle: "solid",
@@ -76,7 +76,7 @@ export const RealEliteLogo = React.forwardRef<HTMLDivElement, RealEliteLogoProps
           }}
         >
           <span
-            className="text-primary-foreground font-sans leading-none text-center block"
+            className="text-white font-sans leading-none text-center block"
             style={{
               fontSize: `${2.1 * 16 * scale}px`,
               fontWeight: 900,
@@ -86,7 +86,7 @@ export const RealEliteLogo = React.forwardRef<HTMLDivElement, RealEliteLogoProps
             REAL
           </span>
           <span
-            className="text-primary-foreground font-sans uppercase text-center block"
+            className="text-white font-sans uppercase text-center block"
             style={{
               fontSize: `${0.52 * 16 * scale}px`,
               fontWeight: 700,
