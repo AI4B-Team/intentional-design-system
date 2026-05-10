@@ -424,7 +424,7 @@ function DealListItem({
                           Flip
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-white text-foreground border shadow-md">
+                      <TooltipContent className="bg-popover text-popover-foreground border border-border border shadow-md">
                         <p>ARV, Repairs & Profit Potential</p>
                       </TooltipContent>
                     </Tooltip>
@@ -444,7 +444,7 @@ function DealListItem({
                           Hold
                         </button>
                       </TooltipTrigger>
-                      <TooltipContent className="bg-white text-foreground border shadow-md">
+                      <TooltipContent className="bg-popover text-popover-foreground border border-border border shadow-md">
                         <p>Rent, Cash Flow & Cap Rate</p>
                       </TooltipContent>
                     </Tooltip>
@@ -1045,7 +1045,7 @@ export function MarketplaceListings({
                       Flip
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white text-foreground border shadow-md">
+                  <TooltipContent className="bg-popover text-popover-foreground border border-border border shadow-md">
                     <p>ARV, Repairs & Profit Potential</p>
                   </TooltipContent>
                 </Tooltip>
@@ -1065,7 +1065,7 @@ export function MarketplaceListings({
                       Hold
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent className="bg-white text-foreground border shadow-md">
+                  <TooltipContent className="bg-popover text-popover-foreground border border-border border shadow-md">
                     <p>Rent, Cash Flow & Cap Rate</p>
                   </TooltipContent>
                 </Tooltip>

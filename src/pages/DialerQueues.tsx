@@ -161,7 +161,7 @@ export default function DialerQueues() {
               className={cn(
                 "px-4 py-2 rounded-small text-small font-medium transition-colors",
                 statusFilter === filter.value
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "bg-popover text-popover-foreground border border-border shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >

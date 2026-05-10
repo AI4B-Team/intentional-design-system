@@ -226,7 +226,7 @@ export function QueueContactsTable({
               className={cn(
                 "px-3 py-1.5 rounded-small text-small font-medium transition-colors",
                 statusFilter === filter.value
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "bg-popover text-popover-foreground border border-border shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >

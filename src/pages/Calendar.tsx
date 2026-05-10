@@ -349,7 +349,7 @@ function EventActions({ event, navigate, completeAction, updateAction, onResched
               <Phone className="h-3.5 w-3.5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -357,7 +357,7 @@ function EventActions({ event, navigate, completeAction, updateAction, onResched
               <MessageSquare className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">SMS</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">SMS</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -365,7 +365,7 @@ function EventActions({ event, navigate, completeAction, updateAction, onResched
               <CalendarClock className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -373,7 +373,7 @@ function EventActions({ event, navigate, completeAction, updateAction, onResched
               <CheckCircle2 className="h-3.5 w-3.5 text-muted-foreground" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Complete</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Complete</p></TooltipContent>
         </Tooltip>
         {event.id.startsWith("ua-") && (
           <Tooltip>
@@ -382,7 +382,7 @@ function EventActions({ event, navigate, completeAction, updateAction, onResched
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Snooze to tomorrow</p></TooltipContent>
+            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Snooze to tomorrow</p></TooltipContent>
           </Tooltip>
         )}
       </div>
@@ -703,7 +703,7 @@ export default function Calendar() {
                   Start Power Hour
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-white text-foreground"><p className="text-xs">AI-curated calls with the highest close probability</p></TooltipContent>
+              <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border"><p className="text-xs">AI-curated calls with the highest close probability</p></TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -732,7 +732,7 @@ export default function Calendar() {
                 className={cn(
                   "flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium rounded-lg border transition-all",
                   viewTab === tab.id
-                    ? "bg-white text-foreground shadow-sm border-border"
+                    ? "bg-popover text-popover-foreground border border-border shadow-sm border-border"
                     : "text-muted-foreground hover:text-foreground border-transparent hover:border-border/50 hover:bg-muted/30"
                 )}
               >
@@ -764,7 +764,7 @@ export default function Calendar() {
                       <Search className="h-4 w-4" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Search</p></TooltipContent>
+                  <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Search</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             )}
@@ -779,7 +779,7 @@ export default function Calendar() {
                       </Button>
                     </PopoverTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Filter</p></TooltipContent>
+                  <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Filter</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <PopoverContent align="end" className="bg-white w-48 p-2">
@@ -816,7 +816,7 @@ export default function Calendar() {
                     <Download className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Export CSV</p></TooltipContent>
+                <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Export CSV</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
 
@@ -830,7 +830,7 @@ export default function Calendar() {
                       </Button>
                     </DropdownMenuTrigger>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">More</p></TooltipContent>
+                  <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">More</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <DropdownMenuContent align="end" className="bg-white w-48">
@@ -856,7 +856,7 @@ export default function Calendar() {
                     {sidebarOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">
                   <p className="text-xs">{sidebarOpen ? "Collapse Panel" : "Expand Panel"}</p>
                 </TooltipContent>
               </Tooltip>
@@ -895,7 +895,7 @@ export default function Calendar() {
                     Today
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Jump to today</p></TooltipContent>
+                <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Jump to today</p></TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </div>
@@ -1346,7 +1346,7 @@ export default function Calendar() {
                                           Call
                                         </button>
                                       </TooltipTrigger>
-                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
+                                      <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Call Now</p></TooltipContent>
                                     </Tooltip>
                                     <div className="w-px h-3.5 bg-border/30" />
                                     <Tooltip>
@@ -1358,7 +1358,7 @@ export default function Calendar() {
                                           <MessageSquare className="h-3 w-3" />
                                         </button>
                                       </TooltipTrigger>
-                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Message</p></TooltipContent>
+                                      <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Message</p></TooltipContent>
                                     </Tooltip>
                                     <div className="w-px h-3.5 bg-border/30" />
                                     <Tooltip>
@@ -1370,7 +1370,7 @@ export default function Calendar() {
                                           <CalendarClock className="h-3 w-3" />
                                         </button>
                                       </TooltipTrigger>
-                                      <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
+                                      <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Reschedule</p></TooltipContent>
                                     </Tooltip>
                                   </TooltipProvider>
                                 </div>

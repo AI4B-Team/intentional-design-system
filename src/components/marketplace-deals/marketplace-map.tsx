@@ -574,7 +574,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
             onClick={() => setMapType("map")}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               mapType === "map"
-                ? "bg-white text-foreground"
+                ? "bg-popover text-popover-foreground border border-border"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
@@ -584,7 +584,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
             onClick={() => setMapType("satellite")}
             className={`px-4 py-2 text-sm font-medium transition-colors border-l ${
               mapType === "satellite"
-                ? "bg-white text-foreground"
+                ? "bg-popover text-popover-foreground border border-border"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
@@ -612,7 +612,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 {scanLoading ? "Scanning..." : scanActive ? "Clear Scan" : "Scan"}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">AI Driving for Dollars — scan visible area</p></TooltipContent>
+            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">AI Driving for Dollars — scan visible area</p></TooltipContent>
           </Tooltip>
         </TooltipProvider>
         {/* Draw Button */}
@@ -631,7 +631,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 {isDrawing ? "Drawing..." : "Draw"}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Draw a polygon to filter properties</p></TooltipContent>
+            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Draw a polygon to filter properties</p></TooltipContent>
           </Tooltip>
         </TooltipProvider>
         

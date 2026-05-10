@@ -187,7 +187,7 @@ export function LiveCallInline({ className, callingMode = "start", onSmsClick, o
                 <TooltipTrigger asChild>
                   <span className="text-[15px] font-semibold text-foreground truncate max-w-[180px] block">{currentContact?.name}</span>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground border-border">
+                <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border border-border">
                   {currentContact?.name}
                 </TooltipContent>
               </Tooltip>

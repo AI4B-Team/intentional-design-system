@@ -170,7 +170,7 @@ export function OutreachTab({ ownerPhone }: OutreachTabProps) {
                 className={cn(
                   "px-3 py-1.5 text-small font-medium rounded-small transition-colors capitalize whitespace-nowrap",
                   filter === opt
-                    ? "bg-white text-foreground shadow-sm"
+                    ? "bg-popover text-popover-foreground border border-border shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
