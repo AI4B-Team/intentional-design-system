@@ -38,7 +38,7 @@ export function SegmentedControl({
     >
       {/* Sliding background */}
       <div
-        className="absolute top-1 bottom-1 bg-white rounded-small shadow-xs transition-all duration-200 ease-out"
+        className="absolute top-1 bottom-1 bg-card rounded-small shadow-xs transition-all duration-200 ease-out"
         style={{
           left: `calc(${(activeIndex / options.length) * 100}% + 4px)`,
           width: `calc(${100 / options.length}% - 8px)`,

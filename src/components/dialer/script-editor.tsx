@@ -131,7 +131,7 @@ export function ScriptEditor({
       <Collapsible
         open={expandedSections.includes("opening")}
         onOpenChange={() => toggleSection("opening")}
-        className="bg-white border border-border-subtle rounded-medium overflow-hidden"
+        className="bg-card border border-border-subtle rounded-medium overflow-hidden"
       >
         <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 text-left hover:bg-muted/30">
           <ChevronDown
@@ -174,7 +174,7 @@ export function ScriptEditor({
       <Collapsible
         open={expandedSections.includes("body")}
         onOpenChange={() => toggleSection("body")}
-        className="bg-white border border-border-subtle rounded-medium overflow-hidden"
+        className="bg-card border border-border-subtle rounded-medium overflow-hidden"
       >
         <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 text-left hover:bg-muted/30">
           <ChevronDown
@@ -225,7 +225,7 @@ We can close quickly, pay cash, and handle all the paperwork..."
       <Collapsible
         open={expandedSections.includes("objections")}
         onOpenChange={() => toggleSection("objections")}
-        className="bg-white border border-border-subtle rounded-medium overflow-hidden"
+        className="bg-card border border-border-subtle rounded-medium overflow-hidden"
       >
         <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 text-left hover:bg-muted/30">
           <ChevronDown
@@ -340,7 +340,7 @@ We can close quickly, pay cash, and handle all the paperwork..."
       <Collapsible
         open={expandedSections.includes("closing")}
         onOpenChange={() => toggleSection("closing")}
-        className="bg-white border border-border-subtle rounded-medium overflow-hidden"
+        className="bg-card border border-border-subtle rounded-medium overflow-hidden"
       >
         <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 text-left hover:bg-muted/30">
           <ChevronDown

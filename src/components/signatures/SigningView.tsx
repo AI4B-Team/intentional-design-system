@@ -144,7 +144,7 @@ export function SigningView({
         </div>
 
         {/* Document preview area */}
-        <Card padding="none" className="bg-white border-2 border-border-subtle min-h-[200px] relative">
+        <Card padding="none" className="bg-card border-2 border-border-subtle min-h-[200px] relative">
           <div className="p-6">
             <div className="space-y-3 text-sm text-muted-foreground">
               <div className="h-3 bg-muted/40 rounded w-full" />

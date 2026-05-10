@@ -85,7 +85,7 @@ export function MergeFieldsSidebar({ onInsert }: MergeFieldsSidebarProps) {
   };
 
   return (
-    <div className="bg-white border border-border-subtle rounded-medium overflow-hidden">
+    <div className="bg-card border border-border-subtle rounded-medium overflow-hidden">
       <div className="p-3 border-b bg-muted/30">
         <h3 className="font-semibold text-foreground">Merge Fields</h3>
         <p className="text-tiny text-muted-foreground">

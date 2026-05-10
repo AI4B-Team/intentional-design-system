@@ -184,7 +184,7 @@ export default function MailTemplates() {
               <div className="relative bg-muted">
                 <AspectRatio ratio={getAspectRatio(template.type)}>
                   <div 
-                    className="absolute inset-0 p-2 overflow-hidden bg-white"
+                    className="absolute inset-0 p-2 overflow-hidden bg-card"
                     style={{
                       transform: "scale(0.35)",
                       transformOrigin: "top left",
@@ -326,7 +326,7 @@ export default function MailTemplates() {
                 <div className="bg-muted">
                   <AspectRatio ratio={getAspectRatio(template.type)}>
                     <div 
-                      className="absolute inset-0 p-2 overflow-hidden bg-white"
+                      className="absolute inset-0 p-2 overflow-hidden bg-card"
                       style={{
                         transform: "scale(0.3)",
                         transformOrigin: "top left",

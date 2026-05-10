@@ -109,7 +109,7 @@ export function CalculatorInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
           className={cn(
-            "flex h-10 w-full rounded-small border border-border bg-white text-right text-body tabular-nums transition-all duration-150",
+            "flex h-10 w-full rounded-small border border-border bg-card text-right text-body tabular-nums transition-all duration-150",
             "placeholder:text-content-tertiary",
             "focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10",
             defaultPrefix ? "pl-8" : "pl-3.5",
@@ -179,7 +179,7 @@ export function CalculatorSlider({
         min={min}
         max={max}
         step={step}
-        className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-white [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
+        className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-card [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
       />
     </div>
   );

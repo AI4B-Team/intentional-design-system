@@ -286,7 +286,7 @@ export default function PropertyDetail() {
                   {formatStatus(property.status)}
                 </Badge>
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {statuses.map((s) => (
                   <SelectItem key={s.value} value={s.value}>
                     {s.label}
@@ -380,7 +380,7 @@ export default function PropertyDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
+              <DropdownMenuContent align="end" className="w-48 bg-card">
                 <DropdownMenuItem onClick={() => setShowRefreshModal(true)}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Refresh Property Data

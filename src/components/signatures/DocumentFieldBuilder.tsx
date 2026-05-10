@@ -202,7 +202,7 @@ export function DocumentFieldBuilder({
             {/* Document Canvas */}
             <div
               ref={canvasRef}
-              className="relative bg-white border border-border-subtle rounded-lg shadow-sm"
+              className="relative bg-card border border-border-subtle rounded-lg shadow-sm"
               style={{ aspectRatio: "8.5 / 11", minHeight: 360 }}
               onClick={() => setSelectedFieldId(null)}
             >

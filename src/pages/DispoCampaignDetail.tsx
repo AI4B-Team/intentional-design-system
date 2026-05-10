@@ -231,7 +231,7 @@ export default function DispoCampaignDetail() {
             <div>
               <p className="text-sm text-muted-foreground mb-2">Body</p>
               <div
-                className="p-4 border rounded-lg bg-white prose prose-sm max-w-none"
+                className="p-4 border rounded-lg bg-card prose prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: campaign.body_html }}
               />
             </div>

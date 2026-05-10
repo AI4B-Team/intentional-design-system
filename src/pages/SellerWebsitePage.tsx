@@ -118,7 +118,7 @@ export default function SellerWebsitePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-card">
         <Loader2 className="h-12 w-12 animate-spin text-gray-400" />
       </div>
     );
@@ -126,7 +126,7 @@ export default function SellerWebsitePage() {
 
   if (error || !website) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-card">
         <div className="text-center px-4">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
           <p className="text-gray-500">
@@ -148,7 +148,7 @@ export default function SellerWebsitePage() {
   const accentColor = website.accent_color || "#10B981";
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-card">
       <SEOHead
         title={website.meta_title}
         description={website.meta_description}
@@ -267,7 +267,7 @@ export default function SellerWebsitePage() {
       />
 
       {/* Mobile Sticky CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t shadow-lg z-40">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-card border-t shadow-lg z-40">
         <button
           onClick={scrollToTop}
           className="w-full py-3 rounded-lg font-bold text-white transition-colors"

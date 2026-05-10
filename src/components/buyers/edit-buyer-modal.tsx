@@ -133,7 +133,7 @@ export function EditBuyerModal({ buyer, open, onOpenChange }: EditBuyerModalProp
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle>Edit Buyer</DialogTitle>
         </DialogHeader>
@@ -189,7 +189,7 @@ export function EditBuyerModal({ buyer, open, onOpenChange }: EditBuyerModalProp
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="sms">SMS</SelectItem>
                   <SelectItem value="call">Phone Call</SelectItem>
@@ -312,7 +312,7 @@ export function EditBuyerModal({ buyer, open, onOpenChange }: EditBuyerModalProp
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-card">
                     {closingTimelines.map((t) => (
                       <SelectItem key={t.value} value={t.value}>
                         {t.label}

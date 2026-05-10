@@ -122,7 +122,7 @@ export function QueueSettingsPanel({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-md bg-white overflow-y-auto">
+      <SheetContent className="sm:max-w-md bg-card overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Queue Settings</SheetTitle>
         </SheetHeader>
@@ -208,10 +208,10 @@ export function QueueSettingsPanel({
                     )
                   }
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-card">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                       <SelectItem key={n} value={n.toString()}>
                         {n}
@@ -231,10 +231,10 @@ export function QueueSettingsPanel({
                     )
                   }
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-card">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                       <SelectItem key={n} value={n.toString()}>
                         {n} day{n > 1 ? "s" : ""}
@@ -333,10 +333,10 @@ export function QueueSettingsPanel({
                   )
                 }
               >
-                <SelectTrigger className="bg-white">
+                <SelectTrigger className="bg-card">
                   <SelectValue placeholder="No script assigned" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   {scripts.map((script: any) => (
                     <SelectItem key={script.id} value={script.id}>
                       {script.name}

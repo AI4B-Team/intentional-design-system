@@ -128,7 +128,7 @@ export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] bg-white max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[600px] bg-card max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add Comparable Sale</DialogTitle>
         </DialogHeader>
@@ -227,7 +227,7 @@ export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalPro
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {ratingOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
@@ -268,7 +268,7 @@ export function AddCompModal({ open, onOpenChange, propertyId }: AddCompModalPro
                       <SelectTrigger className="w-32">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white">
+                      <SelectContent className="bg-card">
                         {adjustmentTypes.map((type) => (
                           <SelectItem key={type} value={type}>
                             {type}

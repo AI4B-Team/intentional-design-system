@@ -552,7 +552,7 @@ export default function Dialer() {
               />
 
               {/* Auto-dial Settings */}
-              <div className="bg-white border border-border-subtle rounded-medium p-4 space-y-3">
+              <div className="bg-card border border-border-subtle rounded-medium p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Settings className="h-4 w-4 text-muted-foreground" />

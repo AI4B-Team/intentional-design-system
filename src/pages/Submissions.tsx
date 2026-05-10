@@ -239,7 +239,7 @@ export default function Submissions() {
                         <MoreHorizontal className="h-4 w-4 text-content-tertiary" />
                       </button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48 bg-white">
+                    <DropdownMenuContent align="end" className="w-48 bg-card">
                       {submission.property_id && (
                         <DropdownMenuItem onClick={() => navigate(`/properties/${submission.property_id}`)}>
                           <ExternalLink className="h-4 w-4 mr-2" />

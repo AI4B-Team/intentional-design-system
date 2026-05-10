@@ -272,7 +272,7 @@ export function DispositionTab({ property }: DispositionTabProps) {
 
       {/* Selection Actions */}
       {selectedBuyers.size > 0 && (
-        <Card variant="elevated" padding="sm" className="sticky top-0 z-10 bg-white">
+        <Card variant="elevated" padding="sm" className="sticky top-0 z-10 bg-card">
           <div className="flex items-center justify-between">
             <span className="text-small font-medium">
               {selectedBuyers.size} buyer{selectedBuyers.size > 1 ? "s" : ""} selected
@@ -426,7 +426,7 @@ export function DispositionTab({ property }: DispositionTabProps) {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-white">
+                        <DropdownMenuContent align="end" className="bg-card">
                           <DropdownMenuItem onClick={() => handleSendToSingle(match)}>
                             <Send className="mr-2 h-4 w-4" />
                             Send Deal

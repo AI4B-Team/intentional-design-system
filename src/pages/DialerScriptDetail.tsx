@@ -261,10 +261,10 @@ export default function DialerScriptDetail() {
                           setFormData((d) => ({ ...d, category: v }))
                         }
                       >
-                        <SelectTrigger className="bg-white">
+                        <SelectTrigger className="bg-card">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white z-50">
+                        <SelectContent className="bg-card z-50">
                           {CATEGORIES.map((cat) => (
                             <SelectItem key={cat.value} value={cat.value}>
                               {cat.label}

@@ -45,7 +45,7 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
           <button
             onClick={handlePrev}
             className={cn(
-              "absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all z-10",
+              "absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-card shadow-md flex items-center justify-center transition-all z-10",
               isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
           >
@@ -54,7 +54,7 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
           <button
             onClick={handleNext}
             className={cn(
-              "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-white shadow-md flex items-center justify-center transition-all z-10",
+              "absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 hover:bg-card shadow-md flex items-center justify-center transition-all z-10",
               isHovered ? "opacity-100" : "opacity-0 pointer-events-none"
             )}
           >
@@ -71,7 +71,7 @@ export function ImageCarousel({ images, alt, className, children }: ImageCarouse
               key={idx}
               className={cn(
                 "h-1.5 rounded-full transition-all",
-                idx === currentIndex % 5 ? "w-3 bg-white" : "w-1.5 bg-white/60"
+                idx === currentIndex % 5 ? "w-3 bg-card" : "w-1.5 bg-white/60"
               )}
             />
           ))}

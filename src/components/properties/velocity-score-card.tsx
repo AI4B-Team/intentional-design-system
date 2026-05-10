@@ -271,7 +271,7 @@ export function VelocityScoreCard({
               Flag Competition
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-white">
+          <DialogContent className="bg-card">
             <DialogHeader>
               <DialogTitle>Flag Competition</DialogTitle>
             </DialogHeader>

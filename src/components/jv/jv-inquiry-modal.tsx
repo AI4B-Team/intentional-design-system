@@ -45,7 +45,7 @@ export function JVInquiryModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white max-w-lg">
+      <DialogContent className="bg-card max-w-lg">
         <DialogHeader>
           <DialogTitle>Express Interest</DialogTitle>
         </DialogHeader>

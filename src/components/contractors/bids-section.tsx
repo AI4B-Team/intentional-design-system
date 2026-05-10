@@ -120,7 +120,7 @@ function EnterBidModal({ bid, open, onOpenChange }: EnterBidModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[400px] bg-white">
+      <DialogContent className="sm:max-w-[400px] bg-card">
         <DialogHeader>
           <DialogTitle>Enter Bid from {bid.contractor.name}</DialogTitle>
         </DialogHeader>
@@ -242,7 +242,7 @@ export function BidsSection({ propertyId, propertyAddress, repairDetails }: Bids
                 {requestedBids.map((bid) => (
                   <div
                     key={bid.id}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-small border border-border-subtle"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-card rounded-small border border-border-subtle"
                   >
                     <span className="text-small">{bid.contractor.name}</span>
                     <Button

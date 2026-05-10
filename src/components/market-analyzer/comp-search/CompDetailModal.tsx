@@ -153,7 +153,7 @@ export function CompDetailModal({
                       key={i}
                       className={cn(
                         "h-2 w-2 rounded-full transition-colors",
-                        i === photoIndex ? "bg-white" : "bg-white/50"
+                        i === photoIndex ? "bg-card" : "bg-white/50"
                       )}
                     />
                   ))}

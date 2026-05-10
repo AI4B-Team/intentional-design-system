@@ -567,7 +567,7 @@ function StepBasics({ state, updateState, templates, selectedTemplate }: any) {
           <Card className="bg-muted/50">
             <CardContent className="pt-4">
               <div className="flex gap-4">
-                <div className="w-32 shrink-0 bg-white rounded-lg overflow-hidden border">
+                <div className="w-32 shrink-0 bg-card rounded-lg overflow-hidden border">
                   <AspectRatio ratio={3/2}>
                     <div 
                       className="p-1 text-[6px]"
@@ -1234,7 +1234,7 @@ function StepTracking({ state, updateState }: any) {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="p-4 bg-muted/50 rounded-lg flex items-center justify-center">
-                    <div className="h-24 w-24 bg-white rounded flex items-center justify-center border">
+                    <div className="h-24 w-24 bg-card rounded flex items-center justify-center border">
                       <QrCode className="h-16 w-16 text-content-tertiary" />
                     </div>
                   </div>
@@ -1352,7 +1352,7 @@ function StepReview({
                 </div>
                 {selectedTemplate && (
                   <div className="flex gap-3">
-                    <div className="w-16 shrink-0 bg-white rounded overflow-hidden border">
+                    <div className="w-16 shrink-0 bg-card rounded overflow-hidden border">
                       <AspectRatio ratio={3/2}>
                         <div 
                           className="p-0.5 text-[4px]"

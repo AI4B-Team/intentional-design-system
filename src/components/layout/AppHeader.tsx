@@ -214,7 +214,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
         <DropdownMenuTrigger asChild>
           <Button
             size="sm"
-            className="hidden sm:flex gap-1 bg-slate-800 hover:bg-slate-700 text-white"
+            className="hidden sm:flex gap-1 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Plus className="h-4 w-4" />
             <span>Add</span>
@@ -260,7 +260,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
         <DropdownMenuTrigger asChild>
           <Button
             size="icon"
-            className="sm:hidden h-9 w-9 bg-slate-800 hover:bg-slate-700 text-white"
+            className="sm:hidden h-9 w-9 bg-primary hover:bg-primary/90 text-primary-foreground"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -298,7 +298,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
               <Calendar className="h-5 w-5" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Calendar</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Calendar</p></TooltipContent>
         </Tooltip>
 
         {/* Dialer Quick Access */}
@@ -306,7 +306,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
           <TooltipTrigger asChild>
             <span><DialerQuickAccess /></span>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Dialer</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Dialer</p></TooltipContent>
         </Tooltip>
 
         {/* Help */}
@@ -314,7 +314,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
           <TooltipTrigger asChild>
             <span><HelpButton variant="icon" /></span>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Help & Support</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Help & Support</p></TooltipContent>
         </Tooltip>
 
         {/* Notifications */}
@@ -322,7 +322,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
           <TooltipTrigger asChild>
             <span><NotificationsDropdown /></span>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Notifications</p></TooltipContent>
+          <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Notifications</p></TooltipContent>
         </Tooltip>
       </TooltipProvider>
 

@@ -131,7 +131,7 @@ export function SignaturePad({ onComplete, signerName = "", className }: Signatu
               ref={canvasRef}
               width={500}
               height={120}
-              className="w-full border-2 border-dashed border-border-subtle rounded-lg bg-white cursor-crosshair touch-none"
+              className="w-full border-2 border-dashed border-border-subtle rounded-lg bg-card cursor-crosshair touch-none"
               style={{ height: 120 }}
               onMouseDown={startDraw}
               onMouseMove={draw}
@@ -188,7 +188,7 @@ export function SignaturePad({ onComplete, signerName = "", className }: Signatu
           </div>
 
           {typedName && (
-            <Card padding="md" className="text-center bg-white">
+            <Card padding="md" className="text-center bg-card">
               <p
                 className="text-3xl text-foreground"
                 style={{

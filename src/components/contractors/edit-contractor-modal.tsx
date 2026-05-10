@@ -152,7 +152,7 @@ export function EditContractorModal({ contractor, open, onOpenChange }: EditCont
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle>Edit Contractor</DialogTitle>
         </DialogHeader>
@@ -277,7 +277,7 @@ export function EditContractorModal({ contractor, open, onOpenChange }: EditCont
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
                   <SelectItem value="blacklisted">Blacklisted</SelectItem>

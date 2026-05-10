@@ -77,7 +77,7 @@ export function DialerCopilotPanel({
   const [isCollapsed, setIsCollapsed] = React.useState(false);
 
   return (
-    <div className="bg-white border border-border-subtle rounded-lg overflow-hidden">
+    <div className="bg-card border border-border-subtle rounded-lg overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 bg-gradient-to-r from-primary/10 to-primary/5 border-b border-primary/20 flex items-center justify-between">
         <div className="flex items-center gap-2">

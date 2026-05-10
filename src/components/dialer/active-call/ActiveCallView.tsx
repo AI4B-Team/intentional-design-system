@@ -108,7 +108,7 @@ export function ActiveCallView({
         {/* Right Column - AI Co-Pilot */}
         <div className="lg:col-span-5 space-y-4">
           {/* AI Co-Pilot Header */}
-          <div className="bg-white border border-border-subtle rounded-lg px-4 py-3">
+          <div className="bg-card border border-border-subtle rounded-lg px-4 py-3">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
               <span className="font-semibold text-foreground">AI Co-Pilot</span>

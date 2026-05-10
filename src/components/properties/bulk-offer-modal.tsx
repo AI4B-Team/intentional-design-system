@@ -266,7 +266,7 @@ export function BulkOfferModal({ open, onOpenChange, properties, onComplete }: B
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Send className="h-5 w-5 text-brand" />

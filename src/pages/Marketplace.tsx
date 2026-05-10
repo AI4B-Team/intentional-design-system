@@ -45,7 +45,7 @@ export default function Marketplace() {
             icon={<ArrowRight />}
             iconPosition="right"
             onClick={() => navigate("/marketplace/request")}
-            className="bg-white text-brand-accent hover:bg-white/90"
+            className="bg-card text-brand-accent hover:bg-white/90"
           >
             Get Started Now
           </Button>

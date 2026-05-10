@@ -362,7 +362,7 @@ export default function Offers() {
                 <SelectTrigger className="w-44">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {filterOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                   ))}

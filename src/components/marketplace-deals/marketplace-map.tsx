@@ -569,12 +569,12 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
     <div className="relative flex-1 z-0">
       {/* Map Type Toggle */}
       <div className="absolute top-3 left-3 z-10">
-        <div className="bg-white rounded-lg shadow-md overflow-hidden flex">
+        <div className="bg-card rounded-lg shadow-md overflow-hidden flex">
           <button
             onClick={() => setMapType("map")}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
               mapType === "map"
-                ? "bg-white text-foreground"
+                ? "bg-popover text-popover-foreground border border-border"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
@@ -584,7 +584,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
             onClick={() => setMapType("satellite")}
             className={`px-4 py-2 text-sm font-medium transition-colors border-l ${
               mapType === "satellite"
-                ? "bg-white text-foreground"
+                ? "bg-popover text-popover-foreground border border-border"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
           >
@@ -603,7 +603,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 variant={scanActive ? "default" : "outline"}
                 className={cn(
                   "shadow-md gap-2",
-                  scanActive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "bg-white"
+                  scanActive ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : "bg-card"
                 )}
                 onClick={handleScan}
                 disabled={scanLoading}
@@ -612,7 +612,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 {scanLoading ? "Scanning..." : scanActive ? "Clear Scan" : "Scan"}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">AI Driving for Dollars — scan visible area</p></TooltipContent>
+            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">AI Driving for Dollars — scan visible area</p></TooltipContent>
           </Tooltip>
         </TooltipProvider>
         {/* Draw Button */}
@@ -623,7 +623,7 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 variant={isDrawing ? "default" : "outline"}
                 className={cn(
                   "shadow-md gap-2",
-                  isDrawing ? "bg-primary text-primary-foreground" : "bg-white"
+                  isDrawing ? "bg-primary text-primary-foreground" : "bg-card"
                 )}
                 onClick={toggleDrawMode}
               >
@@ -631,19 +631,19 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
                 {isDrawing ? "Drawing..." : "Draw"}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]"><p className="text-xs">Draw a polygon to filter properties</p></TooltipContent>
+            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Draw a polygon to filter properties</p></TooltipContent>
           </Tooltip>
         </TooltipProvider>
         
         <Popover open={overlaysOpen} onOpenChange={setOverlaysOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" className="bg-white shadow-md gap-2">
+            <Button variant="outline" className="bg-card shadow-md gap-2">
               <Layers className="h-4 w-4" />
               Intel
               {overlaysOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 bg-white p-0 shadow-lg" align="end">
+          <PopoverContent className="w-72 bg-card p-0 shadow-lg" align="end">
             <div className="max-h-[70vh] overflow-y-auto">
               {/* Heat Maps Section */}
               <div className="p-3 border-b">

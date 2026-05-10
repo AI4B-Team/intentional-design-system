@@ -111,7 +111,7 @@ export function CallHistoryTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white border border-border-subtle rounded-medium overflow-hidden">
+      <div className="bg-card border border-border-subtle rounded-medium overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -142,7 +142,7 @@ export function CallHistoryTable({
 
   if (calls.length === 0) {
     return (
-      <div className="bg-white border border-border-subtle rounded-medium p-12 text-center">
+      <div className="bg-card border border-border-subtle rounded-medium p-12 text-center">
         <Phone className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
         <h3 className="text-h3 font-semibold text-foreground mb-2">No calls found</h3>
         <p className="text-muted-foreground">
@@ -153,7 +153,7 @@ export function CallHistoryTable({
   }
 
   return (
-    <div className="bg-white border border-border-subtle rounded-medium overflow-hidden">
+    <div className="bg-card border border-border-subtle rounded-medium overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -226,7 +226,7 @@ export function CallHistoryTable({
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-white">
+                  <DropdownMenuContent align="end" className="bg-card">
                     <DropdownMenuItem onClick={() => onRowClick(call)}>
                       <ExternalLink className="h-4 w-4 mr-2" />
                       View Details

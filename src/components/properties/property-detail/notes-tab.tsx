@@ -224,7 +224,7 @@ export function NotesTab() {
                           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-36 bg-white">
+                      <DropdownMenuContent align="end" className="w-36 bg-card">
                         <DropdownMenuItem onClick={() => handleTogglePin(note.id)}>
                           <Pin className="h-4 w-4 mr-2" />
                           {note.isPinned ? "Unpin" : "Pin"}

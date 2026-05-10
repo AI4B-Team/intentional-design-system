@@ -139,7 +139,7 @@ export function QueueAnalytics({
                           const data = payload[0].payload;
                           const percent = ((data.value / totalOutcomes) * 100).toFixed(0);
                           return (
-                            <div className="bg-white border border-border-subtle rounded-small px-3 py-2 shadow-md">
+                            <div className="bg-card border border-border-subtle rounded-small px-3 py-2 shadow-md">
                               <p className="font-medium">{data.name}</p>
                               <p className="text-small text-muted-foreground">
                                 {data.value} ({percent}%)
@@ -201,7 +201,7 @@ export function QueueAnalytics({
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white border border-border-subtle rounded-small px-3 py-2 shadow-md">
+                          <div className="bg-card border border-border-subtle rounded-small px-3 py-2 shadow-md">
                             <p className="font-medium">{label}</p>
                             <p className="text-small text-muted-foreground">
                               {payload[0].value} calls

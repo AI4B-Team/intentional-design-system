@@ -201,7 +201,7 @@ export function RecordingPlayer({
                 {playbackRate}x
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white">
+            <DropdownMenuContent align="end" className="bg-card">
               {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
                 <DropdownMenuItem
                   key={rate}

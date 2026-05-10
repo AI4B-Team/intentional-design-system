@@ -176,7 +176,7 @@ export function LeadListView({
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 bg-white">
+                  <DropdownMenuContent align="end" className="w-48 bg-card">
                     <DropdownMenuItem onClick={() => onViewDetail(lead)}>
                       <Eye className="h-4 w-4 mr-2" />
                       View Details

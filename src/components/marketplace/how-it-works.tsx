@@ -42,7 +42,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
   });
 
   return (
-    <section className={cn("py-16 bg-white", className)}>
+    <section className={cn("py-16 bg-card", className)}>
       <div className="container mx-auto px-md">
         {/* Header */}
         <div className="text-center mb-16">
@@ -80,7 +80,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
                       {step.number}
                     </div>
                     {/* Icon in corner */}
-                    <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-white border-2 border-brand-accent flex items-center justify-center">
+                    <div className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full bg-card border-2 border-brand-accent flex items-center justify-center">
                       <Icon className="h-4 w-4 text-brand-accent" />
                     </div>
                   </div>

@@ -218,7 +218,7 @@ export default function DealSourceDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-40 bg-white">
+              <DropdownMenuContent align="end" className="w-40 bg-card">
                 <DropdownMenuItem onClick={() => handleStatusChange("active")}>
                   Mark as Active
                 </DropdownMenuItem>

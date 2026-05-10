@@ -323,7 +323,7 @@ Best regards,
   return (
     <div className="min-h-screen bg-gradient-to-br from-surface-secondary to-background">
       {/* Header */}
-      <header className="bg-white border-b border-border-subtle">
+      <header className="bg-card border-b border-border-subtle">
         <div className="container max-w-4xl mx-auto px-4 py-6">
           <button
             onClick={() => navigate("/campaigns")}
@@ -472,7 +472,7 @@ Best regards,
                     <span className="w-full border-t border-border-subtle" />
                   </div>
                   <div className="relative flex justify-center text-tiny uppercase">
-                    <span className="bg-white px-2 text-content-tertiary">Or add manually</span>
+                    <span className="bg-card px-2 text-content-tertiary">Or add manually</span>
                   </div>
                 </div>
 
@@ -728,7 +728,7 @@ Best regards,
                     ].map((v) => (
                       <code
                         key={v}
-                        className="px-2 py-1 bg-white rounded text-tiny text-brand font-mono"
+                        className="px-2 py-1 bg-card rounded text-tiny text-brand font-mono"
                       >
                         {v}
                       </code>
@@ -741,7 +741,7 @@ Best regards,
                 </Button>
 
                 {showPreview && (
-                  <div className="p-4 bg-white border border-border rounded-medium">
+                  <div className="p-4 bg-card border border-border rounded-medium">
                     <p className="text-small font-semibold text-content mb-2">
                       Subject: {emailSubject.replace("{property_address}", properties[0]?.address || "123 Sample St")}
                     </p>

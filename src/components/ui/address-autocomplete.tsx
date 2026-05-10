@@ -244,7 +244,7 @@ export function AddressAutocomplete({
             </button>
           </PopoverTrigger>
           <PopoverContent
-            className="p-0 bg-white border-2 border-border shadow-xl z-[200] rounded-lg"
+            className="p-0 bg-card border-2 border-border shadow-xl z-[200] rounded-lg"
             align="center"
             style={{ width: wrapperRef.current?.offsetWidth ? `${wrapperRef.current.offsetWidth}px` : '400px' }}
             sideOffset={6}
@@ -403,7 +403,7 @@ export function AddressAutocomplete({
 
       {/* Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-border rounded-medium shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-medium shadow-lg z-50 max-h-64 overflow-y-auto">
           {suggestions.map((suggestion, index) => (
             <button
               key={suggestion.placeId}

@@ -101,7 +101,7 @@ export function PrepWithAIDialog({ open, onOpenChange, appointment }: PrepWithAI
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />

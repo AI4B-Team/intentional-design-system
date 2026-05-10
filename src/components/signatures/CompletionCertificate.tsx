@@ -73,7 +73,7 @@ export function CompletionCertificate({
           <DialogDescription>Proof that all parties signed the document.</DialogDescription>
         </DialogHeader>
 
-        <div ref={certificateRef} className="bg-white p-8 rounded-lg border border-border-subtle space-y-6">
+        <div ref={certificateRef} className="bg-card p-8 rounded-lg border border-border-subtle space-y-6">
           {/* Header */}
           <div className="text-center border-b border-border-subtle pb-4">
             <Shield className="h-10 w-10 text-success mx-auto mb-2" />
@@ -125,7 +125,7 @@ export function CompletionCertificate({
                   <img
                     src={signer.signature.dataUrl}
                     alt={`${signer.name}'s signature`}
-                    className="h-8 max-w-[100px] object-contain border border-border-subtle rounded bg-white p-0.5"
+                    className="h-8 max-w-[100px] object-contain border border-border-subtle rounded bg-card p-0.5"
                   />
                 )}
               </div>

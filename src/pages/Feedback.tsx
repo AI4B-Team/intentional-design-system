@@ -813,7 +813,7 @@ Overall, great product! Keep up the good work.`
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-[100]">
+                  <SelectContent className="bg-card z-[100]">
                     <SelectItem value="low">
                       <span className="flex items-center gap-2">
                         <Info className="h-4 w-4 text-muted-foreground" />

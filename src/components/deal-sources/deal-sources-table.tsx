@@ -124,7 +124,7 @@ export function DealSourcesTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-slate-200 overflow-hidden">
         <div className="p-4 space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-14 rounded-lg" />
@@ -136,7 +136,7 @@ export function DealSourcesTable({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-card rounded-xl border border-slate-200 overflow-hidden">
         <div className="flex flex-col items-center justify-center py-16 px-4">
           <div className="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
             <Users className="h-8 w-8 text-slate-400" />
@@ -156,7 +156,7 @@ export function DealSourcesTable({
   }
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+    <div className="bg-card rounded-xl border border-slate-200 overflow-hidden shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -302,7 +302,7 @@ export function DealSourcesTable({
                           <MoreHorizontal className="h-4 w-4 text-slate-500" />
                         </button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-44 bg-white shadow-lg border border-slate-200">
+                      <DropdownMenuContent align="end" className="w-44 bg-card shadow-lg border border-slate-200">
                         <DropdownMenuItem 
                           onClick={() => navigate(`/contacts/${source.id}`)}
                           className="text-sm"

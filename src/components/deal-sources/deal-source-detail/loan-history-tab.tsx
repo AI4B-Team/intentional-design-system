@@ -115,7 +115,7 @@ export function LoanHistoryTab({ lenderId }: LoanHistoryTabProps) {
           </p>
         </Card>
       ) : (
-        <div className="rounded-medium border border-border-subtle overflow-hidden bg-white">
+        <div className="rounded-medium border border-border-subtle overflow-hidden bg-card">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-surface-secondary">

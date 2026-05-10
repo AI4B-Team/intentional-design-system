@@ -342,7 +342,7 @@ export default function CampaignDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuContent align="end" className="bg-card">
                 <DropdownMenuItem className="text-destructive" onClick={() => setShowDelete(true)}>
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Campaign
@@ -569,7 +569,7 @@ export default function CampaignDetail() {
                                 <MoreHorizontal className="h-4 w-4 text-content-tertiary" />
                               </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-48 bg-white">
+                            <DropdownMenuContent align="end" className="w-48 bg-card">
                               {prop.status === "pending" && (
                                 <DropdownMenuItem onClick={() => handleMarkSent(prop.id)}>
                                   <Send className="h-4 w-4 mr-2" />

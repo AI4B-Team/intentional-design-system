@@ -96,7 +96,7 @@ export function TemplatePreview({ type, frontHtml, backHtml, className }: Templa
                   </Tabs>
                 )}
                 <div 
-                  className="border-2 border-dashed border-content-tertiary/30 rounded-lg overflow-hidden bg-white"
+                  className="border-2 border-dashed border-content-tertiary/30 rounded-lg overflow-hidden bg-card"
                   style={{ aspectRatio: dimensions.ratio }}
                 >
                   <div 
@@ -122,7 +122,7 @@ export function TemplatePreview({ type, frontHtml, backHtml, className }: Templa
           {/* Preview Content */}
           <div 
             className={cn(
-              "border rounded-lg overflow-hidden bg-white shadow-sm",
+              "border rounded-lg overflow-hidden bg-card shadow-sm",
               type === "yellow_letter" && "bg-[#FFF9C4]"
             )}
             style={{ aspectRatio: dimensions.ratio }}

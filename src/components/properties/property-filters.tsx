@@ -69,7 +69,7 @@ export function PropertyFilters({
             placeholder="Search properties..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-10 pr-3 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-white"
+            className="flex h-9 w-full rounded-small border-0 bg-surface-secondary pl-10 pr-3 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent/20 focus-visible:bg-card"
           />
         </div>
 
@@ -104,7 +104,7 @@ export function PropertyFilters({
               <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48 bg-white">
+          <DropdownMenuContent align="end" className="w-48 bg-card">
             {sortOptions.map((option) => (
               <DropdownMenuItem
                 key={option.value}

@@ -559,7 +559,7 @@ export default function Signatures() {
                     )}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">
+                <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">
                   Missing fields · Pricing check · Expiry risk · Clause flags
                 </TooltipContent>
               </Tooltip>
@@ -772,7 +772,7 @@ export default function Signatures() {
                                   <RefreshCw className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">Send Reminder</TooltipContent>
+                              <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">Send Reminder</TooltipContent>
                             </Tooltip>
                           )}
                           <Tooltip>
@@ -781,7 +781,7 @@ export default function Signatures() {
                                 <Link2 className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
-                            <TooltipContent side="bottom" className="bg-white text-foreground z-[200]">Copy Link</TooltipContent>
+                            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">Copy Link</TooltipContent>
                           </Tooltip>
                         </div>
                       </TooltipProvider>

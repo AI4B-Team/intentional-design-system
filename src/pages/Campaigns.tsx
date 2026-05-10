@@ -163,7 +163,7 @@ export default function Campaigns() {
           </Button>
         </Card>
       ) : (
-        <div className="rounded-medium border border-border-subtle overflow-hidden bg-white">
+        <div className="rounded-medium border border-border-subtle overflow-hidden bg-card">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-surface-secondary">
@@ -248,7 +248,7 @@ export default function Campaigns() {
                               <MoreHorizontal className="h-4 w-4 text-content-tertiary" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40 bg-white">
+                          <DropdownMenuContent align="end" className="w-40 bg-card">
                             <DropdownMenuItem onClick={() => navigate(`/campaigns/${campaign.id}`)}>
                               <Eye className="h-4 w-4 mr-2" />
                               View

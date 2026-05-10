@@ -193,7 +193,7 @@ export default function ContractorDetail() {
                 Delete
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-white">
+            <AlertDialogContent className="bg-card">
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete Contractor</AlertDialogTitle>
                 <AlertDialogDescription>

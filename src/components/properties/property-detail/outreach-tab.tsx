@@ -170,7 +170,7 @@ export function OutreachTab({ ownerPhone }: OutreachTabProps) {
                 className={cn(
                   "px-3 py-1.5 text-small font-medium rounded-small transition-colors capitalize whitespace-nowrap",
                   filter === opt
-                    ? "bg-white text-foreground shadow-sm"
+                    ? "bg-popover text-popover-foreground border border-border shadow-sm"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -227,7 +227,7 @@ export function OutreachTab({ ownerPhone }: OutreachTabProps) {
                       <div
                         key={activity.id}
                         className={cn(
-                          "relative bg-white border border-border-subtle rounded-medium p-4 transition-all",
+                          "relative bg-card border border-border-subtle rounded-medium p-4 transition-all",
                           hasFullContent && "cursor-pointer hover:border-border"
                         )}
                         onClick={() => hasFullContent && setExpandedId(isExpanded ? null : activity.id)}

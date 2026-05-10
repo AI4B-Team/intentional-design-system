@@ -152,7 +152,7 @@ export function PropertyHero({
                 <ChevronDown className="h-3.5 w-3.5 text-content-secondary" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-white">
+            <DropdownMenuContent align="end" className="w-40 bg-card">
               {statuses.map((s) => (
                 <DropdownMenuItem
                   key={s}
@@ -223,7 +223,7 @@ export function PropertyHero({
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-white">
+            <DropdownMenuContent align="end" className="w-40 bg-card">
               <DropdownMenuItem>
                 <Share className="h-4 w-4 mr-2" />
                 Share

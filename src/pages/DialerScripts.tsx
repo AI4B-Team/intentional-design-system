@@ -181,7 +181,7 @@ export default function DialerScripts() {
               className={cn(
                 "px-4 py-2 rounded-small text-small font-medium transition-colors",
                 categoryFilter === filter.value
-                  ? "bg-white text-foreground shadow-sm"
+                  ? "bg-popover text-popover-foreground border border-border shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -198,7 +198,7 @@ export default function DialerScripts() {
             ))}
           </div>
         ) : scripts.length === 0 ? (
-          <div className="text-center py-16 bg-white border border-border-subtle rounded-medium">
+          <div className="text-center py-16 bg-card border border-border-subtle rounded-medium">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
             <h3 className="text-h3 font-semibold text-foreground mb-2">
               No scripts yet
@@ -291,7 +291,7 @@ export default function DialerScripts() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="bg-white"
+                      className="bg-card"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <DropdownMenuItem
