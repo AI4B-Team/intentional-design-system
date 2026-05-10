@@ -93,6 +93,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
     } else {
       root.classList.remove("dark");
     }
+    window.dispatchEvent(new Event("app-theme-change"));
     setShowThemes(false);
   };
 
