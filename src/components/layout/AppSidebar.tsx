@@ -346,6 +346,7 @@ export function AppSidebar({
       <aside
         data-sidebar
         className={cn(
+          forceDark && "dark",
           "fixed inset-y-0 left-0 z-50 flex flex-col sidebar-premium noise-texture transition-all duration-200",
           collapsed ? "md:w-16" : "md:w-64",
           mobileOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0"
