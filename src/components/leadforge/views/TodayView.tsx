@@ -25,7 +25,6 @@ import {
   BarChart3,
   LineChart as LineIcon,
   AreaChart as AreaIcon,
-  Workflow,
   Bot,
   User as UserIcon,
   Megaphone,
