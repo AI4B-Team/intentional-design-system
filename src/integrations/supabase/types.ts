@@ -4692,6 +4692,199 @@ export type Database = {
           },
         ]
       }
+      lead_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by_user_id: string
+          assigned_to_user_id: string
+          id: string
+          lead_property_id: string
+          notes: string | null
+          organization_id: string
+          resolved_at: string | null
+          role: string | null
+          status: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by_user_id: string
+          assigned_to_user_id: string
+          id?: string
+          lead_property_id: string
+          notes?: string | null
+          organization_id: string
+          resolved_at?: string | null
+          role?: string | null
+          status?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by_user_id?: string
+          assigned_to_user_id?: string
+          id?: string
+          lead_property_id?: string
+          notes?: string | null
+          organization_id?: string
+          resolved_at?: string | null
+          role?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_assignments_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_sequence_enrollments: {
+        Row: {
+          completed_at: string | null
+          current_step: number
+          enrolled_at: string
+          exit_reason: string | null
+          id: string
+          last_advanced_at: string | null
+          lead_property_id: string
+          next_run_at: string | null
+          organization_id: string
+          sequence_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          current_step?: number
+          enrolled_at?: string
+          exit_reason?: string | null
+          id?: string
+          last_advanced_at?: string | null
+          lead_property_id: string
+          next_run_at?: string | null
+          organization_id: string
+          sequence_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          current_step?: number
+          enrolled_at?: string
+          exit_reason?: string | null
+          id?: string
+          last_advanced_at?: string | null
+          lead_property_id?: string
+          next_run_at?: string | null
+          organization_id?: string
+          sequence_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_sequence_enrollments_lead_property_id_fkey"
+            columns: ["lead_property_id"]
+            isOneToOne: false
+            referencedRelation: "leads_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_sequence_enrollments_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "lead_sequences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_sequence_steps: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          label: string | null
+          organization_id: string
+          required_capability: string | null
+          sequence_id: string
+          step_order: number
+          step_type: string
+          wait_hours: number
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          label?: string | null
+          organization_id: string
+          required_capability?: string | null
+          sequence_id: string
+          step_order: number
+          step_type: string
+          wait_hours?: number
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          label?: string | null
+          organization_id?: string
+          required_capability?: string | null
+          sequence_id?: string
+          step_order?: number
+          step_type?: string
+          wait_hours?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_sequence_steps_sequence_id_fkey"
+            columns: ["sequence_id"]
+            isOneToOne: false
+            referencedRelation: "lead_sequences"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_sequences: {
+        Row: {
+          created_at: string
+          description: string | null
+          enroll_min_score: number | null
+          enroll_tier: string | null
+          id: string
+          is_default: boolean
+          name: string
+          organization_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          enroll_min_score?: number | null
+          enroll_tier?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          organization_id: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          enroll_min_score?: number | null
+          enroll_tier?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          organization_id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads_enrichment: {
         Row: {
           created_at: string
@@ -9029,6 +9222,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      team_member_capabilities: {
+        Row: {
+          capabilities: string[]
+          created_at: string
+          id: string
+          is_available: boolean
+          organization_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          capabilities?: string[]
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          organization_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          capabilities?: string[]
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          organization_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       title_reports: {
         Row: {
