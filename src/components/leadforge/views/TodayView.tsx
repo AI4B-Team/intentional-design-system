@@ -26,10 +26,15 @@ import {
   LineChart as LineIcon,
   AreaChart as AreaIcon,
   Workflow,
+  Bot,
+  User as UserIcon,
+  Megaphone,
+  Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
-import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
+import { AcquisitionLeadCard, AcquisitionLead } from "@/components/leadforge/AcquisitionLeadCard";
+import { AIOpportunityFeed } from "@/components/leadforge/AIOpportunityFeed";
 import {
   ResponsiveContainer,
   BarChart,
@@ -45,10 +50,10 @@ import {
 } from "recharts";
 
 const UTILITY_TILES = [
-  { label: "New Today", count: 38, sub: "Since Yesterday" },
-  { label: "Phone-Ready", count: 2871, sub: "Skip-Traced" },
-  { label: "With Equity", count: 5104, sub: "Owner-Held" },
-  { label: "Absentee", count: 3219, sub: "Off-Market Likely" },
+  { label: "Distress Signals", count: 38, sub: "New Since Yesterday", accent: "text-rose-500" },
+  { label: "Contact Ready", count: 2871, sub: "Phone Verified · Skip-Traced", accent: "text-primary" },
+  { label: "Opportunity Score", count: 5104, sub: "High-Equity Owners", accent: "text-amber-500" },
+  { label: "Likely Sellers", count: 3219, sub: "Absentee · Off-Market", accent: "text-violet-500" },
 ];
 
 const DISTRESS_TYPES = [
@@ -79,20 +84,77 @@ const TICKER = [
   "NOST Sale Date Moved To 11 Days — Flagged Urgent · 42s ago",
 ];
 
-const TOP_LEADS = [
-  { addr: "7216 Redwood Blvd", city: "Tyler, TX 75214", owner: "Andrew Sanchez", score: 82 },
-  { addr: "119 Walnut Blvd", city: "Garland, TX 75210", owner: "Justin Reed", score: 82 },
-  { addr: "9309 Peachtree Rd", city: "Flower Mound, TX 75212", owner: "Larry Owens", score: 80 },
-  { addr: "3155 Maple Ave", city: "Fort Worth, TX 75243", owner: "Eric Thomas", score: 80 },
-  { addr: "8605 Maple Ave", city: "Fort Worth, TX 75216", owner: "Gregory Hall", score: 79 },
+const TOP_LEADS: AcquisitionLead[] = [
+  {
+    id: "7216 Redwood Blvd",
+    addr: "7216 Redwood Blvd",
+    city: "Tyler, TX 75214",
+    owner: "Andrew Sanchez",
+    score: 88,
+    confidence: 92,
+    badges: ["Vacant", "Probate", "Tax Delinquent"],
+    summary: "Likely inherited property with deferred maintenance and absentee owner — high motivation signal.",
+    campaign: "AI SMS Sequence Active",
+    nextAction: { icon: "sms", label: "SMS first · then call after 5pm" },
+  },
+  {
+    id: "119 Walnut Blvd",
+    addr: "119 Walnut Blvd",
+    city: "Garland, TX 75210",
+    owner: "Justin Reed",
+    score: 85,
+    confidence: 88,
+    badges: ["Pre-Foreclosure", "High Equity"],
+    summary: "Notice of default filed 18 days ago. Owner has 62% equity — strong save-the-deal candidate.",
+    campaign: "Voice Agent + Mail",
+    nextAction: { icon: "phone", label: "Call within 24h" },
+  },
+  {
+    id: "9309 Peachtree Rd",
+    addr: "9309 Peachtree Rd",
+    city: "Flower Mound, TX 75212",
+    owner: "Larry Owens",
+    score: 82,
+    confidence: 84,
+    badges: ["Code Violation", "Absentee", "Vacant"],
+    summary: "Out-of-state owner with active code violations. Property unoccupied for 8+ months.",
+    campaign: "Direct Mail Cadence",
+    nextAction: { icon: "mail", label: "Mail postcard · follow with SMS" },
+  },
+  {
+    id: "3155 Maple Ave",
+    addr: "3155 Maple Ave",
+    city: "Fort Worth, TX 75243",
+    owner: "Eric Thomas",
+    score: 78,
+    confidence: 81,
+    badges: ["Tired Landlord", "Eviction Filed"],
+    summary: "Recent eviction, third in two years. Pattern matches landlords ready to exit portfolio.",
+    campaign: "AI SMS · Hybrid",
+    nextAction: { icon: "sms", label: "Empathy script · landlord exit" },
+  },
 ];
 
-const ACTIVITY = [
-  { text: "12 Leads Exported To CRM Pipeline", time: "3m ago" },
-  { text: "Mail Batch Of 48 Candidates Queued", time: "11m ago" },
-  { text: "Skip Trace Cycle Complete · 132 Enriched", time: "27m ago" },
-  { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago" },
+const ACTIVITY: { text: string; time: string; type: "ai" | "human" | "campaign" | "lead" | "comms" }[] = [
+  { text: "AI agent qualified seller in 47s — pushed to Sarah M.", time: "1m ago", type: "ai" },
+  { text: "Sarah M. left voicemail on probate lead", time: "8m ago", type: "human" },
+  { text: "12 Leads Exported To CRM Pipeline", time: "12m ago", type: "lead" },
+  { text: "Mail batch of 48 candidates queued for tomorrow", time: "21m ago", type: "campaign" },
+  { text: "Inbound SMS reply from high-equity owner", time: "34m ago", type: "comms" },
+  { text: "Skip Trace Cycle Complete · 132 Enriched", time: "1h ago", type: "lead" },
+  { text: "AI Voice Agent completed 14 outbound calls", time: "1h ago", type: "ai" },
+  { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago", type: "lead" },
 ];
+
+const ACTIVITY_FILTERS = [
+  { key: "all", label: "All", icon: Activity },
+  { key: "ai", label: "AI", icon: Bot },
+  { key: "human", label: "Human", icon: UserIcon },
+  { key: "campaign", label: "Campaigns", icon: Megaphone },
+  { key: "lead", label: "Leads", icon: Sparkles },
+  { key: "comms", label: "Comms", icon: Radio },
+] as const;
+type ActivityFilter = typeof ACTIVITY_FILTERS[number]["key"];
 
 // 30-day trend data — per lead type
 const TREND_DATA = Array.from({ length: 30 }).map((_, i) => {
