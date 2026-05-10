@@ -141,7 +141,7 @@ export function AppSidebar({
   const sidebarContent = (
     <>
       {/* Logo */}
-      <div className="flex items-center justify-between py-3 px-4" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+      <div className="flex items-center justify-between py-3 px-4" style={{borderBottom: '1px solid hsl(var(--border) / 0.6)'}}>
         <div className="flex-1 flex justify-center">
           {collapsed ? (
             <button
@@ -159,14 +159,14 @@ export function AppSidebar({
           <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={onToggle}
-              className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+              className="hidden lg:flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title="Collapse sidebar"
             >
               <PanelLeftClose className="h-4 w-4" />
             </button>
             <button
               onClick={onMobileClose}
-              className="lg:hidden p-1 text-slate-400 hover:text-white"
+              className="lg:hidden p-1 text-muted-foreground hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -175,7 +175,7 @@ export function AppSidebar({
       </div>
 
       {/* Workspace Switcher */}
-      <div className="py-2" style={{borderBottom: '1px solid rgba(255,255,255,0.06)'}}>
+      <div className="py-2" style={{borderBottom: '1px solid hsl(var(--border) / 0.6)'}}>
         <WorkspaceSwitcher collapsed={collapsed} />
       </div>
 
@@ -194,13 +194,13 @@ export function AppSidebar({
                     }}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 w-full",
-                       "text-slate-400 hover:text-white hover:bg-white/5",
-                       aivaOpen && "bg-gradient-to-r from-primary/25 via-primary/15 to-transparent border border-primary/30 text-white shadow-glow-sm font-semibold",
+                       "text-muted-foreground hover:text-foreground hover:bg-foreground/5",
+                       aivaOpen && "bg-gradient-to-r from-primary/25 via-primary/15 to-transparent border border-primary/30 text-foreground shadow-glow-sm font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
                     <div className="relative">
-                      <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-white")} />
+                      <Sparkles className={cn("h-5 w-5 flex-shrink-0", aivaOpen && "text-foreground")} />
                       {!aivaOpen && (
                         <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
                       )}
@@ -212,7 +212,7 @@ export function AppSidebar({
                   </button>
                 </TooltipTrigger>
                 {collapsed && (
-                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                  <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                     AIVA
                   </TooltipContent>
                 )}
@@ -234,13 +234,13 @@ export function AppSidebar({
                         onClick={onMobileClose}
                         className={cn(
                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                           "text-slate-400 hover:text-white hover:bg-white/5",
-                           isActive && "nav-item-glow text-white font-semibold",
+                           "text-muted-foreground hover:text-foreground hover:bg-foreground/5",
+                           isActive && "nav-item-glow text-foreground font-semibold",
                           collapsed && "justify-center"
                         )}
                       >
                         <div className="relative">
-                          <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-white")} />
+                          <Icon className={cn("h-5 w-5 flex-shrink-0", isActive && "text-foreground")} />
                           {collapsed && badgeCount > 0 && (
                             <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-warning text-[10px] font-bold text-white flex items-center justify-center">
                               {badgeCount > 9 ? "9+" : badgeCount}
@@ -256,7 +256,7 @@ export function AppSidebar({
                       </NavLink>
                     </TooltipTrigger>
                     {collapsed && (
-                      <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                      <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                         {item.label}
                       </TooltipContent>
                     )}
@@ -267,7 +267,7 @@ export function AppSidebar({
 
             {/* Divider after top nav items */}
             <li className="py-2">
-              <div className="border-t border-white/[0.06]" />
+              <div className="border-t border-border/60" />
             </li>
 
             {/* Contacts - Direct Link */}
@@ -279,17 +279,17 @@ export function AppSidebar({
                     onClick={onMobileClose}
                     className={cn(
                        "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                       "text-slate-400 hover:text-white hover:bg-white/5",
-                       isContactsActive && "nav-item-glow text-white font-semibold",
+                       "text-muted-foreground hover:text-foreground hover:bg-foreground/5",
+                       isContactsActive && "nav-item-glow text-foreground font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
-                    <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-white")} />
+                    <contactsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isContactsActive && "text-foreground")} />
                     {!collapsed && <span>{contactsNavItem.label}</span>}
                   </NavLink>
                 </TooltipTrigger>
                 {collapsed && (
-                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                  <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                     {contactsNavItem.label}
                   </TooltipContent>
                 )}
@@ -307,17 +307,17 @@ export function AppSidebar({
                     onClick={onMobileClose}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150",
-                       "text-slate-400 hover:text-white hover:bg-white/5",
-                       isAppsActive && "nav-item-glow text-white font-semibold",
+                       "text-muted-foreground hover:text-foreground hover:bg-foreground/5",
+                       isAppsActive && "nav-item-glow text-foreground font-semibold",
                       collapsed && "justify-center"
                     )}
                   >
-                    <appsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-white")} />
+                    <appsNavItem.icon className={cn("h-5 w-5 flex-shrink-0", isAppsActive && "text-foreground")} />
                     {!collapsed && <span>{appsNavItem.label}</span>}
                   </NavLink>
                 </TooltipTrigger>
                 {collapsed && (
-                  <TooltipContent side="right" className="bg-white text-slate-900 border-slate-200">
+                  <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                     {appsNavItem.label}
                   </TooltipContent>
                 )}
