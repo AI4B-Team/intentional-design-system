@@ -65,12 +65,16 @@ export function AIStatusBar() {
   ];
 
   return (
-    <div className="rounded-lg border border-border bg-gradient-to-br from-muted/40 via-background to-background overflow-hidden">
-      <div className="grid grid-cols-2 md:grid-cols-5 divide-x divide-border border-b border-border">
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {stats.map((s) => {
           const Icon = s.icon;
           return (
-            <div key={s.label} className="px-3 py-2.5 flex items-center gap-2.5 min-w-0">
+            <button
+              key={s.label}
+              type="button"
+              className="rounded-lg border border-border bg-card hover:bg-muted/40 hover:border-primary/40 transition-all px-3 py-2.5 flex items-center gap-2.5 min-w-0 text-left"
+            >
               <div className={cn("h-7 w-7 rounded-md bg-muted/60 flex items-center justify-center shrink-0", s.color)}>
                 <Icon className="h-3.5 w-3.5" />
               </div>
@@ -82,11 +86,11 @@ export function AIStatusBar() {
                   {s.value}
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
-      <div className="px-3 py-2 flex items-start gap-3 bg-background/50">
+      <div className="rounded-lg border border-border bg-card px-3 py-2 flex items-start gap-3">
         <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
