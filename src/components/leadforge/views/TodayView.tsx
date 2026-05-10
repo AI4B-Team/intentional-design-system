@@ -35,6 +35,7 @@ import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/M
 import { AcquisitionLeadCard, AcquisitionLead } from "@/components/leadforge/AcquisitionLeadCard";
 import { AIOpportunityFeed } from "@/components/leadforge/AIOpportunityFeed";
 import { AIStatusBar } from "@/components/leadforge/AIStatusBar";
+import { LiveSignalStream } from "@/components/leadforge/LiveSignalStream";
 import {
   ResponsiveContainer,
   BarChart,
