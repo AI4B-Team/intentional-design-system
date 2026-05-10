@@ -49,7 +49,7 @@ export function AddressAutocomplete({
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [savedDropdownOpen, setSavedDropdownOpen] = React.useState(false);
-  const [savedTab, setSavedTab] = React.useState<"saved" | "recent" | "quick" | "popular">("saved");
+  const [savedTab, setSavedTab] = React.useState<"saved" | "recent" | "quick" | "popular">("recent");
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const debounceRef = React.useRef<NodeJS.Timeout>();
@@ -263,8 +263,8 @@ export function AddressAutocomplete({
             {/* Tab bar */}
             <div className="flex border-b border-border">
               {([
-                { key: "saved" as const, label: "Saved", icon: Heart },
                 { key: "recent" as const, label: "Recent", icon: Clock },
+                { key: "saved" as const, label: "Saved", icon: Heart },
                 { key: "quick" as const, label: "Quick", icon: Zap },
                 { key: "popular" as const, label: "Markets", icon: MapPin },
               ]).map((tab) => (
