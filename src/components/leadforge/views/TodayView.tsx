@@ -202,7 +202,7 @@ export function TodayView() {
   return (
     <div className="space-y-6 pt-6">
       {/* Hero */}
-      <Card className="border-border overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background">
+      <Card className="border-border overflow-hidden bg-card">
         <div className="p-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2 border border-primary/20">
