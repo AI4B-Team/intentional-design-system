@@ -246,7 +246,7 @@ export function MarketplaceFilters({
 
   return (
     <>
-      <div className="relative flex items-center justify-between gap-3 px-4 py-3 bg-white border-b border-border flex-shrink-0 overflow-x-auto">
+      <div className="relative flex items-center justify-between gap-3 px-4 py-3 bg-card border-b border-border flex-shrink-0 overflow-x-auto">
         {/* Left aligned filters - uniform gap-3 for equal spacing */}
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* All Listings */}
@@ -479,7 +479,7 @@ export function MarketplaceFilters({
                 className={cn(
                   "ml-1 h-5 px-1.5 text-xs font-bold transition-colors",
                   showSavedOnly 
-                    ? "bg-white text-brand hover:bg-white" 
+                    ? "bg-card text-brand hover:bg-card" 
                     : "bg-muted text-muted-foreground"
                 )}
               >

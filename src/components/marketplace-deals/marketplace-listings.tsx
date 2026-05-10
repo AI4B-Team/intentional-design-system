@@ -144,7 +144,7 @@ function DealRiskMeter({ arvPercent }: { arvPercent: number }) {
           </div>
         </div>
         <div
-          className="absolute w-4 h-4 bg-white border-2 border-slate-700 rounded-full shadow-md z-10"
+          className="absolute w-4 h-4 bg-card border-2 border-slate-700 rounded-full shadow-md z-10"
           style={{ 
             left: `${Math.min(Math.max(position, 0), 100)}%`, 
             transform: "translateX(-50%)" 
@@ -277,7 +277,7 @@ function DealListItem({
 
   return (
     <Card 
-      className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white"
+      className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-card"
       onClick={handleClick}
     >
       <div className="flex min-h-[240px]">
@@ -418,7 +418,7 @@ function DealListItem({
                             "px-2 py-0.5 text-[10px] font-medium rounded-md border transition-all",
                             cardViewMode === "flip"
                               ? "bg-surface-secondary text-foreground border-border font-semibold"
-                              : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                              : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                           )}
                         >
                           Flip
@@ -438,7 +438,7 @@ function DealListItem({
                             "px-2 py-0.5 text-[10px] font-medium rounded-md border transition-all",
                             cardViewMode === "hold"
                               ? "bg-surface-secondary text-foreground border-border font-semibold"
-                              : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                              : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                           )}
                         >
                           Hold
@@ -696,7 +696,7 @@ function DealCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-white" onClick={handleCardClick}>
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer bg-card" onClick={handleCardClick}>
       {/* Image Carousel */}
       <ImageCarousel
         images={photos}
@@ -820,7 +820,7 @@ function DealCard({
                 "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                 cardViewMode === "flip"
                   ? "bg-surface-secondary text-foreground border-border font-semibold"
-                  : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                  : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
               )}
             >
               Flip
@@ -831,7 +831,7 @@ function DealCard({
                 "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                 cardViewMode === "hold"
                   ? "bg-surface-secondary text-foreground border-border font-semibold"
-                  : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                  : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
               )}
             >
               Hold
@@ -1021,7 +1021,7 @@ export function MarketplaceListings({
   return (
     <div className="flex flex-col h-full bg-slate-50">
       {/* Header */}
-      <div className="p-4 border-b border-border bg-white">
+      <div className="p-4 border-b border-border bg-card">
         {/* Row 1: Title + Global View As toggle */}
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-xl font-bold text-foreground">Find Your Next Deal</h2>
@@ -1039,7 +1039,7 @@ export function MarketplaceListings({
                         "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                         effectiveCardViewMode === "flip"
                           ? "bg-surface-secondary text-foreground border-border font-semibold"
-                          : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                          : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                       )}
                     >
                       Flip
@@ -1059,7 +1059,7 @@ export function MarketplaceListings({
                         "px-3 py-1 text-xs font-medium rounded-lg border transition-all",
                         effectiveCardViewMode === "hold"
                           ? "bg-surface-secondary text-foreground border-border font-semibold"
-                          : "bg-white text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
+                          : "bg-card text-muted-foreground border-border hover:text-foreground hover:bg-surface-secondary"
                       )}
                     >
                       Hold
@@ -1212,7 +1212,7 @@ export function MarketplaceListings({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="p-4 border-t border-border bg-white flex items-center justify-center gap-2">
+        <div className="p-4 border-t border-border bg-card flex items-center justify-center gap-2">
           <Button
             variant="ghost"
             size="icon"

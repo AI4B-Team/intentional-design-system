@@ -33,7 +33,7 @@ export function AutoDialCountdown({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl p-8 text-center max-w-sm mx-4 shadow-2xl">
+      <div className="bg-card rounded-xl p-8 text-center max-w-sm mx-4 shadow-2xl">
         <div className="mb-6">
           <div className="text-7xl font-bold text-primary mb-2 animate-pulse">
             {remaining}

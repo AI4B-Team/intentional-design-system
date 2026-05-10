@@ -102,7 +102,7 @@ export function CallScriptPanel({
 
   if (!script) {
     return (
-      <div className="bg-white border border-border-subtle rounded-medium p-6 text-center">
+      <div className="bg-card border border-border-subtle rounded-medium p-6 text-center">
         <p className="text-muted-foreground">
           No script selected. Select a queue with an assigned script.
         </p>
@@ -111,7 +111,7 @@ export function CallScriptPanel({
   }
 
   return (
-    <div className="bg-white border border-border-subtle rounded-medium overflow-hidden">
+    <div className="bg-card border border-border-subtle rounded-medium overflow-hidden">
       <Tabs defaultValue="script" className="w-full">
         <TabsList className="w-full justify-start border-b rounded-none bg-muted/30 p-0 h-auto">
           <TabsTrigger

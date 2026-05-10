@@ -979,7 +979,7 @@ function SellerFinanceCalculator() {
                   <select
                     value={inputs.amortizationYears}
                     onChange={(e) => updateInput("amortizationYears", Number(e.target.value))}
-                    className="flex h-10 w-full rounded-small border border-border bg-white px-3 text-body focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10"
+                    className="flex h-10 w-full rounded-small border border-border bg-card px-3 text-body focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10"
                   >
                     {[15, 20, 25, 30].map(years => (
                       <option key={years} value={years}>{years} years</option>
@@ -991,7 +991,7 @@ function SellerFinanceCalculator() {
                   <select
                     value={inputs.balloonYears}
                     onChange={(e) => updateInput("balloonYears", Number(e.target.value))}
-                    className="flex h-10 w-full rounded-small border border-border bg-white px-3 text-body focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10"
+                    className="flex h-10 w-full rounded-small border border-border bg-card px-3 text-body focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10"
                   >
                     <option value={0}>No Balloon (Full Amort)</option>
                     {[3, 5, 7, 10].map(years => (
@@ -1067,7 +1067,7 @@ function SellerFinanceCalculator() {
                           key={row.month} 
                           className={cn(
                             "h-9",
-                            index % 2 === 0 ? "bg-white" : "bg-surface-secondary/30",
+                            index % 2 === 0 ? "bg-card" : "bg-surface-secondary/30",
                             row.isBalloon && "bg-warning/10 border-t-2 border-warning"
                           )}
                         >
@@ -1219,7 +1219,7 @@ function SellerFinanceCalculator() {
                           <select
                             value={s.balloon}
                             onChange={(e) => updateScenario(i, 'balloon', Number(e.target.value))}
-                            className="h-8 px-2 rounded border border-border bg-white text-small text-center"
+                            className="h-8 px-2 rounded border border-border bg-card text-small text-center"
                           >
                             <option value={0}>None</option>
                             {[3, 5, 7, 10].map(y => (
@@ -2060,7 +2060,7 @@ function WrapCalculator() {
                 </p>
                 
                 {/* Visual Diagram */}
-                <div className="space-y-3 p-4 bg-white rounded-medium border border-border-subtle">
+                <div className="space-y-3 p-4 bg-card rounded-medium border border-border-subtle">
                   <h4 className="text-small font-medium text-content text-center">Wrap Structure</h4>
                   
                   {/* Your Buyer */}

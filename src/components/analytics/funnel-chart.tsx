@@ -50,7 +50,7 @@ export function FunnelChart({ data, title, className }: FunnelChartProps) {
               {index > 0 && (
                 <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10">
                   <div className="h-4 w-px bg-border" />
-                  <span className="text-tiny text-content-tertiary bg-white px-1">
+                  <span className="text-tiny text-content-tertiary bg-card px-1">
                     {conversionRate}%
                   </span>
                 </div>

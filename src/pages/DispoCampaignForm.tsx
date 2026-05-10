@@ -750,7 +750,7 @@ export default function DispoCampaignForm() {
                     </TabsContent>
                     <TabsContent value="preview">
                       <div
-                        className="p-4 border rounded-lg bg-white min-h-[300px] prose prose-sm max-w-none"
+                        className="p-4 border rounded-lg bg-card min-h-[300px] prose prose-sm max-w-none"
                         dangerouslySetInnerHTML={{ __html: emailContent.body }}
                       />
                     </TabsContent>

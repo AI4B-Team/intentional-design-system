@@ -195,7 +195,7 @@ export function BidRequestWizard({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Send className="h-5 w-5 text-brand" />
@@ -276,7 +276,7 @@ export function BidRequestWizard({
                       <select
                         value={item.category}
                         onChange={(e) => updateScopeItem(item.id, { category: e.target.value })}
-                        className="h-9 px-2 rounded-small border border-border text-small bg-white"
+                        className="h-9 px-2 rounded-small border border-border text-small bg-card"
                       >
                         {categoryOptions.map((cat) => (
                           <option key={cat} value={cat}>{cat}</option>

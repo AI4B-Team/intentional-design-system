@@ -180,7 +180,7 @@ export default function Buyers() {
           <SelectTrigger className="w-40">
             <SelectValue placeholder="POF Status" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             <SelectItem value="all">All POF Status</SelectItem>
             <SelectItem value="verified">Verified</SelectItem>
             <SelectItem value="not_verified">Not Verified</SelectItem>
@@ -190,7 +190,7 @@ export default function Buyers() {
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Activity" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             <SelectItem value="all">All Activity</SelectItem>
             <SelectItem value="active">Active (30 days)</SelectItem>
             <SelectItem value="dormant">Dormant</SelectItem>
@@ -200,7 +200,7 @@ export default function Buyers() {
           <SelectTrigger className="w-40">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             <SelectItem value="newest">Newest</SelectItem>
             <SelectItem value="most_active">Most Active</SelectItem>
             <SelectItem value="highest_volume">Highest Volume</SelectItem>
@@ -274,7 +274,7 @@ export default function Buyers() {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="bg-white">
+                      <DropdownMenuContent align="end" className="bg-card">
                         <DropdownMenuItem onClick={() => navigate(`/buyers/${buyer.id}`)}>
                           <Eye className="mr-2 h-4 w-4" />
                           View

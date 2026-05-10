@@ -102,7 +102,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-white">
+      <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
           <DialogTitle>New Offer</DialogTitle>
         </DialogHeader>
@@ -172,7 +172,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {offerTypes.map((type) => (
                     <SelectItem key={type.value} value={type.value}>
                       {type.label}
@@ -190,7 +190,7 @@ export function AddOfferModal({ open, onOpenChange, propertyId }: AddOfferModalP
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {sendViaOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}

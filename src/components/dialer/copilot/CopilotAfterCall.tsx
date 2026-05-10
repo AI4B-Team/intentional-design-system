@@ -119,7 +119,7 @@ export function CopilotAfterCall({
 
         {/* Draft SMS */}
         {postCallActions.draftSms && (
-          <div className="bg-white border border-border-subtle rounded-lg p-3">
+          <div className="bg-card border border-border-subtle rounded-lg p-3">
             <div className="flex items-start gap-2 mb-2">
               <MessageSquare className="h-4 w-4 text-muted-foreground mt-0.5" />
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
@@ -152,7 +152,7 @@ export function CopilotAfterCall({
 
         {/* Draft Email */}
         {postCallActions.draftEmail && (
-          <div className="bg-white border border-border-subtle rounded-lg p-3">
+          <div className="bg-card border border-border-subtle rounded-lg p-3">
             <div className="flex items-start gap-2 mb-2">
               <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
               <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">

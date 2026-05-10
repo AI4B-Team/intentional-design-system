@@ -29,7 +29,7 @@ export function CallModeSelector({ mode, onModeChange, disabled }: CallModeSelec
   ];
 
   return (
-    <div className="bg-white border border-border-subtle rounded-lg p-4">
+    <div className="bg-card border border-border-subtle rounded-lg p-4">
       <div className="flex items-center gap-2 mb-3">
         <Mic className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm font-medium text-foreground">Call Mode</span>

@@ -457,9 +457,9 @@ Best regards,
 
   return (
     <AppLayout fullWidth>
-      <div className="h-full flex flex-col bg-white">
+      <div className="h-full flex flex-col bg-card">
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-border bg-white px-6 py-4">
+        <div className="flex-shrink-0 border-b border-border bg-card px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -493,7 +493,7 @@ Best regards,
         {/* Split Content */}
         <div className="flex-1 flex overflow-hidden">
           {/* Left Side - Property Details */}
-          <div className="w-[420px] flex-shrink-0 border-r border-border bg-white flex flex-col">
+          <div className="w-[420px] flex-shrink-0 border-r border-border bg-card flex flex-col">
             <ScrollArea className="flex-1">
               <div className="p-4 space-y-4">
                 {/* Image Gallery */}
@@ -508,7 +508,7 @@ Best regards,
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-white"
+                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-card"
                         onClick={prevImage}
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -516,7 +516,7 @@ Best regards,
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-white"
+                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-card"
                         onClick={nextImage}
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -533,7 +533,7 @@ Best regards,
                           className={cn(
                             "h-1.5 rounded-full transition-all",
                             idx === currentImageIndex
-                              ? "w-4 bg-white"
+                              ? "w-4 bg-card"
                               : "w-1.5 bg-white/60"
                           )}
                         />
@@ -698,7 +698,7 @@ Best regards,
           </div>
 
           {/* Right Side - Offer Wizard */}
-          <div className="flex-1 min-h-0 bg-white overflow-hidden flex flex-col">
+          <div className="flex-1 min-h-0 bg-card overflow-hidden flex flex-col">
             {/* Step Indicator */}
             <div className="px-6 py-3 border-b bg-muted/30">
               <div className="flex items-center w-full">
@@ -1556,7 +1556,7 @@ Best regards,
             </ScrollArea>
 
             {/* Footer */}
-            <div className="flex-shrink-0 px-6 py-4 border-t flex items-center justify-between bg-white shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
+            <div className="flex-shrink-0 px-6 py-4 border-t flex items-center justify-between bg-card shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.08)]">
               <Button
                 variant="outline"
                 onClick={handleBack}

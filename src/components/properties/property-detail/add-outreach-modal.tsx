@@ -99,7 +99,7 @@ export function AddOutreachModal({ open, onOpenChange, propertyId }: AddOutreach
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-white">
+      <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
           <DialogTitle>Log Contact</DialogTitle>
         </DialogHeader>
@@ -116,7 +116,7 @@ export function AddOutreachModal({ open, onOpenChange, propertyId }: AddOutreach
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {channelOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
@@ -134,7 +134,7 @@ export function AddOutreachModal({ open, onOpenChange, propertyId }: AddOutreach
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {directionOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
@@ -167,7 +167,7 @@ export function AddOutreachModal({ open, onOpenChange, propertyId }: AddOutreach
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {statusOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
                     {opt.label}

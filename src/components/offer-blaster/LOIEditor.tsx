@@ -193,7 +193,7 @@ export function LOIEditor({
         </TabsContent>
 
         <TabsContent value="preview">
-          <Card variant="default" padding="lg" className="bg-white min-h-[400px]">
+          <Card variant="default" padding="lg" className="bg-card min-h-[400px]">
             <pre className="whitespace-pre-wrap font-sans text-small text-foreground leading-relaxed">
               {getPreviewContent()}
             </pre>

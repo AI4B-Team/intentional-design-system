@@ -62,7 +62,7 @@ export function LiveCallHeader({
   };
 
   return (
-    <div className="bg-white border border-border-subtle rounded-lg p-4 space-y-4">
+    <div className="bg-card border border-border-subtle rounded-lg p-4 space-y-4">
       {/* Top Row - Contact Info & Duration */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

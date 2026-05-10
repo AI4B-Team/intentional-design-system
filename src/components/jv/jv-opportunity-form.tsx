@@ -124,7 +124,7 @@ export function JVOpportunityForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-white max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="bg-card max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {opportunity ? "Edit Opportunity" : "Post JV Opportunity"}

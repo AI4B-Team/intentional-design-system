@@ -65,7 +65,7 @@ export function AuditTrail({ events }: AuditTrailProps) {
           <div key={event.id} className="flex gap-3">
             {/* Timeline line + dot */}
             <div className="flex flex-col items-center">
-              <div className={cn("h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 border border-border-subtle bg-white", color)}>
+              <div className={cn("h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0 border border-border-subtle bg-card", color)}>
                 <Icon className="h-3.5 w-3.5" />
               </div>
               {!isLast && <div className="w-px flex-1 bg-border-subtle min-h-[16px]" />}

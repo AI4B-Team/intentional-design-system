@@ -237,7 +237,7 @@ function PropertyCard({
           <Checkbox
             checked={isSelected}
             onCheckedChange={onSelect}
-            className="h-5 w-5 bg-white border-2"
+            className="h-5 w-5 bg-card border-2"
           />
         </div>
 
@@ -288,7 +288,7 @@ function PropertyCard({
                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-white">
+            <DropdownMenuContent align="end" className="w-40 bg-card">
               <DropdownMenuItem onClick={onView}>
                 <Eye className="h-4 w-4 mr-2" />
                 View
@@ -621,7 +621,7 @@ export default function Properties() {
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {statusOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -632,7 +632,7 @@ export default function Properties() {
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {propertyTypeOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -643,7 +643,7 @@ export default function Properties() {
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Source" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {sourceOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -654,7 +654,7 @@ export default function Properties() {
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Motivation" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {motivationOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -665,7 +665,7 @@ export default function Properties() {
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Sort" />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {sortOptions.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -1046,7 +1046,7 @@ export default function Properties() {
                                         <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                                       </button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-40 bg-white">
+                                    <DropdownMenuContent align="end" className="w-40 bg-card">
                                       <DropdownMenuItem onClick={() => navigate(`/properties/${property.id}`)}>
                                         <Eye className="h-4 w-4 mr-2" />
                                         View

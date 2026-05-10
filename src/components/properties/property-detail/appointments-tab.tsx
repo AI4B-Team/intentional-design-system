@@ -328,7 +328,7 @@ export function AppointmentsTab() {
                                   <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                                 </button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-36 bg-white">
+                              <DropdownMenuContent align="end" className="w-36 bg-card">
                                 <DropdownMenuItem>
                                   <Edit className="h-4 w-4 mr-2" />
                                   Edit

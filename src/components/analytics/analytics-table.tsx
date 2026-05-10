@@ -167,7 +167,7 @@ export function AnalyticsTable({
                 onClick={() => onRowClick?.(row)}
                 className={cn(
                   "h-12 transition-colors",
-                  index % 2 === 0 ? "bg-white" : "bg-surface-secondary/30",
+                  index % 2 === 0 ? "bg-card" : "bg-surface-secondary/30",
                   onRowClick && "cursor-pointer hover:bg-brand-accent/5"
                 )}
               >

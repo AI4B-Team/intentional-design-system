@@ -259,7 +259,7 @@ export default function Contractors() {
           <SelectTrigger className="w-48">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="bg-white">
+          <SelectContent className="bg-card">
             {specialtyOptions.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}

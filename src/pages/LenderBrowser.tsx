@@ -233,7 +233,7 @@ export default function LenderBrowser() {
                 <SelectTrigger className="w-40">
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="featured">Featured</SelectItem>
                   <SelectItem value="rating">Highest Rated</SelectItem>
                   <SelectItem value="reviews">Most Reviews</SelectItem>

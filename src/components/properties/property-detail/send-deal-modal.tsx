@@ -133,7 +133,7 @@ export function SendDealModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle>Send Deal to {buyers.length} Buyer{buyers.length > 1 ? "s" : ""}</DialogTitle>
         </DialogHeader>

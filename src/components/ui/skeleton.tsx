@@ -40,7 +40,7 @@ function Skeleton({
 // Pre-built skeleton patterns
 function SkeletonCard() {
   return (
-    <div className="rounded-medium border border-border-subtle p-md space-y-4 bg-white">
+    <div className="rounded-medium border border-border-subtle p-md space-y-4 bg-card">
       <div className="flex items-start justify-between">
         <div className="space-y-2 flex-1">
           <Skeleton height={14} className="w-24" />
@@ -55,7 +55,7 @@ function SkeletonCard() {
 
 function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
   return (
-    <div className="rounded-medium border border-border-subtle overflow-hidden bg-white">
+    <div className="rounded-medium border border-border-subtle overflow-hidden bg-card">
       {/* Header */}
       <div className="flex gap-4 px-4 py-3 border-b border-border-subtle bg-surface-secondary">
         {Array.from({ length: columns }).map((_, i) => (
@@ -79,7 +79,7 @@ function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; columns?: num
 
 function SkeletonStat() {
   return (
-    <div className="rounded-medium border border-border-subtle p-md space-y-2 bg-white">
+    <div className="rounded-medium border border-border-subtle p-md space-y-2 bg-card">
       <Skeleton height={12} className="w-20" />
       <Skeleton height={32} className="w-24" />
       <Skeleton height={12} className="w-16" />
@@ -130,7 +130,7 @@ function SkeletonListItem() {
 
 function SkeletonPropertyCard() {
   return (
-    <div className="rounded-medium border border-border-subtle overflow-hidden bg-white">
+    <div className="rounded-medium border border-border-subtle overflow-hidden bg-card">
       <Skeleton height={192} className="w-full rounded-none" />
       <div className="p-md space-y-3">
         <Skeleton height={20} className="w-3/4" />
@@ -151,7 +151,7 @@ function SkeletonPropertyCard() {
 
 function SkeletonChart() {
   return (
-    <div className="rounded-medium border border-border-subtle p-md bg-white">
+    <div className="rounded-medium border border-border-subtle p-md bg-card">
       <Skeleton height={20} className="w-40 mb-4" />
       <Skeleton height={256} className="w-full" />
     </div>

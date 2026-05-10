@@ -121,7 +121,7 @@ export function ScriptPreviewModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl bg-white max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-2xl bg-card max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Preview: {script.name}</DialogTitle>
         </DialogHeader>

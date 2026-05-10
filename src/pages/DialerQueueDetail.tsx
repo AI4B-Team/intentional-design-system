@@ -215,7 +215,7 @@ export default function DialerQueueDetail() {
                   <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white">
+              <DropdownMenuContent align="end" className="bg-card">
                 <DropdownMenuItem onClick={() => setShowSettings(true)}>
                   <Settings className="h-4 w-4 mr-2" />
                   Edit Settings
@@ -317,7 +317,7 @@ export default function DialerQueueDetail() {
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-6 bg-white border border-border-subtle rounded-medium p-4">
+        <div className="mb-6 bg-card border border-border-subtle rounded-medium p-4">
           <div className="flex justify-between text-small text-muted-foreground mb-2">
             <span>
               {completed}/{total} processed

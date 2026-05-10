@@ -567,7 +567,7 @@ export function BulkImportModal({ open, onOpenChange, onSuccess }: BulkImportMod
                             <SelectTrigger className="w-full">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white">
+                            <SelectContent className="bg-card">
                               <SelectItem value="ignore" className="text-muted-foreground">
                                 — Ignore this column —
                               </SelectItem>
@@ -633,7 +633,7 @@ export function BulkImportModal({ open, onOpenChange, onSuccess }: BulkImportMod
                     <SelectTrigger className="w-48">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-card">
                       <SelectItem value="skip">Skip duplicates</SelectItem>
                       <SelectItem value="update">Update existing</SelectItem>
                       <SelectItem value="ask">Import anyway</SelectItem>

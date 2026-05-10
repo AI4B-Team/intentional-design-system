@@ -130,7 +130,7 @@ export function TemplateLivePreview({
               </span>
             </div>
           </div>
-          <div className="border rounded-lg bg-white overflow-hidden">
+          <div className="border rounded-lg bg-card overflow-hidden">
             {/* Email Header */}
             <div className="border-b bg-muted/20 p-4">
               <div className="space-y-2">
@@ -250,7 +250,7 @@ export function TemplateLivePreview({
                 </div>
                 {/* Input area mockup */}
                 <div className="p-2 border-t">
-                  <div className="flex items-center gap-2 bg-white rounded-full px-3 py-2">
+                  <div className="flex items-center gap-2 bg-card rounded-full px-3 py-2">
                     <div className="flex-1 text-gray-400 text-sm">iMessage</div>
                     <div className="w-6 h-6 rounded-full bg-primary/20" />
                   </div>
@@ -298,7 +298,7 @@ export function TemplateLivePreview({
               </span>
             </div>
           </div>
-          <div className="border rounded-lg bg-white p-6">
+          <div className="border rounded-lg bg-card p-6">
             <ScrollArea className="h-[calc(100vh-380px)] min-h-[400px]">
               <div className="space-y-4">
                 {/* Company Header */}

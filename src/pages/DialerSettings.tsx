@@ -420,10 +420,10 @@ export default function DialerSettings() {
                       onValueChange={(v) => handleSettingChange("connectSound", v)}
                       disabled={!settings.playSoundOnConnect}
                     >
-                      <SelectTrigger className="w-32 bg-white">
+                      <SelectTrigger className="w-32 bg-card">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectContent className="bg-card z-50">
                         <SelectItem value="chime">Chime</SelectItem>
                         <SelectItem value="beep">Beep</SelectItem>
                         <SelectItem value="none">None</SelectItem>
@@ -497,10 +497,10 @@ export default function DialerSettings() {
                       value={settings.defaultTimezone}
                       onValueChange={(v) => handleSettingChange("defaultTimezone", v)}
                     >
-                      <SelectTrigger className="bg-white">
+                      <SelectTrigger className="bg-card">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectContent className="bg-card z-50">
                         {TIMEZONES.map((tz) => (
                           <SelectItem key={tz.value} value={tz.value}>
                             {tz.label}
@@ -913,10 +913,10 @@ export default function DialerSettings() {
                       <Label>Announcement audio</Label>
                       <div className="flex gap-2">
                         <Select defaultValue="default">
-                          <SelectTrigger className="flex-1 bg-white">
+                          <SelectTrigger className="flex-1 bg-card">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="bg-white z-50">
+                          <SelectContent className="bg-card z-50">
                             <SelectItem value="default">Default</SelectItem>
                             <SelectItem value="custom">Upload Custom</SelectItem>
                           </SelectContent>
@@ -1001,10 +1001,10 @@ export default function DialerSettings() {
                   <div className="space-y-2">
                     <Label>Transcription language</Label>
                     <Select defaultValue="en">
-                      <SelectTrigger className="w-48 bg-white">
+                      <SelectTrigger className="w-48 bg-card">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectContent className="bg-card z-50">
                         <SelectItem value="en">English</SelectItem>
                         <SelectItem value="es">Spanish</SelectItem>
                       </SelectContent>
@@ -1025,10 +1025,10 @@ export default function DialerSettings() {
                     value={settings.recordingAccess}
                     onValueChange={(v) => handleSettingChange("recordingAccess", v)}
                   >
-                    <SelectTrigger className="w-64 bg-white">
+                    <SelectTrigger className="w-64 bg-card">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       <SelectItem value="only_me">Only me</SelectItem>
                       <SelectItem value="admins">Admins and Managers</SelectItem>
                       <SelectItem value="all">All team members</SelectItem>
@@ -1179,10 +1179,10 @@ export default function DialerSettings() {
                       onValueChange={(v) => handleSettingChange("dailySummaryTime", v)}
                       disabled={!settings.emailDailySummary}
                     >
-                      <SelectTrigger className="w-32 bg-white">
+                      <SelectTrigger className="w-32 bg-card">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-white z-50">
+                      <SelectContent className="bg-card z-50">
                         <SelectItem value="17:00">5:00 PM</SelectItem>
                         <SelectItem value="18:00">6:00 PM</SelectItem>
                         <SelectItem value="19:00">7:00 PM</SelectItem>
@@ -1238,7 +1238,7 @@ export default function DialerSettings() {
                         Configure these URLs in your Twilio console:
                       </p>
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between p-2 bg-white rounded-small border">
+                        <div className="flex items-center justify-between p-2 bg-card rounded-small border">
                           <div>
                             <p className="text-tiny text-muted-foreground">Voice URL</p>
                             <p className="text-small font-mono truncate max-w-[400px]">
@@ -1253,7 +1253,7 @@ export default function DialerSettings() {
                             <Copy className="h-4 w-4" />
                           </Button>
                         </div>
-                        <div className="flex items-center justify-between p-2 bg-white rounded-small border">
+                        <div className="flex items-center justify-between p-2 bg-card rounded-small border">
                           <div>
                             <p className="text-tiny text-muted-foreground">Status Callback</p>
                             <p className="text-small font-mono truncate max-w-[400px]">
@@ -1268,7 +1268,7 @@ export default function DialerSettings() {
                             <Copy className="h-4 w-4" />
                           </Button>
                         </div>
-                        <div className="flex items-center justify-between p-2 bg-white rounded-small border">
+                        <div className="flex items-center justify-between p-2 bg-card rounded-small border">
                           <div>
                             <p className="text-tiny text-muted-foreground">Recording Callback</p>
                             <p className="text-small font-mono truncate max-w-[400px]">
@@ -1330,7 +1330,7 @@ export default function DialerSettings() {
             }
           }}
         >
-          <DialogContent className="sm:max-w-lg bg-white">
+          <DialogContent className="sm:max-w-lg bg-card">
             <DialogHeader>
               <DialogTitle>
                 {editingDisposition ? "Edit Disposition" : "Add Custom Disposition"}
@@ -1361,10 +1361,10 @@ export default function DialerSettings() {
                         : setNewDisposition({ ...newDisposition, icon: v })
                     }
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-card">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       {EMOJI_OPTIONS.map((emoji) => (
                         <SelectItem key={emoji} value={emoji}>
                           {emoji}
@@ -1386,10 +1386,10 @@ export default function DialerSettings() {
                         : setNewDisposition({ ...newDisposition, category: v })
                     }
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-card">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       {DISPOSITION_CATEGORIES.map((cat) => (
                         <SelectItem key={cat.value} value={cat.value}>
                           <div>
@@ -1421,10 +1421,10 @@ export default function DialerSettings() {
                         : setNewDisposition({ ...newDisposition, keyboard_shortcut: value });
                     }}
                   >
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-card">
                       <SelectValue placeholder="None" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       <SelectItem value="none">None</SelectItem>
                       {["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
                         <SelectItem key={num} value={num}>

@@ -155,7 +155,7 @@ function DraggableCard({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "bg-white rounded-md border border-border-subtle shadow-sm transition-shadow",
+        "bg-card rounded-md border border-border-subtle shadow-sm transition-shadow",
         isDragging && "opacity-50 shadow-lg"
       )}
     >
@@ -191,7 +191,7 @@ function DraggableCard({
                     <MoreHorizontal className="h-3.5 w-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-40 bg-white">
+                <DropdownMenuContent align="end" className="w-40 bg-card">
                   <DropdownMenuItem onClick={() => onViewDetail(lead)}>
                     <Eye className="h-4 w-4 mr-2" />
                     View
@@ -271,7 +271,7 @@ function DraggableCard({
 
 function LeadCardOverlay({ lead }: { lead: SellerLead }) {
   return (
-    <div className="bg-white rounded-md border border-brand shadow-xl p-3 w-72 opacity-90">
+    <div className="bg-card rounded-md border border-brand shadow-xl p-3 w-72 opacity-90">
       <h4 className="font-medium text-sm">
         {lead.full_name ||
           `${lead.first_name || ""} ${lead.last_name || ""}`.trim() ||

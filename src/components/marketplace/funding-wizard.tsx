@@ -257,7 +257,7 @@ export function FundingWizard({ onComplete, className }: FundingWizardProps) {
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="sfr">Single Family</SelectItem>
                   <SelectItem value="multi">Multi-Family (2-4)</SelectItem>
                   <SelectItem value="commercial">Commercial</SelectItem>
@@ -271,7 +271,7 @@ export function FundingWizard({ onComplete, className }: FundingWizardProps) {
                 <SelectTrigger>
                   <SelectValue placeholder="Select state" />
                 </SelectTrigger>
-                <SelectContent className="bg-white max-h-60">
+                <SelectContent className="bg-card max-h-60">
                   <SelectItem value="TX">Texas</SelectItem>
                   <SelectItem value="FL">Florida</SelectItem>
                   <SelectItem value="CA">California</SelectItem>
@@ -397,7 +397,7 @@ export function FundingWizard({ onComplete, className }: FundingWizardProps) {
                 <SelectTrigger>
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="sell">Sell after rehab</SelectItem>
                   <SelectItem value="refinance">Refinance to long-term</SelectItem>
                   <SelectItem value="hold">Hold as rental</SelectItem>
@@ -410,7 +410,7 @@ export function FundingWizard({ onComplete, className }: FundingWizardProps) {
                 <SelectTrigger>
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   <SelectItem value="asap">ASAP (1-3 days)</SelectItem>
                   <SelectItem value="1-week">Within 1 week</SelectItem>
                   <SelectItem value="2-weeks">Within 2 weeks</SelectItem>

@@ -218,10 +218,10 @@ export default function Pipeline() {
           </div>
           <div className="flex items-center gap-2">
             <div className="inline-flex rounded-lg border border-border-subtle p-1 bg-muted/30">
-              <Button variant={viewMode === "kanban" ? "secondary" : "ghost"} size="sm" className={cn("gap-1.5 px-3", viewMode === "kanban" && "bg-white shadow-sm")} onClick={() => setViewMode("kanban")}>
+              <Button variant={viewMode === "kanban" ? "secondary" : "ghost"} size="sm" className={cn("gap-1.5 px-3", viewMode === "kanban" && "bg-card shadow-sm")} onClick={() => setViewMode("kanban")}>
                 <Kanban className="h-4 w-4" /><span className="hidden sm:inline">Kanban</span>
               </Button>
-              <Button variant={viewMode === "list" ? "secondary" : "ghost"} size="sm" className={cn("gap-1.5 px-3", viewMode === "list" && "bg-white shadow-sm")} onClick={() => setViewMode("list")}>
+              <Button variant={viewMode === "list" ? "secondary" : "ghost"} size="sm" className={cn("gap-1.5 px-3", viewMode === "list" && "bg-card shadow-sm")} onClick={() => setViewMode("list")}>
                 <List className="h-4 w-4" /><span className="hidden sm:inline">List</span>
               </Button>
             </div>

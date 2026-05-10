@@ -387,7 +387,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Send className="h-5 w-5 text-brand" />
@@ -501,7 +501,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-card">
                     <SelectItem value="opening">Opening Offer</SelectItem>
                     <SelectItem value="counter">Counter Offer</SelectItem>
                     <SelectItem value="final">Final Offer</SelectItem>
@@ -664,7 +664,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
                             <SelectTrigger className="mt-1">
                               <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white">
+                            <SelectContent className="bg-card">
                               <SelectItem value="standard">Standard ($0.60)</SelectItem>
                               <SelectItem value="certified">Certified ($4.50)</SelectItem>
                               <SelectItem value="priority">Priority ($8.00)</SelectItem>
@@ -796,7 +796,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
                                   <SelectTrigger className="w-24 h-8">
                                     <SelectValue />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-white">
+                                  <SelectContent className="bg-card">
                                     <SelectItem value="email">Email</SelectItem>
                                     <SelectItem value="sms">SMS</SelectItem>
                                   </SelectContent>

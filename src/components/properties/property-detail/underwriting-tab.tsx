@@ -367,7 +367,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                       key={comp.id}
                       className={cn(
                         "h-12 transition-colors",
-                        index % 2 === 0 ? "bg-white" : "bg-surface-secondary/30",
+                        index % 2 === 0 ? "bg-card" : "bg-surface-secondary/30",
                         "hover:bg-accent/5"
                       )}
                     >
@@ -404,7 +404,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                               <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-32 bg-white">
+                          <DropdownMenuContent align="end" className="w-32 bg-card">
                             <DropdownMenuItem>
                               <Edit className="h-4 w-4 mr-2" />
                               Edit
@@ -482,7 +482,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                         key={index}
                         className={cn(
                           "h-12 transition-colors",
-                          index % 2 === 0 ? "bg-white" : "bg-surface-secondary/30"
+                          index % 2 === 0 ? "bg-card" : "bg-surface-secondary/30"
                         )}
                       >
                         <td className="px-4 text-body font-medium text-foreground">
@@ -501,7 +501,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                                 <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                               </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-32 bg-white">
+                            <DropdownMenuContent align="end" className="w-32 bg-card">
                               <DropdownMenuItem onClick={() => handleEditRepair(index)}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
@@ -692,7 +692,7 @@ export function UnderwritingTab({ property: propFromParent }: UnderwritingTabPro
                     "flex items-center justify-between p-4 rounded-medium border transition-all",
                     offer.recommended
                       ? "border-accent bg-accent/5"
-                      : "border-border-subtle bg-white hover:border-border"
+                      : "border-border-subtle bg-card hover:border-border"
                   )}
                 >
                   <div className="flex items-center gap-3">

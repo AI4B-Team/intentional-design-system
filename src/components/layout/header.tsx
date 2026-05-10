@@ -67,7 +67,7 @@ export function Header({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border-subtle bg-white px-md shadow-xs lg:px-lg",
+        "sticky top-0 z-40 flex h-16 items-center justify-between border-b border-border-subtle bg-card px-md shadow-xs lg:px-lg",
         className
       )}
     >
@@ -123,9 +123,9 @@ export function Header({
               placeholder="Enter an address, city, or ZIP for insights"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex h-9 w-full rounded-small border border-border bg-surface-secondary pl-10 pr-12 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10 focus-visible:bg-white"
+              className="flex h-9 w-full rounded-small border border-border bg-surface-secondary pl-10 pr-12 text-body transition-all duration-150 placeholder:text-content-tertiary focus-visible:outline-none focus-visible:border-brand-accent focus-visible:ring-2 focus-visible:ring-brand-accent/10 focus-visible:bg-card"
             />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden items-center gap-1 rounded border border-border bg-white px-1.5 py-0.5 text-tiny text-content-tertiary lg:flex">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 hidden items-center gap-1 rounded border border-border bg-card px-1.5 py-0.5 text-tiny text-content-tertiary lg:flex">
               <Command className="h-3 w-3" />
               <span>K</span>
             </div>
@@ -175,7 +175,7 @@ export function Header({
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80 bg-white">
+          <DropdownMenuContent align="end" className="w-80 bg-card">
             <DropdownMenuLabel>Notifications</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="max-h-80 overflow-y-auto">
@@ -222,7 +222,7 @@ export function Header({
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 bg-white" align="end">
+            <DropdownMenuContent className="w-56 bg-card" align="end">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-small font-medium leading-none">

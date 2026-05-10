@@ -56,7 +56,7 @@ export function CallStructurePanel({
               Switch
             </Button>
           </div>
-          <div className="flex items-start gap-3 bg-white border border-border-subtle rounded-lg p-3">
+          <div className="flex items-start gap-3 bg-card border border-border-subtle rounded-lg p-3">
             <div className="h-10 w-10 rounded-lg bg-warning flex items-center justify-center flex-shrink-0">
               <MessageSquare className="h-5 w-5 text-warning-foreground" />
             </div>
@@ -74,7 +74,7 @@ export function CallStructurePanel({
       )}
 
       {/* Call Structure - Clean design matching reference */}
-      <div className="bg-white border border-border-subtle rounded-lg p-4">
+      <div className="bg-card border border-border-subtle rounded-lg p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4 text-muted-foreground" />

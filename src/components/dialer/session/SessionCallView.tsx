@@ -103,7 +103,7 @@ export function SessionCallView({
   return (
     <div className="flex-1 overflow-y-auto p-6 space-y-4">
       {/* Header */}
-      <div className="bg-white border border-border-subtle rounded-lg p-4 space-y-4">
+      <div className="bg-card border border-border-subtle rounded-lg p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -183,7 +183,7 @@ export function SessionCallView({
       <div className="grid lg:grid-cols-12 gap-4">
         {/* Transcript */}
         <div className="lg:col-span-7">
-          <div className="bg-white border border-border-subtle rounded-lg p-4 h-[500px] flex flex-col">
+          <div className="bg-card border border-border-subtle rounded-lg p-4 h-[500px] flex flex-col">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4 text-muted-foreground" />
@@ -252,7 +252,7 @@ export function SessionCallView({
         {/* AI Co-Pilot Panel */}
         <div className="lg:col-span-5 space-y-4">
           {/* AI Co-Pilot Header */}
-          <div className="bg-white border border-border-subtle rounded-lg px-4 py-3">
+          <div className="bg-card border border-border-subtle rounded-lg px-4 py-3">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
               <span className="font-semibold text-foreground">AI Co-Pilot</span>
@@ -287,7 +287,7 @@ export function SessionCallView({
           </div>
 
           {/* Call Structure */}
-          <div className="bg-white border border-border-subtle rounded-lg p-4">
+          <div className="bg-card border border-border-subtle rounded-lg p-4">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Settings className="h-4 w-4 text-muted-foreground" />
@@ -323,7 +323,7 @@ export function SessionCallView({
           </div>
 
           {/* Smart Suggestions */}
-          <div className="bg-white border border-border-subtle rounded-lg p-4 space-y-3">
+          <div className="bg-card border border-border-subtle rounded-lg p-4 space-y-3">
             {/* Question Card */}
             <div className="border border-border-subtle rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">

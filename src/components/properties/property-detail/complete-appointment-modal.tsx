@@ -55,7 +55,7 @@ export function CompleteAppointmentModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] bg-white">
+      <DialogContent className="sm:max-w-[450px] bg-card">
         <DialogHeader>
           <DialogTitle>Mark Appointment Complete</DialogTitle>
         </DialogHeader>

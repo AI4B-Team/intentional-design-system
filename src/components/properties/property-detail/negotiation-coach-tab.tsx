@@ -1104,7 +1104,7 @@ export function NegotiationCoachTab({ property, mao, onCompleteProfile }: Negoti
         {/* Customize Script Modal */}
         {customizingScript && (
           <Dialog open={!!customizingScript} onOpenChange={() => setCustomizingScript(null)}>
-            <DialogContent className="sm:max-w-[600px] bg-white">
+            <DialogContent className="sm:max-w-[600px] bg-card">
               <DialogHeader>
                 <DialogTitle>Customize: {customizingScript.title}</DialogTitle>
               </DialogHeader>

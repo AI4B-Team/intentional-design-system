@@ -687,7 +687,7 @@ export default function Calendar() {
     <AppLayout>
       <div className="flex flex-col h-full overflow-hidden bg-muted/30">
         {/* Title and action buttons */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-white border-b border-border">
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-card border-b border-border">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-foreground tracking-tight">Calendar</h1>
             <Button size="sm" variant={teamMode ? "default" : "outline"} onClick={() => setTeamMode(!teamMode)} className="text-xs gap-1.5 h-8 rounded-lg">
@@ -712,14 +712,14 @@ export default function Calendar() {
         <DailyAgenda events={events} teamMode={teamMode} />
 
         {/* Transition divider */}
-        <div className="flex items-center gap-4 px-6 py-2.5 bg-white">
+        <div className="flex items-center gap-4 px-6 py-2.5 bg-card">
           <div className="flex-1 h-px bg-border" />
           <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-widest">After today's execution, tomorrow gets easier.</span>
           <div className="flex-1 h-px bg-border" />
         </div>
 
         {/* Row 1: View tabs + action buttons */}
-        <div className="flex items-center justify-between px-6 py-2 bg-white border-b border-border/60">
+        <div className="flex items-center justify-between px-6 py-2 bg-card border-b border-border/60">
           <div className="flex items-center gap-1.5">
             {([
               { id: "calendar" as CalendarViewTab, icon: CalendarIcon, label: "Calendar" },
@@ -782,7 +782,7 @@ export default function Calendar() {
                   <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">Filter</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <PopoverContent align="end" className="bg-white w-48 p-2">
+              <PopoverContent align="end" className="bg-card w-48 p-2">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">Event Types</p>
                 {Object.entries(EVENT_COLORS).map(([type, colors]) => (
                   <button
@@ -833,7 +833,7 @@ export default function Calendar() {
                   <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]"><p className="text-xs">More</p></TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <DropdownMenuContent align="end" className="bg-white w-48">
+              <DropdownMenuContent align="end" className="bg-card w-48">
                 <DropdownMenuItem onClick={() => navigate("/communications?channel=calls&filter=needs_action")} className="text-xs">
                   <Phone className="h-3.5 w-3.5 mr-2" /> Calls To Make
                 </DropdownMenuItem>
@@ -870,13 +870,13 @@ export default function Calendar() {
           <div className="absolute left-6 flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize h-7 rounded-md border-border/60 bg-white hover:bg-muted/30 text-foreground font-medium px-3">
+                <Button size="sm" variant="outline" className="gap-1.5 text-xs capitalize h-7 rounded-md border-border/60 bg-card hover:bg-muted/30 text-foreground font-medium px-3">
                   <LayoutGrid className="h-3 w-3 text-muted-foreground" />
                   {viewMode}
                   <ChevronDown className="h-3 w-3 opacity-40" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="bg-white w-36">
+              <DropdownMenuContent align="start" className="bg-card w-36">
                 {(["day", "week", "month"] as ViewMode[]).map((v) => (
                   <DropdownMenuItem key={v} onClick={() => setViewMode(v)} className="capitalize text-xs gap-2">
                     {v === viewMode && <CheckCircle2 className="h-3 w-3 text-primary" />}
@@ -890,7 +890,7 @@ export default function Calendar() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button size="sm" variant="outline" onClick={goToToday} className="h-7 text-xs rounded-md border-border/60 bg-white hover:bg-primary/5 text-primary font-medium px-3 gap-1.5">
+                  <Button size="sm" variant="outline" onClick={goToToday} className="h-7 text-xs rounded-md border-border/60 bg-card hover:bg-primary/5 text-primary font-medium px-3 gap-1.5">
                     <CalendarIcon className="h-3 w-3" />
                     Today
                   </Button>
@@ -902,7 +902,7 @@ export default function Calendar() {
 
           {/* Center: Date navigation */}
           <div className="flex items-center gap-1.5">
-            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7 rounded-md hover:bg-white"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></Button>
+            <Button size="icon" variant="ghost" onClick={goToPrev} className="h-7 w-7 rounded-md hover:bg-card"><ChevronLeft className="h-4 w-4 text-muted-foreground" /></Button>
             <span className="text-sm font-semibold text-foreground min-w-[180px] text-center tracking-tight">
               {viewMode === "day"
                 ? format(currentDate, "EEEE, MMM d, yyyy")
@@ -910,13 +910,13 @@ export default function Calendar() {
                   ? `Week of ${format(startOfWeek(currentDate), "MMM d")}`
                   : format(currentDate, "MMMM yyyy")}
             </span>
-            <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7 rounded-md hover:bg-white"><ChevronRight className="h-4 w-4 text-muted-foreground" /></Button>
+            <Button size="icon" variant="ghost" onClick={goToNext} className="h-7 w-7 rounded-md hover:bg-card"><ChevronRight className="h-4 w-4 text-muted-foreground" /></Button>
           </div>
         </div>
 
         {/* Active filters indicator */}
         {(activeFilters.length > 0 || searchQuery) && (
-          <div className="flex items-center gap-2 px-6 py-1.5 bg-white border-b border-border">
+          <div className="flex items-center gap-2 px-6 py-1.5 bg-card border-b border-border">
             {activeFilters.map((f) => (
               <Badge key={f} variant="secondary" className="text-[10px] gap-1 rounded-md">
                 <div className={cn("w-1.5 h-1.5 rounded-full", EVENT_COLORS[f]?.dot)} />
@@ -935,7 +935,7 @@ export default function Calendar() {
 
         {/* Main content */}
         <div className="flex flex-1 overflow-hidden">
-          <div className="flex-1 flex flex-col overflow-auto p-5 bg-white">
+          <div className="flex-1 flex flex-col overflow-auto p-5 bg-card">
             {viewTab === "calendar" && viewMode === "month" && (
               <>
                 {/* Month Grid Header */}
@@ -959,7 +959,7 @@ export default function Calendar() {
                         key={dateKey}
                         onClick={() => setSelectedDate(day)}
                         className={cn(
-                          "bg-white p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col overflow-hidden",
+                          "bg-card p-2 min-h-[90px] text-left transition-all hover:bg-muted/30 flex flex-col overflow-hidden",
                           !isCurrentMonth && "bg-muted/10",
                           
                           isSelected && "relative z-10 shadow-[0_0_0_2px_hsl(var(--primary))] rounded-md bg-primary/[0.02]",
@@ -1049,7 +1049,7 @@ export default function Calendar() {
                     <div className="grid grid-cols-[60px_repeat(7,1fr)] gap-px bg-border/60">
                       {hours.map((hour) => (
                         <React.Fragment key={hour}>
-                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-12 flex items-start justify-end pt-1">
+                          <div className="bg-card p-1 text-[10px] text-muted-foreground text-right pr-2 h-12 flex items-start justify-end pt-1">
                             {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                           </div>
                           {weekDaysArr.map((day) => {
@@ -1063,7 +1063,7 @@ export default function Calendar() {
                               <button
                                 key={`${dateKey}-${hour}`}
                                 onClick={() => setSelectedDate(day)}
-                                className="bg-white h-12 relative hover:bg-muted/20 transition-colors"
+                                className="bg-card h-12 relative hover:bg-muted/20 transition-colors"
                               >
                                 {hourEvents.map((evt) => {
                                   const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
@@ -1103,10 +1103,10 @@ export default function Calendar() {
                       });
                       return (
                         <React.Fragment key={hour}>
-                          <div className="bg-white p-1 text-[10px] text-muted-foreground text-right pr-2 h-14 flex items-start justify-end pt-1">
+                          <div className="bg-card p-1 text-[10px] text-muted-foreground text-right pr-2 h-14 flex items-start justify-end pt-1">
                             {hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
                           </div>
-                          <div className="bg-white h-14 relative hover:bg-muted/20 transition-colors">
+                          <div className="bg-card h-14 relative hover:bg-muted/20 transition-colors">
                             {hourEvents.map((evt) => {
                               const colors = EVENT_COLORS[evt.type] || EVENT_COLORS.appointment;
                               return (
@@ -1280,7 +1280,7 @@ export default function Calendar() {
                               <div
                                 key={evt.id}
                                 className={cn(
-                                  "group rounded-lg bg-white border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
+                                  "group rounded-lg bg-card border border-border/60 hover:shadow-md cursor-pointer transition-all overflow-hidden",
                                   evt.isOverdue && "border-l-[3px] border-l-red-400",
                                   isAtRisk && "border-l-[3px] border-l-amber-300",
                                 )}
@@ -1401,7 +1401,7 @@ export default function Calendar() {
                     return (
                       <div key={evt.id} className="flex gap-3">
                         <div className="flex flex-col items-center">
-                          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 bg-white", urgencyColor ? urgencyColor.border : `border-${colors.dot.replace("bg-", "")}`)}>
+                          <div className={cn("w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 bg-card", urgencyColor ? urgencyColor.border : `border-${colors.dot.replace("bg-", "")}`)}>
                             <Icon className={cn("h-3.5 w-3.5", urgencyColor ? urgencyColor.text : colors.text)} />
                           </div>
                           {!isLast && <div className="w-px flex-1 bg-border min-h-[20px]" />}
@@ -1439,7 +1439,7 @@ export default function Calendar() {
 
           {/* Sidebar */}
           {sidebarOpen && (
-            <div className="w-[340px] border-l border-border bg-white overflow-y-auto hidden lg:block">
+            <div className="w-[340px] border-l border-border bg-card overflow-y-auto hidden lg:block">
               {/* Sidebar header */}
               <div className="px-5 py-4 border-b border-border">
                 <h3 className="text-base font-bold text-foreground">{format(selectedDate, "EEEE, MMMM d")}</h3>

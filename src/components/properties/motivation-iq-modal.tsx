@@ -99,7 +99,7 @@ export function MotivationIQModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-hidden flex flex-col bg-white">
+      <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-hidden flex flex-col bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             <span>MotivationIQ Scoring</span>
@@ -166,7 +166,7 @@ export function MotivationIQModal({
               return (
                 <Collapsible key={category} open={isExpanded}>
                   <CollapsibleTrigger
-                    className="flex items-center justify-between w-full p-3 bg-white border border-border-subtle rounded-medium hover:bg-background-secondary transition-colors"
+                    className="flex items-center justify-between w-full p-3 bg-card border border-border-subtle rounded-medium hover:bg-background-secondary transition-colors"
                     onClick={() => toggleCategory(category)}
                   >
                     <div className="flex items-center gap-2">
@@ -204,7 +204,7 @@ export function MotivationIQModal({
                               "flex items-center gap-3 p-2.5 rounded-small border cursor-pointer transition-all",
                               isSelected
                                 ? "bg-accent/5 border-accent/30"
-                                : "bg-white border-border-subtle hover:bg-background-secondary"
+                                : "bg-card border-border-subtle hover:bg-background-secondary"
                             )}
                           >
                             <Checkbox

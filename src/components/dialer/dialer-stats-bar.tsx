@@ -192,7 +192,7 @@ export function DialerStatsBar({
       <div className="flex items-center justify-between p-4 bg-background-secondary rounded-medium border border-border-subtle">
         {stats.map((stat, index) => (
           <div key={stat.label} className="flex items-center gap-3">
-            <div className={cn("p-2.5 rounded-full bg-white shadow-sm", stat.color)}>
+            <div className={cn("p-2.5 rounded-full bg-card shadow-sm", stat.color)}>
               <stat.icon className="h-4 w-4" />
             </div>
             <div>

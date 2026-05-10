@@ -238,7 +238,7 @@ export function CreateQueueModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg bg-white max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg bg-card max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create Call Queue</DialogTitle>
         </DialogHeader>
@@ -415,10 +415,10 @@ export function CreateQueueModal({
                 <div className="space-y-2">
                   <Label>Select List</Label>
                   <Select value={selectedListId} onValueChange={setSelectedListId}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-card">
                       <SelectValue placeholder="Choose a list..." />
                     </SelectTrigger>
-                    <SelectContent className="bg-white z-50">
+                    <SelectContent className="bg-card z-50">
                       {lists.map((list: any) => (
                         <SelectItem key={list.id} value={list.id}>
                           <div className="flex items-center gap-2">
@@ -523,10 +523,10 @@ export function CreateQueueModal({
                 value={settings.scriptId}
                 onValueChange={(v) => setSettings((s) => ({ ...s, scriptId: v }))}
               >
-                <SelectTrigger className="bg-white">
+                <SelectTrigger className="bg-card">
                   <SelectValue placeholder="Select a script..." />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   {scripts.map((script: any) => (
                     <SelectItem key={script.id} value={script.id}>
                       {script.name}
@@ -545,10 +545,10 @@ export function CreateQueueModal({
                     setSettings((s) => ({ ...s, maxAttempts: parseInt(v) }))
                   }
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-card">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
                       <SelectItem key={n} value={n.toString()}>
                         {n} attempts
@@ -566,10 +566,10 @@ export function CreateQueueModal({
                     setSettings((s) => ({ ...s, daysBetweenAttempts: parseInt(v) }))
                   }
                 >
-                  <SelectTrigger className="bg-white">
+                  <SelectTrigger className="bg-card">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white z-50">
+                  <SelectContent className="bg-card z-50">
                     {[1, 2, 3, 4, 5, 6, 7].map((n) => (
                       <SelectItem key={n} value={n.toString()}>
                         {n} day{n > 1 ? "s" : ""}
@@ -637,10 +637,10 @@ export function CreateQueueModal({
                 value={settings.timezone}
                 onValueChange={(v) => setSettings((s) => ({ ...s, timezone: v }))}
               >
-                <SelectTrigger className="bg-white">
+                <SelectTrigger className="bg-card">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   {TIMEZONES.map((tz) => (
                     <SelectItem key={tz.value} value={tz.value}>
                       {tz.label}

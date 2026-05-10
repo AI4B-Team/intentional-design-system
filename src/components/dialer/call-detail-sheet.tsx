@@ -137,7 +137,7 @@ export function CallDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="sm:max-w-lg bg-white overflow-hidden flex flex-col">
+      <SheetContent className="sm:max-w-lg bg-card overflow-hidden flex flex-col">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             {call.direction === "inbound" ? (

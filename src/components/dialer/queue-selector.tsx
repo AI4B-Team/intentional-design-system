@@ -79,10 +79,10 @@ export function QueueSelector({
           value={selectedQueueId || ""}
           onValueChange={(value) => onQueueChange(value || null)}
         >
-          <SelectTrigger className="flex-1 bg-white">
+          <SelectTrigger className="flex-1 bg-card">
             <SelectValue placeholder="Select Call Queue" />
           </SelectTrigger>
-          <SelectContent className="bg-white z-50">
+          <SelectContent className="bg-card z-50">
             {queues.map((queue) => (
               <SelectItem key={queue.id} value={queue.id}>
                 <div className="flex items-center gap-2">
@@ -115,7 +115,7 @@ export function QueueSelector({
 
       {/* Selected Queue Info */}
       {selectedQueue && (
-        <div className="bg-white border border-border-subtle rounded-medium p-4 space-y-3">
+        <div className="bg-card border border-border-subtle rounded-medium p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-medium text-foreground">{selectedQueue.name}</h4>
             <Badge

@@ -179,14 +179,14 @@ export function OfferPreview({
         </div>
 
         <div className="grid grid-cols-4 gap-3 text-center">
-          <div className="p-2 bg-white rounded-md">
+          <div className="p-2 bg-card rounded-md">
             <DollarSign className="h-4 w-4 text-success mx-auto mb-1" />
             <p className="text-h4 font-bold text-foreground">
               {formatCurrency(propertyData.offerAmount)}
             </p>
             <p className="text-tiny text-muted-foreground">Offer</p>
           </div>
-          <div className="p-2 bg-white rounded-md">
+          <div className="p-2 bg-card rounded-md">
             <DollarSign className="h-4 w-4 text-info mx-auto mb-1" />
             <p className="text-h4 font-bold text-foreground">
               {terms.depositType === "flat"
@@ -195,14 +195,14 @@ export function OfferPreview({
             </p>
             <p className="text-tiny text-muted-foreground">EMD</p>
           </div>
-          <div className="p-2 bg-white rounded-md">
+          <div className="p-2 bg-card rounded-md">
             <Calendar className="h-4 w-4 text-warning mx-auto mb-1" />
             <p className="text-h4 font-bold text-foreground">
               {terms.closingTimeline}d
             </p>
             <p className="text-tiny text-muted-foreground">Close</p>
           </div>
-          <div className="p-2 bg-white rounded-md">
+          <div className="p-2 bg-card rounded-md">
             <Clock className="h-4 w-4 text-purple-500 mx-auto mb-1" />
             <p className="text-h4 font-bold text-foreground">
               {terms.offerExpiration}h
@@ -264,7 +264,7 @@ export function OfferPreview({
         <div className="flex-1 min-h-0">
           <TabsContent value="loi" className="h-full m-0">
             <ScrollArea className="h-[calc(100vh-480px)] min-h-[350px]">
-              <Card variant="default" padding="lg" className="bg-white shadow-sm">
+              <Card variant="default" padding="lg" className="bg-card shadow-sm">
                 {/* LOI Header */}
                 <div className="text-center border-b border-border pb-4 mb-6">
                   <h2 className="text-lg font-bold text-foreground uppercase tracking-wide">
@@ -284,7 +284,7 @@ export function OfferPreview({
 
           <TabsContent value="email" className="h-full m-0">
             <ScrollArea className="h-[calc(100vh-480px)] min-h-[350px]">
-              <Card variant="default" padding="lg" className="bg-white shadow-sm">
+              <Card variant="default" padding="lg" className="bg-card shadow-sm">
                 {/* Email Header */}
                 <div className="bg-slate-50 rounded-lg p-4 mb-4 space-y-2">
                   <div className="flex items-center gap-2">
@@ -335,13 +335,13 @@ export function OfferPreview({
                     </div>
                     
                     {/* Header */}
-                    <div className="bg-white border-b border-slate-200 px-4 py-3 text-center">
+                    <div className="bg-card border-b border-slate-200 px-4 py-3 text-center">
                       <p className="font-semibold text-foreground">{propertyData.sellerName}</p>
                       <p className="text-tiny text-muted-foreground">iMessage</p>
                     </div>
                     
                     {/* Messages */}
-                    <div className="bg-white p-4 min-h-[220px]">
+                    <div className="bg-card p-4 min-h-[220px]">
                       <p className="text-tiny text-center text-muted-foreground mb-4">Today</p>
                       
                       {/* Message Bubble */}
@@ -369,7 +369,7 @@ export function OfferPreview({
                     
                     {/* Input Bar */}
                     <div className="bg-slate-100 px-4 py-3 flex items-center gap-2">
-                      <div className="flex-1 bg-white rounded-full px-4 py-2 text-tiny text-muted-foreground">
+                      <div className="flex-1 bg-card rounded-full px-4 py-2 text-tiny text-muted-foreground">
                         iMessage
                       </div>
                     </div>

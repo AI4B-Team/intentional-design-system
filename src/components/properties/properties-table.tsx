@@ -192,7 +192,7 @@ export function PropertiesTable({
                 className={cn(
                     "h-14 cursor-pointer transition-colors group",
                     isCriticalVelocity && "bg-destructive/5",
-                    !isCriticalVelocity && index % 2 === 0 && "bg-white",
+                    !isCriticalVelocity && index % 2 === 0 && "bg-card",
                     !isCriticalVelocity && index % 2 !== 0 && "bg-surface-secondary/50",
                     isSelected && "bg-brand-accent/5",
                     "hover:bg-brand-accent/5"

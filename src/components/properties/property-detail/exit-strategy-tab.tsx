@@ -675,7 +675,7 @@ export function ExitStrategyTab({ property, onNavigateToUnderwriting }: ExitStra
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-card">
                     <SelectItem value="quick">Quick Flip (1-2 months)</SelectItem>
                     <SelectItem value="6months">6 Months</SelectItem>
                     <SelectItem value="1year">1 Year</SelectItem>
@@ -694,7 +694,7 @@ export function ExitStrategyTab({ property, onNavigateToUnderwriting }: ExitStra
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-card">
                     <SelectItem value="beginner">Beginner (0-2 deals)</SelectItem>
                     <SelectItem value="intermediate">Intermediate (3-10 deals)</SelectItem>
                     <SelectItem value="advanced">Advanced (10+ deals)</SelectItem>
@@ -712,7 +712,7 @@ export function ExitStrategyTab({ property, onNavigateToUnderwriting }: ExitStra
                   <SelectTrigger className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
+                  <SelectContent className="bg-card">
                     <SelectItem value="maxProfit">Maximum Profit</SelectItem>
                     <SelectItem value="cashFlow">Cash Flow</SelectItem>
                     <SelectItem value="equityBuilding">Equity Building</SelectItem>
@@ -914,7 +914,7 @@ export function ExitStrategyTab({ property, onNavigateToUnderwriting }: ExitStra
 
       {/* Detailed Analysis Modal */}
       <Dialog open={!!selectedStrategy} onOpenChange={() => setSelectedStrategy(null)}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-white">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto bg-card">
           {selectedStrategy && (
             <>
               <DialogHeader>

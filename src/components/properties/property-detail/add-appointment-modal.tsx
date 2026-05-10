@@ -109,7 +109,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] bg-white">
+      <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
           <DialogTitle>Schedule Appointment</DialogTitle>
         </DialogHeader>
@@ -131,7 +131,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
                   {date ? format(date, "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-white" align="start">
+              <PopoverContent className="w-auto p-0 bg-card" align="start">
                 <Calendar
                   mode="single"
                   selected={date}
@@ -155,7 +155,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white max-h-60">
+                <SelectContent className="bg-card max-h-60">
                   {timeSlots.filter((_, i) => i >= 28 && i <= 72).map((slot) => (
                     <SelectItem key={slot.value} value={slot.value}>
                       {slot.label}
@@ -173,7 +173,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white">
+                <SelectContent className="bg-card">
                   {durationOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value.toString()}>
                       {opt.label}
@@ -194,7 +194,7 @@ export function AddAppointmentModal({ open, onOpenChange, propertyId }: AddAppoi
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white">
+              <SelectContent className="bg-card">
                 {appointmentTypes.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}

@@ -391,10 +391,10 @@ export default function DialerHistory() {
               </div>
 
               <Select value={dispositionFilter} onValueChange={setDispositionFilter}>
-                <SelectTrigger className="w-[160px] bg-white">
+                <SelectTrigger className="w-[160px] bg-card">
                   <SelectValue placeholder="Disposition" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   <SelectItem value="all">All Dispositions</SelectItem>
                   <SelectItem value="Appointment Set">Appointment Set</SelectItem>
                   <SelectItem value="Interested">Interested</SelectItem>
@@ -405,10 +405,10 @@ export default function DialerHistory() {
               </Select>
 
               <Select value={directionFilter} onValueChange={setDirectionFilter}>
-                <SelectTrigger className="w-[130px] bg-white">
+                <SelectTrigger className="w-[130px] bg-card">
                   <SelectValue placeholder="Direction" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="outbound">Outbound</SelectItem>
                   <SelectItem value="inbound">Inbound</SelectItem>
@@ -419,10 +419,10 @@ export default function DialerHistory() {
                 value={durationFilter}
                 onValueChange={(v) => setDurationFilter(v as DurationFilter)}
               >
-                <SelectTrigger className="w-[130px] bg-white">
+                <SelectTrigger className="w-[130px] bg-card">
                   <SelectValue placeholder="Duration" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="short">&lt;1 min</SelectItem>
                   <SelectItem value="medium">1-5 min</SelectItem>
@@ -432,10 +432,10 @@ export default function DialerHistory() {
               </Select>
 
               <Select value={recordingFilter} onValueChange={setRecordingFilter}>
-                <SelectTrigger className="w-[150px] bg-white">
+                <SelectTrigger className="w-[150px] bg-card">
                   <SelectValue placeholder="Has Recording" />
                 </SelectTrigger>
-                <SelectContent className="bg-white z-50">
+                <SelectContent className="bg-card z-50">
                   <SelectItem value="all">All</SelectItem>
                   <SelectItem value="yes">Has Recording</SelectItem>
                   <SelectItem value="no">No Recording</SelectItem>
@@ -505,7 +505,7 @@ export default function DialerHistory() {
 
         {/* Recording Player Modal */}
         <Dialog open={!!playingRecording} onOpenChange={() => setPlayingRecording(null)}>
-          <DialogContent className="sm:max-w-md bg-white">
+          <DialogContent className="sm:max-w-md bg-card">
             <DialogHeader>
               <DialogTitle>
                 Recording: {playingRecording?.contact_name || "Unknown"}

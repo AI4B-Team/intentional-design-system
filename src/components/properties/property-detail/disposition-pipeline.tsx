@@ -39,7 +39,7 @@ const stages: PipelineStage[] = [
 
 function BuyerCard({ match, stage }: { match: BuyerMatch; stage: string }) {
   return (
-    <div className="p-2 bg-white border border-border-subtle rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+    <div className="p-2 bg-card border border-border-subtle rounded-md shadow-sm hover:shadow-md transition-shadow cursor-pointer">
       <div className="font-medium text-small truncate">{match.buyer.name}</div>
       {match.buyer.company && (
         <div className="text-tiny text-muted-foreground truncate">{match.buyer.company}</div>

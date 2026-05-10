@@ -28,7 +28,7 @@ export function ViewToggle({ value, onChange, className }: ViewToggleProps) {
           onClick={() => onChange(view.id)}
           className={cn(
             "gap-1.5 px-3",
-            value === view.id && "bg-white shadow-sm"
+            value === view.id && "bg-card shadow-sm"
           )}
         >
           {view.icon}

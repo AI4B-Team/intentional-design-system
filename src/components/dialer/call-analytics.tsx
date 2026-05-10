@@ -121,7 +121,7 @@ export function CallAnalytics({
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white border border-border-subtle rounded-small px-3 py-2 shadow-md">
+                          <div className="bg-card border border-border-subtle rounded-small px-3 py-2 shadow-md">
                             <p className="font-medium mb-1">{label}</p>
                             {payload.map((entry: any, i: number) => (
                               <p key={i} className="text-small" style={{ color: entry.color }}>
@@ -194,7 +194,7 @@ export function CallAnalytics({
                           const data = payload[0].payload;
                           const percent = ((data.value / totalDispositions) * 100).toFixed(0);
                           return (
-                            <div className="bg-white border border-border-subtle rounded-small px-3 py-2 shadow-md">
+                            <div className="bg-card border border-border-subtle rounded-small px-3 py-2 shadow-md">
                               <p className="font-medium">{data.name}</p>
                               <p className="text-small text-muted-foreground">
                                 {data.value} ({percent}%)
@@ -256,7 +256,7 @@ export function CallAnalytics({
                     content={({ active, payload, label }) => {
                       if (active && payload && payload.length) {
                         return (
-                          <div className="bg-white border border-border-subtle rounded-small px-3 py-2 shadow-md">
+                          <div className="bg-card border border-border-subtle rounded-small px-3 py-2 shadow-md">
                             <p className="font-medium">{label}</p>
                             <p className="text-small text-muted-foreground">
                               {payload[0].value} calls

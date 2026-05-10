@@ -81,7 +81,7 @@ export function DateRangeSelector({
             <ChevronDown className="h-3.5 w-3.5 text-content-tertiary" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-48 bg-white">
+        <DropdownMenuContent align="start" className="w-48 bg-card">
           {presets.map((preset) => (
             <DropdownMenuItem
               key={preset.label}
@@ -118,7 +118,7 @@ export function DateRangeSelector({
         <PopoverTrigger asChild>
           <span />
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-white" align="start">
+        <PopoverContent className="w-auto p-0 bg-card" align="start">
           <div className="p-4 space-y-4">
             <div className="text-small font-medium text-content">Select date range</div>
             <Calendar

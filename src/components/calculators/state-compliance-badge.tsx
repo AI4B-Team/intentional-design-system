@@ -56,7 +56,7 @@ export function StateComplianceBadge({
           <Info className="h-3 w-3 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-white" align="start">
+      <PopoverContent className="w-80 bg-card" align="start">
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h4 className="font-semibold">{regulation.state_name} Quick Facts</h4>

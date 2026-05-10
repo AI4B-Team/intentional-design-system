@@ -325,7 +325,7 @@ export function AddContactModal({ open, onOpenChange, defaultType }: AddContactM
                       className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
                         isSelected
                           ? "bg-primary text-white border-primary"
-                          : "bg-white text-slate-700 border-slate-200 hover:border-primary"
+                          : "bg-card text-slate-700 border-slate-200 hover:border-primary"
                       }`}
                     >
                       {specialty}

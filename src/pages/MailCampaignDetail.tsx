@@ -394,7 +394,7 @@ export default function MailCampaignDetail() {
                 <CardContent>
                   {template ? (
                     <div className="flex gap-4">
-                      <div className="w-32 shrink-0 bg-white rounded-lg overflow-hidden border">
+                      <div className="w-32 shrink-0 bg-card rounded-lg overflow-hidden border">
                         <AspectRatio ratio={3 / 2}>
                           <div
                             className="p-1 text-[6px]"

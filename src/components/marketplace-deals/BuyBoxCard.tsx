@@ -155,7 +155,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
                 <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-white z-[100]">
+            <DropdownMenuContent align="end" className="w-40 bg-card z-[100]">
               <DropdownMenuItem onClick={() => onEdit(buyBox)} className="gap-2 cursor-pointer">
                 <Pencil className="h-4 w-4" />
                 Edit
@@ -216,7 +216,7 @@ export const BuyBoxCard: React.FC<BuyBoxCardProps> = ({
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40 bg-white z-[100]">
+          <DropdownMenuContent align="end" className="w-40 bg-card z-[100]">
             <DropdownMenuItem onClick={() => onEdit(buyBox)} className="gap-2 cursor-pointer">
               <Pencil className="h-4 w-4" />
               Edit

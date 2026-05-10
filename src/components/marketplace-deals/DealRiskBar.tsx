@@ -45,7 +45,7 @@ export function DealRiskBar({ arvPercent, className }: DealRiskBarProps) {
         
         {/* Indicator Circle */}
         <div 
-          className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-white border-2 border-foreground/20 shadow-md transition-all duration-300"
+          className="absolute top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-card border-2 border-foreground/20 shadow-md transition-all duration-300"
           style={{ left: `calc(${position}% - 10px)` }}
         />
       </div>

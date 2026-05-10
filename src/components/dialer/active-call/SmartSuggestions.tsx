@@ -59,7 +59,7 @@ export function SmartSuggestions({
   };
 
   return (
-    <div className="bg-white border border-border-subtle rounded-lg flex flex-col h-full">
+    <div className="bg-card border border-border-subtle rounded-lg flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-border-subtle">
         <div className="flex items-center gap-2">

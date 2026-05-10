@@ -227,7 +227,7 @@ export function OutreachTab({ ownerPhone }: OutreachTabProps) {
                       <div
                         key={activity.id}
                         className={cn(
-                          "relative bg-white border border-border-subtle rounded-medium p-4 transition-all",
+                          "relative bg-card border border-border-subtle rounded-medium p-4 transition-all",
                           hasFullContent && "cursor-pointer hover:border-border"
                         )}
                         onClick={() => hasFullContent && setExpandedId(isExpanded ? null : activity.id)}

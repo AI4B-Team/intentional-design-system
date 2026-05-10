@@ -168,7 +168,7 @@ export function DispositionPanel({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg bg-white">
+      <DialogContent className="sm:max-w-lg bg-card">
         <DialogHeader>
           <DialogTitle>How did the call go?</DialogTitle>
         </DialogHeader>

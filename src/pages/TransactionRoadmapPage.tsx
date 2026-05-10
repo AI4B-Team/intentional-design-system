@@ -413,7 +413,7 @@ export default function TransactionRoadmapPage() {
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-white"
+                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-card"
                         onClick={prevImage}
                       >
                         <ChevronLeft className="h-4 w-4" />
@@ -421,7 +421,7 @@ export default function TransactionRoadmapPage() {
                       <Button
                         variant="secondary"
                         size="icon"
-                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-white"
+                        className="h-8 w-8 rounded-full bg-white/90 hover:bg-card"
                         onClick={nextImage}
                       >
                         <ChevronRight className="h-4 w-4" />
@@ -435,7 +435,7 @@ export default function TransactionRoadmapPage() {
                           className={cn(
                             "h-1.5 rounded-full transition-all",
                             idx === currentImageIndex
-                              ? "w-4 bg-white"
+                              ? "w-4 bg-card"
                               : "w-1.5 bg-white/60"
                           )}
                         />

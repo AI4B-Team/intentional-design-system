@@ -172,7 +172,7 @@ export function LenderFiltersPanel({
                 updateFilter("minAmount", min);
                 updateFilter("maxAmount", max);
               }}
-              className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-white [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
+              className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-card [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
             />
           </div>
         </FilterSection>
@@ -190,7 +190,7 @@ export function LenderFiltersPanel({
               max={100}
               step={5}
               onValueChange={([v]) => updateFilter("maxLTV", v)}
-              className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-white [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
+              className="[&_[role=slider]]:border-brand-accent [&_[role=slider]]:bg-card [&>span:first-child]:bg-surface-tertiary [&>span:first-child>span]:bg-brand-accent"
             />
           </div>
         </FilterSection>
@@ -201,7 +201,7 @@ export function LenderFiltersPanel({
             <SelectTrigger className="w-full">
               <SelectValue placeholder="All States" />
             </SelectTrigger>
-            <SelectContent className="max-h-60 bg-white">
+            <SelectContent className="max-h-60 bg-card">
               {states.map((state) => (
                 <SelectItem key={state} value={state}>
                   {state}

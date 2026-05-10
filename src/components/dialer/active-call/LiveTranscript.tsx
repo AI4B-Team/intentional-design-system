@@ -43,7 +43,7 @@ export function LiveTranscript({
   };
 
   return (
-    <div className="bg-white border border-border-subtle rounded-lg flex flex-col h-[500px]">
+    <div className="bg-card border border-border-subtle rounded-lg flex flex-col h-[500px]">
       {/* Transcript Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 ? (

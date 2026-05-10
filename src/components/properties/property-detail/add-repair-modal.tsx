@@ -84,7 +84,7 @@ export function AddRepairModal({ open, onOpenChange, onAdd, editingRepair }: Add
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[450px] bg-white">
+      <DialogContent className="sm:max-w-[450px] bg-card">
         <DialogHeader>
           <DialogTitle>{editingRepair ? "Edit Repair Item" : "Add Repair Item"}</DialogTitle>
         </DialogHeader>
@@ -100,7 +100,7 @@ export function AddRepairModal({ open, onOpenChange, onAdd, editingRepair }: Add
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white max-h-60">
+              <SelectContent className="bg-card max-h-60">
                 {repairCategories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}

@@ -171,7 +171,7 @@ export default function DialerQueues() {
         </div>
 
         {/* Queues Table */}
-        <div className="bg-white border border-border-subtle rounded-medium overflow-hidden">
+        <div className="bg-card border border-border-subtle rounded-medium overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -254,7 +254,7 @@ export default function DialerQueues() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
                             align="end"
-                            className="bg-white"
+                            className="bg-card"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <DropdownMenuItem

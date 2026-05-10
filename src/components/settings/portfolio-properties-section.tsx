@@ -248,7 +248,7 @@ export function PortfolioPropertiesSection() {
 
       {/* Add/Edit Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="bg-white max-w-lg">
+        <DialogContent className="bg-card max-w-lg">
           <DialogHeader>
             <DialogTitle>
               {editingProperty ? "Edit Portfolio Property" : "Add Portfolio Property"}

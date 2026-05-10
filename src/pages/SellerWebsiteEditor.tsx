@@ -920,7 +920,7 @@ export default function SellerWebsiteEditor() {
         {/* Preview Panel */}
         <div className="flex-1 flex flex-col bg-surface-secondary rounded-medium overflow-hidden">
           {/* Preview Toolbar */}
-          <div className="flex items-center justify-between p-3 bg-white border-b border-border">
+          <div className="flex items-center justify-between p-3 bg-card border-b border-border">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setDevice("desktop")}
@@ -972,7 +972,7 @@ export default function SellerWebsiteEditor() {
           <div className="flex-1 flex items-start justify-center p-4 overflow-auto">
             <div
               style={{ width: getDeviceWidth(), maxWidth: "100%" }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden h-full"
+              className="bg-card rounded-lg shadow-lg overflow-hidden h-full"
             >
               <iframe
                 key={previewKey}

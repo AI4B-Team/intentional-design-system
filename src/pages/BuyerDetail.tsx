@@ -356,7 +356,7 @@ export default function BuyerDetail() {
                 Delete
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="bg-white">
+            <AlertDialogContent className="bg-card">
               <AlertDialogHeader>
                 <AlertDialogTitle>Delete Buyer</AlertDialogTitle>
                 <AlertDialogDescription>

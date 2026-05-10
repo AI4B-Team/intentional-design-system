@@ -74,7 +74,7 @@ export function EnhancedMessageRow({
     <div
       className={cn(
         "flex items-start gap-3 px-4 py-3 border-b border-border-subtle cursor-pointer transition-all duration-200",
-        isUnread ? "bg-brand/5" : "bg-white dark:bg-background",
+        isUnread ? "bg-brand/5" : "bg-card dark:bg-background",
         selected && "bg-brand/10",
         "hover:bg-muted/50"
       )}

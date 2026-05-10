@@ -34,7 +34,7 @@ export function CreditsBadge() {
           <span className="tabular-nums">${balance.toFixed(2)}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 bg-white">
+      <DropdownMenuContent align="end" className="w-56 bg-card">
         <DropdownMenuLabel>
           <div className="flex items-center justify-between">
             <span>Current Balance</span>
