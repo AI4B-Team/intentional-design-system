@@ -213,7 +213,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[420px]">
+          <div className="h-[560px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA}>
