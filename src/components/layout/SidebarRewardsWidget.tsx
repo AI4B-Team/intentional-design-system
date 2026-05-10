@@ -64,7 +64,7 @@ export function SidebarRewardsWidget({ collapsed, onMobileClose }: SidebarReward
             <p className="text-xs font-semibold text-foreground truncate">
               {isComplete ? "Setup Complete! 🎉" : "Complete Setup"}
             </p>
-            <p className="text-[10px] text-amber-400/80 font-medium tabular-nums">
+            <p className="text-[10px] text-amber-700 dark:text-amber-400/80 font-medium tabular-nums">
               {earnedPoints} / {totalPoints} XP
             </p>
           </div>
