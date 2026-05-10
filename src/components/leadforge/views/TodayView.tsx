@@ -213,7 +213,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[420px]">
+          <div className="h-[560px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA}>
@@ -301,7 +301,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 max-h-[500px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
