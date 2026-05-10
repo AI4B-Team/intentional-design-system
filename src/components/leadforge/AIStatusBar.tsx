@@ -106,18 +106,21 @@ export function AIStatusBar() {
         </div>
         <div className="flex-1 min-w-0 overflow-hidden">
           <div className="flex flex-col gap-0.5">
-            {events.slice(0, 2).map((e, i) => (
-              <div
-                key={`${e.text}-${i}`}
-                className={cn(
-                  "text-xs text-foreground/80 truncate flex items-center gap-2",
-                  i === 0 && "animate-fade-in"
-                )}
-              >
-                <span className="shrink-0">{e.icon}</span>
-                <span className="truncate">{e.text}</span>
-              </div>
-            ))}
+            {events.slice(0, 2).map((e, i) => {
+              const EventIcon = e.icon;
+              return (
+                <div
+                  key={`${e.text}-${i}`}
+                  className={cn(
+                    "text-xs text-foreground/80 truncate flex items-center gap-2",
+                    i === 0 && "animate-fade-in"
+                  )}
+                >
+                  <EventIcon className={cn("h-3.5 w-3.5 shrink-0", e.color)} />
+                  <span className="truncate">{e.text}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
