@@ -196,7 +196,7 @@ export function LeadListView({
                       disabled={!!lead.property_id}
                     >
                       <UserPlus className="h-4 w-4 mr-2" />
-                      Add to Properties
+                      Move to Pipeline
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem

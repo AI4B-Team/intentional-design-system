@@ -92,7 +92,7 @@ function LeadCard({ lead, onImport }: { lead: ScrapedLead; onImport: () => void 
         {!lead.is_imported && (
           <Button size="sm" variant="default" className="flex-1" onClick={onImport}>
             <Import className="h-3 w-3 mr-1" />
-            Import to Pipeline
+            Move to Pipeline
           </Button>
         )}
         {lead.source_url && (

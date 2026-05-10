@@ -147,7 +147,7 @@ export function LeadDetailSheet({
               disabled={!!lead.property_id}
             >
               <Plus className="h-4 w-4 mr-1" />
-              {lead.property_id ? "Added" : "Add to Properties"}
+              {lead.property_id ? "In Pipeline" : "Move to Pipeline"}
             </Button>
           </div>
         </SheetHeader>
