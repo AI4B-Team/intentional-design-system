@@ -25,11 +25,15 @@ import {
   BarChart3,
   LineChart as LineIcon,
   AreaChart as AreaIcon,
-  Workflow,
+  Bot,
+  User as UserIcon,
+  Megaphone,
+  Radio,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
-import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
+import { AcquisitionLeadCard, AcquisitionLead } from "@/components/leadforge/AcquisitionLeadCard";
+import { AIOpportunityFeed } from "@/components/leadforge/AIOpportunityFeed";
 import {
   ResponsiveContainer,
   BarChart,
@@ -45,10 +49,10 @@ import {
 } from "recharts";
 
 const UTILITY_TILES = [
-  { label: "New Today", count: 38, sub: "Since Yesterday" },
-  { label: "Phone-Ready", count: 2871, sub: "Skip-Traced" },
-  { label: "With Equity", count: 5104, sub: "Owner-Held" },
-  { label: "Absentee", count: 3219, sub: "Off-Market Likely" },
+  { label: "Distress Signals", count: 38, sub: "New Since Yesterday", accent: "text-rose-500" },
+  { label: "Contact Ready", count: 2871, sub: "Phone Verified · Skip-Traced", accent: "text-primary" },
+  { label: "Opportunity Score", count: 5104, sub: "High-Equity Owners", accent: "text-amber-500" },
+  { label: "Likely Sellers", count: 3219, sub: "Absentee · Off-Market", accent: "text-violet-500" },
 ];
 
 const DISTRESS_TYPES = [
@@ -79,20 +83,77 @@ const TICKER = [
   "NOST Sale Date Moved To 11 Days — Flagged Urgent · 42s ago",
 ];
 
-const TOP_LEADS = [
-  { addr: "7216 Redwood Blvd", city: "Tyler, TX 75214", owner: "Andrew Sanchez", score: 82 },
-  { addr: "119 Walnut Blvd", city: "Garland, TX 75210", owner: "Justin Reed", score: 82 },
-  { addr: "9309 Peachtree Rd", city: "Flower Mound, TX 75212", owner: "Larry Owens", score: 80 },
-  { addr: "3155 Maple Ave", city: "Fort Worth, TX 75243", owner: "Eric Thomas", score: 80 },
-  { addr: "8605 Maple Ave", city: "Fort Worth, TX 75216", owner: "Gregory Hall", score: 79 },
+const TOP_LEADS: AcquisitionLead[] = [
+  {
+    id: "7216 Redwood Blvd",
+    addr: "7216 Redwood Blvd",
+    city: "Tyler, TX 75214",
+    owner: "Andrew Sanchez",
+    score: 88,
+    confidence: 92,
+    badges: ["Vacant", "Probate", "Tax Delinquent"],
+    summary: "Likely inherited property with deferred maintenance and absentee owner — high motivation signal.",
+    campaign: "AI SMS Sequence Active",
+    nextAction: { icon: "sms", label: "SMS first · then call after 5pm" },
+  },
+  {
+    id: "119 Walnut Blvd",
+    addr: "119 Walnut Blvd",
+    city: "Garland, TX 75210",
+    owner: "Justin Reed",
+    score: 85,
+    confidence: 88,
+    badges: ["Pre-Foreclosure", "High Equity"],
+    summary: "Notice of default filed 18 days ago. Owner has 62% equity — strong save-the-deal candidate.",
+    campaign: "Voice Agent + Mail",
+    nextAction: { icon: "phone", label: "Call within 24h" },
+  },
+  {
+    id: "9309 Peachtree Rd",
+    addr: "9309 Peachtree Rd",
+    city: "Flower Mound, TX 75212",
+    owner: "Larry Owens",
+    score: 82,
+    confidence: 84,
+    badges: ["Code Violation", "Absentee", "Vacant"],
+    summary: "Out-of-state owner with active code violations. Property unoccupied for 8+ months.",
+    campaign: "Direct Mail Cadence",
+    nextAction: { icon: "mail", label: "Mail postcard · follow with SMS" },
+  },
+  {
+    id: "3155 Maple Ave",
+    addr: "3155 Maple Ave",
+    city: "Fort Worth, TX 75243",
+    owner: "Eric Thomas",
+    score: 78,
+    confidence: 81,
+    badges: ["Tired Landlord", "Eviction Filed"],
+    summary: "Recent eviction, third in two years. Pattern matches landlords ready to exit portfolio.",
+    campaign: "AI SMS · Hybrid",
+    nextAction: { icon: "sms", label: "Empathy script · landlord exit" },
+  },
 ];
 
-const ACTIVITY = [
-  { text: "12 Leads Exported To CRM Pipeline", time: "3m ago" },
-  { text: "Mail Batch Of 48 Candidates Queued", time: "11m ago" },
-  { text: "Skip Trace Cycle Complete · 132 Enriched", time: "27m ago" },
-  { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago" },
+const ACTIVITY: { text: string; time: string; type: "ai" | "human" | "campaign" | "lead" | "comms" }[] = [
+  { text: "AI agent qualified seller in 47s — pushed to Sarah M.", time: "1m ago", type: "ai" },
+  { text: "Sarah M. left voicemail on probate lead", time: "8m ago", type: "human" },
+  { text: "12 Leads Exported To CRM Pipeline", time: "12m ago", type: "lead" },
+  { text: "Mail batch of 48 candidates queued for tomorrow", time: "21m ago", type: "campaign" },
+  { text: "Inbound SMS reply from high-equity owner", time: "34m ago", type: "comms" },
+  { text: "Skip Trace Cycle Complete · 132 Enriched", time: "1h ago", type: "lead" },
+  { text: "AI Voice Agent completed 14 outbound calls", time: "1h ago", type: "ai" },
+  { text: "Nightly Scrape Complete · 1,402 New Prospects", time: "2h ago", type: "lead" },
 ];
+
+const ACTIVITY_FILTERS = [
+  { key: "all", label: "All", icon: Activity },
+  { key: "ai", label: "AI", icon: Bot },
+  { key: "human", label: "Human", icon: UserIcon },
+  { key: "campaign", label: "Campaigns", icon: Megaphone },
+  { key: "lead", label: "Leads", icon: Sparkles },
+  { key: "comms", label: "Comms", icon: Radio },
+] as const;
+type ActivityFilter = typeof ACTIVITY_FILTERS[number]["key"];
 
 // 30-day trend data — per lead type
 const TREND_DATA = Array.from({ length: 30 }).map((_, i) => {
@@ -114,6 +175,9 @@ export function TodayView() {
   );
   const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
   const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
+  const [activityFilter, setActivityFilter] = React.useState<ActivityFilter>("all");
+
+  const filteredActivity = activityFilter === "all" ? ACTIVITY : ACTIVITY.filter((a) => a.type === activityFilter);
 
   const activeTypes = DISTRESS_TYPES.filter((d) => selected.has(d.key));
 
@@ -133,18 +197,22 @@ export function TodayView() {
   return (
     <div className="space-y-6 pt-6">
       {/* Hero */}
-      <Card className="border-border overflow-hidden">
+      <Card className="border-border overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background">
         <div className="p-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2 border border-primary/20">
+              <Sparkles className="h-3 w-3" />
+              Acquisition Queue
+            </div>
             <h2 className="text-2xl font-bold text-foreground">
-              <span className="text-primary tabular-nums">38</span> New Prospects Since Yesterday
+              <span className="text-primary tabular-nums">38</span> New Opportunities Surfaced Today
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Automated Lead Machine Runs Every 2 Hours · Last Run 14 Min Ago · 1,402 Properties Scanned Across 13 County Feeds.
+              AI scored 1,402 properties across 13 county feeds in the last 2 hours. Engine running autonomously.
             </p>
           </div>
-          <Button className="gap-2">
-            <Flame className="h-4 w-4" /> Open Hot Sheet
+          <Button className="gap-2 shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.5)]">
+            <Flame className="h-4 w-4" /> Review AI Opportunities
           </Button>
         </div>
         <div className="border-t border-border bg-muted/20 px-4 py-2.5">
@@ -167,8 +235,8 @@ export function TodayView() {
       {/* Utility tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {UTILITY_TILES.map((t) => (
-          <Card key={t.label} className="p-4">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+          <Card key={t.label} className="p-4 hover:border-primary/30 transition-colors">
+            <p className={cn("text-[10px] uppercase tracking-wider font-bold", t.accent)}>
               {t.label}
             </p>
             <p className="text-2xl font-bold tabular-nums mt-1 text-foreground">
@@ -213,7 +281,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[560px]">
+          <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -301,7 +369,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1 max-h-[500px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+          <div className="space-y-1 max-h-[240px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
@@ -347,77 +415,88 @@ export function TodayView() {
 
 
 
-      {/* 2-col footer */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Flame className="h-4 w-4 text-red-500" /> Top Hot Leads
-          </h3>
-          <div className="space-y-2">
-            {TOP_LEADS.map((l) => {
-              const isGraduated = graduated.has(l.addr);
-              return (
-                <div
-                  key={l.addr}
-                  className={cn(
-                    "flex items-center justify-between gap-2 py-2 border-b border-border last:border-0 transition-opacity",
-                    isGraduated && "opacity-70"
-                  )}
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{l.addr}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      {l.city} · {l.owner}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {isGraduated ? (
-                      <InPipelineBadge />
-                    ) : (
-                      <>
-                        <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">
-                          {l.score}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 px-2 gap-1 text-primary hover:text-primary"
-                          onClick={() =>
-                            setPipelineTarget({
-                              id: l.addr,
-                              address: l.addr,
-                              city: l.city,
-                              score: l.score,
-                              signals: ["distress", "absentee"],
-                            })
-                          }
-                        >
-                          <Workflow className="h-3.5 w-3.5" />
-                          Pipeline
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+      {/* AI Opportunity Feed — full row */}
+      <AIOpportunityFeed />
+
+      {/* Acquisition cards + Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Flame className="h-4 w-4 text-rose-500" /> Top Acquisition Opportunities
+            </h3>
+            <span className="text-[11px] text-muted-foreground">AI-Ranked · Confidence Weighted</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {TOP_LEADS.map((l) => (
+              <AcquisitionLeadCard
+                key={l.id}
+                lead={l}
+                graduated={graduated.has(l.id)}
+                onPipeline={() =>
+                  setPipelineTarget({
+                    id: l.id,
+                    address: l.addr,
+                    city: l.city,
+                    score: l.score,
+                    signals: l.badges,
+                  })
+                }
+              />
+            ))}
           </div>
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary" /> Recent Activity
-          </h3>
-          <div className="space-y-3">
-            {ACTIVITY.map((a, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-foreground leading-snug">{a.text}</p>
-                  <p className="text-[11px] text-muted-foreground">{a.time}</p>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" /> Recent Activity
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-1 mb-3">
+            {ACTIVITY_FILTERS.map((f) => {
+              const Icon = f.icon;
+              const active = activityFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setActivityFilter(f.key)}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider transition-colors border",
+                    active
+                      ? "bg-primary/10 text-primary border-primary/30"
+                      : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground"
+                  )}
+                >
+                  <Icon className="h-3 w-3" />
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+            {filteredActivity.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic">No activity in this category yet.</p>
+            ) : (
+              filteredActivity.map((a, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full mt-1.5 shrink-0",
+                      a.type === "ai" && "bg-violet-500",
+                      a.type === "human" && "bg-cyan-500",
+                      a.type === "campaign" && "bg-amber-500",
+                      a.type === "lead" && "bg-primary",
+                      a.type === "comms" && "bg-emerald-500"
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-foreground leading-snug">{a.text}</p>
+                    <p className="text-[11px] text-muted-foreground">{a.time}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>
