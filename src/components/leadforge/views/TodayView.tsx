@@ -216,10 +216,10 @@ export function TodayView() {
           <div className="h-[560px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
-                <BarChart data={TREND_DATA}>
+                <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" width={32} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--background))",
@@ -233,10 +233,10 @@ export function TodayView() {
                   ))}
                 </BarChart>
               ) : chartType === "line" ? (
-                <LineChart data={TREND_DATA}>
+                <LineChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" width={32} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--background))",
@@ -258,10 +258,10 @@ export function TodayView() {
                   ))}
                 </LineChart>
               ) : (
-                <AreaChart data={TREND_DATA}>
+                <AreaChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis dataKey="day" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                  <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" width={32} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "hsl(var(--background))",
