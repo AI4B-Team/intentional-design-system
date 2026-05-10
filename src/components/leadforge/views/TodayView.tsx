@@ -282,7 +282,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[560px]">
+          <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -370,7 +370,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1 max-h-[500px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+          <div className="space-y-1 max-h-[240px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
@@ -416,77 +416,88 @@ export function TodayView() {
 
 
 
-      {/* 2-col footer */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Flame className="h-4 w-4 text-red-500" /> Top Hot Leads
-          </h3>
-          <div className="space-y-2">
-            {TOP_LEADS.map((l) => {
-              const isGraduated = graduated.has(l.addr);
-              return (
-                <div
-                  key={l.addr}
-                  className={cn(
-                    "flex items-center justify-between gap-2 py-2 border-b border-border last:border-0 transition-opacity",
-                    isGraduated && "opacity-70"
-                  )}
-                >
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{l.addr}</p>
-                    <p className="text-[11px] text-muted-foreground truncate">
-                      {l.city} · {l.owner}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {isGraduated ? (
-                      <InPipelineBadge />
-                    ) : (
-                      <>
-                        <Badge className="bg-red-500/10 text-red-600 hover:bg-red-500/10 border-0 tabular-nums">
-                          {l.score}
-                        </Badge>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 px-2 gap-1 text-primary hover:text-primary"
-                          onClick={() =>
-                            setPipelineTarget({
-                              id: l.addr,
-                              address: l.addr,
-                              city: l.city,
-                              score: l.score,
-                              signals: ["distress", "absentee"],
-                            })
-                          }
-                        >
-                          <Workflow className="h-3.5 w-3.5" />
-                          Pipeline
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+      {/* AI Opportunity Feed — full row */}
+      <AIOpportunityFeed />
+
+      {/* Acquisition cards + Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <Card className="p-5 lg:col-span-2">
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Flame className="h-4 w-4 text-rose-500" /> Top Acquisition Opportunities
+            </h3>
+            <span className="text-[11px] text-muted-foreground">AI-Ranked · Confidence Weighted</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {TOP_LEADS.map((l) => (
+              <AcquisitionLeadCard
+                key={l.id}
+                lead={l}
+                graduated={graduated.has(l.id)}
+                onPipeline={() =>
+                  setPipelineTarget({
+                    id: l.id,
+                    address: l.addr,
+                    city: l.city,
+                    score: l.score,
+                    signals: l.badges,
+                  })
+                }
+              />
+            ))}
           </div>
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary" /> Recent Activity
-          </h3>
-          <div className="space-y-3">
-            {ACTIVITY.map((a, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-foreground leading-snug">{a.text}</p>
-                  <p className="text-[11px] text-muted-foreground">{a.time}</p>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" /> Recent Activity
+            </h3>
+          </div>
+          <div className="flex flex-wrap gap-1 mb-3">
+            {ACTIVITY_FILTERS.map((f) => {
+              const Icon = f.icon;
+              const active = activityFilter === f.key;
+              return (
+                <button
+                  key={f.key}
+                  onClick={() => setActivityFilter(f.key)}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider transition-colors border",
+                    active
+                      ? "bg-primary/10 text-primary border-primary/30"
+                      : "bg-muted/40 text-muted-foreground border-transparent hover:text-foreground"
+                  )}
+                >
+                  <Icon className="h-3 w-3" />
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+            {filteredActivity.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic">No activity in this category yet.</p>
+            ) : (
+              filteredActivity.map((a, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm">
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full mt-1.5 shrink-0",
+                      a.type === "ai" && "bg-violet-500",
+                      a.type === "human" && "bg-cyan-500",
+                      a.type === "campaign" && "bg-amber-500",
+                      a.type === "lead" && "bg-primary",
+                      a.type === "comms" && "bg-emerald-500"
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-foreground leading-snug">{a.text}</p>
+                    <p className="text-[11px] text-muted-foreground">{a.time}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>
