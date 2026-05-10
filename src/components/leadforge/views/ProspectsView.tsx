@@ -287,6 +287,9 @@ function HotSheetView() {
 function AllProspectsView() {
   return (
     <div className="space-y-4 pt-6">
+      {/* Live prospects — appears only when leads_properties has rows */}
+      <LiveProspectsTable />
+
       {/* Filters */}
       <Card className="p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
