@@ -49,7 +49,7 @@ export function AddressAutocomplete({
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [savedDropdownOpen, setSavedDropdownOpen] = React.useState(false);
-  const [savedTab, setSavedTab] = React.useState<"saved" | "recent" | "quick" | "popular">("saved");
+  const [savedTab, setSavedTab] = React.useState<"saved" | "recent" | "quick" | "popular">("recent");
   const wrapperRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const debounceRef = React.useRef<NodeJS.Timeout>();
