@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Settings } from "lucide-react";
+import { Settings, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function LeadForgeHeader() {
@@ -14,6 +14,10 @@ export function LeadForgeHeader() {
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold border border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
               LIVE
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-muted/60 text-muted-foreground text-[11px] font-semibold border border-border">
+              <RefreshCw className="h-3 w-3" />
+              Updated Every 2 Hours
             </span>
           </div>
           <p className="text-sm text-muted-foreground font-medium mt-2">
