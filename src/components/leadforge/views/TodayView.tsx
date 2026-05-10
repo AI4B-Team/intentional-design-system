@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
 import { AcquisitionLeadCard, AcquisitionLead } from "@/components/leadforge/AcquisitionLeadCard";
 import { AIOpportunityFeed } from "@/components/leadforge/AIOpportunityFeed";
+import { AIStatusBar } from "@/components/leadforge/AIStatusBar";
 import {
   ResponsiveContainer,
   BarChart,
@@ -205,7 +206,7 @@ export function TodayView() {
               Acquisition Queue
             </div>
             <h2 className="text-2xl font-bold text-foreground">
-              <span className="text-primary tabular-nums">38</span> New Opportunities Surfaced Today
+              <span className="text-primary tabular-nums">38</span> New Opportunities Today
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
               AI scored 1,402 properties across 13 county feeds in the last 2 hours. Engine running autonomously.
@@ -215,20 +216,8 @@ export function TodayView() {
             <Flame className="h-4 w-4" /> Review AI Opportunities
           </Button>
         </div>
-        <div className="border-t border-border bg-muted/20 px-4 py-2.5">
-          <div className="flex items-center gap-3">
-            <Badge className="bg-amber-500 text-white hover:bg-amber-500 shrink-0 rounded-md">JUST IN</Badge>
-            <div className="flex-1 min-w-0 overflow-hidden">
-              <div className="flex gap-8 text-xs text-foreground/80 whitespace-nowrap animate-[scroll_45s_linear_infinite] w-max">
-                {[...TICKER, ...TICKER].map((t, i) => (
-                  <span key={i} className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="border-t border-border p-4">
+          <AIStatusBar />
         </div>
       </Card>
 
