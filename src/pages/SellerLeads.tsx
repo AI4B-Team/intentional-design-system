@@ -60,24 +60,7 @@ import { ViewToggle, type ViewType } from "@/components/leads/ViewToggle";
 import { LeadListView } from "@/components/leads/LeadListView";
 import { LeadGridView } from "@/components/leads/LeadGridView";
 import { LeadKanbanView } from "@/components/leads/LeadKanbanView";
-
-const STATUS_OPTIONS = [
-  { value: "new", label: "New", color: "bg-success" },
-  { value: "contacted", label: "Contacted", color: "bg-info" },
-  { value: "qualified", label: "Qualified", color: "bg-warning" },
-  { value: "appointment", label: "Appointment", color: "bg-purple-500" },
-  { value: "offer_made", label: "Offer Made", color: "bg-orange-500" },
-  { value: "closed", label: "Closed", color: "bg-success" },
-  { value: "lost", label: "Lost", color: "bg-destructive" },
-];
-
-const TIMELINE_OPTIONS = [
-  { value: "asap", label: "ASAP" },
-  { value: "30_days", label: "30 Days" },
-  { value: "60_days", label: "60 Days" },
-  { value: "90_days", label: "90 Days" },
-  { value: "flexible", label: "Flexible" },
-];
+import { STATUS_OPTIONS, TIMELINE_OPTIONS } from "@/lib/lead-constants";
 
 type SortOption = "newest" | "oldest" | "score_high" | "name_asc";
 

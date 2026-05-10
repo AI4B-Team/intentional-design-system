@@ -37,6 +37,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { SellerLead } from "@/hooks/useSellerLeads";
 import { useUpdateLead } from "@/hooks/useSellerLeads";
+import { STATUS_OPTIONS, TIMELINE_LABELS } from "@/lib/lead-constants";
 
 interface LeadDetailSheetProps {
   lead: SellerLead | null;
@@ -47,26 +48,6 @@ interface LeadDetailSheetProps {
   onSms?: (lead: SellerLead) => void;
   onEmail?: (lead: SellerLead) => void;
 }
-
-const STATUS_OPTIONS = [
-  { value: "new", label: "New", color: "bg-success" },
-  { value: "contacted", label: "Contacted", color: "bg-info" },
-  { value: "qualified", label: "Qualified", color: "bg-warning" },
-  { value: "appointment", label: "Appointment", color: "bg-purple-500" },
-  { value: "offer_made", label: "Offer Made", color: "bg-orange-500" },
-  { value: "closed", label: "Closed", color: "bg-success" },
-  { value: "lost", label: "Lost", color: "bg-destructive" },
-];
-
-const TIMELINE_LABELS: Record<string, string> = {
-  asap: "ASAP",
-  "30_days": "30 Days",
-  "60_days": "60 Days",
-  "90_days": "90 Days",
-  "6_months": "6 Months",
-  "1_year": "1 Year",
-  flexible: "Flexible",
-};
 
 const CONDITION_LABELS: Record<string, string> = {
   excellent: "Excellent",
@@ -166,7 +147,7 @@ export function LeadDetailSheet({
               disabled={!!lead.property_id}
             >
               <Plus className="h-4 w-4 mr-1" />
-              {lead.property_id ? "Added" : "Add to Properties"}
+              {lead.property_id ? "In Pipeline" : "Move to Pipeline"}
             </Button>
           </div>
         </SheetHeader>

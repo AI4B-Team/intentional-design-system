@@ -1,75 +1,75 @@
-# Search + Leads — Phased Build Plan
 
-You picked the full build. This spec is large (8 tables, 4 background agents, automation cadence, settings panel, engine health). I'll deliver it across phases so each step is reviewable and reversible. Existing D4D map (`/d4d`) and Marketplace map UIs will not be touched — SEARCH > Map will only link into them.
+# Leads v2.1 — Phased Build Plan
 
-## What stays as-is
-- Existing `harvest/*` pages (Overview, All Leads, Focus, Active Buyers, Outreach) — they become the LEADS section, just renamed/rerouted.
-- D4D map at `/d4d` and Marketplace map — unchanged.
-- Global top-nav search bar — keep current behavior, add deep-link to SEARCH > Lookup.
-
-## Phase 1 — Database (one migration)
-Create the unified data layer:
-- `leads_properties` (canonical record, `source` = auto_detect | manual | d4d_pin | manual_scan)
-- `leads_signals` (distress signals, type + detected_at + confidence)
-- `leads_enrichment` (owner data, phones, emails)
-- `leads_scores` (opportunity_score 0–100, computed by Grade agent)
-- `leads_outreach_log` (campaign sends; sms/mail/call/email; queued/sent/delivered/failed)
-- `leads_scan_jobs` (manual + scheduled scans, status + results)
-- `leads_scraper_health` (per-source status for Engine Health admin view)
-- `leads_pins` (D4D map pins from Search)
-- `automation_settings` (per-org switches: auto_campaigns, auto_enrich_hot, daily_cap, etc.)
-
-All organization-scoped, RLS-policied via `get_user_organization()` and `user_has_role()`. Indexes on (organization_id, created_at), source, score.
-
-## Phase 2 — Routing + nav split
-- New top-level routes: `/search` and `/leads` (LEADS replaces `/harvest`, with redirect from `/harvest/*`).
-- `/search` tabs: Lookup, Map, AI Scan.
-  - Lookup → existing PropertyDetail flow (address search → analysis).
-  - Map → entry cards that route to `/d4d` and `/marketplace` (no map redesign).
-  - AI Scan → form to launch a scan job; writes to `leads_scan_jobs`.
-- `/leads` tabs: Today (default), Prospects. Prospects has Focus List + Active Buyers sub-views.
-- Sidebar gets two clean entries: "Search" and "Leads". `/harvest` removed from sidebar but kept routable via redirect.
-
-## Phase 3 — Hooks + data wiring (mock-fallback)
-- `useLeadsToday`, `useLeadsProspects`, `useLeadsScores`, `useLeadOutreach`, `useScanJobs`, `useScraperHealth`, `useAutomationSettings`.
-- Each hook reads real Supabase tables; if empty, falls back to existing harvest mock so UI never looks dead before agents run.
-
-## Phase 4 — Background agents (edge functions)
-- `agent-detect` — pulls/synthesizes signals, writes `leads_signals` + upserts `leads_properties`.
-- `agent-validate` — runs enrichment via existing `skip-trace` + ATTOM where possible.
-- `agent-grade` — computes `opportunity_score` (deterministic formula from spec) → `leads_scores`.
-- `agent-oversight` — pings each scraper, writes `leads_scraper_health`.
-- `auto-campaign-trigger` — when score ≥ threshold and `automation_settings.auto_campaigns` is on, creates `leads_outreach_log` row and dispatches via existing `lob-send-campaign` / Twilio.
-- pg_cron schedule per spec cadence (every 2h / daily / weekly).
-
-## Phase 5 — Settings
-- `/settings/automation` — toggles: auto-detect, auto-enrich hot leads, auto-campaigns, daily cap, score threshold, suppression rules.
-- `/settings/engine-health` (admin only) — already scaffolded; wire to `leads_scraper_health`.
-
-## Phase 6 — Polish
-- LeadDetailModal upgraded to show signals, score, enrichment, outreach history.
-- Manual lead-add form writing `source='manual'`.
-- Delivery: per-phase commits so you can stop after any phase.
+The spec is 22 pages and spans schema, edge functions, 3 tab UIs, automation, and team handoff. I'll deliver it in 5 reviewable phases so we can validate each before moving on. After each phase you'll see a working preview and can redirect.
 
 ---
 
-## Technical notes (skip if not relevant)
-- Score formula (from spec): weighted blend of signal severity, equity, days-since-detected decay, enrichment completeness — clamped 0–100. HOT > 80, Warm 60–80, Cold < 60.
-- Auto-campaign quality gates: score ≥ threshold, valid contact data present, not in `suppression_list`, daily cap not hit, lead not already contacted within cooldown.
-- Cadence (cron):
-  ```text
-  detect (pre-foreclosure, tax, code)  every 2h
-  detect (probate, divorce, eviction)  daily 03:00
-  validate (enrich hot leads)          every 30m
-  grade                                after each detect/validate run
-  oversight                            every 15m
-  ```
-- All edge functions use Lovable AI Gateway where AI is needed (no extra keys).
-- Existing tables (`properties`, `cash_buyers`, `unified_actions`, `suppression_list`) will be referenced, not duplicated. `leads_properties` links to `properties` via `property_id` when a property already exists.
+## Phase 1 — Foundation (no UI risk)
+
+**1A. Shared constants** — `src/lib/lead-constants.ts`
+Single source for `STATUS_OPTIONS`, `TIER_THRESHOLDS` (hot >80, warm 60–80, cold <60), `SOURCE_OPTIONS`, `SCORE_BREAKDOWN_KEYS`, `SIGNAL_TYPES`, `CAMPAIGN_TYPES`. Replace duplicated copies in the 3 files currently holding their own.
+
+**1B. Three remaining bugs** (section 03 of spec) — I'll read the spec's bug table next and patch in this same phase.
+
+**Deliverable:** lower line counts, dedupe, bugs gone. No visual change beyond bug fixes.
 
 ---
 
-## What I'll do next if you approve
-Start with **Phase 1 (migration)**. After it's applied I'll continue straight into Phase 2 (routing) in the same loop. Phases 4+ will be follow-up messages so each agent can be reviewed independently.
+## Phase 2 — Schema additions
 
-Reply with anything you want changed — otherwise I'll kick off Phase 1.
+Two new domains the spec calls out as "not yet in schema":
+
+- **Sequences** (`lead_sequences`, `lead_sequence_steps`, `lead_sequence_enrollments`) — for Automation Studio
+- **Team handoff** (`lead_assignments`, `lead_team_notifications`, plus a `team_member_capabilities` lookup) — for Human-in-the-Loop
+
+All with `organization_id`, RLS via `is_org_member`, validation triggers (no CHECK on time-based rules per project rules).
+
+Migration is presented for your approval before any UI is wired to it.
+
+---
+
+## Phase 3 — Today + Prospects + Sources tabs (UI rebuild)
+
+Rebuilds against the **live** tables (`leads_properties`, `leads_signals`, `leads_scores`, `leads_enrichment`, `leads_outreach_log`, `leads_scraper_health`).
+
+- **Today** (section 06): signal stream, lead cards with tier chip, bulk-action bar (Approve All / Skip / Enrich / Move to Pipeline), empty state, "Change action" mini-menu.
+- **Prospects** (section 07): filters (status, tier, source, assigned-to, date), table with score + score-breakdown popover.
+- **Sources** (section 08): 7 source health rows from `leads_scraper_health`, last-success timestamps, manual re-ping button → `agent-oversight`.
+- **Lead Detail Sheet** (section 09): signals timeline, enrichment block, outreach history, "Open in Pipeline" when promoted.
+
+Shared bits: tier helpers + score-breakdown component reused across tabs.
+
+---
+
+## Phase 4 — Automation surfaces
+
+- **Automation Settings UI** (section 10) wired to existing `automation_settings` table — exposed in 3 places: header gear, Settings → Leads → Automation, SetupHub onboarding card. One save button, upsert on `organization_id`.
+- **Automation Studio** (section 11): multi-step sequence builder reading the Phase-2 sequence tables. Drag-orderable steps (SMS / Mail / Call / Email / Wait / Human Task), enroll-from-tier rules.
+
+---
+
+## Phase 5 — Human-in-the-loop + edge functions
+
+- **Team assignment + notifications** (section 12) — `lead_assignments` UI on Lead Detail Sheet + Prospects bulk action; in-app notifications via existing `notifications` table.
+- **Two new edge functions:**
+  - `sequence-runner` — advances enrollments through steps, queues `leads_outreach_log` entries.
+  - `team-notify` — fan-out to `notifications` when a step needs a human.
+
+---
+
+## Technical notes
+
+- All UI files cap at ~500 lines (per project memory) — Today/Prospects/Sources main views will extract sub-components.
+- All colors via semantic tokens; tier chips: hot = `bg-destructive/10 text-destructive`, warm = `bg-amber-500/10 text-amber-700`, cold = `bg-muted text-muted-foreground`.
+- Realtime: Today tab subscribes to `leads_signals` + `leads_scores` via existing supabase realtime channel pattern.
+- No changes to `agent-grade`, `agent-validate`, `agent-oversight`, `auto-campaign-trigger` — they're already deployed and the UI binds to their outputs.
+
+---
+
+## What I need from you
+
+1. **Approve this phased order**, or tell me to reorder / cut a phase.
+2. After approval, I'll execute Phase 1 immediately (no DB changes — safe to ship). Phase 2 will pause for migration approval.
+
+Sound good, or do you want to compress phases / change the order?
