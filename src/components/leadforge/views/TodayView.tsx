@@ -408,37 +408,39 @@ export function TodayView() {
 
 
 
-      {/* AI Opportunity Feed — full row */}
-      <AIOpportunityFeed />
+      {/* Top Acquisition Opportunities — full row */}
+      <Card className="p-5">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h3 className="font-semibold text-foreground flex items-center gap-2">
+            <Flame className="h-4 w-4 text-rose-500" /> Top Acquisition Opportunities
+          </h3>
+          <span className="text-[11px] text-muted-foreground">AI-Ranked · Confidence Weighted</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {TOP_LEADS.map((l) => (
+            <AcquisitionLeadCard
+              key={l.id}
+              lead={l}
+              graduated={graduated.has(l.id)}
+              onPipeline={() =>
+                setPipelineTarget({
+                  id: l.id,
+                  address: l.addr,
+                  city: l.city,
+                  score: l.score,
+                  signals: l.badges,
+                })
+              }
+            />
+          ))}
+        </div>
+      </Card>
 
-      {/* Acquisition cards + Recent Activity */}
+      {/* AI Opportunity Feed + Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="p-5 lg:col-span-2">
-          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-            <h3 className="font-semibold text-foreground flex items-center gap-2">
-              <Flame className="h-4 w-4 text-rose-500" /> Top Acquisition Opportunities
-            </h3>
-            <span className="text-[11px] text-muted-foreground">AI-Ranked · Confidence Weighted</span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {TOP_LEADS.map((l) => (
-              <AcquisitionLeadCard
-                key={l.id}
-                lead={l}
-                graduated={graduated.has(l.id)}
-                onPipeline={() =>
-                  setPipelineTarget({
-                    id: l.id,
-                    address: l.addr,
-                    city: l.city,
-                    score: l.score,
-                    signals: l.badges,
-                  })
-                }
-              />
-            ))}
-          </div>
-        </Card>
+        <div className="lg:col-span-2">
+          <AIOpportunityFeed />
+        </div>
 
         <Card className="p-5">
           <div className="flex items-center justify-between mb-3">
