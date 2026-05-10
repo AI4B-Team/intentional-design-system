@@ -176,6 +176,9 @@ export function TodayView() {
   );
   const [graduated, setGraduated] = React.useState<Set<string>>(new Set());
   const [pipelineTarget, setPipelineTarget] = React.useState<PipelineCandidate | null>(null);
+  const [activityFilter, setActivityFilter] = React.useState<ActivityFilter>("all");
+
+  const filteredActivity = activityFilter === "all" ? ACTIVITY : ACTIVITY.filter((a) => a.type === activityFilter);
 
   const activeTypes = DISTRESS_TYPES.filter((d) => selected.has(d.key));
 
@@ -195,18 +198,22 @@ export function TodayView() {
   return (
     <div className="space-y-6 pt-6">
       {/* Hero */}
-      <Card className="border-border overflow-hidden">
+      <Card className="border-border overflow-hidden bg-gradient-to-br from-primary/5 via-background to-background">
         <div className="p-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
+            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2 border border-primary/20">
+              <Sparkles className="h-3 w-3" />
+              Acquisition Queue
+            </div>
             <h2 className="text-2xl font-bold text-foreground">
-              <span className="text-primary tabular-nums">38</span> New Prospects Since Yesterday
+              <span className="text-primary tabular-nums">38</span> New Opportunities Surfaced Today
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Automated Lead Machine Runs Every 2 Hours · Last Run 14 Min Ago · 1,402 Properties Scanned Across 13 County Feeds.
+              AI scored 1,402 properties across 13 county feeds in the last 2 hours. Engine running autonomously.
             </p>
           </div>
-          <Button className="gap-2">
-            <Flame className="h-4 w-4" /> Open Hot Sheet
+          <Button className="gap-2 shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.5)]">
+            <Flame className="h-4 w-4" /> Review AI Opportunities
           </Button>
         </div>
         <div className="border-t border-border bg-muted/20 px-4 py-2.5">
@@ -229,8 +236,8 @@ export function TodayView() {
       {/* Utility tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {UTILITY_TILES.map((t) => (
-          <Card key={t.label} className="p-4">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+          <Card key={t.label} className="p-4 hover:border-primary/30 transition-colors">
+            <p className={cn("text-[10px] uppercase tracking-wider font-bold", t.accent)}>
               {t.label}
             </p>
             <p className="text-2xl font-bold tabular-nums mt-1 text-foreground">
