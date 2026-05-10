@@ -40,12 +40,12 @@ const LANGUAGES = [
   { code: "ja", name: "Japanese", flag: "🇯🇵" },
 ];
 
-type ThemeOption = "light" | "dark" | "split";
+type ThemeOption = "light" | "dark" | "system";
 
 const THEMES: { value: ThemeOption; label: string; icon: React.ReactNode }[] = [
+  { value: "system", label: "System", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
   { value: "light", label: "Light", icon: <Sun className="h-5 w-5 text-muted-foreground" /> },
   { value: "dark", label: "Dark", icon: <Moon className="h-5 w-5 text-muted-foreground" /> },
-  { value: "split", label: "Split", icon: <SunMoon className="h-5 w-5 text-muted-foreground" /> },
 ];
 
 interface ProfileDropdownProps {
