@@ -301,7 +301,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 max-h-[500px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
