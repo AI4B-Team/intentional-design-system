@@ -86,7 +86,7 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
   const handleSelectTheme = (value: ThemeOption) => {
     setSelectedTheme(value);
     localStorage.setItem("app-theme", value);
-    // Apply theme to document
+    // Apply theme to document. "system" = light content + dark sidebar (sidebar is always dark).
     const root = document.documentElement;
     if (value === "dark") {
       root.classList.add("dark");
@@ -98,9 +98,11 @@ export function ProfileDropdown({ className }: ProfileDropdownProps) {
 
   // Apply theme on mount
   useEffect(() => {
-    const saved = localStorage.getItem("app-theme") as ThemeOption;
+    const saved = localStorage.getItem("app-theme") as ThemeOption | null;
     if (saved === "dark") {
       document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
