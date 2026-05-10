@@ -414,17 +414,22 @@
 
 /* Premium sidebar gradient */
 .sidebar-premium {
+  background: hsl(var(--card));
+  border-right: 1px solid hsl(var(--border));
+}
+.dark .sidebar-premium {
   background: linear-gradient(
     170deg,
     hsl(222 47% 9%) 0%,
     hsl(220 43% 7%) 50%,
     hsl(225 50% 8%) 100%
   );
+  border-right: none;
 }
 
 /* Active nav indicator */
 .nav-item-glow {
-  background: hsl(0 0% 100% / 0.08);
+  background: hsl(var(--foreground) / 0.08);
 }
 
 /* Frosted glass header enhancement */
