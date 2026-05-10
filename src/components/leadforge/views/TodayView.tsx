@@ -35,6 +35,7 @@ import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/M
 import { AcquisitionLeadCard, AcquisitionLead } from "@/components/leadforge/AcquisitionLeadCard";
 import { AIOpportunityFeed } from "@/components/leadforge/AIOpportunityFeed";
 import { AIStatusBar } from "@/components/leadforge/AIStatusBar";
+import { LiveSignalStream } from "@/components/leadforge/LiveSignalStream";
 import {
   ResponsiveContainer,
   BarChart,
@@ -225,7 +226,11 @@ export function TodayView() {
         </div>
       </Card>
 
+      {/* Live signal stream — renders only when leads_signals has data */}
+      <LiveSignalStream />
+
       {/* Utility tiles */}
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {UTILITY_TILES.map((t) => (
           <Card key={t.label} className="p-4 hover:border-primary/30 transition-colors">

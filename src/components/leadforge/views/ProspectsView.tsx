@@ -13,6 +13,7 @@ import { Search, Download, Building2, ArrowUpRight, Flame, Zap, UserCheck, Workf
 import { cn } from "@/lib/utils";
 import { MoveToPipelineModal, PipelineCandidate } from "@/components/leadforge/MoveToPipelineModal";
 import { InPipelineBadge } from "@/components/leadforge/InPipelineBadge";
+import { LiveProspectsTable } from "@/components/leadforge/LiveProspectsTable";
 
 type SubTab = "all" | "hot" | "urgency" | "investors";
 
@@ -286,6 +287,9 @@ function HotSheetView() {
 function AllProspectsView() {
   return (
     <div className="space-y-4 pt-6">
+      {/* Live prospects — appears only when leads_properties has rows */}
+      <LiveProspectsTable />
+
       {/* Filters */}
       <Card className="p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
