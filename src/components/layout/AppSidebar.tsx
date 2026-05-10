@@ -117,6 +117,24 @@ export function AppSidebar({
   const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
+  // Force dark sidebar when theme is "system" (sidebar stays dark regardless of content)
+  const [forceDark, setForceDark] = React.useState(() => {
+    if (typeof window === "undefined") return false;
+    return (localStorage.getItem("app-theme") || "system") === "system";
+  });
+  React.useEffect(() => {
+    const update = () => {
+      const t = localStorage.getItem("app-theme") || "system";
+      setForceDark(t === "system");
+    };
+    window.addEventListener("storage", update);
+    window.addEventListener("app-theme-change", update);
+    return () => {
+      window.removeEventListener("storage", update);
+      window.removeEventListener("app-theme-change", update);
+    };
+  }, []);
+
   // Pipeline is now a direct top nav item, no dropdown state needed
 
   // Leads is now a direct link, no open state needed
