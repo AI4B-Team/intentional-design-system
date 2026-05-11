@@ -2,7 +2,6 @@ import * as React from "react";
 // Sidebar navigation component
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
 import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { SidebarRewardsWidget } from "./SidebarRewardsWidget";
@@ -15,29 +14,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  Gauge,
-  PanelLeftClose,
-  X,
-  Sparkles,
-  Phone,
-  Handshake,
-  Kanban,
-  AppWindow,
-  Flame,
-} from "lucide-react";
+import { PanelLeftClose, X, Sparkles } from "lucide-react";
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
   badgeKey?: string;
-}
-
-interface NavGroup {
-  label: string;
-  icon: React.ElementType;
-  items: NavItem[];
 }
 
 const topNavItems: NavItem[] = SHELL_PRIMARY_NAV_ITEMS;
@@ -70,7 +53,6 @@ export function AppSidebar({
   onMobileClose,
 }: AppSidebarProps) {
   const location = useLocation();
-  const { user, signOut } = useAuth();
   const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
@@ -108,10 +90,6 @@ export function AppSidebar({
   // Active state checks for navigation items
   const isContactsActive = location.pathname.startsWith(contactsNavItem.href);
   const isAppsActive = location.pathname.startsWith(appsNavItem.href);
-
-  const handleSignOut = async () => {
-    await signOut();
-  };
 
   const sidebarContent = (
     <>
