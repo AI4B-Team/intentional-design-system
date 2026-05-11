@@ -1,11 +1,25 @@
 import * as React from "react";
-import { useScanJobs, useScraperHealth } from "@/hooks/useLeadsData";
+import { useScanJobs, useScraperHealth, useLeadsToday } from "@/hooks/useLeadsData";
 import {
   Activity, Radar, Bot, Zap, Clock,
   Search, MessageSquare, Home, Phone, Scale,
   DollarSign, AlertTriangle, MapPin, Flame, Mail,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+import { SIGNAL_TYPES, getTier, TIER_CHIP_CLASSES, LEAD_TIERS } from "@/lib/lead-constants";
+
+const SIGNAL_LABELS: Record<string, string> = Object.fromEntries(
+  SIGNAL_TYPES.map((s) => [s.value, s.label])
+);
+
+const SEV_DOT: Record<string, string> = {
+  critical: "bg-destructive",
+  high: "bg-orange-500",
+  medium: "bg-amber-500",
+  low: "bg-muted-foreground/50",
+};
 
 const SIM_EVENTS = [
   { icon: Search, text: "AI detected new probate filing — Dallas County", color: "text-cyan-500" },
