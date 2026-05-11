@@ -10,12 +10,10 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
+import { COMMAND_NAVIGATION_ITEMS } from "./navigation";
 import {
-  Gauge, Building2, Users, Kanban, Phone, Inbox,
-  Plus, Search, Settings, Sparkles, BarChart3,
-  Calculator, FileText, Car, Megaphone, Globe,
-  Hammer, Handshake, LogOut, DollarSign, Flame,
-  Trophy, AppWindow, Radar,
+  Plus, Search, Settings, Sparkles, BarChart3, Car,
+  LogOut,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
@@ -24,29 +22,6 @@ interface CommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-const NAVIGATION_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: Gauge, shortcut: "D" },
-  { label: "Leads", href: "/leads", icon: Flame, shortcut: "L" },
-  { label: "Pipeline", href: "/pipeline", icon: Kanban, shortcut: "P" },
-  { label: "Intel", href: "/intel", icon: Radar },
-  { label: "Properties", href: "/properties", icon: Building2 },
-  { label: "Contacts", href: "/contacts", icon: Users },
-  { label: "Communications", href: "/communications", icon: Inbox },
-  { label: "Dialer", href: "/dialer", icon: Phone },
-  { label: "Campaigns", href: "/campaigns", icon: Megaphone },
-  { label: "Driving for Dollars", href: "/d4d", icon: Car },
-  { label: "Market Analyzer", href: "/market-analyzer", icon: BarChart3 },
-  { label: "Calculators", href: "/market-analyzer?tab=calculators", icon: Calculator },
-  { label: "Documents", href: "/documents", icon: FileText },
-  { label: "Renovations", href: "/renovations", icon: Hammer },
-  { label: "Transactions", href: "/transactions", icon: Handshake },
-  { label: "Dispo", href: "/dispo", icon: DollarSign },
-  { label: "Seller Websites", href: "/websites", icon: Globe },
-  { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
-  { label: "Apps", href: "/apps", icon: AppWindow },
-  { label: "Settings", href: "/settings", icon: Settings },
-];
 
 const QUICK_ACTIONS = [
   { label: "Add New Property", href: "/properties/new", icon: Plus },
@@ -100,7 +75,7 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
         <CommandSeparator />
 
         <CommandGroup heading="Navigate">
-          {NAVIGATION_ITEMS.map((item) => (
+          {COMMAND_NAVIGATION_ITEMS.map((item) => (
             <CommandItem
               key={item.href}
               onSelect={() => runCommand(() => navigate(item.href))}
