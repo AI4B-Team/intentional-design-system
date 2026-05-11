@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/command";
 import { COMMAND_NAVIGATION_ITEMS } from "./navigation";
 import {
-  Plus, Search, Settings, Sparkles, BarChart3,
+  Plus, Search, Settings, Sparkles, BarChart3, Car,
   LogOut,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
