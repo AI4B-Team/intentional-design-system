@@ -3,164 +3,365 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-scraper-token",
 };
 
 /**
- * agent-detect: Pulls/synthesizes distress signals into leads_signals
- * and upserts canonical leads_properties rows.
+ * agent-detect — Real webhook endpoint for the Python scraper system.
  *
- * Body: { organization_id?: string, signal_types?: string[] }
- * If no organization_id is passed, runs across all orgs (cron mode).
+ * Replaces the previous synthetic data generator.
+ *
+ * Two modes:
+ *
+ * 1. SCRAPER WEBHOOK (called by Python scrapers via GitHub Actions)
+ *    POST with header: x-scraper-token = SCRAPER_SECRET env var
+ *    Body: { organization_id, leads: ScrapedLead[], county, state, source_name }
+ *    → Upserts leads_properties, inserts leads_signals, updates scraper health
+ *    → Triggers agent-grade for scoring
+ *
+ * 2. MANUAL TRIGGER (called from Real Elite UI / Settings → Leads → Sources)
+ *    POST with Authorization: Bearer <user_jwt>
+ *    Body: { organization_id, county, state, signal_types }
+ *    → Queues a leads_scan_job and returns immediately
+ *    → GitHub Actions picks up the job via webhook or scheduled run
  */
 
-const SIGNAL_TYPES = [
-  "notice_of_default",
-  "tax_default",
-  "estate_filing",
-  "code_violation",
-  "vacancy",
-  "stale_listing",
-  "pre_foreclosure",
-  "divorce_filing",
-];
+const supabase = createClient(
+  Deno.env.get("SUPABASE_URL")!,
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+);
 
-const STREETS = ["Maple St", "Oak Ave", "Elm Dr", "Cedar Ln", "Pine Ct", "Birch Way", "Walnut Blvd"];
-const CITIES: Array<[string, string, string]> = [
-  ["Dallas", "TX", "75201"],
-  ["Houston", "TX", "77002"],
-  ["Atlanta", "GA", "30303"],
-  ["Phoenix", "AZ", "85003"],
-  ["Tampa", "FL", "33602"],
-];
-const COUNTIES = ["Dallas", "Harris", "Fulton", "Maricopa", "Hillsborough"];
+const SCRAPER_SECRET = Deno.env.get("SCRAPER_SECRET") ?? "";
 
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
+// ── Types ─────────────────────────────────────────────────────────────────
+
+interface IncomingLead {
+  address:          string;
+  city:             string;
+  state:            string;
+  zip_code:         string;
+  county:           string;
+  signal_type:      string;
+  severity:         string;
+  confidence?:      number;
+  source_url?:      string;
+  detected_at?:     string;
+  owner_name?:      string;
+  mailing_address?: string;
+  beds?:            number;
+  baths?:           number;
+  sqft?:            number;
+  year_built?:      number;
+  asset_class?:     string;
+  estimated_value?: number;
+  estimated_equity?:number;
+  doc_number?:      string;
+  filed_date?:      string;
+  amount?:          number;
+  extra?:           Record<string, unknown>;
 }
 
-async function detectForOrg(
-  supabase: ReturnType<typeof createClient>,
+// ── Address hashing ────────────────────────────────────────────────────────
+
+async function sha256(msg: string): Promise<string> {
+  const data   = new TextEncoder().encode(msg);
+  const buf    = await crypto.subtle.digest("SHA-256", data);
+  const arr    = Array.from(new Uint8Array(buf));
+  return arr.map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+}
+
+function normalizeAddress(
+  address: string, city: string, state: string, zip: string,
+): string {
+  const parts = [address, city, state.toUpperCase(), zip.slice(0, 5)]
+    .map((p) => p.trim().toLowerCase())
+    .join(" ");
+  return parts
+    .replace(/\s+/g, " ")
+    .replace(/ street/g, " st")
+    .replace(/ avenue/g, " ave")
+    .replace(/ boulevard/g, " blvd")
+    .replace(/ drive/g, " dr")
+    .replace(/ court/g, " ct")
+    .replace(/ lane/g, " ln")
+    .replace(/ road/g, " rd")
+    .replace(/ place/g, " pl");
+}
+
+// ── Core upsert logic ─────────────────────────────────────────────────────
+
+async function processLeads(
   organizationId: string,
-  requestedTypes?: string[],
-) {
-  const types = requestedTypes && requestedTypes.length > 0 ? requestedTypes : SIGNAL_TYPES;
-  // Synthesize 5–15 fresh signals for this run. Real implementation would
-  // call county scrapers / Firecrawl pipelines; this skeleton seeds plausible data.
-  const count = 5 + Math.floor(Math.random() * 11);
-  let detected = 0;
+  leads: IncomingLead[],
+): Promise<{ upserted: number; signals: number; errors: number }> {
   let upserted = 0;
+  let signals  = 0;
+  let errors   = 0;
 
-  for (let i = 0; i < count; i++) {
-    const [city, state, zip] = pick(CITIES);
-    const street = `${100 + Math.floor(Math.random() * 9000)} ${pick(STREETS)}`;
-    const addressHash = await sha256(`${street}|${city}|${state}|${zip}`);
+  for (const lead of leads) {
+    try {
+      if (!lead.address || !lead.city || !lead.state) {
+        errors++;
+        continue;
+      }
 
-    // Upsert leads_properties by address_hash (within org)
-    const { data: existing } = await supabase
-      .from("leads_properties")
-      .select("id")
-      .eq("organization_id", organizationId)
-      .eq("address_hash", addressHash)
-      .maybeSingle();
+      const addrHash = await sha256(
+        normalizeAddress(lead.address, lead.city, lead.state, lead.zip_code ?? ""),
+      );
 
-    let leadPropertyId: string;
-    if (existing?.id) {
-      leadPropertyId = existing.id as string;
-    } else {
-      const { data: inserted, error: insErr } = await supabase
+      // 1. Upsert leads_properties
+      const { data: existing } = await supabase
         .from("leads_properties")
-        .insert({
+        .select("id")
+        .eq("organization_id", organizationId)
+        .eq("address_hash", addrHash)
+        .maybeSingle();
+
+      let leadPropertyId: string;
+
+      if (existing?.id) {
+        leadPropertyId = existing.id as string;
+        // Update detected_at to now if it's a fresh signal
+        await supabase
+          .from("leads_properties")
+          .update({ updated_at: new Date().toISOString() })
+          .eq("id", leadPropertyId);
+      } else {
+        const insertPayload: Record<string, unknown> = {
           organization_id: organizationId,
-          source: "auto_detect",
-          address: street,
-          city,
-          state,
-          zip,
-          county: pick(COUNTIES),
-          address_hash: addressHash,
-          asset_class: "single_family",
-          beds: 2 + Math.floor(Math.random() * 4),
-          baths: 1 + Math.floor(Math.random() * 3),
-          sqft: 800 + Math.floor(Math.random() * 2500),
-          year_built: 1950 + Math.floor(Math.random() * 70),
-          estimated_value: 80000 + Math.floor(Math.random() * 400000),
-          estimated_equity: Math.floor(Math.random() * 200000),
-          status: "new",
+          source:          "auto_detect",
+          address:         lead.address,
+          city:            lead.city,
+          state:           lead.state,
+          zip:             (lead.zip_code ?? "").slice(0, 5),
+          county:          lead.county,
+          address_hash:    addrHash,
+          status:          "new",
+          detected_at:     lead.detected_at ?? new Date().toISOString(),
+          asset_class:     lead.asset_class,
+          estimated_value: lead.estimated_value,
+          estimated_equity:lead.estimated_equity,
+          beds:            lead.beds,
+          baths:           lead.baths,
+          sqft:            lead.sqft,
+          year_built:      lead.year_built,
+        };
+
+        const { data: inserted, error: insErr } = await supabase
+          .from("leads_properties")
+          .insert(insertPayload)
+          .select("id")
+          .single();
+
+        if (insErr || !inserted) {
+          console.error("insert leads_properties error:", insErr?.message);
+          errors++;
+          continue;
+        }
+        leadPropertyId = inserted.id as string;
+        upserted++;
+      }
+
+      // 2. Check for duplicate signal today
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: existingSig } = await supabase
+        .from("leads_signals")
+        .select("id")
+        .eq("organization_id", organizationId)
+        .eq("lead_property_id", leadPropertyId)
+        .eq("signal_type", lead.signal_type)
+        .gte("detected_at", today)
+        .maybeSingle();
+
+      if (!existingSig) {
+        const { error: sigErr } = await supabase.from("leads_signals").insert({
+          organization_id: organizationId,
+          lead_property_id: leadPropertyId,
+          signal_type:     lead.signal_type,
+          severity:        lead.severity ?? "medium",
+          confidence:      lead.confidence ?? 0.85,
+          source:          lead.source_url ?? "county_scraper",
+          payload: {
+            doc_number:  lead.doc_number,
+            filed_date:  lead.filed_date,
+            amount:      lead.amount,
+            owner:       lead.owner_name,
+            ...(lead.extra ?? {}),
+          },
+          detected_at: lead.detected_at ?? new Date().toISOString(),
+        });
+        if (!sigErr) signals++;
+      }
+
+      // 3. Upsert enrichment if we have owner data
+      if (lead.owner_name) {
+        await supabase.from("leads_enrichment").upsert(
+          {
+            organization_id:   organizationId,
+            lead_property_id:  leadPropertyId,
+            owner_name:        lead.owner_name,
+            mailing_address:   lead.mailing_address,
+            enrichment_source: "county_scraper",
+            enriched_at:       new Date().toISOString(),
+          },
+          { onConflict: "lead_property_id" },
+        );
+      }
+    } catch (e) {
+      console.error("processLeads error:", e);
+      errors++;
+    }
+  }
+
+  return { upserted, signals, errors };
+}
+
+// ── Upsert scraper health ─────────────────────────────────────────────────
+
+async function updateScraperHealth(
+  orgId: string,
+  sourceName: string,
+  status: string,
+  recordsCount: number,
+  failureReason?: string,
+): Promise<void> {
+  const now = new Date().toISOString();
+  await supabase.from("leads_scraper_health").upsert(
+    {
+      organization_id:  orgId,
+      source_name:      sourceName,
+      status,
+      records_last_run: recordsCount,
+      failure_reason:   failureReason ?? null,
+      last_success_at:  status === "healthy" ? now : null,
+      last_failure_at:  status !== "healthy" ? now : null,
+    },
+    { onConflict: "organization_id,source_name" },
+  );
+}
+
+// ── Trigger agent-grade for freshly added leads ───────────────────────────
+
+async function triggerGrading(organizationId: string): Promise<void> {
+  try {
+    await fetch(`${Deno.env.get("SUPABASE_URL")}/functions/v1/agent-grade`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify({ organization_id: organizationId }),
+    });
+  } catch {
+    // Non-fatal — grading runs on a schedule anyway
+  }
+}
+
+// ── Main handler ──────────────────────────────────────────────────────────
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const scraperToken  = req.headers.get("x-scraper-token");
+  const authHeader    = req.headers.get("Authorization");
+  const isScraperCall = scraperToken && scraperToken === SCRAPER_SECRET;
+  const isUserCall    = !!authHeader?.startsWith("Bearer ");
+
+  if (!isScraperCall && !isUserCall) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    const body = await req.json();
+
+    // ── Mode 1: Scraper webhook ──────────────────────────────────────
+    if (isScraperCall) {
+      const { organization_id, leads, county, state, source_name, status, error } = body;
+
+      if (!organization_id) {
+        return new Response(JSON.stringify({ error: "organization_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Health update only (scraper reporting failure)
+      if (status && !leads) {
+        await updateScraperHealth(
+          organization_id,
+          source_name ?? `${county}_${state}`,
+          status === "healthy" ? "healthy" : "degraded",
+          0,
+          error,
+        );
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (!leads || !Array.isArray(leads)) {
+        return new Response(JSON.stringify({ error: "leads array required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const result = await processLeads(organization_id, leads);
+      const sn = source_name ?? `${(county ?? "").toLowerCase().replace(/ /g, "_")}_${(state ?? "").toLowerCase()}`;
+
+      await updateScraperHealth(
+        organization_id, sn, "healthy", leads.length,
+      );
+
+      // Trigger grading asynchronously
+      triggerGrading(organization_id);
+
+      return new Response(
+        JSON.stringify({ ok: true, ...result, county, state }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // ── Mode 2: Manual trigger from UI ──────────────────────────────
+    if (isUserCall) {
+      const { organization_id, county, state, signal_types } = body;
+      if (!organization_id) {
+        return new Response(JSON.stringify({ error: "organization_id required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Queue a scan job — GitHub Actions will pick this up on next run
+      // or the user can trigger the GitHub Actions workflow_dispatch manually
+      const { data: job } = await supabase
+        .from("leads_scan_jobs")
+        .insert({
+          organization_id,
+          job_type:      "manual",
+          signal_types:  signal_types ?? [],
+          area:          { county, state },
+          status:        "queued",
         })
         .select("id")
         .single();
-      if (insErr) {
-        console.error("[agent-detect] insert failed:", insErr.message);
-        continue;
-      }
-      leadPropertyId = inserted!.id as string;
-      upserted++;
+
+      return new Response(
+        JSON.stringify({
+          ok: true,
+          job_id: job?.id,
+          message: `Scan queued for ${county ?? "all"}, ${state ?? "all counties"}. Results appear in Leads within minutes.`,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
-
-    const signalType = pick(types);
-    const severity = pick(["low", "medium", "high", "critical"]);
-    const { error: sigErr } = await supabase.from("leads_signals").insert({
-      organization_id: organizationId,
-      lead_property_id: leadPropertyId,
-      signal_type: signalType,
-      severity,
-      confidence: 0.6 + Math.random() * 0.4,
-      source: "synthetic_detector",
-      payload: { synthesized: true },
-    });
-    if (!sigErr) detected++;
-  }
-
-  return { organization_id: organizationId, signals_detected: detected, properties_upserted: upserted };
-}
-
-async function sha256(input: string) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
-  return Array.from(new Uint8Array(buf))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-
-  try {
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+  } catch (err) {
+    console.error("agent-detect error:", err);
+    return new Response(
+      JSON.stringify({ error: String(err) }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
-
-    const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
-    const requestedOrg: string | undefined = body.organization_id;
-    const signalTypes: string[] | undefined = body.signal_types;
-
-    const orgs: string[] = [];
-    if (requestedOrg) {
-      orgs.push(requestedOrg);
-    } else {
-      const { data: orgRows } = await supabase.from("organizations").select("id").limit(500);
-      (orgRows ?? []).forEach((o: any) => orgs.push(o.id));
-    }
-
-    const results = [];
-    for (const orgId of orgs) {
-      try {
-        results.push(await detectForOrg(supabase, orgId, signalTypes));
-      } catch (e) {
-        console.error("[agent-detect] org failed", orgId, e);
-        results.push({ organization_id: orgId, error: (e as Error).message });
-      }
-    }
-
-    return new Response(JSON.stringify({ ok: true, processed: results.length, results }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (e) {
-    console.error("[agent-detect] fatal:", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
   }
 });

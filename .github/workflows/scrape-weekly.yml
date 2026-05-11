@@ -1,0 +1,116 @@
+name: Scrape County Records — Weekly (All Priorities)
+
+on:
+  schedule:
+    # Every Sunday at 2:00 AM CDT (7:00 AM UTC)
+    - cron: '0 7 * * 0'
+
+  workflow_dispatch:
+    inputs:
+      priority:
+        description: 'Max priority to run (1-5, default 5 = all)'
+        required: false
+        default: '5'
+
+jobs:
+  scrape-weekly-tx:
+    name: Texas Counties
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+        working-directory: scrapers
+      - run: python -m playwright install chromium --with-deps
+        working-directory: scrapers
+      - name: Scrape Texas
+        working-directory: scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
+        run: python run.py --state TX --priority 5 --cadence 168
+
+  scrape-weekly-fl:
+    name: Florida Counties
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    needs: scrape-weekly-tx
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+        working-directory: scrapers
+      - run: python -m playwright install chromium --with-deps
+        working-directory: scrapers
+      - name: Scrape Florida
+        working-directory: scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
+        run: python run.py --state FL --priority 5 --cadence 168
+
+  scrape-weekly-az-il-ga:
+    name: AZ + IL + GA Counties
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    needs: scrape-weekly-fl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+        working-directory: scrapers
+      - run: python -m playwright install chromium --with-deps
+        working-directory: scrapers
+      - name: Scrape AZ + IL + GA
+        working-directory: scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
+        run: |
+          python run.py --state AZ --priority 5 --cadence 168
+          python run.py --state IL --priority 5 --cadence 168
+          python run.py --state GA --priority 5 --cadence 168
+
+  scrape-weekly-remaining:
+    name: CA + NV + NC + OH + Others
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    needs: scrape-weekly-az-il-ga
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: scrapers/requirements.txt
+      - run: pip install -r scrapers/requirements.txt
+        working-directory: scrapers
+      - run: python -m playwright install chromium --with-deps
+        working-directory: scrapers
+      - name: Scrape remaining states
+        working-directory: scrapers
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }}
+        run: |
+          for STATE in CA NV NC OH TN MI PA WA CO IN MN VA; do
+            echo "=== Scraping $STATE ==="
+            python run.py --state $STATE --priority 5 --cadence 168 || echo "WARN: $STATE failed, continuing"
+          done
