@@ -8,6 +8,7 @@ import { WorkspaceSwitcher } from "./WorkspaceSwitcher";
 import { SidebarRewardsWidget } from "./SidebarRewardsWidget";
 import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { usePendingSubmissionsCount } from "@/hooks/useDealSubmissions";
+import { SHELL_PRIMARY_NAV_ITEMS, SHELL_SECONDARY_NAV_ITEMS } from "./navigation";
 import {
   Tooltip,
   TooltipContent,
@@ -16,40 +17,12 @@ import {
 } from "@/components/ui/tooltip";
 import {
   Gauge,
-  Building2,
-  Users,
-  UserCheck,
-  UserPlus,
-  Megaphone,
-  Calculator,
-  Radar,
-  Settings,
-  LogOut,
   PanelLeftClose,
-  Send,
   X,
-  Inbox,
-  Hammer,
-  Mail,
-  ChevronDown,
-  Globe,
   Sparkles,
-  AtSign,
-  ListFilter,
   Phone,
-  DollarSign,
-  Store,
-  Search,
-  Car,
-  Wrench,
   Handshake,
-  Trophy,
-  Award,
-  FileText,
-  Home,
   Kanban,
-  FolderOpen,
-  PenTool,
   AppWindow,
   Flame,
 } from "lucide-react";
@@ -67,15 +40,7 @@ interface NavGroup {
   items: NavItem[];
 }
 
-const topNavItems: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: Gauge },
-  { label: "Intel", href: "/intel", icon: Radar },
-  { label: "Search", href: "/marketplace", icon: Search },
-  { label: "Leads", href: "/leads", icon: Flame },
-  { label: "Pipeline", href: "/pipeline", icon: Kanban },
-  { label: "Transactions", href: "/transactions", icon: Handshake },
-  { label: "Communications", href: "/communications", icon: Phone },
-];
+const topNavItems: NavItem[] = SHELL_PRIMARY_NAV_ITEMS;
 
 // Pipeline is now a direct top nav item
 
@@ -83,21 +48,13 @@ const topNavItems: NavItem[] = [
 
 
 // Contacts - direct nav item (not a collapsible group)
-const contactsNavItem: NavItem = {
-  label: "Contacts",
-  href: "/contacts",
-  icon: Users,
-};
+const contactsNavItem: NavItem = SHELL_SECONDARY_NAV_ITEMS[0];
 
 
 // Documents moved to Apps page
 
 // Apps - direct nav item (not a collapsible group)
-const appsNavItem: NavItem = {
-  label: "Apps",
-  href: "/apps",
-  icon: AppWindow,
-};
+const appsNavItem: NavItem = SHELL_SECONDARY_NAV_ITEMS[1];
 
 interface AppSidebarProps {
   collapsed: boolean;
