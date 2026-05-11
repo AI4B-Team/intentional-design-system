@@ -62,8 +62,7 @@ function useNextScanCountdown() {
 }
 
 export function AIStatusBar() {
-  const { data: scanJobs } = useScanJobs();
-  const { data: health } = useScraperHealth();
+  const { data: liveToday } = useLeadsToday();
   const events = useTickingEvents();
   const nextScan = useNextScanCountdown();
 
@@ -81,6 +80,10 @@ export function AIStatusBar() {
     { icon: Bot, label: "AI Agents Running", value: aiAgents.toString(), color: "text-violet-500" },
     { icon: Clock, label: "Next Scan", value: nextScan, color: "text-emerald-500", mono: true },
   ];
+
+  const isLive = liveToday?.source === "live" && (liveToday?.rows?.length ?? 0) > 0;
+  const liveRows = isLive ? (liveToday!.rows as any[]) : [];
+  const streamCount = isLive ? liveRows.length : events.length;
 
   return (
     <div className="space-y-3">
@@ -108,34 +111,77 @@ export function AIStatusBar() {
           );
         })}
       </div>
-      <div className="rounded-lg border border-border bg-card px-3 py-2 flex items-start gap-3">
-        <div className="flex items-center gap-1.5 shrink-0 pt-0.5">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400">
-            Live
+
+      <div className="rounded-lg border border-border bg-card">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border">
+          <div className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+            </span>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400">
+              Live Signal Stream
+            </span>
+          </div>
+          <span className="text-[11px] text-muted-foreground tabular-nums">
+            {streamCount} New Today
           </span>
         </div>
-        <div className="flex-1 min-w-0 overflow-hidden">
-          <div className="flex flex-col gap-0.5">
-            {events.slice(0, 2).map((e, i) => {
-              const EventIcon = e.icon;
-              return (
-                <div
-                  key={`${e.text}-${i}`}
-                  className={cn(
-                    "text-xs text-foreground/80 truncate flex items-center gap-2",
-                    i === 0 && "animate-fade-in"
-                  )}
-                >
-                  <EventIcon className={cn("h-3.5 w-3.5 shrink-0", e.color)} />
-                  <span className="truncate">{e.text}</span>
-                </div>
-              );
-            })}
-          </div>
+        <div
+          className="max-h-[220px] overflow-y-auto px-2 py-1.5 space-y-0.5"
+          style={{ scrollbarGutter: "stable" }}
+        >
+          {isLive
+            ? liveRows.slice(0, 30).map((row) => {
+                const prop = row.leads_properties || {};
+                const score = row.score ?? 0;
+                const tier = getTier(score);
+                return (
+                  <div
+                    key={row.id}
+                    className="flex items-center gap-2.5 py-1.5 px-2 rounded hover:bg-muted/40 transition-colors"
+                  >
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full shrink-0",
+                        SEV_DOT[row.severity] || SEV_DOT.medium
+                      )}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-foreground truncate">
+                        {SIGNAL_LABELS[row.signal_type] || row.signal_type}
+                        {prop.address ? ` · ${prop.address}` : ""}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {row.detected_at
+                          ? formatDistanceToNow(new Date(row.detected_at), { addSuffix: true })
+                          : "Just Now"}
+                      </p>
+                    </div>
+                    <Badge
+                      variant="outline"
+                      className={cn("text-[9px] uppercase tracking-wider", TIER_CHIP_CLASSES[tier])}
+                    >
+                      {LEAD_TIERS[tier].label}
+                    </Badge>
+                  </div>
+                );
+              })
+            : events.map((e, i) => {
+                const EventIcon = e.icon;
+                return (
+                  <div
+                    key={`${e.text}-${i}`}
+                    className={cn(
+                      "flex items-center gap-2.5 py-1.5 px-2 rounded hover:bg-muted/40 transition-colors",
+                      i === 0 && "animate-fade-in"
+                    )}
+                  >
+                    <EventIcon className={cn("h-3.5 w-3.5 shrink-0", e.color)} />
+                    <span className="text-xs text-foreground/80 truncate flex-1">{e.text}</span>
+                  </div>
+                );
+              })}
         </div>
       </div>
     </div>
