@@ -14,7 +14,7 @@ import {
   Gauge, Building2, Users, Kanban, Phone, Inbox,
   Plus, Search, Settings, Sparkles, BarChart3,
   Calculator, FileText, Car, Megaphone, Globe,
-  Hammer, Handshake, LogOut, DollarSign,
+  Hammer, Handshake, LogOut, DollarSign, Flame,
   Trophy, AppWindow, Radar,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,6 +27,7 @@ interface CommandPaletteProps {
 
 const NAVIGATION_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: Gauge, shortcut: "D" },
+  { label: "Leads", href: "/leads", icon: Flame, shortcut: "L" },
   { label: "Pipeline", href: "/pipeline", icon: Kanban, shortcut: "P" },
   { label: "Intel", href: "/intel", icon: Radar },
   { label: "Properties", href: "/properties", icon: Building2 },
