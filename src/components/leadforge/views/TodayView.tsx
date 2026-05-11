@@ -226,8 +226,6 @@ export function TodayView() {
         </div>
       </Card>
 
-      {/* Live signal stream — renders only when leads_signals has data */}
-      <LiveSignalStream />
 
       {/* Utility tiles */}
 
