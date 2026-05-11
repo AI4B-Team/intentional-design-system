@@ -62,6 +62,8 @@ function useNextScanCountdown() {
 }
 
 export function AIStatusBar() {
+  const { data: scanJobs } = useScanJobs();
+  const { data: health } = useScraperHealth();
   const { data: liveToday } = useLeadsToday();
   const events = useTickingEvents();
   const nextScan = useNextScanCountdown();
