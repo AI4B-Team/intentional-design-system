@@ -94,6 +94,7 @@ const toneClasses: Record<DealCard["badgeTone"], string> = {
   cyan: "bg-cyan-500 text-white",
   amber: "bg-amber-500 text-white",
   slate: "bg-slate-900 text-white",
+  rose: "bg-rose-600 text-white",
 };
 
 function DealMockCard({ deal }: { deal: DealCard }) {
