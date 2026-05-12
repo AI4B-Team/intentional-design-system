@@ -230,10 +230,10 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
         <div className="absolute top-1/2 -left-40 h-96 w-96 rounded-full bg-cyan-500/5 blur-3xl" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 pt-16 pb-24 lg:pt-24 lg:pb-32">
+      <div className="relative w-full px-6 lg:px-12 xl:px-16 pt-16 pb-24 lg:pt-24 lg:pb-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left: Copy */}
-          <div className="max-w-xl">
+          <div className="w-full">
             <div className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-[0.18em] mb-6 animate-fade-in">
               <Sparkles className="h-4 w-4" />
               <span className="relative">
