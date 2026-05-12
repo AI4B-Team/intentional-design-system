@@ -49,7 +49,7 @@ const deals: DealCard[] = [
     rotate: "-rotate-[6deg]",
     translate: "translate-y-6",
     z: "z-10",
-    highlight: true,
+    highlight: false,
   },
   {
     img: deal2,
