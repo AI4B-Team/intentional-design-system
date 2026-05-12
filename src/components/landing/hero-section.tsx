@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowRight, Play, Sparkles, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Play, Sparkles, ShieldCheck, CheckCircle2, BedDouble, Bath, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import deal1 from "@/assets/landing/deal-1.jpg";
