@@ -276,7 +276,6 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
               </div>
             </div>
           </div>
-          </div>
         </div>
       </div>
     </section>
