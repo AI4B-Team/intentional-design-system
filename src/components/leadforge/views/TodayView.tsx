@@ -218,7 +218,7 @@ export function TodayView() {
             </p>
           </div>
           <Button className="gap-2 shadow-[0_4px_18px_-6px_hsl(var(--primary)/0.5)]">
-            <Flame className="h-4 w-4" /> Review AI Opportunities
+            <Flame className="h-4 w-4" /> Review Opportunities
           </Button>
         </div>
         <div className="border-t border-border p-4">
