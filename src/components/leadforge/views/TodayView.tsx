@@ -201,10 +201,10 @@ export function TodayView() {
 
 
   return (
-    <div className="space-y-6 pt-6">
+    <div className="space-y-6 pt-2">
       {/* Hero */}
       <Card className="border-border overflow-hidden bg-card">
-        <div className="p-6 flex items-start justify-between gap-4 flex-wrap">
+        <div className="px-6 pt-4 pb-6 flex items-start justify-between gap-4 flex-wrap">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2 border border-primary/20">
               <Sparkles className="h-3 w-3" />
