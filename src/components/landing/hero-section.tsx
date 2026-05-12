@@ -306,7 +306,7 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                30-day free trial
+                14-Day Free Trial
               </div>
             </div>
           </div>
