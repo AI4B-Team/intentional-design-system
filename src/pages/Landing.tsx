@@ -581,9 +581,9 @@ export default function Landing() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { name: "Starter", price: "$97", per: "/mo", desc: "Solo investors getting started", highlights: ["1 User", "1 Phone Line", "5,000 Skip Traces/mo", "Full AI Suite", "Unlimited Properties", "Offer Blaster"] },
-              { name: "Pro", price: "$197", per: "/mo", desc: "Teams doing 3+ deals/month", highlights: ["5 Users", "3 Phone Lines", "25,000 Skip Traces/mo", "Full AI Suite", "Auto-Offer Engine", "Priority Support"], popular: true },
-              { name: "Elite", price: "$497", per: "/mo", desc: "High-volume operations", highlights: ["Unlimited Users", "10 Phone Lines", "100,000 Skip Traces/mo", "White-Label Websites", "Dedicated Account Manager", "Custom Integrations"] },
+              { name: "Starter", price: "$97", per: "/mo", desc: "Solo Investors Getting Started", highlights: ["1 User", "1 Phone Line", "5,000 Skip Traces/mo", "Full AI Suite", "Unlimited Properties", "Offer Blaster"] },
+              { name: "Pro", price: "$197", per: "/mo", desc: "Teams Doing 3+ Deals/Month", highlights: ["5 Users", "3 Phone Lines", "25,000 Skip Traces/mo", "Full AI Suite", "Auto-Offer Engine", "Priority Support"], popular: true },
+              { name: "Elite", price: "$497", per: "/mo", desc: "High-Volume Operations", highlights: ["Unlimited Users", "10 Phone Lines", "100,000 Skip Traces/mo", "White-Label Websites", "Dedicated Account Manager", "Custom Integrations"] },
             ].map((plan, i) => (
               <div
                 key={plan.name}
