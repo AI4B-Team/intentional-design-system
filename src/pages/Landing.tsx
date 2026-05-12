@@ -620,7 +620,7 @@ export default function Landing() {
           </div>
 
           <p className="text-xs text-muted-foreground mt-6">
-            All plans include a 30-day money-back guarantee · No credit card required to start
+            All plans include a 30-day money-back guarantee · No Credit Card Required to start
           </p>
         </div>
       </section>
@@ -646,7 +646,7 @@ export default function Landing() {
             Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           <p className="text-xs text-muted-foreground mt-4">
-            No credit card required · Full AI suite included · Cancel anytime
+            No Credit Card Required · Full AI suite included · Cancel anytime
           </p>
         </div>
       </section>
