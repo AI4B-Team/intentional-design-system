@@ -277,7 +277,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[460px]">
+          <div className="h-[540px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
@@ -365,7 +365,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1 max-h-[240px] overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+          <div className="space-y-1 overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
@@ -374,7 +374,7 @@ export function TodayView() {
                   key={d.label}
                   onClick={() => toggleType(d.key)}
                   className={cn(
-                    "w-full flex items-center justify-between gap-2 py-2 px-2 rounded hover:bg-muted/50 transition-colors text-left",
+                    "w-full flex items-center justify-between gap-2 py-1.5 px-2 rounded hover:bg-muted/50 transition-colors text-left",
                     !active && "opacity-40"
                   )}
                 >
@@ -405,6 +405,24 @@ export function TodayView() {
                 </button>
               );
             })}
+          </div>
+          {/* Footer summary fills remaining vertical space */}
+          <div className="mt-3 pt-3 border-t border-border grid grid-cols-2 gap-2">
+            <div className="rounded-md bg-muted/40 px-2.5 py-2">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">New Today</div>
+              <div className="text-base font-bold tabular-nums text-foreground mt-0.5">+247</div>
+            </div>
+            <div className="rounded-md bg-muted/40 px-2.5 py-2">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Hot Signals</div>
+              <div className="text-base font-bold tabular-nums text-rose-600 mt-0.5">38</div>
+            </div>
+            <div className="rounded-md bg-muted/40 px-2.5 py-2 col-span-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Top Mover</span>
+                <span className="text-[10px] font-semibold text-emerald-600">+34%</span>
+              </div>
+              <div className="text-sm font-semibold text-foreground mt-0.5">Tax Delinquency</div>
+            </div>
           </div>
         </Card>
       </div>
