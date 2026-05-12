@@ -68,22 +68,21 @@ const deals: DealCard[] = [
   },
   {
     img: deal3,
-    badge: "New",
+    badge: "Thin Margin",
     badgeTone: "amber",
-    price: "$41,500",
+    price: "$92,500",
     address: "2647 W North Ave,",
     city: "Baltimore, MD 21216",
     beds: 3,
     baths: 1,
     sqft: "1,112 sq ft",
-    profit: "+$32,700",
-    roi: "78.8%",
-    arvPercent: 55,
+    profit: "+$4,200",
+    roi: "4.5%",
+    arvPercent: 88,
     rotate: "rotate-[5deg]",
     translate: "translate-y-8",
     z: "z-10",
   },
-];
 
 const toneClasses: Record<DealCard["badgeTone"], string> = {
   emerald: "bg-emerald-500 text-white",
