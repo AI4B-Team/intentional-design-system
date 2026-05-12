@@ -23,6 +23,7 @@ interface DealCard {
   sqft: string;
   profit: string;
   roi: string;
+  arvPercent: number;
   rotate: string;
   translate: string;
   z: string;
