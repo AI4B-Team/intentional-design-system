@@ -528,7 +528,7 @@ export default function Landing() {
               <div className="flex items-baseline gap-3">
                 <span className="text-muted-foreground line-through text-xl">$1,103/mo</span>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                <span className="text-4xl font-bold text-primary">$99/mo</span>
+                <span className="text-4xl font-bold text-primary">$97/mo</span>
               </div>
               <p className="text-sm text-muted-foreground">Save over <strong className="text-foreground">$12,000/year</strong></p>
             </div>
