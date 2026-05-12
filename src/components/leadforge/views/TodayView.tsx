@@ -208,7 +208,7 @@ export function TodayView() {
           <div>
             <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2 border border-primary/20">
               <Sparkles className="h-3 w-3" />
-              Acquisition Queue
+              Lead Trace
             </div>
             <h2 className="text-2xl font-bold text-foreground">
               <span className="text-primary tabular-nums">38</span> New Opportunities Today
