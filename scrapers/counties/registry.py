@@ -8,7 +8,9 @@ To add a new county: add a CountyConfig entry and create the corresponding
 scraper class in counties/{state}/{county_name}.py
 """
 
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Optional
 
 
@@ -18,12 +20,18 @@ class CountyConfig:
     county: str
     fips: str
     population: int
-    scraper_module: str          # e.g. "counties.texas.harris"
-    scraper_class: str           # e.g. "HarrisCountyScraper"
+    scraper_module: str          # e.g. "counties.texas.harris" or "" if not yet implemented
+    scraper_class: str           # e.g. "HarrisCountyScraper" or ""
     signal_types: list[str]      # Which signals this scraper produces
     cadence_hours: int = 24      # How often to run (hours)
     priority: int = 1            # 1=highest, 5=lowest
     notes: str = ""
+    court_system: str = ""       # e.g. "iCivil", "ACIS", "AZCourtConnect"
+    state_name: str = ""
+
+    @property
+    def is_implemented(self) -> bool:
+        return bool(self.scraper_module and self.scraper_class)
 
 
 # ── Supported counties (top 50 by investment activity) ───────────────────
