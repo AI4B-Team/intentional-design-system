@@ -185,7 +185,23 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-[0.18em] mb-6 animate-fade-in">
               <Sparkles className="h-4 w-4" />
-              Automated Real Estate Investing
+              <span className="relative">
+                Automated Real Estate Investing
+                <svg
+                  aria-hidden
+                  viewBox="0 0 240 10"
+                  preserveAspectRatio="none"
+                  className="absolute -bottom-1.5 left-0 w-full h-2 text-primary/70"
+                >
+                  <path
+                    d="M2 6 Q 60 1, 120 5 T 238 4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
             </div>
 
             <h1
