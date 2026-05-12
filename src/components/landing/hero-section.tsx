@@ -284,7 +284,7 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
                 onClick={goSignup}
                 className="bg-primary text-primary-foreground hover:bg-accent-hover text-base px-7 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-[0.97]"
               >
-                Start Your 30-Day Free Trial <ArrowRight className="ml-2 h-5 w-5" />
+                Start Your 14-Day Free Trial <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button
                 size="lg"
@@ -306,7 +306,7 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                30-day free trial
+                14-Day Free Trial
               </div>
             </div>
           </div>
