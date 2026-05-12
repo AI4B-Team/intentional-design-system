@@ -263,15 +263,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ─── Stats ─── */}
-      <section className="py-16 md:py-24">
-        <div className="max-w-5xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {stats.map((s, i) => (
-            <StatBlock key={s.label} {...s} delay={i * 150} />
-          ))}
-        </div>
-      </section>
-
       {/* ═══════════════════════════════════════════════════════════════
           AUTONOMOUS PIPELINE — "Your Next Hire Isn't a Person"
           ═══════════════════════════════════════════════════════════════ */}
