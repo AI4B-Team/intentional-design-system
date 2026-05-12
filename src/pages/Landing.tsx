@@ -260,6 +260,7 @@ export default function Landing() {
             <img src={logoHGTV} alt="HGTV" className="h-7 md:h-8 w-auto object-contain" loading="lazy" />
             <img src={logoTampaBay} alt="Tampa Bay Times (formerly St. Petersburg Times)" className="h-6 md:h-7 w-auto object-contain" loading="lazy" />
             <img src={logoInc} alt="Inc. Magazine" className="h-8 md:h-10 w-auto object-contain" loading="lazy" />
+            <img src={logoSavingHomes} alt="Saving Homes" className="h-8 md:h-10 w-auto object-contain" loading="lazy" />
           </div>
         </div>
       </section>
