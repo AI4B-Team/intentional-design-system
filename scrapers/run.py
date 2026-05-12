@@ -168,15 +168,17 @@ def main():
 
     # List counties mode
     if args.list_counties:
-        table = Table(title=f"Supported Counties ({len(COUNTIES)} total)")
+        table = Table(title=f"County Registry ({TOTAL_IMPLEMENTED} implemented / {TOTAL_COUNTIES} total)")
         table.add_column("State"); table.add_column("County")
-        table.add_column("Priority"); table.add_column("Cadence")
-        table.add_column("Signal Types")
-        for c in sorted(COUNTIES, key=lambda x: (x.state, x.county)):
+        table.add_column("Priority"); table.add_column("Court")
+        table.add_column("Signals"); table.add_column("Status")
+        for c in sorted(ALL_COUNTIES, key=lambda x: (x.priority, x.state, x.county)):
+            status = "[green]ready[/green]" if c.is_implemented else "[yellow]pending[/yellow]"
             table.add_row(
-                c.state, c.county, str(c.priority),
-                f"{c.cadence_hours}h",
-                ", ".join(c.signal_types[:3]) + ("..." if len(c.signal_types) > 3 else ""),
+                c.state, c.county, f"P{c.priority}",
+                c.court_system or "—",
+                ", ".join(c.signal_types[:3]) + ("…" if len(c.signal_types) > 3 else ""),
+                status,
             )
         console.print(table)
         return
