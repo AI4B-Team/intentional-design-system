@@ -263,14 +263,14 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
           {/* Right: Deal Card Stack */}
           <div className="relative h-[520px] lg:h-[560px] hidden md:block">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full max-w-[520px] mx-auto">
-                <div className="absolute left-0 top-[22%]">
+              <div className="relative w-full h-full max-w-[460px] mx-auto">
+                <div className="absolute left-[10px] top-[22%]">
                   <DealMockCard deal={deals[0]} />
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 top-[6%]">
                   <DealMockCard deal={deals[1]} />
                 </div>
-                <div className="absolute right-0 top-[24%]">
+                <div className="absolute right-[10px] top-[24%]">
                   <DealMockCard deal={deals[2]} />
                 </div>
               </div>
