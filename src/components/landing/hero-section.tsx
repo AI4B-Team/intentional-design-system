@@ -303,7 +303,7 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
             >
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-slate-400" />
-                No credit card required
+                No Credit Card Required
               </div>
               <div className="flex items-center gap-1.5">
                 <CheckCircle2 className="h-4 w-4 text-emerald-500" />
