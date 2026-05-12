@@ -272,7 +272,8 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
               style={{ animationDelay: "200ms" }}
             >
               AI agents that find leads, call sellers, analyze deals, send offers, close contracts, and sell deals — while you focus on cashing checks.
-              Replace 8+ tools with one platform built for serious investors.
+              <br />
+              Replace 10+ tools with one platform built for serious investors.
             </p>
 
             <div
