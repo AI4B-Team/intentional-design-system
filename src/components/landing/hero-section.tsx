@@ -158,13 +158,30 @@ function DealMockCard({ deal }: { deal: DealCard }) {
             />
           </div>
         </div>
-        <div className="mt-2 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
-            Est. Profit
-          </div>
-          <div className="text-xl font-bold text-emerald-600 tabular-nums">{deal.profit}</div>
-          <div className="text-[10px] text-emerald-600/80 tabular-nums">ROI {deal.roi}</div>
-        </div>
+        {(() => {
+          const bad = deal.arvPercent > 75;
+          return (
+            <div className={cn(
+              "mt-2 rounded-lg border p-2.5 text-center",
+              bad ? "bg-rose-50 border-rose-200" : "bg-emerald-50 border-emerald-200"
+            )}>
+              <div className={cn(
+                "text-[10px] font-semibold uppercase tracking-wider",
+                bad ? "text-rose-700" : "text-emerald-700"
+              )}>
+                Est. Profit
+              </div>
+              <div className={cn(
+                "text-xl font-bold tabular-nums",
+                bad ? "text-rose-600" : "text-emerald-600"
+              )}>{deal.profit}</div>
+              <div className={cn(
+                "text-[10px] tabular-nums",
+                bad ? "text-rose-600/80" : "text-emerald-600/80"
+              )}>ROI {deal.roi}</div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
