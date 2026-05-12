@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ArrowRight, Play, Sparkles, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Play, Sparkles, ShieldCheck, CheckCircle2, BedDouble, Bath, Ruler } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import deal1 from "@/assets/landing/deal-1.jpg";
@@ -14,7 +14,8 @@ interface HeroSectionProps {
 interface DealCard {
   img: string;
   badge: string;
-  badgeTone: "emerald" | "cyan" | "amber";
+  badgeTone: "emerald" | "cyan" | "amber" | "slate";
+  statusLabel: string;
   price: string;
   address: string;
   city: string;
@@ -35,12 +36,13 @@ const deals: DealCard[] = [
     img: deal1,
     badge: "Just Found",
     badgeTone: "emerald",
+    statusLabel: "New 2 Days Ago",
     price: "$37,900",
     address: "9120 Conner St,",
     city: "Cleveland, OH 44105",
     beds: 2,
     baths: 1,
-    sqft: "896 sq ft",
+    sqft: "896",
     profit: "+$29,600",
     roi: "78.1%",
     arvPercent: 62,
@@ -52,12 +54,13 @@ const deals: DealCard[] = [
     img: deal2,
     badge: "Top Deal",
     badgeTone: "cyan",
+    statusLabel: "For Sale",
     price: "$68,000",
     address: "1234 Mitchell St,",
     city: "Detroit, MI 48206",
     beds: 3,
     baths: 1,
-    sqft: "1,024 sq ft",
+    sqft: "1,024",
     profit: "+$46,000",
     roi: "67.6%",
     arvPercent: 70,
@@ -68,14 +71,15 @@ const deals: DealCard[] = [
   },
   {
     img: deal3,
-    badge: "Thin Margin",
-    badgeTone: "amber",
+    badge: "Sold",
+    badgeTone: "slate",
+    statusLabel: "Sold",
     price: "$92,500",
     address: "2647 W North Ave,",
     city: "Baltimore, MD 21216",
     beds: 3,
     baths: 1,
-    sqft: "1,112 sq ft",
+    sqft: "1,112",
     profit: "+$4,200",
     roi: "4.5%",
     arvPercent: 88,
@@ -89,6 +93,7 @@ const toneClasses: Record<DealCard["badgeTone"], string> = {
   emerald: "bg-emerald-500 text-white",
   cyan: "bg-cyan-500 text-white",
   amber: "bg-amber-500 text-white",
+  slate: "bg-slate-900 text-white",
 };
 
 function DealMockCard({ deal }: { deal: DealCard }) {
@@ -122,10 +127,10 @@ function DealMockCard({ deal }: { deal: DealCard }) {
             toneClasses[deal.badgeTone]
           )}
         >
-          For Sale
+          {deal.statusLabel}
         </span>
       </div>
-      <div className="p-4 space-y-2">
+      <div className="p-4 space-y-2.5">
         <div className="flex items-center justify-between gap-2">
           <div className="text-2xl font-bold text-slate-900 tabular-nums">{deal.price}</div>
           <div className="flex items-center gap-1">
@@ -137,31 +142,50 @@ function DealMockCard({ deal }: { deal: DealCard }) {
           <div>{deal.address}</div>
           <div>{deal.city}</div>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-          <span>{deal.beds} bed</span>
-          <span className="text-slate-300">|</span>
-          <span>{deal.baths} bath</span>
-          <span className="text-slate-300">|</span>
-          <span>{deal.sqft}</span>
-        </div>
-        {/* ARV progress bar */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between text-[10px] font-semibold mb-1">
-            <span className="uppercase tracking-wider text-slate-500">ARV</span>
-            <span className="tabular-nums text-slate-700">{deal.arvPercent}% of ARV</span>
+        {/* Bed / Bath / Sqft with icons */}
+        <div className="grid grid-cols-3 gap-1 pt-2 border-t border-slate-100 text-center">
+          <div className="flex flex-col items-center gap-0.5">
+            <BedDouble className="h-4 w-4 text-slate-400" strokeWidth={1.75} />
+            <div className="text-sm font-bold text-slate-900 tabular-nums leading-none">{deal.beds}</div>
+            <div className="text-[10px] text-slate-500">Beds</div>
           </div>
-          <div className="relative h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+          <div className="flex flex-col items-center gap-0.5">
+            <Bath className="h-4 w-4 text-slate-400" strokeWidth={1.75} />
+            <div className="text-sm font-bold text-slate-900 tabular-nums leading-none">{deal.baths}</div>
+            <div className="text-[10px] text-slate-500">Baths</div>
+          </div>
+          <div className="flex flex-col items-center gap-0.5">
+            <Ruler className="h-4 w-4 text-slate-400" strokeWidth={1.75} />
+            <div className="text-sm font-bold text-slate-900 tabular-nums leading-none">{deal.sqft}</div>
+            <div className="text-[10px] text-slate-500">Sq Ft</div>
+          </div>
+        </div>
+        {/* Deal Risk gradient bar (matches marketplace) */}
+        <div className="pt-1">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-semibold text-slate-600">Deal Risk</span>
+            <span className={cn(
+              "text-[10px] font-bold tabular-nums px-1.5 py-0.5 rounded",
+              deal.arvPercent <= 70
+                ? "bg-emerald-100 text-emerald-700"
+                : deal.arvPercent <= 85
+                ? "bg-amber-100 text-amber-700"
+                : "bg-rose-100 text-rose-700"
+            )}>{deal.arvPercent}% ARV</span>
+          </div>
+          <div className="relative h-2 w-full rounded-full overflow-hidden" style={{
+            background: "linear-gradient(to right, hsl(158 70% 50%) 0%, hsl(158 70% 50%) 40%, hsl(43 95% 55%) 40%, hsl(43 95% 55%) 70%, hsl(0 75% 60%) 70%, hsl(0 75% 60%) 100%)",
+          }}>
             <div
-              className={cn(
-                "absolute inset-y-0 left-0 rounded-full",
-                deal.arvPercent <= 65
-                  ? "bg-emerald-500"
-                  : deal.arvPercent <= 75
-                  ? "bg-amber-500"
-                  : "bg-rose-500"
-              )}
-              style={{ width: `${deal.arvPercent}%` }}
+              className="absolute top-1/2 -translate-y-1/2 h-3.5 w-3.5 rounded-full bg-white border-2 border-slate-700 shadow-sm"
+              style={{ left: `calc(${Math.min(100, Math.max(0, (deal.arvPercent - 50) * 2))}% - 7px)` }}
             />
+          </div>
+          <div className="flex justify-between text-[9px] text-slate-400 mt-1 tabular-nums">
+            <span>50%</span>
+            <span>70%</span>
+            <span>85%</span>
+            <span>100%</span>
           </div>
         </div>
         {(() => {
