@@ -37,8 +37,11 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.table import Table
 
 from counties.registry import (
+    ALL_COUNTIES,
     COUNTIES,
     CountyConfig,
+    TOTAL_COUNTIES,
+    TOTAL_IMPLEMENTED,
     get_counties_by_cadence,
     get_county,
     get_counties_by_state,
