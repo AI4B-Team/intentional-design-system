@@ -248,7 +248,7 @@ export function TodayView() {
         <Card className="p-5 lg:col-span-2">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div>
-              <h3 className="font-semibold text-foreground">30-Day Distress Signal Trend</h3>
+              <h3 className="font-semibold text-foreground">Lead Trace: 30-Day Distress Signals</h3>
               <p className="text-xs text-muted-foreground mt-0.5">+18% vs prior period</p>
             </div>
             <div className="inline-flex items-center rounded-md border border-border bg-muted/30 p-0.5">
@@ -277,7 +277,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[280px]">
+          <div className="h-[460px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
