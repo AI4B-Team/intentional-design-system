@@ -638,7 +638,10 @@ export default function Landing() {
             Let Your Pipeline Work For You.
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
-            Join thousands of investors who replaced their entire tech stack — and half their team's busy work — with RealElite. Start your 14-Day Free Trial today.
+            Join thousands of investors who replaced their entire tech stack — and half their team's busy work — with RealElite.
+            <br />
+            <br />
+            Start your 14-Day Free Trial today.
           </p>
           <Button
             size="lg"
