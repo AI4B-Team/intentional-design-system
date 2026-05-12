@@ -61,7 +61,7 @@ const deals: DealCard[] = [
     city: "Detroit, MI 48206",
     beds: 4,
     baths: 2,
-    sqft: "1,602",
+    sqft: "1,624",
     profit: "+$46,000",
     roi: "67.6%",
     arvPercent: 70,
