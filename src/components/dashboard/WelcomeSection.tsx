@@ -94,7 +94,7 @@ export function WelcomeSection() {
           {/* Meet AIVA Card */}
           <Card className="min-w-[280px] max-w-[320px] p-5 snap-start flex flex-col shrink-0">
             <div className="flex items-center gap-2 mb-2">
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center">
                 <Sparkles className="h-4.5 w-4.5 text-primary-foreground" />
               </div>
               <h3 className="font-semibold text-foreground">Meet AIVA</h3>
