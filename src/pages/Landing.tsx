@@ -630,11 +630,11 @@ export default function Landing() {
       {/* ─── Final CTA ─── */}
       <section className="py-10 md:py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-info/5 pointer-events-none" />
-        <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
+        <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Stop Working Your Pipeline.
           </h2>
-          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-primary">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6 text-primary whitespace-nowrap">
             Let Your Pipeline Work For You.
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-xl mx-auto">
