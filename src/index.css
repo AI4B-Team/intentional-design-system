@@ -80,7 +80,7 @@
     --popover-foreground: 234 32% 14%;
     
     /* Primary - Premium Emerald */
-    --primary: 158 78% 36%;
+    --primary: 0 78% 48%;
     --primary-foreground: 0 0% 100%;
     
     /* Secondary */
@@ -91,10 +91,10 @@
     --muted: 240 5% 96%;
     --muted-foreground: 215 16% 47%;
     
-    /* Accent - Premium Emerald */
-    --accent: 158 78% 36%;
+    /* Accent - Brand Red */
+    --accent: 0 78% 48%;
     --accent-foreground: 0 0% 100%;
-    --accent-hover: 158 78% 29%;
+    --accent-hover: 0 78% 40%;
     
     /* Destructive/Error */
     --destructive: 0 84% 60%;
@@ -183,8 +183,8 @@
     --popover-foreground: 210 40% 98%;
     
     /* Primary - Emerald Green */
-    --primary: 160 84% 45%;
-    --primary-foreground: 222 47% 11%;
+    --primary: 0 84% 55%;
+    --primary-foreground: 0 0% 100%;
     
     /* Secondary */
     --secondary: 217 33% 17%;
@@ -194,10 +194,10 @@
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
     
-    /* Accent - Emerald Green */
-    --accent: 160 84% 45%;
-    --accent-foreground: 222 47% 11%;
-    --accent-hover: 160 84% 50%;
+    /* Accent - Brand Red */
+    --accent: 0 84% 55%;
+    --accent-foreground: 0 0% 100%;
+    --accent-hover: 0 84% 60%;
     
     /* Destructive/Error */
     --destructive: 0 62% 50%;
