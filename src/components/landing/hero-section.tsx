@@ -68,17 +68,17 @@ const deals: DealCard[] = [
   },
   {
     img: deal3,
-    badge: "New",
+    badge: "Thin Margin",
     badgeTone: "amber",
-    price: "$41,500",
+    price: "$92,500",
     address: "2647 W North Ave,",
     city: "Baltimore, MD 21216",
     beds: 3,
     baths: 1,
     sqft: "1,112 sq ft",
-    profit: "+$32,700",
-    roi: "78.8%",
-    arvPercent: 55,
+    profit: "+$4,200",
+    roi: "4.5%",
+    arvPercent: 88,
     rotate: "rotate-[5deg]",
     translate: "translate-y-8",
     z: "z-10",
@@ -95,7 +95,7 @@ function DealMockCard({ deal }: { deal: DealCard }) {
   return (
     <div
       className={cn(
-        "absolute w-[260px] sm:w-[280px] rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden transition-transform duration-500 hover:-translate-y-1",
+        "absolute w-[220px] sm:w-[240px] rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden transition-transform duration-500 hover:-translate-y-1",
         deal.rotate,
         deal.translate,
         deal.z,
@@ -158,13 +158,30 @@ function DealMockCard({ deal }: { deal: DealCard }) {
             />
           </div>
         </div>
-        <div className="mt-2 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
-          <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
-            Est. Profit
-          </div>
-          <div className="text-xl font-bold text-emerald-600 tabular-nums">{deal.profit}</div>
-          <div className="text-[10px] text-emerald-600/80 tabular-nums">ROI {deal.roi}</div>
-        </div>
+        {(() => {
+          const bad = deal.arvPercent > 75;
+          return (
+            <div className={cn(
+              "mt-2 rounded-lg border p-2.5 text-center",
+              bad ? "bg-rose-50 border-rose-200" : "bg-emerald-50 border-emerald-200"
+            )}>
+              <div className={cn(
+                "text-[10px] font-semibold uppercase tracking-wider",
+                bad ? "text-rose-700" : "text-emerald-700"
+              )}>
+                Est. Profit
+              </div>
+              <div className={cn(
+                "text-xl font-bold tabular-nums",
+                bad ? "text-rose-600" : "text-emerald-600"
+              )}>{deal.profit}</div>
+              <div className={cn(
+                "text-[10px] tabular-nums",
+                bad ? "text-rose-600/80" : "text-emerald-600/80"
+              )}>ROI {deal.roi}</div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -205,10 +222,10 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
             </div>
 
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6 animate-fade-in"
+              className="text-[2.5rem] sm:text-5xl lg:text-[3.5rem] xl:text-6xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6 animate-fade-in"
               style={{ animationDelay: "100ms" }}
             >
-              Close More Deals.
+              <span className="whitespace-nowrap">Close More Deals.</span>
               <br />
               <span className="relative inline-block">
                 <span className="absolute inset-x-0 bottom-1 h-[55%] bg-emerald-200/70 -skew-y-1 rounded-sm -z-0" aria-hidden />
@@ -263,14 +280,14 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
           {/* Right: Deal Card Stack */}
           <div className="relative h-[520px] lg:h-[560px] hidden md:block">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full max-w-[520px] mx-auto">
-                <div className="absolute left-0 top-[22%]">
+              <div className="relative w-full h-full max-w-[460px] mx-auto">
+                <div className="absolute left-[10px] top-[22%]">
                   <DealMockCard deal={deals[0]} />
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 top-[6%]">
                   <DealMockCard deal={deals[1]} />
                 </div>
-                <div className="absolute right-0 top-[24%]">
+                <div className="absolute right-[10px] top-[24%]">
                   <DealMockCard deal={deals[2]} />
                 </div>
               </div>
