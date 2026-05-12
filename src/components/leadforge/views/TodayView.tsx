@@ -277,7 +277,7 @@ export function TodayView() {
               })}
             </div>
           </div>
-          <div className="h-[460px]">
+          <div className="h-[540px]">
             <ResponsiveContainer width="100%" height="100%">
               {chartType === "bar" ? (
                 <BarChart data={TREND_DATA} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
