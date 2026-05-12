@@ -628,7 +628,7 @@ export default function Landing() {
       </section>
 
       {/* ─── Final CTA ─── */}
-      <section className="py-20 md:py-32 relative overflow-hidden">
+      <section className="py-10 md:py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-info/5 pointer-events-none" />
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
