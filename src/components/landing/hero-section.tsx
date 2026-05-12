@@ -14,7 +14,7 @@ interface HeroSectionProps {
 interface DealCard {
   img: string;
   badge: string;
-  badgeTone: "emerald" | "cyan" | "amber" | "slate";
+  badgeTone: "emerald" | "cyan" | "amber" | "slate" | "rose";
   statusLabel: string;
   price: string;
   address: string;
@@ -52,9 +52,9 @@ const deals: DealCard[] = [
   },
   {
     img: deal2,
-    badge: "Top Deal",
-    badgeTone: "cyan",
-    statusLabel: "For Sale",
+    badge: "Sold",
+    badgeTone: "rose",
+    statusLabel: "Sold",
     price: "$68,000",
     address: "1234 Mitchell St,",
     city: "Detroit, MI 48206",
@@ -67,7 +67,7 @@ const deals: DealCard[] = [
     rotate: "rotate-0",
     translate: "-translate-y-2",
     z: "z-20",
-    highlight: true,
+    highlight: false,
   },
   {
     img: deal3,
@@ -94,6 +94,7 @@ const toneClasses: Record<DealCard["badgeTone"], string> = {
   cyan: "bg-cyan-500 text-white",
   amber: "bg-amber-500 text-white",
   slate: "bg-slate-900 text-white",
+  rose: "bg-rose-600 text-white",
 };
 
 function DealMockCard({ deal }: { deal: DealCard }) {
