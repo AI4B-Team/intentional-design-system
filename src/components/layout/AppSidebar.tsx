@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PanelLeftClose, X, Sparkles } from "lucide-react";
+import { Command as CommandIcon } from "lucide-react";
 
 interface NavItem {
   label: string;
@@ -55,6 +56,23 @@ export function AppSidebar({
   const location = useLocation();
   const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
+
+  // First-login coachmark for AIVA button
+  const [showAivaCoach, setShowAivaCoach] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!localStorage.getItem("aiva-coachmark-dismissed")) {
+      const t = setTimeout(() => setShowAivaCoach(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, []);
+  const dismissAivaCoach = React.useCallback(() => {
+    setShowAivaCoach(false);
+    try { localStorage.setItem("aiva-coachmark-dismissed", "1"); } catch {}
+  }, []);
+  React.useEffect(() => {
+    if (aivaOpen && showAivaCoach) dismissAivaCoach();
+  }, [aivaOpen, showAivaCoach, dismissAivaCoach]);
 
   // Force dark sidebar when theme is "system" (sidebar stays dark regardless of content)
   const [forceDark, setForceDark] = React.useState(() => {
@@ -137,7 +155,7 @@ export function AppSidebar({
         <TooltipProvider delayDuration={0}>
           <ul className="space-y-0.5">
             {/* AIVA Button - Opens Panel */}
-            <li>
+            <li className="relative">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
@@ -170,6 +188,40 @@ export function AppSidebar({
                   </TooltipContent>
                 )}
               </Tooltip>
+
+              {/* First-login coachmark */}
+              {showAivaCoach && (
+                <div
+                  className={cn(
+                    "hidden md:block absolute top-1/2 -translate-y-1/2 z-50 w-72",
+                    collapsed ? "left-[calc(100%+12px)]" : "left-[calc(100%+16px)]"
+                  )}
+                >
+                  <div className="relative rounded-xl bg-popover border border-primary/40 shadow-glow-md p-4 text-popover-foreground animate-in fade-in slide-in-from-left-2">
+                    {/* Arrow */}
+                    <div className="absolute top-1/2 -left-1.5 -translate-y-1/2 h-3 w-3 rotate-45 bg-popover border-l border-b border-primary/40" />
+                    <button
+                      onClick={dismissAivaCoach}
+                      className="absolute top-2 right-2 text-muted-foreground hover:text-foreground transition-colors"
+                      aria-label="Dismiss"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      <span className="text-[11px] font-bold tracking-wider text-primary">NEW</span>
+                    </div>
+                    <p className="text-sm font-semibold mb-1">Meet your AI Agent</p>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Ask anything — find deals in a ZIP, run comps, gauge a market. Press{" "}
+                      <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-muted border border-border text-[10px] font-medium">
+                        <CommandIcon className="h-2.5 w-2.5" />K
+                      </kbd>{" "}
+                      or click the spark button.
+                    </p>
+                  </div>
+                </div>
+              )}
             </li>
 
             {/* Top Nav Items */}
