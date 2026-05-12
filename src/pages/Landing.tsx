@@ -336,7 +336,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           NO INTEGRATIONS. NO HEADACHES. (REsimpli-style grid)
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 border-b border-border">
+      <section className="py-8 md:py-12 border-b border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-3">
