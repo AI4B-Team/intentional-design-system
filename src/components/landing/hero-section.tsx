@@ -205,10 +205,10 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
             </div>
 
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6 animate-fade-in"
+              className="text-[2.5rem] sm:text-5xl lg:text-[3.5rem] xl:text-6xl font-bold leading-[1.05] tracking-tight text-slate-900 mb-6 animate-fade-in"
               style={{ animationDelay: "100ms" }}
             >
-              Close More Deals.
+              <span className="whitespace-nowrap">Close More Deals.</span>
               <br />
               <span className="relative inline-block">
                 <span className="absolute inset-x-0 bottom-1 h-[55%] bg-emerald-200/70 -skew-y-1 rounded-sm -z-0" aria-hidden />
