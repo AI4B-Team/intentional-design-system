@@ -138,6 +138,26 @@ function DealMockCard({ deal }: { deal: DealCard }) {
           <span className="text-slate-300">|</span>
           <span>{deal.sqft}</span>
         </div>
+        {/* ARV progress bar */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] font-semibold mb-1">
+            <span className="uppercase tracking-wider text-slate-500">ARV</span>
+            <span className="tabular-nums text-slate-700">{deal.arvPercent}% of ARV</span>
+          </div>
+          <div className="relative h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+            <div
+              className={cn(
+                "absolute inset-y-0 left-0 rounded-full",
+                deal.arvPercent <= 65
+                  ? "bg-emerald-500"
+                  : deal.arvPercent <= 75
+                  ? "bg-amber-500"
+                  : "bg-rose-500"
+              )}
+              style={{ width: `${deal.arvPercent}%` }}
+            />
+          </div>
+        </div>
         <div className="mt-2 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
             Est. Profit
