@@ -85,6 +85,10 @@ def run_county(
         "status": "healthy",
     }
 
+    if not config.scraper_module or not config.scraper_class:
+        stats["status"] = "pending"
+        return stats
+
     ScraperClass = load_scraper_class(config)
     if not ScraperClass:
         stats["status"] = "down"
