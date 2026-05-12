@@ -268,7 +268,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           AUTONOMOUS PIPELINE — "Your Next Hire Isn't a Person"
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-20 md:py-32 bg-muted/30">
+      <section id="how-it-works" className="py-10 md:py-16 bg-muted/30">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-semibold mb-4">
@@ -336,7 +336,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           NO INTEGRATIONS. NO HEADACHES. (REsimpli-style grid)
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24 border-b border-border">
+      <section className="py-8 md:py-12 border-b border-border">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-3">
@@ -406,7 +406,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           FEATURE DEEP DIVE — Tabbed Categories (FreedomSoft-style)
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="features" className="py-20 md:py-32">
+      <section id="features" className="py-10 md:py-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -470,7 +470,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           COMPARISON TABLE
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="compare" className="py-16 md:py-28 bg-muted/30">
+      <section id="compare" className="py-8 md:py-14 bg-muted/30">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -503,7 +503,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           REPLACE 8 APPS
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24">
+      <section className="py-8 md:py-12">
         <div className="max-w-5xl mx-auto px-6">
           <div className="bg-card border border-border rounded-2xl p-8 md:p-12">
             <div className="text-center mb-10">
@@ -539,7 +539,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           TESTIMONIALS
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-28 bg-muted/30">
+      <section className="py-8 md:py-14 bg-muted/30">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -570,7 +570,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           PRICING
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-16 md:py-28">
+      <section id="pricing" className="py-8 md:py-14">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Simple Pricing. <span className="text-primary">No Surprises.</span>
@@ -628,7 +628,7 @@ export default function Landing() {
       </section>
 
       {/* ─── Final CTA ─── */}
-      <section className="py-20 md:py-32 relative overflow-hidden">
+      <section className="py-10 md:py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-info/5 pointer-events-none" />
         <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
