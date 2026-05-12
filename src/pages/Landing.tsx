@@ -56,6 +56,7 @@ import {
 import { useCountUp } from "@/hooks/useCountUp";
 import { useInView } from "react-intersection-observer";
 import { cn } from "@/lib/utils";
+import { HeroSection } from "@/components/landing/hero-section";
 
 /* ────────────────────────── Autonomous Pipeline Steps ────────────────────────── */
 
