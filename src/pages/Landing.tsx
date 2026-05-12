@@ -503,7 +503,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           REPLACE 8 APPS
           ═══════════════════════════════════════════════════════════════ */}
-      <section className="py-16 md:py-24">
+      <section className="py-8 md:py-12">
         <div className="max-w-5xl mx-auto px-6">
           <div className="bg-card border border-border rounded-2xl p-8 md:p-12">
             <div className="text-center mb-10">
