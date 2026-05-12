@@ -240,40 +240,8 @@ export default function Landing() {
         )}
       </nav>
 
-      {/* ─── Hero (KEPT AS-IS) ─── */}
-      <section className="relative pt-20 pb-24 md:pt-32 md:pb-36 overflow-hidden">
-
-        <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-semibold mb-8 animate-fade-in">
-            <Sparkles className="h-4 w-4" />
-            The #1 AI-Powered CRM For Real Estate Investors
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold leading-[1.08] tracking-tight mb-6 animate-fade-in" style={{ animationDelay: "100ms" }}>
-            Close More Deals.
-            <br />
-            <span className="text-primary">Work Less.</span>
-          </h1>
-
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "200ms" }}>
-            AI agents that find leads, call sellers, analyze deals, send offers, close contracts, and sell deals — while you focus on cashing checks.
-            Replace 8+ tools with one platform built for serious investors.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in" style={{ animationDelay: "300ms" }}>
-            <Button size="lg" onClick={goSignup} className="bg-primary text-primary-foreground hover:bg-accent-hover text-base px-8 py-6 rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all active:scale-[0.97]">
-              Start Your 30-Day Free Trial <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="text-base px-8 py-6 rounded-xl border-border hover:bg-muted" onClick={() => navigate("/login")}>
-              <Play className="mr-2 h-4 w-4" /> Watch Demo
-            </Button>
-          </div>
-
-          <p className="text-xs text-muted-foreground mt-4 animate-fade-in" style={{ animationDelay: "400ms" }}>
-            No credit card required · Cancel anytime · Full access to all features
-          </p>
-        </div>
-      </section>
+      {/* ─── Hero ─── */}
+      <HeroSection goSignup={goSignup} navigate={navigate} />
 
       {/* ─── Social Proof ─── */}
       <section className="border-y border-border bg-muted/30 py-8">
