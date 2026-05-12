@@ -95,7 +95,7 @@ function DealMockCard({ deal }: { deal: DealCard }) {
   return (
     <div
       className={cn(
-        "absolute w-[260px] sm:w-[280px] rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden transition-transform duration-500 hover:-translate-y-1",
+        "absolute w-[220px] sm:w-[240px] rounded-2xl bg-white border border-slate-200 shadow-2xl shadow-slate-900/10 overflow-hidden transition-transform duration-500 hover:-translate-y-1",
         deal.rotate,
         deal.translate,
         deal.z,
