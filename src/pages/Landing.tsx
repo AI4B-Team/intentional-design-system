@@ -1,6 +1,11 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
+import logoAE from "@/assets/logos/ae.svg";
+import logoHulu from "@/assets/logos/hulu.svg";
+import logoHGTV from "@/assets/logos/hgtv.svg";
+import logoTampaBay from "@/assets/logos/tampabay.svg";
+import logoInc from "@/assets/logos/inc.svg";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
