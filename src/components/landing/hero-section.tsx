@@ -23,6 +23,7 @@ interface DealCard {
   sqft: string;
   profit: string;
   roi: string;
+  arvPercent: number;
   rotate: string;
   translate: string;
   z: string;
@@ -42,6 +43,7 @@ const deals: DealCard[] = [
     sqft: "896 sq ft",
     profit: "+$29,600",
     roi: "78.1%",
+    arvPercent: 62,
     rotate: "-rotate-[6deg]",
     translate: "translate-y-6",
     z: "z-10",
@@ -58,6 +60,7 @@ const deals: DealCard[] = [
     sqft: "1,024 sq ft",
     profit: "+$46,000",
     roi: "67.6%",
+    arvPercent: 70,
     rotate: "rotate-0",
     translate: "-translate-y-2",
     z: "z-20",
@@ -75,6 +78,7 @@ const deals: DealCard[] = [
     sqft: "1,112 sq ft",
     profit: "+$32,700",
     roi: "78.8%",
+    arvPercent: 55,
     rotate: "rotate-[5deg]",
     translate: "translate-y-8",
     z: "z-10",
@@ -134,6 +138,26 @@ function DealMockCard({ deal }: { deal: DealCard }) {
           <span className="text-slate-300">|</span>
           <span>{deal.sqft}</span>
         </div>
+        {/* ARV progress bar */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between text-[10px] font-semibold mb-1">
+            <span className="uppercase tracking-wider text-slate-500">ARV</span>
+            <span className="tabular-nums text-slate-700">{deal.arvPercent}% of ARV</span>
+          </div>
+          <div className="relative h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+            <div
+              className={cn(
+                "absolute inset-y-0 left-0 rounded-full",
+                deal.arvPercent <= 65
+                  ? "bg-emerald-500"
+                  : deal.arvPercent <= 75
+                  ? "bg-amber-500"
+                  : "bg-rose-500"
+              )}
+              style={{ width: `${deal.arvPercent}%` }}
+            />
+          </div>
+        </div>
         <div className="mt-2 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-center">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">
             Est. Profit
@@ -161,7 +185,23 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-[0.18em] mb-6 animate-fade-in">
               <Sparkles className="h-4 w-4" />
-              Automated Real Estate Investing
+              <span className="relative">
+                Automated Real Estate Investing
+                <svg
+                  aria-hidden
+                  viewBox="0 0 240 10"
+                  preserveAspectRatio="none"
+                  className="absolute -bottom-1.5 left-0 w-full h-2 text-primary/70"
+                >
+                  <path
+                    d="M2 6 Q 60 1, 120 5 T 238 4"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
             </div>
 
             <h1
@@ -170,7 +210,10 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
             >
               Close More Deals.
               <br />
-              <span className="text-primary">Work Less.</span>
+              <span className="relative inline-block">
+                <span className="absolute inset-x-0 bottom-1 h-[55%] bg-emerald-200/70 -skew-y-1 rounded-sm -z-0" aria-hidden />
+                <span className="relative">Work Less.</span>
+              </span>
             </h1>
 
             <p
@@ -218,16 +261,16 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
           </div>
 
           {/* Right: Deal Card Stack */}
-          <div className="relative h-[480px] lg:h-[520px] hidden md:block">
+          <div className="relative h-[520px] lg:h-[560px] hidden md:block">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="relative w-full h-full max-w-xl mx-auto">
-                <div className="absolute left-[8%] top-[20%]">
+              <div className="relative w-full h-full max-w-[520px] mx-auto">
+                <div className="absolute left-0 top-[22%]">
                   <DealMockCard deal={deals[0]} />
                 </div>
                 <div className="absolute left-1/2 -translate-x-1/2 top-[6%]">
                   <DealMockCard deal={deals[1]} />
                 </div>
-                <div className="absolute right-[6%] top-[22%]">
+                <div className="absolute right-0 top-[24%]">
                   <DealMockCard deal={deals[2]} />
                 </div>
               </div>
