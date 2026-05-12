@@ -530,7 +530,7 @@ export default function Landing() {
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 <span className="text-4xl font-bold text-primary">$97/mo</span>
               </div>
-              <p className="text-sm text-muted-foreground">Save over <strong className="text-foreground">$12,000/year</strong></p>
+              <p className="text-sm text-muted-foreground">Save Over: <strong className="text-foreground">$12,000/year</strong></p>
             </div>
           </div>
         </div>
