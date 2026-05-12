@@ -354,7 +354,7 @@ export function TodayView() {
         </Card>
 
         {/* Lead types list */}
-        <Card className="p-5">
+        <Card className="p-5 flex flex-col h-full min-h-0">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-foreground">Lead Types</h3>
             <span className="text-[11px] text-muted-foreground">Updated 2 Min Ago</span>
@@ -365,7 +365,7 @@ export function TodayView() {
               {DISTRESS_TYPES.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
             </span>
           </div>
-          <div className="space-y-1 overflow-y-auto pr-1" style={{ scrollbarGutter: "stable" }}>
+          <div className="space-y-1 overflow-y-auto pr-1 flex-1 min-h-0" style={{ scrollbarGutter: "stable" }}>
             {DISTRESS_TYPES.map((d) => {
               const Icon = d.icon;
               const active = selected.has(d.key);
