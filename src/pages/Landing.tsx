@@ -406,7 +406,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           FEATURE DEEP DIVE — Tabbed Categories (FreedomSoft-style)
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="features" className="py-20 md:py-32">
+      <section id="features" className="py-10 md:py-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
