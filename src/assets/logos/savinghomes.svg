@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 70" fill="none">
-  <text x="0" y="48" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700" fill="#1F3242">Saving</text>
-  <g transform="translate(140 8)">
-    <path d="M28 2 L52 22 L52 52 L4 52 L4 22 Z" fill="#F8A989"/>
-    <path d="M28 44 C20 38 14 33 14 26 C14 22 17 19 21 19 C24 19 26 21 28 24 C30 21 32 19 35 19 C39 19 42 22 42 26 C42 33 36 38 28 44 Z" fill="#1F3242"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" fill="none">
+  <text x="0" y="56" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="48" font-weight="600" fill="#243746" letter-spacing="-0.5">Saving</text>
+  <g transform="translate(168 14)">
+    <path d="M30 2 L56 22 L56 56 L4 56 L4 22 Z" fill="#F5A88A"/>
+    <path d="M30 50 C20 42 12 35 12 26 C12 21 16 17 21 17 C24.5 17 27.5 19 30 22.5 C32.5 19 35.5 17 39 17 C44 17 48 21 48 26 C48 35 40 42 30 50 Z" fill="#243746"/>
   </g>
-  <text x="208" y="48" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700" fill="#1F3242">Homes</text>
+  <text x="240" y="56" font-family="'Playfair Display', Georgia, 'Times New Roman', serif" font-size="48" font-weight="600" fill="#243746" letter-spacing="-0.5">Homes</text>
 </svg>
