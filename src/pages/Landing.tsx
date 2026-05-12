@@ -570,7 +570,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           PRICING
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="pricing" className="py-16 md:py-28">
+      <section id="pricing" className="py-8 md:py-14">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Simple Pricing. <span className="text-primary">No Surprises.</span>
