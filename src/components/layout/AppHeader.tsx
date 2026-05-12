@@ -327,7 +327,9 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
       </TooltipProvider>
 
       {/* User Dropdown */}
-      <ProfileDropdown />
+      <div className="ml-1">
+        <ProfileDropdown />
+      </div>
     </header>
   );
 }
