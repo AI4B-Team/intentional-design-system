@@ -230,6 +230,112 @@ export function HeroSection({ goSignup, navigate }: HeroSectionProps) {
         <div className="absolute top-1/2 -left-40 h-96 w-96 rounded-full bg-cyan-500/5 blur-3xl" />
       </div>
 
+      {/* Modern map background — full hero, fades to white on the left */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,1) 100%)",
+          maskImage:
+            "linear-gradient(to right, transparent 0%, transparent 30%, rgba(0,0,0,0.35) 45%, rgba(0,0,0,0.85) 65%, rgba(0,0,0,1) 100%)",
+          opacity: 0.6,
+        }}
+      >
+        <svg viewBox="0 0 1200 700" className="w-full h-full" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <pattern id="mapGridFull" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="hsl(210 20% 78%)" strokeWidth="0.6" />
+            </pattern>
+          </defs>
+          <rect width="1200" height="700" fill="hsl(160 30% 96%)" />
+          <rect width="1200" height="700" fill="url(#mapGridFull)" />
+          {/* Parcel blocks */}
+          <g fill="hsl(160 25% 92%)" stroke="hsl(210 20% 80%)" strokeWidth="0.75">
+            <rect x="40" y="40" width="160" height="90" rx="4" />
+            <rect x="220" y="30" width="120" height="120" rx="4" />
+            <rect x="360" y="50" width="180" height="80" rx="4" />
+            <rect x="560" y="40" width="140" height="100" rx="4" />
+            <rect x="720" y="50" width="160" height="80" rx="4" />
+            <rect x="900" y="40" width="120" height="110" rx="4" />
+            <rect x="1040" y="50" width="140" height="90" rx="4" />
+            <rect x="40" y="170" width="140" height="100" rx="4" />
+            <rect x="200" y="180" width="180" height="80" rx="4" />
+            <rect x="400" y="170" width="120" height="110" rx="4" />
+            <rect x="540" y="190" width="170" height="80" rx="4" />
+            <rect x="730" y="170" width="120" height="110" rx="4" />
+            <rect x="870" y="180" width="160" height="80" rx="4" />
+            <rect x="1050" y="170" width="130" height="100" rx="4" />
+            <rect x="40" y="300" width="180" height="100" rx="4" />
+            <rect x="240" y="310" width="120" height="100" rx="4" />
+            <rect x="380" y="300" width="160" height="110" rx="4" />
+            <rect x="560" y="320" width="140" height="90" rx="4" />
+            <rect x="720" y="300" width="180" height="100" rx="4" />
+            <rect x="920" y="310" width="120" height="100" rx="4" />
+            <rect x="1060" y="300" width="120" height="110" rx="4" />
+            <rect x="40" y="430" width="140" height="100" rx="4" />
+            <rect x="200" y="440" width="160" height="90" rx="4" />
+            <rect x="380" y="430" width="140" height="100" rx="4" />
+            <rect x="540" y="440" width="180" height="90" rx="4" />
+            <rect x="740" y="430" width="120" height="110" rx="4" />
+            <rect x="880" y="440" width="160" height="90" rx="4" />
+            <rect x="1060" y="430" width="120" height="100" rx="4" />
+            <rect x="40" y="560" width="180" height="100" rx="4" />
+            <rect x="240" y="570" width="140" height="90" rx="4" />
+            <rect x="400" y="560" width="160" height="100" rx="4" />
+            <rect x="580" y="570" width="140" height="90" rx="4" />
+            <rect x="740" y="560" width="180" height="100" rx="4" />
+            <rect x="940" y="570" width="120" height="90" rx="4" />
+            <rect x="1080" y="560" width="100" height="100" rx="4" />
+          </g>
+          {/* Major roads (white) */}
+          <g stroke="hsl(0 0% 100%)" strokeWidth="8" fill="none" strokeLinecap="round">
+            <path d="M0 150 H1200" />
+            <path d="M0 285 H1200" />
+            <path d="M0 415 H1200" />
+            <path d="M0 545 H1200" />
+            <path d="M190 0 V700" />
+            <path d="M380 0 V700" />
+            <path d="M555 0 V700" />
+            <path d="M735 0 V700" />
+            <path d="M905 0 V700" />
+            <path d="M1055 0 V700" />
+          </g>
+          {/* Road outlines */}
+          <g stroke="hsl(210 20% 78%)" strokeWidth="9" fill="none" strokeLinecap="round" opacity="0.35">
+            <path d="M0 150 H1200" />
+            <path d="M0 285 H1200" />
+            <path d="M0 415 H1200" />
+            <path d="M0 545 H1200" />
+            <path d="M190 0 V700" />
+            <path d="M380 0 V700" />
+            <path d="M555 0 V700" />
+            <path d="M735 0 V700" />
+            <path d="M905 0 V700" />
+            <path d="M1055 0 V700" />
+          </g>
+          {/* Diagonal highway */}
+          <path d="M-20 640 L1220 80" stroke="hsl(43 90% 70%)" strokeWidth="10" fill="none" strokeLinecap="round" opacity="0.55" />
+          {/* Water blob */}
+          <path d="M820 470 Q 900 440 970 480 Q 1060 540 1000 590 Q 900 620 830 580 Q 770 530 820 470 Z" fill="hsl(205 70% 82%)" opacity="0.7" />
+          {/* Map pins */}
+          <g>
+            <circle cx="430" cy="240" r="7" fill="hsl(158 78% 36%)" />
+            <circle cx="430" cy="240" r="13" fill="hsl(158 78% 36%)" opacity="0.25" />
+            <circle cx="660" cy="360" r="7" fill="hsl(0 75% 55%)" />
+            <circle cx="660" cy="360" r="13" fill="hsl(0 75% 55%)" opacity="0.25" />
+            <circle cx="880" cy="200" r="7" fill="hsl(43 95% 50%)" />
+            <circle cx="880" cy="200" r="13" fill="hsl(43 95% 50%)" opacity="0.25" />
+            <circle cx="1010" cy="490" r="7" fill="hsl(158 78% 36%)" />
+            <circle cx="1010" cy="490" r="13" fill="hsl(158 78% 36%)" opacity="0.25" />
+            <circle cx="540" cy="600" r="7" fill="hsl(0 75% 55%)" />
+            <circle cx="540" cy="600" r="13" fill="hsl(0 75% 55%)" opacity="0.25" />
+            <circle cx="780" cy="630" r="7" fill="hsl(158 78% 36%)" />
+            <circle cx="780" cy="630" r="13" fill="hsl(158 78% 36%)" opacity="0.25" />
+          </g>
+        </svg>
+      </div>
+
       <div className="relative w-full px-6 lg:px-12 xl:px-16 pt-16 pb-24 lg:pt-24 lg:pb-32">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left: Copy */}
