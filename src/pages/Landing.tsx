@@ -6,6 +6,7 @@ import logoHulu from "@/assets/logos/hulu.svg";
 import logoHGTV from "@/assets/logos/hgtv.svg";
 import logoTampaBay from "@/assets/logos/tampabay.svg";
 import logoInc from "@/assets/logos/inc.svg";
+import logoSavingHomes from "@/assets/logos/savinghomes.svg";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
