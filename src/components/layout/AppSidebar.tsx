@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PanelLeftClose, X, Sparkles } from "lucide-react";
+import { Command as CommandIcon } from "lucide-react";
 
 interface NavItem {
   label: string;
