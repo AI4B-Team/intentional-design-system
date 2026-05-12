@@ -215,7 +215,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ─── Nav ─── */}
       <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border overflow-visible">
-        <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-14 overflow-visible">
+        <div className="w-full flex items-center justify-between px-6 lg:px-12 xl:px-16 h-14 overflow-visible">
           <div className="relative z-10 self-start mt-2">
             <RealEliteLogo height={28} />
           </div>
