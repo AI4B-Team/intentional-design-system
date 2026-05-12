@@ -455,7 +455,69 @@ def get_counties_by_cadence(max_hours: int) -> list[CountyConfig]:
     return [c for c in COUNTIES if c.cadence_hours <= max_hours]
 
 
-from typing import Optional
 
-# Total county count
-TOTAL_COUNTIES = len(COUNTIES)
+# ── Full US registry (all parseable counties from the master PDF) ─────────
+#
+# COUNTIES above contains hand-tuned configs for counties with custom
+# scrapers. The JSON file ships every county in the master registry with
+# its court system, FIPS, signal types and priority — including those
+# without a custom Python scraper yet. The runner uses court_system to
+# dispatch to a generic court-system scraper as a fallback.
+
+_REGISTRY_JSON = Path(__file__).parent / "registry_data.json"
+
+
+def _load_full_registry() -> list[CountyConfig]:
+    if not _REGISTRY_JSON.exists():
+        return []
+    raw = json.loads(_REGISTRY_JSON.read_text())
+    # Index hand-tuned entries by FIPS to override JSON defaults
+    custom_by_fips = {c.fips: c for c in COUNTIES if c.fips}
+    out: list[CountyConfig] = []
+    for row in raw:
+        fips = row["fips"]
+        if fips in custom_by_fips:
+            cfg = custom_by_fips[fips]
+            cfg.court_system = cfg.court_system or row.get("court_system", "")
+            cfg.state_name = row.get("state_name", "")
+            out.append(cfg)
+        else:
+            out.append(CountyConfig(
+                state=row["state"],
+                county=row["county"],
+                fips=fips,
+                population=row.get("population") or 0,
+                scraper_module="",
+                scraper_class="",
+                signal_types=row.get("signal_types", []),
+                cadence_hours=24 if row.get("priority", 5) <= 2 else 48,
+                priority=row.get("priority", 5),
+                notes="",
+                court_system=row.get("court_system", ""),
+                state_name=row.get("state_name", ""),
+            ))
+    # Append any custom entries not present in the JSON
+    seen = {row["fips"] for row in raw}
+    for c in COUNTIES:
+        if c.fips and c.fips not in seen:
+            out.append(c)
+    return out
+
+
+ALL_COUNTIES: list[CountyConfig] = _load_full_registry() or list(COUNTIES)
+
+
+def get_all_counties(implemented_only: bool = False) -> list[CountyConfig]:
+    if implemented_only:
+        return [c for c in ALL_COUNTIES if c.is_implemented]
+    return ALL_COUNTIES
+
+
+def get_counties_by_court_system(system: str) -> list[CountyConfig]:
+    return [c for c in ALL_COUNTIES if c.court_system.lower() == system.lower()]
+
+
+# Total county counts
+TOTAL_COUNTIES = len(ALL_COUNTIES)
+TOTAL_IMPLEMENTED = sum(1 for c in ALL_COUNTIES if c.is_implemented)
+
