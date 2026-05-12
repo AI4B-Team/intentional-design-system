@@ -109,11 +109,6 @@ function DealMockCard({ deal }: { deal: DealCard }) {
         deal.highlight && "ring-2 ring-primary/30"
       )}
     >
-      {deal.highlight && (
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 inline-flex items-center gap-1 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full">
-          ★ Top Deal
-        </div>
-      )}
       <div className="relative h-36 overflow-hidden">
         <img
           src={deal.img}
@@ -123,14 +118,21 @@ function DealMockCard({ deal }: { deal: DealCard }) {
           width={768}
           height={576}
         />
-        <span
-          className={cn(
-            "absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded",
-            toneClasses[deal.badgeTone]
+        <div className="absolute top-3 left-3 right-3 flex items-center gap-1.5 flex-wrap">
+          <span
+            className={cn(
+              "text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded",
+              toneClasses[deal.badgeTone]
+            )}
+          >
+            {deal.statusLabel}
+          </span>
+          {deal.highlight && (
+            <span className="inline-flex items-center gap-1 bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded">
+              ★ Top Deal
+            </span>
           )}
-        >
-          {deal.statusLabel}
-        </span>
+        </div>
       </div>
       <div className="p-4 space-y-2.5">
         <div className="flex items-center justify-between gap-2">
