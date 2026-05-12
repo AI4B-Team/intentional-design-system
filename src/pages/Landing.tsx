@@ -470,7 +470,7 @@ export default function Landing() {
       {/* ═══════════════════════════════════════════════════════════════
           COMPARISON TABLE
           ═══════════════════════════════════════════════════════════════ */}
-      <section id="compare" className="py-16 md:py-28 bg-muted/30">
+      <section id="compare" className="py-8 md:py-14 bg-muted/30">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
