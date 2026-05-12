@@ -445,7 +445,7 @@ export default function Landing() {
                     <Sparkles className="h-3 w-3" /> {cat.badge}
                   </span>
                 )}
-                <p className="text-sm text-muted-foreground max-w-lg mx-auto">{cat.desc}</p>
+                <p className={`text-sm text-muted-foreground mx-auto ${cat.desc.startsWith("6 autonomous") ? "max-w-none whitespace-nowrap" : "max-w-lg"}`}>{cat.desc}</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
