@@ -126,7 +126,13 @@ function DealMockCard({ deal }: { deal: DealCard }) {
         </span>
       </div>
       <div className="p-4 space-y-2">
-        <div className="text-2xl font-bold text-slate-900 tabular-nums">{deal.price}</div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-2xl font-bold text-slate-900 tabular-nums">{deal.price}</div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 border border-emerald-200">Flip</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">Hold</span>
+          </div>
+        </div>
         <div className="text-sm text-slate-600 leading-tight">
           <div>{deal.address}</div>
           <div>{deal.city}</div>
