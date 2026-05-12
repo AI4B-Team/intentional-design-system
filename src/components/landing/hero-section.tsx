@@ -83,6 +83,7 @@ const deals: DealCard[] = [
     translate: "translate-y-8",
     z: "z-10",
   },
+];
 
 const toneClasses: Record<DealCard["badgeTone"], string> = {
   emerald: "bg-emerald-500 text-white",
