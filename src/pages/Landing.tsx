@@ -651,7 +651,7 @@ export default function Landing() {
             Get Started Free <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
           <p className="text-xs text-muted-foreground mt-4">
-            No Credit Card Required · Full AI suite included · Cancel anytime
+            No Credit Card Required · Full AI Suite Included · Cancel Anytime
           </p>
         </div>
       </section>
