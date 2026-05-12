@@ -14,7 +14,7 @@ interface HeroSectionProps {
 interface DealCard {
   img: string;
   badge: string;
-  badgeTone: "emerald" | "cyan" | "amber" | "slate";
+  badgeTone: "emerald" | "cyan" | "amber" | "slate" | "rose";
   statusLabel: string;
   price: string;
   address: string;
