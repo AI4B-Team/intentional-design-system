@@ -211,7 +211,7 @@ export function TodayView() {
               Lead Trace
             </div>
             <h2 className="text-2xl font-bold text-foreground">
-              <span className="text-primary tabular-nums">38</span> New Opportunities Today
+              <span className="text-emerald-600 tabular-nums">38</span> New Opportunities Today
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
               AI scored 1,402 properties across 13 county feeds in the last 2 hours. Engine running autonomously.
