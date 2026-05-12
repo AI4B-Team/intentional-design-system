@@ -622,7 +622,7 @@ export default function Landing() {
           </div>
 
           <p className="text-xs text-muted-foreground mt-6">
-            All plans include a 30-day money-back guarantee · No Credit Card Required to start
+            All Plans Include A 30-Day Money-Back Guarantee · No Credit Card Required To Start
           </p>
         </div>
       </section>
