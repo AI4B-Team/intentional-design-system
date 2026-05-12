@@ -36,7 +36,7 @@ const deals: DealCard[] = [
     img: deal1,
     badge: "Just Found",
     badgeTone: "emerald",
-    statusLabel: "New 2 Days Ago",
+    statusLabel: "For Sale",
     price: "$37,900",
     address: "9120 Conner St,",
     city: "Cleveland, OH 44105",
