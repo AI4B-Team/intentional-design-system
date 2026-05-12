@@ -245,13 +245,33 @@ export default function Landing() {
       <HeroSection goSignup={goSignup} navigate={navigate} />
 
       {/* ─── Social Proof ─── */}
-      <section className="border-y border-border bg-muted/30 py-8">
+      <section className="border-y border-border bg-muted/30 py-10">
         <div className="max-w-5xl mx-auto px-6">
-          <p className="text-center text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-6">Trusted By Investors Nationwide</p>
-          <div className="flex items-center justify-center gap-10 md:gap-16 opacity-40">
-            {["Forbes", "NBC", "CBS", "Fox", "Yahoo"].map(name => (
-              <span key={name} className="text-lg font-bold tracking-tight text-foreground">{name}</span>
-            ))}
+          <p className="text-center text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-7">Founders Featured On</p>
+          <div className="flex items-center justify-center flex-wrap gap-x-12 gap-y-6 md:gap-x-16 opacity-70 grayscale">
+            {/* A&E */}
+            <span className="font-black text-2xl tracking-tighter text-foreground" style={{ fontFamily: "Georgia, serif" }}>
+              A<span className="text-[1.4em] leading-none align-middle">&amp;</span>E
+            </span>
+            {/* Hulu */}
+            <span
+              className="text-white font-black text-sm tracking-wide px-3 py-1.5 rounded-full lowercase"
+              style={{ background: "#1ce783", fontFamily: "Helvetica, Arial, sans-serif" }}
+            >
+              hulu
+            </span>
+            {/* HGTV */}
+            <span className="font-black text-2xl tracking-tight" style={{ color: "#7BB342", fontFamily: "Helvetica, Arial, sans-serif" }}>
+              HGTV
+            </span>
+            {/* St. Pete Times */}
+            <span className="font-bold text-lg tracking-tight text-foreground italic" style={{ fontFamily: "Times New Roman, serif" }}>
+              St. Pete Times
+            </span>
+            {/* Inc. */}
+            <span className="font-black text-3xl tracking-tighter italic" style={{ color: "#D62828", fontFamily: "Helvetica, Arial, sans-serif" }}>
+              Inc<span className="text-foreground">.</span>
+            </span>
           </div>
         </div>
       </section>
