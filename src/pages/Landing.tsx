@@ -252,9 +252,9 @@ export default function Landing() {
 
       {/* ─── Social Proof ─── */}
       <section className="border-y border-border bg-muted/30 py-10">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-none mx-auto px-6">
           <p className="text-center text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-7">Founders Featured On</p>
-          <div className="flex items-center justify-center flex-wrap gap-x-12 gap-y-6 md:gap-x-16 opacity-70 grayscale">
+          <div className="flex items-center justify-center flex-nowrap gap-x-8 md:gap-x-12 lg:gap-x-16 opacity-70 grayscale">
             <img src={logoAE} alt="A&E" className="h-8 md:h-9 w-auto object-contain" loading="lazy" />
             <img src={logoHulu} alt="Hulu" className="h-6 md:h-7 w-auto object-contain" loading="lazy" />
             <img src={logoHGTV} alt="HGTV" className="h-7 md:h-8 w-auto object-contain" loading="lazy" />
