@@ -56,6 +56,23 @@ export function AppSidebar({
   const { openAIVA, isOpen: aivaOpen } = useAIVA();
   const { data: pendingSubmissions } = usePendingSubmissionsCount();
 
+  // First-login coachmark for AIVA button
+  const [showAivaCoach, setShowAivaCoach] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!localStorage.getItem("aiva-coachmark-dismissed")) {
+      const t = setTimeout(() => setShowAivaCoach(true), 600);
+      return () => clearTimeout(t);
+    }
+  }, []);
+  const dismissAivaCoach = React.useCallback(() => {
+    setShowAivaCoach(false);
+    try { localStorage.setItem("aiva-coachmark-dismissed", "1"); } catch {}
+  }, []);
+  React.useEffect(() => {
+    if (aivaOpen && showAivaCoach) dismissAivaCoach();
+  }, [aivaOpen, showAivaCoach, dismissAivaCoach]);
+
   // Force dark sidebar when theme is "system" (sidebar stays dark regardless of content)
   const [forceDark, setForceDark] = React.useState(() => {
     if (typeof window === "undefined") return false;
