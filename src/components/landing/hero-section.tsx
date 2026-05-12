@@ -72,9 +72,9 @@ const deals: DealCard[] = [
   },
   {
     img: deal3,
-    badge: "Sold",
-    badgeTone: "slate",
-    statusLabel: "Sold",
+    badge: "New",
+    badgeTone: "amber",
+    statusLabel: "New 2 Days Ago",
     price: "$92,500",
     address: "2647 W North Ave,",
     city: "Baltimore, MD 21216",
