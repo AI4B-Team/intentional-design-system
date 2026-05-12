@@ -410,7 +410,7 @@ export function TodayView() {
           <div className="mt-3 pt-3 border-t border-border grid grid-cols-2 gap-2">
             <div className="rounded-md bg-muted/40 px-2.5 py-2">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">New Today</div>
-              <div className="text-base font-bold tabular-nums text-foreground mt-0.5">+247</div>
+              <div className="text-base font-bold tabular-nums text-foreground mt-0.5">+38</div>
             </div>
             <div className="rounded-md bg-muted/40 px-2.5 py-2">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Hot Signals</div>
