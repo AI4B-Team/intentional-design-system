@@ -254,29 +254,11 @@ export default function Landing() {
         <div className="max-w-5xl mx-auto px-6">
           <p className="text-center text-xs text-muted-foreground uppercase tracking-widest font-semibold mb-7">Founders Featured On</p>
           <div className="flex items-center justify-center flex-wrap gap-x-12 gap-y-6 md:gap-x-16 opacity-70 grayscale">
-            {/* A&E */}
-            <span className="font-black text-2xl tracking-tighter text-foreground" style={{ fontFamily: "Georgia, serif" }}>
-              A<span className="text-[1.4em] leading-none align-middle">&amp;</span>E
-            </span>
-            {/* Hulu */}
-            <span
-              className="text-white font-black text-sm tracking-wide px-3 py-1.5 rounded-full lowercase"
-              style={{ background: "#1ce783", fontFamily: "Helvetica, Arial, sans-serif" }}
-            >
-              hulu
-            </span>
-            {/* HGTV */}
-            <span className="font-black text-2xl tracking-tight" style={{ color: "#7BB342", fontFamily: "Helvetica, Arial, sans-serif" }}>
-              HGTV
-            </span>
-            {/* St. Pete Times */}
-            <span className="font-bold text-lg tracking-tight text-foreground italic" style={{ fontFamily: "Times New Roman, serif" }}>
-              St. Pete Times
-            </span>
-            {/* Inc. */}
-            <span className="font-black text-3xl tracking-tighter italic" style={{ color: "#D62828", fontFamily: "Helvetica, Arial, sans-serif" }}>
-              Inc<span className="text-foreground">.</span>
-            </span>
+            <img src={logoAE} alt="A&E" className="h-8 md:h-9 w-auto object-contain" loading="lazy" />
+            <img src={logoHulu} alt="Hulu" className="h-6 md:h-7 w-auto object-contain" loading="lazy" />
+            <img src={logoHGTV} alt="HGTV" className="h-7 md:h-8 w-auto object-contain" loading="lazy" />
+            <img src={logoTampaBay} alt="Tampa Bay Times (formerly St. Petersburg Times)" className="h-6 md:h-7 w-auto object-contain" loading="lazy" />
+            <img src={logoInc} alt="Inc. Magazine" className="h-8 md:h-10 w-auto object-contain" loading="lazy" />
           </div>
         </div>
       </section>
