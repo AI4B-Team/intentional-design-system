@@ -91,7 +91,8 @@ async function createGHLContact(
 
   if (!response.ok) {
     const error = await response.text();
-    throw new Error(`Failed to create GHL contact: ${error}`);
+    console.error("GHL create contact failed:", response.status, error);
+    throw new Error("Failed to create GHL contact");
   }
 
   const result = await response.json();

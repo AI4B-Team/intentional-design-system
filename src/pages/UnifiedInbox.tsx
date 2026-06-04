@@ -1,4 +1,5 @@
 import * as React from "react";
+import DOMPurify from "dompurify";
 import { useNavigate } from "react-router-dom";
 import { PageLayout, PageHeader } from "@/components/layout";
 import { Card } from "@/components/ui/card";
@@ -324,7 +325,12 @@ function MessageDetail({
           {message.body_html ? (
             <div
               className="prose prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: message.body_html }}
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(message.body_html, {
+                  ALLOWED_TAGS: ['p','br','strong','em','a','ul','ol','li','blockquote','h1','h2','h3','h4','span','div','img','table','tr','td','th','thead','tbody','hr'],
+                  ALLOWED_ATTR: ['href','src','alt','title','style','target','rel'],
+                }),
+              }}
             />
           ) : (
             <div className="whitespace-pre-wrap text-body">{message.body}</div>

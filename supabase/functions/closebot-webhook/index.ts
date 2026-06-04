@@ -93,7 +93,8 @@ Deno.serve(async (req) => {
       .single();
 
     if (convError) {
-      throw new Error(`Failed to create conversation: ${convError.message}`);
+      console.error("Closebot create conversation failed:", convError);
+      throw new Error("Failed to create conversation");
     }
 
     // If property_id provided, update property with collected data
