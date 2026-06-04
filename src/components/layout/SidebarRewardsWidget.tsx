@@ -28,12 +28,12 @@ export function SidebarRewardsWidget({ collapsed, onMobileClose }: SidebarReward
             <NavLink
               to="/setup"
               onClick={onMobileClose}
-              className="flex items-center justify-center h-10 w-full rounded-lg bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/20 hover:border-amber-500/40 transition-all"
+              className="flex items-center justify-center h-10 w-full rounded-lg bg-white/[0.02] border border-white/10 hover:border-primary/40 transition-all"
             >
               <div className="relative">
-                <Trophy className="h-5 w-5 text-amber-400" />
+                <Trophy className="h-5 w-5 text-primary" />
                 {!isComplete && (
-                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-amber-400 text-[8px] font-bold text-slate-900 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary text-[8px] font-bold text-white flex items-center justify-center">
                     {Math.round(progress)}
                   </span>
                 )}
@@ -54,23 +54,31 @@ export function SidebarRewardsWidget({ collapsed, onMobileClose }: SidebarReward
       <NavLink
         to="/setup"
         onClick={onMobileClose}
-        className="block rounded-xl bg-gradient-to-br from-amber-500/15 via-amber-600/10 to-transparent border border-amber-500/20 hover:border-amber-500/40 transition-all p-3 group"
+        className="block rounded-xl bg-white/[0.02] border border-white/10 hover:border-primary/40 transition-all p-3 group"
       >
-        <div className="flex items-center gap-2 mb-2">
-          <div className="h-7 w-7 rounded-lg bg-amber-500/20 flex items-center justify-center">
-            <Trophy className="h-4 w-4 text-amber-400" />
-          </div>
+        <div className="flex items-center gap-2 mb-2.5">
+          <Trophy className="h-4 w-4 text-primary flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-foreground truncate">
-              {isComplete ? "Setup Complete! 🎉" : "Complete Setup"}
-            </p>
-            <p className="text-[10px] text-amber-700 dark:text-amber-400/80 font-medium tabular-nums">
-              {earnedPoints} / {totalPoints} XP
+            <p className="text-xs font-semibold text-white truncate">
+              {isComplete ? "Setup Complete" : "Complete Setup"}
             </p>
           </div>
-          <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-amber-400 transition-colors" />
+          <ChevronRight className="h-3.5 w-3.5 text-white/40 group-hover:text-primary transition-colors" />
         </div>
-        <Progress value={progress} className="h-1.5 bg-foreground/10" />
+        <div className="flex items-center justify-between mb-1.5">
+          <span className="text-[10px] text-white/50 tabular-nums">
+            {earnedPoints} / {totalPoints} XP
+          </span>
+          <span className="text-[10px] text-white/50 tabular-nums">
+            {Math.round(progress)}%
+          </span>
+        </div>
+        <div className="h-1 w-full rounded-full bg-white/5 overflow-hidden">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </NavLink>
     </div>
   );
