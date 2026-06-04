@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 // Singleton loader for the Google Maps JavaScript API.
 // Uses the Lovable-managed browser key + tracking ID injected via Vite env vars
 // by the Google Maps Platform connector.
