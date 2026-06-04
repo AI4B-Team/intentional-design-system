@@ -583,18 +583,25 @@ export default function Landing() {
             {[
               { name: "Starter", price: "$97", per: "/mo", desc: "Solo Investors Getting Started", highlights: ["1 User", "1 Phone Line", "5,000 Skip Traces/mo", "Full AI Suite", "Unlimited Properties", "Offer Blaster"] },
               { name: "Pro", price: "$197", per: "/mo", desc: "Teams Doing 3+ Deals/Month", highlights: ["5 Users", "3 Phone Lines", "25,000 Skip Traces/mo", "Full AI Suite", "Auto-Offer Engine", "Priority Support"], popular: true },
-              { name: "Elite", price: "$497", per: "/mo", desc: "High-Volume Operations", highlights: ["Unlimited Users", "10 Phone Lines", "100,000 Skip Traces/mo", "White-Label Websites", "Dedicated Account Manager", "Custom Integrations"] },
+              { name: "Elite", price: "$497", per: "/mo", desc: "High-Volume Operations", highlights: ["Unlimited Users", "10 Phone Lines", "100,000 Skip Traces/mo", "Full Autonomous AI Agent", "White-Label Websites", "Dedicated Account Manager", "Custom Integrations"], autonomous: true },
             ].map((plan, i) => (
               <div
                 key={plan.name}
                 className={cn(
                   "bg-card border rounded-2xl p-6 text-left relative",
-                  plan.popular ? "border-primary shadow-lg shadow-primary/10 ring-1 ring-primary" : "border-border"
+                  plan.popular && "border-primary shadow-lg shadow-primary/10 ring-1 ring-primary",
+                  plan.autonomous && "border-accent shadow-lg shadow-accent/10 ring-1 ring-accent",
+                  !plan.popular && !plan.autonomous && "border-border"
                 )}
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full">
                     Most Popular
+                  </div>
+                )}
+                {plan.autonomous && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                    Full Autonomous AI
                   </div>
                 )}
                 <h3 className="text-lg font-bold mb-1">{plan.name}</h3>
@@ -606,14 +613,19 @@ export default function Landing() {
                 <ul className="space-y-3 mb-8">
                   {plan.highlights.map(h => (
                     <li key={h} className="flex items-center gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                      <CheckCircle2 className={cn("h-4 w-4 shrink-0", plan.autonomous ? "text-accent" : "text-primary")} />
                       {h}
                     </li>
                   ))}
                 </ul>
                 <Button
                   onClick={goSignup}
-                  className={cn("w-full rounded-xl", plan.popular ? "bg-primary text-primary-foreground hover:bg-accent-hover" : "bg-muted text-foreground hover:bg-muted/80")}
+                  className={cn(
+                    "w-full rounded-xl",
+                    plan.popular && "bg-primary text-primary-foreground hover:bg-accent-hover",
+                    plan.autonomous && "bg-accent text-accent-foreground hover:bg-accent/90",
+                    !plan.popular && !plan.autonomous && "bg-muted text-foreground hover:bg-muted/80"
+                  )}
                 >
                   Start Free Trial
                 </Button>
