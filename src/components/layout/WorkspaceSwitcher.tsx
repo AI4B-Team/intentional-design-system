@@ -99,8 +99,11 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         <PopoverTrigger asChild>
           <button
             className={cn(
-              "flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors",
-              "bg-transparent hover:bg-white/10 text-white border border-white"
+              "flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-all",
+              "bg-white/[0.02] text-white border border-white/10",
+              "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)]",
+              "hover:bg-white/[0.04] hover:border-primary/40",
+              open && "border-primary/50 bg-white/[0.04]"
             )}
           >
             <span className="font-medium truncate">{activeWorkspace.name}</span>
