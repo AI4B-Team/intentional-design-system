@@ -1,4 +1,5 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PageLayout } from '@/components/layout/page-layout';
 import { Button } from '@/components/ui/button';
