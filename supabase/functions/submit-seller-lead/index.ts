@@ -165,7 +165,12 @@ serve(async (req) => {
 
     if (leadError) {
       console.error('Lead insert error:', leadError)
-      throw leadError
+      return new Response(JSON.stringify({
+        error: 'Unable to process submission. Please try again.'
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
 
     console.log('Lead created:', lead.id)

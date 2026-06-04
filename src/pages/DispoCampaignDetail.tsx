@@ -232,7 +232,12 @@ export default function DispoCampaignDetail() {
               <p className="text-sm text-muted-foreground mb-2">Body</p>
               <div
                 className="p-4 border rounded-lg bg-card prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: campaign.body_html }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(campaign.body_html || "", {
+                    ALLOWED_TAGS: ['p','br','strong','em','a','ul','ol','li','blockquote','h1','h2','h3','h4','span','div','img','table','tr','td','th','thead','tbody','hr'],
+                    ALLOWED_ATTR: ['href','src','alt','title','style','target','rel'],
+                  }),
+                }}
               />
             </div>
           </CardContent>

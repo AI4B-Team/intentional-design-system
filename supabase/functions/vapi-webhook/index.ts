@@ -12,6 +12,22 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Verify shared secret to prevent forged webhooks
+  const VAPI_WEBHOOK_SECRET = Deno.env.get("VAPI_WEBHOOK_SECRET");
+  const providedSecret =
+    req.headers.get("x-vapi-secret") ||
+    req.headers.get("x-vapi-signature") ||
+    req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  if (!VAPI_WEBHOOK_SECRET || !providedSecret || providedSecret !== VAPI_WEBHOOK_SECRET) {
+    console.warn("vapi-webhook: missing or invalid webhook secret");
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+
+
   try {
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,

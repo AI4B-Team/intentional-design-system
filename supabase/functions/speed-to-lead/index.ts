@@ -12,6 +12,34 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Authenticate caller: accept either a valid user JWT or the internal shared secret
+  const SPEED_TO_LEAD_SECRET = Deno.env.get("SPEED_TO_LEAD_SECRET");
+  const authHeader = req.headers.get("authorization") || "";
+  const internalSecret = req.headers.get("x-internal-secret");
+  let isAuthorized = false;
+  if (SPEED_TO_LEAD_SECRET && internalSecret && internalSecret === SPEED_TO_LEAD_SECRET) {
+    isAuthorized = true;
+  } else if (authHeader.toLowerCase().startsWith("bearer ")) {
+    try {
+      const authClient = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      const { data: { user } } = await authClient.auth.getUser(
+        authHeader.replace(/^Bearer\s+/i, "")
+      );
+      if (user) isAuthorized = true;
+    } catch (_) { /* fall through */ }
+  }
+  if (!isAuthorized) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+
+
   try {
     const VAPI_API_KEY = Deno.env.get("VAPI_API_KEY");
     if (!VAPI_API_KEY) {
