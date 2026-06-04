@@ -22,11 +22,11 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       >
         {/* Ambient glow top-left */}
         <div className="absolute top-0 left-0 w-96 h-96 rounded-full opacity-20 pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(158 78% 36%) 0%, transparent 70%)", transform: "translate(-30%, -30%)" }}
+          style={{ background: "radial-gradient(circle, hsl(0 78% 48%) 0%, transparent 70%)", transform: "translate(-30%, -30%)" }}
         />
         {/* Ambient glow bottom-right */}
         <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full opacity-10 pointer-events-none"
-          style={{ background: "radial-gradient(circle, hsl(217 91% 60%) 0%, transparent 70%)", transform: "translate(30%, 30%)" }}
+          style={{ background: "radial-gradient(circle, hsl(0 78% 48%) 0%, transparent 70%)", transform: "translate(30%, 30%)" }}
         />
 
         {/* Logo */}
@@ -36,7 +36,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         {/* Main Content */}
         <div className="relative max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium mb-6">
             <Zap className="h-4 w-4" />
             AI-Powered Deal Intelligence
           </div>
@@ -45,7 +45,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             style={{ letterSpacing: "-0.03em" }}
           >
             Close More Deals.<br />
-            <span className="bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-red-400 bg-clip-text text-transparent">
               Move Faster.
             </span>
           </h1>
@@ -60,7 +60,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             {features.map((feature) => (
               <div key={feature.title} className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="h-4 w-4 text-emerald-400" />
+                  <feature.icon className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <span className="text-white/90 text-sm font-medium">{feature.title}</span>
