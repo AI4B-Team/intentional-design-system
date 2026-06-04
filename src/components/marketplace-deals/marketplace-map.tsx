@@ -16,6 +16,7 @@ import { D4DScanPanel } from "./D4DScanPanel";
 import { D4DScanOverlay } from "./D4DScanOverlay";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useD4DScan } from "@/contexts/D4DScanContext";
+import { StreetViewPanel } from "./StreetViewPanel";
 
 interface AnalysisResult {
   propertyCount: number;
@@ -161,6 +162,9 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
   // D4D Scan states — persisted in context so results survive tab switches
   const { scanActive, setScanActive, scanLoading, setScanLoading, scanProperties, setScanProperties, scanPanelExpanded, setScanPanelExpanded, clearScan } = useD4DScan();
   const scanMarkersRef = useRef<any[]>([]);
+
+  // Street View state
+  const [streetView, setStreetView] = useState<{ lat: number; lng: number; address: string } | null>(null);
 
   const loadedRef = useRef(false);
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -320,17 +324,41 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
       });
 
       const marker = L.marker([deal.lat, deal.lng], { icon: priceIcon }).addTo(map);
-      
+      const fullAddress = `${deal.address}, ${deal.city}, ${deal.state} ${deal.zip}`;
+
       marker.bindPopup(`
-        <div class="p-2 min-w-[200px]">
+        <div class="p-2 min-w-[220px]">
           <img src="${deal.imageUrl}" alt="${deal.address}" class="w-full h-24 object-cover rounded-md mb-2" />
           <p class="font-semibold text-sm">${deal.address}</p>
           <p class="text-xs text-gray-500">${deal.city}, ${deal.state} ${deal.zip}</p>
           <p class="text-lg font-bold text-emerald-600 mt-1">$${deal.price.toLocaleString()}</p>
-          <p class="text-xs text-gray-500">${deal.beds} bd | ${deal.baths} ba | ${deal.sqft.toLocaleString()} sqft</p>
+          <p class="text-xs text-gray-500 mb-2">${deal.beds} bd | ${deal.baths} ba | ${deal.sqft.toLocaleString()} sqft</p>
+          <button
+            data-street-view
+            data-lat="${deal.lat}"
+            data-lng="${deal.lng}"
+            data-address="${fullAddress.replace(/"/g, '&quot;')}"
+            class="w-full text-xs font-medium px-2 py-1.5 rounded-md bg-primary text-primary-foreground hover:opacity-90 transition flex items-center justify-center gap-1.5"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            Street View
+          </button>
         </div>
       `);
-      
+
+      marker.on("popupopen", (e: any) => {
+        const node: HTMLElement | undefined = e.popup?.getElement?.();
+        const btn = node?.querySelector<HTMLButtonElement>("button[data-street-view]");
+        if (!btn) return;
+        btn.onclick = () => {
+          setStreetView({
+            lat: parseFloat(btn.dataset.lat!),
+            lng: parseFloat(btn.dataset.lng!),
+            address: btn.dataset.address || "",
+          });
+        };
+      });
+
       markersRef.current.push(marker);
     });
   }, [filteredDeals, isReady]);
@@ -983,6 +1011,15 @@ export function MarketplaceMap({ deals, searchLocation, onSearch }: MarketplaceM
         onRescan={handleScan}
       />
     )}
+
+    {/* Street View Panel */}
+    <StreetViewPanel
+      open={streetView !== null}
+      lat={streetView?.lat ?? null}
+      lng={streetView?.lng ?? null}
+      address={streetView?.address}
+      onClose={() => setStreetView(null)}
+    />
     </div>
   );
 }
