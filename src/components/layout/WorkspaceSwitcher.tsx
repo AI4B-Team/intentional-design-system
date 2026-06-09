@@ -100,7 +100,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
           <button
             className={cn(
               "flex items-center justify-between w-full px-3 py-2.5 rounded-lg transition-colors",
-              "bg-transparent hover:bg-white/10 text-white border border-white"
+              "bg-brand-accent hover:bg-brand-accent/80 text-white"
             )}
           >
             <span className="font-medium truncate">{activeWorkspace.name}</span>
