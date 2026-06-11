@@ -1,12 +1,62 @@
 project_id = "iaenzywwyiaccnnpdqzt"
 
-[functions.ai-stage-room]
+# ============================================================================
+# Edge function JWT verification policy
+# ----------------------------------------------------------------------------
+# verify_jwt = false : public/external callers — must do their own auth in code
+# verify_jwt = true  : invoked from the authenticated web app (Supabase client)
+# ============================================================================
+
+# --- Public / external webhook endpoints (verify_jwt = false) ---------------
+
+[functions.submit-seller-lead]
+verify_jwt = false  # Public seller lead capture form on hosted seller websites
+
+[functions.speed-to-lead]
+verify_jwt = false  # Internal trigger from submit-seller-lead + cron processor (validates x-internal-secret or service-role bearer)
+
+[functions.process-scheduled-calls]
+verify_jwt = false  # pg_cron HTTP trigger; validates x-internal-secret in code
+
+[functions.vapi-webhook]
+verify_jwt = false  # Inbound from Vapi (validates x-vapi-secret in code)
+
+[functions.closebot-webhook]
+verify_jwt = false  # Inbound from Closebot
+
+[functions.twilio-webhook]
+verify_jwt = false  # Inbound from Twilio call status webhooks
+
+[functions.twilio-recording]
+verify_jwt = false  # Inbound from Twilio recording-status webhooks
+
+[functions.twilio-twiml]
+verify_jwt = false  # TwiML response endpoint hit by Twilio voice service
+
+[functions.lob-webhook]
+verify_jwt = false  # Inbound from Lob direct mail status webhooks
+
+# --- Authenticated app endpoints (verify_jwt = true) ------------------------
+
+[functions.agent-detect]
 verify_jwt = true
 
-[functions.ai-material-swap]
+[functions.agent-grade]
 verify_jwt = true
 
-[functions.process-list-upload]
+[functions.agent-oversight]
+verify_jwt = true
+
+[functions.agent-validate]
+verify_jwt = true
+
+[functions.ai-appointment-prep]
+verify_jwt = true
+
+[functions.ai-deal-analyzer]
+verify_jwt = true
+
+[functions.ai-deal-intelligence]
 verify_jwt = true
 
 [functions.ai-deal-suggestions]
@@ -15,26 +65,89 @@ verify_jwt = true
 [functions.ai-inbox-analysis]
 verify_jwt = true
 
-[functions.generate-buyer-message]
+[functions.ai-logo-generator]
 verify_jwt = true
 
-[functions.dialer-copilot]
+[functions.ai-market-analyzer]
 verify_jwt = true
 
-[functions.ai-website-writer]
+[functions.ai-material-swap]
 verify_jwt = true
 
-[functions.transcribe-audio]
+[functions.ai-negotiation]
+verify_jwt = true
+
+[functions.ai-offer-insights]
 verify_jwt = true
 
 [functions.ai-property-analysis]
 verify_jwt = true
 
-[functions.vapi-webhook]
-verify_jwt = false
+[functions.ai-property-intelligence]
+verify_jwt = true
+
+[functions.ai-stage-room]
+verify_jwt = true
+
+[functions.ai-website-writer]
+verify_jwt = true
+
+[functions.aiva-chat]
+verify_jwt = true
+
+[functions.attom-api]
+verify_jwt = true
+
+[functions.auto-campaign-trigger]
+verify_jwt = true
+
+[functions.auto-offer-engine]
+verify_jwt = true
+
+[functions.dialer-copilot]
+verify_jwt = true
+
+[functions.end-call]
+verify_jwt = true
+
+[functions.generate-buyer-message]
+verify_jwt = true
+
+[functions.ghl-sync]
+verify_jwt = true  # Invoked from the app to push records into GoHighLevel
+
+[functions.lob-api]
+verify_jwt = true
+
+[functions.lob-send-campaign]
+verify_jwt = true
+
+[functions.make-call]
+verify_jwt = true
+
+[functions.process-list-upload]
+verify_jwt = true
+
+[functions.scrape-listings]
+verify_jwt = true  # Called from app; validates auth.getClaims internally
+
+[functions.skip-trace]
+verify_jwt = true
+
+[functions.stack-lists]
+verify_jwt = true
+
+[functions.transcribe-audio]
+verify_jwt = true
+
+[functions.transfer-call]
+verify_jwt = true
+
+[functions.twilio-token]
+verify_jwt = true  # App requests a Twilio access token for the browser dialer
 
 [functions.vapi-create-assistant]
 verify_jwt = true
 
-[functions.speed-to-lead]
-verify_jwt = false
+[functions.virtual-staging]
+verify_jwt = true
