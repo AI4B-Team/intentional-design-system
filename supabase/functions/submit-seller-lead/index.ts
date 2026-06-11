@@ -482,6 +482,23 @@ async function sendOwnerNotification(website: any, lead: any) {
   }
   const conditionLabel = conditionLabels[lead.property_condition as string] || 'Not specified'
 
+  // Escape all lead-supplied values before HTML interpolation
+  const eWebsiteName = escapeHtml(website.name)
+  const eFullName = escapeHtml(lead.full_name || lead.first_name || 'Not provided')
+  const ePhone = escapeHtml(lead.phone)
+  const ePhoneAttr = escapeAttr(lead.phone)
+  const eEmail = escapeHtml(lead.email)
+  const eEmailAttr = escapeAttr(lead.email)
+  const eAddress = escapeHtml(lead.property_address)
+  const eLocation = escapeHtml(
+    [lead.property_city, lead.property_state, lead.property_zip].filter(Boolean).join(', '),
+  )
+  const eCondition = escapeHtml(conditionLabel)
+  const eTimeline = escapeHtml(timelineLabel)
+  const eReason = escapeHtml(lead.reason_selling || 'Not specified')
+  const eNotes = escapeHtml(lead.notes)
+  const eSubjectAddress = escapeHtml(lead.property_address)
+
   const html = `
 <!DOCTYPE html>
 <html>
@@ -510,39 +527,39 @@ async function sendOwnerNotification(website: any, lead: any) {
   <div class="container">
     <div class="header">
       <h1 style="margin: 0;">🏠 New Lead!</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">${website.name}</p>
-      <div class="score-badge">${scoreEmoji} Score: ${lead.auto_score}/1000</div>
+      <p style="margin: 5px 0 0 0; opacity: 0.9;">${eWebsiteName}</p>
+      <div class="score-badge">${scoreEmoji} Score: ${Number(lead.auto_score) || 0}/1000</div>
     </div>
     <div class="content">
       <div class="section">
         <div class="section-title">Contact Information</div>
         <div class="contact-grid">
           <div class="contact-item">
-            👤 <strong>${lead.full_name || lead.first_name || 'Not provided'}</strong>
+            👤 <strong>${eFullName}</strong>
           </div>
-          ${lead.phone ? `<div class="contact-item">📞 <a href="tel:${lead.phone}">${lead.phone}</a></div>` : ''}
-          ${lead.email ? `<div class="contact-item">✉️ <a href="mailto:${lead.email}">${lead.email}</a></div>` : ''}
+          ${lead.phone ? `<div class="contact-item">📞 <a href="tel:${ePhoneAttr}">${ePhone}</a></div>` : ''}
+          ${lead.email ? `<div class="contact-item">✉️ <a href="mailto:${eEmailAttr}">${eEmail}</a></div>` : ''}
         </div>
       </div>
-      
+
       <div class="section">
         <div class="section-title">Property Details</div>
-        <div class="property-address">${lead.property_address}</div>
+        <div class="property-address">${eAddress}</div>
         <div style="color: #6b7280; margin-top: 5px;">
-          ${[lead.property_city, lead.property_state, lead.property_zip].filter(Boolean).join(', ')}
+          ${eLocation}
         </div>
         <div style="margin-top: 15px;">
           <div class="detail-row">
             <span class="detail-label">Condition</span>
-            <span class="detail-value">${conditionLabel}</span>
+            <span class="detail-value">${eCondition}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Timeline</span>
-            <span class="detail-value">${timelineLabel}</span>
+            <span class="detail-value">${eTimeline}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Reason</span>
-            <span class="detail-value">${lead.reason_selling || 'Not specified'}</span>
+            <span class="detail-value">${eReason}</span>
           </div>
         </div>
       </div>
@@ -550,17 +567,22 @@ async function sendOwnerNotification(website: any, lead: any) {
       ${lead.notes ? `
       <div class="notes">
         <div class="section-title">📝 Notes from Seller</div>
-        <p style="margin: 0;">${lead.notes}</p>
+        <p style="margin: 0;">${eNotes}</p>
       </div>
       ` : ''}
 
       ${lead.phone ? `
-      <a href="tel:${lead.phone}" class="cta-button">📞 Call Now: ${lead.phone}</a>
+      <a href="tel:${ePhoneAttr}" class="cta-button">📞 Call Now: ${ePhone}</a>
       ` : ''}
     </div>
   </div>
 </body>
 </html>`
+
+  console.warn(
+    'sendOwnerNotification: sending from noreply@resend.dev — production should use a verified Resend domain ' +
+      'to ensure delivery to arbitrary owner email addresses.',
+  )
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -571,7 +593,7 @@ async function sendOwnerNotification(website: any, lead: any) {
     body: JSON.stringify({
       from: `Lead Alerts <noreply@resend.dev>`,
       to: [website.lead_notification_email],
-      subject: `${scoreEmoji} New Lead: ${lead.property_address}`,
+      subject: `${scoreEmoji} New Lead: ${eSubjectAddress}`,
       html
     })
   })
