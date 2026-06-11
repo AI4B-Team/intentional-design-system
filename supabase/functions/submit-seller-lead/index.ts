@@ -228,13 +228,11 @@ serve(async (req) => {
       }
     }
 
-    // Trigger Speed-to-Lead AI call if phone is available
+    // Trigger Speed-to-Lead AI call if phone is available.
+    // We enqueue a durable row in scheduled_ai_calls instead of using setTimeout,
+    // because Deno isolates terminate after the response returns.
     if (formattedPhone && website.organization_id) {
       try {
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!
-        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-        
-        // Check if AI agent is configured and speed-to-lead is enabled
         const { data: agentConfig } = await supabase
           .from('voice_agent_config')
           .select('is_active, speed_to_lead_enabled, speed_to_lead_delay_seconds')
@@ -242,30 +240,27 @@ serve(async (req) => {
           .single()
 
         if (agentConfig?.is_active && agentConfig?.speed_to_lead_enabled) {
-          const delayMs = (agentConfig.speed_to_lead_delay_seconds || 60) * 1000
-          
-          // Trigger the speed-to-lead call after the configured delay
-          setTimeout(async () => {
-            try {
-              await fetch(`${supabaseUrl}/functions/v1/speed-to-lead`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${serviceKey}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  phone_number: formattedPhone,
-                  contact_name: lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
-                  property_address: sanitizedAddress,
-                  organization_id: website.organization_id,
-                  user_id: website.user_id,
-                }),
-              })
-              console.log('Speed-to-lead AI call triggered')
-            } catch (stlError) {
-              console.error('Speed-to-lead trigger failed:', stlError)
-            }
-          }, delayMs)
+          const delaySec = agentConfig.speed_to_lead_delay_seconds || 60
+          const callAfter = new Date(Date.now() + delaySec * 1000).toISOString()
+
+          const { error: enqueueError } = await supabase
+            .from('scheduled_ai_calls')
+            .insert({
+              organization_id: website.organization_id,
+              user_id: website.user_id,
+              phone_number: formattedPhone,
+              contact_name:
+                lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || null,
+              property_address: sanitizedAddress,
+              call_after: callAfter,
+              status: 'pending',
+            })
+
+          if (enqueueError) {
+            console.error('Speed-to-lead enqueue failed:', enqueueError)
+          } else {
+            console.log(`Speed-to-lead call queued for ${callAfter}`)
+          }
         }
       } catch (stlCheckError) {
         console.error('Speed-to-lead config check failed:', stlCheckError)
@@ -301,6 +296,23 @@ function formatPhone(phone: string | null | undefined): string | null {
   return phone
 }
 
+// Escape user-supplied values before interpolating into HTML email templates.
+function escapeHtml(value: unknown): string {
+  if (value === null || value === undefined) return ''
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Sanitize a value for use inside an HTML attribute (tel:, mailto:, href).
+function escapeAttr(value: unknown): string {
+  return escapeHtml(value)
+}
+
+
 async function sendAutoEmail(website: any, lead: any) {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
   if (!RESEND_API_KEY) {
@@ -321,6 +333,17 @@ ${website.company_phone ? `If you have any questions in the meantime, feel free 
 Thank you,
 ${website.company_name}`
 
+  // Escape user/website-supplied values for HTML interpolation
+  const eFirstName = escapeHtml(firstName)
+  const eCompanyName = escapeHtml(website.company_name)
+  const eCompanyPhone = escapeHtml(website.company_phone)
+  const eAddress = escapeHtml(lead.property_address)
+  const eCity = escapeHtml(lead.property_city)
+  const eState = escapeHtml(lead.property_state)
+  const eZip = escapeHtml(lead.property_zip)
+  const ePrimary = escapeAttr(website.primary_color || '#2563EB')
+  const eAccent = escapeAttr(website.accent_color || '#10B981')
+
   const html = `
 <!DOCTYPE html>
 <html>
@@ -328,10 +351,10 @@ ${website.company_name}`
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: ${website.primary_color || '#2563EB'}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .header { background: ${ePrimary}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
     .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-    .property { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${website.accent_color || '#10B981'}; }
-    .cta { display: inline-block; background: ${website.accent_color || '#10B981'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
+    .property { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${eAccent}; }
+    .cta { display: inline-block; background: ${eAccent}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
     .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 20px; }
   </style>
 </head>
@@ -341,24 +364,32 @@ ${website.company_name}`
       <h1>Thank You!</h1>
     </div>
     <div class="content">
-      <p>Hi ${firstName},</p>
+      <p>Hi ${eFirstName},</p>
       <p>We've received your information about your property:</p>
       <div class="property">
-        <strong>${lead.property_address}</strong><br>
-        ${lead.property_city ? `${lead.property_city}, ` : ''}${lead.property_state || ''} ${lead.property_zip || ''}
+        <strong>${eAddress}</strong><br>
+        ${eCity ? `${eCity}, ` : ''}${eState} ${eZip}
       </div>
       <p>One of our team members will contact you <strong>within 24 hours</strong> to discuss your situation and provide you with a no-obligation cash offer.</p>
       ${website.company_phone ? `
       <p>Have questions? Call us anytime:</p>
-      <a href="tel:${website.company_phone}" class="cta">📞 ${website.company_phone}</a>
+      <a href="tel:${escapeAttr(website.company_phone)}" class="cta">📞 ${eCompanyPhone}</a>
       ` : ''}
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} ${website.company_name}. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} ${eCompanyName}. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>`
+
+  const hasVerifiedFromDomain = Boolean(website.company_email)
+  if (!hasVerifiedFromDomain) {
+    console.warn(
+      'sendAutoEmail: falling back to noreply@resend.dev — this only delivers to addresses verified in the Resend account. ' +
+        'Configure a verified sending domain in Resend and set website.company_email for production deliverability.',
+    )
+  }
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -367,7 +398,9 @@ ${website.company_name}`
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: website.company_email ? `${website.company_name} <${website.company_email}>` : `${website.company_name} <noreply@resend.dev>`,
+      from: hasVerifiedFromDomain
+        ? `${website.company_name} <${website.company_email}>`
+        : `${website.company_name} <noreply@resend.dev>`,
       to: [lead.email],
       subject,
       text: body,
@@ -449,6 +482,23 @@ async function sendOwnerNotification(website: any, lead: any) {
   }
   const conditionLabel = conditionLabels[lead.property_condition as string] || 'Not specified'
 
+  // Escape all lead-supplied values before HTML interpolation
+  const eWebsiteName = escapeHtml(website.name)
+  const eFullName = escapeHtml(lead.full_name || lead.first_name || 'Not provided')
+  const ePhone = escapeHtml(lead.phone)
+  const ePhoneAttr = escapeAttr(lead.phone)
+  const eEmail = escapeHtml(lead.email)
+  const eEmailAttr = escapeAttr(lead.email)
+  const eAddress = escapeHtml(lead.property_address)
+  const eLocation = escapeHtml(
+    [lead.property_city, lead.property_state, lead.property_zip].filter(Boolean).join(', '),
+  )
+  const eCondition = escapeHtml(conditionLabel)
+  const eTimeline = escapeHtml(timelineLabel)
+  const eReason = escapeHtml(lead.reason_selling || 'Not specified')
+  const eNotes = escapeHtml(lead.notes)
+  const eSubjectAddress = escapeHtml(lead.property_address)
+
   const html = `
 <!DOCTYPE html>
 <html>
@@ -477,39 +527,39 @@ async function sendOwnerNotification(website: any, lead: any) {
   <div class="container">
     <div class="header">
       <h1 style="margin: 0;">🏠 New Lead!</h1>
-      <p style="margin: 5px 0 0 0; opacity: 0.9;">${website.name}</p>
-      <div class="score-badge">${scoreEmoji} Score: ${lead.auto_score}/1000</div>
+      <p style="margin: 5px 0 0 0; opacity: 0.9;">${eWebsiteName}</p>
+      <div class="score-badge">${scoreEmoji} Score: ${Number(lead.auto_score) || 0}/1000</div>
     </div>
     <div class="content">
       <div class="section">
         <div class="section-title">Contact Information</div>
         <div class="contact-grid">
           <div class="contact-item">
-            👤 <strong>${lead.full_name || lead.first_name || 'Not provided'}</strong>
+            👤 <strong>${eFullName}</strong>
           </div>
-          ${lead.phone ? `<div class="contact-item">📞 <a href="tel:${lead.phone}">${lead.phone}</a></div>` : ''}
-          ${lead.email ? `<div class="contact-item">✉️ <a href="mailto:${lead.email}">${lead.email}</a></div>` : ''}
+          ${lead.phone ? `<div class="contact-item">📞 <a href="tel:${ePhoneAttr}">${ePhone}</a></div>` : ''}
+          ${lead.email ? `<div class="contact-item">✉️ <a href="mailto:${eEmailAttr}">${eEmail}</a></div>` : ''}
         </div>
       </div>
-      
+
       <div class="section">
         <div class="section-title">Property Details</div>
-        <div class="property-address">${lead.property_address}</div>
+        <div class="property-address">${eAddress}</div>
         <div style="color: #6b7280; margin-top: 5px;">
-          ${[lead.property_city, lead.property_state, lead.property_zip].filter(Boolean).join(', ')}
+          ${eLocation}
         </div>
         <div style="margin-top: 15px;">
           <div class="detail-row">
             <span class="detail-label">Condition</span>
-            <span class="detail-value">${conditionLabel}</span>
+            <span class="detail-value">${eCondition}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Timeline</span>
-            <span class="detail-value">${timelineLabel}</span>
+            <span class="detail-value">${eTimeline}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Reason</span>
-            <span class="detail-value">${lead.reason_selling || 'Not specified'}</span>
+            <span class="detail-value">${eReason}</span>
           </div>
         </div>
       </div>
@@ -517,17 +567,22 @@ async function sendOwnerNotification(website: any, lead: any) {
       ${lead.notes ? `
       <div class="notes">
         <div class="section-title">📝 Notes from Seller</div>
-        <p style="margin: 0;">${lead.notes}</p>
+        <p style="margin: 0;">${eNotes}</p>
       </div>
       ` : ''}
 
       ${lead.phone ? `
-      <a href="tel:${lead.phone}" class="cta-button">📞 Call Now: ${lead.phone}</a>
+      <a href="tel:${ePhoneAttr}" class="cta-button">📞 Call Now: ${ePhone}</a>
       ` : ''}
     </div>
   </div>
 </body>
 </html>`
+
+  console.warn(
+    'sendOwnerNotification: sending from noreply@resend.dev — production should use a verified Resend domain ' +
+      'to ensure delivery to arbitrary owner email addresses.',
+  )
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -538,7 +593,7 @@ async function sendOwnerNotification(website: any, lead: any) {
     body: JSON.stringify({
       from: `Lead Alerts <noreply@resend.dev>`,
       to: [website.lead_notification_email],
-      subject: `${scoreEmoji} New Lead: ${lead.property_address}`,
+      subject: `${scoreEmoji} New Lead: ${eSubjectAddress}`,
       html
     })
   })
