@@ -1,35 +1,47 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { validateTwilioSignature } from '../_shared/webhook-signatures.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-twilio-signature',
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN')
+  if (!TWILIO_AUTH_TOKEN) {
+    console.error('twilio-recording: TWILIO_AUTH_TOKEN env var is not set')
+    return new Response('Server not configured', { status: 503, headers: corsHeaders })
+  }
+
   try {
+    const formData = await req.formData()
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = value.toString() })
+
+    const signature = req.headers.get('x-twilio-signature')
+    const ok = await validateTwilioSignature({
+      authToken: TWILIO_AUTH_TOKEN,
+      url: req.url,
+      params,
+      signature,
+    })
+    if (!ok) {
+      console.warn('twilio-recording: invalid signature for', new URL(req.url).pathname)
+      return new Response('Forbidden', { status: 403, headers: corsHeaders })
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    // Parse form data from Twilio webhook
-    const formData = await req.formData()
-    const params: Record<string, string> = {}
-    formData.forEach((value, key) => {
-      params[key] = value.toString()
-    })
-
-    console.log('Recording webhook received:', params)
-
     const callSid = params.CallSid
     const recordingUrl = params.RecordingUrl
-    const recordingSid = params.RecordingSid
     const recordingDuration = parseInt(params.RecordingDuration || '0')
     const recordingStatus = params.RecordingStatus
 
@@ -37,7 +49,6 @@ serve(async (req) => {
       return new Response('Missing CallSid', { status: 400 })
     }
 
-    // Find call by Twilio SID
     const { data: call, error: findError } = await supabase
       .from('calls')
       .select('id')
@@ -54,13 +65,11 @@ serve(async (req) => {
       return new Response('OK', { status: 200 })
     }
 
-    // Update call with recording info
     const updates: Record<string, any> = {
       recording_status: recordingStatus,
       recording_duration_seconds: recordingDuration
     }
 
-    // Store the recording URL (add .mp3 for direct access)
     if (recordingUrl) {
       updates.recording_url = `${recordingUrl}.mp3`
     }
