@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+    "authorization, x-client-info, apikey, content-type, x-internal-secret, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -12,22 +12,37 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Authenticate caller: accept either a valid user JWT or the internal shared secret
+  // Authenticate caller. Accept any of:
+  //   1) x-internal-secret header matching SPEED_TO_LEAD_SECRET (preferred for server-to-server)
+  //   2) Authorization: Bearer <SUPABASE_SERVICE_ROLE_KEY> (legacy internal path)
+  //   3) Authorization: Bearer <user JWT> validated via Supabase auth
   const SPEED_TO_LEAD_SECRET = Deno.env.get("SPEED_TO_LEAD_SECRET");
+  const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const authHeader = req.headers.get("authorization") || "";
   const internalSecret = req.headers.get("x-internal-secret");
+  const bearer = authHeader.toLowerCase().startsWith("bearer ")
+    ? authHeader.replace(/^Bearer\s+/i, "")
+    : "";
+
+  const safeEqual = (a: string, b: string) => {
+    if (!a || !b || a.length !== b.length) return false;
+    let diff = 0;
+    for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    return diff === 0;
+  };
+
   let isAuthorized = false;
-  if (SPEED_TO_LEAD_SECRET && internalSecret && internalSecret === SPEED_TO_LEAD_SECRET) {
+  if (SPEED_TO_LEAD_SECRET && internalSecret && safeEqual(internalSecret, SPEED_TO_LEAD_SECRET)) {
     isAuthorized = true;
-  } else if (authHeader.toLowerCase().startsWith("bearer ")) {
+  } else if (bearer && safeEqual(bearer, SERVICE_ROLE_KEY)) {
+    isAuthorized = true;
+  } else if (bearer) {
     try {
       const authClient = createClient(
         Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+        SERVICE_ROLE_KEY,
       );
-      const { data: { user } } = await authClient.auth.getUser(
-        authHeader.replace(/^Bearer\s+/i, "")
-      );
+      const { data: { user } } = await authClient.auth.getUser(bearer);
       if (user) isAuthorized = true;
     } catch (_) { /* fall through */ }
   }
