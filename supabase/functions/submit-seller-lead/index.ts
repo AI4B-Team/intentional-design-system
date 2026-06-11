@@ -333,6 +333,17 @@ ${website.company_phone ? `If you have any questions in the meantime, feel free 
 Thank you,
 ${website.company_name}`
 
+  // Escape user/website-supplied values for HTML interpolation
+  const eFirstName = escapeHtml(firstName)
+  const eCompanyName = escapeHtml(website.company_name)
+  const eCompanyPhone = escapeHtml(website.company_phone)
+  const eAddress = escapeHtml(lead.property_address)
+  const eCity = escapeHtml(lead.property_city)
+  const eState = escapeHtml(lead.property_state)
+  const eZip = escapeHtml(lead.property_zip)
+  const ePrimary = escapeAttr(website.primary_color || '#2563EB')
+  const eAccent = escapeAttr(website.accent_color || '#10B981')
+
   const html = `
 <!DOCTYPE html>
 <html>
@@ -340,10 +351,10 @@ ${website.company_name}`
   <style>
     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: ${website.primary_color || '#2563EB'}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+    .header { background: ${ePrimary}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
     .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
-    .property { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${website.accent_color || '#10B981'}; }
-    .cta { display: inline-block; background: ${website.accent_color || '#10B981'}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
+    .property { background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid ${eAccent}; }
+    .cta { display: inline-block; background: ${eAccent}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 15px; }
     .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 20px; }
   </style>
 </head>
@@ -353,24 +364,32 @@ ${website.company_name}`
       <h1>Thank You!</h1>
     </div>
     <div class="content">
-      <p>Hi ${firstName},</p>
+      <p>Hi ${eFirstName},</p>
       <p>We've received your information about your property:</p>
       <div class="property">
-        <strong>${lead.property_address}</strong><br>
-        ${lead.property_city ? `${lead.property_city}, ` : ''}${lead.property_state || ''} ${lead.property_zip || ''}
+        <strong>${eAddress}</strong><br>
+        ${eCity ? `${eCity}, ` : ''}${eState} ${eZip}
       </div>
       <p>One of our team members will contact you <strong>within 24 hours</strong> to discuss your situation and provide you with a no-obligation cash offer.</p>
       ${website.company_phone ? `
       <p>Have questions? Call us anytime:</p>
-      <a href="tel:${website.company_phone}" class="cta">📞 ${website.company_phone}</a>
+      <a href="tel:${escapeAttr(website.company_phone)}" class="cta">📞 ${eCompanyPhone}</a>
       ` : ''}
     </div>
     <div class="footer">
-      <p>© ${new Date().getFullYear()} ${website.company_name}. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} ${eCompanyName}. All rights reserved.</p>
     </div>
   </div>
 </body>
 </html>`
+
+  const hasVerifiedFromDomain = Boolean(website.company_email)
+  if (!hasVerifiedFromDomain) {
+    console.warn(
+      'sendAutoEmail: falling back to noreply@resend.dev — this only delivers to addresses verified in the Resend account. ' +
+        'Configure a verified sending domain in Resend and set website.company_email for production deliverability.',
+    )
+  }
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -379,7 +398,9 @@ ${website.company_name}`
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: website.company_email ? `${website.company_name} <${website.company_email}>` : `${website.company_name} <noreply@resend.dev>`,
+      from: hasVerifiedFromDomain
+        ? `${website.company_name} <${website.company_email}>`
+        : `${website.company_name} <noreply@resend.dev>`,
       to: [lead.email],
       subject,
       text: body,
