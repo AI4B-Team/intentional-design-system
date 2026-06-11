@@ -25,16 +25,16 @@ verify_jwt = false  # Inbound from Vapi (validates x-vapi-secret in code)
 verify_jwt = false  # Inbound from Closebot
 
 [functions.twilio-webhook]
-verify_jwt = false  # Inbound from Twilio call status webhooks
+verify_jwt = false  # Inbound from Twilio — X-Twilio-Signature HMAC-SHA1 validated in code
 
 [functions.twilio-recording]
-verify_jwt = false  # Inbound from Twilio recording-status webhooks
+verify_jwt = false  # Inbound from Twilio — X-Twilio-Signature HMAC-SHA1 validated in code
 
 [functions.twilio-twiml]
-verify_jwt = false  # TwiML response endpoint hit by Twilio voice service
+verify_jwt = false  # Inbound from Twilio — X-Twilio-Signature HMAC-SHA1 validated in code
 
 [functions.lob-webhook]
-verify_jwt = false  # Inbound from Lob direct mail status webhooks
+verify_jwt = false  # Inbound from Lob — Lob-Signature HMAC-SHA256 + timestamp replay window validated in code
 
 # --- Authenticated app endpoints (verify_jwt = true) ------------------------
 
