@@ -8459,6 +8459,57 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_ai_calls: {
+        Row: {
+          attempts: number
+          call_after: string
+          contact_name: string | null
+          created_at: string
+          id: string
+          last_error: string | null
+          organization_id: string
+          phone_number: string
+          property_address: string | null
+          property_id: string | null
+          sent_at: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          call_after?: string
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          organization_id: string
+          phone_number: string
+          property_address?: string | null
+          property_id?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          call_after?: string
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_error?: string | null
+          organization_id?: string
+          phone_number?: string
+          property_address?: string | null
+          property_id?: string | null
+          sent_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       scrape_jobs: {
         Row: {
           created_at: string | null
