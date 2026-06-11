@@ -1,9 +1,10 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { validateTwilioSignature } from '../_shared/webhook-signatures.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-twilio-signature',
 }
 
 function mapTwilioStatus(status: string): string {
@@ -21,25 +22,37 @@ function mapTwilioStatus(status: string): string {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
+  const TWILIO_AUTH_TOKEN = Deno.env.get('TWILIO_AUTH_TOKEN')
+  if (!TWILIO_AUTH_TOKEN) {
+    console.error('twilio-webhook: TWILIO_AUTH_TOKEN env var is not set')
+    return new Response('Server not configured', { status: 503, headers: corsHeaders })
+  }
+
   try {
+    const formData = await req.formData()
+    const params: Record<string, string> = {}
+    formData.forEach((value, key) => { params[key] = value.toString() })
+
+    const signature = req.headers.get('x-twilio-signature')
+    const ok = await validateTwilioSignature({
+      authToken: TWILIO_AUTH_TOKEN,
+      url: req.url,
+      params,
+      signature,
+    })
+    if (!ok) {
+      console.warn('twilio-webhook: invalid signature for', new URL(req.url).pathname)
+      return new Response('Forbidden', { status: 403, headers: corsHeaders })
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
-
-    // Parse form data from Twilio webhook
-    const formData = await req.formData()
-    const params: Record<string, string> = {}
-    formData.forEach((value, key) => {
-      params[key] = value.toString()
-    })
-
-    console.log('Twilio webhook received:', params)
 
     const callSid = params.CallSid
     const callStatus = params.CallStatus
@@ -49,7 +62,6 @@ serve(async (req) => {
       return new Response('Missing CallSid', { status: 400 })
     }
 
-    // Find call by Twilio SID
     const { data: call, error: findError } = await supabase
       .from('calls')
       .select('*')
@@ -66,21 +78,18 @@ serve(async (req) => {
       return new Response('OK', { status: 200 })
     }
 
-    const updates: Record<string, any> = { 
-      status: mapTwilioStatus(callStatus) 
+    const updates: Record<string, any> = {
+      status: mapTwilioStatus(callStatus)
     }
 
-    // Set answered_at when call is answered
     if (callStatus === 'in-progress' && !call.answered_at) {
       updates.answered_at = new Date().toISOString()
     }
 
-    // Handle call completion
     if (callStatus === 'completed') {
       updates.ended_at = new Date().toISOString()
       updates.duration_seconds = callDuration
-      
-      // Calculate talk time vs ring time
+
       if (call.answered_at && call.initiated_at) {
         const ringTime = Math.floor(
           (new Date(call.answered_at).getTime() - new Date(call.initiated_at).getTime()) / 1000
@@ -90,12 +99,10 @@ serve(async (req) => {
       }
     }
 
-    // Handle failed/no-answer/busy calls
     if (['busy', 'no-answer', 'failed', 'canceled'].includes(callStatus)) {
       updates.ended_at = new Date().toISOString()
     }
 
-    // Update call record
     const { error: updateError } = await supabase
       .from('calls')
       .update(updates)
@@ -105,7 +112,6 @@ serve(async (req) => {
       console.error('Error updating call:', updateError)
     }
 
-    // Update queue contact if applicable
     if (call.queue_contact_id) {
       const contactUpdates: Record<string, any> = {
         last_attempt_at: new Date().toISOString(),
@@ -113,7 +119,6 @@ serve(async (req) => {
         updated_at: new Date().toISOString()
       }
 
-      // Increment attempt count
       const { data: contact } = await supabase
         .from('call_queue_contacts')
         .select('attempt_count')
@@ -130,7 +135,6 @@ serve(async (req) => {
         .eq('id', call.queue_contact_id)
     }
 
-    // Update queue stats if applicable
     if (call.queue_id) {
       await supabase.rpc('update_queue_stats', { p_queue_id: call.queue_id })
     }
