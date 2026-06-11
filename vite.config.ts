@@ -18,15 +18,15 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png"],
+      includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png", "og-image.png"],
       manifest: {
-        name: "RealElite Command Center",
-        short_name: "RealElite",
-        description: "Real Estate Investment Platform - Manage properties, analyze deals, and close faster",
+        name: "REAL ELITE Command Center",
+        short_name: "REAL ELITE",
+        description: "AI-Powered Real Estate Investing Platform — find leads, analyze deals, send offers, and close contracts.",
         start_url: "/dashboard",
         display: "standalone",
         background_color: "#ffffff",
-        theme_color: "#16a34a",
+        theme_color: "#dc2626",
         orientation: "portrait-primary",
         categories: ["business", "finance", "productivity"],
         icons: [
@@ -49,18 +49,25 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
-        // Cache version bump to force update - v5
-        cacheId: 'realelite-v5',
+        // Cache version bump to force update - v6 (removed authenticated supabase cache)
+        cacheId: "realelite-v6",
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024, // 8 MB
         runtimeCaching: [
+          // NEVER cache authenticated Supabase endpoints (auth, rest, functions, realtime).
+          // These return tenant-scoped PII that must not persist after logout.
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-            handler: "NetworkFirst",
+            urlPattern: /^https:\/\/.*\.supabase\.co\/(auth|rest|functions|realtime)\/.*/i,
+            handler: "NetworkOnly",
+          },
+          // Public storage assets are safe to cache.
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/.*/i,
+            handler: "CacheFirst",
             options: {
-              cacheName: "supabase-cache",
+              cacheName: "supabase-public-assets",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
               cacheableResponse: {
                 statuses: [0, 200],

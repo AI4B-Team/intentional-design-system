@@ -14,11 +14,22 @@ serve(async (req) => {
 
   // Verify shared secret to prevent forged webhooks
   const VAPI_WEBHOOK_SECRET = Deno.env.get("VAPI_WEBHOOK_SECRET");
+  if (!VAPI_WEBHOOK_SECRET) {
+    console.error(
+      "vapi-webhook: VAPI_WEBHOOK_SECRET env var is not set. " +
+        "Add it via Lovable Cloud secrets and configure the matching header in the Vapi dashboard. " +
+        "All webhook traffic is being rejected until this is fixed.",
+    );
+    return new Response(JSON.stringify({ error: "Server not configured" }), {
+      status: 503,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
   const providedSecret =
     req.headers.get("x-vapi-secret") ||
     req.headers.get("x-vapi-signature") ||
     req.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
-  if (!VAPI_WEBHOOK_SECRET || !providedSecret || providedSecret !== VAPI_WEBHOOK_SECRET) {
+  if (!providedSecret || providedSecret !== VAPI_WEBHOOK_SECRET) {
     console.warn("vapi-webhook: missing or invalid webhook secret");
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,

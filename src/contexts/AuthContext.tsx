@@ -73,6 +73,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Purge any cached Supabase responses so tenant PII does not linger on shared devices.
+    if (typeof caches !== "undefined") {
+      try {
+        const names = await caches.keys();
+        await Promise.all(
+          names
+            .filter((n) => n.startsWith("supabase") || n.startsWith("realelite"))
+            .map((n) => caches.delete(n)),
+        );
+      } catch {
+        /* noop — cache purge is best-effort */
+      }
+    }
   };
 
   return (
