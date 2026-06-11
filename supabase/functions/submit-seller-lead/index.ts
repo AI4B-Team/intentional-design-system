@@ -296,6 +296,23 @@ function formatPhone(phone: string | null | undefined): string | null {
   return phone
 }
 
+// Escape user-supplied values before interpolating into HTML email templates.
+function escapeHtml(value: unknown): string {
+  if (value === null || value === undefined) return ''
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+// Sanitize a value for use inside an HTML attribute (tel:, mailto:, href).
+function escapeAttr(value: unknown): string {
+  return escapeHtml(value)
+}
+
+
 async function sendAutoEmail(website: any, lead: any) {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
   if (!RESEND_API_KEY) {
