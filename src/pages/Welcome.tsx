@@ -772,16 +772,20 @@ export default function Welcome() {
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs">Property Type</Label>
-                    <select
-                      className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+                    <Select
                       value={data.buyBox.propertyType}
-                      onChange={(e) => update("buyBox", { ...data.buyBox, propertyType: e.target.value })}
+                      onValueChange={(v) => update("buyBox", { ...data.buyBox, propertyType: v })}
                     >
-                      <option value="single_family">Single Family</option>
-                      <option value="multi_family">Multi-Family</option>
-                      <option value="land">Land</option>
-                      <option value="commercial">Commercial</option>
-                    </select>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="single_family">Single Family</SelectItem>
+                        <SelectItem value="multi_family">Multi-Family</SelectItem>
+                        <SelectItem value="land">Land</SelectItem>
+                        <SelectItem value="commercial">Commercial</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </Card>
