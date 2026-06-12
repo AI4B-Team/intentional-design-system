@@ -7056,66 +7056,96 @@ export type Database = {
           address: string | null
           automation_mode: string | null
           billing_email: string | null
+          business_hours_end: string | null
+          business_hours_start: string | null
           city: string | null
           created_at: string | null
+          ein: string | null
           id: string
+          llc_name: string | null
           logo_url: string | null
           max_properties: number | null
           max_users: number | null
           name: string
           phone: string | null
+          signature_url: string | null
+          signer_name: string | null
+          signer_title: string | null
           slug: string
           state: string | null
           stripe_customer_id: string | null
           subscription_status: string | null
           subscription_tier: string | null
           timezone: string | null
+          twilio_phone_number: string | null
+          twilio_phone_sid: string | null
           updated_at: string | null
           website: string | null
+          welcome_completed_at: string | null
           zip: string | null
         }
         Insert: {
           address?: string | null
           automation_mode?: string | null
           billing_email?: string | null
+          business_hours_end?: string | null
+          business_hours_start?: string | null
           city?: string | null
           created_at?: string | null
+          ein?: string | null
           id?: string
+          llc_name?: string | null
           logo_url?: string | null
           max_properties?: number | null
           max_users?: number | null
           name: string
           phone?: string | null
+          signature_url?: string | null
+          signer_name?: string | null
+          signer_title?: string | null
           slug: string
           state?: string | null
           stripe_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           timezone?: string | null
+          twilio_phone_number?: string | null
+          twilio_phone_sid?: string | null
           updated_at?: string | null
           website?: string | null
+          welcome_completed_at?: string | null
           zip?: string | null
         }
         Update: {
           address?: string | null
           automation_mode?: string | null
           billing_email?: string | null
+          business_hours_end?: string | null
+          business_hours_start?: string | null
           city?: string | null
           created_at?: string | null
+          ein?: string | null
           id?: string
+          llc_name?: string | null
           logo_url?: string | null
           max_properties?: number | null
           max_users?: number | null
           name?: string
           phone?: string | null
+          signature_url?: string | null
+          signer_name?: string | null
+          signer_title?: string | null
           slug?: string
           state?: string | null
           stripe_customer_id?: string | null
           subscription_status?: string | null
           subscription_tier?: string | null
           timezone?: string | null
+          twilio_phone_number?: string | null
+          twilio_phone_sid?: string | null
           updated_at?: string | null
           website?: string | null
+          welcome_completed_at?: string | null
           zip?: string | null
         }
         Relationships: []
