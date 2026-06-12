@@ -68,6 +68,30 @@ interface AutomationRules {
   respectBusinessHours: boolean;
 }
 
+type LeadImportType =
+  | "cash_buyer"
+  | "seller_lead"
+  | "wholesaler"
+  | "jv_partner"
+  | "lender"
+  | "contractor"
+  | "agent"
+  | "tenant"
+  | "other";
+
+const LEAD_IMPORT_TYPES: { id: LeadImportType; label: string; routesTo: string }[] = [
+  { id: "cash_buyer",  label: "Cash Buyers",        routesTo: "Buyers List" },
+  { id: "seller_lead", label: "Seller Leads",       routesTo: "Pipeline → New Leads" },
+  { id: "wholesaler",  label: "Wholesalers",        routesTo: "Contacts → Wholesalers" },
+  { id: "jv_partner",  label: "JV Partners",        routesTo: "Contacts → JV" },
+  { id: "lender",      label: "Lenders",            routesTo: "Contacts → Lenders" },
+  { id: "contractor",  label: "Contractors",        routesTo: "Contacts → Contractors" },
+  { id: "agent",       label: "Agents / Realtors",  routesTo: "Contacts → Agents" },
+  { id: "tenant",      label: "Tenants / Renters",  routesTo: "Contacts → Tenants" },
+  { id: "other",       label: "Other Contacts",     routesTo: "Contacts → All" },
+];
+
+
 interface WelcomeData {
   titleCompany: Vendor;
   lender: Vendor;
