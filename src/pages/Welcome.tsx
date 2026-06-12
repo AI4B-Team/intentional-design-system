@@ -594,7 +594,43 @@ export default function Welcome() {
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-xs">Title</Label>
-                    <Input placeholder="Managing Member" value={data.entity.signerTitle} onChange={(e) => update("entity", { ...data.entity, signerTitle: e.target.value })} />
+                    {(() => {
+                      const PRESETS = ["Managing Member", "Member", "Manager", "Owner", "CEO", "President", "Vice President", "Partner", "Authorized Signer", "Director"];
+                      const isCustom = !!data.entity.signerTitle && !PRESETS.includes(data.entity.signerTitle);
+                      const [mode, setMode] = [isCustom ? "custom" : data.entity.signerTitle || "", null] as const;
+                      return (
+                        <div className="space-y-1.5">
+                          <Select
+                            value={isCustom ? "__custom__" : (data.entity.signerTitle || undefined)}
+                            onValueChange={(v) => {
+                              if (v === "__custom__") {
+                                update("entity", { ...data.entity, signerTitle: "" });
+                              } else {
+                                update("entity", { ...data.entity, signerTitle: v });
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Title" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {PRESETS.map((t) => (
+                                <SelectItem key={t} value={t}>{t}</SelectItem>
+                              ))}
+                              <SelectItem value="__custom__">Custom (Type Your Own)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {isCustom && (
+                            <Input
+                              placeholder="Enter Custom Title"
+                              value={data.entity.signerTitle}
+                              onChange={(e) => update("entity", { ...data.entity, signerTitle: e.target.value })}
+                              autoFocus
+                            />
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
                 </div>
               </Card>
