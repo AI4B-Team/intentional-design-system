@@ -503,22 +503,36 @@ export default function Welcome() {
                   {TEMPLATES.map((t) => {
                     const checked = data.selectedTemplates.includes(t.id);
                     return (
-                      <label key={t.id} className="flex items-start gap-3 p-3 rounded-lg border border-border-subtle hover:bg-surface-hover cursor-pointer">
+                      <div key={t.id} className="flex items-start gap-3 p-3 rounded-lg border border-border-subtle hover:bg-surface-hover">
                         <input
                           type="checkbox"
+                          id={`tpl-${t.id}`}
                           checked={checked}
                           onChange={() =>
                             update("selectedTemplates", checked
                               ? data.selectedTemplates.filter((x) => x !== t.id)
                               : [...data.selectedTemplates, t.id])
                           }
-                          className="mt-1"
+                          className="mt-1 cursor-pointer"
                         />
-                        <div className="flex-1">
+                        <label htmlFor={`tpl-${t.id}`} className="flex-1 cursor-pointer">
                           <p className="text-sm font-medium text-foreground">{t.label}</p>
                           <p className="text-xs text-muted-foreground">{t.description}</p>
-                        </div>
-                      </label>
+                        </label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 px-2 text-xs gap-1.5 text-muted-foreground hover:text-foreground"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPreviewTemplateId(t.id);
+                          }}
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Preview
+                        </Button>
+                      </div>
                     );
                   })}
                 </Card>
