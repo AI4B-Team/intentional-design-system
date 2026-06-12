@@ -124,6 +124,7 @@ const initialData: WelcomeData = {
   buyBox: { minPrice: "", maxPrice: "", propertyType: "single_family" },
   comms: { wantsNumber: false, areaCode: "", businessHoursStart: "09:00", businessHoursEnd: "18:00" },
   buyersCsv: null,
+  leadImports: [],
   automation: {
     approvalMode: "assisted",
     autoSendLOIs: false,
