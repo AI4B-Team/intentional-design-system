@@ -355,7 +355,7 @@ export default function SignupFlow() {
             {/* Step: Organization */}
             {step === "organization" && (
               <div className="space-y-4">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs">
+                <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 text-xs">
                   <Building2 className="h-3 w-3 mr-1" />
                   Organization Setup
                 </Badge>
