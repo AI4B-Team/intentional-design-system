@@ -624,7 +624,7 @@ export default function Landing() {
                     "w-full rounded-xl",
                     plan.popular && "bg-primary text-primary-foreground hover:bg-accent-hover",
                     plan.autonomous && "bg-accent text-accent-foreground hover:bg-accent/90",
-                    !plan.popular && !plan.autonomous && "bg-muted text-foreground hover:bg-muted/80"
+                    !plan.popular && !plan.autonomous && "bg-foreground text-background hover:bg-foreground/90"
                   )}
                 >
                   Start Free Trial
