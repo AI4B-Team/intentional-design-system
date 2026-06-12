@@ -422,7 +422,7 @@ export default function SignupFlow() {
                         className={cn(
                           "p-3 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
-                            ? "border-primary bg-primary/5"
+                            ? "border-emerald-500 bg-emerald-500/5"
                             : "border-border hover:border-border/80"
                         )}
                       >
