@@ -272,7 +272,7 @@ export default function SignupFlow() {
                         className={cn(
                           "h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium",
                           isCompleted && "bg-success text-success-foreground",
-                          isCurrent && "bg-primary text-primary-foreground",
+                          isCurrent && "bg-emerald-500 text-white",
                           !isCompleted && !isCurrent && "bg-white/10 text-white/30"
                         )}
                       >
@@ -298,7 +298,7 @@ export default function SignupFlow() {
                       </p>
                       <p className={cn(
                         "text-xs",
-                        isCurrent ? "text-primary" : "text-white/20"
+                        isCurrent ? "text-emerald-400" : "text-white/20"
                       )}>
                         {isCompleted ? "Completed" : isCurrent ? "Current Step" : ""}
                       </p>
@@ -318,7 +318,12 @@ export default function SignupFlow() {
               <span>Progress</span>
               <span>{currentStepIndex + 1} of {STEPS.length}</span>
             </div>
-            <Progress value={progressPercent} className="h-1 bg-white/10" />
+            <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
 
           {/* Pro Tip */}
@@ -350,7 +355,7 @@ export default function SignupFlow() {
             {/* Step: Organization */}
             {step === "organization" && (
               <div className="space-y-4">
-                <Badge variant="secondary" className="bg-primary/10 text-primary border-0 text-xs">
+                <Badge variant="secondary" className="bg-muted text-muted-foreground border-0 text-xs">
                   <Building2 className="h-3 w-3 mr-1" />
                   Organization Setup
                 </Badge>
