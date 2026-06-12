@@ -95,6 +95,7 @@ const initialData: WelcomeData = {
   selectedTemplates: ["purchase", "loi"],
   entity: { llcName: "", ein: "", signerName: "", signerTitle: "Managing Member", signatureDataUrl: "" },
   markets: [],
+  marketTargets: {},
   buyBox: { minPrice: "", maxPrice: "", propertyType: "single_family" },
   comms: { wantsNumber: false, areaCode: "", businessHoursStart: "09:00", businessHoursEnd: "18:00" },
   buyersCsv: null,
