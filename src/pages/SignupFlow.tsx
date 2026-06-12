@@ -422,7 +422,7 @@ export default function SignupFlow() {
                         className={cn(
                           "p-3 rounded-xl text-left transition-all border-2",
                           selectedRole === role.id
-                            ? "border-primary bg-primary/5"
+                            ? "border-emerald-500 bg-emerald-500/5"
                             : "border-border hover:border-border/80"
                         )}
                       >
@@ -500,13 +500,13 @@ export default function SignupFlow() {
                         className={cn(
                           "w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all border-2",
                           isSelected
-                            ? "border-primary bg-primary/5"
+                            ? "border-emerald-500 bg-emerald-500/5"
                             : "border-border hover:border-border/80"
                         )}
                       >
                         <div className={cn(
                           "h-8 w-8 rounded-lg flex items-center justify-center",
-                          isSelected ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                          isSelected ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"
                         )}>
                           <Icon className="h-4 w-4" />
                         </div>
@@ -515,7 +515,7 @@ export default function SignupFlow() {
                           <p className="text-xs text-muted-foreground">{goal.description}</p>
                         </div>
                         {isSelected && (
-                          <Check className="h-5 w-5 text-primary flex-shrink-0" />
+                          <Check className="h-5 w-5 text-emerald-500 flex-shrink-0" />
                         )}
                       </button>
                     );
