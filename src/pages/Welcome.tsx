@@ -30,6 +30,7 @@ import {
   Rocket,
   Bot,
   Gauge,
+  Eye,
 } from "lucide-react";
 
 const WELCOME_KEY = "realelite_welcome_setup";
