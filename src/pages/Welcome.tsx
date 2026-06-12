@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Building2,
   Landmark,
@@ -357,21 +358,124 @@ export default function Welcome() {
   };
   const back = () => stepIdx > 0 && setStepIdx(stepIdx - 1);
 
-  const finish = () => {
+  const [finishing, setFinishing] = React.useState(false);
+  const fileMapRef = React.useRef<Map<string, File>>(new Map());
+  const docFileMapRef = React.useRef<File[]>([]);
+
+  // Lightweight CSV parser (handles quoted values with commas)
+  const parseCsv = (text: string): Array<Record<string, string>> => {
+    const lines = text.split(/\r?\n/).filter((l) => l.length > 0);
+    if (lines.length === 0) return [];
+    const split = (line: string): string[] => {
+      const out: string[] = [];
+      let cur = "";
+      let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (q && line[i + 1] === '"') { cur += '"'; i++; }
+          else q = !q;
+        } else if (c === "," && !q) { out.push(cur); cur = ""; }
+        else cur += c;
+      }
+      out.push(cur);
+      return out;
+    };
+    const headers = split(lines[0]).map((h) => h.trim());
+    return lines.slice(1).map((line) => {
+      const cells = split(line);
+      const row: Record<string, string> = {};
+      headers.forEach((h, i) => { row[h] = (cells[i] ?? "").trim(); });
+      return row;
+    });
+  };
+
+  const finish = async () => {
+    if (finishing) return;
+    setFinishing(true);
     persist();
-    // Flag markets for refinement reminder in Buy Box page
-    if (data.markets.length > 0) {
-      try {
-        const items = data.markets.map((state) => ({
-          state,
-          target: data.marketTargets[state] ?? { type: "statewide", values: "" },
-        }));
-        localStorage.setItem("buybox_pending_refinement", JSON.stringify(items));
-      } catch {}
+    const toastId = toast.loading("Setting Up Your Automations…");
+
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData?.user?.id;
+      if (!userId) throw new Error("Not signed in");
+
+      // 1. Upload signature PNG to storage
+      let signaturePath: string | null = null;
+      if (data.entity.signatureDataUrl) {
+        try {
+          const res = await fetch(data.entity.signatureDataUrl);
+          const blob = await res.blob();
+          const path = `${userId}/signature-${Date.now()}.png`;
+          const { error } = await supabase.storage.from("signatures").upload(path, blob, {
+            contentType: "image/png", upsert: true,
+          });
+          if (!error) signaturePath = path;
+        } catch (e) { console.warn("signature upload failed", e); }
+      }
+
+      // 2. Upload any custom doc files
+      const uploadedDocPaths: string[] = [];
+      for (const f of docFileMapRef.current) {
+        try {
+          const path = `${userId}/${Date.now()}-${f.name}`;
+          const { error } = await supabase.storage.from("welcome-docs").upload(path, f, { upsert: true });
+          if (!error) uploadedDocPaths.push(path);
+        } catch {}
+      }
+
+      // 3. Parse queued CSVs into rows
+      const leadImportsWithRows = await Promise.all(
+        data.leadImports.map(async (imp) => {
+          const file = fileMapRef.current.get(imp.id);
+          if (!file) return { type: imp.type, fileName: imp.name, rows: [] };
+          const text = await file.text();
+          return { type: imp.type, fileName: imp.name, rows: parseCsv(text) };
+        }),
+      );
+
+      // 4. Call the edge function
+      const { data: result, error: fnErr } = await supabase.functions.invoke("welcome-finish", {
+        body: {
+          titleCompany: data.titleCompany,
+          lender: data.lender,
+          agent: data.agent,
+          selectedTemplates: data.selectedTemplates,
+          uploadedDocPaths,
+          entity: data.entity,
+          signaturePath,
+          markets: data.markets,
+          marketTargets: data.marketTargets,
+          buyBox: data.buyBox,
+          comms: data.comms,
+          leadImports: leadImportsWithRows,
+          automation: data.automation,
+        },
+      });
+      if (fnErr) throw fnErr;
+
+      if (data.markets.length > 0) {
+        try {
+          const items = data.markets.map((state) => ({
+            state, target: data.marketTargets[state] ?? { type: "statewide", values: "" },
+          }));
+          localStorage.setItem("buybox_pending_refinement", JSON.stringify(items));
+        } catch {}
+      }
+      localStorage.setItem(WELCOME_DONE_KEY, "true");
+
+      const twilio = (result as any)?.results?.twilio;
+      const twilioMsg = twilio?.phone_number
+        ? ` New Number: ${twilio.phone_number}.`
+        : twilio?.error ? ` (Number Provisioning Failed — Set Up Later.)` : "";
+      toast.success(`Automations Live!${twilioMsg}`, { id: toastId });
+      navigate("/dashboard");
+    } catch (e: any) {
+      console.error(e);
+      toast.error(`Setup Failed: ${e?.message ?? "Unknown Error"}`, { id: toastId });
+      setFinishing(false);
     }
-    localStorage.setItem(WELCOME_DONE_KEY, "true");
-    toast.success("Automations Live! Welcome To RealElite.");
-    navigate("/dashboard");
   };
 
   const skipAll = () => {
@@ -382,6 +486,7 @@ export default function Welcome() {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    docFileMapRef.current = [...docFileMapRef.current, ...files];
     update("uploadedDocs", [...data.uploadedDocs, ...files.map((f) => ({ name: f.name, size: f.size }))]);
     update("docMode", "upload");
     toast.success(`${files.length} Document(s) Ready To Upload`);
@@ -398,13 +503,9 @@ export default function Welcome() {
       const reader = new FileReader();
       reader.onload = () => {
         const rows = Math.max(0, (reader.result as string).split("\n").filter(Boolean).length - 1);
-        const entry = {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          type: pendingLeadType,
-          name: f.name,
-          size: f.size,
-          rows,
-        };
+        const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        fileMapRef.current.set(id, f);
+        const entry = { id, type: pendingLeadType, name: f.name, size: f.size, rows };
         update("leadImports", [...data.leadImports, entry]);
         if (pendingLeadType === "cash_buyer") {
           update("buyersCsv", { name: f.name, size: f.size, rows });
@@ -420,8 +521,10 @@ export default function Welcome() {
   };
 
   const removeLeadImport = (id: string) => {
+    fileMapRef.current.delete(id);
     update("leadImports", data.leadImports.filter((x) => x.id !== id));
   };
+
 
 
   return (
@@ -1156,8 +1259,8 @@ export default function Welcome() {
                 >
                   Go To Dashboard
                 </button>
-                <Button onClick={finish} className="gap-2">
-                  Launch My Automations <Rocket className="h-4 w-4" />
+                <Button onClick={finish} disabled={finishing} className="gap-2">
+                  {finishing ? "Launching…" : "Launch My Automations"} <Rocket className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
