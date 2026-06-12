@@ -597,7 +597,6 @@ export default function Welcome() {
                     {(() => {
                       const PRESETS = ["Managing Member", "Member", "Manager", "Owner", "CEO", "President", "Vice President", "Partner", "Authorized Signer", "Director"];
                       const isCustom = !!data.entity.signerTitle && !PRESETS.includes(data.entity.signerTitle);
-                      const [mode, setMode] = [isCustom ? "custom" : data.entity.signerTitle || "", null] as const;
                       return (
                         <div className="space-y-1.5">
                           <Select
