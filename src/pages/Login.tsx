@@ -91,7 +91,7 @@ export default function Login() {
               className="h-12 pr-10"
               required
             />
-            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
