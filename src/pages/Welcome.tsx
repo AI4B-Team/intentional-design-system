@@ -929,6 +929,26 @@ export default function Welcome() {
           </div>
         </div>
       </footer>
+
+      <Dialog open={!!previewTemplate} onOpenChange={(o) => !o && setPreviewTemplateId(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              {previewTemplate?.label}
+            </DialogTitle>
+            <DialogDescription>{previewTemplate?.description}</DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 min-h-0 overflow-y-auto rounded-lg border border-border-subtle bg-muted/30 p-5">
+            <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-foreground/90">
+              {previewTemplate?.preview}
+            </pre>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            This Is A Sample Preview. The Full Attorney-Reviewed Template Will Be Populated With Your Deal Data At Send Time.
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
