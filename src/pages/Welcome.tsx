@@ -110,9 +110,9 @@ const initialData: WelcomeData = {
 
 const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: "intro", label: "Welcome", icon: Sparkles },
+  { id: "entity", label: "Business Info", icon: PenLine },
   { id: "vendors", label: "Team", icon: Building2 },
   { id: "documents", label: "Documents", icon: FileText },
-  { id: "entity", label: "Business Info", icon: PenLine },
   { id: "markets", label: "Buy Box", icon: MapPin },
   { id: "comms", label: "Communications", icon: Phone },
   { id: "buyers", label: "Cash Buyers", icon: Users },
