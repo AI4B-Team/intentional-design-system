@@ -647,8 +647,8 @@ export default function SignupFlow() {
             {step === "launch" && (
               <div className="space-y-4 text-center">
                 <div className="flex justify-center">
-                  <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center">
-                    <Rocket className="h-8 w-8 text-primary-foreground" />
+                  <div className="h-16 w-16 rounded-2xl bg-emerald-500 flex items-center justify-center">
+                    <Rocket className="h-8 w-8 text-white" />
                   </div>
                 </div>
                 
@@ -663,7 +663,7 @@ export default function SignupFlow() {
                   </p>
                 </div>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-left">
+                <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4 text-left">
                   <div className="flex items-center gap-2 mb-3">
                     <Sparkles className="h-4 w-4 text-warning" />
                     <span className="font-semibold text-foreground">Pro Tip</span>
