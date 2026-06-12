@@ -36,7 +36,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         {/* Main Content */}
         <div className="relative max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/5 text-white/70 text-sm font-medium mb-6">
             <Zap className="h-4 w-4" />
             AI-Powered Deal Intelligence
           </div>
@@ -45,7 +45,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             style={{ letterSpacing: "-0.03em" }}
           >
             Close More Deals.<br />
-            <span className="text-primary">
+            <span className="text-white">
               Move Faster.
             </span>
           </h1>
@@ -60,7 +60,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             {features.map((feature) => (
               <div key={feature.title} className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
-                  <feature.icon className="h-4 w-4 text-primary" />
+                  <feature.icon className="h-4 w-4 text-white/70" />
                 </div>
                 <div>
                   <span className="text-white/90 text-sm font-medium">{feature.title}</span>

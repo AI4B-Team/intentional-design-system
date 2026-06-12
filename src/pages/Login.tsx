@@ -91,7 +91,7 @@ export default function Login() {
               className="h-12 pr-10"
               required
             />
-            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+            <Mail className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           </div>
         </div>
 
@@ -108,7 +108,7 @@ export default function Login() {
               required
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-primary" />
+              <Lock className="h-5 w-5 text-muted-foreground" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -121,7 +121,7 @@ export default function Login() {
         </div>
 
         <div className="flex justify-end">
-          <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+          <Link to="/forgot-password" className="text-sm text-muted-foreground hover:text-foreground hover:underline">
             Forgot Password?
           </Link>
         </div>
@@ -184,7 +184,7 @@ export default function Login() {
       {/* Sign Up Link */}
       <p className="text-center mt-6 text-sm text-muted-foreground">
         Don't Have An Account?{" "}
-        <Link to="/signup" className="text-primary hover:underline font-medium">
+        <Link to="/signup" className="text-foreground hover:underline font-medium">
           Create Your Account
         </Link>
       </p>
