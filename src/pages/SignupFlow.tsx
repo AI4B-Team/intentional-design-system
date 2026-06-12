@@ -272,7 +272,7 @@ export default function SignupFlow() {
                         className={cn(
                           "h-6 w-6 rounded-full flex items-center justify-center text-xs font-medium",
                           isCompleted && "bg-success text-success-foreground",
-                          isCurrent && "bg-primary text-primary-foreground",
+                          isCurrent && "bg-emerald-500 text-white",
                           !isCompleted && !isCurrent && "bg-white/10 text-white/30"
                         )}
                       >
