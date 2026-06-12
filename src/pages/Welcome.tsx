@@ -433,7 +433,7 @@ export default function Welcome() {
               </Card>
 
               <AutomationPreview>
-                Every Contract You Send Will Auto-Route To <strong>{data.titleCompany.company || "Your Title Company"}</strong> And CC <strong>{data.lender.company || "Your Lender"}</strong> — No Manual Forwarding.
+                Once A Contract Is Fully Executed By All Parties (Buyer And Seller), It Will Auto-Route To <strong>{data.titleCompany.company || "Your Title Company"}</strong> And CC <strong>{data.lender.company || "Your Lender"}</strong> — No Manual Forwarding. Contracts In Progress Or Awaiting Signatures Will Not Be Sent.
               </AutomationPreview>
             </div>
           )}
