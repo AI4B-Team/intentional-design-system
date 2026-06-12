@@ -197,6 +197,7 @@ const BuyBox: React.FC = () => {
 
   return (
     <PageLayout title="Buy Box">
+      <BuyBoxRefinementBanner />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
