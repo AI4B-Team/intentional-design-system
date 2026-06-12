@@ -36,7 +36,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
         {/* Main Content */}
         <div className="relative max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-sm font-medium mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/5 text-white/70 text-sm font-medium mb-6">
             <Zap className="h-4 w-4" />
             AI-Powered Deal Intelligence
           </div>
@@ -45,7 +45,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             style={{ letterSpacing: "-0.03em" }}
           >
             Close More Deals.<br />
-            <span className="text-primary">
+            <span className="text-white">
               Move Faster.
             </span>
           </h1>
