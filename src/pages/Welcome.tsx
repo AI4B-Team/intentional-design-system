@@ -1259,8 +1259,8 @@ export default function Welcome() {
                 >
                   Go To Dashboard
                 </button>
-                <Button onClick={finish} className="gap-2">
-                  Launch My Automations <Rocket className="h-4 w-4" />
+                <Button onClick={finish} disabled={finishing} className="gap-2">
+                  {finishing ? "Launching…" : "Launch My Automations"} <Rocket className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
