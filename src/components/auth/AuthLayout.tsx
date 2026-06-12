@@ -45,7 +45,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
             style={{ letterSpacing: "-0.03em" }}
           >
             Close More Deals.<br />
-            <span className="bg-gradient-to-r from-primary to-red-400 bg-clip-text text-transparent">
+            <span className="text-primary">
               Move Faster.
             </span>
           </h1>
