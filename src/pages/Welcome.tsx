@@ -952,6 +952,32 @@ export default function Welcome() {
               You Can Customize This Template Anytime In <strong>Settings → Documents</strong> — Add Clauses, Update Terms, Or Upload Your Own Version.
             </p>
           </div>
+          <div className="shrink-0 flex items-center justify-end gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (!previewTemplate) return;
+                try {
+                  const raw = localStorage.getItem("documents_pending_customization");
+                  const list: Array<{ id: string; label: string; addedAt: string }> = raw ? JSON.parse(raw) : [];
+                  if (!list.find((x) => x.id === previewTemplate.id)) {
+                    list.push({ id: previewTemplate.id, label: previewTemplate.label, addedAt: new Date().toISOString() });
+                    localStorage.setItem("documents_pending_customization", JSON.stringify(list));
+                  }
+                  toast.success("We'll Remind You In Documents", {
+                    description: `${previewTemplate.label} Flagged For Customization.`,
+                  });
+                } catch {}
+                setPreviewTemplateId(null);
+              }}
+            >
+              Remind Me To Edit Later
+            </Button>
+            <Button size="sm" onClick={() => setPreviewTemplateId(null)}>
+              Close Preview
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
