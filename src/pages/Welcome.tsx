@@ -893,35 +893,104 @@ export default function Welcome() {
           {step.id === "buyers" && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-semibold text-foreground">Import Your Cash Buyers</h2>
-                <p className="text-muted-foreground mt-2">Drop A CSV So Dispositions Can Fire From Day One.</p>
+                <h2 className="text-2xl font-semibold text-foreground">Import Your Contacts &amp; Leads</h2>
+                <p className="text-muted-foreground mt-2">Upload Any List — Buyers, Sellers, Lenders, Contractors. We'll Route Each To The Right Place.</p>
               </div>
               <WhyCard>
-                <strong>Why This Matters:</strong> The Moment You Lock Up A Deal, The Platform Can Blast It To Matched Buyers
-                In Your List — No Manual List-Building Required. Skip If You're Starting From Scratch.
+                <strong>Why This Matters:</strong> Every Contact You Upload Becomes Routable Inventory — Buyers Get Matched To Locked Deals,
+                Seller Leads Hit Your Pipeline, And Vendors Auto-CC On Contracts. Skip If You're Starting From Scratch.
               </WhyCard>
 
-              <Card className="p-5">
-                <label className="block border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 transition">
-                  <Users className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-sm font-medium text-foreground">Click To Upload Cash Buyers CSV</p>
-                  <p className="text-xs text-muted-foreground mt-1">Name, Email, Phone, Markets, Max Price</p>
-                  <input type="file" accept=".csv" className="hidden" onChange={handleBuyersCsv} />
+              <Card className="p-5 space-y-4">
+                <div className="grid sm:grid-cols-[1fr_auto] gap-3 items-end">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Lead / Contact Type</Label>
+                    <Select value={pendingLeadType} onValueChange={(v) => setPendingLeadType(v as LeadImportType)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {LEAD_IMPORT_TYPES.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>
+                            {t.label} <span className="text-muted-foreground">— {t.routesTo}</span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <label className="inline-flex">
+                    <span className="inline-flex items-center gap-2 h-10 px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium cursor-pointer hover:bg-primary/90 transition">
+                      <Upload className="h-4 w-4" />
+                      Upload CSV
+                    </span>
+                    <input
+                      type="file"
+                      accept=".csv"
+                      multiple
+                      className="hidden"
+                      onChange={handleLeadImportUpload}
+                    />
+                  </label>
+                </div>
+
+                <label className="block border-2 border-dashed border-border rounded-xl p-6 text-center cursor-pointer hover:border-primary/50 transition">
+                  <Users className="h-7 w-7 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm font-medium text-foreground">
+                    Drop CSV For{" "}
+                    <span className="text-primary">
+                      {LEAD_IMPORT_TYPES.find((t) => t.id === pendingLeadType)?.label}
+                    </span>
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Standard Columns: Name, Email, Phone, Address, Tags. Extra Columns Are Preserved.
+                  </p>
+                  <input type="file" accept=".csv" multiple className="hidden" onChange={handleLeadImportUpload} />
                 </label>
-                {data.buyersCsv && (
-                  <div className="mt-4 flex items-center gap-2 text-sm p-3 rounded bg-success/5 border border-success/20">
-                    <Check className="h-4 w-4 text-success" />
-                    <span className="flex-1">{data.buyersCsv.name}</span>
-                    <Badge variant="secondary">{data.buyersCsv.rows} Buyers</Badge>
+
+                {data.leadImports.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Queued Imports</p>
+                    {data.leadImports.map((imp) => {
+                      const meta = LEAD_IMPORT_TYPES.find((t) => t.id === imp.type);
+                      return (
+                        <div
+                          key={imp.id}
+                          className="flex items-center gap-3 text-sm p-3 rounded-lg border border-border bg-muted/30"
+                        >
+                          <Check className="h-4 w-4 text-success shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-foreground truncate">{imp.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {meta?.label} → {meta?.routesTo}
+                            </p>
+                          </div>
+                          <Badge variant="secondary" className="tabular-nums">{imp.rows} Rows</Badge>
+                          <button
+                            onClick={() => removeLeadImport(imp.id)}
+                            className="text-muted-foreground hover:text-foreground transition-colors text-xs px-2"
+                            aria-label="Remove"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
+
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                  <p className="text-xs text-muted-foreground">
+                    <strong className="text-foreground">Import More Later:</strong> You Can Add Or Re-Map Any List Anytime From <strong>Contacts → Import</strong>.
+                  </p>
+                </div>
               </Card>
 
               <AutomationPreview>
-                When You Lock A Deal, Matching Buyers Will Be Notified Instantly Based On Markets And Price Range.
+                When You Lock A Deal, Matched Buyers Get Pinged Instantly. Seller Leads, Vendors, And Other Contacts Flow To Their Routed Folders Automatically.
               </AutomationPreview>
             </div>
           )}
+
 
           {step.id === "automation" && (
             <div className="space-y-6">
