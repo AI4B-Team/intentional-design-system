@@ -118,13 +118,44 @@ const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: "done", label: "Review", icon: Rocket },
 ];
 
-const TEMPLATES = [
-  { id: "purchase", label: "Purchase & Sale Agreement", description: "Standard Wholesale-Friendly Contract" },
-  { id: "loi", label: "Letter Of Intent (LOI)", description: "Soft Offer To Test Seller Interest" },
-  { id: "assignment", label: "Assignment Of Contract", description: "Assign Your Contract To An End Buyer" },
-  { id: "jv", label: "JV Agreement", description: "Partner With Another Investor On A Deal" },
-  { id: "addendum", label: "Inspection Addendum", description: "Standard Inspection Contingency" },
+const TEMPLATES: Array<{ id: string; label: string; description: string; preview: string }> = [
+  {
+    id: "purchase",
+    label: "Purchase & Sale Agreement",
+    description: "Standard Wholesale-Friendly Contract",
+    preview:
+      "PURCHASE AND SALE AGREEMENT\n\nThis Purchase and Sale Agreement (\"Agreement\") is entered into on [DATE] by and between [SELLER NAME] (\"Seller\") and [BUYER NAME / ASSIGNS] (\"Buyer\").\n\n1. PROPERTY. Seller agrees to sell and Buyer agrees to purchase the real property located at [PROPERTY ADDRESS] (the \"Property\").\n\n2. PURCHASE PRICE. Total purchase price shall be $[AMOUNT], payable at closing in cash or certified funds.\n\n3. EARNEST MONEY. Buyer shall deposit $[EMD] in escrow within 3 business days of the Effective Date.\n\n4. INSPECTION PERIOD. Buyer shall have [X] days to inspect and may terminate for any reason during this period.\n\n5. CLOSING. Closing shall occur on or before [CLOSING DATE] at a title company of Buyer's choosing.\n\n6. ASSIGNMENT. This Agreement is freely assignable by Buyer without Seller's consent.\n\n7. AS-IS. Property is sold in AS-IS condition with no warranties expressed or implied.",
+  },
+  {
+    id: "loi",
+    label: "Letter Of Intent (LOI)",
+    description: "Soft Offer To Test Seller Interest",
+    preview:
+      "LETTER OF INTENT TO PURCHASE\n\nDate: [DATE]\nTo: [SELLER NAME]\nRe: [PROPERTY ADDRESS]\n\nDear [SELLER],\n\nThis Letter of Intent (\"LOI\") outlines the basic terms under which [BUYER NAME / ASSIGNS] proposes to purchase the above-referenced property.\n\n• Offer Price: $[AMOUNT]\n• Earnest Money: $[EMD] upon mutual contract execution\n• Closing: [X] days from contract execution\n• Inspection Period: [X] days\n• Sold AS-IS, no repairs requested\n\nThis LOI is non-binding and intended only as a basis for further negotiation. A formal Purchase and Sale Agreement will follow upon mutual agreement of terms.\n\nSincerely,\n[BUYER NAME]",
+  },
+  {
+    id: "assignment",
+    label: "Assignment Of Contract",
+    description: "Assign Your Contract To An End Buyer",
+    preview:
+      "ASSIGNMENT OF REAL ESTATE PURCHASE AND SALE AGREEMENT\n\nThis Assignment is made on [DATE] between [ASSIGNOR] (\"Assignor\") and [ASSIGNEE] (\"Assignee\").\n\n1. ORIGINAL CONTRACT. Assignor is party to that certain Purchase and Sale Agreement dated [DATE] for the property located at [PROPERTY ADDRESS] (the \"Contract\").\n\n2. ASSIGNMENT. Assignor hereby assigns all rights, title, and interest in the Contract to Assignee.\n\n3. ASSIGNMENT FEE. Assignee shall pay Assignor an assignment fee of $[FEE] at closing via the closing agent.\n\n4. ASSUMPTION. Assignee assumes all obligations of Buyer under the Contract, including the earnest money deposit.\n\n5. CLOSING. Closing shall occur per the terms of the original Contract.",
+  },
+  {
+    id: "jv",
+    label: "JV Agreement",
+    description: "Partner With Another Investor On A Deal",
+    preview:
+      "JOINT VENTURE AGREEMENT\n\nThis Joint Venture Agreement (\"Agreement\") is entered into on [DATE] between [PARTY A] and [PARTY B] (collectively the \"Venturers\") for the purpose of acquiring, improving, and disposing of the property located at [PROPERTY ADDRESS].\n\n1. CONTRIBUTIONS.\n   • [PARTY A]: [Capital / Funding / Acquisition]\n   • [PARTY B]: [Deal Source / Management / Rehab Oversight]\n\n2. PROFIT SPLIT. Net profits from disposition shall be split [X]% to [PARTY A] and [Y]% to [PARTY B] after repayment of all capital contributions and project costs.\n\n3. DECISION MAKING. Major decisions require unanimous consent. Day-to-day operations led by [LEAD VENTURER].\n\n4. TERM. This Agreement terminates upon disposition of the Property and final accounting.",
+  },
+  {
+    id: "addendum",
+    label: "Inspection Addendum",
+    description: "Standard Inspection Contingency",
+    preview:
+      "INSPECTION ADDENDUM\n\nThis Addendum is attached to and made part of the Purchase and Sale Agreement dated [DATE] between [SELLER] and [BUYER] for the property located at [PROPERTY ADDRESS].\n\n1. INSPECTION PERIOD. Buyer shall have [X] calendar days from the Effective Date to perform inspections at Buyer's expense.\n\n2. TERMINATION RIGHT. During the Inspection Period, Buyer may terminate this Agreement for any reason or no reason and receive a full refund of earnest money.\n\n3. ACCESS. Seller shall provide reasonable access to the Property for inspections, including utilities turned on if available.\n\n4. REPAIR REQUESTS. Buyer may submit a written request for repairs or credit. Seller may accept, counter, or decline. If no agreement is reached within [X] days, Buyer may terminate.",
+  },
 ];
+
 
 const US_STATES = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
