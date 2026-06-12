@@ -387,17 +387,42 @@ export default function Welcome() {
     toast.success(`${files.length} Document(s) Ready To Upload`);
   };
 
-  const handleBuyersCsv = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const rows = (reader.result as string).split("\n").filter(Boolean).length - 1;
-      update("buyersCsv", { name: f.name, size: f.size, rows: Math.max(0, rows) });
-      toast.success(`${rows} Buyers Detected — We'll Import On Launch`);
-    };
-    reader.readAsText(f);
+  const [pendingLeadType, setPendingLeadType] = React.useState<LeadImportType>("cash_buyer");
+
+  const handleLeadImportUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    const typeLabel = LEAD_IMPORT_TYPES.find((t) => t.id === pendingLeadType)?.label ?? "Leads";
+    let pending = files.length;
+    files.forEach((f) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const rows = Math.max(0, (reader.result as string).split("\n").filter(Boolean).length - 1);
+        const entry = {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          type: pendingLeadType,
+          name: f.name,
+          size: f.size,
+          rows,
+        };
+        update("leadImports", [...data.leadImports, entry]);
+        if (pendingLeadType === "cash_buyer") {
+          update("buyersCsv", { name: f.name, size: f.size, rows });
+        }
+        pending -= 1;
+        if (pending === 0) {
+          toast.success(`${files.length} ${typeLabel} File${files.length > 1 ? "s" : ""} Queued For Import`);
+        }
+      };
+      reader.readAsText(f);
+    });
+    e.target.value = "";
   };
+
+  const removeLeadImport = (id: string) => {
+    update("leadImports", data.leadImports.filter((x) => x.id !== id));
+  };
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
