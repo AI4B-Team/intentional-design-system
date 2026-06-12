@@ -486,6 +486,7 @@ export default function Welcome() {
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
+    docFileMapRef.current = [...docFileMapRef.current, ...files];
     update("uploadedDocs", [...data.uploadedDocs, ...files.map((f) => ({ name: f.name, size: f.size }))]);
     update("docMode", "upload");
     toast.success(`${files.length} Document(s) Ready To Upload`);
@@ -502,13 +503,9 @@ export default function Welcome() {
       const reader = new FileReader();
       reader.onload = () => {
         const rows = Math.max(0, (reader.result as string).split("\n").filter(Boolean).length - 1);
-        const entry = {
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          type: pendingLeadType,
-          name: f.name,
-          size: f.size,
-          rows,
-        };
+        const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+        fileMapRef.current.set(id, f);
+        const entry = { id, type: pendingLeadType, name: f.name, size: f.size, rows };
         update("leadImports", [...data.leadImports, entry]);
         if (pendingLeadType === "cash_buyer") {
           update("buyersCsv", { name: f.name, size: f.size, rows });
@@ -524,8 +521,10 @@ export default function Welcome() {
   };
 
   const removeLeadImport = (id: string) => {
+    fileMapRef.current.delete(id);
     update("leadImports", data.leadImports.filter((x) => x.id !== id));
   };
+
 
 
   return (
