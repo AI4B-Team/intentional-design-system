@@ -333,6 +333,16 @@ export default function Welcome() {
 
   const finish = () => {
     persist();
+    // Flag markets for refinement reminder in Buy Box page
+    if (data.markets.length > 0) {
+      try {
+        const items = data.markets.map((state) => ({
+          state,
+          target: data.marketTargets[state] ?? { type: "statewide", values: "" },
+        }));
+        localStorage.setItem("buybox_pending_refinement", JSON.stringify(items));
+      } catch {}
+    }
     localStorage.setItem(WELCOME_DONE_KEY, "true");
     toast.success("Automations Live! Welcome To RealElite.");
     navigate("/dashboard");
