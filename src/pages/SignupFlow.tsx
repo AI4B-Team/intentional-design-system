@@ -318,7 +318,12 @@ export default function SignupFlow() {
               <span>Progress</span>
               <span>{currentStepIndex + 1} of {STEPS.length}</span>
             </div>
-            <Progress value={progressPercent} className="h-1 bg-white/10" />
+            <div className="relative h-1 w-full overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
 
           {/* Pro Tip */}
