@@ -295,6 +295,89 @@ const initialFolders: DocumentFolder[] = [
   { id: "company-bank", name: "Bank Statements", icon: Landmark, fileCount: 0, lastModified: new Date(), color: "blue", isFavorite: false, parentId: "company-docs" },
 ];
 
+interface PendingTemplate {
+  id: string;
+  label: string;
+  addedAt: string;
+}
+
+function PendingCustomizationBanner() {
+  const [items, setItems] = React.useState<PendingTemplate[]>([]);
+
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem("documents_pending_customization");
+      if (raw) setItems(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const dismiss = (id: string) => {
+    const next = items.filter((x) => x.id !== id);
+    setItems(next);
+    try {
+      localStorage.setItem("documents_pending_customization", JSON.stringify(next));
+    } catch {}
+  };
+
+  const dismissAll = () => {
+    setItems([]);
+    try {
+      localStorage.removeItem("documents_pending_customization");
+    } catch {}
+  };
+
+  if (items.length === 0) return null;
+
+  return (
+    <div className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
+        <div className="flex items-center gap-2">
+          <Edit className="h-4 w-4 text-primary" />
+          <h3 className="text-sm font-semibold text-foreground">
+            Templates Flagged During Setup
+          </h3>
+        </div>
+        <button
+          onClick={dismissAll}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Dismiss All
+        </button>
+      </div>
+      <p className="text-xs text-muted-foreground mb-3">
+        You Marked These Templates To Customize Later. Open Any To Edit Clauses, Update Terms, Or Upload Your Own Version.
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {items.map((t) => (
+          <div
+            key={t.id}
+            className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 text-sm"
+          >
+            <FileText className="h-4 w-4 text-primary" />
+            <span className="font-medium">{t.label}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 px-2 text-xs"
+              onClick={() => toast.info("Open Templates Folder To Edit", { description: t.label })}
+            >
+              Edit
+            </Button>
+            <button
+              onClick={() => dismiss(t.id)}
+              className="text-muted-foreground hover:text-foreground transition-colors text-xs"
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
 interface FolderCardProps {
   folder: DocumentFolder;
   hasChildren: boolean;
@@ -701,6 +784,7 @@ export default function Documents() {
         </div>
       ) : (
         <>
+          {!currentFolderId && <PendingCustomizationBanner />}
           {/* Header with Breadcrumb */}
           <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
