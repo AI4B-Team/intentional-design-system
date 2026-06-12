@@ -931,8 +931,8 @@ export default function Welcome() {
       </footer>
 
       <Dialog open={!!previewTemplate} onOpenChange={(o) => !o && setPreviewTemplateId(null)}>
-        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-          <DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col gap-4 p-6">
+          <DialogHeader className="shrink-0">
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
               {previewTemplate?.label}
@@ -944,9 +944,14 @@ export default function Welcome() {
               {previewTemplate?.preview}
             </pre>
           </div>
-          <p className="text-xs text-muted-foreground">
-            This Is A Sample Preview. The Full Attorney-Reviewed Template Will Be Populated With Your Deal Data At Send Time.
-          </p>
+          <div className="shrink-0 space-y-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
+            <p className="text-xs text-foreground/90">
+              <strong>This Is A Sample Preview.</strong> The Full Attorney-Reviewed Template Will Be Populated With Your Deal Data At Send Time.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              You Can Customize This Template Anytime In <strong>Settings → Documents</strong> — Add Clauses, Update Terms, Or Upload Your Own Version.
+            </p>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
