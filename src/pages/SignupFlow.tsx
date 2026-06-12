@@ -35,6 +35,10 @@ import {
   Mail,
   FileText,
   Bot,
+  Kanban,
+  PenTool,
+  Car,
+  Megaphone,
 } from "lucide-react";
 
 type Step = "organization" | "role" | "goals" | "features" | "launch";
@@ -84,41 +88,89 @@ const GOALS = [
 ];
 
 const FEATURES = [
-  { 
-    icon: Bot, 
-    label: "AI Deal Analyst", 
-    description: "Your AI assistant that analyzes properties and runs your system 24/7",
-    color: "text-primary"
+  {
+    icon: Bot,
+    label: "AIVA AI Assistant",
+    description: "Your 24/7 AI co-pilot that analyzes deals and runs your system",
+    iconClass: "text-violet-500",
+    bgClass: "bg-violet-500/10",
   },
-  { 
-    icon: PhoneIcon, 
-    label: "Power Dialer", 
-    description: "Call through lists with AI transcription and coaching",
-    color: "text-success"
+  {
+    icon: PhoneIcon,
+    label: "Power Dialer",
+    description: "Call through lists with AI transcription and live coaching",
+    iconClass: "text-emerald-500",
+    bgClass: "bg-emerald-500/10",
   },
-  { 
-    icon: TrendingUp, 
-    label: "Property Scout", 
-    description: "Find distressed properties with skip tracing built-in",
-    color: "text-warning"
+  {
+    icon: Search,
+    label: "Lead Scout",
+    description: "AI scrapes Craigslist, FB & MLS for distressed properties",
+    iconClass: "text-amber-500",
+    bgClass: "bg-amber-500/10",
   },
-  { 
-    icon: BarChart3, 
-    label: "Market Analytics", 
-    description: "Real-time comps, trends, and neighborhood insights",
-    color: "text-info"
+  {
+    icon: BarChart3,
+    label: "Market Intel",
+    description: "Real-time comps, ARV, trends and neighborhood insights",
+    iconClass: "text-sky-500",
+    bgClass: "bg-sky-500/10",
   },
-  { 
-    icon: Mail, 
-    label: "Campaign Engine", 
+  {
+    icon: Mail,
+    label: "Campaign Engine",
     description: "Automated direct mail, SMS, and email sequences",
-    color: "text-destructive"
+    iconClass: "text-rose-500",
+    bgClass: "bg-rose-500/10",
   },
-  { 
-    icon: FileText, 
-    label: "Automated Offers", 
-    description: "Send hundreds of offers in minutes with AI-powered automation",
-    color: "text-brand"
+  {
+    icon: FileText,
+    label: "Offer Blaster",
+    description: "Send hundreds of offers in minutes from your buy box rules",
+    iconClass: "text-orange-500",
+    bgClass: "bg-orange-500/10",
+  },
+  {
+    icon: Kanban,
+    label: "Pipeline CRM",
+    description: "Kanban deal stages with AI priority scoring and follow-ups",
+    iconClass: "text-cyan-500",
+    bgClass: "bg-cyan-500/10",
+  },
+  {
+    icon: Users,
+    label: "Buyer Network",
+    description: "Organize cash buyers and dispo deals with one click",
+    iconClass: "text-fuchsia-500",
+    bgClass: "bg-fuchsia-500/10",
+  },
+  {
+    icon: PenTool,
+    label: "Digital Signatures",
+    description: "Send contracts and collect e-signatures right from the deal",
+    iconClass: "text-indigo-500",
+    bgClass: "bg-indigo-500/10",
+  },
+  {
+    icon: Car,
+    label: "Driving For Dollars",
+    description: "Tag distressed properties from your phone with route tracking",
+    iconClass: "text-lime-500",
+    bgClass: "bg-lime-500/10",
+  },
+  {
+    icon: Megaphone,
+    label: "Website Builder",
+    description: "Launch motivated seller and cash buyer landing pages instantly",
+    iconClass: "text-pink-500",
+    bgClass: "bg-pink-500/10",
+  },
+  {
+    icon: Calculator,
+    label: "Deal Analyzer",
+    description: "Run flip, BRRRR, STR and wholesale exits in seconds",
+    iconClass: "text-teal-500",
+    bgClass: "bg-teal-500/10",
   },
 ];
 
@@ -565,14 +617,9 @@ export default function SignupFlow() {
                       >
                         <div className={cn(
                           "h-8 w-8 rounded-lg flex items-center justify-center mb-2",
-                          feature.color === "text-primary" && "bg-primary/10",
-                          feature.color === "text-success" && "bg-success/10",
-                          feature.color === "text-warning" && "bg-warning/10",
-                          feature.color === "text-info" && "bg-info/10",
-                          feature.color === "text-destructive" && "bg-destructive/10",
-                          feature.color === "text-brand" && "bg-brand/10"
+                          feature.bgClass
                         )}>
-                          <Icon className={cn("h-4 w-4", feature.color)} />
+                          <Icon className={cn("h-4 w-4", feature.iconClass)} />
                         </div>
                         <p className="font-semibold text-sm text-foreground mb-0.5">{feature.label}</p>
                         <p className="text-xs text-muted-foreground leading-relaxed">{feature.description}</p>
