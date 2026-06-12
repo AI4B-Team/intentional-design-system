@@ -108,7 +108,7 @@ export default function Login() {
               required
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <Lock className="h-5 w-5 text-primary" />
+              <Lock className="h-5 w-5 text-muted-foreground" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
