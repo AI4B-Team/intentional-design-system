@@ -1121,7 +1121,7 @@ export default function Welcome() {
                   { label: "Signature", val: data.entity.signatureDataUrl ? "Saved" : "Skipped" },
                   { label: "Buy Box", val: data.markets.length ? `${data.markets.length} States` : "Skipped" },
                   { label: "Business Number", val: data.comms.wantsNumber ? `Area ${data.comms.areaCode || "Any"}` : "Skipped" },
-                  { label: "Cash Buyers", val: data.buyersCsv ? `${data.buyersCsv.rows} Imported` : "Skipped" },
+                  { label: "Contacts & Leads", val: data.leadImports.length ? `${data.leadImports.length} List${data.leadImports.length > 1 ? "s" : ""} (${data.leadImports.reduce((a, b) => a + b.rows, 0)} Rows)` : "Skipped" },
                   { label: "Approval Mode", val: data.automation.approvalMode.charAt(0).toUpperCase() + data.automation.approvalMode.slice(1) },
                   { label: "Daily Limit", val: `${data.automation.dailySendLimit || 0} Sends/Day` },
                 ].map((r) => (
