@@ -283,6 +283,8 @@ function SignaturePad({ value, onChange }: { value: string; onChange: (v: string
 export default function Welcome() {
   const navigate = useNavigate();
   const [stepIdx, setStepIdx] = React.useState(0);
+  const [previewTemplateId, setPreviewTemplateId] = React.useState<string | null>(null);
+  const previewTemplate = TEMPLATES.find((t) => t.id === previewTemplateId) ?? null;
   const [data, setData] = React.useState<WelcomeData>(() => {
     try {
       const stored = localStorage.getItem(WELCOME_KEY);
