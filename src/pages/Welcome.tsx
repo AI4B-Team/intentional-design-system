@@ -144,7 +144,7 @@ const STEPS: { id: StepId; label: string; icon: React.ElementType }[] = [
   { id: "documents", label: "Documents", icon: FileText },
   { id: "markets", label: "Buy Box", icon: MapPin },
   { id: "comms", label: "Communications", icon: Phone },
-  { id: "buyers", label: "Cash Buyers", icon: Users },
+  { id: "buyers", label: "Contacts", icon: Users },
   { id: "automation", label: "Automation Rules", icon: Bot },
   { id: "done", label: "Review", icon: Rocket },
 ];
