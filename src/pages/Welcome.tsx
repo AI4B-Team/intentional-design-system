@@ -81,6 +81,7 @@ interface WelcomeData {
   buyBox: { minPrice: string; maxPrice: string; propertyType: string };
   comms: { wantsNumber: boolean; areaCode: string; businessHoursStart: string; businessHoursEnd: string };
   buyersCsv: { name: string; size: number; rows: number } | null;
+  leadImports: Array<{ id: string; type: LeadImportType; name: string; size: number; rows: number }>;
   automation: AutomationRules;
 }
 
