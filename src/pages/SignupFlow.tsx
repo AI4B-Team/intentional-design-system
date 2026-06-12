@@ -35,6 +35,10 @@ import {
   Mail,
   FileText,
   Bot,
+  Kanban,
+  PenTool,
+  Car,
+  Megaphone,
 } from "lucide-react";
 
 type Step = "organization" | "role" | "goals" | "features" | "launch";
