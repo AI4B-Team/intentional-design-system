@@ -298,7 +298,7 @@ export default function SignupFlow() {
                       </p>
                       <p className={cn(
                         "text-xs",
-                        isCurrent ? "text-primary" : "text-white/20"
+                        isCurrent ? "text-emerald-400" : "text-white/20"
                       )}>
                         {isCompleted ? "Completed" : isCurrent ? "Current Step" : ""}
                       </p>
