@@ -77,6 +77,7 @@ interface WelcomeData {
   selectedTemplates: string[];
   entity: { llcName: string; ein: string; signerName: string; signerTitle: string; signatureDataUrl: string };
   markets: string[];
+  marketTargets: Record<string, { type: "statewide" | "cities" | "counties" | "zips"; values: string }>;
   buyBox: { minPrice: string; maxPrice: string; propertyType: string };
   comms: { wantsNumber: boolean; areaCode: string; businessHoursStart: string; businessHoursEnd: string };
   buyersCsv: { name: string; size: number; rows: number } | null;
