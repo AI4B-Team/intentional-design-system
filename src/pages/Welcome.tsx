@@ -864,7 +864,7 @@ export default function Welcome() {
                     <p className="text-sm font-medium text-foreground">Provision A Business Number</p>
                     <p className="text-xs text-muted-foreground">We'll Set This Up In The Dialer After Launch.</p>
                   </div>
-                  <Switch checked={data.comms.wantsNumber} onCheckedChange={(v) => update("comms", { ...data.comms, wantsNumber: v })} />
+                  <Switch className="data-[state=checked]:bg-emerald-600" checked={data.comms.wantsNumber} onCheckedChange={(v) => update("comms", { ...data.comms, wantsNumber: v })} />
                 </div>
                 {data.comms.wantsNumber && (
                   <div className="space-y-1.5">
