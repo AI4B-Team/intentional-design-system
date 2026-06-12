@@ -446,7 +446,7 @@ export default function Welcome() {
               </div>
               <WhyCard>
                 <strong>Why This Matters:</strong> Your Documents Power Auto-Offer Engine, The Offer Blaster, And One-Click
-                E-Signature. The Faster They're In Place, The Faster You Send Compliant Contracts.
+                E-Signature. The Faster They're In Place, The Faster You Send Offers.
               </WhyCard>
 
               <div className="grid sm:grid-cols-2 gap-3">
