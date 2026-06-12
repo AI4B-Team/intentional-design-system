@@ -30,6 +30,81 @@ import { BuyBoxCreator } from "@/components/property-scout/BuyBoxCreator";
 import { BuyBoxWizard } from "@/components/marketplace-deals/BuyBoxWizard";
 import { BuyBox as BuyBoxType } from "@/types/property-scout";
 import { toast } from "sonner";
+import { MapPin, Sparkles, X } from "lucide-react";
+
+interface PendingMarketTarget {
+  state: string;
+  target: { type: "statewide" | "cities" | "counties" | "zips"; values: string };
+}
+
+function BuyBoxRefinementBanner() {
+  const [items, setItems] = React.useState<PendingMarketTarget[]>([]);
+
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem("buybox_pending_refinement");
+      if (raw) setItems(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const dismiss = () => {
+    setItems([]);
+    try {
+      localStorage.removeItem("buybox_pending_refinement");
+    } catch {}
+  };
+
+  if (items.length === 0) return null;
+
+  const needsRefinement = items.filter((i) => i.target.type === "statewide" || !i.target.values.trim());
+
+  return (
+    <div className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="rounded-md bg-primary/10 p-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-foreground">Refine Your Buy Box Markets</h3>
+            <p className="text-xs text-muted-foreground">
+              You Picked {items.length} {items.length === 1 ? "State" : "States"} During Setup. Narrow Each One To Cities, Counties, Or Zip Codes For Sharper Lead Targeting.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {items.map((i) => (
+                <div
+                  key={i.state}
+                  className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2 py-1 text-xs"
+                >
+                  <MapPin className="h-3 w-3 text-primary" />
+                  <span className="font-semibold">{i.state}</span>
+                  <span className="text-muted-foreground">
+                    {i.target.type === "statewide"
+                      ? "Statewide"
+                      : `${i.target.type}: ${i.target.values || "Not Set"}`}
+                  </span>
+                  {needsRefinement.find((n) => n.state === i.state) && (
+                    <span className="ml-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-400">
+                      Refine
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={dismiss}
+          className="text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 // Mock data for buy boxes
 const mockBuyBoxes: (BuyBoxType & { matchCount?: number })[] = [
@@ -197,6 +272,7 @@ const BuyBox: React.FC = () => {
 
   return (
     <PageLayout title="Buy Box">
+      <BuyBoxRefinementBanner />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>

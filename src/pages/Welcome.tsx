@@ -77,6 +77,7 @@ interface WelcomeData {
   selectedTemplates: string[];
   entity: { llcName: string; ein: string; signerName: string; signerTitle: string; signatureDataUrl: string };
   markets: string[];
+  marketTargets: Record<string, { type: "statewide" | "cities" | "counties" | "zips"; values: string }>;
   buyBox: { minPrice: string; maxPrice: string; propertyType: string };
   comms: { wantsNumber: boolean; areaCode: string; businessHoursStart: string; businessHoursEnd: string };
   buyersCsv: { name: string; size: number; rows: number } | null;
@@ -94,6 +95,7 @@ const initialData: WelcomeData = {
   selectedTemplates: ["purchase", "loi"],
   entity: { llcName: "", ein: "", signerName: "", signerTitle: "Managing Member", signatureDataUrl: "" },
   markets: [],
+  marketTargets: {},
   buyBox: { minPrice: "", maxPrice: "", propertyType: "single_family" },
   comms: { wantsNumber: false, areaCode: "", businessHoursStart: "09:00", businessHoursEnd: "18:00" },
   buyersCsv: null,
@@ -331,6 +333,16 @@ export default function Welcome() {
 
   const finish = () => {
     persist();
+    // Flag markets for refinement reminder in Buy Box page
+    if (data.markets.length > 0) {
+      try {
+        const items = data.markets.map((state) => ({
+          state,
+          target: data.marketTargets[state] ?? { type: "statewide", values: "" },
+        }));
+        localStorage.setItem("buybox_pending_refinement", JSON.stringify(items));
+      } catch {}
+    }
     localStorage.setItem(WELCOME_DONE_KEY, "true");
     toast.success("Automations Live! Welcome To RealElite.");
     navigate("/dashboard");
@@ -667,7 +679,13 @@ export default function Welcome() {
                     return (
                       <button
                         key={s}
-                        onClick={() => update("markets", active ? data.markets.filter((x) => x !== s) : [...data.markets, s])}
+                        onClick={() => {
+                          const nextMarkets = active ? data.markets.filter((x) => x !== s) : [...data.markets, s];
+                          update("markets", nextMarkets);
+                          if (!active && !data.marketTargets[s]) {
+                            update("marketTargets", { ...data.marketTargets, [s]: { type: "statewide", values: "" } });
+                          }
+                        }}
                         className={cn(
                           "h-8 min-w-[44px] px-2.5 rounded-md text-xs font-medium border transition",
                           active ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50",
@@ -677,6 +695,67 @@ export default function Welcome() {
                       </button>
                     );
                   })}
+                </div>
+
+                {data.markets.length > 0 && (
+                  <div className="space-y-3 pt-2 border-t border-border">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-foreground">Narrow Each State (Optional)</p>
+                      <span className="text-xs text-muted-foreground">Statewide By Default</span>
+                    </div>
+                    {data.markets.map((s) => {
+                      const target = data.marketTargets[s] ?? { type: "statewide" as const, values: "" };
+                      const setTarget = (t: typeof target) =>
+                        update("marketTargets", { ...data.marketTargets, [s]: t });
+                      const TYPES: Array<{ id: "statewide" | "cities" | "counties" | "zips"; label: string }> = [
+                        { id: "statewide", label: "Statewide" },
+                        { id: "cities", label: "Cities" },
+                        { id: "counties", label: "Counties" },
+                        { id: "zips", label: "Zip Codes" },
+                      ];
+                      const placeholder =
+                        target.type === "cities" ? "Tampa, Orlando, Miami" :
+                        target.type === "counties" ? "Hillsborough, Orange, Miami-Dade" :
+                        target.type === "zips" ? "33602, 32801, 33101" : "";
+                      return (
+                        <div key={s} className="rounded-lg border border-border bg-muted/30 p-3 space-y-2">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-sm font-semibold text-foreground">{s}</span>
+                            <div className="flex flex-wrap gap-1">
+                              {TYPES.map((t) => (
+                                <button
+                                  key={t.id}
+                                  onClick={() => setTarget({ ...target, type: t.id, values: t.id === "statewide" ? "" : target.values })}
+                                  className={cn(
+                                    "h-7 px-2.5 rounded-md text-xs font-medium border transition",
+                                    target.type === t.id
+                                      ? "bg-primary text-primary-foreground border-primary"
+                                      : "border-border hover:border-primary/50",
+                                  )}
+                                >
+                                  {t.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                          {target.type !== "statewide" && (
+                            <Input
+                              placeholder={placeholder}
+                              value={target.values}
+                              onChange={(e) => setTarget({ ...target, values: e.target.value })}
+                              className="h-9 text-sm"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                  <p className="text-xs text-muted-foreground">
+                    <strong className="text-foreground">Refine Later:</strong> You Can Add Cities, Counties, Zips, Or Full Buy Box Criteria Anytime In <strong>Buy Box Tracker</strong>. We'll Remind You.
+                  </p>
                 </div>
               </Card>
 
