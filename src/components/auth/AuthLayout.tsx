@@ -30,9 +30,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         />
 
         {/* Logo */}
-        <div className="relative">
+        <Link to="/" className="relative inline-block" aria-label="Go to homepage">
           <RealEliteLogo height={26} color="white" />
-        </div>
+        </Link>
 
         {/* Main Content */}
         <div className="relative max-w-lg">
@@ -94,7 +94,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
       <div className="flex-1 flex flex-col bg-background">
         {/* Mobile Logo */}
         <div className="lg:hidden flex items-center p-6 border-b border-border">
-          <RealEliteLogo height={22} color="hsl(222 47% 11%)" />
+          <Link to="/" aria-label="Go to homepage">
+            <RealEliteLogo height={22} color="hsl(222 47% 11%)" />
+          </Link>
         </div>
 
         {/* Form Container */}
