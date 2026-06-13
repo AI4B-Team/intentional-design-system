@@ -30,9 +30,9 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         />
 
         {/* Logo */}
-        <div className="relative">
+        <Link to="/" className="relative inline-block" aria-label="Go to homepage">
           <RealEliteLogo height={26} color="white" />
-        </div>
+        </Link>
 
         {/* Main Content */}
         <div className="relative max-w-lg">
