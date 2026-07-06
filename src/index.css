@@ -288,7 +288,13 @@
     text-rendering: optimizeLegibility;
   }
   
-  /* Selection color — see final ::selection rule below for the canonical brand selection */
+  /* Brand selection color (canonical — do not duplicate elsewhere) */
+  ::selection {
+    background: hsl(var(--primary) / 0.2);
+    color: hsl(var(--foreground));
+  }
+
+
 
   
   /* Focus visible for accessibility */
