@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Flame, ArrowRight, Phone, Mail } from "lucide-react";
 import type { HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 // Enhanced Hot Opportunity Item
 function EnhancedHotOpportunityItem({
@@ -155,19 +156,27 @@ function LegacyHotOpportunityItem({
 interface HotOpportunitiesCardProps {
   opportunities: HotOpportunityEnhanced[] | any[];
   isLoading: boolean;
+  isDemo?: boolean;
 }
 
-export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunitiesCardProps) {
+export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false }: HotOpportunitiesCardProps) {
   const navigate = useNavigate();
 
   const handleCall = (e: React.MouseEvent, phone: string | null) => {
     e.stopPropagation();
+    if (isDemo) return;
     if (phone) window.location.href = `tel:${phone}`;
   };
 
   const handleEmail = (e: React.MouseEvent, email: string | null) => {
     e.stopPropagation();
+    if (isDemo) return;
     if (email) window.location.href = `mailto:${email}`;
+  };
+
+  const goToProperty = (id: string) => {
+    if (isDemo) return; // never navigate to fake IDs
+    navigate(`/properties/${id}`);
   };
 
   return (
