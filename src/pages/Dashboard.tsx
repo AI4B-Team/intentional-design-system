@@ -18,7 +18,7 @@ import { PipelineValueCard } from "@/components/dashboard/PipelineValueCard";
 import { PipelineOverviewCard } from "@/components/dashboard/PipelineOverviewCard";
 import { HotOpportunitiesCard } from "@/components/dashboard/HotOpportunitiesCard";
 import { RecentActivityCard } from "@/components/dashboard/RecentActivityCard";
-import { demoPipelineValueData, demoHotOpportunities, demoRecentActivity } from "@/components/dashboard/dashboard-demo-data";
+import { demoPipelineValueData, demoHotOpportunities } from "@/components/dashboard/dashboard-demo-data";
 
 import {
   Users,
@@ -42,22 +42,21 @@ export default function Dashboard() {
   const { data: insights } = useDashboardInsights();
 
   // Use demo data when no real data
-  const hasRealData = pipelineValueStatsRaw && (
+  const hasRealData = !!pipelineValueStatsRaw && (
     pipelineValueStatsRaw.leads.count > 0 ||
     pipelineValueStatsRaw.offers.count > 0 ||
     pipelineValueStatsRaw.contracted.count > 0 ||
     pipelineValueStatsRaw.sold.count > 0
   );
-
+  const pipelineStatsIsDemo = !hasRealData;
   const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoPipelineValueData;
 
   const realOpportunities = insights?.hotOpportunities || hotOpportunities || [];
-  const displayHotOpportunities = realOpportunities.length >= 5
-    ? realOpportunities
-    : demoHotOpportunities;
+  const opportunitiesIsDemo = realOpportunities.length < 5;
+  const displayHotOpportunities = opportunitiesIsDemo ? demoHotOpportunities : realOpportunities;
 
-  const hasEnoughRealActivity = (recentActivity?.length || 0) >= 4;
-  const displayActivity = hasEnoughRealActivity ? recentActivity : demoRecentActivity;
+  // Real empty state instead of demo activity when the org has none yet.
+  const hasRealActivity = (recentActivity?.length || 0) > 0;
 
   return (
     <AppLayout>
