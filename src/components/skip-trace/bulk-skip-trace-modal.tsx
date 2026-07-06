@@ -13,6 +13,8 @@ import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Search, Check, X, AlertCircle, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/hooks/useCredits";
+import { useSubscription } from "@/hooks/useSubscription";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
