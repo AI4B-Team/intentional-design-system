@@ -278,6 +278,7 @@ export default function Pipeline() {
                     contextIcon={card.key === "offers" ? Hourglass : undefined}
                     contextSeverity={card.key === "offers" ? "attention" : undefined}
                     nextExpectedClose={card.key === "contracted" && pipelineValueStats?.contracted?.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
+                    isDemo={!hasRealData}
                   />
                 </div>
               ))}
