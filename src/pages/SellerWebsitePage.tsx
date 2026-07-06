@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getPublicWebsite, trackWebsiteEvent } from "@/lib/getPublicWebsite";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { toast } from "sonner";
 import { WebsiteHero } from "@/components/seller-website/WebsiteHero";
 import { StatsSection } from "@/components/seller-website/StatsSection";
 import { HowItWorksSection } from "@/components/seller-website/HowItWorksSection";
@@ -88,7 +89,7 @@ export default function SellerWebsitePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFormSubmit = async (formData: any) => {
+  const handleFormSubmit = async (formData: any, turnstileToken?: string) => {
     if (!website) return;
 
     try {
@@ -106,13 +107,19 @@ export default function SellerWebsitePage() {
         sellTimeline: formData.sellTimeline,
         reasonSelling: formData.reasonSelling,
         notes: formData.notes,
-      });
-      
+      }, turnstileToken);
+
       if (result?.companyPhone) {
         setCompanyPhone(result.companyPhone);
       }
     } catch (err) {
       console.error('Form submission error:', err);
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.toLowerCase().includes('too many submissions')) {
+        toast.error('Too many submissions, please try again later.');
+      } else {
+        toast.error('Something went wrong. Please try again or call us directly.');
+      }
     }
   };
 

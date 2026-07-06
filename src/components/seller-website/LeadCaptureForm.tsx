@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Lock, Loader2, Star } from "lucide-react";
+import { TurnstileWidget, isTurnstileEnabled } from "@/components/security/TurnstileWidget";
 import type { CustomFormField } from "@/types/custom-form-fields";
 
 const US_STATES = [
@@ -58,7 +59,7 @@ interface LeadCaptureFormProps {
   formPrivacyText?: string;
   accentColor: string;
   primaryColor: string;
-  onSubmit: (data: FormData) => Promise<void>;
+  onSubmit: (data: FormData, turnstileToken?: string) => Promise<void>;
   isSubmitting?: boolean;
   isSubmitted?: boolean;
   customFormFields?: CustomFormField[];
@@ -110,6 +111,8 @@ export function LeadCaptureForm({
     notes: "",
     customFields: {},
   });
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const turnstileRequired = isTurnstileEnabled();
 
   const handleCustomChange = (fieldId: string, value: string | string[]) => {
     setFormData((prev) => ({
@@ -124,7 +127,7 @@ export function LeadCaptureForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    await onSubmit(formData, turnstileToken || undefined);
   };
 
   const fields = formFields || ["address", "name", "phone", "email"];
@@ -447,10 +450,16 @@ export function LeadCaptureForm({
           );
         })}
 
+        {turnstileRequired && (
+          <div className="flex justify-center">
+            <TurnstileWidget onToken={setTurnstileToken} />
+          </div>
+        )}
+
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
           className="w-full text-lg py-6 font-bold"
           style={{ backgroundColor: accentColor }}
         >

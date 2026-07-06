@@ -237,41 +237,39 @@ export function useSubmitInterest() {
     canProvidePof?: boolean;
     canCloseQuickly?: boolean;
     offerAmount?: number;
+    turnstileToken?: string;
   }) => {
     setSubmitting(true);
 
     try {
-      const { error } = await supabase.from('deal_interests').insert({
-        deal_id: data.dealId,
-        user_id: data.userId,
-        guest_name: data.name,
-        guest_email: data.email,
-        guest_phone: data.phone || null,
-        interest_type: data.interestType,
-        message: data.message || null,
-        offer_amount: data.offerAmount || null,
-        source: 'direct',
+      const { data: resp, error } = await supabase.functions.invoke('submit-deal-interest', {
+        body: {
+          dealId: data.dealId,
+          userId: data.userId,
+          name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          interestType: data.interestType,
+          message: data.message || null,
+          offerAmount: data.offerAmount || null,
+          turnstileToken: data.turnstileToken,
+        },
       });
 
-      if (error) throw error;
-
-      // Update deal interest count
-      const { data: dealData } = await supabase
-        .from('dispo_deals')
-        .select('interest_count')
-        .eq('id', data.dealId)
-        .single();
-
-      if (dealData) {
-        await supabase
-          .from('dispo_deals')
-          .update({ interest_count: (dealData.interest_count || 0) + 1 })
-          .eq('id', data.dealId);
+      if (error) {
+        const ctxRes = (error as { context?: { response?: Response } })?.context?.response;
+        if (ctxRes?.status === 429) {
+          return { success: false, error: 'Too many submissions, please try again later.' };
+        }
+        return { success: false, error: error.message || 'Failed to submit interest' };
+      }
+      if (resp?.error) {
+        return { success: false, error: resp.error };
       }
 
       return { success: true };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Failed to submit interest' };
+      return { success: false, error: err?.message || 'Failed to submit interest' };
     } finally {
       setSubmitting(false);
     }

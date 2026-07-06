@@ -30,14 +30,18 @@ export function useLeadSubmit() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<LeadSubmitResult | null>(null);
 
-  const submitLead = async (websiteId: string, formData: LeadFormData): Promise<LeadSubmitResult> => {
+  const submitLead = async (
+    websiteId: string,
+    formData: LeadFormData,
+    turnstileToken?: string,
+  ): Promise<LeadSubmitResult> => {
     setSubmitting(true);
     setError(null);
-    
+
     try {
       // Get UTM parameters from URL
       const params = new URLSearchParams(window.location.search);
-      
+
       const { data, error: invokeError } = await supabase.functions.invoke('submit-seller-lead', {
         body: {
           websiteId,
@@ -58,18 +62,25 @@ export function useLeadSubmit() {
           utmSource: params.get('utm_source') || undefined,
           utmMedium: params.get('utm_medium') || undefined,
           utmCampaign: params.get('utm_campaign') || undefined,
-          utmContent: params.get('utm_content') || undefined
+          utmContent: params.get('utm_content') || undefined,
+          turnstileToken,
         }
       });
-      
+
       if (invokeError) {
+        // Supabase Functions client surfaces non-2xx as FunctionsHttpError; the
+        // response body (which carries our 429 message) is on `context.response`.
+        const ctxRes = (invokeError as { context?: { response?: Response } })?.context?.response;
+        if (ctxRes?.status === 429) {
+          throw new Error('Too many submissions, please try again later.');
+        }
         throw new Error(invokeError.message || 'Failed to submit lead');
       }
-      
+
       if (data?.error) {
         throw new Error(data.error);
       }
-      
+
       setSuccess(true);
       setResult(data);
       return data;

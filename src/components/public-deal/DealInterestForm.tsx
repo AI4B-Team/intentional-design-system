@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useSubmitInterest } from '@/hooks/usePublicDeal';
+import { TurnstileWidget, isTurnstileEnabled } from '@/components/security/TurnstileWidget';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -31,6 +32,8 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
   const { submitInterest, submitting } = useSubmitInterest();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const turnstileRequired = isTurnstileEnabled();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +67,7 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
         offerAmount: validated.offerAmount,
         canProvidePof: validated.canProvidePof,
         canCloseQuickly: validated.canCloseQuickly,
+        turnstileToken: turnstileToken || undefined,
       });
 
       if (result.success) {
@@ -222,7 +226,16 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
             </label>
           </div>
 
-          <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={submitting}>
+          {turnstileRequired && (
+            <TurnstileWidget onToken={setTurnstileToken} />
+          )}
+
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full sm:w-auto"
+            disabled={submitting || (turnstileRequired && !turnstileToken)}
+          >
             <Send className="h-4 w-4 mr-2" />
             {submitting ? 'Submitting...' : 'Submit Interest'}
           </Button>

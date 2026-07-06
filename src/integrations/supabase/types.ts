@@ -7821,6 +7821,27 @@ export type Database = {
           },
         ]
       }
+      public_ip_rate_limits: {
+        Row: {
+          endpoint: string
+          ip: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          endpoint: string
+          ip: string
+          request_count?: number
+          window_start: string
+        }
+        Update: {
+          endpoint?: string
+          ip?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       renovation_images: {
         Row: {
           area_label: string | null
