@@ -32,6 +32,8 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
   const { submitInterest, submitting } = useSubmitInterest();
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
+  const turnstileRequired = isTurnstileEnabled();
 
   const [formData, setFormData] = useState({
     name: '',
