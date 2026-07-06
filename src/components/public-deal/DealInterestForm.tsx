@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useSubmitInterest } from '@/hooks/usePublicDeal';
+import { TurnstileWidget, isTurnstileEnabled } from '@/components/security/TurnstileWidget';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
