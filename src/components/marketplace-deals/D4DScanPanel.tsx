@@ -12,6 +12,7 @@ import { D4DUpgradeModal } from "./D4DUpgradeModal";
 import { toast } from "sonner";
 import { CreateListModal } from "@/components/lists/create-list-modal";
 import { useIsTopPlan } from "@/hooks/useIsTopPlan";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 interface D4DScanPanelProps {
   properties: D4DProperty[];
@@ -132,7 +133,10 @@ export function D4DScanPanel({ properties, onClose, onFocusProperty, onRescan, t
                 <ScanSearch className="h-4 w-4 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">AI Scanner</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-sm">AI Scanner</h3>
+                  <SampleDataBadge compact title="Deep Scan is currently populated with illustrative sample properties so you can preview the workflow." />
+                </div>
                 <p className="text-xs text-muted-foreground">{totalScanned.toLocaleString()} properties scanned</p>
               </div>
             </div>
