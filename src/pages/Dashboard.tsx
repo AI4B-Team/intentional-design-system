@@ -100,6 +100,7 @@ export default function Dashboard() {
             onClick={() => navigate("/properties?status=new,contacted,appointment")}
             goal={goals.leadsGoal}
             actionInsight={insights?.leadsInsight}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '100ms' }}>
@@ -120,6 +121,7 @@ export default function Dashboard() {
               : undefined}
             contextIcon={Hourglass}
             contextSeverity="attention"
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '200ms' }}>
@@ -138,6 +140,7 @@ export default function Dashboard() {
             goal={goals.contractsGoal}
             variant="calm"
             nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
@@ -156,6 +159,7 @@ export default function Dashboard() {
             goal={goals.soldGoal}
             variant="celebration"
             lastClosedDaysAgo={pipelineValueStats?.sold.count && pipelineValueStats.sold.count > 0 ? 3 : undefined}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
       </div>
@@ -165,6 +169,7 @@ export default function Dashboard() {
         <HotOpportunitiesCard
           opportunities={displayHotOpportunities}
           isLoading={hotLoading}
+          isDemo={opportunitiesIsDemo}
         />
         <PipelineOverviewCard
           pipelineStats={pipelineStats}
@@ -184,8 +189,9 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TodaysTasks />
         <RecentActivityCard
-          activities={displayActivity}
+          activities={hasRealActivity ? recentActivity : []}
           isLoading={activityLoading}
+          emptyState={!activityLoading && !hasRealActivity}
         />
       </div>
     </AppLayout>
