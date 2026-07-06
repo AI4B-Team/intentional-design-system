@@ -343,10 +343,6 @@
   }
 
   /* .text-tiny — canonical definition lives in the "Global Polish" section below */
-    line-height: 1.45;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
   
   /* Monospace for numbers */
   .font-mono {
