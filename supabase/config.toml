@@ -39,6 +39,15 @@ verify_jwt = false  # Inbound from Lob — Lob-Signature HMAC-SHA256 + timestamp
 [functions.buyer-portal-auth]
 verify_jwt = false  # Public buyer portal auth (magic link); handles its own validation
 
+[functions.submit-deal]
+verify_jwt = false  # Public deal submission form; per-IP rate limit + Turnstile
+
+[functions.submit-deal-interest]
+verify_jwt = false  # Public "interested in this deal" form; per-IP rate limit + Turnstile
+
+[functions.track-website-event]
+verify_jwt = false  # Public seller-website analytics beacon; per-IP rate cap
+
 # --- Authenticated app endpoints (verify_jwt = true) ------------------------
 
 [functions.agent-detect]
