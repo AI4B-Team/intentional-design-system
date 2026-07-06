@@ -83,7 +83,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Vapi webhook error:", error);
+    await reportError(error, { functionName: "vapi-webhook" });
     return new Response(JSON.stringify({ error: "Webhook processing failed" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

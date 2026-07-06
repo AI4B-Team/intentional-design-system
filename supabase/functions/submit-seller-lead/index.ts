@@ -322,7 +322,7 @@ serve(async (req) => {
     })
 
   } catch (error) {
-    console.error('Lead submission error:', error)
+    await reportError(error, { functionName: "submit-seller-lead" });
     return new Response(JSON.stringify({ 
       error: 'Submission failed. Please try again or call us directly.' 
     }), {

@@ -142,7 +142,7 @@ serve(async (req) => {
     return new Response('OK', { status: 200 })
 
   } catch (error) {
-    console.error('Webhook error:', error)
+    await reportError(error, { functionName: "twilio-webhook" });
     return new Response('Internal error', { status: 500 })
   }
 })

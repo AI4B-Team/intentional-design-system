@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
       }
     }
   } catch (e) {
-    console.error("Webhook handler error", event.type, e);
+    await reportError(e, { functionName: "stripe-webhook", extra: { eventType: event.type } });
     return new Response("Handler error", { status: 500 });
   }
 

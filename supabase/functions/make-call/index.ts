@@ -175,7 +175,7 @@ serve(async (req) => {
     })
 
   } catch (error) {
-    console.error('Make call error:', error)
+    await reportError(error, { functionName: "make-call" });
     return new Response(JSON.stringify({ error: 'Failed to make call' }), { 
       status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
     })
