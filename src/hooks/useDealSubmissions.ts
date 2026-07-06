@@ -148,113 +148,72 @@ export function useMarkSubmissionReviewed() {
 
 export function useSubmitDeal() {
   return useMutation({
-    mutationFn: async (data: SubmitDealData) => {
-      // 1. Check if deal source exists by email
-      const { data: existingSource } = await supabase
-        .from("deal_sources")
-        .select("id")
-        .eq("email", data.submitterEmail)
-        .maybeSingle();
-
-      let dealSourceId = existingSource?.id;
-
-      // 2. Create new deal source if needed
-      if (!dealSourceId) {
-        const typeMap: Record<string, string> = {
-          "Wholesaler": "wholesaler",
-          "Agent": "agent",
-          "Property Owner": "agent",
-          "Other": "agent",
-        };
-
-        const { data: newSource, error: sourceError } = await supabase
-          .from("deal_sources")
-          .insert({
-            name: data.submitterName,
-            company: data.submitterCompany || null,
-            phone: data.submitterPhone,
-            email: data.submitterEmail,
-            type: typeMap[data.submitterType || "Other"] || "agent",
-            source: "deal_submission",
-            status: "cold",
-            user_id: "00000000-0000-0000-0000-000000000000", // Placeholder for public submissions
-          })
-          .select()
-          .single();
-
-        if (sourceError) throw sourceError;
-        dealSourceId = newSource.id;
-      }
-
-      // 3. Create property record
-      const { data: property, error: propertyError } = await supabase
-        .from("properties")
-        .insert({
+    mutationFn: async (
+      data: SubmitDealData & { turnstileToken?: string },
+    ) => {
+      // Photos still upload client-side to storage (property-photos bucket is
+      // public). The rest of the submission goes through the rate-limited
+      // edge function so anon writes to deal_sources/properties/deal_submissions
+      // are no longer allowed from the browser.
+      const { data: resp, error } = await supabase.functions.invoke('submit-deal', {
+        body: {
+          submitterName: data.submitterName,
+          submitterCompany: data.submitterCompany,
+          submitterPhone: data.submitterPhone,
+          submitterEmail: data.submitterEmail,
+          referralSource: data.referralSource,
+          submitterType: data.submitterType,
           address: data.address,
           city: data.city,
           state: data.state,
           zip: data.zip,
-          property_type: data.propertyType || null,
-          beds: data.beds || null,
-          baths: data.baths || null,
-          sqft: data.sqft || null,
-          year_built: data.yearBuilt || null,
-          lot_size: data.lotSize || null,
-          estimated_value: data.askingPrice,
-          arv: data.arv || null,
-          repair_estimate: data.repairEstimate || null,
-          source: "deal_submission",
-          source_id: dealSourceId,
-          status: "new",
-          notes: [
-            data.isWholesale ? `Wholesale assignment - Fee: $${data.assignmentFee || 0}` : null,
-            data.propertyCondition ? `Condition: ${data.propertyCondition}` : null,
-            data.occupancy ? `Occupancy: ${data.occupancy}` : null,
-            data.sellerMotivation ? `Motivation: ${data.sellerMotivation}` : null,
-            data.timeline ? `Timeline: ${data.timeline}` : null,
-            data.dealNotes ? `Deal notes: ${data.dealNotes}` : null,
-            data.additionalNotes ? `Additional: ${data.additionalNotes}` : null,
-          ].filter(Boolean).join("\n\n"),
-          user_id: "00000000-0000-0000-0000-000000000000", // Placeholder for public submissions
-        })
-        .select()
-        .single();
+          propertyType: data.propertyType,
+          beds: data.beds,
+          baths: data.baths,
+          sqft: data.sqft,
+          yearBuilt: data.yearBuilt,
+          lotSize: data.lotSize,
+          askingPrice: data.askingPrice,
+          arv: data.arv,
+          repairEstimate: data.repairEstimate,
+          isWholesale: data.isWholesale,
+          assignmentFee: data.assignmentFee,
+          propertyCondition: data.propertyCondition,
+          occupancy: data.occupancy,
+          sellerMotivation: data.sellerMotivation,
+          timeline: data.timeline,
+          dealNotes: data.dealNotes,
+          additionalNotes: data.additionalNotes,
+          turnstileToken: data.turnstileToken,
+        },
+      });
 
-      if (propertyError) throw propertyError;
+      if (error) {
+        const ctxRes = (error as { context?: { response?: Response } })?.context?.response;
+        if (ctxRes?.status === 429) {
+          throw new Error('Too many submissions, please try again later.');
+        }
+        throw new Error(error.message || 'Failed to submit deal');
+      }
+      if (resp?.error) throw new Error(resp.error);
 
-      // 4. Upload photos if any
+      const { submission, property } = resp as {
+        submission: DealSubmission;
+        property: { id: string };
+      };
+
+      // Upload photos (best-effort — failures are logged but do not fail the submission)
       if (data.photos && data.photos.length > 0) {
         for (const photo of data.photos) {
           const fileName = `${property.id}/${Date.now()}-${photo.name}`;
           const { error: uploadError } = await supabase.storage
-            .from("property-photos")
+            .from('property-photos')
             .upload(fileName, photo);
-
           if (uploadError) {
-            console.error("Photo upload error:", uploadError);
+            console.error('Photo upload error:', uploadError);
           }
         }
       }
-
-      // 5. Create submission record
-      const { data: submission, error: submissionError } = await supabase
-        .from("deal_submissions")
-        .insert({
-          property_id: property.id,
-          deal_source_id: dealSourceId,
-          submitter_name: data.submitterName,
-          submitter_email: data.submitterEmail,
-          submitter_phone: data.submitterPhone,
-          submitter_company: data.submitterCompany || null,
-          submitter_type: data.submitterType || null,
-          referral_source: data.referralSource || null,
-        })
-        .select()
-        .single();
-
-      if (submissionError) throw submissionError;
-
-      // TODO: Send notification email via edge function for new deal submissions
 
       return { submission, property };
     },
