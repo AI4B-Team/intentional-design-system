@@ -67,6 +67,7 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
         offerAmount: validated.offerAmount,
         canProvidePof: validated.canProvidePof,
         canCloseQuickly: validated.canCloseQuickly,
+        turnstileToken: turnstileToken || undefined,
       });
 
       if (result.success) {
