@@ -38,20 +38,30 @@ export async function trackWebsiteEvent(
     os?: string;
   }
 ) {
-  await supabase.from('website_analytics').insert({
-    website_id: websiteId,
-    event_type: eventType,
-    page_url: pageUrl,
-    visitor_id: metadata?.visitorId,
-    session_id: metadata?.sessionId,
-    referrer: metadata?.referrer,
-    utm_source: metadata?.utmSource,
-    utm_medium: metadata?.utmMedium,
-    utm_campaign: metadata?.utmCampaign,
-    device_type: metadata?.deviceType,
-    browser: metadata?.browser,
-    os: metadata?.os,
-  });
+  // Routed through the edge function so the write is rate-limited per IP
+  // (60/hour). Beyond that cap events are silently dropped — analytics
+  // beacons should never break the page.
+  try {
+    await supabase.functions.invoke('track-website-event', {
+      body: {
+        websiteId,
+        eventType,
+        pageUrl,
+        visitorId: metadata?.visitorId,
+        sessionId: metadata?.sessionId,
+        referrer: metadata?.referrer,
+        utmSource: metadata?.utmSource,
+        utmMedium: metadata?.utmMedium,
+        utmCampaign: metadata?.utmCampaign,
+        deviceType: metadata?.deviceType,
+        browser: metadata?.browser,
+        os: metadata?.os,
+      },
+    });
+  } catch (err) {
+    // Never surface analytics errors to the user.
+    console.warn('trackWebsiteEvent failed:', err);
+  }
 }
 
 export async function submitSellerLead(
