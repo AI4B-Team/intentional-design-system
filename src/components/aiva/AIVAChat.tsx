@@ -179,9 +179,11 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
           
           if (uploadError) throw uploadError;
           
-          const { data: { publicUrl } } = supabase.storage
+          const { data: signed, error: signedErr } = await supabase.storage
             .from('voice-recordings')
-            .getPublicUrl(fileName);
+            .createSignedUrl(fileName, 300);
+          if (signedErr || !signed?.signedUrl) throw signedErr || new Error('Failed to sign URL');
+          const publicUrl = signed.signedUrl;
           
           // Transcribe
           const { data, error: fnError } = await supabase.functions.invoke('transcribe-audio', {
