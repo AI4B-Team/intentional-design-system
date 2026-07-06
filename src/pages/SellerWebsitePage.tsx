@@ -114,7 +114,12 @@ export default function SellerWebsitePage() {
       }
     } catch (err) {
       console.error('Form submission error:', err);
-      // submitError from the hook already surfaces the friendly 429 message.
+      const msg = err instanceof Error ? err.message : '';
+      if (msg.toLowerCase().includes('too many submissions')) {
+        toast.error('Too many submissions, please try again later.');
+      } else {
+        toast.error('Something went wrong. Please try again or call us directly.');
+      }
     }
   };
 
