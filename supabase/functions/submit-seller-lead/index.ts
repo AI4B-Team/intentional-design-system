@@ -220,8 +220,28 @@ serve(async (req) => {
       user_agent: req.headers.get('user-agent')
     })
 
-    // Send auto-response email to lead
-    if (website.auto_respond_email && sanitizedEmail) {
+    // Phone-cooldown check: if the same phone was already queued for this org
+    // in the last 24h, still save the lead but skip call/SMS/auto-email.
+    let phoneRecentlyQueued = false
+    if (formattedPhone && website.organization_id) {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      const { data: existingQueue } = await supabase
+        .from('scheduled_ai_calls')
+        .select('id, created_at')
+        .eq('organization_id', website.organization_id)
+        .eq('phone_number', formattedPhone)
+        .gte('created_at', since)
+        .limit(1)
+      if (existingQueue && existingQueue.length > 0) {
+        phoneRecentlyQueued = true
+        console.log(
+          `[submit-seller-lead] phone cooldown active for ${formattedPhone} (org=${website.organization_id}); skipping call/SMS/auto-email for lead ${lead.id}`,
+        )
+      }
+    }
+
+    // Send auto-response email to lead (skipped when phone is in cooldown window)
+    if (website.auto_respond_email && sanitizedEmail && !phoneRecentlyQueued) {
       try {
         await sendAutoEmail(website, lead)
         await supabase.from('seller_leads').update({ auto_email_sent: true }).eq('id', lead.id)
@@ -231,8 +251,8 @@ serve(async (req) => {
       }
     }
 
-    // Send auto-response SMS to lead
-    if (website.auto_respond_sms && formattedPhone) {
+    // Send auto-response SMS to lead (skipped when phone is in cooldown window)
+    if (website.auto_respond_sms && formattedPhone && !phoneRecentlyQueued) {
       try {
         await sendAutoSMS(website, lead)
         await supabase.from('seller_leads').update({ auto_sms_sent: true }).eq('id', lead.id)
@@ -242,7 +262,7 @@ serve(async (req) => {
       }
     }
 
-    // Notify website owner
+    // Notify website owner (always — this is an internal alert, not outbound to the lead)
     if (website.lead_notification_email) {
       try {
         await sendOwnerNotification(website, lead)
@@ -253,10 +273,10 @@ serve(async (req) => {
       }
     }
 
-    // Trigger Speed-to-Lead AI call if phone is available.
+    // Trigger Speed-to-Lead AI call if phone is available and not in cooldown.
     // We enqueue a durable row in scheduled_ai_calls instead of using setTimeout,
     // because Deno isolates terminate after the response returns.
-    if (formattedPhone && website.organization_id) {
+    if (formattedPhone && website.organization_id && !phoneRecentlyQueued) {
       try {
         const { data: agentConfig } = await supabase
           .from('voice_agent_config')
