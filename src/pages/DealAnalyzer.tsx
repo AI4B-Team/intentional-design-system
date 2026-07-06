@@ -231,6 +231,8 @@ export default function DealAnalyzer() {
           )}
         </div>
 
+        <UpgradeBanner feature="Deal Analyzer AI" />
+
         {/* Address Input - Always visible at top */}
         <Card className="p-6">
           <AddressInput
