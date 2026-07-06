@@ -5,6 +5,7 @@ import { Sparkles, Bot, Brain, MessageSquare, Zap, TrendingUp } from "lucide-rea
 import { AIVAChat } from "@/components/aiva/AIVAChat";
 import { AIActionsLog } from "@/components/ai/AIActionsLog";
 import { AIVASmartAlerts } from "@/components/aiva/AIVASmartAlerts";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 
 export default function AIVA() {
   return (
@@ -23,6 +24,9 @@ export default function AIVA() {
             </div>
           </div>
           
+          {/* Upgrade banner (renders nothing when access is active) */}
+          <UpgradeBanner feature="AIVA" className="mb-4" />
+
           {/* Chat Component */}
           <AIVAChat className="flex-1 min-h-0" />
         </div>
