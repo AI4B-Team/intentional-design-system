@@ -187,7 +187,10 @@ export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false 
             <Flame className="h-4 w-4 text-destructive" />
           </div>
           <div>
-            <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+              {isDemo && <SampleDataBadge compact />}
+            </div>
             <p className="text-tiny text-muted-foreground">Top 10% by profit, urgency, or score</p>
           </div>
         </div>
@@ -218,7 +221,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false 
                   <EnhancedHotOpportunityItem
                     key={enhanced.id}
                     opportunity={enhanced}
-                    onClick={() => navigate(`/properties/${enhanced.id}`)}
+                    onClick={() => goToProperty(enhanced.id)}
                     onCall={(e) => handleCall(e, enhanced.owner_phone)}
                     onEmail={(e) => handleEmail(e, enhanced.owner_email)}
                   />
@@ -228,7 +231,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false 
                 <LegacyHotOpportunityItem
                   key={opp.id}
                   opportunity={opp}
-                  onClick={() => navigate(`/properties/${opp.id}`)}
+                  onClick={() => goToProperty(opp.id)}
                   onCall={(e) => handleCall(e, opp.owner_phone)}
                   onEmail={(e) => handleEmail(e, opp.owner_email)}
                 />
@@ -236,7 +239,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false 
             })}
           </div>
         )}
-        {!isLoading && opportunities && opportunities.length > 11 && (
+        {!isLoading && !isDemo && opportunities && opportunities.length > 11 && (
           <div
             className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
             onClick={() => navigate("/properties?sort=motivation_score")}
