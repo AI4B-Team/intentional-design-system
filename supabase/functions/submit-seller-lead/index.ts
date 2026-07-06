@@ -45,7 +45,26 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     )
 
-    const body: LeadSubmission = await req.json()
+    const ip = getClientIp(req)
+
+    // Per-IP hourly rate limit: 5 seller lead submissions per hour
+    const ipLimit = await checkAndBumpIpLimit(supabase, ip, 'submit-seller-lead', 5)
+    if (!ipLimit.ok) {
+      console.warn(`[submit-seller-lead] rate limit exceeded for ip=${ip}`)
+      return rateLimitedResponse(corsHeaders)
+    }
+
+    const body: LeadSubmission & { turnstileToken?: string } = await req.json()
+
+    // Cloudflare Turnstile verification (skipped when TURNSTILE_SECRET_KEY unset)
+    const turnstile = await verifyTurnstile(body.turnstileToken, ip)
+    if (!turnstile.ok) {
+      return new Response(JSON.stringify({ error: 'Verification failed. Please try again.' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     const {
       websiteId,
       firstName,
