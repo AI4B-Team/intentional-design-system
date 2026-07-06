@@ -173,6 +173,42 @@ serve(async (req) => {
       userId = user?.id || "";
     }
 
+    // Require an authenticated user for chat + rate limiting
+    if (!userId) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // Per-user rate limit: 30 requests / hour
+    const RATE_LIMIT = 30;
+    const windowStart = new Date();
+    windowStart.setMinutes(0, 0, 0);
+    const windowStartIso = windowStart.toISOString();
+
+    const { data: rlRow } = await supabase
+      .from("aiva_chat_rate_limits")
+      .select("request_count")
+      .eq("user_id", userId)
+      .eq("window_start", windowStartIso)
+      .maybeSingle();
+
+    const currentCount = rlRow?.request_count ?? 0;
+    if (currentCount >= RATE_LIMIT) {
+      return new Response(
+        JSON.stringify({ error: `Rate limit exceeded (${RATE_LIMIT}/hour). Try again later.` }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    await supabase
+      .from("aiva_chat_rate_limits")
+      .upsert(
+        { user_id: userId, window_start: windowStartIso, request_count: currentCount + 1 },
+        { onConflict: "user_id,window_start" },
+      );
+
     // Get the last user message
     const lastUserMessage = messages.filter(m => m.role === "user").pop()?.content || "";
     
