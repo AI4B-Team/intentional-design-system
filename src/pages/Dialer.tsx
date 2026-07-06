@@ -27,6 +27,7 @@ import { ActiveCallView, type TranscriptMessage, type CallPhase } from "@/compon
 import { Plus, Settings, Clock, ArrowLeft, Sparkles } from "lucide-react";
 import { TransferCallDialog } from "@/components/dialer/TransferCallDialog";
 import { CreateQueueDialog } from "@/components/dialer/CreateQueueDialog";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 
 interface SessionStats {
   callsMade: number;
