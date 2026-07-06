@@ -59,7 +59,7 @@ interface LeadCaptureFormProps {
   formPrivacyText?: string;
   accentColor: string;
   primaryColor: string;
-  onSubmit: (data: FormData) => Promise<void>;
+  onSubmit: (data: FormData, turnstileToken?: string) => Promise<void>;
   isSubmitting?: boolean;
   isSubmitted?: boolean;
   customFormFields?: CustomFormField[];
