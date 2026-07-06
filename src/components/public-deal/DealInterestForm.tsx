@@ -226,7 +226,16 @@ export function DealInterestForm({ dealId, userId }: DealInterestFormProps) {
             </label>
           </div>
 
-          <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={submitting}>
+          {turnstileRequired && (
+            <TurnstileWidget onToken={setTurnstileToken} />
+          )}
+
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full sm:w-auto"
+            disabled={submitting || (turnstileRequired && !turnstileToken)}
+          >
             <Send className="h-4 w-4 mr-2" />
             {submitting ? 'Submitting...' : 'Submit Interest'}
           </Button>
