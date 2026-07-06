@@ -184,6 +184,8 @@ export function BulkSkipTraceModal({
             </DialogDescription>
           )}
         </DialogHeader>
+        <UpgradeBanner feature="Skip Trace" />
+
 
         {state === "idle" && (
           <div className="space-y-4 py-4">
