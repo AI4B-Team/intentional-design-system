@@ -288,11 +288,8 @@
     text-rendering: optimizeLegibility;
   }
   
-  /* Selection color */
-  ::selection {
-    background-color: hsl(var(--accent));
-    color: white;
-  }
+  /* Selection color — see final ::selection rule below for the canonical brand selection */
+
   
   /* Focus visible for accessibility */
   :focus-visible {
@@ -344,9 +341,8 @@
     font-size: 0.8125rem;
     line-height: 1.55;
   }
-  
-  .text-tiny {
-    font-size: 0.6875rem;
+
+  /* .text-tiny — canonical definition lives in the "Global Polish" section below */
     line-height: 1.45;
     letter-spacing: 0.04em;
     text-transform: uppercase;
