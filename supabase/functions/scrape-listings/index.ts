@@ -92,7 +92,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    let allLeads: any[] = [];
+    const allLeads: any[] = [];
 
     for (const searchQuery of searchTerms) {
       console.log('Searching:', searchQuery);

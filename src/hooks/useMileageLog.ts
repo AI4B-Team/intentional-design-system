@@ -133,7 +133,7 @@ export function useMileageLog(year?: number) {
       const miles = updates.final_miles || updates.calculated_miles;
       const purpose = (updates.purpose as MileagePurpose) || 'business';
       
-      let updateData = { ...updates };
+      const updateData = { ...updates };
       if (miles !== undefined) {
         const mileageRate = rate[purpose];
         updateData.mileage_rate = mileageRate;
