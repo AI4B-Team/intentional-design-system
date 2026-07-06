@@ -176,6 +176,7 @@ export default function PublicRecords() {
               <Badge variant="outline" className="text-content-secondary">
                 {stateCode}
               </Badge>
+              <SampleDataBadge />
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
