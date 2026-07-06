@@ -1,82 +1,60 @@
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/layout";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useSubscription } from "@/hooks/useSubscription";
+import { PLANS, getPlan } from "@/lib/plans";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { Spinner } from "@/components/ui/spinner";
-import { 
-  CreditCard, 
-  Users, 
-  Home,
-  Calendar,
+import {
+  CreditCard,
   ExternalLink,
   Check,
   Zap,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
 } from "lucide-react";
 
-const PLANS = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: 49,
-    maxUsers: 3,
-    maxProperties: 500,
-    features: [
-      "Up to 3 team members",
-      "500 properties",
-      "Basic analytics",
-      "Email support"
-    ]
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 99,
-    maxUsers: 10,
-    maxProperties: 2500,
-    features: [
-      "Up to 10 team members",
-      "2,500 properties",
-      "Advanced analytics",
-      "Priority support",
-      "API access"
-    ],
-    popular: true
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    price: 249,
-    maxUsers: 50,
-    maxProperties: 10000,
-    features: [
-      "Up to 50 team members",
-      "10,000 properties",
-      "Custom integrations",
-      "Dedicated support",
-      "SSO & advanced security"
-    ]
-  }
-];
+function formatDate(iso?: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default function BillingSettings() {
   const navigate = useNavigate();
-  const { organization, members, canManageBilling } = useOrganization();
-  const { canManageBilling: hasBillingPermission } = usePermissions();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { organization } = useOrganization();
+  const { canManageBilling } = usePermissions();
+  const sub = useSubscription();
+  const [busy, setBusy] = React.useState<string | null>(null);
 
-  // Redirect if no permission
   React.useEffect(() => {
-    if (!hasBillingPermission && organization) {
-      navigate("/dashboard");
+    if (searchParams.get("checkout") === "success") {
+      toast.success("Subscription started — welcome aboard!");
+      sub.refresh();
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
+    } else if (searchParams.get("checkout") === "cancel") {
+      toast.info("Checkout canceled.");
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
     }
-  }, [hasBillingPermission, organization, navigate]);
+  }, [searchParams, setSearchParams, sub]);
 
-  if (!organization || !canManageBilling) {
+  React.useEffect(() => {
+    if (!canManageBilling && organization) navigate("/dashboard");
+  }, [canManageBilling, organization, navigate]);
+
+  if (!organization) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[400px]">
@@ -86,32 +64,62 @@ export default function BillingSettings() {
     );
   }
 
-  const activeMembers = members.filter((m) => m.status === "active");
-  const seatsUsed = activeMembers.length;
-  const seatsPercent = (seatsUsed / organization.max_users) * 100;
-  
-  // Mock properties count - would come from actual data
-  const propertiesUsed = 127;
-  const propertiesPercent = (propertiesUsed / organization.max_properties) * 100;
-
-  const currentPlan = PLANS.find((p) => p.id === organization.subscription_tier) || PLANS[0];
-  const isFreePlan = organization.subscription_tier === "free";
-
-  const handleManageSubscription = () => {
-    // Would open Stripe portal
-    window.open("https://billing.stripe.com/session/test", "_blank");
+  const handleStartCheckout = async (planId: string, priceId?: string, trialDays?: number) => {
+    if (!priceId) {
+      toast.error("This plan is not yet configured. Ask admin to set the Stripe price ID.");
+      return;
+    }
+    try {
+      setBusy(planId);
+      const { data, error } = await supabase.functions.invoke("stripe-checkout", {
+        body: { priceId, plan: planId, trialDays },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not start checkout");
+    } finally {
+      setBusy(null);
+    }
   };
+
+  const handleManageBilling = async () => {
+    try {
+      setBusy("portal");
+      const { data, error } = await supabase.functions.invoke("stripe-portal", {});
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (e: any) {
+      toast.error(e?.message ?? "Could not open billing portal");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const currentPlan = getPlan(sub.plan);
+  const activeSubscription = sub.status === "active" || sub.status === "trialing";
 
   return (
     <DashboardLayout>
       <div className="space-y-lg max-w-4xl">
-        {/* Header */}
         <div>
           <h1 className="text-h1 font-semibold text-content">Billing & Subscription</h1>
           <p className="text-body text-content-secondary mt-1">
             Manage your plan and billing details
           </p>
         </div>
+
+        {!sub.billingLive && (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm text-content-secondary">
+              Billing is not yet live. All accounts have full access while Stripe is being
+              configured. Add <code className="text-content">STRIPE_SECRET_KEY</code>,{" "}
+              <code className="text-content">STRIPE_WEBHOOK_SECRET</code>, and the plan price
+              IDs, then set <code className="text-content">VITE_BILLING_LIVE=true</code>.
+            </div>
+          </div>
+        )}
 
         {/* Current Plan */}
         <Card variant="default" padding="lg">
@@ -123,129 +131,107 @@ export default function BillingSettings() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-h3 font-semibold text-content">
-                    {isFreePlan ? "Free" : currentPlan.name} Plan
+                    {currentPlan?.name ?? (sub.status === "trialing" ? "Free Trial" : "No Plan")}
                   </h2>
-                  {organization.subscription_status === "active" ? (
-                    <Badge variant="success">Active</Badge>
-                  ) : organization.subscription_status === "past_due" ? (
-                    <Badge variant="destructive">Past Due</Badge>
-                  ) : (
-                    <Badge variant="secondary">{organization.subscription_status}</Badge>
-                  )}
+                  {sub.status === "trialing" && <Badge variant="secondary">Trial</Badge>}
+                  {sub.status === "active" && <Badge variant="success">Active</Badge>}
+                  {sub.status === "past_due" && <Badge variant="destructive">Past Due</Badge>}
+                  {sub.status === "canceled" && <Badge variant="destructive">Canceled</Badge>}
+                  {sub.status === "none" && <Badge variant="secondary">Inactive</Badge>}
                 </div>
-                {!isFreePlan && (
-                  <p className="text-body text-content-secondary mt-1">
-                    ${currentPlan.price}/month • Next billing: March 15, 2024
-                  </p>
-                )}
-                {isFreePlan && (
-                  <p className="text-body text-content-secondary mt-1">
-                    Limited features • Upgrade to unlock more
-                  </p>
-                )}
+                <p className="text-body text-content-secondary mt-1">
+                  {sub.status === "trialing" && (
+                    <>Trial ends {formatDate(sub.trialEndsAt)}</>
+                  )}
+                  {sub.status === "active" && currentPlan && (
+                    <>
+                      ${currentPlan.priceMonthly}/mo • Renews {formatDate(sub.currentPeriodEnd)}
+                      {sub.cancelAtPeriodEnd && " (cancels at period end)"}
+                    </>
+                  )}
+                  {sub.status === "past_due" && "Payment failed — update your card to continue."}
+                  {sub.status === "canceled" && "Your subscription has ended."}
+                  {sub.status === "none" && "Choose a plan below to get started."}
+                </p>
               </div>
             </div>
-            
-            <div className="flex gap-3">
-              {!isFreePlan && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleManageSubscription}
+
+            {activeSubscription && sub.stripeCustomerId && (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={handleManageBilling}
+                  disabled={busy === "portal"}
                   icon={<ExternalLink className="h-4 w-4" />}
                   iconPosition="right"
                 >
-                  Manage Subscription
+                  {busy === "portal" ? "Opening…" : "Manage Billing"}
                 </Button>
-              )}
-              <Button variant="primary" icon={<Zap className="h-4 w-4" />}>
-                {isFreePlan ? "Upgrade Plan" : "Change Plan"}
-              </Button>
-            </div>
+              </div>
+            )}
           </div>
         </Card>
 
-        {/* Usage Stats */}
-        <div className="grid gap-lg md:grid-cols-2">
-          <Card variant="default" padding="lg">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Users className="h-5 w-5 text-blue-500" />
-              </div>
-              <div>
-                <p className="text-small font-medium text-content">Team Seats</p>
-                <p className="text-tiny text-content-secondary">
-                  {seatsUsed} of {organization.max_users} used
-                </p>
-              </div>
-            </div>
-            <Progress value={seatsPercent} className="h-2" />
-            {seatsPercent >= 90 && (
-              <div className="flex items-center gap-2 mt-3 text-tiny text-amber-600">
-                <AlertCircle className="h-3 w-3" />
-                You're approaching your seat limit
-              </div>
-            )}
-          </Card>
-
-          <Card variant="default" padding="lg">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                <Home className="h-5 w-5 text-emerald-500" />
-              </div>
-              <div>
-                <p className="text-small font-medium text-content">Properties</p>
-                <p className="text-tiny text-content-secondary">
-                  {propertiesUsed} of {organization.max_properties} used
-                </p>
-              </div>
-            </div>
-            <Progress value={propertiesPercent} className="h-2" />
-          </Card>
-        </div>
-
         {/* Plan Comparison */}
-        {isFreePlan && (
+        {(!activeSubscription || sub.status === "trialing") && (
           <div className="space-y-4">
-            <h2 className="text-h3 font-semibold text-content">Choose a Plan</h2>
-            <div className="grid gap-lg md:grid-cols-3">
+            <h2 className="text-h3 font-semibold text-content">
+              {sub.status === "trialing" ? "Upgrade to keep going" : "Choose a Plan"}
+            </h2>
+            <div className="grid gap-lg md:grid-cols-2">
               {PLANS.map((plan) => (
-                <Card 
-                  key={plan.id} 
-                  variant="default" 
+                <Card
+                  key={plan.id}
+                  variant="default"
                   padding="lg"
                   className={plan.popular ? "ring-2 ring-brand-accent relative" : ""}
                 >
                   {plan.popular && (
-                    <Badge 
-                      variant="default" 
+                    <Badge
+                      variant="default"
                       className="absolute -top-2 left-1/2 -translate-x-1/2"
                     >
                       Most Popular
                     </Badge>
                   )}
-                  
                   <div className="text-center mb-6">
                     <h3 className="text-h4 font-semibold text-content">{plan.name}</h3>
-                    <div className="mt-2">
-                      <span className="text-3xl font-bold text-content">${plan.price}</span>
+                    <p className="text-tiny text-content-secondary mt-1">{plan.tagline}</p>
+                    <div className="mt-3">
+                      <span className="text-3xl font-bold text-content">
+                        ${plan.priceMonthly}
+                      </span>
                       <span className="text-content-secondary">/month</span>
                     </div>
+                    <p className="text-tiny text-content-secondary mt-1">
+                      {plan.trialDays}-day free trial • No card required to start
+                    </p>
                   </div>
-
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-center gap-2 text-small text-content-secondary">
+                    {plan.features.map((feature) => (
+                      <li
+                        key={feature}
+                        className="flex items-center gap-2 text-small text-content-secondary"
+                      >
                         <Check className="h-4 w-4 text-status-success flex-shrink-0" />
                         {feature}
                       </li>
                     ))}
                   </ul>
-
-                  <Button 
-                    variant={plan.popular ? "primary" : "outline"} 
+                  <Button
+                    variant={plan.popular ? "primary" : "outline"}
                     fullWidth
+                    disabled={busy === plan.id}
+                    onClick={() =>
+                      handleStartCheckout(plan.id, plan.stripePriceId, plan.trialDays)
+                    }
+                    icon={<Sparkles className="h-4 w-4" />}
                   >
-                    Get Started
+                    {busy === plan.id
+                      ? "Redirecting…"
+                      : sub.status === "trialing"
+                      ? `Upgrade to ${plan.name}`
+                      : `Start ${plan.trialDays}-Day Trial`}
                   </Button>
                 </Card>
               ))}
@@ -253,82 +239,23 @@ export default function BillingSettings() {
           </div>
         )}
 
-        {/* Billing Info */}
-        {!isFreePlan && (
+        {activeSubscription && (
           <Card variant="default" padding="lg">
             <CardHeader className="px-0 pt-0">
-              <CardTitle>Billing Information</CardTitle>
+              <CardTitle>Change Plan</CardTitle>
               <CardDescription>
-                Your payment method and billing address
+                Switch plans or manage payment methods from the Stripe billing portal.
               </CardDescription>
             </CardHeader>
             <CardContent className="px-0 pb-0">
-              <div className="flex items-center justify-between p-4 rounded-medium bg-surface-secondary">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-content/10 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-content" />
-                  </div>
-                  <div>
-                    <p className="text-small font-medium text-content">•••• •••• •••• 4242</p>
-                    <p className="text-tiny text-content-secondary">Expires 12/2025</p>
-                  </div>
-                </div>
-                <Button variant="ghost" size="sm">
-                  Update
-                </Button>
-              </div>
-
-              <div className="mt-4 p-4 rounded-medium bg-surface-secondary">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-small font-medium text-content">Billing Email</p>
-                    <p className="text-tiny text-content-secondary">
-                      {organization.billing_email || "Not set"}
-                    </p>
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={() => navigate("/settings/organization")}>
-                    Update
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Invoice History */}
-        {!isFreePlan && (
-          <Card variant="default" padding="lg">
-            <CardHeader className="px-0 pt-0">
-              <CardTitle>Invoice History</CardTitle>
-              <CardDescription>
-                Download past invoices
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="px-0 pb-0">
-              <div className="space-y-2">
-                {[
-                  { date: "Feb 15, 2024", amount: "$99.00", status: "Paid" },
-                  { date: "Jan 15, 2024", amount: "$99.00", status: "Paid" },
-                  { date: "Dec 15, 2023", amount: "$99.00", status: "Paid" },
-                ].map((invoice, idx) => (
-                  <div 
-                    key={idx}
-                    className="flex items-center justify-between p-3 rounded-medium hover:bg-surface-secondary transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Calendar className="h-4 w-4 text-content-tertiary" />
-                      <span className="text-small text-content">{invoice.date}</span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-small font-medium text-content">{invoice.amount}</span>
-                      <Badge variant="success" size="sm">{invoice.status}</Badge>
-                      <Button variant="ghost" size="sm">
-                        Download
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <Button
+                variant="primary"
+                onClick={handleManageBilling}
+                disabled={busy === "portal"}
+                icon={<Zap className="h-4 w-4" />}
+              >
+                Open Billing Portal
+              </Button>
             </CardContent>
           </Card>
         )}
