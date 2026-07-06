@@ -88,7 +88,7 @@ export default function SellerWebsitePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleFormSubmit = async (formData: any) => {
+  const handleFormSubmit = async (formData: any, turnstileToken?: string) => {
     if (!website) return;
 
     try {
@@ -106,13 +106,14 @@ export default function SellerWebsitePage() {
         sellTimeline: formData.sellTimeline,
         reasonSelling: formData.reasonSelling,
         notes: formData.notes,
-      });
-      
+      }, turnstileToken);
+
       if (result?.companyPhone) {
         setCompanyPhone(result.companyPhone);
       }
     } catch (err) {
       console.error('Form submission error:', err);
+      // submitError from the hook already surfaces the friendly 429 message.
     }
   };
 
