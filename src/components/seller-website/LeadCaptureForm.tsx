@@ -450,10 +450,16 @@ export function LeadCaptureForm({
           );
         })}
 
+        {turnstileRequired && (
+          <div className="flex justify-center">
+            <TurnstileWidget onToken={setTurnstileToken} />
+          </div>
+        )}
+
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || (turnstileRequired && !turnstileToken)}
           className="w-full text-lg py-6 font-bold"
           style={{ backgroundColor: accentColor }}
         >
