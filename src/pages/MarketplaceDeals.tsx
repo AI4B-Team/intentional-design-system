@@ -11,6 +11,7 @@ import { useGeocodeSearch } from "@/hooks/useGeocodeSearch";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
 import { WebScoutPanel } from "@/components/lead-scout";
 import { cn } from "@/lib/utils";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 export type LayoutMode = "cards" | "split" | "map";
 type CardViewMode = "flip" | "hold";
