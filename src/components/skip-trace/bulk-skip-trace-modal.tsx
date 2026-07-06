@@ -13,6 +13,8 @@ import { Progress } from "@/components/ui/progress";
 import { AlertTriangle, Search, Check, X, AlertCircle, Wallet } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/hooks/useCredits";
+import { useSubscription } from "@/hooks/useSubscription";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -52,6 +54,7 @@ export function BulkSkipTraceModal({
 }: BulkSkipTraceModalProps) {
   const navigate = useNavigate();
   const { balance, refreshBalance } = useCredits();
+  const { hasAccess: hasAiAccess } = useSubscription();
   const [state, setState] = React.useState<ProcessingState>("idle");
   const [progress, setProgress] = React.useState(0);
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -81,6 +84,10 @@ export function BulkSkipTraceModal({
   }, [open]);
 
   const handleProcess = async () => {
+    if (!hasAiAccess) {
+      toast.error("Your trial has ended. Upgrade to run skip traces.");
+      return;
+    }
     setState("processing");
     stopRef.current = false;
     const propertiesToProcess = hasEnoughCredits 
@@ -177,6 +184,8 @@ export function BulkSkipTraceModal({
             </DialogDescription>
           )}
         </DialogHeader>
+        <UpgradeBanner feature="Skip Trace" />
+
 
         {state === "idle" && (
           <div className="space-y-4 py-4">

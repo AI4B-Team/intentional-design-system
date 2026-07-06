@@ -27,6 +27,7 @@ import { ActiveCallView, type TranscriptMessage, type CallPhase } from "@/compon
 import { Plus, Settings, Clock, ArrowLeft, Sparkles } from "lucide-react";
 import { TransferCallDialog } from "@/components/dialer/TransferCallDialog";
 import { CreateQueueDialog } from "@/components/dialer/CreateQueueDialog";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 
 interface SessionStats {
   callsMade: number;
@@ -490,6 +491,7 @@ export default function Dialer() {
         </div>
       }
     >
+      <UpgradeBanner feature="Dialer AI" className="mb-4" />
       {/* Show ActiveCallView when on a call or in demo mode, otherwise show setup view */}
       {(dialer.isOnCall || demoMode) ? (
         <ActiveCallView
