@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Lock, Loader2, Star } from "lucide-react";
+import { TurnstileWidget, isTurnstileEnabled } from "@/components/security/TurnstileWidget";
 import type { CustomFormField } from "@/types/custom-form-fields";
 
 const US_STATES = [
