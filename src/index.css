@@ -625,10 +625,7 @@
     overflow: hidden;
   }
   
-  /* Touch-friendly tap targets */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px];
-  }
+  /* .touch-target — canonical raw definition lives further below */
   
   /* Safe area padding for mobile */
   .safe-area-inset {
@@ -674,10 +671,11 @@
     overflow-x: hidden;
   }
   
-  /* Larger touch targets on mobile */
-  button, 
-  [role="button"],
-  a,
+  /* Larger touch targets on mobile — applied selectively, not to every element.
+     Blanket rules inflate dense tables, pagination, and inline links. */
+  .touch-target,
+  button[class*="bg-primary"],
+  button[class*="bg-brand"],
   input,
   select,
   textarea {
