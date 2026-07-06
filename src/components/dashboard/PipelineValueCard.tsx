@@ -10,6 +10,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import type { ActionInsight } from "@/hooks/useDashboardInsights";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 export interface PipelineValueCardProps {
   title: string;
@@ -33,6 +34,7 @@ export interface PipelineValueCardProps {
   contextIcon?: React.ElementType;
   contextSeverity?: "reminder" | "attention" | "blocking";
   animateOnMount?: boolean;
+  isDemo?: boolean;
 }
 
 export function PipelineValueCard({
@@ -56,6 +58,7 @@ export function PipelineValueCard({
   contextIcon: ContextIcon,
   contextSeverity = "reminder",
   animateOnMount = true,
+  isDemo = false,
 }: PipelineValueCardProps) {
   const shouldAnimate = animateOnMount && !isLoading;
   const animatedCount = useCountUp(count, 1000, 100, shouldAnimate);
@@ -107,7 +110,10 @@ export function PipelineValueCard({
       <div className="relative flex flex-col h-full min-w-0">
         <div className="flex items-center justify-between">
           <div className="min-w-0">
-            <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-small text-muted-foreground font-medium tracking-wide uppercase">{title}</p>
+              {isDemo && <SampleDataBadge compact />}
+            </div>
             {subtitle && (
               <p className={cn(
                 "text-tiny mt-0.5 truncate",

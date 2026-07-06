@@ -11,6 +11,7 @@ import { useGeocodeSearch } from "@/hooks/useGeocodeSearch";
 import { AdvancedFilters, defaultFilters } from "@/components/marketplace-deals/more-filters-dialog";
 import { WebScoutPanel } from "@/components/lead-scout";
 import { cn } from "@/lib/utils";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 export type LayoutMode = "cards" | "split" | "map";
 type CardViewMode = "flip" | "hold";
@@ -187,6 +188,9 @@ export default function MarketplaceDeals() {
   return (
     <AppLayout fullWidth>
       <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="px-4 pt-3 flex items-center gap-2">
+          <SampleDataBadge title="The marketplace is currently populated with illustrative sample listings so you can explore filters and layouts." />
+        </div>
         {/* Filters Bar - Full width with view toggles */}
         <MarketplaceFilters 
           filters={filters} 

@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Flame, ArrowRight, Phone, Mail } from "lucide-react";
 import type { HotOpportunityEnhanced } from "@/hooks/useDashboardInsights";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 // Enhanced Hot Opportunity Item
 function EnhancedHotOpportunityItem({
@@ -155,19 +156,27 @@ function LegacyHotOpportunityItem({
 interface HotOpportunitiesCardProps {
   opportunities: HotOpportunityEnhanced[] | any[];
   isLoading: boolean;
+  isDemo?: boolean;
 }
 
-export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunitiesCardProps) {
+export function HotOpportunitiesCard({ opportunities, isLoading, isDemo = false }: HotOpportunitiesCardProps) {
   const navigate = useNavigate();
 
   const handleCall = (e: React.MouseEvent, phone: string | null) => {
     e.stopPropagation();
+    if (isDemo) return;
     if (phone) window.location.href = `tel:${phone}`;
   };
 
   const handleEmail = (e: React.MouseEvent, email: string | null) => {
     e.stopPropagation();
+    if (isDemo) return;
     if (email) window.location.href = `mailto:${email}`;
+  };
+
+  const goToProperty = (id: string) => {
+    if (isDemo) return; // never navigate to fake IDs
+    navigate(`/properties/${id}`);
   };
 
   return (
@@ -178,7 +187,10 @@ export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunit
             <Flame className="h-4 w-4 text-destructive" />
           </div>
           <div>
-            <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-body font-semibold text-foreground">Hot Opportunities</h2>
+              {isDemo && <SampleDataBadge compact />}
+            </div>
             <p className="text-tiny text-muted-foreground">Top 10% by profit, urgency, or score</p>
           </div>
         </div>
@@ -209,7 +221,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunit
                   <EnhancedHotOpportunityItem
                     key={enhanced.id}
                     opportunity={enhanced}
-                    onClick={() => navigate(`/properties/${enhanced.id}`)}
+                    onClick={() => goToProperty(enhanced.id)}
                     onCall={(e) => handleCall(e, enhanced.owner_phone)}
                     onEmail={(e) => handleEmail(e, enhanced.owner_email)}
                   />
@@ -219,7 +231,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunit
                 <LegacyHotOpportunityItem
                   key={opp.id}
                   opportunity={opp}
-                  onClick={() => navigate(`/properties/${opp.id}`)}
+                  onClick={() => goToProperty(opp.id)}
                   onCall={(e) => handleCall(e, opp.owner_phone)}
                   onEmail={(e) => handleEmail(e, opp.owner_email)}
                 />
@@ -227,7 +239,7 @@ export function HotOpportunitiesCard({ opportunities, isLoading }: HotOpportunit
             })}
           </div>
         )}
-        {!isLoading && opportunities && opportunities.length > 11 && (
+        {!isLoading && !isDemo && opportunities && opportunities.length > 11 && (
           <div
             className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors mt-auto"
             onClick={() => navigate("/properties?sort=motivation_score")}

@@ -79,7 +79,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 234 32% 14%;
     
-    /* Primary - Premium Emerald */
+    /* Primary - Brand Red */
     --primary: 0 78% 48%;
     --primary-foreground: 0 0% 100%;
     
@@ -111,10 +111,10 @@
     --warning-foreground: 0 0% 100%;
     --warning-muted: 48 96% 97%;
     
-    /* Info - Emerald Green */
-    --info: 160 84% 39%;
+    /* Info - Blue */
+    --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
-    --info-muted: 152 81% 96%;
+    --info-muted: 214 100% 97%;
     
     /* Heat Score Colors */
     --heat-hot: 0 72% 51%;
@@ -127,7 +127,7 @@
     --border: 30 10% 88%;
     --border-subtle: 30 15% 93%;
     --input: 30 10% 88%;
-    --ring: 158 78% 36%;
+    --ring: 0 78% 48%;
     
     /* Border Radius */
     --radius: 0.5rem;
@@ -141,19 +141,19 @@
     /* Sidebar - Light Theme */
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 234 32% 14%;
-    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary: 0 78% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 0 0% 100%;
     --sidebar-accent-foreground: 234 32% 14%;
     --sidebar-border: 220 14% 96%;
-    --sidebar-ring: 160 84% 39%;
+    --sidebar-ring: 0 78% 48%;
     
-    /* Chart Colors */
-    --chart-1: 160 84% 39%;
+    /* Chart Colors — categorical palette, chart-1 = brand red */
+    --chart-1: 0 78% 48%;
     --chart-2: 217 91% 60%;
     --chart-3: 38 92% 50%;
     --chart-4: 262 83% 58%;
-    --chart-5: 0 84% 60%;
+    --chart-5: 160 84% 39%;
   }
 
   .dark {
@@ -182,7 +182,7 @@
     --popover: 222 47% 8%;
     --popover-foreground: 210 40% 98%;
     
-    /* Primary - Emerald Green */
+    /* Primary - Brand Red */
     --primary: 0 84% 55%;
     --primary-foreground: 0 0% 100%;
     
@@ -214,10 +214,10 @@
     --warning-foreground: 222 47% 11%;
     --warning-muted: 38 60% 12%;
     
-    /* Info - Emerald Green */
-    --info: 160 84% 45%;
+    /* Info - Blue */
+    --info: 217 91% 65%;
     --info-foreground: 210 40% 98%;
-    --info-muted: 160 60% 12%;
+    --info-muted: 217 60% 15%;
     
     /* Heat Score Colors - Slightly muted for dark */
     --heat-hot: 0 72% 55%;
@@ -230,24 +230,24 @@
     --border: 217 33% 17%;
     --border-subtle: 217 33% 14%;
     --input: 217 33% 17%;
-    --ring: 160 84% 45%;
+    --ring: 0 84% 55%;
     
     /* Sidebar - Dark Theme */
     --sidebar-background: 222 50% 7%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 160 84% 45%;
+    --sidebar-primary: 0 84% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 160 84% 45%;
+    --sidebar-ring: 0 84% 55%;
     
-    /* Chart Colors */
-    --chart-1: 160 84% 45%;
+    /* Chart Colors — categorical palette, chart-1 = brand red */
+    --chart-1: 0 84% 60%;
     --chart-2: 217 91% 65%;
     --chart-3: 38 92% 55%;
     --chart-4: 262 83% 65%;
-    --chart-5: 0 84% 65%;
+    --chart-5: 160 84% 50%;
   }
 }
 
@@ -288,11 +288,14 @@
     text-rendering: optimizeLegibility;
   }
   
-  /* Selection color */
+  /* Brand selection color (canonical — do not duplicate elsewhere) */
   ::selection {
-    background-color: hsl(var(--accent));
-    color: white;
+    background: hsl(var(--primary) / 0.2);
+    color: hsl(var(--foreground));
   }
+
+
+
   
   /* Focus visible for accessibility */
   :focus-visible {
@@ -344,13 +347,8 @@
     font-size: 0.8125rem;
     line-height: 1.55;
   }
-  
-  .text-tiny {
-    font-size: 0.6875rem;
-    line-height: 1.45;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+
+  /* .text-tiny — canonical definition lives in the "Global Polish" section below */
   
   /* Monospace for numbers */
   .font-mono {
@@ -633,10 +631,7 @@
     overflow: hidden;
   }
   
-  /* Touch-friendly tap targets */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px];
-  }
+  /* .touch-target — canonical raw definition lives further below */
   
   /* Safe area padding for mobile */
   .safe-area-inset {
@@ -682,10 +677,11 @@
     overflow-x: hidden;
   }
   
-  /* Larger touch targets on mobile */
-  button, 
-  [role="button"],
-  a,
+  /* Larger touch targets on mobile — applied selectively, not to every element.
+     Blanket rules inflate dense tables, pagination, and inline links. */
+  .touch-target,
+  button[class*="bg-primary"],
+  button[class*="bg-brand"],
   input,
   select,
   textarea {
@@ -906,12 +902,13 @@
   transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-button:active {
+/* Press effect — scoped to primary action buttons only.
+   Menus, icon buttons, table row buttons, etc. should NOT bounce. */
+.btn-base:active,
+button[class*="bg-primary"]:active,
+button[class*="bg-brand"]:active,
+button[class*="bg-accent"]:active {
   transform: scale(0.97);
-}
-
-button[class*="rounded-full"]:active {
-  transform: scale(0.94);
 }
 
 /* Hover lift utility */
@@ -976,27 +973,7 @@ img {
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* Thin, subtle scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.4);
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Brand selection color */
-::selection {
-  background: hsl(var(--primary) / 0.2);
-  color: hsl(var(--foreground));
-}
+/* Scrollbar + ::selection — canonical definitions live in the top `@layer base` block above. */
 
 /* Gradient fade separator */
 .separator-gradient {

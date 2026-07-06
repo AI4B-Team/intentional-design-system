@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   Plus,
@@ -12,6 +13,7 @@ import {
   Clock,
   ArrowRight,
 } from "lucide-react";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 interface Activity {
   id: string;
@@ -52,9 +54,11 @@ function ActivityItem({ activity, onClick }: { activity: Activity; onClick: () =
 interface RecentActivityCardProps {
   activities: Activity[] | undefined;
   isLoading: boolean;
+  isDemo?: boolean;
+  emptyState?: boolean;
 }
 
-export function RecentActivityCard({ activities, isLoading }: RecentActivityCardProps) {
+export function RecentActivityCard({ activities, isLoading, isDemo = false, emptyState = false }: RecentActivityCardProps) {
   const navigate = useNavigate();
 
   return (
@@ -65,6 +69,7 @@ export function RecentActivityCard({ activities, isLoading }: RecentActivityCard
             <Clock className="h-4 w-4 text-muted-foreground" />
           </div>
           <h2 className="text-body font-semibold text-foreground">Recent Activity</h2>
+          {isDemo && !emptyState && <SampleDataBadge compact />}
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -80,25 +85,44 @@ export function RecentActivityCard({ activities, isLoading }: RecentActivityCard
               </div>
             ))}
           </div>
+        ) : emptyState ? (
+          <div className="flex flex-col items-center justify-center h-full text-center px-6 py-8">
+            <div className="p-3 rounded-full bg-muted mb-3">
+              <Clock className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <p className="text-small font-medium text-foreground">No activity yet</p>
+            <p className="text-tiny text-muted-foreground mt-1 mb-4">
+              Add your first property to start seeing activity here.
+            </p>
+            <Button size="sm" onClick={() => navigate("/properties/new")}>
+              <Plus className="h-3.5 w-3.5 mr-1" />
+              Add Your First Property
+            </Button>
+          </div>
         ) : (
           <div className="p-2">
             {activities?.slice(0, 4).map((activity) => (
               <ActivityItem
                 key={activity.id}
                 activity={activity}
-                onClick={() => activity.propertyId && navigate(`/properties/${activity.propertyId}`)}
+                onClick={() => {
+                  if (isDemo) return; // never navigate to fake IDs
+                  activity.propertyId && navigate(`/properties/${activity.propertyId}`);
+                }}
               />
             ))}
           </div>
         )}
       </div>
-      <div
-        className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors shrink-0"
-        onClick={() => navigate("/activity")}
-      >
-        <span>View All Activity</span>
-        <ArrowRight className="h-3.5 w-3.5" />
-      </div>
+      {!emptyState && (
+        <div
+          className="flex items-center justify-center gap-2 py-3 border-t border-border-subtle text-small text-muted-foreground hover:text-primary cursor-pointer transition-colors shrink-0"
+          onClick={() => navigate("/activity")}
+        >
+          <span>View All Activity</span>
+          <ArrowRight className="h-3.5 w-3.5" />
+        </div>
+      )}
     </Card>
   );
 }

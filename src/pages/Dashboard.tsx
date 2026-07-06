@@ -18,7 +18,7 @@ import { PipelineValueCard } from "@/components/dashboard/PipelineValueCard";
 import { PipelineOverviewCard } from "@/components/dashboard/PipelineOverviewCard";
 import { HotOpportunitiesCard } from "@/components/dashboard/HotOpportunitiesCard";
 import { RecentActivityCard } from "@/components/dashboard/RecentActivityCard";
-import { demoPipelineValueData, demoHotOpportunities, demoRecentActivity } from "@/components/dashboard/dashboard-demo-data";
+import { demoPipelineValueData, demoHotOpportunities } from "@/components/dashboard/dashboard-demo-data";
 
 import {
   Users,
@@ -42,22 +42,21 @@ export default function Dashboard() {
   const { data: insights } = useDashboardInsights();
 
   // Use demo data when no real data
-  const hasRealData = pipelineValueStatsRaw && (
+  const hasRealData = !!pipelineValueStatsRaw && (
     pipelineValueStatsRaw.leads.count > 0 ||
     pipelineValueStatsRaw.offers.count > 0 ||
     pipelineValueStatsRaw.contracted.count > 0 ||
     pipelineValueStatsRaw.sold.count > 0
   );
-
+  const pipelineStatsIsDemo = !hasRealData;
   const pipelineValueStats = hasRealData ? pipelineValueStatsRaw : demoPipelineValueData;
 
   const realOpportunities = insights?.hotOpportunities || hotOpportunities || [];
-  const displayHotOpportunities = realOpportunities.length >= 5
-    ? realOpportunities
-    : demoHotOpportunities;
+  const opportunitiesIsDemo = realOpportunities.length < 5;
+  const displayHotOpportunities = opportunitiesIsDemo ? demoHotOpportunities : realOpportunities;
 
-  const hasEnoughRealActivity = (recentActivity?.length || 0) >= 4;
-  const displayActivity = hasEnoughRealActivity ? recentActivity : demoRecentActivity;
+  // Real empty state instead of demo activity when the org has none yet.
+  const hasRealActivity = (recentActivity?.length || 0) > 0;
 
   return (
     <AppLayout>
@@ -101,6 +100,7 @@ export default function Dashboard() {
             onClick={() => navigate("/properties?status=new,contacted,appointment")}
             goal={goals.leadsGoal}
             actionInsight={insights?.leadsInsight}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '100ms' }}>
@@ -121,6 +121,7 @@ export default function Dashboard() {
               : undefined}
             contextIcon={Hourglass}
             contextSeverity="attention"
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '200ms' }}>
@@ -139,6 +140,7 @@ export default function Dashboard() {
             goal={goals.contractsGoal}
             variant="calm"
             nextExpectedClose={pipelineValueStats?.contracted.count && pipelineValueStats.contracted.count > 0 ? 14 : undefined}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
         <div className="animate-fade-in min-w-0" style={{ animationDelay: '300ms' }}>
@@ -157,6 +159,7 @@ export default function Dashboard() {
             goal={goals.soldGoal}
             variant="celebration"
             lastClosedDaysAgo={pipelineValueStats?.sold.count && pipelineValueStats.sold.count > 0 ? 3 : undefined}
+            isDemo={pipelineStatsIsDemo}
           />
         </div>
       </div>
@@ -166,6 +169,7 @@ export default function Dashboard() {
         <HotOpportunitiesCard
           opportunities={displayHotOpportunities}
           isLoading={hotLoading}
+          isDemo={opportunitiesIsDemo}
         />
         <PipelineOverviewCard
           pipelineStats={pipelineStats}
@@ -185,8 +189,9 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TodaysTasks />
         <RecentActivityCard
-          activities={displayActivity}
+          activities={hasRealActivity ? recentActivity : []}
           isLoading={activityLoading}
+          emptyState={!activityLoading && !hasRealActivity}
         />
       </div>
     </AppLayout>
