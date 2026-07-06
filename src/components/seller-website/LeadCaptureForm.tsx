@@ -111,6 +111,8 @@ export function LeadCaptureForm({
     notes: "",
     customFields: {},
   });
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
+  const turnstileRequired = isTurnstileEnabled();
 
   const handleCustomChange = (fieldId: string, value: string | string[]) => {
     setFormData((prev) => ({
@@ -125,7 +127,7 @@ export function LeadCaptureForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await onSubmit(formData);
+    await onSubmit(formData, turnstileToken || undefined);
   };
 
   const fields = formFields || ["address", "name", "phone", "email"];
