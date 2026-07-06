@@ -48,6 +48,9 @@ verify_jwt = false  # Public "interested in this deal" form; per-IP rate limit +
 [functions.track-website-event]
 verify_jwt = false  # Public seller-website analytics beacon; per-IP rate cap
 
+[functions.stripe-webhook]
+verify_jwt = false  # Inbound from Stripe — Stripe-Signature HMAC validated in code
+
 # --- Authenticated app endpoints (verify_jwt = true) ------------------------
 
 [functions.agent-detect]
