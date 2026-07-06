@@ -1,3 +1,4 @@
+import { AI_MODEL_FAST } from "../_shared/ai-models.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -288,7 +289,7 @@ Give a brief final assessment and confidence level for this deal.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_FAST,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },

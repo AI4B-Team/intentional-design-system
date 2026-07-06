@@ -1,3 +1,4 @@
+import { reportError } from "../_shared/report-error.ts";
 // Stripe webhook. Verifies signature and syncs the `subscriptions` table.
 // verify_jwt = false (see supabase/config.toml). Auth is via Stripe signature.
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -60,7 +61,7 @@ Deno.serve(async (req) => {
       }
     }
   } catch (e) {
-    console.error("Webhook handler error", event.type, e);
+    await reportError(e, { functionName: "stripe-webhook", extra: { eventType: event.type } });
     return new Response("Handler error", { status: 500 });
   }
 

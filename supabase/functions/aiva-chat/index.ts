@@ -1,3 +1,5 @@
+import { reportError } from "../_shared/report-error.ts";
+import { AI_MODEL_FAST } from "../_shared/ai-models.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -92,7 +94,7 @@ async function searchPropertiesOnline(query: string): Promise<string> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_FAST,
         messages: [
           {
             role: "system",
@@ -274,7 +276,7 @@ Be concise, professional, and focused on helping the user close more deals. Use 
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_FAST,
         messages: additionalContext ? aiMessages.slice(0, -1).concat([
           { role: "user", content: lastUserMessage + "\n\nContext from search:\n" + additionalContext }
         ]) : aiMessages,
@@ -308,7 +310,7 @@ Be concise, professional, and focused on helping the user close more deals. Use 
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
   } catch (error) {
-    console.error("AIVA chat error:", error);
+    await reportError(error, { functionName: "aiva-chat" });
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }

@@ -1,3 +1,4 @@
+import { reportError } from "../_shared/report-error.ts";
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { validateTwilioSignature } from '../_shared/webhook-signatures.ts'
@@ -142,7 +143,7 @@ serve(async (req) => {
     return new Response('OK', { status: 200 })
 
   } catch (error) {
-    console.error('Webhook error:', error)
+    await reportError(error, { functionName: "twilio-webhook" });
     return new Response('Internal error', { status: 500 })
   }
 })

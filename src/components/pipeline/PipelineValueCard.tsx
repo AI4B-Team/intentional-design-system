@@ -43,6 +43,7 @@ export interface PipelineValueCardProps {
   contextLine?: string;
   contextIcon?: React.ElementType;
   contextSeverity?: "reminder" | "attention" | "blocking";
+  isDemo?: boolean;
 }
 
 export function PipelineValueCard({ 
@@ -65,6 +66,7 @@ export function PipelineValueCard({
   contextLine,
   contextIcon: ContextIcon,
   contextSeverity = "reminder",
+  isDemo: _isDemo = false,
 }: PipelineValueCardProps) {
   const shouldAnimate = !isLoading;
   const animatedCount = useCountUp(count, 1000, 100, shouldAnimate);

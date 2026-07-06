@@ -1,3 +1,4 @@
+import { reportError } from "../_shared/report-error.ts";
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import {
@@ -322,7 +323,7 @@ serve(async (req) => {
     })
 
   } catch (error) {
-    console.error('Lead submission error:', error)
+    await reportError(error, { functionName: "submit-seller-lead" });
     return new Response(JSON.stringify({ 
       error: 'Submission failed. Please try again or call us directly.' 
     }), {
