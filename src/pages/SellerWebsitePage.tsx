@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { getPublicWebsite, trackWebsiteEvent } from "@/lib/getPublicWebsite";
 import { useLeadSubmit } from "@/hooks/useLeadSubmit";
+import { toast } from "sonner";
 import { WebsiteHero } from "@/components/seller-website/WebsiteHero";
 import { StatsSection } from "@/components/seller-website/StatsSection";
 import { HowItWorksSection } from "@/components/seller-website/HowItWorksSection";
