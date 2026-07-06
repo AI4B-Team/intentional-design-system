@@ -896,12 +896,13 @@
   transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-button:active {
+/* Press effect — scoped to primary action buttons only.
+   Menus, icon buttons, table row buttons, etc. should NOT bounce. */
+.btn-base:active,
+button[class*="bg-primary"]:active,
+button[class*="bg-brand"]:active,
+button[class*="bg-accent"]:active {
   transform: scale(0.97);
-}
-
-button[class*="rounded-full"]:active {
-  transform: scale(0.94);
 }
 
 /* Hover lift utility */
@@ -966,27 +967,7 @@ img {
   image-rendering: -webkit-optimize-contrast;
 }
 
-/* Thin, subtle scrollbars */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.4);
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* Brand selection color */
-::selection {
-  background: hsl(var(--primary) / 0.2);
-  color: hsl(var(--foreground));
-}
+/* Scrollbar + ::selection — canonical definitions live in the top `@layer base` block above. */
 
 /* Gradient fade separator */
 .separator-gradient {
