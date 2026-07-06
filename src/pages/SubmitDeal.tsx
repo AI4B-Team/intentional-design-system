@@ -180,6 +180,12 @@ export default function SubmitDeal() {
       setIsSuccess(true);
     } catch (error) {
       console.error("Submission error:", error);
+      const msg = error instanceof Error ? error.message : "";
+      if (msg.toLowerCase().includes("too many submissions")) {
+        toast.error("Too many submissions, please try again later.");
+      } else {
+        toast.error("Failed to submit deal. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
