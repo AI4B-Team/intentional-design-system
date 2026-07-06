@@ -29,6 +29,7 @@ import {
   Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SampleDataBadge } from "@/components/common/SampleDataBadge";
 
 export default function PublicRecords() {
   const [searchParams] = useSearchParams();
