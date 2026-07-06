@@ -490,6 +490,7 @@ export default function Dialer() {
         </div>
       }
     >
+      <UpgradeBanner feature="Dialer AI" className="mb-4" />
       {/* Show ActiveCallView when on a call or in demo mode, otherwise show setup view */}
       {(dialer.isOnCall || demoMode) ? (
         <ActiveCallView
