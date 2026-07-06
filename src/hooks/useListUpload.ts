@@ -125,15 +125,16 @@ export function useListUpload() {
 
       setProgress(60);
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      // Private bucket: create a short-lived signed URL for the edge function
+      const { data: signed, error: signedErr } = await supabase.storage
         .from('list-uploads')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 60 * 60);
+      if (signedErr || !signed?.signedUrl) throw signedErr || new Error('Failed to sign URL');
+      const publicUrl = signed.signedUrl;
 
-      // Update list with file URL
       await supabase
         .from('lists')
-        .update({ source_file_url: publicUrl })
+        .update({ source_file_url: fileName })
         .eq('id', list.id);
 
       setUploading(false);

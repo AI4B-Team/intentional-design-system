@@ -36,6 +36,9 @@ verify_jwt = false  # Inbound from Twilio — X-Twilio-Signature HMAC-SHA1 valid
 [functions.lob-webhook]
 verify_jwt = false  # Inbound from Lob — Lob-Signature HMAC-SHA256 + timestamp replay window validated in code
 
+[functions.buyer-portal-auth]
+verify_jwt = false  # Public buyer portal auth (magic link); handles its own validation
+
 # --- Authenticated app endpoints (verify_jwt = true) ------------------------
 
 [functions.agent-detect]
