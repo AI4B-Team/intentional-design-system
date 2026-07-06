@@ -1,3 +1,4 @@
+import { AI_MODEL_FAST } from "../_shared/ai-models.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -55,7 +56,7 @@ Be realistic and conservative in your estimates. Always return valid JSON only.`
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: AI_MODEL_FAST,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
