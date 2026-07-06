@@ -54,6 +54,7 @@ export function BulkSkipTraceModal({
 }: BulkSkipTraceModalProps) {
   const navigate = useNavigate();
   const { balance, refreshBalance } = useCredits();
+  const { hasAccess: hasAiAccess } = useSubscription();
   const [state, setState] = React.useState<ProcessingState>("idle");
   const [progress, setProgress] = React.useState(0);
   const [currentIndex, setCurrentIndex] = React.useState(0);
@@ -83,6 +84,10 @@ export function BulkSkipTraceModal({
   }, [open]);
 
   const handleProcess = async () => {
+    if (!hasAiAccess) {
+      toast.error("Your trial has ended. Upgrade to run skip traces.");
+      return;
+    }
     setState("processing");
     stopRef.current = false;
     const propertiesToProcess = hasEnoughCredits 
