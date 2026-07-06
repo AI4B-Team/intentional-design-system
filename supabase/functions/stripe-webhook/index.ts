@@ -1,3 +1,4 @@
+import { reportError } from "../_shared/report-error.ts";
 // Stripe webhook. Verifies signature and syncs the `subscriptions` table.
 // verify_jwt = false (see supabase/config.toml). Auth is via Stripe signature.
 import { createClient } from "npm:@supabase/supabase-js@2";
