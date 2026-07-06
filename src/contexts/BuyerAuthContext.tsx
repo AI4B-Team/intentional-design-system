@@ -16,49 +16,28 @@ const BuyerAuthContext = createContext<BuyerAuthContextType | undefined>(undefin
 
 const BUYER_SESSION_KEY = 'buyer_session_token';
 
+async function callAuth(action: string, payload: Record<string, unknown> = {}) {
+  const { data, error } = await supabase.functions.invoke('buyer-portal-auth', {
+    body: { action, ...payload },
+  });
+  if (error) {
+    return { success: false, error: error.message || 'Request failed' } as const;
+  }
+  return data as { success: boolean; error?: string; session_token?: string; buyer?: CashBuyer };
+}
+
 export function BuyerAuthProvider({ children }: { children: React.ReactNode }) {
   const [buyer, setBuyer] = useState<CashBuyer | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchBuyerBySession = useCallback(async (sessionToken: string) => {
     try {
-      // Check if session is valid
-      const { data: session, error: sessionError } = await supabase
-        .from('buyer_portal_sessions')
-        .select('buyer_id, expires_at')
-        .eq('session_token', sessionToken)
-        .gt('expires_at', new Date().toISOString())
-        .single();
-
-      if (sessionError || !session) {
+      const res = await callAuth('get_session', { session_token: sessionToken });
+      if (!res.success || !res.buyer) {
         localStorage.removeItem(BUYER_SESSION_KEY);
         return null;
       }
-
-      // Fetch buyer data
-      const { data: buyerData, error: buyerError } = await supabase
-        .from('cash_buyers')
-        .select('*')
-        .eq('id', session.buyer_id)
-        .single();
-
-      if (buyerError || !buyerData) {
-        localStorage.removeItem(BUYER_SESSION_KEY);
-        return null;
-      }
-
-      // Update last active
-      await supabase
-        .from('buyer_portal_sessions')
-        .update({ last_active_at: new Date().toISOString() })
-        .eq('session_token', sessionToken);
-
-      await supabase
-        .from('cash_buyers')
-        .update({ last_active_at: new Date().toISOString() })
-        .eq('id', session.buyer_id);
-
-      return buyerData as CashBuyer;
+      return res.buyer;
     } catch (error) {
       console.error('Error fetching buyer session:', error);
       return null;
@@ -74,46 +53,13 @@ export function BuyerAuthProvider({ children }: { children: React.ReactNode }) {
       }
       setIsLoading(false);
     };
-
     initAuth();
   }, [fetchBuyerBySession]);
 
-  const login = async (email: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string) => {
     try {
-      // Find buyer by email
-      const { data: buyerData, error: buyerError } = await supabase
-        .from('cash_buyers')
-        .select('id, email, first_name')
-        .eq('email', email.toLowerCase())
-        .single();
-
-      if (buyerError || !buyerData) {
-        return { success: false, error: 'No account found with this email. Please register first.' };
-      }
-
-      // Generate magic link token
-      const magicToken = crypto.randomUUID();
-      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days session
-      const magicLinkExpiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min magic link
-
-      // Create session with magic link
-      const { error: sessionError } = await supabase
-        .from('buyer_portal_sessions')
-        .insert({
-          buyer_id: buyerData.id,
-          session_token: crypto.randomUUID(),
-          expires_at: expiresAt.toISOString(),
-          magic_link_token: magicToken,
-          magic_link_expires_at: magicLinkExpiresAt.toISOString(),
-        });
-
-      if (sessionError) {
-        return { success: false, error: 'Failed to create login session' };
-      }
-
-      // TODO: In production, send magic link email via edge function
-      // const magicLink = `${window.location.origin}/buyer/auth?token=${magicToken}`;
-
+      const res = await callAuth('login', { email });
+      if (!res.success) return { success: false, error: res.error || 'Failed to send login link' };
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
@@ -121,40 +67,18 @@ export function BuyerAuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const verifyToken = async (token: string): Promise<{ success: boolean; error?: string }> => {
+  const verifyToken = async (token: string) => {
     try {
-      // Find session by magic link token
-      const { data: session, error: sessionError } = await supabase
-        .from('buyer_portal_sessions')
-        .select('*')
-        .eq('magic_link_token', token)
-        .gt('magic_link_expires_at', new Date().toISOString())
-        .single();
-
-      if (sessionError || !session) {
-        return { success: false, error: 'Invalid or expired link. Please request a new one.' };
+      const res = await callAuth('verify_token', { token });
+      if (!res.success || !res.session_token) {
+        return { success: false, error: res.error || 'Invalid or expired link.' };
       }
-
-      // Clear magic link token (one-time use)
-      await supabase
-        .from('buyer_portal_sessions')
-        .update({ 
-          magic_link_token: null, 
-          magic_link_expires_at: null,
-          last_active_at: new Date().toISOString()
-        })
-        .eq('id', session.id);
-
-      // Store session token
-      localStorage.setItem(BUYER_SESSION_KEY, session.session_token);
-
-      // Fetch buyer
-      const buyerData = await fetchBuyerBySession(session.session_token);
+      localStorage.setItem(BUYER_SESSION_KEY, res.session_token);
+      const buyerData = await fetchBuyerBySession(res.session_token);
       if (buyerData) {
         setBuyer(buyerData);
         return { success: true };
       }
-
       return { success: false, error: 'Failed to load your account' };
     } catch (error) {
       console.error('Token verification error:', error);
@@ -165,11 +89,7 @@ export function BuyerAuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     const sessionToken = localStorage.getItem(BUYER_SESSION_KEY);
     if (sessionToken) {
-      supabase
-        .from('buyer_portal_sessions')
-        .delete()
-        .eq('session_token', sessionToken)
-        .then(() => {});
+      callAuth('logout', { session_token: sessionToken }).catch(() => {});
     }
     localStorage.removeItem(BUYER_SESSION_KEY);
     setBuyer(null);
