@@ -35,13 +35,13 @@ async function searchPropertiesInDatabase(
 ): Promise<PropertySearchResult[]> {
   console.log("Searching database for:", query);
   
-  // Parse search terms
-  const terms = query.toLowerCase().split(/\s+/);
-  
-  let queryBuilder = supabase
-    .from("properties")
-    .select("id, address, city, state, zip, arv, asking_price, status, bedrooms, bathrooms, sqft, year_built, property_type")
-    .eq("user_id", userId)
+  // Parse + sanitize search terms — strip characters that could break out of
+  // PostgREST .or() filter syntax (commas, parentheses, periods, percent signs).
+  const terms = query
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.replace(/[,()%.]/g, "").trim())
+    .filter((t) => t.length > 1);
     .limit(10);
   
   // Search by address, city, or state
