@@ -35,6 +35,8 @@ import {
   EditableMetricsPanel,
 } from "@/components/deal-intelligence";
 import type { DealIntelligenceResult, EditableMetrics, DealStrategy } from "@/components/deal-intelligence/types";
+import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 type ViewState = "input" | "analyzing" | "report";
 
@@ -45,6 +47,7 @@ function fmt(value: number): string {
 export default function DealAnalyzer() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { hasAccess: hasAiAccess } = useSubscription();
   const [viewState, setViewState] = useState<ViewState>("input");
   const [address, setAddress] = useState("");
   const [activeTab, setActiveTab] = useState("analysis");
@@ -76,6 +79,10 @@ export default function DealAnalyzer() {
   const handleAnalyze = useCallback(async () => {
     if (!address.trim()) {
       toast.error("Please enter a property address");
+      return;
+    }
+    if (!hasAiAccess) {
+      toast.error("Your trial has ended. Upgrade to run deal analyses.");
       return;
     }
 
