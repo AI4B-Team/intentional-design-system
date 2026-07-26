@@ -15,6 +15,58 @@ interface ErrorBoundaryState {
   errorInfo: React.ErrorInfo | null;
 }
 
+const STALE_CHUNK_RETRY_KEY = "realelite_stale_chunk_retry";
+const STALE_CHUNK_RETRY_WINDOW_MS = 30_000;
+
+function isStaleChunkError(error: Error): boolean {
+  return /failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|loading chunk \d+ failed/i.test(
+    error.message,
+  );
+}
+
+async function recoverFromStaleChunk(): Promise<void> {
+  if (typeof window === "undefined") return;
+
+  const now = Date.now();
+  const currentPath = window.location.pathname;
+  const lastRetry = window.sessionStorage.getItem(STALE_CHUNK_RETRY_KEY);
+
+  if (lastRetry) {
+    try {
+      const retry = JSON.parse(lastRetry) as { path?: string; at?: number };
+      if (retry.path === currentPath && retry.at && now - retry.at < STALE_CHUNK_RETRY_WINDOW_MS) {
+        return;
+      }
+    } catch {
+      // Ignore malformed retry metadata and attempt a clean recovery.
+    }
+  }
+
+  window.sessionStorage.setItem(STALE_CHUNK_RETRY_KEY, JSON.stringify({ path: currentPath, at: now }));
+
+  try {
+    if ("serviceWorker" in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map((registration) => registration.unregister()));
+    }
+  } catch {
+    // Recovery is best-effort; reloading still helps when the browser cache is stale.
+  }
+
+  try {
+    if ("caches" in window) {
+      const cacheNames = await window.caches.keys();
+      await Promise.all(cacheNames.map((cacheName) => window.caches.delete(cacheName)));
+    }
+  } catch {
+    // Recovery is best-effort.
+  }
+
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set("reload", String(now));
+  window.location.replace(nextUrl.toString());
+}
+
 export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -28,6 +80,10 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error("Error caught by boundary:", error, errorInfo);
     this.setState({ errorInfo });
+
+    if (isStaleChunkError(error)) {
+      void recoverFromStaleChunk();
+    }
 
     // Report to Sentry when enabled (no-op otherwise).
     reportClientError(error, { componentStack: errorInfo.componentStack });
