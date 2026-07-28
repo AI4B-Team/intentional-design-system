@@ -1,6 +1,6 @@
-// Legacy service worker kill switch.
-// Replaces stale app-shell workers at /sw.js, clears only this app's Workbox
-// caches, reloads open tabs, and unregisters itself.
+// Active service worker kill switch.
+// Replaces stale app-shell workers at /service-worker.js, clears only this app's
+// Workbox caches, reloads open tabs, and unregisters itself.
 
 function isWorkboxCacheForThisRegistration(name) {
   const hasWorkboxBucket = /(^|-)precache-v\d+-|(^|-)runtime-|(^|-)googleAnalytics-/.test(name);
