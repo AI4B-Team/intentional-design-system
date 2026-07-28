@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
+      filename: "service-worker.js",
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png", "og-image.png"],
       manifest: {
