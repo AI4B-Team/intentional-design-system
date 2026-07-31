@@ -171,8 +171,11 @@ export function AIVAChat({ className, onClose }: AIVAChatProps) {
         stream.getTracks().forEach(track => track.stop());
         
         try {
-          // Upload to storage
-          const fileName = `voice-${Date.now()}.webm`;
+          // Upload to storage — path must be scoped to the owner's folder (RLS)
+          const { data: authData } = await supabase.auth.getUser();
+          const uid = authData?.user?.id;
+          if (!uid) throw new Error('Not authenticated');
+          const fileName = `${uid}/voice-${Date.now()}.webm`;
           const { error: uploadError } = await supabase.storage
             .from('voice-recordings')
             .upload(fileName, audioBlob, { contentType: 'audio/webm' });
