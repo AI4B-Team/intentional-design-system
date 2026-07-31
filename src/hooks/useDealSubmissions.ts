@@ -202,15 +202,20 @@ export function useSubmitDeal() {
         property: { id: string };
       };
 
-      // Upload photos (best-effort — failures are logged but do not fail the submission)
+      // Upload photos (best-effort). Storage now requires an authenticated
+      // user and an owner-scoped path, so anonymous submissions skip photos.
       if (data.photos && data.photos.length > 0) {
-        for (const photo of data.photos) {
-          const fileName = `${property.id}/${Date.now()}-${photo.name}`;
-          const { error: uploadError } = await supabase.storage
-            .from('property-photos')
-            .upload(fileName, photo);
-          if (uploadError) {
-            console.error('Photo upload error:', uploadError);
+        const { data: authData } = await supabase.auth.getUser();
+        const uid = authData?.user?.id;
+        if (uid) {
+          for (const photo of data.photos) {
+            const fileName = `${uid}/${property.id}/${Date.now()}-${photo.name}`;
+            const { error: uploadError } = await supabase.storage
+              .from('property-photos')
+              .upload(fileName, photo);
+            if (uploadError) {
+              console.error('Photo upload error:', uploadError);
+            }
           }
         }
       }
