@@ -109,7 +109,11 @@ Deno.serve(async (req) => {
         const sig = await hmacSignature(payload, hook.secret);
         const res = await fetch(hook.url, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "x-hub-signature": sig },
+          headers: {
+            "Content-Type": "application/json",
+            "x-webhook-signature": sig,
+            "x-hub-signature": sig,
+          },
           body: payload,
         });
         await admin
