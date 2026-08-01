@@ -414,7 +414,7 @@ const App = () => (
             <Route path="/harvest/outreach" element={<ProtectedRoute><HarvestOutreach /></ProtectedRoute>} />
             <Route path="/settings/engine-health" element={<ProtectedRoute><EngineHealth /></ProtectedRoute>} />
             <Route path="/settings/automation" element={<ProtectedRoute><AutomationSettings /></ProtectedRoute>} />
-            <Route path="/settings/app-family" element={<ProtectedRoute><AppFamilySettings /></ProtectedRoute>} />i
+            <Route path="/settings/app-family" element={<ProtectedRoute><AppFamilySettings /></ProtectedRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<RootRedirect />} />
