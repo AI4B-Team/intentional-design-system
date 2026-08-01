@@ -166,3 +166,6 @@ verify_jwt = true
 
 [functions.virtual-staging]
 verify_jwt = true
+
+[functions.hub-events-ingest]
+verify_jwt = false  # Satellite apps authenticate with an HMAC x-hub-signature header

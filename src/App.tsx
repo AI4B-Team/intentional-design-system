@@ -99,6 +99,7 @@ const HarvestActiveBuyers = React.lazy(() => import("./pages/harvest/HarvestActi
 const HarvestOutreach = React.lazy(() => import("./pages/harvest/HarvestOutreach"));
 const EngineHealth = React.lazy(() => import("./pages/settings/EngineHealth"));
 const AutomationSettings = React.lazy(() => import("./pages/settings/AutomationSettings"));
+const AppFamilySettings = React.lazy(() => import("./pages/settings/AppFamilySettings"));
 const SearchLayout = React.lazy(() => import("./pages/search/SearchLayout"));
 const SearchLookup = React.lazy(() => import("./pages/search/SearchLookup"));
 const SearchMap = React.lazy(() => import("./pages/search/SearchMap"));
@@ -413,6 +414,7 @@ const App = () => (
             <Route path="/harvest/outreach" element={<ProtectedRoute><HarvestOutreach /></ProtectedRoute>} />
             <Route path="/settings/engine-health" element={<ProtectedRoute><EngineHealth /></ProtectedRoute>} />
             <Route path="/settings/automation" element={<ProtectedRoute><AutomationSettings /></ProtectedRoute>} />
+            <Route path="/settings/app-family" element={<ProtectedRoute><AppFamilySettings /></ProtectedRoute>} />
 
             {/* Redirects */}
             <Route path="/" element={<RootRedirect />} />

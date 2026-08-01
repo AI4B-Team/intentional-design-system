@@ -232,6 +232,77 @@ export type Database = {
         }
         Relationships: []
       }
+      app_family_apps: {
+        Row: {
+          base_url: string
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          base_url: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          base_url?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      app_family_events: {
+        Row: {
+          app_slug: string
+          created_at: string
+          event_type: string
+          id: string
+          organization_id: string
+          payload: Json
+          remote_event_id: string | null
+        }
+        Insert: {
+          app_slug: string
+          created_at?: string
+          event_type: string
+          id?: string
+          organization_id: string
+          payload?: Json
+          remote_event_id?: string | null
+        }
+        Update: {
+          app_slug?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          organization_id?: string
+          payload?: Json
+          remote_event_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_family_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           appointment_type: string | null
@@ -6974,6 +7045,98 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_app_links: {
+        Row: {
+          app_slug: string
+          created_at: string
+          id: string
+          last_event_at: string | null
+          linked_at: string | null
+          organization_id: string
+          remote_org_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          app_slug: string
+          created_at?: string
+          id?: string
+          last_event_at?: string | null
+          linked_at?: string | null
+          organization_id: string
+          remote_org_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          app_slug?: string
+          created_at?: string
+          id?: string
+          last_event_at?: string | null
+          linked_at?: string | null
+          organization_id?: string
+          remote_org_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_app_links_app_slug_fkey"
+            columns: ["app_slug"]
+            isOneToOne: false
+            referencedRelation: "app_family_apps"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "org_app_links_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_webhooks: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          last_delivery_at: string | null
+          last_delivery_status: number | null
+          organization_id: string
+          secret: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_delivery_at?: string | null
+          last_delivery_status?: number | null
+          organization_id: string
+          secret?: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          last_delivery_at?: string | null
+          last_delivery_status?: number | null
+          organization_id?: string
+          secret?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_webhooks_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
         ]

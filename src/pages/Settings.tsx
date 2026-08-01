@@ -302,6 +302,32 @@ export default function Settings() {
               </CardHeader>
             </Card>
 
+            <Card variant="default" padding="md">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                      <SettingsIcon className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle>App Family</CardTitle>
+                      <CardDescription>
+                        Single sign-on into LeadTrace, Master Closer, and event webhooks
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/settings/app-family">
+                      Configure
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </Link>
+                  </Button>
+                </div>
+              </CardHeader>
+            </Card>
+
+
+
             <Card variant="default" padding="md" className="opacity-60">
               <CardHeader>
                 <div className="flex items-center gap-4">
