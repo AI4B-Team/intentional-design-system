@@ -23,7 +23,8 @@ Deno.serve(async (req) => {
   if (!secret) return json({ error: "Hub signing secret not configured" }, 503);
 
   const raw = await req.text();
-  const provided = req.headers.get("x-hub-signature") ?? "";
+  const provided =
+    req.headers.get("x-webhook-signature") ?? req.headers.get("x-hub-signature") ?? "";
   const expected = await hmacSignature(raw, secret);
   if (!provided || !safeEqual(provided.toLowerCase(), expected)) {
     return json({ error: "Invalid signature" }, 401);
