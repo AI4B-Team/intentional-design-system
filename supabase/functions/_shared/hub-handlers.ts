@@ -101,33 +101,61 @@ export async function applyIncomingEvents(
         case "lead.flagged_litigator": {
           const userId = await owner();
           const address = p.property_address ?? p.address;
-          if (!userId || !address) {
+          const phone = normalizePhone(p.phone ?? p.phone_number ?? p.contact_phone);
+          if (!userId || (!address && !phone)) {
             results.push({ event_type: evt.event_type, action: "skipped:incomplete" });
             break;
           }
-          const normalized = String(address).trim().toLowerCase().replace(/\s+/g, " ");
-          const hash = await sha256Hex(normalized);
-          const { error } = await admin.from("suppression_list").upsert(
-            {
-              user_id: userId,
-              organization_id: orgId,
-              address: String(address).slice(0, 300),
-              normalized_address: normalized,
-              address_hash: hash,
-              city: p.city ?? null,
-              state: p.state ?? null,
-              zip: p.zip ?? null,
-              reason: evt.event_type === "lead.flagged_dnc" ? "dnc" : "litigator",
-              reason_notes: p.notes ?? `Flagged by ${appSlug}`,
-              source: appSlug,
-              source_reference_id: evt.id ?? null,
-            },
-            { onConflict: "user_id,address_hash", ignoreDuplicates: true },
-          );
-          results.push({
-            event_type: evt.event_type,
-            action: error ? `suppression_error` : "suppression_list:+1",
-          });
+          const reason = evt.event_type === "lead.flagged_dnc" ? "dnc" : "litigator";
+          const actions: string[] = [];
+
+          if (address) {
+            const normalized = String(address).trim().toLowerCase().replace(/\s+/g, " ");
+            const hash = await sha256Hex(normalized);
+            const { error } = await admin.from("suppression_list").upsert(
+              {
+                user_id: userId,
+                organization_id: orgId,
+                address: String(address).slice(0, 300),
+                normalized_address: normalized,
+                address_hash: hash,
+                city: p.city ?? null,
+                state: p.state ?? null,
+                zip: p.zip ?? null,
+                reason,
+                reason_notes: p.notes ?? `Flagged by ${appSlug}`,
+                source: appSlug,
+                source_reference_id: evt.id ?? null,
+              },
+              { onConflict: "user_id,address_hash", ignoreDuplicates: true },
+            );
+            actions.push(error ? "suppression_error" : "suppression_list:+1");
+          }
+
+          if (phone) {
+            // Stop the dialer from ever calling this number again.
+            const { data: stopped } = await admin
+              .from("call_queue_contacts")
+              .update({
+                status: "dnc",
+                updated_at: new Date().toISOString(),
+              })
+              .eq("organization_id", orgId)
+              .in("status", ["pending", "in_progress"])
+              .or(`phone_number.eq.${phone},phone_number.eq.+1${phone}`)
+              .select("id");
+            actions.push(`queue_dnc:${stopped?.length ?? 0}`);
+
+            const { data: flagged } = await admin
+              .from("properties")
+              .update({ phone_dnc: true })
+              .eq("organization_id", orgId)
+              .eq("owner_phone", phone)
+              .select("id");
+            actions.push(`properties_dnc:${flagged?.length ?? 0}`);
+          }
+
+          results.push({ event_type: evt.event_type, action: actions.join(" ") });
           break;
         }
 
