@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -78,6 +79,7 @@ Deno.serve(async (req) => {
       .from("closebot_conversations")
       .insert({
         user_id: connection.user_id,
+        organization_id: connection.organization_id ?? null,
         property_id: payload.property_id || null,
         bot_id: payload.bot_id,
         bot_name: payload.bot_name,
@@ -96,6 +98,23 @@ Deno.serve(async (req) => {
       console.error("Closebot create conversation failed:", convError);
       throw new Error("Failed to create conversation");
     }
+
+    // Notify family apps that an inbound conversation reply landed.
+    if (connection.organization_id) {
+      await emitHubEvent(supabase, connection.organization_id, "message.reply_received", {
+        source: "closebot",
+        channel: "sms",
+        conversation_id: conversation.id,
+        bot_name: payload.bot_name ?? null,
+        status: payload.status,
+        outcome: payload.outcome,
+        property_id: payload.property_id ?? null,
+        property_address: payload.collected_data?.property_address ?? null,
+        appointment_set: payload.outcome === "appointment_set",
+        appointment_time: appointmentTime,
+      });
+    }
+
 
     // If property_id provided, update property with collected data
     if (payload.property_id && payload.collected_data) {
