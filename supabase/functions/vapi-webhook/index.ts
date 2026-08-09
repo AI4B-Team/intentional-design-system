@@ -128,7 +128,8 @@ async function handleEndOfCallReport(supabase: any, payload: any) {
   const motivation = extractMotivation(summary);
 
   // Update the voice agent call record
-  const { error } = await supabase
+  const outcome = mapEndedReasonToOutcome(message?.endedReason);
+  const { data: updated, error } = await supabase
     .from("voice_agent_calls")
     .update({
       transcript,
@@ -137,12 +138,30 @@ async function handleEndOfCallReport(supabase: any, payload: any) {
       motivation_level: motivation,
       ended_at: call?.endedAt || new Date().toISOString(),
       duration_seconds: duration,
-      outcome: mapEndedReasonToOutcome(message?.endedReason),
+      outcome,
     })
-    .eq("vapi_call_id", vapiCallId);
+    .eq("vapi_call_id", vapiCallId)
+    .select("id, organization_id, property_id, property_address")
+    .maybeSingle();
 
   if (error) {
     console.error("Failed to update call record:", error);
+  }
+
+  // Notify family apps that an inbound conversation reply completed.
+  if (updated?.organization_id) {
+    await emitHubEvent(supabase, updated.organization_id, "message.reply_received", {
+      source: "voice_agent",
+      channel: "voice",
+      call_record_id: updated.id,
+      property_id: updated.property_id ?? null,
+      property_address: updated.property_address ?? null,
+      outcome,
+      sentiment,
+      motivation_level: motivation,
+      duration_seconds: duration,
+      summary: typeof summary === "string" ? summary.slice(0, 1000) : null,
+    });
   }
 
   console.log(`End of call report processed for ${vapiCallId}: ${summary?.slice(0, 200)}`);
