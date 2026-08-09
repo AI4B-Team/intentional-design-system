@@ -159,6 +159,18 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       const memberData =
         (activeOrgId && rows.find((r) => (r as any).organization_id === activeOrgId)) || rows[0];
 
+      // Keep the stored id in sync so a deleted/left workspace isn't remembered forever
+      const resolvedOrgId = (memberData as any).organization_id as string;
+      if (resolvedOrgId !== activeOrgId) {
+        try {
+          localStorage.setItem(ACTIVE_ORG_STORAGE_KEY, resolvedOrgId);
+        } catch {
+          /* storage unavailable */
+        }
+      }
+
+
+
       // Extract organization from nested response
       const orgData = (memberData as any).organizations as Organization;
       const membershipData: OrganizationMember = {
