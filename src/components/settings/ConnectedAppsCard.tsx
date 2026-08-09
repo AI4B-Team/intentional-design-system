@@ -65,7 +65,9 @@ export function ConnectedAppsCard() {
       return null;
     } finally {
       setChecking(null);
+      refetchLinks();
     }
+
   };
 
   const handleCheckAll = async () => {
