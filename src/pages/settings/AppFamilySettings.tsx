@@ -63,6 +63,33 @@ export default function AppFamilySettings() {
     toast({ title: "Webhook Added" });
   };
 
+  const handleSaveApp = async (
+    app: { slug: string; name: string; base_url: string; description?: string | null; enabled?: boolean },
+    nextUrl: string,
+  ) => {
+    if (!/^https?:\/\//i.test(nextUrl)) {
+      toast({ title: "Invalid URL", description: "Enter the app's full published URL.", variant: "destructive" });
+      return;
+    }
+    try {
+      await saveApp.mutateAsync({ ...app, base_url: nextUrl });
+      toast({ title: "App Saved" });
+    } catch (e: any) {
+      toast({ title: "Could Not Save", description: e?.message, variant: "destructive" });
+    }
+  };
+
+  const handleAddApp = async () => {
+    const slug = newApp.slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, "-");
+    if (!slug || !newApp.name.trim()) {
+      toast({ title: "Missing Fields", description: "Slug and name are required.", variant: "destructive" });
+      return;
+    }
+    await handleSaveApp({ slug, name: newApp.name.trim(), base_url: newApp.base_url, enabled: true }, newApp.base_url);
+    setNewApp({ slug: "", name: "", base_url: "" });
+  };
+
+
   return (
     <DashboardLayout>
       <PageHeader
