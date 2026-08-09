@@ -19,6 +19,7 @@ function relativeTime(iso: string) {
 export function FamilyAppsSection() {
   const { data: apps = [], isLoading } = useFamilyApps();
   const { data: links = [] } = useOrgAppLinks();
+  const { data: events = [] } = useFamilyEvents(100);
   const launch = useLaunchFamilyApp();
   const [pending, setPending] = React.useState<string | null>(null);
 
