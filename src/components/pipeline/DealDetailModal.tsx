@@ -31,6 +31,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
+
 import { formatDistanceToNow } from "date-fns";
 import type { PipelineDeal } from "@/hooks/usePipelineDeals";
 import { PIPELINE_STAGES, getLeadScoreBg, getLeadScoreColor } from "./pipeline-config";
