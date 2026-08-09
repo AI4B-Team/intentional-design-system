@@ -159,9 +159,63 @@ export async function applyIncomingEvents(
           break;
         }
 
+        case "job.completed": {
+          const label = p.job_type ?? p.type ?? "Background Job";
+          const n = await notifyOrg(admin, orgId, {
+            type: "app_family",
+            title: `${titleCase(String(label))} Completed`,
+            message: [p.summary ?? p.message, p.count != null ? `${p.count} records` : null]
+              .filter(Boolean)
+              .join(" · ") || `Finished in ${appSlug}.`,
+            link: "/settings/app-family",
+          });
+          results.push({ event_type: evt.event_type, action: `notifications:+${n}` });
+          break;
+        }
+
+        case "campaign.launched": {
+          const n = await notifyOrg(admin, orgId, {
+            type: "app_family",
+            title: "Campaign Launched",
+            message: [p.campaign_name ?? p.name, p.channel, p.recipient_count != null ? `${p.recipient_count} recipients` : null]
+              .filter(Boolean)
+              .join(" · ") || `A campaign went out from ${appSlug}.`,
+            link: "/settings/app-family",
+          });
+          results.push({ event_type: evt.event_type, action: `notifications:+${n}` });
+          break;
+        }
+
+        case "brand.approved": {
+          const n = await notifyOrg(admin, orgId, {
+            type: "app_family",
+            title: "Brand Assets Approved",
+            message: [p.brand_name ?? p.name, p.notes].filter(Boolean).join(" · ") ||
+              `Brand assets were approved in ${appSlug}.`,
+            link: "/settings/app-family",
+          });
+          results.push({ event_type: evt.event_type, action: `notifications:+${n}` });
+          break;
+        }
+
+        case "credits.low": {
+          const remaining = p.remaining ?? p.balance ?? p.credits;
+          const n = await notifyOrg(admin, orgId, {
+            type: "app_family",
+            title: "Credits Running Low",
+            message: remaining != null
+              ? `${remaining} credits remaining in ${appSlug}.`
+              : `Credit balance is low in ${appSlug}.`,
+            link: "/settings/billing",
+          });
+          results.push({ event_type: evt.event_type, action: `notifications:+${n}` });
+          break;
+        }
+
         default:
           results.push({ event_type: evt.event_type, action: "stored" });
       }
+
     } catch (e) {
       console.error("[hub-handlers]", evt.event_type, e);
       results.push({ event_type: evt.event_type, action: "error" });
@@ -177,6 +231,38 @@ function normalizePhone(value: unknown): string | null {
   if (digits.length < 10) return null;
   return digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits.slice(0, 15);
 }
+
+function titleCase(value: string): string {
+  return value
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+/** Fan a notification out to every member of the org. Returns rows created. */
+async function notifyOrg(
+  admin: Admin,
+  orgId: string,
+  notification: { type: string; title: string; message: string; link: string },
+): Promise<number> {
+  const { data: members } = await admin
+    .from("organization_members")
+    .select("user_id")
+    .eq("organization_id", orgId);
+  if (!members?.length) return 0;
+  const rows = members.map((m: any) => ({
+    user_id: m.user_id,
+    organization_id: orgId,
+    type: notification.type,
+    title: notification.title.slice(0, 200),
+    message: notification.message.slice(0, 500),
+    link: notification.link,
+  }));
+  const { error } = await admin.from("notifications").insert(rows);
+  return error ? 0 : rows.length;
+}
+
 
 async function sha256Hex(input: string): Promise<string> {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input));
