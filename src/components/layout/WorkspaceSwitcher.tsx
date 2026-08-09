@@ -491,7 +491,7 @@ function WorkspaceDropdownContent({
                       e.stopPropagation();
                       commitEditing(workspace);
                     }}
-                    className="p-1 rounded-md text-emerald-500 hover:bg-background flex-shrink-0 disabled:opacity-50"
+                    className="p-1 rounded-md text-brand-accent hover:bg-background flex-shrink-0 disabled:opacity-50"
                   >
                     <Check className="h-3.5 w-3.5" />
                   </button>
