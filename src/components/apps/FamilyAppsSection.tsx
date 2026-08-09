@@ -54,6 +54,11 @@ export function FamilyAppsSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {enabled.map((app) => {
           const link = links.find((l) => l.app_slug === app.slug);
+          const appEvents = events.filter((e) => e.app_slug === app.slug);
+          const lastAt = appEvents[0]?.created_at ?? link?.last_event_at ?? null;
+          const failed = appEvents.filter((e) =>
+            (e.delivery ?? []).some((d) => d.status >= 400),
+          ).length;
           return (
             <Card key={app.id} padding="md" className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-2">
