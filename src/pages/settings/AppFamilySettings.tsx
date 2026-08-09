@@ -20,6 +20,7 @@ import {
   type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
+import { HUB_EVENT_CATALOG } from "@/lib/hubEvents";
 import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
 import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck, RefreshCw } from "lucide-react";
 
@@ -48,7 +49,6 @@ export default function AppFamilySettings() {
   const [webhookUrl, setWebhookUrl] = React.useState("");
   const [pending, setPending] = React.useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
-  const [filterDrafts, setFilterDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
   const callAction = useCallFamilyAppAction();
   const integrationCheck = useIntegrationCheck();
@@ -473,33 +473,48 @@ export default function AppFamilySettings() {
                     </Button>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <Input
-                    className="font-mono text-xs"
-                    placeholder="leads.new, campaign.launched (blank = all events)"
-                    value={filterDrafts[w.id] ?? (w.event_types ?? []).join(", ")}
-                    onChange={(e) => setFilterDrafts((d) => ({ ...d, [w.id]: e.target.value }))}
-                  />
-                  <Button
-                    variant="outline"
-                    disabled={setWebhookEventTypes.isPending}
-                    onClick={async () => {
-                      const raw = filterDrafts[w.id] ?? (w.event_types ?? []).join(", ");
-                      const eventTypes = raw
-                        .split(",")
-                        .map((s) => s.trim())
-                        .filter(Boolean);
-                      await setWebhookEventTypes.mutateAsync({ id: w.id, eventTypes });
-                      toast({
-                        title: "Subscription Saved",
-                        description: eventTypes.length
-                          ? `Only: ${eventTypes.join(", ")}`
-                          : "Receiving all event types.",
-                      });
-                    }}
-                  >
-                    Save Events
-                  </Button>
+                <div className="space-y-2">
+                  <div className="text-xs text-muted-foreground">
+                    Subscribed Events — none selected means every event type is delivered.
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {HUB_EVENT_CATALOG.map((evt) => {
+                      const selected = (w.event_types ?? []).includes(evt.type);
+                      return (
+                        <button
+                          key={evt.type}
+                          type="button"
+                          title={evt.description}
+                          disabled={setWebhookEventTypes.isPending}
+                          onClick={() => {
+                            const current = w.event_types ?? [];
+                            const eventTypes = selected
+                              ? current.filter((t) => t !== evt.type)
+                              : [...current, evt.type];
+                            setWebhookEventTypes.mutate({ id: w.id, eventTypes });
+                          }}
+                          className={`rounded-full border px-2.5 py-1 font-mono text-xs transition-colors ${
+                            selected
+                              ? "border-primary bg-primary/10 text-primary"
+                              : "border-border text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {evt.type}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {(w.event_types ?? []).length > 0 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() =>
+                        setWebhookEventTypes.mutate({ id: w.id, eventTypes: [] })
+                      }
+                    >
+                      Subscribe To All Events
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
