@@ -191,6 +191,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     setBusy(true);
     try {
       const org = await createOrganization.mutateAsync({ name });
+      queryClient.clear();
       switchOrganization(org.id);
       setCreateOpen(false);
       setNewName("");
