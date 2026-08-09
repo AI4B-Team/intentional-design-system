@@ -29,9 +29,11 @@ export async function emitHubEvent(
         app_slug: "real-elite",
         event_type: eventType.slice(0, 60),
         payload,
+        direction: "outbound",
       })
       .select("id, created_at")
       .maybeSingle();
+
 
     const envelope = JSON.stringify({
       id: stored?.id ?? crypto.randomUUID(),
@@ -83,6 +85,14 @@ export async function emitHubEvent(
         })
         .eq("id", hook.id);
     }
+
+    if (stored?.id) {
+      await admin
+        .from("app_family_events")
+        .update({ delivery: delivered })
+        .eq("id", stored.id);
+    }
+
   } catch (e) {
     console.error("[emitHubEvent]", eventType, e);
   }

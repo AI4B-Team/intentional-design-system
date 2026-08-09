@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
@@ -25,7 +27,10 @@ export interface FamilyEvent {
   event_type: string;
   payload: Record<string, unknown>;
   created_at: string;
+  direction: "inbound" | "outbound";
+  delivery: { target: string; status: number }[] | null;
 }
+
 
 export interface OrgWebhook {
   id: string;
@@ -68,6 +73,28 @@ export function useOrgAppLinks() {
 
 export function useFamilyEvents(limit = 50) {
   const organizationId = useCurrentOrganizationId();
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!organizationId) return;
+    const channel = supabase
+      .channel(`app_family_events_${organizationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "app_family_events",
+          filter: `organization_id=eq.${organizationId}`,
+        },
+        () => qc.invalidateQueries({ queryKey: ["app_family_events"] }),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [organizationId, qc]);
+
   return useQuery({
     queryKey: ["app_family_events", organizationId, limit],
     enabled: !!organizationId,
@@ -84,6 +111,7 @@ export function useFamilyEvents(limit = 50) {
     },
   });
 }
+
 
 export function useOrgWebhooks() {
   const organizationId = useCurrentOrganizationId();

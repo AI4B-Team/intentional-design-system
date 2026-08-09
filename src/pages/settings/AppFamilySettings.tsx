@@ -20,7 +20,9 @@ import {
   type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
+import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
 import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+
 
 
 
@@ -354,57 +356,8 @@ export default function AppFamilySettings() {
         )}
 
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" /> Incoming Events
-            </CardTitle>
-            <CardDescription>
-              Events satellite apps have sent to this organization.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {events.length === 0 ? (
-              <div className="text-sm text-muted-foreground">
-                No events yet. Apps post to this endpoint with an HMAC signature:
-                <div className="mt-2 flex items-center gap-2">
-                  <code className="flex-1 truncate rounded bg-muted px-2 py-1 text-xs">
-                    {INGEST_URL}
-                  </code>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(INGEST_URL);
-                      toast({ title: "Endpoint Copied" });
-                    }}
-                  >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <div className="divide-y divide-border">
-                {events.map((e) => (
-                  <div key={e.id} className="flex items-center justify-between gap-3 py-2">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{e.app_slug}</Badge>
-                        <span className="font-mono text-sm text-foreground">{e.event_type}</span>
-                      </div>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {JSON.stringify(e.payload)}
-                      </p>
-                    </div>
-                    <span className="shrink-0 text-xs text-muted-foreground tabular-nums">
-                      {new Date(e.created_at).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <FamilyEventsFeed />
+
 
         <Card>
           <CardHeader>
