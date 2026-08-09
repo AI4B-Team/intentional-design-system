@@ -244,42 +244,29 @@ export function useAcceptInvite() {
     mutationFn: async (token: string) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Find the invite
-      const { data: invite, error: inviteError } = await supabase
-        .from("organization_invites")
-        .select("*")
-        .eq("token", token)
-        .is("accepted_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .single();
+      // Security-definer RPC: validates the token, email match and expiry,
+      // then creates the membership and marks the invite accepted.
+      const { data, error } = await supabase.rpc("accept_organization_invite", {
+        p_token: token,
+      });
 
-      if (inviteError || !invite) {
-        throw new Error("Invalid or expired invitation");
+      if (error) throw error;
+
+      const result = data as { success?: boolean; error?: string; organization_id?: string } | null;
+      if (!result?.success) {
+        const reason = result?.error;
+        throw new Error(
+          reason === "email_mismatch"
+            ? "This invitation was sent to a different email address."
+            : reason === "not_authenticated"
+              ? "Please sign in to accept this invitation."
+              : "Invalid or expired invitation",
+        );
       }
 
-      // Create membership
-      const { error: memberError } = await supabase
-        .from("organization_members")
-        .insert({
-          organization_id: invite.organization_id,
-          user_id: user.id,
-          role: invite.role,
-          status: "active",
-          invited_by: invite.invited_by,
-          invited_at: invite.created_at,
-          joined_at: new Date().toISOString(),
-        });
-
-      if (memberError) throw memberError;
-
-      // Mark invite as accepted
-      await supabase
-        .from("organization_invites")
-        .update({ accepted_at: new Date().toISOString() })
-        .eq("id", invite.id);
-
-      return invite;
+      return result;
     },
+
     onSuccess: async () => {
       await refreshOrganization();
       queryClient.invalidateQueries({ queryKey: ["organization"] });
