@@ -378,6 +378,7 @@ interface WorkspaceDropdownContentProps {
   onRenameWorkspace: (workspace: Workspace, name: string) => void;
   onRequestDelete: (workspace: Workspace) => void;
   onCreateWorkspace: () => void;
+  onManageMembers: () => void;
 }
 
 function WorkspaceDropdownContent({
@@ -391,6 +392,7 @@ function WorkspaceDropdownContent({
   onRenameWorkspace,
   onRequestDelete,
   onCreateWorkspace,
+  onManageMembers,
 }: WorkspaceDropdownContentProps) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [draftName, setDraftName] = React.useState("");
