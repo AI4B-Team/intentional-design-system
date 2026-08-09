@@ -43,6 +43,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
 import {
   useDealSource,
   useUpdateDealSourceField,
