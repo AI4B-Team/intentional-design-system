@@ -9,6 +9,7 @@ import {
   Pencil,
   Trash2,
   X,
+  Users,
   Loader2,
 } from "lucide-react";
 import {
@@ -48,6 +49,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface Workspace {
   id: string;
@@ -95,6 +97,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   const [newName, setNewName] = React.useState("");
   const createOrganization = useCreateOrganization();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const workspaces: Workspace[] = React.useMemo(
     () =>
@@ -215,6 +218,10 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         setOpen(false);
         setNewName("");
         setCreateOpen(true);
+      }}
+      onManageMembers={() => {
+        setOpen(false);
+        navigate("/settings/team");
       }}
     />
   );
@@ -371,6 +378,7 @@ interface WorkspaceDropdownContentProps {
   onRenameWorkspace: (workspace: Workspace, name: string) => void;
   onRequestDelete: (workspace: Workspace) => void;
   onCreateWorkspace: () => void;
+  onManageMembers: () => void;
 }
 
 function WorkspaceDropdownContent({
@@ -384,6 +392,7 @@ function WorkspaceDropdownContent({
   onRenameWorkspace,
   onRequestDelete,
   onCreateWorkspace,
+  onManageMembers,
 }: WorkspaceDropdownContentProps) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [draftName, setDraftName] = React.useState("");
@@ -549,6 +558,16 @@ function WorkspaceDropdownContent({
       >
         <Plus className="h-4 w-4 mr-2" />
         Create New Space
+      </Button>
+
+      {/* Manage Members */}
+      <Button
+        variant="ghost"
+        onClick={onManageMembers}
+        className="w-full mt-1 justify-center text-foreground/70 hover:bg-muted hover:text-foreground"
+      >
+        <Users className="h-4 w-4 mr-2" />
+        Manage Members
       </Button>
     </div>
   );
