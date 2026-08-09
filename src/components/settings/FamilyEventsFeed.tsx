@@ -92,30 +92,61 @@ export function FamilyEventsFeed() {
             and outbound events the hub fans out, with delivery status.
           </CardDescription>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          className="shrink-0"
-          disabled={cleanup.isPending}
-          onClick={() => {
-            cleanup.mutate(30, {
-              onSuccess: (r) =>
-                toast({
-                  title: "Activity Cleaned Up",
-                  description: `${r.deleted} event(s) older than ${r.days} days removed.`,
-                }),
-              onError: (e) =>
-                toast({
-                  title: "Cleanup Failed",
-                  description: e instanceof Error ? e.message : "Unexpected error",
-                  variant: "destructive",
-                }),
-            });
-          }}
-        >
-          <Trash2 className="mr-2 h-3.5 w-3.5" />
-          Clear Events Older Than 30 Days
-        </Button>
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={sweep.isPending}
+            onClick={() => {
+              sweep.mutate(undefined, {
+                onSuccess: (r) =>
+                  toast({
+                    title: r.retried > 0 ? "Redelivery Sweep Complete" : "Nothing To Retry",
+                    description:
+                      r.retried > 0
+                        ? `${r.retried} event(s) retried, ${r.still_failing} still failing.`
+                        : "No failed outbound events in the last 24 hours.",
+                    variant: r.still_failing > 0 ? "destructive" : undefined,
+                  }),
+                onError: (e) =>
+                  toast({
+                    title: "Sweep Failed",
+                    description: e instanceof Error ? e.message : "Unexpected error",
+                    variant: "destructive",
+                  }),
+              });
+            }}
+          >
+            <RefreshCw
+              className={cn("mr-2 h-3.5 w-3.5", sweep.isPending && "animate-spin")}
+            />
+            Retry All Failed
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={cleanup.isPending}
+            onClick={() => {
+              cleanup.mutate(30, {
+                onSuccess: (r) =>
+                  toast({
+                    title: "Activity Cleaned Up",
+                    description: `${r.deleted} event(s) older than ${r.days} days removed.`,
+                  }),
+                onError: (e) =>
+                  toast({
+                    title: "Cleanup Failed",
+                    description: e instanceof Error ? e.message : "Unexpected error",
+                    variant: "destructive",
+                  }),
+              });
+            }}
+          >
+            <Trash2 className="mr-2 h-3.5 w-3.5" />
+            Clear Events Older Than 30 Days
+          </Button>
+        </div>
+
       </CardHeader>
 
       <CardContent className="space-y-3">
