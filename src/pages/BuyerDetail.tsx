@@ -4,6 +4,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -347,6 +348,15 @@ export default function BuyerDetail() {
           <Button variant="primary" size="sm" icon={<Send />}>
             Send Deal
           </Button>
+          <SendToAppMenu
+            variant="secondary"
+            size="sm"
+            next={`/buyers?${new URLSearchParams({
+              ...(buyer.email ? { email: buyer.email } : {}),
+              ...(buyer.phone ? { phone: buyer.phone } : {}),
+              name: buyer.name,
+            }).toString()}`}
+          />
           <Button variant="ghost" size="sm" icon={<Pencil />} onClick={() => setIsEditOpen(true)}>
             Edit
           </Button>

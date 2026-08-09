@@ -13,10 +13,12 @@ import {
 import { COMMAND_NAVIGATION_ITEMS } from "./navigation";
 import {
   Plus, Search, Settings, Sparkles, BarChart3, Car,
-  LogOut,
+  LogOut, ExternalLink,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
+import { useFamilyApps, useLaunchFamilyApp } from "@/hooks/useAppFamily";
+import { toast } from "@/hooks/use-toast";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -35,11 +37,31 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
   const { signOut } = useAuth();
   const { openAIVA } = useAIVA();
   const [search, setSearch] = React.useState("");
+  const { data: familyApps = [] } = useFamilyApps();
+  const launchApp = useLaunchFamilyApp();
+  const enabledApps = familyApps.filter((a) => a.enabled);
 
   const runCommand = React.useCallback((command: () => void) => {
     onOpenChange(false);
     command();
   }, [onOpenChange]);
+
+  const openFamilyApp = React.useCallback(
+    async (slug: string) => {
+      try {
+        const url = await launchApp.mutateAsync({ appSlug: slug });
+        window.open(url, "_blank", "noopener,noreferrer");
+      } catch (e: unknown) {
+        toast({
+          title: "Could Not Open App",
+          description: e instanceof Error ? e.message : "Handoff link failed.",
+          variant: "destructive",
+        });
+      }
+    },
+    [launchApp],
+  );
+
 
   React.useEffect(() => {
     if (!open) setSearch("");
@@ -87,7 +109,27 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           ))}
         </CommandGroup>
 
+        {enabledApps.length > 0 && (
+          <>
+            <CommandSeparator />
+            <CommandGroup heading="App Family">
+              {enabledApps.map((app) => (
+                <CommandItem
+                  key={app.slug}
+                  value={`open ${app.name}`}
+                  onSelect={() => runCommand(() => openFamilyApp(app.slug))}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  <span>Open {app.name}</span>
+                  <CommandShortcut>SSO</CommandShortcut>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </>
+        )}
+
         <CommandSeparator />
+
 
         <CommandGroup heading="Account">
           <CommandItem onSelect={() => runCommand(() => navigate("/settings"))}>
