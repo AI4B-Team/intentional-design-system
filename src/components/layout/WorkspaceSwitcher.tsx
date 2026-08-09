@@ -9,6 +9,7 @@ import {
   Pencil,
   Trash2,
   X,
+  Loader2,
 } from "lucide-react";
 import {
   Popover,
@@ -34,84 +35,154 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
 
 interface Workspace {
   id: string;
   name: string;
   initial: string;
   color: string;
+  role: OrgRole;
 }
 
-// Mock workspaces - in real implementation, fetch from database
-const mockWorkspaces: Workspace[] = [
-  { id: "1", name: "Dolmar", initial: "D", color: "bg-orange-500" },
-  { id: "2", name: "Brian's Space", initial: "B", color: "bg-emerald-500" },
+// Deterministic accent per workspace so colors stay stable across reloads
+const WORKSPACE_COLORS = [
+  "bg-orange-500",
+  "bg-emerald-500",
+  "bg-sky-500",
+  "bg-violet-500",
+  "bg-amber-500",
+  "bg-rose-500",
 ];
+
+function colorForId(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) % 9973;
+  return WORKSPACE_COLORS[hash % WORKSPACE_COLORS.length];
+}
 
 interface WorkspaceSwitcherProps {
   collapsed?: boolean;
 }
 
 export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
+  const navigate = useNavigate();
+  const {
+    organization,
+    organizations,
+    rolesByOrganization,
+    switchOrganization,
+    refreshOrganization,
+    loading,
+  } = useOrganization();
+
   const [open, setOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [workspaces, setWorkspaces] = React.useState<Workspace[]>(mockWorkspaces);
-  const [activeWorkspaceId, setActiveWorkspaceId] = React.useState(mockWorkspaces[0].id);
   const [pendingDelete, setPendingDelete] = React.useState<Workspace | null>(null);
+  const [busy, setBusy] = React.useState(false);
+
+  const workspaces: Workspace[] = React.useMemo(
+    () =>
+      organizations.map((org) => ({
+        id: org.id,
+        name: org.name,
+        initial: (org.name?.trim().charAt(0) || "W").toUpperCase(),
+        color: colorForId(org.id),
+        role: rolesByOrganization[org.id] ?? "member",
+      })),
+    [organizations, rolesByOrganization]
+  );
 
   const activeWorkspace =
-    workspaces.find((ws) => ws.id === activeWorkspaceId) ?? workspaces[0];
+    workspaces.find((ws) => ws.id === organization?.id) ?? workspaces[0] ?? null;
 
   const filteredWorkspaces = workspaces.filter((ws) =>
     ws.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSelectWorkspace = (workspace: Workspace) => {
-    setActiveWorkspaceId(workspace.id);
+    if (workspace.id !== organization?.id) {
+      switchOrganization(workspace.id);
+      toast.success(`Switched To ${workspace.name}`);
+    }
     setOpen(false);
     setSearchQuery("");
   };
 
-  const handleRenameWorkspace = (id: string, name: string) => {
+  const handleRenameWorkspace = async (workspace: Workspace, name: string) => {
     const trimmed = name.trim();
     if (!trimmed) {
       toast.error("Workspace Name Cannot Be Empty");
       return;
     }
-    setWorkspaces((prev) =>
-      prev.map((ws) =>
-        ws.id === id
-          ? { ...ws, name: trimmed, initial: trimmed.charAt(0).toUpperCase() }
-          : ws
-      )
-    );
+    if (trimmed === workspace.name) return;
+    if (!["owner", "admin"].includes(workspace.role)) {
+      toast.error("Only Owners And Admins Can Rename A Workspace");
+      return;
+    }
+
+    setBusy(true);
+    const { error } = await supabase
+      .from("organizations")
+      .update({ name: trimmed })
+      .eq("id", workspace.id);
+    setBusy(false);
+
+    if (error) {
+      toast.error(error.message || "Failed To Rename Workspace");
+      return;
+    }
+    await refreshOrganization();
     toast.success("Workspace Renamed");
   };
 
-  const handleDeleteWorkspace = (workspace: Workspace) => {
+  const handleDeleteWorkspace = async (workspace: Workspace) => {
+    if (workspace.role !== "owner") {
+      toast.error("Only The Owner Can Delete A Workspace");
+      setPendingDelete(null);
+      return;
+    }
     if (workspaces.length <= 1) {
       toast.error("You Must Keep At Least One Workspace");
       setPendingDelete(null);
       return;
     }
-    const remaining = workspaces.filter((ws) => ws.id !== workspace.id);
-    setWorkspaces(remaining);
-    if (activeWorkspaceId === workspace.id) {
-      setActiveWorkspaceId(remaining[0].id);
-    }
+
+    setBusy(true);
+    const { error } = await supabase.from("organizations").delete().eq("id", workspace.id);
+    setBusy(false);
     setPendingDelete(null);
+
+    if (error) {
+      toast.error(error.message || "Failed To Delete Workspace");
+      return;
+    }
+
+    if (organization?.id === workspace.id) {
+      const next = workspaces.find((ws) => ws.id !== workspace.id);
+      if (next) switchOrganization(next.id);
+    }
+    await refreshOrganization();
     toast.success(`Deleted "${workspace.name}"`);
   };
 
   const dropdown = (
     <WorkspaceDropdownContent
       workspaces={filteredWorkspaces}
-      activeWorkspace={activeWorkspace}
+      activeWorkspaceId={activeWorkspace?.id ?? null}
       searchQuery={searchQuery}
+      loading={loading}
+      busy={busy}
       onSearchChange={setSearchQuery}
       onSelectWorkspace={handleSelectWorkspace}
       onRenameWorkspace={handleRenameWorkspace}
       onRequestDelete={setPendingDelete}
+      onCreateWorkspace={() => {
+        setOpen(false);
+        navigate("/settings/organization");
+      }}
     />
   );
 
@@ -125,7 +196,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
           <AlertDialogTitle>Delete Workspace</AlertDialogTitle>
           <AlertDialogDescription>
             {pendingDelete
-              ? `"${pendingDelete.name}" and its workspace settings will be removed. This cannot be undone.`
+              ? `"${pendingDelete.name}" and all of its data will be permanently removed. This cannot be undone.`
               : ""}
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -160,7 +231,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
               </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent side="right" sideOffset={8} className="bg-popover text-popover-foreground border-border">
-              Workspace
+              {activeWorkspace?.name ?? "Workspace"}
             </TooltipContent>
           </Tooltip>
           <PopoverContent
@@ -193,7 +264,9 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
               "bg-brand-accent hover:bg-brand-accent/80 text-white"
             )}
           >
-            <span className="font-medium truncate">{activeWorkspace.name}</span>
+            <span className="font-medium truncate">
+              {activeWorkspace?.name ?? (loading ? "Loading..." : "No Workspace")}
+            </span>
             <ChevronDown
               className={cn(
                 "h-4 w-4 flex-shrink-0 transition-transform",
@@ -218,22 +291,28 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
 
 interface WorkspaceDropdownContentProps {
   workspaces: Workspace[];
-  activeWorkspace: Workspace;
+  activeWorkspaceId: string | null;
   searchQuery: string;
+  loading: boolean;
+  busy: boolean;
   onSearchChange: (query: string) => void;
   onSelectWorkspace: (workspace: Workspace) => void;
-  onRenameWorkspace: (id: string, name: string) => void;
+  onRenameWorkspace: (workspace: Workspace, name: string) => void;
   onRequestDelete: (workspace: Workspace) => void;
+  onCreateWorkspace: () => void;
 }
 
 function WorkspaceDropdownContent({
   workspaces,
-  activeWorkspace,
+  activeWorkspaceId,
   searchQuery,
+  loading,
+  busy,
   onSearchChange,
   onSelectWorkspace,
   onRenameWorkspace,
   onRequestDelete,
+  onCreateWorkspace,
 }: WorkspaceDropdownContentProps) {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [draftName, setDraftName] = React.useState("");
@@ -243,8 +322,8 @@ function WorkspaceDropdownContent({
     setDraftName(workspace.name);
   };
 
-  const commitEditing = () => {
-    if (editingId) onRenameWorkspace(editingId, draftName);
+  const commitEditing = (workspace: Workspace) => {
+    onRenameWorkspace(workspace, draftName);
     setEditingId(null);
   };
 
@@ -263,8 +342,23 @@ function WorkspaceDropdownContent({
 
       {/* Workspace List */}
       <div className="space-y-1 max-h-48 overflow-y-auto">
+        {loading && workspaces.length === 0 && (
+          <div className="flex items-center gap-2 px-2 py-3 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading Workspaces...
+          </div>
+        )}
+
+        {!loading && workspaces.length === 0 && (
+          <p className="px-2 py-3 text-sm text-muted-foreground">
+            {searchQuery ? "No Matching Workspaces" : "No Workspaces Yet"}
+          </p>
+        )}
+
         {workspaces.map((workspace) => {
           const isEditing = editingId === workspace.id;
+          const canRename = ["owner", "admin"].includes(workspace.role);
+          const canDelete = workspace.role === "owner";
 
           return (
             <div
@@ -283,7 +377,7 @@ function WorkspaceDropdownContent({
                 "group flex items-center gap-2 w-full px-2 py-2 rounded-lg transition-colors",
                 "text-foreground/80",
                 !isEditing && "cursor-pointer hover:bg-muted",
-                activeWorkspace.id === workspace.id && "bg-muted"
+                activeWorkspaceId === workspace.id && "bg-muted"
               )}
             >
               <div
@@ -304,7 +398,7 @@ function WorkspaceDropdownContent({
                     onClick={(e) => e.stopPropagation()}
                     onKeyDown={(e) => {
                       e.stopPropagation();
-                      if (e.key === "Enter") commitEditing();
+                      if (e.key === "Enter") commitEditing(workspace);
                       if (e.key === "Escape") setEditingId(null);
                     }}
                     className="h-7 min-w-0 flex-1 bg-background border-border text-sm"
@@ -312,11 +406,12 @@ function WorkspaceDropdownContent({
                   <button
                     type="button"
                     aria-label="Save Workspace Name"
+                    disabled={busy}
                     onClick={(e) => {
                       e.stopPropagation();
-                      commitEditing();
+                      commitEditing(workspace);
                     }}
-                    className="p-1 rounded-md text-emerald-500 hover:bg-background flex-shrink-0"
+                    className="p-1 rounded-md text-emerald-500 hover:bg-background flex-shrink-0 disabled:opacity-50"
                   >
                     <Check className="h-3.5 w-3.5" />
                   </button>
@@ -337,32 +432,36 @@ function WorkspaceDropdownContent({
                   <span className="flex-1 min-w-0 text-left text-sm truncate">
                     {workspace.name}
                   </span>
-                  {activeWorkspace.id === workspace.id && (
+                  {activeWorkspaceId === workspace.id && (
                     <Check className="h-4 w-4 text-brand-accent flex-shrink-0" />
                   )}
                   <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity flex-shrink-0">
-                    <button
-                      type="button"
-                      aria-label={`Rename ${workspace.name}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(workspace);
-                      }}
-                      className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-background"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`Delete ${workspace.name}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRequestDelete(workspace);
-                      }}
-                      className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-background"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                    {canRename && (
+                      <button
+                        type="button"
+                        aria-label={`Rename ${workspace.name}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startEditing(workspace);
+                        }}
+                        className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-background"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    {canDelete && (
+                      <button
+                        type="button"
+                        aria-label={`Delete ${workspace.name}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRequestDelete(workspace);
+                        }}
+                        className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-background"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -374,6 +473,7 @@ function WorkspaceDropdownContent({
       {/* Create New Space */}
       <Button
         variant="outline"
+        onClick={onCreateWorkspace}
         className="w-full mt-2 border-dashed border-border text-foreground/80 hover:bg-muted hover:text-foreground"
       >
         <Plus className="h-4 w-4 mr-2" />
