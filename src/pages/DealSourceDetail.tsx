@@ -43,6 +43,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
 import {
   useDealSource,
   useUpdateDealSourceField,
@@ -212,6 +213,15 @@ export default function DealSourceDetail() {
             <Button variant="secondary" icon={<Pencil />}>
               Edit
             </Button>
+            <SendToAppMenu
+              variant="secondary"
+              size="default"
+              next={`/contacts?${new URLSearchParams({
+                ...(source.email ? { email: source.email } : {}),
+                ...(source.phone ? { phone: source.phone } : {}),
+                name: source.name,
+              }).toString()}`}
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
