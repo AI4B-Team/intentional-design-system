@@ -37,6 +37,62 @@ export default function AppFamilySettings() {
   const [pending, setPending] = React.useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
+  const callAction = useCallFamilyAppAction();
+  const [actionForm, setActionForm] = React.useState<{
+    appSlug: string;
+    action: string;
+    method: "GET" | "POST";
+    params: string;
+  }>({ appSlug: "", action: "", method: "POST", params: "" });
+  const [actionResult, setActionResult] = React.useState<string | null>(null);
+
+  const handleRunAction = async () => {
+    if (!actionForm.appSlug || !actionForm.action.trim()) {
+      toast({
+        title: "Missing Details",
+        description: "Pick an app and enter an action name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    let params: Record<string, unknown> = {};
+    if (actionForm.params.trim()) {
+      try {
+        params = JSON.parse(actionForm.params);
+      } catch {
+        toast({
+          title: "Invalid JSON",
+          description: "Params must be valid JSON.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    setActionResult(null);
+    try {
+      const res = await callAction.mutateAsync({
+        appSlug: actionForm.appSlug,
+        action: actionForm.action.trim(),
+        method: actionForm.method,
+        params,
+      });
+      setActionResult(JSON.stringify(res, null, 2));
+      toast({
+        title: res.ok ? "Action Succeeded" : "Action Returned An Error",
+        description: `${res.status} · ${res.target}`,
+        variant: res.ok ? undefined : "destructive",
+      });
+    } catch (e: any) {
+      setActionResult(String(e?.message ?? e));
+      toast({
+        title: "Could Not Call Action",
+        description: e?.message ?? "Request failed.",
+        variant: "destructive",
+      });
+    }
+  };
+
+
 
 
   const linkFor = (slug: string) => links.find((l) => l.app_slug === slug);
