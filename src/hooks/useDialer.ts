@@ -329,6 +329,14 @@ export function useDialer() {
           reason: 'do_not_call',
           source: 'call_disposition'
         });
+
+        // Propagate the DNC flag to every connected App Family satellite
+        void emitHubEvent('lead.flagged_dnc', {
+          phone,
+          reason: 'do_not_call',
+          source: 'call_disposition',
+          disposition: disposition.name,
+        });
       }
 
       toast.success(`Marked as: ${disposition.name}`);
