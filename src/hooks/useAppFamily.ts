@@ -19,7 +19,12 @@ export interface OrgAppLink {
   remote_org_id: string | null;
   linked_at: string | null;
   last_event_at: string | null;
+  last_check_at?: string | null;
+  last_check_passed?: number | null;
+  last_check_total?: number | null;
+  last_check_details?: IntegrationCheck[] | null;
 }
+
 
 export interface FamilyEvent {
   id: string;

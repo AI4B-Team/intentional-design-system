@@ -7069,6 +7069,10 @@ export type Database = {
           app_slug: string
           created_at: string
           id: string
+          last_check_at: string | null
+          last_check_details: Json | null
+          last_check_passed: number | null
+          last_check_total: number | null
           last_event_at: string | null
           linked_at: string | null
           organization_id: string
@@ -7079,6 +7083,10 @@ export type Database = {
           app_slug: string
           created_at?: string
           id?: string
+          last_check_at?: string | null
+          last_check_details?: Json | null
+          last_check_passed?: number | null
+          last_check_total?: number | null
           last_event_at?: string | null
           linked_at?: string | null
           organization_id: string
@@ -7089,6 +7097,10 @@ export type Database = {
           app_slug?: string
           created_at?: string
           id?: string
+          last_check_at?: string | null
+          last_check_details?: Json | null
+          last_check_passed?: number | null
+          last_check_total?: number | null
           last_event_at?: string | null
           linked_at?: string | null
           organization_id?: string

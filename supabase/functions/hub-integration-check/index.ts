@@ -80,7 +80,11 @@ Deno.serve(async (req) => {
           : base,
     });
 
-    if (!configured) return json({ app_slug: appSlug, base_url: base, checks });
+    if (!configured) {
+      await persist(admin, orgId, appSlug, 0, checks);
+      return json({ app_slug: appSlug, base_url: base, passed: 0, total: checks.length, checks });
+    }
+
 
     // 2. Reachable + /auth/hub route
     const root = await probe(base, "GET");
@@ -146,14 +150,18 @@ Deno.serve(async (req) => {
       detail: ping.status ? `HTTP ${ping.status}` : ping.error,
     });
 
+    const passed = checks.filter((c) => c.ok).length;
+    await persist(admin, orgId, appSlug, passed, checks);
+
     return json({
       app_slug: appSlug,
       base_url: base,
       enabled: !!app.enabled,
-      passed: checks.filter((c) => c.ok).length,
+      passed,
       total: checks.length,
       checks,
     });
+
   } catch (e) {
     console.error("[hub-integration-check]", e);
     return json({ error: "Integration check failed" }, 500);
@@ -189,4 +197,31 @@ function json(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+/** Remembers the latest acceptance-check outcome on the org's app link row. */
+async function persist(
+  admin: ReturnType<typeof createClient>,
+  orgId: string,
+  appSlug: string,
+  passed: number,
+  checks: Check[],
+) {
+  try {
+    await admin
+      .from("org_app_links")
+      .upsert(
+        {
+          organization_id: orgId,
+          app_slug: appSlug,
+          last_check_at: new Date().toISOString(),
+          last_check_passed: passed,
+          last_check_total: checks.length,
+          last_check_details: checks,
+        },
+        { onConflict: "organization_id,app_slug" },
+      );
+  } catch (e) {
+    console.error("[hub-integration-check] persist failed", e);
+  }
 }
