@@ -36,8 +36,32 @@ function DeliveryBadges({ delivery }: { delivery: FamilyEvent["delivery"] }) {
 
 export function FamilyEventsFeed() {
   const { data: events = [] } = useFamilyEvents(100);
+  const retry = useRetryFamilyEvent();
+  const [retrying, setRetrying] = React.useState<string | null>(null);
   const [filter, setFilter] = React.useState<Filter>("all");
   const [type, setType] = React.useState("all");
+  const [expanded, setExpanded] = React.useState<string | null>(null);
+
+  const handleRetry = async (id: string) => {
+    setRetrying(id);
+    try {
+      const delivered = await retry.mutateAsync(id);
+      const ok = delivered.filter((d) => d.status >= 200 && d.status < 300).length;
+      toast({
+        title: ok > 0 ? "Redelivered" : "Retry Failed",
+        description: `${ok}/${delivered.length} targets accepted the event.`,
+        variant: ok > 0 ? undefined : "destructive",
+      });
+    } catch (e: unknown) {
+      toast({
+        title: "Retry Failed",
+        description: e instanceof Error ? e.message : "Could not redeliver event.",
+        variant: "destructive",
+      });
+    } finally {
+      setRetrying(null);
+    }
+  };
   const [expanded, setExpanded] = React.useState<string | null>(null);
 
   const types = React.useMemo(
