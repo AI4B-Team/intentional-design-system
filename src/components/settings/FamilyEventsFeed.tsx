@@ -46,6 +46,8 @@ export function FamilyEventsFeed() {
   const { data: events = [] } = useFamilyEvents(100);
   const retry = useRetryFamilyEvent();
   const cleanup = useCleanupFamilyEvents();
+  const sweep = useSweepFamilyEvents();
+
   const [retrying, setRetrying] = React.useState<string | null>(null);
   const [filter, setFilter] = React.useState<Filter>("all");
   const [type, setType] = React.useState("all");
