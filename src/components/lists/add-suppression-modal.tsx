@@ -27,6 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { emitHubEvent } from "@/lib/emitHubEvent";
 
 interface AddSuppressionModalProps {
   open: boolean;
