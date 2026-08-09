@@ -103,6 +103,18 @@ export function AddSuppressionModal({ open, onOpenChange }: AddSuppressionModalP
       }
 
       toast.success("Address added to suppression list");
+
+      if (reason === "do_not_call") {
+        void emitHubEvent("lead.flagged_dnc", {
+          address,
+          city,
+          state,
+          zip: zip || null,
+          reason,
+          source: "manual",
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ["suppression-list"] });
       resetForm();
       onOpenChange(false);
