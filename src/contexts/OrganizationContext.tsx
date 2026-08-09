@@ -84,27 +84,46 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
   const [organization, setOrganization] = React.useState<Organization | null>(null);
   const [membership, setMembership] = React.useState<OrganizationMember | null>(null);
   const [members, setMembers] = React.useState<OrganizationMember[]>([]);
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [rolesByOrganization, setRolesByOrganization] = React.useState<Record<string, OrgRole>>({});
+  const [activeOrgId, setActiveOrgId] = React.useState<string | null>(() => {
+    try {
+      return localStorage.getItem(ACTIVE_ORG_STORAGE_KEY);
+    } catch {
+      return null;
+    }
+  });
   const [loading, setLoading] = React.useState(true);
+
+  const switchOrganization = React.useCallback((organizationId: string) => {
+    setActiveOrgId(organizationId);
+    try {
+      localStorage.setItem(ACTIVE_ORG_STORAGE_KEY, organizationId);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
 
   const fetchOrganization = React.useCallback(async () => {
     // Wait for auth to finish loading before checking organization
     if (authLoading) {
       return;
     }
-    
+
     if (!user) {
       setOrganization(null);
       setMembership(null);
       setMembers([]);
+      setOrganizations([]);
+      setRolesByOrganization({});
       setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      
-      // Get user's membership with organization
-      // NOTE: A user can have multiple active memberships; pick the most recent one.
+
+      // Get every active membership with its organization (a user can belong to several)
       const { data: memberRows, error: memberError } = await supabase
         .from("organization_members")
         .select(`
@@ -113,19 +132,32 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         `)
         .eq("user_id", user.id)
         .eq("status", "active")
-        .order("created_at", { ascending: false })
-        .limit(1);
+        .order("created_at", { ascending: false });
 
-      const memberData = memberRows?.[0];
+      const rows = (memberRows ?? []).filter((r) => (r as any).organizations);
 
-      if (memberError || !memberData) {
+      if (memberError || rows.length === 0) {
         // User has no organization - will need to create or join one
         setOrganization(null);
         setMembership(null);
         setMembers([]);
+        setOrganizations([]);
+        setRolesByOrganization({});
         setLoading(false);
         return;
       }
+
+      const allOrgs = rows.map((r) => (r as any).organizations as Organization);
+      const roleMap: Record<string, OrgRole> = {};
+      rows.forEach((r) => {
+        roleMap[(r as any).organization_id] = (r as any).role as OrgRole;
+      });
+      setOrganizations(allOrgs);
+      setRolesByOrganization(roleMap);
+
+      // Prefer the stored active workspace, fall back to the most recent membership
+      const memberData =
+        (activeOrgId && rows.find((r) => (r as any).organization_id === activeOrgId)) || rows[0];
 
       // Extract organization from nested response
       const orgData = (memberData as any).organizations as Organization;
@@ -158,7 +190,8 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     } finally {
       setLoading(false);
     }
-  }, [user, authLoading]);
+  }, [user, authLoading, activeOrgId]);
+
 
   const fetchMembers = React.useCallback(async () => {
     if (!organization || !membership) {
