@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrganizationContext } from '@/hooks/useOrganizationId';
 import { toast } from 'sonner';
+import { emitHubEvent } from '@/lib/emitHubEvent';
 
 interface CallRecord {
   id: string;
