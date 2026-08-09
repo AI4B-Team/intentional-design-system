@@ -4,8 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hubEventLabel } from "@/lib/hubEvents";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyEvents, useRetryFamilyEvent, type FamilyEvent } from "@/hooks/useAppFamily";
-import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw } from "lucide-react";
+import {
+  useFamilyEvents,
+  useRetryFamilyEvent,
+  useCleanupFamilyEvents,
+  type FamilyEvent,
+} from "@/hooks/useAppFamily";
+import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
@@ -38,6 +43,7 @@ function DeliveryBadges({ delivery }: { delivery: FamilyEvent["delivery"] }) {
 export function FamilyEventsFeed() {
   const { data: events = [] } = useFamilyEvents(100);
   const retry = useRetryFamilyEvent();
+  const cleanup = useCleanupFamilyEvents();
   const [retrying, setRetrying] = React.useState<string | null>(null);
   const [filter, setFilter] = React.useState<Filter>("all");
   const [type, setType] = React.useState("all");
@@ -76,15 +82,42 @@ export function FamilyEventsFeed() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-primary" /> Family Activity
-        </CardTitle>
-        <CardDescription>
-          Live feed of every event exchanged with satellite apps — inbound events they send here and
-          outbound events the hub fans out, with delivery status.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1.5">
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" /> Family Activity
+          </CardTitle>
+          <CardDescription>
+            Live feed of every event exchanged with satellite apps — inbound events they send here
+            and outbound events the hub fans out, with delivery status.
+          </CardDescription>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          className="shrink-0"
+          disabled={cleanup.isPending}
+          onClick={() => {
+            cleanup.mutate(30, {
+              onSuccess: (r) =>
+                toast({
+                  title: "Activity Cleaned Up",
+                  description: `${r.deleted} event(s) older than ${r.days} days removed.`,
+                }),
+              onError: (e) =>
+                toast({
+                  title: "Cleanup Failed",
+                  description: e instanceof Error ? e.message : "Unexpected error",
+                  variant: "destructive",
+                }),
+            });
+          }}
+        >
+          <Trash2 className="mr-2 h-3.5 w-3.5" />
+          Clear Events Older Than 30 Days
+        </Button>
       </CardHeader>
+
       <CardContent className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           {(["all", "inbound", "outbound"] as Filter[]).map((f) => (
