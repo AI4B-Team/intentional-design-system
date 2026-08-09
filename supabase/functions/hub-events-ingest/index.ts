@@ -64,7 +64,7 @@ Deno.serve(async (req) => {
     .maybeSingle();
   if (!org) return json({ error: "Unknown organization" }, 404);
 
-  const rows = incoming
+  const allRows = incoming
     .filter((e: any) => typeof e?.event_type === "string")
     .slice(0, 200)
     .map((e: any) => ({
@@ -75,6 +75,33 @@ Deno.serve(async (req) => {
       remote_event_id: e.id ? String(e.id).slice(0, 120) : null,
       created_at: e.created_at ?? new Date().toISOString(),
     }));
+
+  // Idempotency: skip events whose remote id we already stored for this app/org.
+  const remoteIds = allRows.map((r) => r.remote_event_id).filter(Boolean) as string[];
+  let seen = new Set<string>();
+  if (remoteIds.length > 0) {
+    const { data: existing } = await admin
+      .from("app_family_events")
+      .select("remote_event_id")
+      .eq("organization_id", orgId)
+      .eq("app_slug", appSlug)
+      .in("remote_event_id", remoteIds);
+    seen = new Set((existing ?? []).map((r: any) => r.remote_event_id));
+  }
+
+  // Dedupe within the batch too.
+  const batchSeen = new Set<string>();
+  const rows = allRows.filter((r) => {
+    if (!r.remote_event_id) return true;
+    if (seen.has(r.remote_event_id) || batchSeen.has(r.remote_event_id)) return false;
+    batchSeen.add(r.remote_event_id);
+    return true;
+  });
+  const duplicates = allRows.length - rows.length;
+
+  if (rows.length === 0) {
+    return json({ received: 0, duplicates, applied: [] });
+  }
 
   const { data: inserted, error } = await admin
     .from("app_family_events")
