@@ -1,4 +1,5 @@
 import { reportError } from "../_shared/report-error.ts";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -255,6 +256,10 @@ serve(async (req) => {
       .eq("status", "active")
       .maybeSingle();
 
+    // Notify the app family when the balance is running low.
+    const remaining = Number(
+      deductResult?.new_balance ?? deductResult?.balance ?? deductResult?.remaining ?? NaN,
+    );
     // Save skip trace results
     const { data: skipTraceRecord, error: insertError } = await supabase
       .from("skip_trace_results")
@@ -290,6 +295,15 @@ serve(async (req) => {
 
     if (insertError) {
       console.error("Error saving skip trace:", insertError);
+    }
+
+    if (Number.isFinite(remaining) && remaining < 5 && orgMember?.organization_id) {
+      await emitHubEvent(supabase, orgMember.organization_id, "credits.low", {
+        user_id: user.id,
+        balance: remaining,
+        threshold: 5,
+        last_service: "skip_trace",
+      });
     }
 
     // Update property if propertyId provided
