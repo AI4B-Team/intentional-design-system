@@ -151,6 +151,85 @@ export default function AppFamilySettings() {
           </CardContent>
         </Card>
 
+        {isAdmin && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings2 className="h-4 w-4 text-primary" /> App Registry
+              </CardTitle>
+              <CardDescription>
+                Point each app at its real published URL. Handoff links are built as{" "}
+                <code className="text-xs">{"{base_url}/auth/hub?token=…"}</code>.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {apps.map((app) => (
+                <div key={app.slug} className="space-y-2 rounded-lg border border-border p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-foreground">{app.name}</span>
+                      <Badge variant="outline" className="font-mono text-xs">{app.slug}</Badge>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <Label className="text-xs text-muted-foreground">Enabled</Label>
+                      <Switch
+                        checked={app.enabled}
+                        onCheckedChange={(enabled) => toggleApp.mutate({ slug: app.slug, enabled })}
+                      />
+                      <Button size="sm" variant="ghost" onClick={() => removeApp.mutate(app.slug)}>
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <Input
+                      value={urlDrafts[app.slug] ?? app.base_url}
+                      onChange={(e) =>
+                        setUrlDrafts((d) => ({ ...d, [app.slug]: e.target.value }))
+                      }
+                      placeholder="https://app.example.com"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        handleSaveApp(app, urlDrafts[app.slug] ?? app.base_url)
+                      }
+                      disabled={saveApp.isPending}
+                    >
+                      Save URL
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              <div className="space-y-2 rounded-lg border border-dashed border-border p-3">
+                <div className="text-sm font-medium text-foreground">Register Another App</div>
+                <div className="grid gap-2 sm:grid-cols-3">
+                  <Input
+                    placeholder="slug"
+                    value={newApp.slug}
+                    onChange={(e) => setNewApp({ ...newApp, slug: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Name"
+                    value={newApp.name}
+                    onChange={(e) => setNewApp({ ...newApp, name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="https://app.example.com"
+                    value={newApp.base_url}
+                    onChange={(e) => setNewApp({ ...newApp, base_url: e.target.value })}
+                  />
+                </div>
+                <Button onClick={handleAddApp} disabled={saveApp.isPending}>
+                  Add App
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
