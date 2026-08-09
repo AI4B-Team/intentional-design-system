@@ -3,6 +3,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hubEventLabel } from "@/lib/hubEvents";
+import { DeliveryHealthStrip } from "@/components/settings/DeliveryHealthStrip";
+
 import { toast } from "@/hooks/use-toast";
 import {
   useFamilyEvents,
