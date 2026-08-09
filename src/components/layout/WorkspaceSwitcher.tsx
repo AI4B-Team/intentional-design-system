@@ -141,14 +141,19 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     }
 
     setBusy(true);
-    const { error } = await supabase
+    const { data: updated, error } = await supabase
       .from("organizations")
       .update({ name: trimmed })
-      .eq("id", workspace.id);
+      .eq("id", workspace.id)
+      .select("id");
     setBusy(false);
 
     if (error) {
       toast.error(error.message || "Failed To Rename Workspace");
+      return;
+    }
+    if (!updated || updated.length === 0) {
+      toast.error("You Don't Have Permission To Rename This Workspace");
       return;
     }
     await refreshOrganization();
@@ -168,7 +173,11 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     }
 
     setBusy(true);
-    const { error } = await supabase.from("organizations").delete().eq("id", workspace.id);
+    const { data: deleted, error } = await supabase
+      .from("organizations")
+      .delete()
+      .eq("id", workspace.id)
+      .select("id");
     setBusy(false);
     setPendingDelete(null);
 
@@ -176,14 +185,22 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
       toast.error(error.message || "Failed To Delete Workspace");
       return;
     }
+    if (!deleted || deleted.length === 0) {
+      toast.error("You Don't Have Permission To Delete This Workspace");
+      return;
+    }
 
     if (organization?.id === workspace.id) {
       const next = workspaces.find((ws) => ws.id !== workspace.id);
-      if (next) switchOrganization(next.id);
+      if (next) {
+        queryClient.clear();
+        switchOrganization(next.id);
+      }
     }
     await refreshOrganization();
     toast.success(`Deleted "${workspace.name}"`);
   };
+
 
   const handleCreateWorkspace = async () => {
     const name = newName.trim();
