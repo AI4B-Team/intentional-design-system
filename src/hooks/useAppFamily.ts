@@ -314,7 +314,7 @@ export function useRetryFamilyEvent() {
 export function useCleanupFamilyEvents() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (days = 30) => {
+    mutationFn: async (days: number = 30) => {
       const { data, error } = await supabase.functions.invoke("hub-events-cleanup", {
         body: { days },
       });
