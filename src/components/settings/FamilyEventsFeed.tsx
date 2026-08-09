@@ -43,6 +43,7 @@ function DeliveryBadges({ delivery }: { delivery: FamilyEvent["delivery"] }) {
 export function FamilyEventsFeed() {
   const { data: events = [] } = useFamilyEvents(100);
   const retry = useRetryFamilyEvent();
+  const cleanup = useCleanupFamilyEvents();
   const [retrying, setRetrying] = React.useState<string | null>(null);
   const [filter, setFilter] = React.useState<Filter>("all");
   const [type, setType] = React.useState("all");
