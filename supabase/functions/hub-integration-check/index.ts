@@ -80,7 +80,11 @@ Deno.serve(async (req) => {
           : base,
     });
 
-    if (!configured) return json({ app_slug: appSlug, base_url: base, checks });
+    if (!configured) {
+      await persist(admin, orgId, appSlug, 0, checks);
+      return json({ app_slug: appSlug, base_url: base, passed: 0, total: checks.length, checks });
+    }
+
 
     // 2. Reachable + /auth/hub route
     const root = await probe(base, "GET");
