@@ -136,7 +136,7 @@ export function ConnectedAppsCard() {
         )}
         {apps.map((app) => {
           const link = linkFor(app.slug);
-          const result = results[app.slug];
+          const result = resultFor(app.slug);
           return (
             <div key={app.slug} className="space-y-3 rounded-lg border border-border bg-card p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -158,7 +158,13 @@ export function ConnectedAppsCard() {
                       Last Event: {new Date(link.last_event_at).toLocaleString()}
                     </p>
                   )}
+                  {result?.checked_at && (
+                    <p className="text-xs text-muted-foreground tabular-nums">
+                      Last Check: {new Date(result.checked_at).toLocaleString()}
+                    </p>
+                  )}
                 </div>
+
                 <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
                   <Button
                     variant="outline"
