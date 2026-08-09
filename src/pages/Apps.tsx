@@ -27,6 +27,7 @@ import {
   Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FamilyAppsSection } from "@/components/apps/FamilyAppsSection";
 
 interface AppItem {
   id: string;
@@ -336,6 +337,9 @@ export default function Apps() {
             ))}
           </div>
         </div>
+
+        {/* Family Apps (satellite apps via hub SSO) */}
+        {activeCategory === "all" && !searchQuery && <FamilyAppsSection />}
 
         {/* Featured Apps */}
         {activeCategory === "all" && !searchQuery && (
