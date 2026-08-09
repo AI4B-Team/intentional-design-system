@@ -8,7 +8,9 @@
  * Satellite receiver: {base_url}/api/hub/events   header: x-webhook-signature
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { corsHeaders, hmacSignature, HUB_EVENT_TYPES } from "../_shared/hub.ts";
+import { corsHeaders } from "../_shared/hub.ts";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
+
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
