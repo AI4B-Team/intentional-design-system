@@ -20,6 +20,7 @@ import {
   type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
+import { HUB_EVENT_CATALOG } from "@/lib/hubEvents";
 import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
 import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck, RefreshCw } from "lucide-react";
 
@@ -48,7 +49,6 @@ export default function AppFamilySettings() {
   const [webhookUrl, setWebhookUrl] = React.useState("");
   const [pending, setPending] = React.useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
-  const [filterDrafts, setFilterDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
   const callAction = useCallFamilyAppAction();
   const integrationCheck = useIntegrationCheck();
