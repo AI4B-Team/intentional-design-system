@@ -141,32 +141,16 @@ Deno.serve(async (req) => {
   for (const hook of hooks ?? []) {
     for (const evt of inserted ?? []) {
       const payload = JSON.stringify({ ...evt, real_elite_org_id: orgId });
-      try {
-        const sig = await hmacSignature(payload, hook.secret);
-        const res = await fetch(hook.url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-webhook-signature": sig,
-            "x-hub-signature": sig,
-          },
-          body: payload,
-        });
-        await admin
-          .from("org_webhooks")
-          .update({ last_delivery_at: new Date().toISOString(), last_delivery_status: res.status })
-          .eq("id", hook.id);
-      } catch (e) {
-        console.error("[hub-events-ingest] webhook delivery failed", e);
-        await admin
-          .from("org_webhooks")
-          .update({ last_delivery_at: new Date().toISOString(), last_delivery_status: 0 })
-          .eq("id", hook.id);
-      }
+      const sig = await hmacSignature(payload, hook.secret);
+      const status = await post(hook.url, payload, sig);
+      await admin
+        .from("org_webhooks")
+        .update({ last_delivery_at: new Date().toISOString(), last_delivery_status: status })
+        .eq("id", hook.id);
     }
   }
 
-  return json({ received: rows.length, applied });
+  return json({ received: rows.length, duplicates, applied });
 });
 
 function json(body: unknown, status = 200) {
