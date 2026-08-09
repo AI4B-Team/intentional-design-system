@@ -201,6 +201,28 @@ serve(async (req) => {
 
     console.log('Lead created:', lead.id)
 
+    // Fan the new lead out to connected App Family satellites (never throws).
+    if (website.organization_id) {
+      await emitHubEvent(supabase, website.organization_id, 'leads.new', {
+        lead_id: lead.id,
+        property_address: sanitizedAddress,
+        city: lead.property_city,
+        state: lead.property_state,
+        zip: lead.property_zip,
+        name: lead.full_name,
+        first_name: lead.first_name,
+        last_name: lead.last_name,
+        phone: formattedPhone,
+        email: sanitizedEmail,
+        notes: lead.notes,
+        source: 'seller-website',
+        source_url: sourceUrl?.slice(0, 500),
+        auto_score: autoScore,
+        motivation_indicators: motivationIndicators,
+      })
+    }
+
+
     // Update website submission count
     await supabase
       .from('seller_websites')
