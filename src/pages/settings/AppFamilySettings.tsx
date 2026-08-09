@@ -41,6 +41,32 @@ export default function AppFamilySettings() {
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
   const callAction = useCallFamilyAppAction();
+  const integrationCheck = useIntegrationCheck();
+  const [checking, setChecking] = React.useState<string | null>(null);
+  const [checkResult, setCheckResult] = React.useState<IntegrationCheckResult | null>(null);
+
+  const handleRunCheck = async (slug: string) => {
+    setChecking(slug);
+    setCheckResult(null);
+    try {
+      const res = await integrationCheck.mutateAsync(slug);
+      setCheckResult(res);
+      toast({
+        title: res.passed === res.total ? "Integration Ready" : "Integration Issues Found",
+        description: `${res.passed}/${res.total} checks passed for ${slug}.`,
+        variant: res.passed === res.total ? undefined : "destructive",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Check Failed",
+        description: e?.message ?? "Could not run the integration check.",
+        variant: "destructive",
+      });
+    } finally {
+      setChecking(null);
+    }
+  };
+
   const [actionForm, setActionForm] = React.useState<{
     appSlug: string;
     action: string;
