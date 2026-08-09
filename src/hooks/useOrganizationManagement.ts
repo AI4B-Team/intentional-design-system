@@ -268,11 +268,15 @@ export function useAcceptInvite() {
       return result;
     },
 
-    onSuccess: async () => {
+    onSuccess: async (result) => {
+      if (result?.organization_id) {
+        switchOrganization(result.organization_id);
+      }
       await refreshOrganization();
       queryClient.invalidateQueries({ queryKey: ["organization"] });
       toast.success("You've joined the organization!");
     },
+
     onError: (error: Error) => {
       toast.error(error.message || "Failed to accept invitation");
     },
