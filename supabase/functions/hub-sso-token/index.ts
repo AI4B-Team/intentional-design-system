@@ -87,7 +87,9 @@ Deno.serve(async (req) => {
     );
 
     const base = app.base_url.replace(/\/+$/, "");
-    return json({ url: `${base}/auth/hub?token=${token}`, expires_in: 60 });
+    const url =
+      `${base}/auth/hub?token=${token}` + (next ? `&next=${encodeURIComponent(next)}` : "");
+    return json({ url, expires_in: 60 });
   } catch (e) {
     console.error("[hub-sso-token]", e);
     return json({ error: "Failed to mint handoff token" }, 500);
