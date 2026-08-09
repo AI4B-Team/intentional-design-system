@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { maybeEmitCreditsLow } from '../_shared/credits-low.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -153,13 +154,15 @@ serve(async (req) => {
     const generatedImageUrl = Array.isArray(result.output) ? result.output[0] : result.output
 
     // Deduct credits
-    await supabase.rpc('deduct_credits', {
+    const { data: deductResult } = await supabase.rpc('deduct_credits', {
       p_user_id: user.id,
       p_amount: STAGING_PRICE,
       p_description: `Virtual staging: ${roomType || 'room'} - ${stylePreset || 'custom'}`,
       p_service: 'virtual_staging',
       p_reference_id: renovationImageId || null
     })
+
+    await maybeEmitCreditsLow(supabase, user.id, deductResult as any, 'virtual_staging')
 
     // Update renovation_images with new generated image
     if (renovationImageId) {
