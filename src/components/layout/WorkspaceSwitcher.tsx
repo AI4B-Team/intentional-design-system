@@ -219,6 +219,10 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         setNewName("");
         setCreateOpen(true);
       }}
+      onManageMembers={() => {
+        setOpen(false);
+        navigate("/settings/team");
+      }}
     />
   );
 
