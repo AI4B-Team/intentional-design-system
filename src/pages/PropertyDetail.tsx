@@ -370,6 +370,11 @@ export default function PropertyDetail() {
             >
               Analyze
             </Button>
+            <SendToAppMenu
+              variant="secondary"
+              size="sm"
+              next={`/leads?address=${encodeURIComponent(property.address)}`}
+            />
             <Button variant="primary" size="sm" onClick={() => setShowOfferWizard(true)}>
               Make Offer
             </Button>
