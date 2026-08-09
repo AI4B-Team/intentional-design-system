@@ -291,7 +291,8 @@ export default function AppFamilySettings() {
             </CardTitle>
             <CardDescription>
               Every event received is forwarded to these URLs, signed with the webhook secret in an{" "}
-              <code className="text-xs">x-hub-signature</code> header.
+              <code className="text-xs">x-webhook-signature</code> header. Outbound hub events are
+              also pushed to each enabled app at <code className="text-xs">/api/hub/events</code>.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -304,7 +305,39 @@ export default function AppFamilySettings() {
               <Button onClick={handleAddWebhook} disabled={addWebhook.isPending}>
                 Add Webhook
               </Button>
+              <Button
+                variant="outline"
+                disabled={emitEvent.isPending}
+                onClick={async () => {
+                  try {
+                    const delivered = await emitEvent.mutateAsync({
+                      eventType: "hub.test",
+                      payload: { source: "settings", at: new Date().toISOString() },
+                    });
+                    toast({
+                      title: "Test Event Sent",
+                      description: delivered.length
+                        ? delivered.map((d) => `${d.target}: ${d.status}`).join(" · ")
+                        : "No enabled apps or webhooks to deliver to.",
+                    });
+                  } catch (e: any) {
+                    toast({
+                      title: "Could Not Send Event",
+                      description: e?.message ?? "Emit failed.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                {emitEvent.isPending ? (
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Activity className="mr-2 h-3.5 w-3.5" />
+                )}
+                Send Test Event
+              </Button>
             </div>
+
 
             {webhooks.map((w) => (
               <div
