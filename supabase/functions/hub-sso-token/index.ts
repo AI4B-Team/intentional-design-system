@@ -31,7 +31,11 @@ Deno.serve(async (req) => {
     const user = userData?.user;
     if (!user) return json({ error: "Unauthorized" }, 401);
 
-    const { app_slug } = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => ({}));
+    const app_slug = body?.app_slug;
+    // Optional deep link inside the satellite, e.g. "/leads?address=123+Main+St".
+    const rawNext = String(body?.next ?? "").trim().slice(0, 500);
+    const next = /^\/[^\s]*$/.test(rawNext) ? rawNext : "";
     if (!app_slug) return json({ error: "app_slug is required" }, 400);
 
     const { data: app } = await admin
