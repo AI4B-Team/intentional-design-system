@@ -25,7 +25,10 @@ export interface FamilyEvent {
   event_type: string;
   payload: Record<string, unknown>;
   created_at: string;
+  direction: "inbound" | "outbound";
+  delivery: { target: string; status: number }[] | null;
 }
+
 
 export interface OrgWebhook {
   id: string;
