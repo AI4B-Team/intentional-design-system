@@ -584,7 +584,10 @@ export default function AppFamilySettings() {
             )}
           </CardContent>
         </Card>
+
+        <HubIntegrationGuide />
       </div>
+
     </DashboardLayout>
   );
 }
