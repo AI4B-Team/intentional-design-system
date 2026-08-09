@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
 import {
   Phone,
   Mail,
@@ -149,6 +150,9 @@ export function LeadDetailSheet({
               <Plus className="h-4 w-4 mr-1" />
               {lead.property_id ? "In Pipeline" : "Move to Pipeline"}
             </Button>
+            <SendToAppMenu
+              next={`/leads?address=${encodeURIComponent(lead.property_address || "")}`}
+            />
           </div>
         </SheetHeader>
 

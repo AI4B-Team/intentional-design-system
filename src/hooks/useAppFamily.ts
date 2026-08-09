@@ -214,9 +214,10 @@ export function useOrgWebhooks() {
 export function useLaunchFamilyApp() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (appSlug: string) => {
+    mutationFn: async (input: string | { appSlug: string; next?: string }) => {
+      const { appSlug, next } = typeof input === "string" ? { appSlug: input, next: undefined } : input;
       const { data, error } = await supabase.functions.invoke("hub-sso-token", {
-        body: { app_slug: appSlug },
+        body: { app_slug: appSlug, next },
       });
       if (error) throw error;
       if (!data?.url) throw new Error(data?.error || "Could not create handoff link");
