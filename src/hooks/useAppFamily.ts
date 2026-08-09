@@ -39,6 +39,8 @@ export interface OrgWebhook {
   enabled: boolean;
   last_delivery_at: string | null;
   last_delivery_status: number | null;
+  /** Empty = subscribed to every event type. */
+  event_types?: string[] | null;
 }
 
 export function useFamilyApps() {
