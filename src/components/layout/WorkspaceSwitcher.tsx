@@ -559,6 +559,16 @@ function WorkspaceDropdownContent({
         <Plus className="h-4 w-4 mr-2" />
         Create New Space
       </Button>
+
+      {/* Manage Members */}
+      <Button
+        variant="ghost"
+        onClick={onManageMembers}
+        className="w-full mt-1 justify-center text-foreground/70 hover:bg-muted hover:text-foreground"
+      >
+        <Users className="h-4 w-4 mr-2" />
+        Manage Members
+      </Button>
     </div>
   );
 }
