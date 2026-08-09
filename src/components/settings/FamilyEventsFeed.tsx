@@ -14,7 +14,7 @@ import {
 
   type FamilyEvent,
 } from "@/hooks/useAppFamily";
-import { Activity, AlertTriangle, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
+import { Activity, AlertTriangle, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, Download, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
@@ -106,6 +106,42 @@ export function FamilyEventsFeed() {
           </CardDescription>
         </div>
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              if (!filtered.length) {
+                toast({ title: "Nothing To Export", description: "No events match the current filters." });
+                return;
+              }
+              const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+              const rows = [
+                ["created_at", "direction", "app_slug", "event_type", "dead_lettered_at", "retry_attempts", "delivery", "payload"],
+                ...filtered.map((e) => [
+                  e.created_at,
+                  e.direction,
+                  e.app_slug,
+                  e.event_type,
+                  e.dead_lettered_at ?? "",
+                  e.retry_attempts ?? 0,
+                  (e.delivery ?? []).map((d) => `${d.target}:${d.status}`).join(" | "),
+                  JSON.stringify(e.payload),
+                ]),
+              ]
+                .map((r) => r.map(esc).join(","))
+                .join("\n");
+              const url = URL.createObjectURL(new Blob([rows], { type: "text/csv;charset=utf-8" }));
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `family-activity-${new Date().toISOString().slice(0, 10)}.csv`;
+              a.click();
+              URL.revokeObjectURL(url);
+              toast({ title: "Activity Exported", description: `${filtered.length} event(s) written to CSV.` });
+            }}
+          >
+            <Download className="mr-2 h-3.5 w-3.5" />
+            Export CSV
+          </Button>
           <Button
             size="sm"
             variant="outline"
