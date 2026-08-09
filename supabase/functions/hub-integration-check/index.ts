@@ -198,3 +198,30 @@ function json(body: unknown, status = 200) {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 }
+
+/** Remembers the latest acceptance-check outcome on the org's app link row. */
+async function persist(
+  admin: ReturnType<typeof createClient>,
+  orgId: string,
+  appSlug: string,
+  passed: number,
+  checks: Check[],
+) {
+  try {
+    await admin
+      .from("org_app_links")
+      .upsert(
+        {
+          organization_id: orgId,
+          app_slug: appSlug,
+          last_check_at: new Date().toISOString(),
+          last_check_passed: passed,
+          last_check_total: checks.length,
+          last_check_details: checks,
+        },
+        { onConflict: "organization_id,app_slug" },
+      );
+  } catch (e) {
+    console.error("[hub-integration-check] persist failed", e);
+  }
+}
