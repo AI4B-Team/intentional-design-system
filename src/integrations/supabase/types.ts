@@ -10426,6 +10426,7 @@ export type Database = {
         Returns: string
       }
       user_has_role: { Args: { required_role: string }; Returns: boolean }
+      user_org_ids: { Args: never; Returns: string[] }
     }
     Enums: {
       bug_severity: "low" | "medium" | "high"
