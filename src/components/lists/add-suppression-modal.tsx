@@ -105,8 +105,17 @@ export function AddSuppressionModal({ open, onOpenChange }: AddSuppressionModalP
 
       toast.success("Address added to suppression list");
 
-      if (reason === "do_not_call") {
+      if (reason === "do_not_contact" || reason === "hostile") {
         void emitHubEvent("lead.flagged_dnc", {
+          address,
+          city,
+          state,
+          zip: zip || null,
+          reason,
+          source: "manual",
+        });
+      } else if (reason === "litigator") {
+        void emitHubEvent("lead.flagged_litigator", {
           address,
           city,
           state,
@@ -196,6 +205,7 @@ export function AddSuppressionModal({ open, onOpenChange }: AddSuppressionModalP
                 <SelectItem value="deceased">Deceased</SelectItem>
                 <SelectItem value="wrong_number">Wrong Number</SelectItem>
                 <SelectItem value="hostile">Hostile</SelectItem>
+                <SelectItem value="litigator">Known Litigator</SelectItem>
                 <SelectItem value="already_sold">Already Sold</SelectItem>
                 <SelectItem value="not_interested">Not Interested</SelectItem>
                 <SelectItem value="returned_mail">Returned Mail</SelectItem>
