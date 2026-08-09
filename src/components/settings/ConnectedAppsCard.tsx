@@ -101,6 +101,23 @@ export function ConnectedAppsCard() {
     }
   };
 
+  const STALE_MS = 48 * 60 * 60 * 1000;
+  const isStale = (checkedAt?: string) =>
+    !!checkedAt && Date.now() - new Date(checkedAt).getTime() > STALE_MS;
+
+  const summary = React.useMemo(() => {
+    let failing = 0;
+    let healthy = 0;
+    let unchecked = 0;
+    for (const app of apps) {
+      const r = resultFor(app.slug);
+      if (!r) unchecked += 1;
+      else if (r.passed === r.total) healthy += 1;
+      else failing += 1;
+    }
+    return { failing, healthy, unchecked };
+  }, [apps, links, results]);
+
   return (
     <Card>
       <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -110,7 +127,24 @@ export function ConnectedAppsCard() {
           </CardTitle>
           <CardDescription>
             Opening an app signs you in with your Real Elite organization and user identity.
+            Checks also run automatically every night — owners and admins are alerted if an app
+            starts failing.
           </CardDescription>
+          {apps.length > 0 && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <Badge variant={summary.failing > 0 ? "destructive" : "default"}>
+                {summary.failing > 0
+                  ? `${summary.failing} Failing`
+                  : `${summary.healthy} Healthy`}
+              </Badge>
+              {summary.failing > 0 && summary.healthy > 0 && (
+                <Badge variant="secondary">{summary.healthy} Healthy</Badge>
+              )}
+              {summary.unchecked > 0 && (
+                <Badge variant="secondary">{summary.unchecked} Never Checked</Badge>
+              )}
+            </div>
+          )}
         </div>
         {apps.length > 0 && (
           <Button
@@ -159,8 +193,11 @@ export function ConnectedAppsCard() {
                     </p>
                   )}
                   {result?.checked_at && (
-                    <p className="text-xs text-muted-foreground tabular-nums">
+                    <p className="flex items-center gap-2 text-xs text-muted-foreground tabular-nums">
                       Last Check: {new Date(result.checked_at).toLocaleString()}
+                      {isStale(result.checked_at) && (
+                        <Badge variant="secondary" className="text-[10px]">Stale</Badge>
+                      )}
                     </p>
                   )}
                 </div>
