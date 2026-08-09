@@ -226,3 +226,34 @@ export function useEmitFamilyEvent() {
     },
   });
 }
+
+export interface FamilyActionResult {
+  target: string;
+  status: number;
+  ok: boolean;
+  data: unknown;
+}
+
+/** Calls a satellite app's authenticated action endpoint through the signed hub proxy. */
+export function useCallFamilyAppAction() {
+  return useMutation({
+    mutationFn: async ({
+      appSlug,
+      action,
+      params = {},
+      method = "POST",
+    }: {
+      appSlug: string;
+      action: string;
+      params?: Record<string, unknown>;
+      method?: "GET" | "POST";
+    }) => {
+      const { data, error } = await supabase.functions.invoke("hub-app-action", {
+        body: { app_slug: appSlug, action, params, method },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data as FamilyActionResult;
+    },
+  });
+}
