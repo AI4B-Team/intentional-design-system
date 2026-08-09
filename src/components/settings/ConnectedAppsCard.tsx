@@ -193,8 +193,11 @@ export function ConnectedAppsCard() {
                     </p>
                   )}
                   {result?.checked_at && (
-                    <p className="text-xs text-muted-foreground tabular-nums">
+                    <p className="flex items-center gap-2 text-xs text-muted-foreground tabular-nums">
                       Last Check: {new Date(result.checked_at).toLocaleString()}
+                      {isStale(result.checked_at) && (
+                        <Badge variant="secondary" className="text-[10px]">Stale</Badge>
+                      )}
                     </p>
                   )}
                 </div>
