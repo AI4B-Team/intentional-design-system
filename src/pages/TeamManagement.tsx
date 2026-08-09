@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layout";
 import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -82,7 +83,8 @@ import {
   RefreshCw,
   Trash2,
   Info,
-  AlertCircle
+  AlertCircle,
+  Copy
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
@@ -282,6 +284,17 @@ export default function TeamManagement() {
       // Error handled by mutation
     }
   };
+
+  const handleCopyInviteLink = async (token: string) => {
+    const link = `${window.location.origin}/onboarding/join?token=${token}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success("Invite link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
+
 
   return (
     <DashboardLayout>
@@ -485,9 +498,18 @@ export default function TeamManagement() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                title="Copy Invite Link"
+                                onClick={() => handleCopyInviteLink(invite.token)}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
                               <Button 
                                 variant="ghost" 
                                 size="sm"
+                                title="Resend Invite"
                                 onClick={() => handleResendInvite(invite.id)}
                                 disabled={resendInvite.isPending}
                               >
