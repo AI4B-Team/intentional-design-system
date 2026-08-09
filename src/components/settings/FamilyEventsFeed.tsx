@@ -12,12 +12,12 @@ import {
 
   type FamilyEvent,
 } from "@/hooks/useAppFamily";
-import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
+import { Activity, AlertTriangle, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
 
-type Filter = "all" | "inbound" | "outbound";
+type Filter = "all" | "inbound" | "outbound" | "dead-letter";
 
 function DeliveryBadges({ delivery }: { delivery: FamilyEvent["delivery"] }) {
   if (!delivery?.length) return null;
@@ -79,10 +79,17 @@ export function FamilyEventsFeed() {
     [events],
   );
 
-  const filtered = events.filter(
-    (e) =>
-      (filter === "all" || e.direction === filter) && (type === "all" || e.event_type === type),
-  );
+  const deadCount = events.filter((e) => !!e.dead_lettered_at).length;
+
+  const filtered = events.filter((e) => {
+    const matchesFilter =
+      filter === "all"
+        ? true
+        : filter === "dead-letter"
+          ? !!e.dead_lettered_at
+          : e.direction === filter;
+    return matchesFilter && (type === "all" || e.event_type === type);
+  });
 
   return (
     <Card>
@@ -108,7 +115,7 @@ export function FamilyEventsFeed() {
                     title: r.retried > 0 ? "Redelivery Sweep Complete" : "Nothing To Retry",
                     description:
                       r.retried > 0
-                        ? `${r.retried} event(s) retried, ${r.still_failing} still failing.`
+                        ? `${r.retried} event(s) retried, ${r.still_failing} still failing${r.dead_lettered ? `, ${r.dead_lettered} moved to dead-letter` : ""}.`
                         : "No failed outbound events in the last 24 hours.",
                     variant: r.still_failing > 0 ? "destructive" : undefined,
                   }),
@@ -155,7 +162,7 @@ export function FamilyEventsFeed() {
 
       <CardContent className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          {(["all", "inbound", "outbound"] as Filter[]).map((f) => (
+          {(["all", "inbound", "outbound", "dead-letter"] as Filter[]).map((f) => (
             <Button
               key={f}
               size="sm"
@@ -163,7 +170,7 @@ export function FamilyEventsFeed() {
               onClick={() => setFilter(f)}
               className="capitalize"
             >
-              {f}
+              {f === "dead-letter" ? `Dead-Letter${deadCount ? ` (${deadCount})` : ""}` : f}
             </Button>
           ))}
           <select
@@ -219,6 +226,11 @@ export function FamilyEventsFeed() {
                         )}
                         <Badge variant="outline">{e.app_slug}</Badge>
                         <span className="font-mono text-sm text-foreground">{e.event_type}</span>
+                        {e.dead_lettered_at && (
+                          <Badge variant="outline" className="border-destructive/40 text-destructive">
+                            <AlertTriangle className="mr-1 h-3 w-3" /> Gave Up
+                          </Badge>
+                        )}
                       </div>
                       {!open && (
                         <p className="truncate text-xs text-muted-foreground">

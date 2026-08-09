@@ -29,6 +29,9 @@ export interface FamilyEvent {
   created_at: string;
   direction: "inbound" | "outbound";
   delivery: { target: string; status: number }[] | null;
+  retry_attempts?: number | null;
+  last_retry_at?: string | null;
+  dead_lettered_at?: string | null;
 }
 
 
@@ -332,6 +335,7 @@ export interface SweepResult {
   swept: number;
   retried: number;
   still_failing: number;
+  dead_lettered?: number;
 }
 
 /** Bulk-retries every outbound event from the last 24h that still has failed targets. */

@@ -65,6 +65,7 @@ Deno.serve(async (req) => {
       .eq("direction", "outbound")
       .gte("created_at", since)
       .lt("retry_attempts", MAX_ATTEMPTS)
+      .is("dead_lettered_at", null)
       .order("created_at", { ascending: true })
       .limit(BATCH);
     if (orgFilter) query = query.eq("organization_id", orgFilter);
@@ -78,6 +79,7 @@ Deno.serve(async (req) => {
 
     let retried = 0;
     let stillFailing = 0;
+    let deadLettered = 0;
 
     for (const event of events ?? []) {
       const previous = (event.delivery ?? []) as Delivery[];
@@ -152,11 +154,28 @@ Deno.serve(async (req) => {
         })
         .eq("id", event.id);
 
+      const attempts = (event.retry_attempts ?? 0) + 1;
+      const failing = merged.some((d) => !(d.status >= 200 && d.status < 300));
+
+      if (failing && attempts >= MAX_ATTEMPTS) {
+        await admin
+          .from("app_family_events")
+          .update({ dead_lettered_at: new Date().toISOString() })
+          .eq("id", event.id);
+        deadLettered += 1;
+        await notifyDeadLetter(admin, event.organization_id, event.event_type);
+      }
+
       retried += 1;
-      if (merged.some((d) => !(d.status >= 200 && d.status < 300))) stillFailing += 1;
+      if (failing) stillFailing += 1;
     }
 
-    return json({ swept: (events ?? []).length, retried, still_failing: stillFailing });
+    return json({
+      swept: (events ?? []).length,
+      retried,
+      still_failing: stillFailing,
+      dead_lettered: deadLettered,
+    });
   } catch (e) {
     console.error("[hub-events-sweep]", e);
     return json({ error: "Failed to sweep events" }, 500);
@@ -168,4 +187,43 @@ function json(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+/**
+ * Alerts org owners/admins once per hour when an event exhausts all retries.
+ */
+// deno-lint-ignore no-explicit-any
+async function notifyDeadLetter(admin: any, orgId: string, eventType: string) {
+  try {
+    const since = new Date(Date.now() - 3600_000).toISOString();
+    const { data: recent } = await admin
+      .from("notifications")
+      .select("id")
+      .eq("organization_id", orgId)
+      .eq("type", "hub_event_dead_lettered")
+      .gte("created_at", since)
+      .limit(1);
+    if (recent && recent.length > 0) return;
+
+    const { data: admins } = await admin
+      .from("organization_members")
+      .select("user_id")
+      .eq("organization_id", orgId)
+      .eq("status", "active")
+      .in("role", ["owner", "admin"]);
+    if (!admins || admins.length === 0) return;
+
+    await admin.from("notifications").insert(
+      admins.map((m: { user_id: string }) => ({
+        user_id: m.user_id,
+        organization_id: orgId,
+        type: "hub_event_dead_lettered",
+        title: "App Family Delivery Gave Up",
+        message: `"${eventType}" failed ${MAX_ATTEMPTS} delivery attempts and was moved to the dead-letter list.`,
+        link: "/settings/app-family",
+      })),
+    );
+  } catch (e) {
+    console.error("[hub-events-sweep] dead-letter notify failed", e);
+  }
 }

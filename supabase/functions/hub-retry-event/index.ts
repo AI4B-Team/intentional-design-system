@@ -118,7 +118,11 @@ Deno.serve(async (req) => {
     for (const r of results) {
       if (!merged.some((m) => m.target === r.target)) merged.push(r);
     }
-    await admin.from("app_family_events").update({ delivery: merged }).eq("id", event.id);
+    const allOk = merged.every((d) => d.status >= 200 && d.status < 300);
+    await admin
+      .from("app_family_events")
+      .update({ delivery: merged, ...(allOk ? { dead_lettered_at: null } : {}) })
+      .eq("id", event.id);
 
     return json({ event_id: event.id, delivered: results });
   } catch (e) {
