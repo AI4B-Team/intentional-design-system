@@ -69,11 +69,13 @@ export async function emitHubEvent(
 
     const { data: hooks } = await admin
       .from("org_webhooks")
-      .select("id, url, secret")
+      .select("id, url, secret, event_types")
       .eq("organization_id", orgId)
       .eq("enabled", true);
 
     for (const hook of hooks ?? []) {
+      const filters: string[] = Array.isArray(hook.event_types) ? hook.event_types : [];
+      if (filters.length && !filters.includes(eventType)) continue;
       const sig = await hmacSignature(envelope, hook.secret);
       const status = await post(hook.url, envelope, sig);
       delivered.push({ target: hook.url, status });

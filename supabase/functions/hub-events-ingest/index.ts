@@ -135,12 +135,14 @@ Deno.serve(async (req) => {
   // Fan out to org webhooks (best-effort, signed with each webhook's own secret).
   const { data: hooks } = await admin
     .from("org_webhooks")
-    .select("id, url, secret")
+    .select("id, url, secret, event_types")
     .eq("organization_id", orgId)
     .eq("enabled", true);
 
   for (const hook of hooks ?? []) {
+    const filters: string[] = Array.isArray(hook.event_types) ? hook.event_types : [];
     for (const evt of inserted ?? []) {
+      if (filters.length && !filters.includes(evt.event_type)) continue;
       const payload = JSON.stringify({ ...evt, real_elite_org_id: orgId });
       const sig = await hmacSignature(payload, hook.secret);
       const status = await post(hook.url, payload, sig);
