@@ -193,21 +193,56 @@ export default function AppFamilySettings() {
                       </p>
                     )}
                   </div>
-                  <Button
-                    onClick={() => handleLaunch(app.slug)}
-                    disabled={pending === app.slug || !app.enabled}
-                    className="shrink-0"
-                  >
-                    {pending === app.slug ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                    )}
-                    Open {app.name}
-                  </Button>
+                  <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleRunCheck(app.slug)}
+                      disabled={checking === app.slug}
+                    >
+                      {checking === app.slug ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      )}
+                      Run Integration Check
+                    </Button>
+                    <Button
+                      onClick={() => handleLaunch(app.slug)}
+                      disabled={pending === app.slug || !app.enabled}
+                    >
+                      {pending === app.slug ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                      )}
+                      Open {app.name}
+                    </Button>
+                  </div>
                 </div>
               );
             })}
+            {checkResult && (
+              <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  {checkResult.app_slug} — {checkResult.passed}/{checkResult.total} Checks Passed
+                </div>
+                {checkResult.checks.map((c) => (
+                  <div key={c.id} className="flex items-start justify-between gap-3 text-sm">
+                    <span className="min-w-0 text-foreground">{c.label}</span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="max-w-[220px] truncate text-xs text-muted-foreground">
+                        {c.detail}
+                      </span>
+                      <Badge variant={c.ok ? "default" : "destructive"}>
+                        {c.ok ? "Pass" : "Fail"}
+                      </Badge>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </CardContent>
         </Card>
 
