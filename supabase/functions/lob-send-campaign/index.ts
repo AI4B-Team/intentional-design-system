@@ -190,6 +190,23 @@ serve(async (req) => {
       })
       .eq("id", campaign_id);
 
+    // Notify family apps that a direct mail campaign went out.
+    if (sent > 0 && campaign.organization_id) {
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      );
+      await emitHubEvent(admin, campaign.organization_id, "campaign.launched", {
+        channel: "direct_mail",
+        campaign_id,
+        campaign_name: campaign.name ?? null,
+        sent,
+        failed,
+        total: pieces.length,
+      });
+    }
+
+
     return new Response(
       JSON.stringify({ success: true, sent, failed, total: pieces.length, errors: errors.slice(0, 10) }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
