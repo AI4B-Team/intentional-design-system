@@ -199,3 +199,30 @@ export function useManageFamilyApps() {
 
   return { saveApp, toggleApp, removeApp };
 }
+
+/** Publishes a hub event out to enabled satellite apps + org webhooks. */
+export function useEmitFamilyEvent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      eventType,
+      payload = {},
+      appSlugs,
+    }: {
+      eventType: string;
+      payload?: Record<string, unknown>;
+      appSlugs?: string[];
+    }) => {
+      const { data, error } = await supabase.functions.invoke("hub-emit-event", {
+        body: { event_type: eventType, payload, app_slugs: appSlugs },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return (data?.delivered ?? []) as { target: string; status: number }[];
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app_family_events"] });
+      qc.invalidateQueries({ queryKey: ["org_webhooks"] });
+    },
+  });
+}
