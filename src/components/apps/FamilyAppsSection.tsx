@@ -3,8 +3,17 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyApps, useOrgAppLinks, useLaunchFamilyApp } from "@/hooks/useAppFamily";
-import { Boxes, ExternalLink, Loader2 } from "lucide-react";
+import { useFamilyApps, useOrgAppLinks, useLaunchFamilyApp, useFamilyEvents } from "@/hooks/useAppFamily";
+import { Boxes, ExternalLink, Loader2, Activity, AlertTriangle } from "lucide-react";
+
+function relativeTime(iso: string) {
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return "Just Now";
+  if (mins < 60) return `${mins}m Ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h Ago`;
+  return `${Math.floor(hrs / 24)}d Ago`;
+}
 
 /** Launcher for satellite apps in the Real Elite family (hub SSO handoff). */
 export function FamilyAppsSection() {
