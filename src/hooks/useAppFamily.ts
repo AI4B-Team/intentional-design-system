@@ -328,6 +328,29 @@ export function useCleanupFamilyEvents() {
   });
 }
 
+export interface SweepResult {
+  swept: number;
+  retried: number;
+  still_failing: number;
+}
+
+/** Bulk-retries every outbound event from the last 24h that still has failed targets. */
+export function useSweepFamilyEvents() {
+  const qc = useQueryClient();
+  return useMutation<SweepResult, Error, void>({
+    mutationFn: async () => {
+      const { data, error } = await supabase.functions.invoke("hub-events-sweep", { body: {} });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data as SweepResult;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app_family_events"] });
+    },
+  });
+}
+
+
 
 
 
