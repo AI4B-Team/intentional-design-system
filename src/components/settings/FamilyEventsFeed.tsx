@@ -170,6 +170,21 @@ export function FamilyEventsFeed() {
                       />
                     </div>
                   </button>
+                  {!inbound && (e.delivery ?? []).some((d) => !(d.status >= 200 && d.status < 300)) && (
+                    <div className="mt-1 flex justify-end">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={retrying === e.id}
+                        onClick={() => handleRetry(e.id)}
+                      >
+                        <RefreshCw
+                          className={cn("mr-2 h-3.5 w-3.5", retrying === e.id && "animate-spin")}
+                        />
+                        Retry Delivery
+                      </Button>
+                    </div>
+                  )}
                   {open && (
                     <pre className="mt-2 max-h-56 overflow-auto rounded-md bg-muted p-3 text-xs">
                       {JSON.stringify(e.payload, null, 2)}
