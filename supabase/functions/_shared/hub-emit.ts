@@ -15,6 +15,7 @@ export async function emitHubEvent(
   orgId: string | null | undefined,
   eventType: string,
   payload: Record<string, unknown> = {},
+  onlySlugs?: string[],
 ): Promise<{ target: string; status: number }[]> {
   const delivered: { target: string; status: number }[] = [];
   try {
