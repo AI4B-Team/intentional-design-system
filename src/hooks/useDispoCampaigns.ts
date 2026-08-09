@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
+import { emitHubEvent } from '@/lib/emitHubEvent';
 
 export interface DispoCampaign {
   id: string;
