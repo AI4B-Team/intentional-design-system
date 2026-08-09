@@ -153,3 +153,49 @@ export function useLaunchFamilyApp() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org_app_links"] }),
   });
 }
+
+/** Admin-only registry management for satellite apps. */
+export function useManageFamilyApps() {
+  const qc = useQueryClient();
+  const invalidate = () => qc.invalidateQueries({ queryKey: ["app_family_apps"] });
+
+  const saveApp = useMutation({
+    mutationFn: async (app: Partial<FamilyApp> & { slug: string; name: string; base_url: string }) => {
+      const { error } = await supabase
+        .from("app_family_apps" as any)
+        .upsert(
+          {
+            slug: app.slug,
+            name: app.name,
+            base_url: app.base_url.replace(/\/+$/, ""),
+            description: app.description ?? null,
+            enabled: app.enabled ?? true,
+          },
+          { onConflict: "slug" },
+        );
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const toggleApp = useMutation({
+    mutationFn: async ({ slug, enabled }: { slug: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from("app_family_apps" as any)
+        .update({ enabled })
+        .eq("slug", slug);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const removeApp = useMutation({
+    mutationFn: async (slug: string) => {
+      const { error } = await supabase.from("app_family_apps" as any).delete().eq("slug", slug);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  return { saveApp, toggleApp, removeApp };
+}
