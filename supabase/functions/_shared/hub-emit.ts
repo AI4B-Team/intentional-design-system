@@ -85,6 +85,14 @@ export async function emitHubEvent(
         })
         .eq("id", hook.id);
     }
+
+    if (stored?.id) {
+      await admin
+        .from("app_family_events")
+        .update({ delivery: delivered })
+        .eq("id", stored.id);
+    }
+
   } catch (e) {
     console.error("[emitHubEvent]", eventType, e);
   }
