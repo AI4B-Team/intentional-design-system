@@ -13,8 +13,10 @@ import {
   useFamilyEvents,
   useOrgWebhooks,
   useLaunchFamilyApp,
+  useManageFamilyApps,
 } from "@/hooks/useAppFamily";
-import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy } from "lucide-react";
+import { useOrganizationContext } from "@/hooks/useOrganizationId";
+import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2 } from "lucide-react";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
 
@@ -24,8 +26,14 @@ export default function AppFamilySettings() {
   const { data: events = [] } = useFamilyEvents();
   const { data: webhooks = [], addWebhook, toggleWebhook, removeWebhook } = useOrgWebhooks();
   const launch = useLaunchFamilyApp();
+  const { saveApp, toggleApp, removeApp } = useManageFamilyApps();
+  const { hasRole } = useOrganizationContext();
+  const isAdmin = hasRole("admin");
   const [webhookUrl, setWebhookUrl] = React.useState("");
   const [pending, setPending] = React.useState<string | null>(null);
+  const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
+  const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
+
 
   const linkFor = (slug: string) => links.find((l) => l.app_slug === slug);
 
