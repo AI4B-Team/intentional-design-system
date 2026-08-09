@@ -62,7 +62,6 @@ export function FamilyEventsFeed() {
       setRetrying(null);
     }
   };
-  const [expanded, setExpanded] = React.useState<string | null>(null);
 
   const types = React.useMemo(
     () => Array.from(new Set(events.map((e) => e.event_type))).sort(),
