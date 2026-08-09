@@ -10,6 +10,7 @@ import {
   rateLimitedResponse,
   verifyTurnstile,
 } from '../_shared/abuse.ts'
+import { emitHubEvent } from '../_shared/hub-emit.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
