@@ -415,40 +415,82 @@ export default function AppFamilySettings() {
 
 
             {webhooks.map((w) => (
-              <div
-                key={w.id}
-                className="flex flex-col gap-2 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-medium text-foreground">{w.url}</div>
-                  <div className="text-xs text-muted-foreground tabular-nums">
-                    {w.last_delivery_at
-                      ? `Last Delivery: ${new Date(w.last_delivery_at).toLocaleString()} · ${w.last_delivery_status}`
-                      : "No deliveries yet"}
+              <div key={w.id} className="space-y-3 rounded-lg border border-border p-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium text-foreground">{w.url}</div>
+                    <div className="text-xs text-muted-foreground tabular-nums">
+                      {w.last_delivery_at
+                        ? `Last Delivery: ${new Date(w.last_delivery_at).toLocaleString()} · ${w.last_delivery_status}`
+                        : "No deliveries yet"}
+                    </div>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <Label className="text-xs text-muted-foreground">Enabled</Label>
+                      <Switch
+                        checked={w.enabled}
+                        onCheckedChange={(enabled) =>
+                          toggleWebhook.mutate({ id: w.id, enabled })
+                        }
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        navigator.clipboard.writeText(w.secret);
+                        toast({ title: "Secret Copied" });
+                      }}
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={rotateWebhookSecret.isPending}
+                      onClick={async () => {
+                        const secret = await rotateWebhookSecret.mutateAsync(w.id);
+                        await navigator.clipboard.writeText(secret).catch(() => undefined);
+                        toast({
+                          title: "Secret Rotated",
+                          description: "The new secret is copied — update your endpoint now.",
+                        });
+                      }}
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => removeWebhook.mutate(w.id)}>
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-xs text-muted-foreground">Enabled</Label>
-                    <Switch
-                      checked={w.enabled}
-                      onCheckedChange={(enabled) =>
-                        toggleWebhook.mutate({ id: w.id, enabled })
-                      }
-                    />
-                  </div>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Input
+                    className="font-mono text-xs"
+                    placeholder="leads.new, campaign.launched (blank = all events)"
+                    value={filterDrafts[w.id] ?? (w.event_types ?? []).join(", ")}
+                    onChange={(e) => setFilterDrafts((d) => ({ ...d, [w.id]: e.target.value }))}
+                  />
                   <Button
-                    size="sm"
                     variant="outline"
-                    onClick={() => {
-                      navigator.clipboard.writeText(w.secret);
-                      toast({ title: "Secret Copied" });
+                    disabled={setWebhookEventTypes.isPending}
+                    onClick={async () => {
+                      const raw = filterDrafts[w.id] ?? (w.event_types ?? []).join(", ");
+                      const eventTypes = raw
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean);
+                      await setWebhookEventTypes.mutateAsync({ id: w.id, eventTypes });
+                      toast({
+                        title: "Subscription Saved",
+                        description: eventTypes.length
+                          ? `Only: ${eventTypes.join(", ")}`
+                          : "Receiving all event types.",
+                      });
                     }}
                   >
-                    <Copy className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={() => removeWebhook.mutate(w.id)}>
-                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                    Save Events
                   </Button>
                 </div>
               </div>
