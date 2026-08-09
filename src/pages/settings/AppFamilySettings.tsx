@@ -20,7 +20,9 @@ import {
   type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
-import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
+import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+
 
 
 
