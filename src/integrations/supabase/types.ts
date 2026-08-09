@@ -10389,6 +10389,10 @@ export type Database = {
       }
       get_user_organization: { Args: never; Returns: string }
       get_user_role: { Args: never; Returns: string }
+      has_org_role: {
+        Args: { org_id: string; required_role: string }
+        Returns: boolean
+      }
       is_org_member: { Args: { org_id: string }; Returns: boolean }
       is_suppressed: {
         Args: { p_address_hash: string; p_user_id: string }
