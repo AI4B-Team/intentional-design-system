@@ -14,7 +14,7 @@ import {
 
   type FamilyEvent,
 } from "@/hooks/useAppFamily";
-import { Activity, AlertTriangle, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
+import { Activity, AlertTriangle, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, Download, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
