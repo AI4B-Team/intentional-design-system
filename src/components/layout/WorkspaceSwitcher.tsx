@@ -35,9 +35,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
+import { useCreateOrganization } from "@/hooks/useOrganizationManagement";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface Workspace {
   id: string;
@@ -68,7 +77,6 @@ interface WorkspaceSwitcherProps {
 }
 
 export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
-  const navigate = useNavigate();
   const {
     organization,
     organizations,
@@ -82,6 +90,9 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [pendingDelete, setPendingDelete] = React.useState<Workspace | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const createOrganization = useCreateOrganization();
 
   const workspaces: Workspace[] = React.useMemo(
     () =>
@@ -168,6 +179,23 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     toast.success(`Deleted "${workspace.name}"`);
   };
 
+  const handleCreateWorkspace = async () => {
+    const name = newName.trim();
+    if (!name) {
+      toast.error("Workspace Name Is Required");
+      return;
+    }
+    setBusy(true);
+    try {
+      const org = await createOrganization.mutateAsync({ name });
+      switchOrganization(org.id);
+      setCreateOpen(false);
+      setNewName("");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const dropdown = (
     <WorkspaceDropdownContent
       workspaces={filteredWorkspaces}
@@ -181,10 +209,47 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
       onRequestDelete={setPendingDelete}
       onCreateWorkspace={() => {
         setOpen(false);
-        navigate("/settings/organization");
+        setNewName("");
+        setCreateOpen(true);
       }}
     />
   );
+
+  const createDialog = (
+    <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Create New Space</DialogTitle>
+          <DialogDescription>
+            Spaces keep deals, contacts and settings separate. You can rename or delete it later.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor="new-workspace-name">Workspace Name</Label>
+          <Input
+            id="new-workspace-name"
+            autoFocus
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleCreateWorkspace();
+            }}
+            placeholder="e.g. Austin Acquisitions"
+          />
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setCreateOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={handleCreateWorkspace} disabled={busy || !newName.trim()}>
+            {busy && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Create Space
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+
 
   const deleteDialog = (
     <AlertDialog
@@ -244,6 +309,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
           </PopoverContent>
         </Popover>
         {deleteDialog}
+        {createDialog}
       </TooltipProvider>
     );
   }
@@ -285,6 +351,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         </PopoverContent>
       </Popover>
       {deleteDialog}
+      {createDialog}
     </div>
   );
 }
