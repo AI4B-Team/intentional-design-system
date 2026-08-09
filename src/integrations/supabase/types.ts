@@ -10326,6 +10326,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_organization_invite: { Args: { p_token: string }; Returns: Json }
       add_credits: {
         Args: {
           p_amount: number
@@ -10393,6 +10394,7 @@ export type Database = {
         Args: { p_address_hash: string; p_user_id: string }
         Returns: boolean
       }
+      lookup_organization_invite: { Args: { p_token: string }; Returns: Json }
       normalize_address: {
         Args: {
           p_address: string
