@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
+import { emitHubEvent } from '@/lib/emitHubEvent';
 
 export interface DispoCampaign {
   id: string;
@@ -303,11 +304,22 @@ export function useSendDispoCampaign() {
       if (error) throw error;
       return data as unknown as DispoCampaign;
     },
-    onSuccess: (_, id) => {
+    onSuccess: (campaign, id) => {
       queryClient.invalidateQueries({ queryKey: ['dispo-campaigns'] });
       queryClient.invalidateQueries({ queryKey: ['dispo-campaign', id] });
       queryClient.invalidateQueries({ queryKey: ['dispo-campaign-stats'] });
       toast.success('Campaign sent successfully!');
+
+      // Notify App Family satellites that a dispo campaign went out
+      void emitHubEvent('campaign.launched', {
+        campaign_id: id,
+        campaign_type: 'dispo_email',
+        name: campaign?.name,
+        subject: campaign?.subject,
+        deal_id: campaign?.deal_id,
+        recipient_count: campaign?.recipient_count,
+        sent_at: campaign?.sent_at,
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to send campaign');
