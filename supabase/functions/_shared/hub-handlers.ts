@@ -138,7 +138,6 @@ export async function applyIncomingEvents(
               .from("call_queue_contacts")
               .update({
                 status: "dnc",
-                notes_summary: `Flagged ${reason} by ${appSlug}`,
                 updated_at: new Date().toISOString(),
               })
               .eq("organization_id", orgId)
