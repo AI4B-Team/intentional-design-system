@@ -35,7 +35,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
 import { useCreateOrganization } from "@/hooks/useOrganizationManagement";
@@ -78,7 +77,6 @@ interface WorkspaceSwitcherProps {
 }
 
 export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
-  const navigate = useNavigate();
   const {
     organization,
     organizations,
