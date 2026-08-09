@@ -16,9 +16,12 @@ import {
   useManageFamilyApps,
   useEmitFamilyEvent,
   useCallFamilyAppAction,
+  useIntegrationCheck,
+  type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
-import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal } from "lucide-react";
+import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+
 
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
