@@ -273,9 +273,11 @@ export type Database = {
           direction: string
           event_type: string
           id: string
+          last_retry_at: string | null
           organization_id: string
           payload: Json
           remote_event_id: string | null
+          retry_attempts: number
         }
         Insert: {
           app_slug: string
@@ -284,9 +286,11 @@ export type Database = {
           direction?: string
           event_type: string
           id?: string
+          last_retry_at?: string | null
           organization_id: string
           payload?: Json
           remote_event_id?: string | null
+          retry_attempts?: number
         }
         Update: {
           app_slug?: string
@@ -295,9 +299,11 @@ export type Database = {
           direction?: string
           event_type?: string
           id?: string
+          last_retry_at?: string | null
           organization_id?: string
           payload?: Json
           remote_event_id?: string | null
+          retry_attempts?: number
         }
         Relationships: [
           {
