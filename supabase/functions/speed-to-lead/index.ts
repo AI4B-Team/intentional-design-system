@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -168,6 +169,17 @@ serve(async (req) => {
     if (insertError) {
       console.error("Failed to create call record:", insertError);
     }
+
+    // Notify family apps that a new lead entered speed-to-lead.
+    await emitHubEvent(supabase, organization_id, "leads.new", {
+      source: "speed_to_lead",
+      contact_name: contact_name ?? null,
+      phone_number: formattedPhone,
+      property_id: property_id ?? null,
+      property_address: property_address ?? null,
+      call_record_id: callRecord?.id ?? null,
+    });
+
 
     return new Response(
       JSON.stringify({

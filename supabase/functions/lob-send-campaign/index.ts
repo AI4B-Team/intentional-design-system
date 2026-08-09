@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -188,6 +189,23 @@ serve(async (req) => {
         total_cost: sent * (isPostcard ? 0.75 : 1.25),
       })
       .eq("id", campaign_id);
+
+    // Notify family apps that a direct mail campaign went out.
+    if (sent > 0 && campaign.organization_id) {
+      const admin = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      );
+      await emitHubEvent(admin, campaign.organization_id, "campaign.launched", {
+        channel: "direct_mail",
+        campaign_id,
+        campaign_name: campaign.name ?? null,
+        sent,
+        failed,
+        total: pieces.length,
+      });
+    }
+
 
     return new Response(
       JSON.stringify({ success: true, sent, failed, total: pieces.length, errors: errors.slice(0, 10) }),
