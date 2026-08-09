@@ -49,6 +49,7 @@ export async function emitHubEvent(
       .eq("enabled", true);
 
     for (const app of apps ?? []) {
+      if (onlySlugs && !onlySlugs.includes(app.slug)) continue;
       const url = `${String(app.base_url).replace(/\/+$/, "")}/api/hub/events`;
       const status = await post(url, envelope, hubSig);
       delivered.push({ target: app.slug, status });
