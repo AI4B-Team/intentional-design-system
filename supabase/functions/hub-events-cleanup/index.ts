@@ -22,12 +22,26 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: req.headers.get("Authorization") ?? "" } } },
     );
 
+    const body = await req.json().catch(() => ({}));
+    const days = Math.min(365, Math.max(1, Number(body.days ?? 30) || 30));
+    const cronSecret = Deno.env.get("HUB_CRON_SECRET");
+    const isCron = !!cronSecret && req.headers.get("x-hub-cron-secret") === cronSecret;
+
+    // Scheduled run: prune every organization at once.
+    if (isCron) {
+      const cutoffAll = new Date(Date.now() - days * 86400_000).toISOString();
+      const { data, error } = await admin
+        .from("app_family_events")
+        .delete()
+        .lt("created_at", cutoffAll)
+        .select("id");
+      if (error) return json({ error: error.message }, 500);
+      return json({ deleted: (data ?? []).length, days, scope: "all_organizations" });
+    }
+
     const { data: userData } = await anon.auth.getUser();
     const user = userData?.user;
     if (!user) return json({ error: "Unauthorized" }, 401);
-
-    const body = await req.json().catch(() => ({}));
-    const days = Math.min(365, Math.max(1, Number(body.days ?? 30) || 30));
 
     const { data: membership } = await admin
       .from("organization_members")
