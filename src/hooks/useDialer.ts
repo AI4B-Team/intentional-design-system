@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrganizationContext } from '@/hooks/useOrganizationId';
 import { toast } from 'sonner';
+import { emitHubEvent } from '@/lib/emitHubEvent';
 
 interface CallRecord {
   id: string;
@@ -328,6 +329,14 @@ export function useDialer() {
           address_hash: `phone_${phone}`,
           reason: 'do_not_call',
           source: 'call_disposition'
+        });
+
+        // Propagate the DNC flag to every connected App Family satellite
+        void emitHubEvent('lead.flagged_dnc', {
+          phone,
+          reason: 'do_not_call',
+          source: 'call_disposition',
+          disposition: disposition.name,
         });
       }
 

@@ -27,6 +27,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { emitHubEvent } from "@/lib/emitHubEvent";
 
 interface AddSuppressionModalProps {
   open: boolean;
@@ -103,6 +104,18 @@ export function AddSuppressionModal({ open, onOpenChange }: AddSuppressionModalP
       }
 
       toast.success("Address added to suppression list");
+
+      if (reason === "do_not_call") {
+        void emitHubEvent("lead.flagged_dnc", {
+          address,
+          city,
+          state,
+          zip: zip || null,
+          reason,
+          source: "manual",
+        });
+      }
+
       queryClient.invalidateQueries({ queryKey: ["suppression-list"] });
       resetForm();
       onOpenChange(false);
