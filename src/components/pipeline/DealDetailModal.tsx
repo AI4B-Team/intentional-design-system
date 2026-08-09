@@ -56,7 +56,13 @@ export function DealDetailModal({ deal, onClose }: DealDetailModalProps) {
           <DialogDescription>
             {deal.city}, {deal.state} {deal.zip}
           </DialogDescription>
+          <div className="pt-2">
+            <SendToAppMenu
+              next={`/leads?address=${encodeURIComponent(deal.address || "")}`}
+            />
+          </div>
         </DialogHeader>
+
 
         <div className="space-y-3 px-6 py-3">
           <div className="flex items-center gap-3">
