@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { emitHubEvent } from "../_shared/hub-emit.ts";
+
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -336,6 +338,19 @@ serve(async (req) => {
     }
 
     console.log(`Processing complete: ${uniqueRecords} unique of ${totalRecords} total`);
+
+    // Tell the app family the import job finished.
+    await emitHubEvent(supabase, organizationId, "job.completed", {
+      job_type: "list_import",
+      list_id: listId,
+      user_id: user.id,
+      total_records: totalRecords,
+      unique_records: uniqueRecords,
+      skipped_duplicates: skippedDuplicates,
+      skipped_suppressed: skippedSuppressed,
+      invalid_records: invalidRecords,
+    });
+
 
     return new Response(JSON.stringify({
       success: true,

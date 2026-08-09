@@ -297,6 +297,17 @@ serve(async (req) => {
       console.error("Error saving skip trace:", insertError);
     }
 
+    // Flag DNC numbers to the app family so satellites stop dialing them.
+    if (primaryPhone?.dnc && orgMember?.organization_id) {
+      await emitHubEvent(supabase, orgMember.organization_id, "lead.flagged_dnc", {
+        user_id: user.id,
+        phone: primaryPhone.number,
+        property_id: propertyId || null,
+        skip_trace_id: skipTraceRecord?.id || null,
+        address: `${address}, ${city}, ${state} ${zip}`,
+      });
+    }
+
     if (Number.isFinite(remaining) && remaining < 5 && orgMember?.organization_id) {
       await emitHubEvent(supabase, orgMember.organization_id, "credits.low", {
         user_id: user.id,
@@ -305,6 +316,7 @@ serve(async (req) => {
         last_service: "skip_trace",
       });
     }
+
 
     // Update property if propertyId provided
     if (propertyId && primaryPhone) {
