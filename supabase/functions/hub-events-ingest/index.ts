@@ -15,6 +15,7 @@ import {
   HUB_EVENT_TYPES,
 } from "../_shared/hub.ts";
 import { applyIncomingEvents } from "../_shared/hub-handlers.ts";
+import { post } from "../_shared/hub-emit.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
