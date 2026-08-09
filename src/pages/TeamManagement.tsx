@@ -284,6 +284,17 @@ export default function TeamManagement() {
     }
   };
 
+  const handleCopyInviteLink = async (token: string) => {
+    const link = `${window.location.origin}/onboarding/join?token=${token}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      toast.success("Invite link copied");
+    } catch {
+      toast.error("Could not copy link");
+    }
+  };
+
+
   return (
     <DashboardLayout>
       <div className="space-y-lg">
