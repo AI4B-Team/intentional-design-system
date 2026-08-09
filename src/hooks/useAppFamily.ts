@@ -313,8 +313,8 @@ export function useRetryFamilyEvent() {
 /** Deletes stored family activity older than the retention window (owners/admins). */
 export function useCleanupFamilyEvents() {
   const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async (days: number = 30) => {
+  return useMutation<{ deleted: number; days: number }, Error, number>({
+    mutationFn: async (days: number) => {
       const { data, error } = await supabase.functions.invoke("hub-events-cleanup", {
         body: { days },
       });
