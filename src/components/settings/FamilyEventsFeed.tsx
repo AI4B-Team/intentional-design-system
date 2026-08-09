@@ -2,6 +2,7 @@ import * as React from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { hubEventLabel } from "@/lib/hubEvents";
 import { toast } from "@/hooks/use-toast";
 import { useFamilyEvents, useRetryFamilyEvent, type FamilyEvent } from "@/hooks/useAppFamily";
 import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw } from "lucide-react";
@@ -105,7 +106,7 @@ export function FamilyEventsFeed() {
             <option value="all">All Event Types</option>
             {types.map((t) => (
               <option key={t} value={t}>
-                {t}
+                {hubEventLabel(t)} ({t})
               </option>
             ))}
           </select>
