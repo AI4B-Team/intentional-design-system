@@ -134,3 +134,51 @@ export async function post(url: string, body: string, signature: string): Promis
   }
   return status;
 }
+
+/**
+ * Notifies org owners/admins when an outbound event failed to reach one or more
+ * targets. Throttled to one notification per org per hour to avoid noise.
+ */
+async function notifyDeliveryFailures(
+  admin: Admin,
+  orgId: string,
+  eventType: string,
+  delivered: { target: string; status: number }[],
+) {
+  try {
+    const failed = delivered.filter((d) => !(d.status >= 200 && d.status < 300));
+    if (failed.length === 0) return;
+
+    const since = new Date(Date.now() - 3600_000).toISOString();
+    const { data: recent } = await admin
+      .from("notifications")
+      .select("id")
+      .eq("organization_id", orgId)
+      .eq("type", "hub_delivery_failed")
+      .gte("created_at", since)
+      .limit(1);
+    if (recent && recent.length > 0) return;
+
+    const { data: admins } = await admin
+      .from("organization_members")
+      .select("user_id")
+      .eq("organization_id", orgId)
+      .eq("status", "active")
+      .in("role", ["owner", "admin"]);
+    if (!admins || admins.length === 0) return;
+
+    const targets = failed.map((f) => `${f.target} (${f.status || "no response"})`).join(", ");
+    await admin.from("notifications").insert(
+      admins.map((m: { user_id: string }) => ({
+        user_id: m.user_id,
+        organization_id: orgId,
+        type: "hub_delivery_failed",
+        title: "App Family Delivery Failed",
+        message: `${eventType} could not be delivered to: ${targets}`,
+        link: "/settings/app-family",
+      })),
+    );
+  } catch (e) {
+    console.error("[emitHubEvent] failure notification error", e);
+  }
+}
