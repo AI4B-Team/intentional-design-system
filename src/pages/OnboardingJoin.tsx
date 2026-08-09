@@ -54,12 +54,13 @@ export default function OnboardingJoin() {
   const [error, setError] = React.useState("");
   const [joined, setJoined] = React.useState(false);
 
-  // Redirect if user already has an organization
+  // Redirect only if the user already has an organization AND no invite token
+  // was provided — with a token they may be joining an additional workspace.
   React.useEffect(() => {
-    if (!orgLoading && organization) {
+    if (!orgLoading && organization && !searchParams.get("token")) {
       navigate("/dashboard", { replace: true });
     }
-  }, [organization, orgLoading, navigate]);
+  }, [organization, orgLoading, navigate, searchParams]);
 
   // Auto-lookup invite if token is in URL
   React.useEffect(() => {
@@ -70,42 +71,29 @@ export default function OnboardingJoin() {
 
   const handleLookupInvite = async () => {
     if (!token.trim()) return;
-    
+
     setLoading(true);
     setError("");
     setInvite(null);
 
     try {
-      const { data, error: lookupError } = await supabase
-        .from("organization_invites")
-        .select(`
-          id,
-          organization_id,
-          email,
-          role,
-          expires_at,
-          organizations (name, logo_url)
-        `)
-        .eq("token", token.trim())
-        .is("accepted_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .single();
+      const { data, error: lookupError } = await supabase.rpc("lookup_organization_invite", {
+        p_token: token.trim(),
+      });
 
       if (lookupError || !data) {
         setError("Invalid or expired invitation. Please check your invite code.");
         return;
       }
 
-      setInvite({
-        ...data,
-        organization: (data as any).organizations,
-      });
+      setInvite(data as unknown as InviteDetails);
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleAcceptInvite = async () => {
     if (!token.trim()) return;
