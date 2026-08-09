@@ -92,6 +92,9 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [pendingDelete, setPendingDelete] = React.useState<Workspace | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [newName, setNewName] = React.useState("");
+  const createOrganization = useCreateOrganization();
 
   const workspaces: Workspace[] = React.useMemo(
     () =>
