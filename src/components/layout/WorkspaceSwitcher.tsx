@@ -117,6 +117,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
 
   const handleSelectWorkspace = (workspace: Workspace) => {
     if (workspace.id !== organization?.id) {
+      queryClient.clear();
       switchOrganization(workspace.id);
       toast.success(`Switched To ${workspace.name}`);
     }
