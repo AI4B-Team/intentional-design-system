@@ -146,14 +146,18 @@ Deno.serve(async (req) => {
       detail: ping.status ? `HTTP ${ping.status}` : ping.error,
     });
 
+    const passed = checks.filter((c) => c.ok).length;
+    await persist(admin, orgId, appSlug, passed, checks);
+
     return json({
       app_slug: appSlug,
       base_url: base,
       enabled: !!app.enabled,
-      passed: checks.filter((c) => c.ok).length,
+      passed,
       total: checks.length,
       checks,
     });
+
   } catch (e) {
     console.error("[hub-integration-check]", e);
     return json({ error: "Integration check failed" }, 500);
