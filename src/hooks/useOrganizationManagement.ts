@@ -237,8 +237,9 @@ export function useUpdateMemberRole() {
 
 export function useAcceptInvite() {
   const { user } = useAuth();
-  const { refreshOrganization } = useOrganization();
+  const { refreshOrganization, switchOrganization } = useOrganization();
   const queryClient = useQueryClient();
+
 
   return useMutation({
     mutationFn: async (token: string) => {
