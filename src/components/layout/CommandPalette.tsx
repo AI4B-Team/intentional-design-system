@@ -109,7 +109,27 @@ export function CommandPalette({ open, onOpenChange }: CommandPaletteProps) {
           ))}
         </CommandGroup>
 
+        {enabledApps.length > 0 && (
+          <>
+            <CommandSeparator />
+            <CommandGroup heading="App Family">
+              {enabledApps.map((app) => (
+                <CommandItem
+                  key={app.slug}
+                  value={`open ${app.name}`}
+                  onSelect={() => runCommand(() => openFamilyApp(app.slug))}
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  <span>Open {app.name}</span>
+                  <CommandShortcut>SSO</CommandShortcut>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </>
+        )}
+
         <CommandSeparator />
+
 
         <CommandGroup heading="Account">
           <CommandItem onSelect={() => runCommand(() => navigate("/settings"))}>
