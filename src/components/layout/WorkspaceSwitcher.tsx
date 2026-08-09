@@ -47,6 +47,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Workspace {
   id: string;
@@ -93,6 +94,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   const [createOpen, setCreateOpen] = React.useState(false);
   const [newName, setNewName] = React.useState("");
   const createOrganization = useCreateOrganization();
+  const queryClient = useQueryClient();
 
   const workspaces: Workspace[] = React.useMemo(
     () =>
@@ -115,6 +117,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
 
   const handleSelectWorkspace = (workspace: Workspace) => {
     if (workspace.id !== organization?.id) {
+      queryClient.clear();
       switchOrganization(workspace.id);
       toast.success(`Switched To ${workspace.name}`);
     }
@@ -188,6 +191,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
     setBusy(true);
     try {
       const org = await createOrganization.mutateAsync({ name });
+      queryClient.clear();
       switchOrganization(org.id);
       setCreateOpen(false);
       setNewName("");
