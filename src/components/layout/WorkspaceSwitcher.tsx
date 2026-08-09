@@ -353,6 +353,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
         </PopoverContent>
       </Popover>
       {deleteDialog}
+      {createDialog}
     </div>
   );
 }
