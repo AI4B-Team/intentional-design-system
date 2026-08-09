@@ -10,6 +10,7 @@ import {
   rateLimitedResponse,
   verifyTurnstile,
 } from '../_shared/abuse.ts'
+import { emitHubEvent } from '../_shared/hub-emit.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -82,7 +83,7 @@ serve(async (req) => {
     // Bump interest_count on the deal
     const { data: deal } = await supabase
       .from('dispo_deals')
-      .select('interest_count')
+      .select('interest_count, organization_id, address, city, state, title, asking_price')
       .eq('id', dealId)
       .maybeSingle()
     if (deal) {
@@ -90,6 +91,25 @@ serve(async (req) => {
         .from('dispo_deals')
         .update({ interest_count: (deal.interest_count || 0) + 1 })
         .eq('id', dealId)
+    }
+
+    // Fan the buyer interest out to connected App Family apps + org webhooks.
+    if (deal?.organization_id) {
+      await emitHubEvent(supabase, deal.organization_id, 'leads.new', {
+        lead_type: 'cash_buyer',
+        name,
+        email,
+        phone,
+        interest_type: interestType,
+        message,
+        offer_amount: offerAmount,
+        property_address: deal.address ?? null,
+        city: deal.city ?? null,
+        state: deal.state ?? null,
+        deal_title: deal.title ?? null,
+        asking_price: deal.asking_price ?? null,
+        source: 'real-elite:deal-interest',
+      })
     }
 
     return new Response(
