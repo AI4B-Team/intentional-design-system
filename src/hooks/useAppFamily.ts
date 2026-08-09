@@ -310,6 +310,26 @@ export function useRetryFamilyEvent() {
   });
 }
 
+/** Deletes stored family activity older than the retention window (owners/admins). */
+export function useCleanupFamilyEvents() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (days = 30) => {
+      const { data, error } = await supabase.functions.invoke("hub-events-cleanup", {
+        body: { days },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data as { deleted: number; days: number };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app_family_events"] });
+    },
+  });
+}
+
+
+
 
 
 export interface FamilyActionResult {
