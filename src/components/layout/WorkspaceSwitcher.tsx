@@ -38,6 +38,16 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
+import { useCreateOrganization } from "@/hooks/useOrganizationManagement";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface Workspace {
   id: string;
