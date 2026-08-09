@@ -269,6 +269,7 @@ export type Database = {
         Row: {
           app_slug: string
           created_at: string
+          dead_lettered_at: string | null
           delivery: Json | null
           direction: string
           event_type: string
@@ -282,6 +283,7 @@ export type Database = {
         Insert: {
           app_slug: string
           created_at?: string
+          dead_lettered_at?: string | null
           delivery?: Json | null
           direction?: string
           event_type: string
@@ -295,6 +297,7 @@ export type Database = {
         Update: {
           app_slug?: string
           created_at?: string
+          dead_lettered_at?: string | null
           delivery?: Json | null
           direction?: string
           event_type?: string
