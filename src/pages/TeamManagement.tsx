@@ -82,7 +82,8 @@ import {
   RefreshCw,
   Trash2,
   Info,
-  AlertCircle
+  AlertCircle,
+  Copy
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDistanceToNow } from "date-fns";
