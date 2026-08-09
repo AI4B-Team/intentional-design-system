@@ -498,9 +498,18 @@ export default function TeamManagement() {
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                title="Copy Invite Link"
+                                onClick={() => handleCopyInviteLink(invite.token)}
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
                               <Button 
                                 variant="ghost" 
                                 size="sm"
+                                title="Resend Invite"
                                 onClick={() => handleResendInvite(invite.id)}
                                 disabled={resendInvite.isPending}
                               >
