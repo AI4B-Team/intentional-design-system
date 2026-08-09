@@ -22,6 +22,7 @@ import {
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { HUB_EVENT_CATALOG } from "@/lib/hubEvents";
 import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
+import { HubIntegrationGuide } from "@/components/settings/HubIntegrationGuide";
 import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck, RefreshCw } from "lucide-react";
 
 
@@ -583,7 +584,10 @@ export default function AppFamilySettings() {
             )}
           </CardContent>
         </Card>
+
+        <HubIntegrationGuide />
       </div>
+
     </DashboardLayout>
   );
 }
