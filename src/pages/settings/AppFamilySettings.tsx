@@ -16,9 +16,12 @@ import {
   useManageFamilyApps,
   useEmitFamilyEvent,
   useCallFamilyAppAction,
+  useIntegrationCheck,
+  type IntegrationCheckResult,
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
-import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal } from "lucide-react";
+import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+
 
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
@@ -38,6 +41,32 @@ export default function AppFamilySettings() {
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
   const callAction = useCallFamilyAppAction();
+  const integrationCheck = useIntegrationCheck();
+  const [checking, setChecking] = React.useState<string | null>(null);
+  const [checkResult, setCheckResult] = React.useState<IntegrationCheckResult | null>(null);
+
+  const handleRunCheck = async (slug: string) => {
+    setChecking(slug);
+    setCheckResult(null);
+    try {
+      const res = await integrationCheck.mutateAsync(slug);
+      setCheckResult(res);
+      toast({
+        title: res.passed === res.total ? "Integration Ready" : "Integration Issues Found",
+        description: `${res.passed}/${res.total} checks passed for ${slug}.`,
+        variant: res.passed === res.total ? undefined : "destructive",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Check Failed",
+        description: e?.message ?? "Could not run the integration check.",
+        variant: "destructive",
+      });
+    } finally {
+      setChecking(null);
+    }
+  };
+
   const [actionForm, setActionForm] = React.useState<{
     appSlug: string;
     action: string;
@@ -193,21 +222,56 @@ export default function AppFamilySettings() {
                       </p>
                     )}
                   </div>
-                  <Button
-                    onClick={() => handleLaunch(app.slug)}
-                    disabled={pending === app.slug || !app.enabled}
-                    className="shrink-0"
-                  >
-                    {pending === app.slug ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                    )}
-                    Open {app.name}
-                  </Button>
+                  <div className="flex shrink-0 flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => handleRunCheck(app.slug)}
+                      disabled={checking === app.slug}
+                    >
+                      {checking === app.slug ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      )}
+                      Run Integration Check
+                    </Button>
+                    <Button
+                      onClick={() => handleLaunch(app.slug)}
+                      disabled={pending === app.slug || !app.enabled}
+                    >
+                      {pending === app.slug ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : (
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                      )}
+                      Open {app.name}
+                    </Button>
+                  </div>
                 </div>
               );
             })}
+            {checkResult && (
+              <div className="space-y-2 rounded-lg border border-border bg-muted/40 p-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
+                  {checkResult.app_slug} — {checkResult.passed}/{checkResult.total} Checks Passed
+                </div>
+                {checkResult.checks.map((c) => (
+                  <div key={c.id} className="flex items-start justify-between gap-3 text-sm">
+                    <span className="min-w-0 text-foreground">{c.label}</span>
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="max-w-[220px] truncate text-xs text-muted-foreground">
+                        {c.detail}
+                      </span>
+                      <Badge variant={c.ok ? "default" : "destructive"}>
+                        {c.ok ? "Pass" : "Fail"}
+                      </Badge>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </CardContent>
         </Card>
 
