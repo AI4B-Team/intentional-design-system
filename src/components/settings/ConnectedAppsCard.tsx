@@ -15,7 +15,7 @@ import { Boxes, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
 /** Launchable satellite apps with per-app acceptance-check results. */
 export function ConnectedAppsCard() {
   const { data: apps = [], isLoading: appsLoading } = useFamilyApps();
-  const { data: links = [] } = useOrgAppLinks();
+  const { data: links = [], refetch: refetchLinks } = useOrgAppLinks();
   const launch = useLaunchFamilyApp();
   const integrationCheck = useIntegrationCheck();
   const [pending, setPending] = React.useState<string | null>(null);
@@ -24,6 +24,22 @@ export function ConnectedAppsCard() {
   const [results, setResults] = React.useState<Record<string, IntegrationCheckResult>>({});
 
   const linkFor = (slug: string) => links.find((l) => l.app_slug === slug);
+
+  /** Live result if we just ran a check, otherwise the last stored outcome. */
+  const resultFor = (slug: string): (IntegrationCheckResult & { checked_at?: string }) | null => {
+    if (results[slug]) return results[slug];
+    const link = linkFor(slug);
+    if (!link?.last_check_at || !link.last_check_details) return null;
+    return {
+      app_slug: slug,
+      base_url: "",
+      passed: link.last_check_passed ?? 0,
+      total: link.last_check_total ?? link.last_check_details.length,
+      checks: link.last_check_details,
+      checked_at: link.last_check_at,
+    };
+  };
+
 
   const runCheck = async (slug: string, silent = false) => {
     setChecking(slug);
