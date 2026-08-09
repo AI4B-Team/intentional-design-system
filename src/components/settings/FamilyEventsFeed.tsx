@@ -161,7 +161,9 @@ export function FamilyEventsFeed() {
       </CardHeader>
 
       <CardContent className="space-y-3">
+        <DeliveryHealthStrip events={events} />
         <div className="flex flex-wrap items-center gap-2">
+
           {(["all", "inbound", "outbound", "dead-letter"] as Filter[]).map((f) => (
             <Button
               key={f}
