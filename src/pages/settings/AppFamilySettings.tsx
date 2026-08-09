@@ -21,7 +21,7 @@ import {
 } from "@/hooks/useAppFamily";
 import { useOrganizationContext } from "@/hooks/useOrganizationId";
 import { FamilyEventsFeed } from "@/components/settings/FamilyEventsFeed";
-import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck } from "lucide-react";
+import { Boxes, ExternalLink, Loader2, Trash2, Webhook, Activity, Copy, Settings2, Terminal, ShieldCheck, RefreshCw } from "lucide-react";
 
 
 
@@ -32,7 +32,14 @@ export default function AppFamilySettings() {
   const { data: apps = [], isLoading: appsLoading } = useFamilyApps();
   const { data: links = [] } = useOrgAppLinks();
   const { data: events = [] } = useFamilyEvents();
-  const { data: webhooks = [], addWebhook, toggleWebhook, removeWebhook } = useOrgWebhooks();
+  const {
+    data: webhooks = [],
+    addWebhook,
+    toggleWebhook,
+    removeWebhook,
+    setWebhookEventTypes,
+    rotateWebhookSecret,
+  } = useOrgWebhooks();
   const launch = useLaunchFamilyApp();
   const { saveApp, toggleApp, removeApp } = useManageFamilyApps();
   const emitEvent = useEmitFamilyEvent();
@@ -41,6 +48,7 @@ export default function AppFamilySettings() {
   const [webhookUrl, setWebhookUrl] = React.useState("");
   const [pending, setPending] = React.useState<string | null>(null);
   const [urlDrafts, setUrlDrafts] = React.useState<Record<string, string>>({});
+  const [filterDrafts, setFilterDrafts] = React.useState<Record<string, string>>({});
   const [newApp, setNewApp] = React.useState({ slug: "", name: "", base_url: "" });
   const callAction = useCallFamilyAppAction();
   const integrationCheck = useIntegrationCheck();
