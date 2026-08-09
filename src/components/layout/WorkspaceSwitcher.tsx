@@ -97,6 +97,7 @@ export function WorkspaceSwitcher({ collapsed }: WorkspaceSwitcherProps) {
   const [newName, setNewName] = React.useState("");
   const createOrganization = useCreateOrganization();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const workspaces: Workspace[] = React.useMemo(
     () =>
