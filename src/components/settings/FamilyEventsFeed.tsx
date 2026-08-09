@@ -3,6 +3,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hubEventLabel } from "@/lib/hubEvents";
+import { DeliveryHealthStrip } from "@/components/settings/DeliveryHealthStrip";
+
 import { toast } from "@/hooks/use-toast";
 import {
   useFamilyEvents,
@@ -161,7 +163,9 @@ export function FamilyEventsFeed() {
       </CardHeader>
 
       <CardContent className="space-y-3">
+        <DeliveryHealthStrip events={events} />
         <div className="flex flex-wrap items-center gap-2">
+
           {(["all", "inbound", "outbound", "dead-letter"] as Filter[]).map((f) => (
             <Button
               key={f}
