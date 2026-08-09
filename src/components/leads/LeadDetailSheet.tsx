@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { SendToAppMenu } from "@/components/app-family/SendToAppMenu";
 import {
   Phone,
   Mail,
