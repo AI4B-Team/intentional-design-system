@@ -13,10 +13,12 @@ import {
 import { COMMAND_NAVIGATION_ITEMS } from "./navigation";
 import {
   Plus, Search, Settings, Sparkles, BarChart3, Car,
-  LogOut,
+  LogOut, ExternalLink,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAIVA } from "@/contexts/AIVAContext";
+import { useFamilyApps, useLaunchFamilyApp } from "@/hooks/useAppFamily";
+import { toast } from "@/hooks/use-toast";
 
 interface CommandPaletteProps {
   open: boolean;
