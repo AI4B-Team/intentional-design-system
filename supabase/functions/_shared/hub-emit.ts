@@ -29,9 +29,11 @@ export async function emitHubEvent(
         app_slug: "real-elite",
         event_type: eventType.slice(0, 60),
         payload,
+        direction: "outbound",
       })
       .select("id, created_at")
       .maybeSingle();
+
 
     const envelope = JSON.stringify({
       id: stored?.id ?? crypto.randomUUID(),
