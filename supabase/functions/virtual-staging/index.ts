@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { maybeEmitCreditsLow } from "../_shared/credits-low.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -50,6 +52,9 @@ serve(async (req) => {
         { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    await maybeEmitCreditsLow(admin, userId, creditResult, "virtual_staging");
 
     // Build the staging prompt
     const stylePrompts: Record<string, string> = {
