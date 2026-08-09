@@ -14,6 +14,7 @@ import {
   safeEqual,
   HUB_EVENT_TYPES,
 } from "../_shared/hub.ts";
+import { applyIncomingEvents } from "../_shared/hub-handlers.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -85,6 +86,13 @@ Deno.serve(async (req) => {
     return json({ error: "Failed to store events" }, 500);
   }
 
+  // Project meaningful events onto real hub records (leads, suppression, inbox).
+  const applied = await applyIncomingEvents(admin, orgId, appSlug, rows.map((r, i) => ({
+    id: r.remote_event_id ?? inserted?.[i]?.id,
+    event_type: r.event_type,
+    payload: r.payload,
+  })));
+
   await admin.from("org_app_links").upsert(
     {
       organization_id: orgId,
@@ -131,7 +139,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  return json({ received: rows.length });
+  return json({ received: rows.length, applied });
 });
 
 function json(body: unknown, status = 200) {
