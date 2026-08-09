@@ -95,6 +95,10 @@ export async function emitHubEvent(
         .eq("id", stored.id);
     }
 
+    await notifyDeliveryFailures(admin, orgId, eventType, delivered);
+
+
+
   } catch (e) {
     console.error("[emitHubEvent]", eventType, e);
   }
