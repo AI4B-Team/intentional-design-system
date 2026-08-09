@@ -1,0 +1,1 @@
+ALTER TABLE public.org_webhooks ADD COLUMN IF NOT EXISTS event_types text[] NOT NULL DEFAULT '{}'::text[];

@@ -39,6 +39,8 @@ export interface OrgWebhook {
   enabled: boolean;
   last_delivery_at: string | null;
   last_delivery_status: number | null;
+  /** Empty = subscribed to every event type. */
+  event_types?: string[] | null;
 }
 
 export function useFamilyApps() {
@@ -163,7 +165,41 @@ export function useOrgWebhooks() {
     onSuccess: invalidate,
   });
 
-  return { ...query, addWebhook, toggleWebhook, removeWebhook };
+  /** Empty array = receive every event type. */
+  const setWebhookEventTypes = useMutation({
+    mutationFn: async ({ id, eventTypes }: { id: string; eventTypes: string[] }) => {
+      const { error } = await supabase
+        .from("org_webhooks" as any)
+        .update({ event_types: eventTypes })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: invalidate,
+  });
+
+  const rotateWebhookSecret = useMutation({
+    mutationFn: async (id: string) => {
+      const bytes = new Uint8Array(32);
+      crypto.getRandomValues(bytes);
+      const secret = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+      const { error } = await supabase
+        .from("org_webhooks" as any)
+        .update({ secret })
+        .eq("id", id);
+      if (error) throw error;
+      return secret;
+    },
+    onSuccess: invalidate,
+  });
+
+  return {
+    ...query,
+    addWebhook,
+    toggleWebhook,
+    removeWebhook,
+    setWebhookEventTypes,
+    rotateWebhookSecret,
+  };
 }
 
 /** Mints a 60s handoff token and returns the satellite launch URL. */
