@@ -3,13 +3,23 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyApps, useOrgAppLinks, useLaunchFamilyApp } from "@/hooks/useAppFamily";
-import { Boxes, ExternalLink, Loader2 } from "lucide-react";
+import { useFamilyApps, useOrgAppLinks, useLaunchFamilyApp, useFamilyEvents } from "@/hooks/useAppFamily";
+import { Boxes, ExternalLink, Loader2, Activity, AlertTriangle } from "lucide-react";
+
+function relativeTime(iso: string) {
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  if (mins < 1) return "Just Now";
+  if (mins < 60) return `${mins}m Ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h Ago`;
+  return `${Math.floor(hrs / 24)}d Ago`;
+}
 
 /** Launcher for satellite apps in the Real Elite family (hub SSO handoff). */
 export function FamilyAppsSection() {
   const { data: apps = [], isLoading } = useFamilyApps();
   const { data: links = [] } = useOrgAppLinks();
+  const { data: events = [] } = useFamilyEvents(100);
   const launch = useLaunchFamilyApp();
   const [pending, setPending] = React.useState<string | null>(null);
 
@@ -44,6 +54,11 @@ export function FamilyAppsSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {enabled.map((app) => {
           const link = links.find((l) => l.app_slug === app.slug);
+          const appEvents = events.filter((e) => e.app_slug === app.slug);
+          const lastAt = appEvents[0]?.created_at ?? link?.last_event_at ?? null;
+          const failed = appEvents.filter((e) =>
+            (e.delivery ?? []).some((d) => d.status >= 400),
+          ).length;
           return (
             <Card key={app.id} padding="md" className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-2">
@@ -60,6 +75,19 @@ export function FamilyAppsSection() {
                 >
                   {link?.linked_at ? "Linked" : "Not Linked"}
                 </Badge>
+              </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground tabular-nums">
+                <span className="flex items-center gap-1">
+                  <Activity className="h-3 w-3 text-primary" />
+                  {appEvents.length} Events
+                </span>
+                <span>{lastAt ? relativeTime(lastAt) : "No Activity Yet"}</span>
+                {failed > 0 && (
+                  <span className="flex items-center gap-1 text-destructive">
+                    <AlertTriangle className="h-3 w-3" />
+                    {failed} Failed
+                  </span>
+                )}
               </div>
               <Button
                 size="sm"
