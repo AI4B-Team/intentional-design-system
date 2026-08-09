@@ -62,23 +62,7 @@ Deno.serve(async (req) => {
   }
 });
 
-async function post(url: string, body: string, signature: string): Promise<number> {
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-webhook-signature": signature,
-        "x-hub-signature": signature,
-      },
-      body,
-    });
-    return res.status;
-  } catch (e) {
-    console.error("[hub-emit-event] delivery failed", url, e);
-    return 0;
-  }
-}
+
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
