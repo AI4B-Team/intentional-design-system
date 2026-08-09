@@ -48,6 +48,11 @@ interface OrganizationContextType {
   organization: Organization | null;
   membership: OrganizationMember | null;
   members: OrganizationMember[];
+  /** Every active organization the user belongs to (workspaces) */
+  organizations: Organization[];
+  /** Role of the user in each organization, keyed by organization id */
+  rolesByOrganization: Record<string, OrgRole>;
+  switchOrganization: (organizationId: string) => void;
   loading: boolean;
   hasRole: (role: OrgRole | string) => boolean;
   canManageTeam: boolean;
@@ -58,7 +63,10 @@ interface OrganizationContextType {
   refetchMembers: () => Promise<void>;
 }
 
+const ACTIVE_ORG_STORAGE_KEY = "re_active_organization_id";
+
 const OrganizationContext = React.createContext<OrganizationContextType | undefined>(undefined);
+
 
 // Role hierarchy for permission checks
 const ROLE_HIERARCHY: Record<OrgRole, number> = {
