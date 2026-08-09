@@ -76,6 +76,19 @@ export function FamilyAppsSection() {
                   {link?.linked_at ? "Linked" : "Not Linked"}
                 </Badge>
               </div>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground tabular-nums">
+                <span className="flex items-center gap-1">
+                  <Activity className="h-3 w-3 text-primary" />
+                  {appEvents.length} Events
+                </span>
+                <span>{lastAt ? relativeTime(lastAt) : "No Activity Yet"}</span>
+                {failed > 0 && (
+                  <span className="flex items-center gap-1 text-destructive">
+                    <AlertTriangle className="h-3 w-3" />
+                    {failed} Failed
+                  </span>
+                )}
+              </div>
               <Button
                 size="sm"
                 variant="outline"
