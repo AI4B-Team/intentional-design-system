@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layout";
 import { useOrganization, type OrgRole } from "@/contexts/OrganizationContext";
 import { usePermissions } from "@/hooks/usePermissions";
