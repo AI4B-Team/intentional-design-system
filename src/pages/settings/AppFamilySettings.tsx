@@ -28,7 +28,7 @@ export default function AppFamilySettings() {
   const { data: webhooks = [], addWebhook, toggleWebhook, removeWebhook } = useOrgWebhooks();
   const launch = useLaunchFamilyApp();
   const { saveApp, toggleApp, removeApp } = useManageFamilyApps();
-  const { hasRole } = useOrganizationContext();
+  const emitEvent = useEmitFamilyEvent();
   const isAdmin = hasRole("admin");
   const [webhookUrl, setWebhookUrl] = React.useState("");
   const [pending, setPending] = React.useState<string | null>(null);
