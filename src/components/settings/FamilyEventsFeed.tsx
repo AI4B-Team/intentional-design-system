@@ -3,8 +3,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyEvents, type FamilyEvent } from "@/hooks/useAppFamily";
-import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy } from "lucide-react";
+import { useFamilyEvents, useRetryFamilyEvent, type FamilyEvent } from "@/hooks/useAppFamily";
+import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
