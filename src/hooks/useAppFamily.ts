@@ -255,6 +255,27 @@ export function useEmitFamilyEvent() {
   });
 }
 
+/** Re-delivers a stored outbound event to the targets that previously failed. */
+export function useRetryFamilyEvent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (eventId: string) => {
+      const { data, error } = await supabase.functions.invoke("hub-retry-event", {
+        body: { event_id: eventId },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return (data?.delivered ?? []) as { target: string; status: number }[];
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["app_family_events"] });
+      qc.invalidateQueries({ queryKey: ["org_webhooks"] });
+    },
+  });
+}
+
+
+
 export interface FamilyActionResult {
   target: string;
   status: number;

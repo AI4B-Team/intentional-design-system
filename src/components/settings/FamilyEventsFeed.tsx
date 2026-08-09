@@ -3,8 +3,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyEvents, type FamilyEvent } from "@/hooks/useAppFamily";
-import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy } from "lucide-react";
+import { useFamilyEvents, useRetryFamilyEvent, type FamilyEvent } from "@/hooks/useAppFamily";
+import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
@@ -36,9 +36,32 @@ function DeliveryBadges({ delivery }: { delivery: FamilyEvent["delivery"] }) {
 
 export function FamilyEventsFeed() {
   const { data: events = [] } = useFamilyEvents(100);
+  const retry = useRetryFamilyEvent();
+  const [retrying, setRetrying] = React.useState<string | null>(null);
   const [filter, setFilter] = React.useState<Filter>("all");
   const [type, setType] = React.useState("all");
   const [expanded, setExpanded] = React.useState<string | null>(null);
+
+  const handleRetry = async (id: string) => {
+    setRetrying(id);
+    try {
+      const delivered = await retry.mutateAsync(id);
+      const ok = delivered.filter((d) => d.status >= 200 && d.status < 300).length;
+      toast({
+        title: ok > 0 ? "Redelivered" : "Retry Failed",
+        description: `${ok}/${delivered.length} targets accepted the event.`,
+        variant: ok > 0 ? undefined : "destructive",
+      });
+    } catch (e: unknown) {
+      toast({
+        title: "Retry Failed",
+        description: e instanceof Error ? e.message : "Could not redeliver event.",
+        variant: "destructive",
+      });
+    } finally {
+      setRetrying(null);
+    }
+  };
 
   const types = React.useMemo(
     () => Array.from(new Set(events.map((e) => e.event_type))).sort(),
@@ -147,6 +170,21 @@ export function FamilyEventsFeed() {
                       />
                     </div>
                   </button>
+                  {!inbound && (e.delivery ?? []).some((d) => !(d.status >= 200 && d.status < 300)) && (
+                    <div className="mt-1 flex justify-end">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={retrying === e.id}
+                        onClick={() => handleRetry(e.id)}
+                      >
+                        <RefreshCw
+                          className={cn("mr-2 h-3.5 w-3.5", retrying === e.id && "animate-spin")}
+                        />
+                        Retry Delivery
+                      </Button>
+                    </div>
+                  )}
                   {open && (
                     <pre className="mt-2 max-h-56 overflow-auto rounded-md bg-muted p-3 text-xs">
                       {JSON.stringify(e.payload, null, 2)}
