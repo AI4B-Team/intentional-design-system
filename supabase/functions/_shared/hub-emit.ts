@@ -99,20 +99,32 @@ export async function emitHubEvent(
   return delivered;
 }
 
-async function post(url: string, body: string, signature: string): Promise<number> {
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-webhook-signature": signature,
-        "x-hub-signature": signature,
-      },
-      body,
-    });
-    return res.status;
-  } catch (e) {
-    console.error("[emitHubEvent] delivery failed", url, e);
-    return 0;
+/**
+ * POSTs a signed envelope with retry + exponential backoff.
+ * Retries transient failures only (network error or 5xx), up to 3 attempts.
+ */
+export async function post(url: string, body: string, signature: string): Promise<number> {
+  const delays = [300, 900];
+  let status = 0;
+  for (let attempt = 0; attempt <= delays.length; attempt++) {
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-webhook-signature": signature,
+          "x-hub-signature": signature,
+        },
+        body,
+      });
+      status = res.status;
+    } catch (e) {
+      console.error("[emitHubEvent] delivery failed", url, e);
+      status = 0;
+    }
+    const transient = status === 0 || status >= 500 || status === 429;
+    if (!transient) return status;
+    if (attempt < delays.length) await new Promise((r) => setTimeout(r, delays[attempt]));
   }
+  return status;
 }
