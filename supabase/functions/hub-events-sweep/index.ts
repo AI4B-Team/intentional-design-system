@@ -32,9 +32,12 @@ Deno.serve(async (req) => {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, serviceKey);
 
     const token = (req.headers.get("Authorization") ?? "").replace(/^Bearer\s+/i, "");
+    const cronSecret = Deno.env.get("HUB_CRON_SECRET");
+    const isCron = !!cronSecret && req.headers.get("x-hub-cron-secret") === cronSecret;
     let orgFilter: string | null = null;
 
-    if (token !== serviceKey) {
+    if (!isCron && token !== serviceKey) {
+
       const anon = createClient(
         Deno.env.get("SUPABASE_URL")!,
         Deno.env.get("SUPABASE_ANON_KEY")!,
