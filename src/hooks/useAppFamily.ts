@@ -257,3 +257,32 @@ export function useCallFamilyAppAction() {
     },
   });
 }
+
+export interface IntegrationCheck {
+  id: string;
+  label: string;
+  ok: boolean;
+  detail: string;
+}
+
+export interface IntegrationCheckResult {
+  app_slug: string;
+  base_url: string;
+  passed: number;
+  total: number;
+  checks: IntegrationCheck[];
+}
+
+/** Runs the App Family acceptance checks against a satellite app. */
+export function useIntegrationCheck() {
+  return useMutation({
+    mutationFn: async (appSlug: string) => {
+      const { data, error } = await supabase.functions.invoke("hub-integration-check", {
+        body: { app_slug: appSlug },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      return data as IntegrationCheckResult;
+    },
+  });
+}
