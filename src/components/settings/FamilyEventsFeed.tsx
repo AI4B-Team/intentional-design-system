@@ -4,8 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hubEventLabel } from "@/lib/hubEvents";
 import { toast } from "@/hooks/use-toast";
-import { useFamilyEvents, useRetryFamilyEvent, type FamilyEvent } from "@/hooks/useAppFamily";
-import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw } from "lucide-react";
+import {
+  useFamilyEvents,
+  useRetryFamilyEvent,
+  useCleanupFamilyEvents,
+  type FamilyEvent,
+} from "@/hooks/useAppFamily";
+import { Activity, ArrowDownLeft, ArrowUpRight, ChevronDown, Copy, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const INGEST_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hub-events-ingest`;
