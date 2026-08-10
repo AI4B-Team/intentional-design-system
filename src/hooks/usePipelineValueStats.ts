@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface PipelineValueStats {
   leads: {
@@ -25,34 +28,31 @@ export interface PipelineValueStats {
 }
 
 export function usePipelineValueStats() {
+  const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["pipeline-value-stats"],
+    queryKey: ["pipeline-value-stats", organizationId, user?.id],
     queryFn: async (): Promise<PipelineValueStats> => {
+      const scoped = (columns: string) =>
+        scopeToWorkspace(
+          supabase.from("properties").select(columns),
+          organizationId,
+          user!.id,
+        );
       // Fetch properties with financial data for each stage
       const [leadsResult, offersResult, contractedResult, soldResult] = await Promise.all([
         // Leads: new, contacted, appointment statuses (Discovery - Red)
-        supabase
-          .from("properties")
-          .select("id, asking_price, arv, repair_estimate, equity_amount")
-          .in("status", ["new", "contacted", "appointment"]),
+        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["new", "contacted", "appointment"]),
         
         // Offers: offer_made, negotiating, follow_up statuses (Intent - Yellow)
-        supabase
-          .from("properties")
-          .select("id, asking_price, arv, repair_estimate, equity_amount")
-          .in("status", ["offer_made", "negotiating", "follow_up"]),
+        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["offer_made", "negotiating", "follow_up"]),
         
         // Contracted: under_contract, marketing statuses (Commitment - Blue)
-        supabase
-          .from("properties")
-          .select("id, asking_price, arv, repair_estimate, equity_amount")
-          .in("status", ["under_contract", "marketing"]),
+        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["under_contract", "marketing"]),
         
         // Sold: closed, sold statuses (Outcome - Green)
-        supabase
-          .from("properties")
-          .select("id, asking_price, arv, repair_estimate, equity_amount, sale_price")
-          .in("status", ["closed", "sold"]),
+        scoped("id, asking_price, arv, repair_estimate, equity_amount, sale_price").in("status", ["closed", "sold"]),
       ]);
 
       const calculateStats = (properties: any[] | null) => {
@@ -106,6 +106,7 @@ export function usePipelineValueStats() {
         sold: calculateSoldStats(soldResult.data),
       };
     },
+    enabled: !!user?.id,
     refetchInterval: 30000,
   });
 }

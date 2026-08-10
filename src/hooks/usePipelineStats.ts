@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { PIPELINE_COLORS, PIPELINE_LABELS, type PipelineStageId } from "@/lib/pipeline-colors";
 
 export interface PipelineStage {
@@ -10,8 +13,11 @@ export interface PipelineStage {
 }
 
 export function usePipelineStats() {
+  const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["pipeline-stats"],
+    queryKey: ["pipeline-stats", organizationId, user?.id],
     queryFn: async (): Promise<PipelineStage[]> => {
       // Use centralized color config for consistency with dashboard tiles
       const statuses: { status: PipelineStageId; label: string; color: string }[] = [
@@ -29,10 +35,11 @@ export function usePipelineStats() {
 
       const results = await Promise.all(
         statuses.map(async ({ status, label, color }) => {
-          const { count } = await supabase
-            .from("properties")
-            .select("id", { count: "exact", head: true })
-            .eq("status", status);
+          const { count } = await scopeToWorkspace(
+            supabase.from("properties").select("id", { count: "exact", head: true }),
+            organizationId,
+            user!.id,
+          ).eq("status", status);
 
           return {
             status,
@@ -45,6 +52,7 @@ export function usePipelineStats() {
 
       return results;
     },
+    enabled: !!user?.id,
     refetchInterval: 30000,
   });
 }
