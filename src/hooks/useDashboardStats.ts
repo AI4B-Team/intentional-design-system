@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { startOfWeek, endOfWeek, startOfMonth, endOfMonth, subWeeks, subMonths } from "date-fns";
 
 interface DashboardStats {
@@ -10,9 +13,18 @@ interface DashboardStats {
 }
 
 export function useDashboardStats() {
+  const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["dashboard-stats"],
+    queryKey: ["dashboard-stats", organizationId, user?.id],
     queryFn: async (): Promise<DashboardStats> => {
+      const scopedCount = (table: "properties" | "appointments" | "offers") =>
+        scopeToWorkspace(
+          supabase.from(table).select("id", { count: "exact", head: true }),
+          organizationId,
+          user!.id,
+        );
       const now = new Date();
       
       // Date ranges
@@ -37,57 +49,41 @@ export function useDashboardStats() {
         closedLastMonthResult,
       ] = await Promise.all([
         // Active leads (new or contacted)
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scopedCount("properties")
           .in("status", ["new", "contacted"]),
         
         // Last week active leads (approximate - properties created last week)
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scopedCount("properties")
           .in("status", ["new", "contacted"])
           .lt("created_at", weekStart.toISOString()),
         
         // Appointments this week
-        supabase
-          .from("appointments")
-          .select("id", { count: "exact", head: true })
+        scopedCount("appointments")
           .gte("scheduled_time", weekStart.toISOString())
           .lte("scheduled_time", weekEnd.toISOString()),
         
         // Appointments last week
-        supabase
-          .from("appointments")
-          .select("id", { count: "exact", head: true })
+        scopedCount("appointments")
           .gte("scheduled_time", lastWeekStart.toISOString())
           .lte("scheduled_time", lastWeekEnd.toISOString()),
         
         // Pending offers
-        supabase
-          .from("offers")
-          .select("id", { count: "exact", head: true })
+        scopedCount("offers")
           .eq("response", "pending"),
         
         // Last week pending offers (approximate)
-        supabase
-          .from("offers")
-          .select("id", { count: "exact", head: true })
+        scopedCount("offers")
           .eq("response", "pending")
           .lt("created_at", weekStart.toISOString()),
         
         // Closed this month
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scopedCount("properties")
           .eq("status", "closed")
           .gte("updated_at", monthStart.toISOString())
           .lte("updated_at", monthEnd.toISOString()),
         
         // Closed last month
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scopedCount("properties")
           .eq("status", "closed")
           .gte("updated_at", lastMonthStart.toISOString())
           .lte("updated_at", lastMonthEnd.toISOString()),
@@ -129,6 +125,7 @@ export function useDashboardStats() {
         },
       };
     },
+    enabled: !!user?.id,
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 }

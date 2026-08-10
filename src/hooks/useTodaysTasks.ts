@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { startOfDay, endOfDay, format } from "date-fns";
 
 export interface TodayTask {
@@ -13,24 +16,29 @@ export interface TodayTask {
 }
 
 export function useTodaysTasks() {
+  const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["todays-tasks"],
+    queryKey: ["todays-tasks", organizationId, user?.id],
     queryFn: async (): Promise<TodayTask[]> => {
       const now = new Date();
       const dayStart = startOfDay(now);
       const dayEnd = endOfDay(now);
 
       // Fetch today's appointments
-      const { data: appointments, error: appointmentsError } = await supabase
-        .from("appointments")
-        .select(`
+      const { data: appointments, error: appointmentsError } = await scopeToWorkspace(
+        supabase.from("appointments").select(`
           id,
           scheduled_time,
           appointment_type,
           status,
           property_id,
           properties!inner(address)
-        `)
+        `),
+        organizationId,
+        user!.id,
+      )
         .gte("scheduled_time", dayStart.toISOString())
         .lte("scheduled_time", dayEnd.toISOString())
         .order("scheduled_time", { ascending: true });
@@ -41,9 +49,11 @@ export function useTodaysTasks() {
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
 
-      const { data: followups, error: followupsError } = await supabase
-        .from("properties")
-        .select("id, address, updated_at")
+      const { data: followups, error: followupsError } = await scopeToWorkspace(
+        supabase.from("properties").select("id, address, updated_at"),
+        organizationId,
+        user!.id,
+      )
         .eq("status", "contacted")
         .lt("updated_at", threeDaysAgo.toISOString())
         .limit(5);
@@ -81,6 +91,7 @@ export function useTodaysTasks() {
 
       return tasks;
     },
+    enabled: !!user?.id,
     refetchInterval: 60000,
   });
 }
