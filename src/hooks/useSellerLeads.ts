@@ -2,6 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface SellerLead {
   id: string;
@@ -80,17 +83,21 @@ export interface LeadStats {
 
 export function useSellerLeads(filters: LeadFilters = {}) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["seller-leads", filters],
+    queryKey: ["seller-leads", organizationId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from("seller_leads")
-        .select(`
-          *,
-          website:seller_websites(name, slug)
-        `)
-        .order("created_at", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase
+          .from("seller_leads")
+          .select(`
+            *,
+            website:seller_websites(name, slug)
+          `),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (filters.websiteId) {
         query = query.eq("website_id", filters.websiteId);
@@ -148,10 +155,10 @@ export function useSellerLead(id: string | undefined) {
           website:seller_websites(name, slug)
         `)
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as SellerLead;
+      return data as SellerLead | null;
     },
     enabled: !!user?.id && !!id,
   });
@@ -159,11 +166,16 @@ export function useSellerLead(id: string | undefined) {
 
 export function useLeadStats(websiteId?: string) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["seller-leads-stats", websiteId],
+    queryKey: ["seller-leads-stats", organizationId, websiteId],
     queryFn: async () => {
-      let query = supabase.from("seller_leads").select("status");
+      let query = scopeToWorkspace(
+        supabase.from("seller_leads").select("status"),
+        organizationId,
+        user!.id,
+      );
 
       if (websiteId) {
         query = query.eq("website_id", websiteId);
@@ -196,6 +208,7 @@ export function useCreateLead() {
 
       const insertData = {
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         property_address: data.property_address || "",
         ...data,
         status: data.status || "new",
@@ -299,6 +312,7 @@ export function useConvertLeadToProperty() {
       // Create property
       const propertyInsert: Record<string, unknown> = {
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         address: lead.property_address,
         city: lead.property_city,
         state: lead.property_state,
