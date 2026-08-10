@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface PipelineDeal {
   id: string;
@@ -137,6 +138,8 @@ export function useUpdatePipelineDealStage() {
 
 export function useCreatePipelineDeal() {
   const queryClient = useQueryClient();
+  const organizationId = useCurrentOrganizationId();
+
 
   return useMutation({
     mutationFn: async (deal: {
@@ -155,21 +158,14 @@ export function useCreatePipelineDeal() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Not authenticated");
 
-      // Get user's organization
-      const { data: membership } = await supabase
-        .from("organization_members")
-        .select("organization_id")
-        .eq("user_id", userData.user.id)
-        .eq("status", "active")
-        .single();
-
       const { data, error } = await supabase
         .from("properties")
         .insert({
           ...deal,
           user_id: userData.user.id,
-          organization_id: membership?.organization_id || null,
+          organization_id: organizationId,
           source: "Manual Entry",
+
           property_type: "Single Family",
           motivation_score: 75,
         })

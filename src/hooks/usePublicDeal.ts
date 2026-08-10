@@ -159,7 +159,7 @@ export function usePublicDeal(slug: string | undefined) {
           .from('dispo_settings')
           .select('*')
           .eq('user_id', dealData.user_id)
-          .single();
+          .maybeSingle();
 
         if (settingsData) {
           setSettings(settingsData as DispoSettings);

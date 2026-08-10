@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 // ─── Types ──────────────────────────────────────────────────
 export type ActionType = "call" | "sms" | "email" | "voicemail" | "follow_up" | "appointment" | "deadline" | "doc" | "payment" | "task" | "inspection";
@@ -188,27 +189,19 @@ export function useUnifiedActions(filters: ActionFilters = {}) {
 
 export function useCreateAction() {
   const queryClient = useQueryClient();
+  const organizationId = useCurrentOrganizationId();
 
   return useMutation({
     mutationFn: async (input: CreateActionInput) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Get org id
-      const { data: orgData } = await supabase
-        .from("organization_members")
-        .select("organization_id")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .limit(1)
-        .single();
-
       const { data, error } = await supabase
         .from("unified_actions")
         .insert({
           ...input,
           user_id: user.id,
-          organization_id: orgData?.organization_id || null,
+          organization_id: organizationId,
         })
         .select()
         .single();
