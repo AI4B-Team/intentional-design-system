@@ -60,6 +60,7 @@ export interface LenderLoanInsert {
 
 export function useLenderLoans(lenderId: string | undefined, status?: string) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
     queryKey: ["lender-loans", lenderId, organizationId, status],
@@ -95,6 +96,7 @@ export function useLenderLoans(lenderId: string | undefined, status?: string) {
 
 export function useLenderLoanStats(lenderId: string | undefined) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
     queryKey: ["lender-loan-stats", lenderId, organizationId],
