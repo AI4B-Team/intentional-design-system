@@ -12,6 +12,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/hub.ts";
 import { runIntegrationChecks, type Check } from "../_shared/hub-checks.ts";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -39,15 +40,8 @@ Deno.serve(async (req) => {
     const appSlug = String(body.app_slug ?? "").trim().slice(0, 60);
     if (!appSlug) return json({ error: "app_slug is required" }, 400);
 
-    const { data: membership } = await admin
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-    const orgId = membership?.organization_id;
+    const membership = await resolveActiveMembership(admin, user.id, requestedOrgId(body));
+    const orgId = membership?.organization_id as string | undefined;
     if (!orgId) return json({ error: "No active organization for this user" }, 400);
 
     const { data: app } = await admin

@@ -1,5 +1,6 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { requestedOrgId, resolveActiveMembership } from '../_shared/org.ts'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -25,25 +26,19 @@ serve(async (req) => {
       })
     }
 
-    // Resolve the caller's active workspace so stacked lists are visible to teammates
-    const { data: membership } = await supabase
-      .from('organization_members')
-      .select('organization_id')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .order('joined_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-    const orgId = membership?.organization_id ?? null
-
-    const { 
+    const body = await req.json().catch(() => ({}))
+    const {
       name,
       description,
       sourceListIds,
       stackCriteria,
       includeSuppressed = false,
       boostMotivation = true
-    } = await req.json()
+    } = body
+
+    // Resolve the caller's active workspace so stacked lists are visible to teammates
+    const membership = await resolveActiveMembership(supabase, user.id, requestedOrgId(body))
+    const orgId = (membership?.organization_id as string | undefined) ?? null
 
     if (!sourceListIds || sourceListIds.length < 2) {
       return new Response(JSON.stringify({ error: 'At least 2 lists required for stacking' }), { 

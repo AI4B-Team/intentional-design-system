@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 
 export interface StackingStats {
@@ -52,6 +53,7 @@ export function useListStacking() {
           stackCriteria,
           includeSuppressed: options.includeSuppressed ?? false,
           boostMotivation: options.boostMotivation ?? true,
+          organization_id: getActiveOrganizationId(),
         },
       });
 

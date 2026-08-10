@@ -10,6 +10,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/hub.ts";
 import { emitHubEvent } from "../_shared/hub-emit.ts";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 
 Deno.serve(async (req) => {
@@ -40,16 +41,9 @@ Deno.serve(async (req) => {
     const payload = (body.payload ?? {}) as Record<string, unknown>;
     const only: string[] | null = Array.isArray(body.app_slugs) ? body.app_slugs : null;
 
-    const { data: membership } = await admin
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const membership = await resolveActiveMembership(admin, user.id, requestedOrgId(body));
 
-    const orgId = membership?.organization_id;
+    const orgId = membership?.organization_id as string | undefined;
     if (!orgId) return json({ error: "No active organization for this user" }, 400);
 
     const delivered = await emitHubEvent(admin, orgId, eventType, payload, only ?? undefined);
