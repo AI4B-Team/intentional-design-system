@@ -377,7 +377,7 @@ export function useCreateJVInquiry() {
       if (!user) throw new Error("Not authenticated");
       const { data: result, error } = await supabase
         .from("jv_inquiries")
-        .insert({ ...data, inquirer_user_id: user.id, organization_id: getActiveOrganizationId() })
+        .insert({ ...data, inquirer_user_id: user.id })
         .select()
         .single();
       if (error) throw error;

@@ -477,7 +477,7 @@ export function useAddToSuppressionList() {
     mutationFn: async (entry: { address: string; reason: string; source: string }) => {
       const { data, error } = await supabase
         .from("mail_suppression_list")
-        .insert({ ...entry, user_id: user!.id, organization_id: getActiveOrganizationId() })
+        .insert({ ...entry, user_id: user!.id })
         .select()
         .single();
 
