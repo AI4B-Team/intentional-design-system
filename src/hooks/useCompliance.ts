@@ -36,7 +36,7 @@ export function useStateRegulation(stateCode: string | undefined) {
         .from("state_regulations")
         .select("*")
         .eq("state_code", stateCode.toUpperCase())
-        .single();
+        .maybeSingle();
       if (error) {
         if (error.code === "PGRST116") return null; // No rows found
         throw error;
