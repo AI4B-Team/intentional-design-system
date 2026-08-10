@@ -14,6 +14,7 @@
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders, hmacSignature } from "../_shared/hub.ts";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const ACTION_RE = /^[a-z0-9][a-z0-9._/-]{0,80}$/i;
 
@@ -48,16 +49,9 @@ Deno.serve(async (req) => {
     if (!appSlug) return json({ error: "app_slug is required" }, 400);
     if (!ACTION_RE.test(action)) return json({ error: "Invalid action name" }, 400);
 
-    const { data: membership } = await admin
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const membership = await resolveActiveMembership(admin, user.id, requestedOrgId(body));
 
-    const orgId = membership?.organization_id;
+    const orgId = membership?.organization_id as string | undefined;
     if (!orgId) return json({ error: "No active organization for this user" }, 400);
 
     const { data: app } = await admin

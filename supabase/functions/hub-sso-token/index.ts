@@ -6,6 +6,7 @@
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { mintHubToken, corsHeaders } from "../_shared/hub.ts";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -45,14 +46,12 @@ Deno.serve(async (req) => {
       .maybeSingle();
     if (!app || !app.enabled) return json({ error: "Unknown or disabled app" }, 404);
 
-    const { data: membership } = await admin
-      .from("organization_members")
-      .select("organization_id, role, organizations(name)")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const membership = await resolveActiveMembership(
+      admin,
+      user.id,
+      requestedOrgId(body),
+      "organization_id, role, organizations(name)",
+    );
 
     if (!membership?.organization_id) {
       return json({ error: "No active organization for this user" }, 400);

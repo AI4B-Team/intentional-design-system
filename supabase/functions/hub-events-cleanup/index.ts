@@ -6,6 +6,7 @@
  */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
 import { corsHeaders } from "../_shared/hub.ts";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -43,14 +44,7 @@ Deno.serve(async (req) => {
     const user = userData?.user;
     if (!user) return json({ error: "Unauthorized" }, 401);
 
-    const { data: membership } = await admin
-      .from("organization_members")
-      .select("organization_id, role")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    const membership = await resolveActiveMembership(admin, user.id, requestedOrgId(body));
     if (!membership) return json({ error: "No organization" }, 403);
     if (!["owner", "admin"].includes(String(membership.role))) {
       return json({ error: "Forbidden" }, 403);
@@ -60,7 +54,7 @@ Deno.serve(async (req) => {
     const { data, error } = await admin
       .from("app_family_events")
       .delete()
-      .eq("organization_id", membership.organization_id)
+      .eq("organization_id", membership.organization_id as string)
       .lt("created_at", cutoff)
       .select("id");
     if (error) return json({ error: error.message }, 500);
