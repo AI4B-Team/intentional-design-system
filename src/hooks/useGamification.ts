@@ -156,7 +156,7 @@ export function useGamificationSettings() {
         .from("gamification_settings")
         .select("*")
         .eq("organization_id", organization.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") throw error;
       
@@ -299,7 +299,7 @@ export function useUserStreak() {
         .select("*")
         .eq("user_id", user.id)
         .eq("organization_id", organization.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") throw error;
       return data;
@@ -585,7 +585,7 @@ async function updateStreak(userId: string, organizationId: string) {
     .select("*")
     .eq("user_id", userId)
     .eq("organization_id", organizationId)
-    .single();
+    .maybeSingle();
 
   if (!existing) {
     // Create new streak record

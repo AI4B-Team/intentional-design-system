@@ -9,7 +9,7 @@ export async function getPublicWebsite(slug: string): Promise<SellerWebsite | nu
     .select('*')
     .eq('slug', slug)
     .eq('status', 'published')
-    .single();
+    .maybeSingle();
 
   if (error || !data) return null;
   
@@ -119,7 +119,7 @@ export async function submitSellerLead(
       .from('seller_websites')
       .select('total_submissions')
       .eq('id', websiteId)
-      .single();
+      .maybeSingle();
     
     if (website.data) {
       await supabase
