@@ -25,6 +25,17 @@ serve(async (req) => {
       })
     }
 
+    // Resolve the caller's active workspace so stacked lists are visible to teammates
+    const { data: membership } = await supabase
+      .from('organization_members')
+      .select('organization_id')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('joined_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const orgId = membership?.organization_id ?? null
+
     const { 
       name,
       description,
@@ -45,6 +56,7 @@ serve(async (req) => {
       .from('lists')
       .insert({
         user_id: user.id,
+        organization_id: orgId,
         name: name || `Stacked List (${sourceListIds.length} lists)`,
         description,
         list_type: 'stacked',
@@ -141,6 +153,7 @@ serve(async (req) => {
       stackedRecords.push({
         list_id: stackedList.id,
         user_id: user.id,
+        organization_id: orgId,
         address: mergedRecord.address,
         street_number: mergedRecord.street_number,
         street_name: mergedRecord.street_name,
