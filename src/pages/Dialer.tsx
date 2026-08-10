@@ -103,7 +103,7 @@ export default function Dialer() {
         .from("call_queues")
         .select("call_script_id")
         .eq("id", selectedQueueId)
-        .single();
+        .maybeSingle();
 
       if (!queue?.call_script_id) {
         // Get default script
@@ -119,7 +119,7 @@ export default function Dialer() {
         .from("call_scripts")
         .select("*")
         .eq("id", queue.call_script_id)
-        .single();
+        .maybeSingle();
 
       return script;
     },
@@ -367,7 +367,7 @@ export default function Dialer() {
       .from("call_dispositions")
       .select("marks_as_success, name")
       .eq("id", dispositionId)
-      .single();
+      .maybeSingle();
 
     if (disposition?.marks_as_success) {
       setStats((prev) => ({ ...prev, contactsReached: prev.contactsReached + 1 }));
