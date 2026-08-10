@@ -3,6 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface CashBuyer {
   id: string;
@@ -68,14 +70,16 @@ export function useCashBuyers(filters?: {
   sort?: string;
 }) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['cash-buyers', filters],
+    queryKey: ['cash-buyers', organizationId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from('cash_buyers')
-        .select('*')
-        .eq('user_id', user!.id);
+      let query = scopeToWorkspace(
+        supabase.from('cash_buyers').select('*'),
+        organizationId,
+        user!.id,
+      );
 
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
@@ -160,14 +164,16 @@ export function useCashBuyer(id: string | undefined) {
 
 export function useCashBuyerStats() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['cash-buyer-stats'],
+    queryKey: ['cash-buyer-stats', organizationId],
     queryFn: async () => {
-      const { data: buyers, error } = await supabase
-        .from('cash_buyers')
-        .select('status, is_verified, tags, buyer_rating')
-        .eq('user_id', user!.id);
+      const { data: buyers, error } = await scopeToWorkspace(
+        supabase.from('cash_buyers').select('status, is_verified, tags, buyer_rating'),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 

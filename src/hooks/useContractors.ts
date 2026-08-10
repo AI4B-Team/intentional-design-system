@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface Contractor {
   id: string;
@@ -50,14 +52,16 @@ export interface Bid {
 
 export function useContractors() {
   const { user } = useAuth();
-  
+  const organizationId = useCurrentOrganizationId();
+
   return useQuery({
-    queryKey: ["contractors"],
+    queryKey: ["contractors", organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("contractors")
-        .select("*")
-        .order("name", { ascending: true });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("contractors").select("*"),
+        organizationId,
+        user!.id,
+      ).order("name", { ascending: true });
 
       if (error) throw error;
       return data as Contractor[];
@@ -89,20 +93,24 @@ export function useContractor(id: string | undefined) {
 
 export function useContractorStats() {
   const { user } = useAuth();
-  
+  const organizationId = useCurrentOrganizationId();
+
   return useQuery({
-    queryKey: ["contractor-stats"],
+    queryKey: ["contractor-stats", organizationId],
     queryFn: async () => {
-      const { data: contractors, error } = await supabase
-        .from("contractors")
-        .select("overall_rating, status");
+      const { data: contractors, error } = await scopeToWorkspace(
+        supabase.from("contractors").select("overall_rating, status"),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
-      const { count: activeBids } = await supabase
-        .from("bids")
-        .select("*", { count: "exact", head: true })
-        .in("status", ["requested", "received"]);
+      const { count: activeBids } = await scopeToWorkspace(
+        supabase.from("bids").select("*", { count: "exact", head: true }),
+        organizationId,
+        user!.id,
+      ).in("status", ["requested", "received"]);
 
       return {
         total: contractors?.length || 0,

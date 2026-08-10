@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Json } from "@/integrations/supabase/types";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface BuyBox {
   property_types?: string[];
@@ -44,11 +46,16 @@ export function useBuyers(filters?: {
   search?: string;
 }) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["buyers", filters],
+    queryKey: ["buyers", organizationId, filters],
     queryFn: async () => {
-      let query = supabase.from("buyers").select("*");
+      let query = scopeToWorkspace(
+        supabase.from("buyers").select("*"),
+        organizationId,
+        user!.id,
+      );
 
       if (filters?.search) {
         query = query.or(
@@ -110,9 +117,10 @@ export function useBuyer(id: string | undefined) {
         .from("buyers")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) return null;
       return {
         ...data,
         buy_box: (data.buy_box as BuyBox) || {},
@@ -124,11 +132,16 @@ export function useBuyer(id: string | undefined) {
 
 export function useBuyerStats() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["buyer-stats"],
+    queryKey: ["buyer-stats", organizationId],
     queryFn: async () => {
-      const { data: buyers, error } = await supabase.from("buyers").select("*");
+      const { data: buyers, error } = await scopeToWorkspace(
+        supabase.from("buyers").select("*"),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
