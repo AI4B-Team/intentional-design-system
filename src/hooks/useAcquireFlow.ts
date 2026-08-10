@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -231,7 +232,7 @@ export function useCreateLoiTemplate() {
     mutationFn: async (template: Omit<LoiTemplate, "id" | "user_id" | "organization_id" | "created_at" | "updated_at" | "use_count">) => {
       const { data, error } = await supabase
         .from("loi_templates")
-        .insert({ ...template, user_id: user!.id })
+        .insert({ ...template, user_id: user!.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
 
@@ -496,6 +497,7 @@ export function useCreateOfferBatch() {
         .insert({
           ...batchData,
           user_id: user!.id,
+          organization_id: getActiveOrganizationId(),
           total_properties: properties.length,
         })
         .select()

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Json } from "@/integrations/supabase/types";
@@ -96,6 +97,7 @@ export function useSaveComplianceCheck() {
         .from("compliance_checks")
         .insert([{
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           check_type: checkType,
           state,
           deal_terms: JSON.parse(JSON.stringify(dealTerms)) as Json,

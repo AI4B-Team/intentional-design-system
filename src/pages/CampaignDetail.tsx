@@ -60,6 +60,7 @@ import {
   type CampaignProperty,
 } from "@/hooks/useCampaigns";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {
@@ -191,6 +192,7 @@ export default function CampaignDetail() {
         .from("properties")
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           address: prop.address,
           city: prop.city,
           state: prop.state,

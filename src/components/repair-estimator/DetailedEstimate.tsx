@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -168,6 +169,7 @@ export function DetailedEstimate({
         .from("repair_estimates")
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           property_id: propertyId || null,
           deal_analysis_id: dealAnalysisId || null,
           name: estimateName || "Untitled Estimate",
@@ -201,6 +203,7 @@ export function DetailedEstimate({
 
     const { error } = await supabase.from("repair_items_library").insert({
       user_id: user.id,
+      organization_id: getActiveOrganizationId(),
       category: item.category,
       name: item.name,
       unit: item.unit,

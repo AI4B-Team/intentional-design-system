@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
@@ -123,6 +124,7 @@ export function CreateAnalysisModal({ open, onOpenChange }: CreateAnalysisModalP
         .from("deal_analyses")
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           analysis_type: analysisType,
           name: name || "New Analysis",
           property_id: propertySource === "existing" ? selectedPropertyId : null,

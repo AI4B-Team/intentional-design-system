@@ -43,6 +43,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useAddOffer } from "@/hooks/usePropertyMutations";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
 import { toast } from "sonner";
 import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -279,6 +280,7 @@ export function OfferWizardModal({ open, onOpenChange, propertyId, property }: O
         .from("offers")
         .insert({
           property_id: propertyId,
+          organization_id: getActiveOrganizationId(),
           offer_amount: parseFloat(offerAmount),
           offer_type: offerType,
           notes: notes || null,
