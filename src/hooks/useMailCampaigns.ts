@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface MailTemplate {
   id: string;
@@ -145,7 +146,7 @@ export function useCreateMailTemplate() {
     mutationFn: async (template: { name: string } & Omit<Partial<MailTemplate>, "user_id" | "id">) => {
       const { data, error } = await supabase
         .from("mail_templates")
-        .insert([{ ...template, user_id: user!.id }])
+        .insert([{ ...template, user_id: user!.id, organization_id: getActiveOrganizationId() }])
         .select()
         .single();
 
@@ -287,7 +288,7 @@ export function useCreateMailCampaign() {
     mutationFn: async (campaign: { name: string } & Omit<Partial<MailCampaign>, "user_id" | "id">) => {
       const { data, error } = await supabase
         .from("mail_campaigns")
-        .insert([{ ...campaign, user_id: user!.id }])
+        .insert([{ ...campaign, user_id: user!.id, organization_id: getActiveOrganizationId() }])
         .select()
         .single();
 
@@ -414,7 +415,7 @@ export function useUpdateLobConnection() {
       } else {
         const { data, error } = await supabase
           .from("lob_connections")
-          .insert({ ...connection, user_id: user!.id })
+          .insert({ ...connection, user_id: user!.id, organization_id: getActiveOrganizationId() })
           .select()
           .single();
         if (error) throw error;

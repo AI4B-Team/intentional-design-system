@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface Contractor {
   id: string;
@@ -125,7 +126,7 @@ export function useCreateContractor() {
         .from("contractors")
         .insert({
           name: contractor.name!,
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           company: contractor.company,
           phone: contractor.phone,
           email: contractor.email,
@@ -272,7 +273,7 @@ export function useCreateBid() {
         .insert(bids.map(b => ({
           property_id: b.property_id,
           contractor_id: b.contractor_id,
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           scope_of_work: b.scope_of_work,
           scope_items: b.scope_items,
           valid_until: b.valid_until,

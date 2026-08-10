@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface CashBuyer {
   id: string;
@@ -197,7 +198,7 @@ export function useCreateCashBuyer() {
       const { data, error } = await supabase
         .from('cash_buyers')
         .insert({
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           email: buyer.email!,
           first_name: buyer.first_name,
           last_name: buyer.last_name,

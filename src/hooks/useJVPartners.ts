@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface JVProfile {
   id: string;
@@ -131,7 +132,7 @@ export function useCreateJVProfile() {
       if (!user) throw new Error("Not authenticated");
       const { data: result, error } = await supabase
         .from("jv_profiles")
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...data, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
       if (error) throw error;

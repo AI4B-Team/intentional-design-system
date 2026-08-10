@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesInsert, TablesUpdate, Json } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 // Extended contact types for real estate CRM
 export type ContactType = 
@@ -205,7 +206,7 @@ export function useCreateContact() {
         .from("deal_sources")
         .insert({ 
           ...data, 
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           buy_box: data.buy_box as Json,
           lending_criteria: data.lending_criteria as Json,
         })

@@ -63,7 +63,7 @@ interface OrganizationContextType {
   refetchMembers: () => Promise<void>;
 }
 
-const ACTIVE_ORG_STORAGE_KEY = "re_active_organization_id";
+import { ACTIVE_ORG_STORAGE_KEY } from "@/lib/activeOrganization";
 
 const OrganizationContext = React.createContext<OrganizationContextType | undefined>(undefined);
 
