@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Json } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface BuyBox {
   property_types?: string[];
@@ -162,7 +163,7 @@ export function useCreateBuyer() {
         .from("buyers")
         .insert({
           name: buyer.name!,
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           company: buyer.company,
           phone: buyer.phone,
           email: buyer.email,

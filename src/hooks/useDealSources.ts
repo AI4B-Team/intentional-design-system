@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export type DealSource = Tables<"deal_sources">;
 export type DealSourceInsert = TablesInsert<"deal_sources">;
@@ -121,7 +122,7 @@ export function useCreateDealSource() {
 
       const { data: result, error } = await supabase
         .from("deal_sources")
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...data, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
 

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface MarketplaceLender {
   id: string;
@@ -180,7 +181,7 @@ export function useCreateFundingRequest() {
       if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("funding_requests")
-        .insert({ ...request, user_id: user.id })
+        .insert({ ...request, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
 

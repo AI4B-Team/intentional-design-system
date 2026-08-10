@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface LendingCriteria {
   min_loan_amount?: number;
@@ -146,7 +147,7 @@ export function useCreateLenderLoan() {
 
       const { data: result, error } = await supabase
         .from("lender_loans")
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...data, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
 

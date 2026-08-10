@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Json } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface SellerWebsite {
   id: string;
@@ -155,7 +156,7 @@ export function useCreateWebsite() {
       const { data: website, error } = await supabase
         .from("seller_websites")
         .insert({
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           ...data,
           form_fields: data.form_fields ? JSON.stringify(data.form_fields) : undefined,
           custom_form_fields: data.custom_form_fields ? JSON.stringify(data.custom_form_fields) : undefined,
@@ -287,7 +288,7 @@ export function useDuplicateWebsite() {
       const { data: duplicate, error } = await supabase
         .from("seller_websites")
         .insert({
-          user_id: user.id,
+          user_id: user.id, organization_id: getActiveOrganizationId(),
           name: `${original.name} (Copy)`,
           slug: `${original.slug}-copy-${Date.now()}`,
           site_type: original.site_type,
