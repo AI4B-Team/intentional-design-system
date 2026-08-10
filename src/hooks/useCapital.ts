@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -113,15 +114,17 @@ export function useMarketplaceLenders(filters?: {
 export function useFundingRequests() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["funding-requests", user?.id],
+    queryKey: ["funding-requests", user?.id, organizationId],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase
-        .from("funding_requests")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("funding_requests").select("*"),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as FundingRequest[];
@@ -271,15 +274,18 @@ export function useSubmitToLenders() {
 export function useCapitalStats() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["capital-stats", user?.id],
+    queryKey: ["capital-stats", user?.id, organizationId],
     queryFn: async () => {
       if (!user) return { total: 0, pending: 0, approved: 0, funded: 0 };
 
-      const { data: requests, error } = await supabase
-        .from("funding_requests")
-        .select("status, loan_amount_requested")
-        .eq("user_id", user.id);
+      const { data: requests, error } = await scopeToWorkspace(
+        supabase.from("funding_requests").select("status, loan_amount_requested"),
+        organizationId,
+        user.id,
+      );
 
       if (error) throw error;
 

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -104,14 +105,16 @@ export interface LobConnection {
 // Mail Templates
 export function useMailTemplates() {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
-    queryKey: ["mail-templates", user?.id],
+    queryKey: ["mail-templates", user?.id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_templates")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("mail_templates").select("*"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as MailTemplate[];
@@ -213,12 +216,18 @@ export function useDeleteMailTemplate() {
 export function useMailCampaignStats() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["mail-campaign-stats", user?.id],
+    queryKey: ["mail-campaign-stats", user?.id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_campaigns")
-        .select("total_sent, total_delivered, total_returned, total_responses, total_cost");
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("mail_campaigns")
+          .select("total_sent, total_delivered, total_returned, total_responses, total_cost"),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
@@ -247,13 +256,16 @@ export function useMailCampaignStats() {
 export function useMailCampaigns() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["mail-campaigns", user?.id],
+    queryKey: ["mail-campaigns", user?.id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_campaigns")
-        .select("*, mail_templates(*)")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("mail_campaigns").select("*, mail_templates(*)"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as MailCampaign[];
@@ -435,13 +447,16 @@ export function useUpdateLobConnection() {
 export function useMailLists() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["mail-lists", user?.id],
+    queryKey: ["mail-lists", user?.id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_lists")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("mail_lists").select("*"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as MailList[];

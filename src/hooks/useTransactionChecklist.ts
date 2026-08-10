@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { toast } from "sonner";
@@ -90,16 +91,19 @@ export function useTransactionChecklist(dealId: string) {
     setLoading(true);
     try {
       const [checkRes, notesRes] = await Promise.all([
-        supabase
-          .from("transaction_checklist")
-          .select("stage, item_key, completed")
-          .eq("deal_id", dealId)
-          .eq("user_id", user.id),
-        supabase
-          .from("transaction_stage_notes")
-          .select("stage, notes")
-          .eq("deal_id", dealId)
-          .eq("user_id", user.id),
+        scopeToWorkspace(
+          supabase
+            .from("transaction_checklist")
+            .select("stage, item_key, completed")
+            .eq("deal_id", dealId),
+          organizationId,
+          user.id,
+        ),
+        scopeToWorkspace(
+          supabase.from("transaction_stage_notes").select("stage, notes").eq("deal_id", dealId),
+          organizationId,
+          user.id,
+        ),
       ]);
 
       const map: Record<string, boolean> = {};
