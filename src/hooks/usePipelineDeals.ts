@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface PipelineDeal {
   id: string;
