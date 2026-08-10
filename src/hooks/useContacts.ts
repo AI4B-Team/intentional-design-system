@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesInsert, TablesUpdate, Json } from "@/integrations/supabase/types";
@@ -73,15 +74,18 @@ export interface ContactStats {
 export function useContacts(filters: ContactFilters = {}) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["contacts", user?.id, filters],
+    queryKey: ["contacts", user?.id, organizationId, filters],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      let query = supabase
-        .from("deal_sources")
-        .select("*")
-        .eq("user_id", user.id);
+      let query = scopeToWorkspace(
+        supabase.from("deal_sources").select("*"),
+        organizationId,
+        user.id,
+      );
 
       // Filter by type
       if (filters.type && filters.type !== "all") {
@@ -149,15 +153,20 @@ export function useContacts(filters: ContactFilters = {}) {
 export function useContactStats(type?: ContactType | "all") {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["contact-stats", user?.id, type],
+    queryKey: ["contact-stats", user?.id, organizationId, type],
     queryFn: async () => {
       if (!user?.id) return null;
 
-      let query = supabase
-        .from("deal_sources")
-        .select("type, status, deals_closed, total_profit, pof_verified, license_verified, rating, jobs_completed")
-        .eq("user_id", user.id);
+      let query = scopeToWorkspace(
+        supabase
+          .from("deal_sources")
+          .select("type, status, deals_closed, total_profit, pof_verified, license_verified, rating, jobs_completed"),
+        organizationId,
+        user.id,
+      );
 
       if (type && type !== "all") {
         query = query.eq("type", type);
