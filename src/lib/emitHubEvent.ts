@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { HubEventType } from "@/lib/hubEvents";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 /**
  * Fire-and-forget outbound App Family event from the hub UI.
@@ -11,7 +12,7 @@ export async function emitHubEvent(
 ): Promise<void> {
   try {
     const { error } = await supabase.functions.invoke("hub-emit-event", {
-      body: { event_type: eventType, payload },
+      body: { event_type: eventType, payload, organization_id: getActiveOrganizationId() },
     });
     if (error) console.warn("[hub-emit-event]", eventType, error.message);
   } catch (e) {

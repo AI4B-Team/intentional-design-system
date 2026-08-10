@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface FamilyApp {
@@ -217,7 +218,7 @@ export function useLaunchFamilyApp() {
     mutationFn: async (input: string | { appSlug: string; next?: string }) => {
       const { appSlug, next } = typeof input === "string" ? { appSlug: input, next: undefined } : input;
       const { data, error } = await supabase.functions.invoke("hub-sso-token", {
-        body: { app_slug: appSlug, next },
+        body: { app_slug: appSlug, next, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (!data?.url) throw new Error(data?.error || "Could not create handoff link");
@@ -287,7 +288,7 @@ export function useEmitFamilyEvent() {
       appSlugs?: string[];
     }) => {
       const { data, error } = await supabase.functions.invoke("hub-emit-event", {
-        body: { event_type: eventType, payload, app_slugs: appSlugs },
+        body: { event_type: eventType, payload, app_slugs: appSlugs, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -325,7 +326,7 @@ export function useCleanupFamilyEvents() {
   return useMutation<{ deleted: number; days: number }, Error, number>({
     mutationFn: async (days: number) => {
       const { data, error } = await supabase.functions.invoke("hub-events-cleanup", {
-        body: { days },
+        body: { days, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -387,7 +388,7 @@ export function useCallFamilyAppAction() {
       method?: "GET" | "POST";
     }) => {
       const { data, error } = await supabase.functions.invoke("hub-app-action", {
-        body: { app_slug: appSlug, action, params, method },
+        body: { app_slug: appSlug, action, params, method, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
@@ -416,7 +417,7 @@ export function useIntegrationCheck() {
   return useMutation({
     mutationFn: async (appSlug: string) => {
       const { data, error } = await supabase.functions.invoke("hub-integration-check", {
-        body: { app_slug: appSlug },
+        body: { app_slug: appSlug, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
