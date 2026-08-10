@@ -244,7 +244,7 @@ export function useCreateJVOpportunity() {
     mutationFn: async (data: Omit<Partial<JVOpportunity>, 'property' | 'user_id'>) => {
       if (!user) throw new Error("Not authenticated");
       const insertData = {
-        user_id: user.id, organization_id: getActiveOrganizationId(),
+        user_id: user.id,
         title: data.title || "",
         description: data.description,
         capital_needed: data.capital_needed,
