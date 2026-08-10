@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -61,18 +62,21 @@ export function useLenderLoans(lenderId: string | undefined, status?: string) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["lender-loans", lenderId, status],
+    queryKey: ["lender-loans", lenderId, organizationId, status],
     queryFn: async () => {
       if (!lenderId || !user?.id) return [];
 
-      let query = supabase
-        .from("lender_loans")
-        .select(`
-          *,
-          property:properties(id, address, city, state, arv)
-        `)
-        .eq("lender_id", lenderId)
-        .eq("user_id", user.id);
+      let query = scopeToWorkspace(
+        supabase
+          .from("lender_loans")
+          .select(`
+            *,
+            property:properties(id, address, city, state, arv)
+          `)
+          .eq("lender_id", lenderId),
+        organizationId,
+        user.id,
+      );
 
       if (status) {
         query = query.eq("status", status);
@@ -93,15 +97,18 @@ export function useLenderLoanStats(lenderId: string | undefined) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["lender-loan-stats", lenderId],
+    queryKey: ["lender-loan-stats", lenderId, organizationId],
     queryFn: async () => {
       if (!lenderId || !user?.id) return null;
 
-      const { data, error } = await supabase
-        .from("lender_loans")
-        .select("loan_amount, interest_rate, ltv_at_funding, status, total_interest_paid")
-        .eq("lender_id", lenderId)
-        .eq("user_id", user.id);
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("lender_loans")
+          .select("loan_amount, interest_rate, ltv_at_funding, status, total_interest_paid")
+          .eq("lender_id", lenderId),
+        organizationId,
+        user.id,
+      );
 
       if (error) throw error;
 

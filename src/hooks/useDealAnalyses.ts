@@ -1,5 +1,7 @@
 import * as React from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -77,11 +79,11 @@ export function useDealAnalyses() {
     setLoading(true);
 
     try {
-      let query = supabase
-        .from("deal_analyses")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase.from("deal_analyses").select("*"),
+        getActiveOrganizationId(),
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (filters?.type) query = query.eq("analysis_type", filters.type);
       if (filters?.status) query = query.eq("status", filters.status);

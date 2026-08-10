@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -99,16 +101,18 @@ export function createDefaultSummary(): TitleReportSummary {
 export function usePropertyTitleReport(propertyId: string | undefined) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["title-report", propertyId],
+    queryKey: ["title-report", propertyId, organizationId],
     queryFn: async () => {
       if (!propertyId || !user?.id) return null;
 
-      const { data, error } = await supabase
-        .from("title_reports")
-        .select("*")
-        .eq("property_id", propertyId)
-        .eq("user_id", user.id)
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("title_reports").select("*").eq("property_id", propertyId),
+        organizationId,
+        user.id,
+      )
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -129,19 +133,21 @@ export function usePropertyTitleReport(propertyId: string | undefined) {
 export function useTitleReports() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["title-reports"],
+    queryKey: ["title-reports", organizationId],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("title_reports")
-        .select(`
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("title_reports").select(`
           *,
           property:properties(id, address, city, state)
-        `)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+        `),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;

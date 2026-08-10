@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -98,14 +99,16 @@ export interface CampaignPropertyInsert {
 export function useCampaigns() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["campaigns"],
+    queryKey: ["campaigns", organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaigns")
-        .select("*")
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("campaigns").select("*"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as unknown as Campaign[];
@@ -117,15 +120,16 @@ export function useCampaigns() {
 export function useCampaign(id: string | undefined) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["campaign", id],
+    queryKey: ["campaign", id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaigns")
-        .select("*")
-        .eq("id", id!)
-        .eq("user_id", user!.id)
-        .single();
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("campaigns").select("*").eq("id", id!),
+        organizationId,
+        user!.id,
+      ).maybeSingle();
 
       if (error) throw error;
       return data as unknown as Campaign;
@@ -137,15 +141,16 @@ export function useCampaign(id: string | undefined) {
 export function useCampaignProperties(campaignId: string | undefined) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["campaign-properties", campaignId],
+    queryKey: ["campaign-properties", campaignId, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaign_properties")
-        .select("*")
-        .eq("campaign_id", campaignId!)
-        .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("campaign_properties").select("*").eq("campaign_id", campaignId!),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as CampaignProperty[];
@@ -157,13 +162,18 @@ export function useCampaignProperties(campaignId: string | undefined) {
 export function useCampaignStats() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["campaign-stats"],
+    queryKey: ["campaign-stats", organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("campaigns")
-        .select("status, properties_count, sent_count, opened_count, responded_count")
-        .eq("user_id", user!.id);
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("campaigns")
+          .select("status, properties_count, sent_count, opened_count, responded_count"),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
