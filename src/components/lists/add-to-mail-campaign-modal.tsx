@@ -22,7 +22,7 @@ import {
 import { Loader2, Mail, Plus, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 

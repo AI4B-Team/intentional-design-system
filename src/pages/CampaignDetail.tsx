@@ -60,7 +60,7 @@ import {
   type CampaignProperty,
 } from "@/hooks/useCampaigns";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import {

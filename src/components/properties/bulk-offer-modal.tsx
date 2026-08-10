@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";

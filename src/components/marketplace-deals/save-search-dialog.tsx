@@ -47,7 +47,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface SaveSearchDialogProps {

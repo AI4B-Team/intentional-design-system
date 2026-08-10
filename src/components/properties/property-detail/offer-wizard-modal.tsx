@@ -43,7 +43,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useAddOffer } from "@/hooks/usePropertyMutations";
 import { supabase } from "@/integrations/supabase/client";
-import { getActiveOrganizationId } from \"@/lib/activeOrganization\";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
