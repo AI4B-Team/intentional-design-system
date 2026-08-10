@@ -137,6 +137,8 @@ export function useUpdatePipelineDealStage() {
 
 export function useCreatePipelineDeal() {
   const queryClient = useQueryClient();
+  const organizationId = useCurrentOrganizationId();
+
 
   return useMutation({
     mutationFn: async (deal: {
