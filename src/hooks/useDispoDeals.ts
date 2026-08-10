@@ -3,6 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { getActiveOrganizationId } from '@/lib/activeOrganization';
+import { scopeToWorkspace } from '@/lib/workspaceScope';
+import { useCurrentOrganizationId } from '@/hooks/useOrganizationId';
 import type { Json } from '@/integrations/supabase/types';
 
 export interface DispoPhoto {
@@ -132,14 +135,16 @@ export function useDispoDeals(filters?: {
   sort?: string;
 }) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['dispo-deals', filters],
+    queryKey: ['dispo-deals', organizationId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from('dispo_deals')
-        .select('*')
-        .eq('user_id', user!.id);
+      let query = scopeToWorkspace(
+        supabase.from('dispo_deals').select('*'),
+        organizationId,
+        user!.id,
+      );
 
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
@@ -188,9 +193,10 @@ export function useDispoDeal(id: string | undefined) {
         .from('dispo_deals')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) return null;
 
       return {
         ...data,
@@ -204,14 +210,18 @@ export function useDispoDeal(id: string | undefined) {
 
 export function useDispoStats() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['dispo-stats'],
+    queryKey: ['dispo-stats', organizationId],
     queryFn: async () => {
-      const { data: deals, error } = await supabase
-        .from('dispo_deals')
-        .select('status, view_count, interest_count, sold_at')
-        .eq('user_id', user!.id);
+      const { data: deals, error } = await scopeToWorkspace(
+        supabase
+          .from('dispo_deals')
+          .select('status, view_count, interest_count, sold_at'),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
@@ -288,6 +298,7 @@ export function useCreateDispoDeal() {
 
       const insertData: Record<string, any> = {
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         title: deal.title!,
         address: deal.address!,
         city: deal.city!,
