@@ -158,21 +158,14 @@ export function useCreatePipelineDeal() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Not authenticated");
 
-      // Get user's organization
-      const { data: membership } = await supabase
-        .from("organization_members")
-        .select("organization_id")
-        .eq("user_id", userData.user.id)
-        .eq("status", "active")
-        .single();
-
       const { data, error } = await supabase
         .from("properties")
         .insert({
           ...deal,
           user_id: userData.user.id,
-          organization_id: membership?.organization_id || null,
+          organization_id: organizationId,
           source: "Manual Entry",
+
           property_type: "Single Family",
           motivation_score: 75,
         })
