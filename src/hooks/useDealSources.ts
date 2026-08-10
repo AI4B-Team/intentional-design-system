@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
@@ -23,15 +24,18 @@ export interface DealSourceFilters {
 export function useDealSources(filters: DealSourceFilters = {}) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["deal-sources", user?.id, filters],
+    queryKey: ["deal-sources", user?.id, organizationId, filters],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      let query = supabase
-        .from("deal_sources")
-        .select("*")
-        .eq("user_id", user.id);
+      let query = scopeToWorkspace(
+        supabase.from("deal_sources").select("*"),
+        organizationId,
+        user.id,
+      );
 
       // Filter by type
       if (filters.type && filters.type !== "all") {
@@ -84,15 +88,18 @@ export function useDealSources(filters: DealSourceFilters = {}) {
 export function useDealSourceStats() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["deal-sources-stats", user?.id],
+    queryKey: ["deal-sources-stats", user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const { data, error } = await supabase
-        .from("deal_sources")
-        .select("status, deals_closed, total_profit")
-        .eq("user_id", user.id);
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("deal_sources").select("status, deals_closed, total_profit"),
+        organizationId,
+        user.id,
+      );
 
       if (error) throw error;
 

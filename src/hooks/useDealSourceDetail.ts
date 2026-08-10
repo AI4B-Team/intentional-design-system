@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -10,18 +11,18 @@ export type OutreachLog = Tables<"outreach_log">;
 
 export function useDealSource(id: string | undefined) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
-    queryKey: ["deal-source", id],
+    queryKey: ["deal-source", id, organizationId],
     queryFn: async () => {
       if (!id || !user?.id) return null;
 
-      const { data, error } = await supabase
-        .from("deal_sources")
-        .select("*")
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .single();
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("deal_sources").select("*").eq("id", id),
+        organizationId,
+        user.id,
+      ).maybeSingle();
 
       if (error) throw error;
       return data as DealSource;
@@ -32,18 +33,21 @@ export function useDealSource(id: string | undefined) {
 
 export function useDealSourceDeals(sourceId: string | undefined) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
-    queryKey: ["deal-source-deals", sourceId],
+    queryKey: ["deal-source-deals", sourceId, organizationId],
     queryFn: async () => {
       if (!sourceId || !user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, status, arv, created_at")
-        .eq("source_id", sourceId)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, status, arv, created_at")
+          .eq("source_id", sourceId),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -54,19 +58,22 @@ export function useDealSourceDeals(sourceId: string | undefined) {
 
 export function useDealSourceOutreach(sourceId: string | undefined) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
-    queryKey: ["deal-source-outreach", sourceId],
+    queryKey: ["deal-source-outreach", sourceId, organizationId],
     queryFn: async () => {
       if (!sourceId || !user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("outreach_log")
-        .select("*")
-        .eq("target_type", "deal_source")
-        .eq("target_id", sourceId)
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("outreach_log")
+          .select("*")
+          .eq("target_type", "deal_source")
+          .eq("target_id", sourceId),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as OutreachLog[];
