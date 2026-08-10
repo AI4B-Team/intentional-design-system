@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface SaveSearchDialogProps {
@@ -202,6 +203,7 @@ export function SaveSearchDialog({
         .from("saved_searches")
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           name: searchName.trim(),
           filters: filters,
           notification_frequency: dealAlertsEnabled && resultCount <= MAX_RESULTS_FOR_ALERTS ? notificationFrequency : "never",

@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -186,6 +187,7 @@ export function BulkOfferModal({ open, onOpenChange, properties, onComplete }: B
           .from("offers")
           .insert({
             property_id: property.id,
+            organization_id: getActiveOrganizationId(),
             offer_amount: offerAmount,
             offer_type: "opening",
             sent_date: scheduleType === "now" ? new Date().toISOString() : scheduledDate,

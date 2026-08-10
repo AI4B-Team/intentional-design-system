@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import type { Tables, TablesUpdate } from "@/integrations/supabase/types";
@@ -123,6 +124,7 @@ export function useLogDealSourceContact() {
         .from("outreach_log")
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           target_type: "deal_source",
           target_id: sourceId,
           channel,

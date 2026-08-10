@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -168,6 +169,7 @@ export function useConnectGHL() {
           .from("ghl_connections")
           .insert({
             user_id: user.id,
+            organization_id: getActiveOrganizationId(),
             api_key: apiKey,
             location_id: locationId,
             account_name: accountName || `Location ${locationId.substring(0, 8)}`,

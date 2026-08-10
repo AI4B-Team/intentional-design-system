@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -77,6 +78,7 @@ export function useCreateDispoSettings() {
         .from('dispo_settings')
         .insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           buyer_slug: slug,
           ...settings,
         })
