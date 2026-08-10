@@ -648,7 +648,7 @@ export function useAwardAchievement() {
         .select("id")
         .eq("user_id", user.id)
         .eq("achievement_id", achievementId)
-        .single();
+        .maybeSingle();
 
       if (existing) return null;
 

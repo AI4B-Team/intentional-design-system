@@ -258,9 +258,9 @@ export function useTriggerClosebotConversation() {
       const { data: connection } = await supabase
         .from("closebot_connections")
         .select("*")
-        .eq("user_id", user?.id)
+        .eq("user_id", user?.id ?? "")
         .eq("is_active", true)
-        .single();
+        .maybeSingle();
 
       if (!connection) {
         throw new Error("Closebot not connected");
