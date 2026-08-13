@@ -117,6 +117,7 @@ function getRoiColor(roi: number | null): string {
 
 export function DealAnalyzerTab({ onCreateAnalysis }: DealAnalyzerTabProps) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   

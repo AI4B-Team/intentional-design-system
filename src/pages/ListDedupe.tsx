@@ -58,6 +58,7 @@ interface DuplicateGroup {
 
 export default function ListDedupe() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [step, setStep] = useState<Step>("select");
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [dedupeAll, setDedupeAll] = useState(false);

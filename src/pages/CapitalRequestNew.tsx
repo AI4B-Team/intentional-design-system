@@ -159,6 +159,7 @@ function formatCurrency(value: number | null): string {
 // Hook to get user's properties
 function useUserProperties() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
     queryKey: ["user-properties-for-funding", organizationId],

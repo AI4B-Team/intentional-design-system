@@ -68,6 +68,7 @@ const US_STATES = [
 
 export function CreateAnalysisModal({ open, onOpenChange }: CreateAnalysisModalProps) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 

@@ -49,6 +49,7 @@ function fmt(value: number): string {
 export default function DealAnalyzer() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const { hasAccess: hasAiAccess } = useSubscription();
   const [viewState, setViewState] = useState<ViewState>("input");
   const [address, setAddress] = useState("");
