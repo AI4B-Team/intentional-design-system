@@ -33,6 +33,7 @@ const US_STATES = [
 
 export function ManualTab({ onSuccess }: ManualTabProps) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedListId, setSelectedListId] = useState<string>("");
   const [newListName, setNewListName] = useState("");
