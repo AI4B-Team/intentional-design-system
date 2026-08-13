@@ -4,6 +4,9 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Json } from '@/integrations/supabase/types';
 import { emitHubEvent } from '@/lib/emitHubEvent';
+import { scopeToWorkspace } from '@/lib/workspaceScope';
+import { useCurrentOrganizationId } from '@/hooks/useOrganizationId';
+import { getActiveOrganizationId } from '@/lib/activeOrganization';
 
 export interface DispoCampaign {
   id: string;
@@ -70,18 +73,21 @@ export interface CampaignRecipient {
 
 export function useDispoCampaigns(filters?: { status?: string; dealId?: string }) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['dispo-campaigns', filters],
+    queryKey: ['dispo-campaigns', organizationId, filters],
     queryFn: async () => {
-      let query = supabase
-        .from('dispo_campaigns')
-        .select(`
-          *,
-          deal:dispo_deals(id, title, address, city, state, photos, asking_price, arv)
-        `)
-        .eq('user_id', user!.id)
-        .order('created_at', { ascending: false });
+      let query = scopeToWorkspace(
+        supabase
+          .from('dispo_campaigns')
+          .select(`
+            *,
+            deal:dispo_deals(id, title, address, city, state, photos, asking_price, arv)
+          `),
+        organizationId,
+        user!.id,
+      ).order('created_at', { ascending: false });
 
       if (filters?.status && filters.status !== 'all') {
         query = query.eq('status', filters.status);
@@ -114,10 +120,10 @@ export function useDispoCampaign(id: string | undefined) {
           deal:dispo_deals(id, title, address, city, state, photos, asking_price, arv)
         `)
         .eq('id', id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as unknown as DispoCampaign;
+      return data as unknown as DispoCampaign | null;
     },
     enabled: !!user && !!id,
   });
@@ -125,14 +131,18 @@ export function useDispoCampaign(id: string | undefined) {
 
 export function useDispoCampaignStats() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['dispo-campaign-stats'],
+    queryKey: ['dispo-campaign-stats', organizationId],
     queryFn: async () => {
-      const { data: campaigns, error } = await supabase
-        .from('dispo_campaigns')
-        .select('status, sent_count, opened_count, clicked_count')
-        .eq('user_id', user!.id);
+      const { data: campaigns, error } = await scopeToWorkspace(
+        supabase
+          .from('dispo_campaigns')
+          .select('status, sent_count, opened_count, clicked_count'),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
 
@@ -189,6 +199,7 @@ export function useCreateDispoCampaign() {
 
       const insertData = {
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         name: campaign.name || 'Untitled Campaign',
         subject: campaign.subject || '',
         preview_text: campaign.preview_text || null,
