@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 import type { Json } from "@/integrations/supabase/types";
 
