@@ -19,12 +19,21 @@ export function useDashboardStats() {
   return useQuery({
     queryKey: ["dashboard-stats", organizationId, user?.id],
     queryFn: async (): Promise<DashboardStats> => {
-      const scopedCount = (table: "properties" | "appointments" | "offers") =>
+      type CountQuery = {
+        in: (column: string, values: string[]) => CountQuery;
+        eq: (column: string, value: string) => CountQuery;
+        gte: (column: string, value: string) => CountQuery;
+        lte: (column: string, value: string) => CountQuery;
+        lt: (column: string, value: string) => CountQuery;
+        then: Promise<{ count: number | null }>["then"];
+      };
+      const scopedCount = (table: "properties" | "appointments" | "offers"): CountQuery =>
         scopeToWorkspace(
-          supabase.from(table).select("id", { count: "exact", head: true }),
+          (supabase.from(table) as ReturnType<typeof supabase.from>).select("id", { count: "exact", head: true }),
           organizationId,
           user!.id,
-        );
+        ) as unknown as CountQuery;
+
       const now = new Date();
       
       // Date ranges
