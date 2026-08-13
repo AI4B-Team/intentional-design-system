@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { toast } from "sonner";
 import type { Json } from "@/integrations/supabase/types";
 
@@ -218,15 +220,16 @@ export function useUpdateClosebotSettings() {
 
 export function useClosebotConversations(propertyId?: string) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["closebot-conversations", user?.id, propertyId],
+    queryKey: ["closebot-conversations", organizationId, user?.id, propertyId],
     queryFn: async () => {
-      let query = supabase
-        .from("closebot_conversations")
-        .select("*")
-        .eq("user_id", user?.id)
-        .order("created_at", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase.from("closebot_conversations").select("*"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (propertyId) {
         query = query.eq("property_id", propertyId);
