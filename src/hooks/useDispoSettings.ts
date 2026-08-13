@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentOrganizationId } from '@/hooks/useOrganizationId';
 import { toast } from 'sonner';
 
 export interface DispoSettings {
@@ -42,14 +43,30 @@ export interface DispoSettings {
 
 export function useDispoSettings() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ['dispo-settings'],
+    queryKey: ['dispo-settings', organizationId],
     queryFn: async () => {
+      // Dispositions branding/settings belong to the workspace, so teammates
+      // share one record. Fall back to the creator's legacy row when the
+      // workspace has no stamped settings yet.
+      if (organizationId) {
+        const { data, error } = await supabase
+          .from('dispo_settings')
+          .select('*')
+          .eq('organization_id', organizationId)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) return data as DispoSettings;
+      }
+
       const { data, error } = await supabase
         .from('dispo_settings')
         .select('*')
         .eq('user_id', user!.id)
+        .is('organization_id', null)
         .maybeSingle();
 
       if (error) throw error;
@@ -101,22 +118,36 @@ export function useCreateDispoSettings() {
 export function useUpdateDispoSettings() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useMutation({
     mutationFn: async (settings: Partial<DispoSettings>) => {
       if (!user) throw new Error('Not authenticated');
 
+      const patch = { ...settings, updated_at: new Date().toISOString() };
+
+      if (organizationId) {
+        const { data, error } = await supabase
+          .from('dispo_settings')
+          .update(patch)
+          .eq('organization_id', organizationId)
+          .select()
+          .maybeSingle();
+
+        if (error) throw error;
+        if (data) return data as DispoSettings;
+      }
+
       const { data, error } = await supabase
         .from('dispo_settings')
-        .update({
-          ...settings,
-          updated_at: new Date().toISOString(),
-        })
+        .update(patch)
         .eq('user_id', user.id)
+        .is('organization_id', null)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) throw new Error('No dispositions settings found to update');
       return data as DispoSettings;
     },
     onSuccess: () => {
