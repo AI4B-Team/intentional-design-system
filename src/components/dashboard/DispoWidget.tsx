@@ -8,10 +8,13 @@ import { useDispoStats } from '@/hooks/useDispoDeals';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCurrentOrganizationId } from '@/hooks/useOrganizationId';
+import { scopeToWorkspace } from '@/lib/workspaceScope';
 
 export function DispoWidget() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const { data: stats, isLoading: statsLoading } = useDispoStats();
 
   // Fetch recent interests
@@ -32,13 +35,15 @@ export function DispoWidget() {
 
   // Fetch buyer count
   const { data: buyerCount } = useQuery({
-    queryKey: ['dispo-buyer-count'],
+    queryKey: ['dispo-buyer-count', organizationId],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from('cash_buyers')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user!.id)
-        .eq('status', 'active');
+      const { count, error } = await scopeToWorkspace(
+        supabase
+          .from('cash_buyers')
+          .select('id', { count: 'exact', head: true }),
+        organizationId,
+        user!.id,
+      ).eq('status', 'active');
 
       if (error) throw error;
       return count || 0;
