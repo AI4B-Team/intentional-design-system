@@ -39,6 +39,7 @@ import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 type ViewState = "input" | "analyzing" | "report";
 
@@ -122,6 +123,7 @@ export default function DealAnalyzer() {
         const topStrategy = [...data.strategies].sort((a, b) => b.score - a.score)[0];
         await supabase.from("deal_analyses").insert({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           name: `${address} Intelligence Report`,
           analysis_type: "creative" as any,
           address,
@@ -175,6 +177,7 @@ export default function DealAnalyzer() {
     try {
       const { error } = await supabase.from("properties").insert({
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         address,
         arv: result.arvAnalysis.arvEstimate,
         asking_price: result.propertyProfile.estimatedValue,
