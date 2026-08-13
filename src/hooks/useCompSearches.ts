@@ -3,7 +3,9 @@
  import { toast } from "sonner";
  import { useAuth } from "@/contexts/AuthContext";
  import { useOrganization } from "@/contexts/OrganizationContext";
+ import { scopeToWorkspace } from "@/lib/workspaceScope";
  import type { Json } from "@/integrations/supabase/types";
+
  
  export interface CompSearch {
    id: string;
