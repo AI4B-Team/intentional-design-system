@@ -282,6 +282,7 @@ export function useTriggerClosebotConversation() {
         .from("closebot_conversations")
         .insert({
           user_id: user?.id,
+          organization_id: getActiveOrganizationId(),
           property_id: propertyId,
           bot_id: botId,
           bot_name: `${botType.replace(/_/g, " ")} Bot`,
