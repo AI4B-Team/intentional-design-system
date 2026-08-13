@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 interface DealAnalyzerTabProps {
   onCreateAnalysis: () => void;
@@ -125,14 +127,15 @@ export function DealAnalyzerTab({ onCreateAnalysis }: DealAnalyzerTabProps) {
   const [viewMode, setViewMode] = React.useState<"grid" | "list">("grid");
 
   const { data: analyses, isLoading, refetch } = useQuery({
-    queryKey: ["deal-analyses", user?.id, typeFilter, statusFilter, sortBy, search],
+    queryKey: ["deal-analyses", user?.id, organizationId, typeFilter, statusFilter, sortBy, search],
     queryFn: async () => {
       if (!user?.id) return [];
       
-      let query = supabase
-        .from("deal_analyses")
-        .select("*")
-        .eq("user_id", user.id);
+      let query = scopeToWorkspace(
+        supabase.from("deal_analyses").select("*"),
+        organizationId,
+        user.id,
+      );
 
       if (typeFilter !== "all") {
         query = query.eq("analysis_type", typeFilter);

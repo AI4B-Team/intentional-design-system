@@ -37,6 +37,8 @@ import {
 import type { DealIntelligenceResult, EditableMetrics, DealStrategy } from "@/components/deal-intelligence/types";
 import { UpgradeBanner } from "@/components/billing/UpgradeBanner";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 type ViewState = "input" | "analyzing" | "report";
 
@@ -61,13 +63,14 @@ export default function DealAnalyzer() {
 
   // Analysis history
   const { data: historyItems, refetch: refetchHistory } = useQuery({
-    queryKey: ["deal-analyses-history", user?.id],
+    queryKey: ["deal-analyses-history", user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from("deal_analyses")
-        .select("*")
-        .eq("user_id", user.id)
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("deal_analyses").select("*"),
+        organizationId,
+        user.id,
+      )
         .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
