@@ -15,6 +15,9 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 interface ManualTabProps {
   onSuccess: () => void;
@@ -45,11 +48,13 @@ export function ManualTab({ onSuccess }: ManualTabProps) {
   });
 
   const { data: lists = [] } = useQuery({
-    queryKey: ["lists-for-manual", user?.id],
+    queryKey: ["lists-for-manual", user?.id, organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lists")
-        .select("id, name")
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("lists").select("id, name"),
+        organizationId,
+        user!.id,
+      )
         .eq("list_type", "manual")
         .neq("status", "archived")
         .order("created_at", { ascending: false });
@@ -102,6 +107,7 @@ export function ManualTab({ onSuccess }: ManualTabProps) {
             list_type: "manual",
             status: "active",
             user_id: user?.id,
+            organization_id: getActiveOrganizationId(),
           })
           .select()
           .single();
@@ -130,6 +136,7 @@ export function ManualTab({ onSuccess }: ManualTabProps) {
       const { error: recordError } = await supabase.from("list_records").insert({
         list_id: listId,
         user_id: user?.id,
+        organization_id: getActiveOrganizationId(),
         address: formData.address,
         city: formData.city,
         state: formData.state,
