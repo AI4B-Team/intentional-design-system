@@ -18,6 +18,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 const propertySchema = z.object({
   address: z.string().min(1, "Address is required").max(255),
@@ -136,6 +137,7 @@ export function AddPropertyModal({ isOpen, onClose, initialValues }: AddProperty
 
       const propertyData = {
         user_id: userData.user.id,
+        organization_id: getActiveOrganizationId(),
         address: data.address,
         city: data.city || null,
         state: data.state || null,

@@ -28,6 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { emitHubEvent } from "@/lib/emitHubEvent";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 interface AddSuppressionModalProps {
   open: boolean;
@@ -82,6 +83,7 @@ export function AddSuppressionModal({ open, onOpenChange }: AddSuppressionModalP
 
       const { error } = await supabase.from("suppression_list").insert({
         user_id: user?.id,
+        organization_id: getActiveOrganizationId(),
         address,
         city,
         state,

@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 interface ImportSuppressionModalProps {
   open: boolean;
@@ -149,6 +150,7 @@ export function ImportSuppressionModal({ open, onOpenChange }: ImportSuppression
 
           return {
             user_id: user?.id,
+            organization_id: getActiveOrganizationId(),
             address,
             city,
             state,
