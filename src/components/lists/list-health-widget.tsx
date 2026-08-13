@@ -15,6 +15,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 interface HealthMetric {
   label: string;
@@ -26,32 +28,35 @@ interface HealthMetric {
 
 export function ListHealthWidget() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
 
   // Fetch health metrics
   const { data: metrics = [], isLoading, refetch } = useQuery({
-    queryKey: ["list-health"],
+    queryKey: ["list-health", organizationId],
     queryFn: async () => {
       // Get total records
-      const { count: totalRecords } = await supabase
-        .from("list_records")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user?.id)
-        .eq("status", "active");
+      const { count: totalRecords } = await scopeToWorkspace(
+        supabase.from("list_records").select("*", { count: "exact", head: true }),
+        organizationId,
+        user!.id,
+      ).eq("status", "active");
 
       // Get records with phone
-      const { count: withPhone } = await supabase
-        .from("list_records")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user?.id)
+      const { count: withPhone } = await scopeToWorkspace(
+        supabase.from("list_records").select("*", { count: "exact", head: true }),
+        organizationId,
+        user!.id,
+      )
         .eq("status", "active")
         .not("phone", "is", null);
 
       // Get records with owner name
-      const { count: withOwner } = await supabase
-        .from("list_records")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user?.id)
+      const { count: withOwner } = await scopeToWorkspace(
+        supabase.from("list_records").select("*", { count: "exact", head: true }),
+        organizationId,
+        user!.id,
+      )
         .eq("status", "active")
         .not("owner_name", "is", null);
 

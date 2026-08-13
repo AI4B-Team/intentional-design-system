@@ -14,6 +14,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 interface OverlapData {
   listA: string;
@@ -25,16 +27,18 @@ interface OverlapData {
 
 export function DuplicateReportWidget() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
 
   // Fetch lists for overlap calculation
   const { data: lists = [] } = useQuery({
-    queryKey: ["lists-for-overlap"],
+    queryKey: ["lists-for-overlap", organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lists")
-        .select("id, name, total_records")
-        .eq("user_id", user?.id)
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("lists").select("id, name, total_records"),
+        organizationId,
+        user!.id,
+      )
         .eq("status", "active")
         .order("total_records", { ascending: false })
         .limit(5);
