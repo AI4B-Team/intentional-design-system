@@ -3,7 +3,9 @@
  import { toast } from "sonner";
  import { useAuth } from "@/contexts/AuthContext";
  import { useOrganization } from "@/contexts/OrganizationContext";
+ import { scopeToWorkspace } from "@/lib/workspaceScope";
  import type { Json } from "@/integrations/supabase/types";
+
  
  export interface CompSearch {
    id: string;
@@ -35,32 +37,43 @@
  }
  
  export function useCompSearches() {
+   const { user } = useAuth();
+   const { organization } = useOrganization();
+
    return useQuery({
-     queryKey: ["comp-searches"],
+     queryKey: ["comp-searches", organization?.id, user?.id],
      queryFn: async (): Promise<CompSearch[]> => {
-       const { data, error } = await supabase
-         .from("comp_searches")
-         .select("*")
+       const { data, error } = await scopeToWorkspace(
+         supabase.from("comp_searches").select("*"),
+         organization?.id ?? null,
+         user!.id,
+       )
          .order("created_at", { ascending: false })
          .limit(50);
  
        if (error) throw error;
        return (data || []) as CompSearch[];
      },
+     enabled: !!user?.id,
    });
  }
  
  export function useCompSearchByAddress(address: string | undefined) {
+   const { user } = useAuth();
+   const { organization } = useOrganization();
+
    return useQuery({
-     queryKey: ["comp-search-by-address", address],
+     queryKey: ["comp-search-by-address", organization?.id, user?.id, address],
      queryFn: async (): Promise<CompSearch | null> => {
        if (!address) return null;
        
        const normalizedAddress = address.toLowerCase().trim();
        
-       const { data, error } = await supabase
-         .from("comp_searches")
-         .select("*")
+       const { data, error } = await scopeToWorkspace(
+         supabase.from("comp_searches").select("*"),
+         organization?.id ?? null,
+         user!.id,
+       )
          .ilike("subject_address", `%${normalizedAddress}%`)
          .order("created_at", { ascending: false })
          .limit(1)
@@ -69,9 +82,10 @@
        if (error) throw error;
        return data as CompSearch | null;
      },
-     enabled: !!address,
+     enabled: !!address && !!user?.id,
    });
  }
+
  
  export function useSaveCompSearch() {
    const queryClient = useQueryClient();

@@ -2,7 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { toast } from "sonner";
+
 import { useEffect } from "react";
 
 // Types
@@ -203,13 +205,16 @@ export function useDeletePOF() {
 
 export function useOfferTemplates(offerType?: string) {
   const { organization } = useOrganization();
+  const { user } = useAuth();
 
   return useQuery({
-    queryKey: ["offer-templates", organization?.id, offerType],
+    queryKey: ["offer-templates", organization?.id, user?.id, offerType],
     queryFn: async () => {
-      let query = supabase
-        .from("offer_templates")
-        .select("*")
+      let query = scopeToWorkspace(
+        supabase.from("offer_templates").select("*"),
+        organization?.id ?? null,
+        user!.id,
+      )
         .eq("is_active", true)
         .order("is_default", { ascending: false })
         .order("use_count", { ascending: false });
@@ -222,7 +227,7 @@ export function useOfferTemplates(offerType?: string) {
       if (error) throw error;
       return data as OfferTemplate[];
     },
-    enabled: !!organization?.id,
+    enabled: !!organization?.id && !!user?.id,
   });
 }
 
@@ -236,14 +241,15 @@ export function useOfferTemplate(id: string | null) {
         .from("offer_templates")
         .select("*")
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return data as OfferTemplate;
+      return data as OfferTemplate | null;
     },
     enabled: !!id,
   });
 }
+
 
 export function useCreateOfferTemplate() {
   const queryClient = useQueryClient();
