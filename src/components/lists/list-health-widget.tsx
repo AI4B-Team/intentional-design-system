@@ -61,10 +61,11 @@ export function ListHealthWidget() {
         .not("owner_name", "is", null);
 
       // Get suppression count
-      const { count: suppressionCount } = await supabase
-        .from("suppression_list")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user?.id);
+      const { count: suppressionCount } = await scopeToWorkspace(
+        supabase.from("suppression_list").select("*", { count: "exact", head: true }),
+        organizationId,
+        user!.id,
+      );
 
       const total = totalRecords || 0;
       const phonePercent = total > 0 ? Math.round(((withPhone || 0) / total) * 100) : 0;
