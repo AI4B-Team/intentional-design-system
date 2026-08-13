@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -230,17 +231,18 @@ export function useUpdateLendingCriteria() {
 
 export function useUserProperties() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["user-properties-simple", user?.id],
+    queryKey: ["user-properties-simple", user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, arv")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("properties").select("id, address, city, state, arv"),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
