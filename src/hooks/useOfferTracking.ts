@@ -2,6 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+
 
 // Fetch deliveries for a specific offer
 export function useOfferDeliveries(offerId: string | undefined) {
@@ -46,25 +49,29 @@ export function useOfferFollowups(offerId: string | undefined) {
 // Fetch all offers with deliveries for dashboard
 export function useAllOffers() {
   const { user } = useAuth();
-  
+  const organizationId = useCurrentOrganizationId();
+
   return useQuery({
-    queryKey: ["all-offers"],
+    queryKey: ["all-offers", organizationId, user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
-      const { data, error } = await supabase
-        .from("offers")
-        .select(`
-          *,
-          properties:property_id (
-            id,
-            address,
-            city,
-            state,
-            owner_name
-          )
-        `)
-        .order("created_at", { ascending: false });
+
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("offers")
+          .select(`
+            *,
+            properties:property_id (
+              id,
+              address,
+              city,
+              state,
+              owner_name
+            )
+          `),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -76,9 +83,10 @@ export function useAllOffers() {
 // Fetch offer statistics
 export function useOfferStats() {
   const { user } = useAuth();
-  
+  const organizationId = useCurrentOrganizationId();
+
   return useQuery({
-    queryKey: ["offer-stats"],
+    queryKey: ["offer-stats", organizationId, user?.id],
     queryFn: async () => {
       if (!user) return null;
       
@@ -86,17 +94,21 @@ export function useOfferStats() {
       const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-      // Get all offers
-      const { data: offers, error: offersError } = await supabase
-        .from("offers")
-        .select("*");
+      // Get all offers in the active workspace
+      const { data: offers, error: offersError } = await scopeToWorkspace(
+        supabase.from("offers").select("*"),
+        organizationId,
+        user.id,
+      );
 
       if (offersError) throw offersError;
 
-      // Get all deliveries
-      const { data: deliveries, error: deliveriesError } = await supabase
-        .from("offer_deliveries")
-        .select("*");
+      const offerIds = (offers || []).map((o) => o.id);
+
+      // Get deliveries for those offers only
+      const { data: deliveries, error: deliveriesError } = offerIds.length
+        ? await supabase.from("offer_deliveries").select("*").in("offer_id", offerIds)
+        : { data: [], error: null };
 
       if (deliveriesError) throw deliveriesError;
 
@@ -130,12 +142,23 @@ export function useOfferStats() {
 // Fetch recent offer activity
 export function useOfferActivity() {
   const { user } = useAuth();
-  
+  const organizationId = useCurrentOrganizationId();
+
   return useQuery({
-    queryKey: ["offer-activity"],
+    queryKey: ["offer-activity", organizationId, user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
+      // Limit activity to offers in the active workspace
+      const { data: workspaceOffers, error: offersError } = await scopeToWorkspace(
+        supabase.from("offers").select("id"),
+        organizationId,
+        user.id,
+      );
+      if (offersError) throw offersError;
+      const offerIds = (workspaceOffers || []).map((o) => o.id);
+      if (!offerIds.length) return [];
+
       // Get recent deliveries with offer and property info
       const { data: deliveries, error } = await supabase
         .from("offer_deliveries")
@@ -151,10 +174,12 @@ export function useOfferActivity() {
             )
           )
         `)
+        .in("offer_id", offerIds)
         .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
+
       
       // Transform into activity items
       const activities: any[] = [];
