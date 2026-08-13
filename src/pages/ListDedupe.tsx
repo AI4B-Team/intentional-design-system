@@ -39,6 +39,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 type Step = "select" | "review" | "settings" | "processing" | "complete";
 
@@ -56,6 +58,7 @@ interface DuplicateGroup {
 
 export default function ListDedupe() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [step, setStep] = useState<Step>("select");
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const [dedupeAll, setDedupeAll] = useState(false);
@@ -68,12 +71,13 @@ export default function ListDedupe() {
 
   // Fetch lists
   const { data: lists = [], isLoading } = useQuery({
-    queryKey: ["lists"],
+    queryKey: ["lists", organizationId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lists")
-        .select("id, name, total_records, list_type")
-        .eq("user_id", user?.id)
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("lists").select("id, name, total_records, list_type"),
+        organizationId,
+        user!.id,
+      )
         .eq("status", "active")
         .order("created_at", { ascending: false });
       if (error) throw error;

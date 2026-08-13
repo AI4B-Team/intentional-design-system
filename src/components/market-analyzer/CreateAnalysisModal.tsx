@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowRight, Building2, Home, RefreshCcw, Repeat } from "lucide-react";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 interface CreateAnalysisModalProps {
   open: boolean;
@@ -66,6 +68,7 @@ const US_STATES = [
 
 export function CreateAnalysisModal({ open, onOpenChange }: CreateAnalysisModalProps) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -87,13 +90,16 @@ export function CreateAnalysisModal({ open, onOpenChange }: CreateAnalysisModalP
 
   // Fetch user's properties
   const { data: properties } = useQuery({
-    queryKey: ["properties-simple", user?.id],
+    queryKey: ["properties-simple", user?.id, organizationId],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, zip, beds, baths, sqft, year_built, estimated_value, arv")
-        .eq("user_id", user.id)
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, zip, beds, baths, sqft, year_built, estimated_value, arv"),
+        organizationId,
+        user.id,
+      )
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;

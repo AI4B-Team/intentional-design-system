@@ -41,6 +41,8 @@ import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateFundingRequest, useMarketplaceLenders, useSubmitToLenders } from "@/hooks/useCapital";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 const steps = [
   { id: 1, label: "Request Type", icon: FileText },
@@ -157,16 +159,19 @@ function formatCurrency(value: number | null): string {
 // Hook to get user's properties
 function useUserProperties() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["user-properties-for-funding"],
+    queryKey: ["user-properties-for-funding", organizationId],
     queryFn: async () => {
       if (!user?.id) return [];
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, zip, property_type, arv, estimated_value")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, zip, property_type, arv, estimated_value"),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
