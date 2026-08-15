@@ -22,6 +22,8 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useListStacking, StackingStats } from "@/hooks/useListStacking";
 
 interface StackTabProps {
@@ -56,15 +58,21 @@ export function StackTab({ onSuccess }: StackTabProps) {
 
   const { stackLists, estimateStackResults, isStacking, progress } = useListStacking();
 
+  const stackOrganizationId = useCurrentOrganizationId();
+
   const { data: lists = [], isLoading } = useQuery({
-    queryKey: ["lists-for-stacking", user?.id],
+    queryKey: ["lists-for-stacking", stackOrganizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lists")
-        .select("id, name, list_type, total_records, unique_records")
-        .neq("status", "archived")
-        .neq("list_type", "stacked")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("lists")
+          .select("id, name, list_type, total_records, unique_records")
+          .neq("status", "archived")
+          .neq("list_type", "stacked")
+          .order("created_at", { ascending: false }),
+        stackOrganizationId,
+        user!.id,
+      );
 
       if (error) throw error;
       return data;
