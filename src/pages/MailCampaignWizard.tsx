@@ -174,6 +174,8 @@ const PRICING = {
 
 export default function MailCampaignWizard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const { data: templates } = useMailTemplates();
   const createCampaign = useCreateMailCampaign();
   
