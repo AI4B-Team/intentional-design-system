@@ -58,12 +58,29 @@ serve(async (req) => {
       )
     }
 
-    // 1. Find or create deal source by email
-    const { data: existingSource } = await supabase
+    // Resolve the receiving workspace (optional, passed by the public form).
+    let orgId: string | null = null
+    const requestedOrg = String(body.organizationId || '').trim()
+    if (/^[0-9a-f-]{36}$/i.test(requestedOrg)) {
+      const { data: org } = await supabase
+        .from('organizations')
+        .select('id')
+        .eq('id', requestedOrg)
+        .maybeSingle()
+      orgId = org?.id ?? null
+    }
+
+    // 1. Find or create deal source by email (scoped to the receiving workspace)
+    let sourceQuery = supabase
       .from('deal_sources')
       .select('id')
       .eq('email', submitterEmail)
-      .maybeSingle()
+      .limit(1)
+    sourceQuery = orgId
+      ? sourceQuery.eq('organization_id', orgId)
+      : sourceQuery.is('organization_id', null)
+    const { data: existingSources } = await sourceQuery
+    const existingSource = existingSources?.[0]
 
     let dealSourceId = existingSource?.id
     if (!dealSourceId) {
@@ -84,6 +101,7 @@ serve(async (req) => {
           source: 'deal_submission',
           status: 'cold',
           user_id: PLACEHOLDER_USER,
+          organization_id: orgId,
         })
         .select('id')
         .single()
@@ -129,6 +147,7 @@ serve(async (req) => {
         status: 'new',
         notes,
         user_id: PLACEHOLDER_USER,
+        organization_id: orgId,
       })
       .select('id')
       .single()
