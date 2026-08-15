@@ -117,6 +117,7 @@ export function usePortfolioProperties() {
       const { data, error } = await supabase
         .from("portfolio_properties")
         .select("*")
+        .or(orgFilter)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as PortfolioProperty[];
@@ -134,7 +135,7 @@ export function useCreatePortfolioProperty() {
       if (!user) throw new Error("Not authenticated");
       const { data: result, error } = await supabase
         .from("portfolio_properties")
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...data, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
       if (error) throw error;
