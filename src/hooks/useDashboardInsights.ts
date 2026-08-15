@@ -64,6 +64,7 @@ export function useDashboardInsights() {
     queryFn: async (): Promise<DashboardInsights> => {
       const userId = user!.id;
       const scoped = <T,>(q: T) => scopeToWorkspace(q, organizationId, userId);
+      const scopedByCreator = <T,>(q: T) => scopeToWorkspace(q, organizationId, userId, "created_by");
       const countByStatus = (status: string) =>
         scoped(supabase.from("properties").select("id", { count: "exact", head: true })).eq("status", status);
       const threeDaysAgo = subDays(new Date(), 3).toISOString();
@@ -83,7 +84,7 @@ export function useDashboardInsights() {
           .lt("created_at", threeDaysAgo),
         
         // Offers awaiting response (pending offers)
-        scoped(supabase.from("offers").select("id", { count: "exact", head: true })).eq("response", "pending"),
+        scopedByCreator(supabase.from("offers").select("id", { count: "exact", head: true })).eq("response", "pending"),
         
         // Stalling deals (contacted status with no update in 7 days)
         scoped(supabase.from("properties").select("id", { count: "exact", head: true }))
