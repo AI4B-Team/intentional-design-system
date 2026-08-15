@@ -175,6 +175,8 @@ export function DealAnalyzerTab({ onCreateAnalysis }: DealAnalyzerTabProps) {
     const { id, created_at, updated_at, ...rest } = analysis;
     const { error } = await supabase.from("deal_analyses").insert({
       ...rest,
+      user_id: user?.id ?? rest.user_id,
+      organization_id: organizationId ?? rest.organization_id ?? null,
       name: `${rest.name} (Copy)`,
     });
     if (!error) refetch();
