@@ -116,7 +116,7 @@ export function useOverviewAnalytics(dateRange: DateRange) {
   const compareRange = getComparisonRange(dateRange);
 
   return useQuery({
-    queryKey: ["analytics-overview", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-overview", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
     queryFn: async () => {
       // Current period counts
       const [
@@ -288,7 +288,7 @@ export function usePipelineAnalytics() {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["analytics-pipeline-enhanced", user?.id],
+    queryKey: ["analytics-pipeline-enhanced", user?.id, orgFilter],
     queryFn: async () => {
       const stages = [
         { status: "new", name: "New Leads", benchmark: 3 },
@@ -396,7 +396,7 @@ export function useStalledDeals() {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["stalled-deals", user?.id],
+    queryKey: ["stalled-deals", user?.id, orgFilter],
     queryFn: async () => {
       const stageBenchmarks: Record<string, number> = {
         new: 3,
@@ -507,7 +507,7 @@ export function useSourceAnalytics(dateRange: DateRange) {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["analytics-sources", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-sources", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
     queryFn: async () => {
       // Get properties with their sources
       const { data: properties } = await supabase
@@ -596,7 +596,7 @@ export function useDealFlowTimeSeries(dateRange: DateRange) {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["analytics-dealflow", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-dealflow", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
     queryFn: async () => {
       const daysDiff = differenceInDays(dateRange.to, dateRange.from);
       
@@ -688,7 +688,7 @@ export function useMarketingAnalytics(dateRange: DateRange) {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["analytics-marketing", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-marketing", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
     queryFn: async () => {
       const [campaignsResult, outreachResult] = await Promise.all([
         supabase
@@ -787,7 +787,7 @@ export function useFinancialAnalytics(dateRange: DateRange) {
   const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
-    queryKey: ["analytics-financial-enhanced", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
+    queryKey: ["analytics-financial-enhanced", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
     queryFn: async () => {
       const { data: closedDeals } = await supabase
         .from("properties")
