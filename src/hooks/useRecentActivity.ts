@@ -1,6 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+
 
 export type ActivityType = 
   | "property_added" 
@@ -20,24 +24,29 @@ export interface RecentActivity {
 }
 
 export function useRecentActivity(limit = 20) {
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
-    queryKey: ["recent-activity", limit],
+    queryKey: ["recent-activity", organizationId, user?.id, limit],
+    enabled: !!user?.id,
     queryFn: async (): Promise<RecentActivity[]> => {
+      const userId = user!.id;
       const activities: RecentActivity[] = [];
 
       // Fetch recent data in parallel
       const [propertiesResult, offersResult, appointmentsResult] = await Promise.all([
         // Recent properties
-        supabase
-          .from("properties")
-          .select("id, address, created_at, status")
+        scopeToWorkspace(
+          supabase.from("properties").select("id, address, created_at, status"),
+          organizationId,
+          userId,
+        )
           .order("created_at", { ascending: false })
           .limit(10),
 
         // Recent offers
-        supabase
-          .from("offers")
-          .select(`
+        scopeToWorkspace(
+          supabase.from("offers").select(`
             id,
             offer_amount,
             response,
@@ -45,21 +54,26 @@ export function useRecentActivity(limit = 20) {
             sent_date,
             property_id,
             properties!inner(address)
-          `)
+          `),
+          organizationId,
+          userId,
+        )
           .order("created_at", { ascending: false })
           .limit(10),
 
         // Recent appointments
-        supabase
-          .from("appointments")
-          .select(`
+        scopeToWorkspace(
+          supabase.from("appointments").select(`
             id,
             appointment_type,
             scheduled_time,
             created_at,
             property_id,
             properties!inner(address)
-          `)
+          `),
+          organizationId,
+          userId,
+        )
           .order("created_at", { ascending: false })
           .limit(10),
       ]);

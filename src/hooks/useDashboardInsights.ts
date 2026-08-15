@@ -1,6 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { subDays } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 export interface ActionInsight {
   type: "warning" | "action" | "opportunity";
@@ -53,9 +56,16 @@ export interface DashboardInsights {
 }
 
 export function useDashboardInsights() {
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
-    queryKey: ["dashboard-insights"],
+    queryKey: ["dashboard-insights", organizationId, user?.id],
+    enabled: !!user?.id,
     queryFn: async (): Promise<DashboardInsights> => {
+      const userId = user!.id;
+      const scoped = <T,>(q: T) => scopeToWorkspace(q, organizationId, userId);
+      const countByStatus = (status: string) =>
+        scoped(supabase.from("properties").select("id", { count: "exact", head: true })).eq("status", status);
       const threeDaysAgo = subDays(new Date(), 3).toISOString();
       const sevenDaysAgo = subDays(new Date(), 7).toISOString();
       
@@ -68,40 +78,33 @@ export function useDashboardInsights() {
         stageDistribution,
       ] = await Promise.all([
         // New leads that need first contact (status = 'new', created > 3 days ago)
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scoped(supabase.from("properties").select("id", { count: "exact", head: true }))
           .eq("status", "new")
           .lt("created_at", threeDaysAgo),
         
         // Offers awaiting response (pending offers)
-        supabase
-          .from("offers")
-          .select("id", { count: "exact", head: true })
-          .eq("response", "pending"),
+        scoped(supabase.from("offers").select("id", { count: "exact", head: true })).eq("response", "pending"),
         
         // Stalling deals (contacted status with no update in 7 days)
-        supabase
-          .from("properties")
-          .select("id", { count: "exact", head: true })
+        scoped(supabase.from("properties").select("id", { count: "exact", head: true }))
           .eq("status", "contacted")
           .lt("updated_at", sevenDaysAgo),
         
         // Hot properties with financial data (using existing columns)
-        supabase
+        scoped(supabase
           .from("properties")
-          .select("id, address, city, state, motivation_score, status, updated_at, created_at, owner_phone, owner_email, arv, estimated_value, repair_estimate, equity_percent, mao_standard")
+          .select("id, address, city, state, motivation_score, status, updated_at, created_at, owner_phone, owner_email, arv, estimated_value, repair_estimate, equity_percent, mao_standard"))
           .order("motivation_score", { ascending: false })
           .limit(10),
         
         // Stage distribution for bottleneck detection
         Promise.all([
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "new"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "contacted"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "appointment"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "offer_made"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "under_contract"),
-          supabase.from("properties").select("id", { count: "exact", head: true }).eq("status", "closed"),
+          countByStatus("new"),
+          countByStatus("contacted"),
+          countByStatus("appointment"),
+          countByStatus("offer_made"),
+          countByStatus("under_contract"),
+          countByStatus("closed"),
         ]),
       ]);
 

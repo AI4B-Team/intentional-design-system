@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { startOfDay, endOfDay, subDays, differenceInDays, format } from "date-fns";
 
 export interface TodayPriority {
@@ -60,6 +62,7 @@ export interface DailyReportData {
 
 export function useDailyReport() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const today = new Date();
   const todayStart = startOfDay(today);
   const todayEnd = endOfDay(today);
@@ -68,8 +71,10 @@ export function useDailyReport() {
   const twoWeeksAgo = subDays(today, 14);
 
   return useQuery({
-    queryKey: ["daily-report", format(today, "yyyy-MM-dd"), user?.id],
+    queryKey: ["daily-report", format(today, "yyyy-MM-dd"), organizationId, user?.id],
+    enabled: !!user?.id,
     queryFn: async (): Promise<DailyReportData> => {
+      const userId = user!.id;
       // Fetch all needed data in parallel
       const [
         propertiesResult,
@@ -77,21 +82,31 @@ export function useDailyReport() {
         offersResult,
         outreachResult,
       ] = await Promise.all([
-        supabase
-          .from("properties")
-          .select("id, address, city, state, status, motivation_score, velocity_score, created_at, updated_at, owner_phone, owner_email"),
-        supabase
-          .from("appointments")
-          .select("id, property_id, scheduled_time, status, outcome, notes")
+        scopeToWorkspace(
+          supabase
+            .from("properties")
+            .select("id, address, city, state, status, motivation_score, velocity_score, created_at, updated_at, owner_phone, owner_email"),
+          organizationId,
+          userId,
+        ),
+        scopeToWorkspace(
+          supabase.from("appointments").select("id, property_id, scheduled_time, status, outcome, notes"),
+          organizationId,
+          userId,
+        )
           .gte("scheduled_time", format(yesterdayStart, "yyyy-MM-dd'T'HH:mm:ss"))
           .order("scheduled_time", { ascending: true }),
-        supabase
-          .from("offers")
-          .select("id, property_id, created_at, response, offer_amount")
+        scopeToWorkspace(
+          supabase.from("offers").select("id, property_id, created_at, response, offer_amount"),
+          organizationId,
+          userId,
+        )
           .gte("created_at", format(weekAgo, "yyyy-MM-dd'T'HH:mm:ss")),
-        supabase
-          .from("outreach_log")
-          .select("id, target_id, channel, status, created_at, response_content")
+        scopeToWorkspace(
+          supabase.from("outreach_log").select("id, target_id, channel, status, created_at, response_content"),
+          organizationId,
+          userId,
+        )
           .gte("created_at", format(weekAgo, "yyyy-MM-dd'T'HH:mm:ss")),
       ]);
 

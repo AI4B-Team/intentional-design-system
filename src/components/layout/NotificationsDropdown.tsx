@@ -30,6 +30,9 @@ import { formatDistanceToNow, format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useRealtimeNotifications, type RealtimeNotificationType } from "@/hooks/useRealtimeNotifications";
 
 // Notification types specific to real estate
@@ -83,9 +86,13 @@ interface Notification {
 
 // Hook to fetch real notifications from database
 function useRealNotifications() {
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
-    queryKey: ["notifications-real"],
+    queryKey: ["notifications-real", organizationId, user?.id],
+    enabled: !!user?.id,
     queryFn: async (): Promise<Notification[]> => {
+      const scoped = <T,>(q: T) => scopeToWorkspace(q, organizationId, user!.id);
       const notifications: Notification[] = [];
       const now = new Date();
 
@@ -98,15 +105,15 @@ function useRealNotifications() {
         recentPropertiesResult,
       ] = await Promise.all([
         // Hot leads (high motivation score)
-        supabase
+        scoped(supabase
           .from("properties")
-          .select("id, address, city, state, motivation_score, status, created_at, owner_name")
+          .select("id, address, city, state, motivation_score, status, created_at, owner_name"))
           .gte("motivation_score", 700)
           .order("created_at", { ascending: false })
           .limit(5),
 
         // Today's appointments and follow-ups
-        supabase
+        scoped(supabase
           .from("appointments")
           .select(`
             id,
@@ -115,13 +122,13 @@ function useRealNotifications() {
             status,
             property_id,
             properties!inner(address)
-          `)
+          `))
           .gte("scheduled_time", new Date().toISOString())
           .order("scheduled_time", { ascending: true })
           .limit(10),
 
         // Pending offers
-        supabase
+        scoped(supabase
           .from("offers")
           .select(`
             id,
@@ -130,13 +137,13 @@ function useRealNotifications() {
             created_at,
             property_id,
             properties!inner(address)
-          `)
+          `))
           .eq("response", "pending")
           .order("created_at", { ascending: false })
           .limit(5),
 
         // Upcoming appointments
-        supabase
+        scoped(supabase
           .from("appointments")
           .select(`
             id,
@@ -144,16 +151,16 @@ function useRealNotifications() {
             appointment_type,
             property_id,
             properties!inner(address)
-          `)
+          `))
           .gte("scheduled_time", now.toISOString())
           .lte("scheduled_time", new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString())
           .order("scheduled_time", { ascending: true })
           .limit(5),
 
         // Recent new properties (last 24 hours)
-        supabase
+        scoped(supabase
           .from("properties")
-          .select("id, address, city, state, created_at, owner_name")
+          .select("id, address, city, state, created_at, owner_name"))
           .gte("created_at", new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString())
           .order("created_at", { ascending: false })
           .limit(5),
