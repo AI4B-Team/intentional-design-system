@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -267,6 +268,23 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { action, property_id, appointment_id, workflow_id, properties } = body;
 
+    // Resolve the workspace the caller is acting in so teammates' records are
+    // reachable (and new rows are stamped with it), instead of only own records.
+    const membership = await resolveActiveMembership(
+      supabase,
+      userId,
+      requestedOrgId(body),
+      "organization_id",
+    );
+    const orgId = (membership?.organization_id as string | undefined) ?? null;
+
+    /** Restricts a properties query to the active workspace (legacy rows: own). */
+    // deno-lint-ignore no-explicit-any
+    const scopeProperties = (query: any) =>
+      orgId
+        ? query.or(`organization_id.eq.${orgId},and(organization_id.is.null,user_id.eq.${userId})`)
+        : query.eq("user_id", userId);
+
     // Get GHL connection
     const { data: connection, error: connError } = await supabase
       .from("ghl_connections")
@@ -306,6 +324,7 @@ Deno.serve(async (req) => {
     ) {
       await supabase.from("ghl_sync_log").insert({
         user_id: userId,
+        organization_id: orgId,
         sync_type: syncType,
         direction,
         record_type: recordType,
@@ -319,12 +338,9 @@ Deno.serve(async (req) => {
     switch (action) {
       case "sync_property": {
         // Get property
-        const { data: property, error: propError } = await supabase
-          .from("properties")
-          .select("*")
-          .eq("id", property_id)
-          .eq("user_id", userId)
-          .single();
+        const { data: property, error: propError } = await scopeProperties(
+          supabase.from("properties").select("*").eq("id", property_id),
+        ).maybeSingle();
 
         if (propError || !property) {
           return new Response(JSON.stringify({ error: "Property not found" }), {
@@ -380,7 +396,7 @@ Deno.serve(async (req) => {
         // Get appointment with property
         const { data: appointment, error: apptError } = await supabase
           .from("appointments")
-          .select("*, properties(id, ghl_contact_id, user_id)")
+          .select("*, properties(id, ghl_contact_id, user_id, organization_id)")
           .eq("id", appointment_id)
           .single();
 
@@ -392,7 +408,11 @@ Deno.serve(async (req) => {
         }
 
         const property = appointment.properties;
-        if (property.user_id !== userId) {
+        const propertyInWorkspace = orgId
+          ? property.organization_id === orgId ||
+            (property.organization_id === null && property.user_id === userId)
+          : property.user_id === userId;
+        if (!propertyInWorkspace) {
           return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 403,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -441,12 +461,9 @@ Deno.serve(async (req) => {
 
       case "trigger_workflow": {
         // Get property for contact ID
-        const { data: property, error: propError } = await supabase
-          .from("properties")
-          .select("ghl_contact_id")
-          .eq("id", property_id)
-          .eq("user_id", userId)
-          .single();
+        const { data: property, error: propError } = await scopeProperties(
+          supabase.from("properties").select("ghl_contact_id").eq("id", property_id),
+        ).maybeSingle();
 
         if (propError || !property?.ghl_contact_id) {
           return new Response(
@@ -469,10 +486,9 @@ Deno.serve(async (req) => {
 
       case "bulk_sync": {
         // Get all unsynced or specified properties
-        let query = supabase
-          .from("properties")
-          .select("*")
-          .eq("user_id", userId);
+        let query = scopeProperties(
+          supabase.from("properties").select("*"),
+        );
 
         if (properties && properties.length > 0) {
           query = query.in("id", properties);
