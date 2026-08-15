@@ -13,8 +13,8 @@ import { RealEliteLogo } from "@/components/brand/RealEliteLogo";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import {
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import {
   Building2,
   Landmark,
   UserCheck,
