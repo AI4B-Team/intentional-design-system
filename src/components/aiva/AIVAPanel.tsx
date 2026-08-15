@@ -97,6 +97,17 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     };
   }, [location.pathname]);
 
+  // Mount the chat only while the panel is open (plus the close animation window).
+  const [mounted, setMounted] = React.useState(open);
+  React.useEffect(() => {
+    if (open) {
+      setMounted(true);
+      return;
+    }
+    const timeout = setTimeout(() => setMounted(false), 300);
+    return () => clearTimeout(timeout);
+  }, [open]);
+
   // Round to avoid sub-pixel overlap.
   // Add a small gap so the panel never visually covers the sidebar (even by 1–2px due to rounding/layout).
   const sidebarRightPx = Math.ceil(sidebarRight);
