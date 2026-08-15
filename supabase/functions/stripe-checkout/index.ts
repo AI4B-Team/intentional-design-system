@@ -2,6 +2,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import Stripe from "npm:stripe@14";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const STRIPE_SECRET_KEY = Deno.env.get("STRIPE_SECRET_KEY");
 const APP_URL = Deno.env.get("APP_URL") ?? "http://localhost:8080";
@@ -37,14 +38,9 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: member } = await admin
-      .from("organization_members")
-      .select("organization_id, role")
-      .eq("user_id", userId)
-      .eq("status", "active")
-      .maybeSingle();
+    const member = await resolveActiveMembership(admin, userId, requestedOrgId(body));
     if (!member) return json({ error: "No active organization" }, 400);
-    if (!["owner", "admin"].includes(member.role)) return json({ error: "Forbidden" }, 403);
+    if (!["owner", "admin"].includes(member.role as string)) return json({ error: "Forbidden" }, 403);
     const orgId = member.organization_id as string;
 
     const stripe = new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2024-06-20" });

@@ -2,6 +2,7 @@ import { reportError } from "../_shared/report-error.ts";
 import { emitHubEvent } from "../_shared/hub-emit.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -51,8 +52,8 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { firstName, lastName, address, city, state, zip, propertyId } =
-      await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { firstName, lastName, address, city, state, zip, propertyId } = body ?? {};
 
     // Validate required fields
     if (!address || !city || !state || !zip) {
@@ -249,12 +250,7 @@ serve(async (req) => {
     }
 
     // Get user's organization_id
-    const { data: orgMember } = await supabase
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .maybeSingle();
+    const orgMember = await resolveActiveMembership(supabase, user.id, requestedOrgId(body), "organization_id");
 
     // Notify the app family when the balance is running low.
     const remaining = Number(

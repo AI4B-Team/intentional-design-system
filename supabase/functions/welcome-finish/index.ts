@@ -1,5 +1,6 @@
 // Welcome wizard finish — persists everything from the wizard to the backend.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -84,16 +85,11 @@ Deno.serve(async (req) => {
     // Service client for writes
     const sb = createClient(supabaseUrl, serviceKey);
 
-    // Get user's organization
-    const { data: orgMember } = await sb
-      .from("organization_members")
-      .select("organization_id")
-      .eq("user_id", userId)
-      .eq("status", "active")
-      .maybeSingle();
-    const orgId = orgMember?.organization_id ?? null;
-
     const p: Payload = await req.json();
+
+    // Get user's active organization
+    const orgMember = await resolveActiveMembership(sb, userId, requestedOrgId(p), "organization_id");
+    const orgId = (orgMember?.organization_id as string | undefined) ?? null;
     const results: Record<string, unknown> = {};
 
     // --- 1. Business profile + signature → organizations row ---
