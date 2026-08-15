@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -453,14 +456,21 @@ export default function Properties() {
     });
   };
 
+  const propertiesUser = useAuth().user;
+  const propertiesOrganizationId = useCurrentOrganizationId();
+
   // Fetch properties
   const { data: properties = [], isLoading, refetch } = useQuery({
-    queryKey: ["properties"],
+    queryKey: ["properties", propertiesOrganizationId, propertiesUser?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, zip, beds, baths, sqft, arv, mao_standard, mao_aggressive, mao_conservative, motivation_score, status, source, property_type, owner_name, owner_email, owner_phone, owner_mailing_address, created_at, updated_at")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, zip, beds, baths, sqft, arv, mao_standard, mao_aggressive, mao_conservative, motivation_score, status, source, property_type, owner_name, owner_email, owner_phone, owner_mailing_address, created_at, updated_at")
+          .order("created_at", { ascending: false }),
+        propertiesOrganizationId,
+        propertiesUser!.id,
+      );
 
       if (error) throw error;
       return data as (Property & { mao_aggressive: number | null; mao_conservative: number | null; owner_email: string | null; owner_phone: string | null; owner_mailing_address: string | null })[];
