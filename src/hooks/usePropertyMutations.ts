@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 // Offers
 export function useAddOffer() {
@@ -80,7 +81,7 @@ export function useAddOutreach() {
     mutationFn: async (outreach: TablesInsert<"outreach_log">) => {
       const { data, error } = await supabase
         .from("outreach_log")
-        .insert(outreach)
+        .insert({ organization_id: getActiveOrganizationId(), ...outreach })
         .select()
         .single();
 

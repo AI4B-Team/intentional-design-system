@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Buyer, BuyBox } from "./useBuyers";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface PropertyForMatching {
   id: string;
@@ -212,6 +213,7 @@ export function useSendDeal() {
       const outreachEntries = payload.buyerIds.flatMap((buyerId) =>
         payload.channels.map((channel) => ({
           user_id: user.id,
+          organization_id: getActiveOrganizationId(),
           target_id: buyerId,
           target_type: "buyer",
           channel,
@@ -282,6 +284,7 @@ export function useUpdateBuyerResponse() {
       // Log the response
       const { error } = await supabase.from("outreach_log").insert({
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         target_id: payload.buyerId,
         target_type: "buyer",
         channel: "response",
