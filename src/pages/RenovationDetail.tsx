@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import html2canvas from "html2canvas";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -126,6 +125,7 @@ export default function RenovationDetail() {
     el.style.display = "block";
 
     try {
+      const html2canvas = (await import("html2canvas")).default;
       const canvas = await html2canvas(el, { scale: 2, useCORS: true, backgroundColor: "#ffffff" });
       el.style.display = "none";
 

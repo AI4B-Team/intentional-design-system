@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as XLSX from "xlsx";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -225,9 +224,10 @@ export function MarketTrendsTab() {
           <RecentSalesTable
             sales={recentSales}
             onViewMap={() => toast.info("Map view coming soon")}
-            onExport={() => {
+            onExport={async () => {
               toast("Exporting market data...");
               try {
+                const XLSX = await import("xlsx");
                 const wb = XLSX.utils.book_new();
 
                 // Sheet 1: Price Trends
