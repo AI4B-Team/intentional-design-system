@@ -124,5 +124,5 @@ export function safeEqual(a: string, b: string): boolean {
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-hub-signature, x-webhook-signature",
+    "authorization, x-client-info, apikey, content-type, x-hub-signature, x-webhook-signature, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
