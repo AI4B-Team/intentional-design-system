@@ -24,51 +24,23 @@ export function useCreateOrganization() {
 
       const slug = generateSlug(data.name);
 
-      // Create organization - don't use .select() since RLS won't let us read it yet
-      const { data: org, error: orgError } = await supabase
-        .from("organizations")
-        .insert({
-          name: data.name,
-          slug,
-          website: data.website || null,
-          phone: data.phone || null,
-          billing_email: user.email,
-        })
-        .select("id")
-        .single();
+      // Workspace + owner membership are created atomically server-side so a
+      // workspace can never exist without its owner (and nobody can claim one).
+      const { data: org, error: orgError } = await supabase.rpc(
+        "create_organization_with_owner",
+        {
+          p_name: data.name,
+          p_slug: slug,
+          p_website: data.website || null,
+          p_phone: data.phone || null,
+          p_billing_email: user.email || null,
+        },
+      );
 
       if (orgError) throw orgError;
 
-      const orgId = org.id;
+      return org as unknown as Organization;
 
-      // Add user as owner - this makes them a member, enabling RLS reads
-      const { error: memberError } = await supabase
-        .from("organization_members")
-        .insert({
-          organization_id: orgId,
-          user_id: user.id,
-          role: "owner",
-          status: "active",
-          joined_at: new Date().toISOString(),
-        });
-
-      if (memberError) {
-        // Rollback org creation - use service role would be ideal, but we can't from client
-        // The org will be orphaned but that's better than a partial state
-        console.error("Failed to add member, org may be orphaned:", memberError);
-        throw memberError;
-      }
-
-      // Now that we're a member, we can read the full organization
-      const { data: fullOrg, error: fetchError } = await supabase
-        .from("organizations")
-        .select("*")
-        .eq("id", orgId)
-        .single();
-
-      if (fetchError) throw fetchError;
-
-      return fullOrg as Organization;
     },
     onSuccess: async () => {
       await refreshOrganization();
