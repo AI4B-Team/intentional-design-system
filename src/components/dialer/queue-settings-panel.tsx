@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Clock, FileText, Zap } from "lucide-react";
+import { useOrganizationContext } from "@/contexts/OrganizationContext";
 
 interface QueueSettings {
   id: string;
@@ -71,15 +72,18 @@ export function QueueSettingsPanel({
   }, [queue]);
 
   const { data: scripts = [] } = useQuery({
-    queryKey: ["call-scripts"],
+    queryKey: ["call-scripts", organizationId],
     queryFn: async () => {
+      if (!organizationId) return [];
       const { data } = await supabase
         .from("call_scripts")
         .select("id, name")
         .eq("is_active", true)
+        .or(`organization_id.eq.${organizationId},is_system.eq.true`)
         .order("name");
       return data || [];
     },
+    enabled: !!organizationId,
   });
 
   const updateQueue = useMutation({
