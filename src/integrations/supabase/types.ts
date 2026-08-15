@@ -4475,6 +4475,7 @@ export type Database = {
           error_message: string | null
           ghl_id: string | null
           id: string
+          organization_id: string | null
           record_id: string | null
           record_type: string
           status: string
@@ -4487,6 +4488,7 @@ export type Database = {
           error_message?: string | null
           ghl_id?: string | null
           id?: string
+          organization_id?: string | null
           record_id?: string | null
           record_type: string
           status: string
@@ -4499,13 +4501,22 @@ export type Database = {
           error_message?: string | null
           ghl_id?: string | null
           id?: string
+          organization_id?: string | null
           record_id?: string | null
           record_type?: string
           status?: string
           sync_type?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ghl_sync_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inbox_messages: {
         Row: {
