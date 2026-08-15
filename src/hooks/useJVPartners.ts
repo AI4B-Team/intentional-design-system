@@ -249,7 +249,9 @@ export function useCreateJVOpportunity() {
       if (!user) throw new Error("Not authenticated");
       const insertData = {
         user_id: user.id,
+        organization_id: getActiveOrganizationId(),
         title: data.title || "",
+
         description: data.description,
         capital_needed: data.capital_needed,
         your_contribution: data.your_contribution,
