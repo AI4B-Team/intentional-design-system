@@ -93,6 +93,7 @@ export function useDailyReport() {
           supabase.from("appointments").select("id, property_id, scheduled_time, status, outcome, notes"),
           organizationId,
           userId,
+          "created_by",
         )
           .gte("scheduled_time", format(yesterdayStart, "yyyy-MM-dd'T'HH:mm:ss"))
           .order("scheduled_time", { ascending: true }),
@@ -100,12 +101,14 @@ export function useDailyReport() {
           supabase.from("offers").select("id, property_id, created_at, response, offer_amount"),
           organizationId,
           userId,
+          "created_by",
         )
           .gte("created_at", format(weekAgo, "yyyy-MM-dd'T'HH:mm:ss")),
         scopeToWorkspace(
           supabase.from("outreach_log").select("id, target_id, channel, status, created_at, response_content"),
           organizationId,
           userId,
+          "created_by",
         )
           .gte("created_at", format(weekAgo, "yyyy-MM-dd'T'HH:mm:ss")),
       ]);

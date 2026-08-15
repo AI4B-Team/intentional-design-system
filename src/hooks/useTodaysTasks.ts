@@ -38,6 +38,7 @@ export function useTodaysTasks() {
         `),
         organizationId,
         user!.id,
+        "created_by",
       )
         .gte("scheduled_time", dayStart.toISOString())
         .lte("scheduled_time", dayEnd.toISOString())

@@ -195,6 +195,7 @@ function useCalendarEvents(currentDate: Date) {
         supabase.from("appointments").select(`id, scheduled_time, appointment_type, status, notes, property_id, properties!inner(address, city, state)`),
         organizationId,
         userId,
+        "created_by",
       )
         .gte("scheduled_time", rangeStart.toISOString())
         .lte("scheduled_time", rangeEnd.toISOString())
