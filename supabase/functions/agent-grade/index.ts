@@ -77,18 +77,24 @@ async function gradeOrg(supabase: ReturnType<typeof createClient>, organizationI
     const score = Math.round(clamp(sigScore + equityScore + freshness + enrScore));
     const tier = score >= 80 ? "hot" : score >= 60 ? "warm" : "cold";
 
-    const { error } = await supabase.from("leads_scores").insert({
-      organization_id: organizationId,
-      lead_property_id: lead.id,
-      opportunity_score: score,
-      tier,
-      score_breakdown: {
-        signal: Math.round(sigScore),
-        equity: Math.round(equityScore),
-        freshness: Math.round(freshness),
-        enrichment: Math.round(enrScore),
+    // One score row per lead: refresh in place instead of appending history,
+    // which previously grew the table by hundreds of rows per lead.
+    const { error } = await supabase.from("leads_scores").upsert(
+      {
+        organization_id: organizationId,
+        lead_property_id: lead.id,
+        opportunity_score: score,
+        tier,
+        computed_at: new Date().toISOString(),
+        score_breakdown: {
+          signal: Math.round(sigScore),
+          equity: Math.round(equityScore),
+          freshness: Math.round(freshness),
+          enrichment: Math.round(enrScore),
+        },
       },
-    });
+      { onConflict: "lead_property_id" },
+    );
     if (!error) scored++;
   }
 
