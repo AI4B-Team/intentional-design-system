@@ -42,7 +42,7 @@ export function AttachContextPopover({ children, onAttach }: AttachContextPopove
       let query = scopeToWorkspace(
         supabase
           .from("properties")
-          .select("id, address, city, state, arv, asking_price, status")
+          .select("id, address, city, state, arv, estimated_value, status")
           .limit(20)
           .order("created_at", { ascending: false }),
         organizationId,
@@ -115,7 +115,7 @@ export function AttachContextPopover({ children, onAttach }: AttachContextPopove
     onAttach({
       type: "property",
       label: `${p.address}, ${p.city || ""} ${p.state || ""}`.trim(),
-      data: { id: p.id, address: p.address, city: p.city, state: p.state, arv: p.arv, asking_price: p.asking_price, status: p.status },
+      data: { id: p.id, address: p.address, city: p.city, state: p.state, arv: p.arv, asking_price: p.estimated_value, status: p.status },
     });
     setOpen(false);
   };
@@ -179,7 +179,7 @@ export function AttachContextPopover({ children, onAttach }: AttachContextPopove
                       <div className="flex items-center gap-2 mt-0.5">
                         <span className="text-[10px] text-muted-foreground">{p.city}, {p.state}</span>
                         <span className="text-[10px] text-muted-foreground">ARV: {fmt(p.arv)}</span>
-                        <span className="text-[10px] text-muted-foreground">Ask: {fmt(p.asking_price)}</span>
+                        <span className="text-[10px] text-muted-foreground">Ask: {fmt(p.estimated_value)}</span>
                       </div>
                     </button>
                   ))

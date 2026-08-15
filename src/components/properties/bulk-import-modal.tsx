@@ -386,7 +386,7 @@ export function BulkImportModal({ open, onOpenChange, onSuccess }: BulkImportMod
       sqft: mapped.sqft ? parseInt(mapped.sqft.replace(/,/g, ""), 10) || null : null,
       property_type: mapped.property_type || null,
       arv: mapped.arv ? parseFloat(mapped.arv.replace(/[$,]/g, "")) || null : null,
-      asking_price: mapped.asking_price ? parseFloat(mapped.asking_price.replace(/[$,]/g, "")) || null : null,
+      estimated_value: mapped.asking_price ? parseFloat(mapped.asking_price.replace(/[$,]/g, "")) || null : null,
       owner_name: mapped.owner_name || null,
       owner_phone: mapped.owner_phone || null,
       owner_email: mapped.owner_email || null,

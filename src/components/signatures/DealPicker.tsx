@@ -59,7 +59,7 @@ export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
       const { data, error } = await scopeToWorkspace(
         supabase
           .from("properties")
-          .select("id, address, city, state, zip, owner_name, owner_email, owner_phone, estimated_value, arv, repair_estimate, status, beds, baths, sqft, year_built, property_type, asking_price, earnest_money"),
+          .select("id, address, city, state, zip, owner_name, owner_email, owner_phone, estimated_value, arv, repair_estimate, status, beds, baths, sqft, year_built, property_type"),
         organizationId,
         user?.id,
       )
@@ -79,10 +79,10 @@ export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
           ownerEmail: p.owner_email || "",
           ownerPhone: p.owner_phone || "",
           estimatedValue: p.estimated_value,
-          askingPrice: p.asking_price,
+          askingPrice: p.estimated_value,
           arv: p.arv,
           repairEstimate: p.repair_estimate,
-          earnestMoney: p.earnest_money,
+          earnestMoney: null,
           status: p.status || "new",
           beds: p.beds,
           baths: p.baths,
