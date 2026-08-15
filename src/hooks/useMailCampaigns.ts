@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { scopeToWorkspace, scopeConnectionToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
@@ -469,14 +469,19 @@ export function useMailLists() {
 // Suppression List
 export function useSuppressionList() {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
 
   return useQuery({
-    queryKey: ["suppression-list", user?.id],
+    queryKey: ["suppression-list", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_suppression_list")
-        .select("*")
-        .order("added_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("mail_suppression_list")
+          .select("*")
+          .order("added_at", { ascending: false }),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
       return data;
@@ -493,7 +498,7 @@ export function useAddToSuppressionList() {
     mutationFn: async (entry: { address: string; reason: string; source: string }) => {
       const { data, error } = await supabase
         .from("mail_suppression_list")
-        .insert({ ...entry, user_id: user!.id })
+        .insert({ ...entry, user_id: user!.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
 
