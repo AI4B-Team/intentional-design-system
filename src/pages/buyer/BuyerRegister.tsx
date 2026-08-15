@@ -106,9 +106,14 @@ export default function BuyerRegister() {
 
       // Create buyer record (we need to associate with a wholesaler - for now use a placeholder)
       // In a real implementation, this would be scoped to a specific wholesaler via URL param
+      // The registration link can carry ?org=<workspace id> so the buyer lands
+      // in the wholesaler's workspace instead of being orphaned.
+      const orgParam = new URLSearchParams(window.location.search).get('org');
+
       const { error } = await supabase
         .from('cash_buyers')
         .insert({
+          organization_id: orgParam || null,
           // Note: In production, user_id should come from the wholesaler's context
           // For now, we'll need the buyer to be "claimed" by a wholesaler or use a system account
           user_id: '00000000-0000-0000-0000-000000000000', // Placeholder - should be wholesaler ID
