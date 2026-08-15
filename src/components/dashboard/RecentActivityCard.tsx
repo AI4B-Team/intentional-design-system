@@ -23,7 +23,10 @@ interface Activity {
   propertyId?: string;
 }
 
-function ActivityItem({ activity, onClick }: { activity: Activity; onClick: () => void }) {
+const ActivityItem = React.forwardRef<
+  HTMLDivElement,
+  { activity: Activity; onClick: () => void }
+>(function ActivityItem({ activity, onClick }, ref) {
   const iconMap: Record<string, { icon: React.ElementType; color: string }> = {
     property_added: { icon: Plus, color: "bg-success/10 text-success" },
     offer_sent: { icon: Send, color: "bg-accent/10 text-accent" },
@@ -36,6 +39,7 @@ function ActivityItem({ activity, onClick }: { activity: Activity; onClick: () =
 
   return (
     <div
+      ref={ref}
       className="flex items-start gap-3 p-3 hover:bg-background-secondary rounded-lg cursor-pointer transition-all duration-150 group"
       onClick={onClick}
     >
@@ -49,7 +53,7 @@ function ActivityItem({ activity, onClick }: { activity: Activity; onClick: () =
       <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all duration-150 mt-1 translate-x-2 group-hover:translate-x-0" />
     </div>
   );
-}
+});
 
 interface RecentActivityCardProps {
   activities: Activity[] | undefined;
