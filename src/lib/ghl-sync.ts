@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 // ============ TYPES ============
 
@@ -41,7 +43,7 @@ async function callGHLSync(action: string, data: Record<string, unknown>): Promi
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ action, ...data }),
+    body: JSON.stringify({ action, organization_id: getActiveOrganizationId(), ...data }),
   });
 
   const result = await response.json();
@@ -111,6 +113,7 @@ export async function bulkSyncToGHL(
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export function useSyncPropertyToGHL() {
   const queryClient = useQueryClient();
@@ -193,15 +196,19 @@ export function useBulkSyncToGHL() {
 
 export function useUnsyncedPropertiesCount() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["unsynced-properties-count", user?.id],
+    queryKey: ["unsynced-properties-count", organizationId, user?.id],
     queryFn: async () => {
-      const { count, error } = await supabase
-        .from("properties")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user?.id)
-        .is("ghl_contact_id", null);
+      const { count, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id", { count: "exact", head: true })
+          .is("ghl_contact_id", null),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
       return count || 0;
