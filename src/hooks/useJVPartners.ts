@@ -25,6 +25,7 @@ export interface JVProfile {
 export interface JVOpportunity {
   id: string;
   user_id: string;
+  organization_id?: string | null;
   property_id: string | null;
   title: string;
   description: string | null;
