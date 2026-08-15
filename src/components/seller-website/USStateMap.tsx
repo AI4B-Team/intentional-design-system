@@ -49,7 +49,7 @@ export function USStateMap({ selectedStates, onToggleState, primaryColor = "#256
         customStates={customStates}
         mapSettings={{
           width: "100%",
-          height: "fit-content",
+          height: "auto",
         }}
       />
     </div>
