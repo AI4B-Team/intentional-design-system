@@ -134,6 +134,7 @@ export function useConnectClosebot() {
       } else {
         const { error } = await supabase.from("closebot_connections").insert({
           user_id: user?.id,
+          organization_id: getActiveOrganizationId(),
           api_key: apiKey,
           account_id: accountId || null,
           account_name: "Closebot Account",
