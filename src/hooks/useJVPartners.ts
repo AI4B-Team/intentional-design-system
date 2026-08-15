@@ -178,8 +178,9 @@ export function useUpdateJVProfile() {
 
 export function useJVOpportunities(filters?: JVOpportunityFilters, myOnly = false) {
   const { user } = useAuth();
+  const organizationId = getActiveOrganizationId();
   return useQuery({
-    queryKey: ["jv-opportunities", filters, myOnly, user?.id],
+    queryKey: ["jv-opportunities", filters, myOnly, user?.id, organizationId],
     queryFn: async () => {
       let query = supabase
         .from("jv_opportunities")
@@ -189,10 +190,11 @@ export function useJVOpportunities(filters?: JVOpportunityFilters, myOnly = fals
         `);
 
       if (myOnly && user) {
-        query = query.eq("user_id", user.id);
+        query = scopeToWorkspace(query, organizationId, user.id);
       } else {
         query = query.eq("visibility", "public").eq("status", "open");
       }
+
 
       if (filters?.minCapital) {
         query = query.gte("capital_needed", filters.minCapital);
