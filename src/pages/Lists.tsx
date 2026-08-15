@@ -55,6 +55,8 @@ import { DuplicateReportWidget } from "@/components/lists/duplicate-report-widge
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { format } from "date-fns";
 
 type ListType = "criteria" | "uploaded" | "stacked" | "manual";
@@ -85,13 +87,16 @@ export default function Lists() {
   const [activeTab, setActiveTab] = useState("all");
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
+  const organizationId = useCurrentOrganizationId();
+
   const { data: lists = [], isLoading } = useQuery({
-    queryKey: ["lists", user?.id],
+    queryKey: ["lists", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("lists")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("lists").select("*").order("created_at", { ascending: false }),
+        organizationId,
+        user!.id,
+      );
 
       if (error) throw error;
       return data as List[];

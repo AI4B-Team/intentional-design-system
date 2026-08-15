@@ -5,6 +5,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -28,17 +31,23 @@ export function AttachContextPopover({ children, onAttach }: AttachContextPopove
   const [loadingProps, setLoadingProps] = useState(false);
   const [loadingLists, setLoadingLists] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   // Fetch properties
   useEffect(() => {
     if (!open || tab !== "properties") return;
     const timeout = setTimeout(async () => {
       setLoadingProps(true);
-      let query = supabase
-        .from("properties")
-        .select("id, address, city, state, arv, asking_price, status")
-        .limit(20)
-        .order("created_at", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, arv, asking_price, status")
+          .limit(20)
+          .order("created_at", { ascending: false }),
+        organizationId,
+        user?.id ?? "",
+      );
 
       if (propertySearch.trim()) {
         query = query.ilike("address", `%${propertySearch.trim()}%`);
@@ -49,22 +58,26 @@ export function AttachContextPopover({ children, onAttach }: AttachContextPopove
       setLoadingProps(false);
     }, 300);
     return () => clearTimeout(timeout);
-  }, [open, tab, propertySearch]);
+  }, [open, tab, propertySearch, organizationId, user?.id]);
 
   // Fetch lists
   useEffect(() => {
     if (!open || tab !== "lists") return;
     (async () => {
       setLoadingLists(true);
-      const { data } = await supabase
-        .from("lists")
-        .select("id, name, total_records, created_at")
-        .order("created_at", { ascending: false })
-        .limit(20);
+      const { data } = await scopeToWorkspace(
+        supabase
+          .from("lists")
+          .select("id, name, total_records, created_at")
+          .order("created_at", { ascending: false })
+          .limit(20),
+        organizationId,
+        user?.id ?? "",
+      );
       setLists(data || []);
       setLoadingLists(false);
     })();
-  }, [open, tab]);
+  }, [open, tab, organizationId, user?.id]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
