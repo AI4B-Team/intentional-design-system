@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Search, MapPin, DollarSign, User, CheckCircle, Building2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentOrganizationId } from "@/lib/activeOrganization";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 

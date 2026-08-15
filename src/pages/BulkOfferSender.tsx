@@ -52,7 +52,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCurrentOrganizationId } from "@/lib/activeOrganization";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useLoiTemplates,
