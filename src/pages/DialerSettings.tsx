@@ -172,7 +172,6 @@ export default function DialerSettings() {
     <AppLayout>
       <PageLayout title="Dialer Settings">
         <Tabs defaultValue="general" className="space-y-6">
-        <Tabs defaultValue="general" className="space-y-6">
           <TabsList className="bg-muted/50">
             <TabsTrigger value="general" className="gap-2">
               <Settings className="h-4 w-4" />
