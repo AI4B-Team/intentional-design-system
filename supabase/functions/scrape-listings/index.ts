@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { requestedOrgId, resolveActiveMembership } from "../_shared/org.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,7 +37,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { query, sources, jobId } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { query, sources, jobId } = body ?? {};
     if (!query) {
       return new Response(
         JSON.stringify({ success: false, error: 'Query is required' }),
@@ -51,14 +53,9 @@ Deno.serve(async (req) => {
     );
 
     // Get user's org
-    const { data: membership } = await sbAdmin
-      .from('organization_members')
-      .select('organization_id')
-      .eq('user_id', userId)
-      .eq('status', 'active')
-      .single();
+    const membership = await resolveActiveMembership(sbAdmin, userId, requestedOrgId(body), 'organization_id');
 
-    const orgId = membership?.organization_id;
+    const orgId = membership?.organization_id as string | undefined;
 
     // Build search terms - map source names to site: filters
     const siteMap: Record<string, string> = {

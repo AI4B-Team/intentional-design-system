@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
 import {
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
   CreditCard,
   ExternalLink,
   Check,
@@ -72,7 +73,7 @@ export default function BillingSettings() {
     try {
       setBusy(planId);
       const { data, error } = await supabase.functions.invoke("stripe-checkout", {
-        body: { priceId, plan: planId, trialDays },
+        body: { priceId, plan: planId, trialDays, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
@@ -86,7 +87,9 @@ export default function BillingSettings() {
   const handleManageBilling = async () => {
     try {
       setBusy("portal");
-      const { data, error } = await supabase.functions.invoke("stripe-portal", {});
+      const { data, error } = await supabase.functions.invoke("stripe-portal", {
+        body: { organization_id: getActiveOrganizationId() },
+      });
       if (error) throw error;
       if (data?.url) window.open(data.url, "_blank");
     } catch (e: any) {
