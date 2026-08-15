@@ -4692,6 +4692,7 @@ export type Database = {
           expires_at: string | null
           id: string
           location: string | null
+          organization_id: string | null
           property_id: string | null
           proposed_split: string | null
           seeking: string | null
@@ -4710,6 +4711,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           location?: string | null
+          organization_id?: string | null
           property_id?: string | null
           proposed_split?: string | null
           seeking?: string | null
@@ -4728,6 +4730,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           location?: string | null
+          organization_id?: string | null
           property_id?: string | null
           proposed_split?: string | null
           seeking?: string | null
@@ -4739,6 +4742,13 @@ export type Database = {
           your_contribution?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "jv_opportunities_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jv_opportunities_property_id_fkey"
             columns: ["property_id"]
