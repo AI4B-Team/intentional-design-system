@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -208,12 +209,16 @@ export const DEFAULT_LOI_TEMPLATES: Omit<LoiTemplate, "id" | "user_id" | "organi
 export function useLoiTemplates() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["loi-templates"],
+    queryKey: ["loi-templates", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("loi_templates")
-        .select("*")
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("loi_templates").select("*"),
+        organizationId,
+        user!.id,
+      )
         .order("is_default", { ascending: false })
         .order("use_count", { ascending: false });
 
@@ -302,17 +307,22 @@ export function useInboxMessages(options?: {
 }) {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["inbox-messages", options],
+    queryKey: ["inbox-messages", options, organizationId, user?.id],
     queryFn: async () => {
-      let query = supabase
-        .from("inbox_messages")
-        .select(`
-          *,
-          properties:property_id (address, city, state),
-          offers:offer_id (offer_amount)
-        `)
-        .order("created_at", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase
+          .from("inbox_messages")
+          .select(`
+            *,
+            properties:property_id (address, city, state),
+            offers:offer_id (offer_amount)
+          `),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (options?.isRead !== undefined) {
         query = query.eq("is_read", options.isRead);
@@ -339,28 +349,28 @@ export function useInboxMessages(options?: {
 export function useInboxStats() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+  const scopedCount = () =>
+    scopeToWorkspace(
+      supabase.from("inbox_messages").select("*", { count: "exact", head: true }),
+      organizationId,
+      user!.id,
+    );
+
   return useQuery({
-    queryKey: ["inbox-stats"],
+    queryKey: ["inbox-stats", organizationId, user?.id],
     queryFn: async () => {
-      const { count: unread, error: unreadError } = await supabase
-        .from("inbox_messages")
-        .select("*", { count: "exact", head: true })
+      const { count: unread, error: unreadError } = await scopedCount()
         .eq("is_read", false)
         .eq("is_archived", false);
 
       if (unreadError) throw unreadError;
 
-      const { count: starred, error: starredError } = await supabase
-        .from("inbox_messages")
-        .select("*", { count: "exact", head: true })
-        .eq("is_starred", true);
+      const { count: starred, error: starredError } = await scopedCount().eq("is_starred", true);
 
       if (starredError) throw starredError;
 
-      const { count: total, error: totalError } = await supabase
-        .from("inbox_messages")
-        .select("*", { count: "exact", head: true })
-        .eq("is_archived", false);
+      const { count: total, error: totalError } = await scopedCount().eq("is_archived", false);
 
       if (totalError) throw totalError;
 
@@ -419,13 +429,16 @@ export function useMarkMessagesRead() {
 export function useOfferBatches() {
   const { user } = useAuth();
 
+  const organizationId = getActiveOrganizationId();
+
   return useQuery({
-    queryKey: ["offer-batches"],
+    queryKey: ["offer-batches", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("offer_batches")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("offer_batches").select("*"),
+        organizationId,
+        user!.id,
+      ).order("created_at", { ascending: false });
 
       if (error) throw error;
       return data as unknown as OfferBatch[];
