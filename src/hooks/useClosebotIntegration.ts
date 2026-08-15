@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
-import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { scopeToWorkspace, scopeConnectionToWorkspace } from "@/lib/workspaceScope";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { toast } from "sonner";
 import type { Json } from "@/integrations/supabase/types";
@@ -71,15 +71,16 @@ export const DEFAULT_FIELD_MAPPINGS: Record<string, string> = {
 // Hooks
 export function useClosebotConnection() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["closebot-connection", user?.id],
+    queryKey: ["closebot-connection", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("closebot_connections")
-        .select("*")
-        .eq("user_id", user?.id)
-        .maybeSingle();
+      const { data, error } = await scopeConnectionToWorkspace(
+        supabase.from("closebot_connections").select("*"),
+        organizationId,
+        user!.id,
+      ).maybeSingle();
 
       if (error) throw error;
       
@@ -111,11 +112,11 @@ export function useConnectClosebot() {
       // For now, we'll simulate a successful test
       
       // Create or update connection
-      const { data: existing } = await supabase
-        .from("closebot_connections")
-        .select("id")
-        .eq("user_id", user?.id)
-        .maybeSingle();
+      const { data: existing } = await scopeConnectionToWorkspace(
+        supabase.from("closebot_connections").select("id"),
+        getActiveOrganizationId(),
+        user!.id,
+      ).maybeSingle();
 
       if (existing) {
         const { error } = await supabase
@@ -164,7 +165,8 @@ export function useDisconnectClosebot() {
       const { error } = await supabase
         .from("closebot_connections")
         .update({ is_active: false, api_key: null })
-        .eq("user_id", user?.id);
+        .eq("user_id", user!.id)
+        .eq("organization_id", getActiveOrganizationId() ?? "");
 
       if (error) throw error;
     },
@@ -205,7 +207,8 @@ export function useUpdateClosebotSettings() {
       const { error } = await supabase
         .from("closebot_connections")
         .update(dbUpdates)
-        .eq("user_id", user?.id);
+        .eq("user_id", user!.id)
+        .eq("organization_id", getActiveOrganizationId() ?? "");
 
       if (error) throw error;
     },
