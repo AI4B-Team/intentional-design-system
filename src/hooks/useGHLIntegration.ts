@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
-import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { scopeToWorkspace, scopeConnectionToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -84,17 +84,18 @@ export const DEFAULT_STAGE_MAPPINGS: StageMapping[] = [
 
 export function useGHLConnection() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["ghl-connection", user?.id],
+    queryKey: ["ghl-connection", organizationId, user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const { data, error } = await supabase
-        .from("ghl_connections")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const { data, error } = await scopeConnectionToWorkspace(
+        supabase.from("ghl_connections").select("*"),
+        organizationId,
+        user.id,
+      ).maybeSingle();
 
       if (error) throw error;
       return data as GHLConnection | null;
@@ -146,11 +147,11 @@ export function useConnectGHL() {
       if (!user?.id) throw new Error("Not authenticated");
 
       // Check if connection already exists
-      const { data: existing } = await supabase
-        .from("ghl_connections")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const { data: existing } = await scopeConnectionToWorkspace(
+        supabase.from("ghl_connections").select("id"),
+        getActiveOrganizationId(),
+        user.id,
+      ).maybeSingle();
 
       if (existing) {
         // Update existing
@@ -161,9 +162,10 @@ export function useConnectGHL() {
             location_id: locationId,
             account_name: accountName || `Location ${locationId.substring(0, 8)}`,
             is_active: true,
+            organization_id: getActiveOrganizationId(),
             updated_at: new Date().toISOString(),
           })
-          .eq("user_id", user.id)
+          .eq("id", existing.id)
           .select()
           .single();
 
@@ -222,7 +224,8 @@ export function useDisconnectGHL() {
           access_token: null,
           refresh_token: null,
         })
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .eq("organization_id", getActiveOrganizationId() ?? "");
 
       if (error) throw error;
     },
@@ -248,6 +251,7 @@ export function useUpdateGHLSettings() {
           updated_at: new Date().toISOString(),
         })
         .eq("user_id", user.id)
+        .eq("organization_id", getActiveOrganizationId() ?? "")
         .select()
         .single();
 
@@ -304,7 +308,8 @@ export function useTriggerGHLSync() {
       await supabase
         .from("ghl_connections")
         .update({ last_sync_at: new Date().toISOString() })
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .eq("organization_id", getActiveOrganizationId() ?? "");
 
       return { synced: 0, syncType };
     },
