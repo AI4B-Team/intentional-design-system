@@ -149,7 +149,7 @@ export function useScrapeJobs() {
         city: lead.city,
         state: lead.state,
         zip: lead.zip,
-        asking_price: lead.price,
+        estimated_value: lead.price,
         property_type: lead.property_type,
         beds: lead.bedrooms,
         baths: lead.bathrooms,

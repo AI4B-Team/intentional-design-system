@@ -43,16 +43,16 @@ export function usePipelineValueStats() {
       // Fetch properties with financial data for each stage
       const [leadsResult, offersResult, contractedResult, soldResult] = await Promise.all([
         // Leads: new, contacted, appointment statuses (Discovery - Red)
-        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["new", "contacted", "appointment"]),
+        scoped("id, estimated_value, arv, repair_estimate").in("status", ["new", "contacted", "appointment"]),
         
         // Offers: offer_made, negotiating, follow_up statuses (Intent - Yellow)
-        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["offer_made", "negotiating", "follow_up"]),
+        scoped("id, estimated_value, arv, repair_estimate").in("status", ["offer_made", "negotiating", "follow_up"]),
         
         // Contracted: under_contract, marketing statuses (Commitment - Blue)
-        scoped("id, asking_price, arv, repair_estimate, equity_amount").in("status", ["under_contract", "marketing"]),
+        scoped("id, estimated_value, arv, repair_estimate").in("status", ["under_contract", "marketing"]),
         
         // Sold: closed, sold statuses (Outcome - Green)
-        scoped("id, asking_price, arv, repair_estimate, equity_amount, sale_price").in("status", ["closed", "sold"]),
+        scoped("id, estimated_value, arv, repair_estimate").in("status", ["closed", "sold"]),
       ]);
 
       const calculateStats = (properties: any[] | null) => {
@@ -61,16 +61,13 @@ export function usePipelineValueStats() {
         }
 
         const count = properties.length;
-        const totalValue = properties.reduce((sum, p) => sum + (p.asking_price || 0), 0);
+        const totalValue = properties.reduce((sum, p) => sum + (p.estimated_value || 0), 0);
         
         // Profit potential = sum of equity amounts, or estimate based on ARV - asking - repairs
         const profitPotential = properties.reduce((sum, p) => {
-          if (p.equity_amount) {
-            return sum + p.equity_amount;
-          }
           // Fallback calculation
           const arv = p.arv || 0;
-          const asking = p.asking_price || 0;
+          const asking = p.estimated_value || 0;
           const repairs = p.repair_estimate || 0;
           const estimatedProfit = arv - asking - repairs;
           return sum + Math.max(0, estimatedProfit);
@@ -86,12 +83,12 @@ export function usePipelineValueStats() {
         }
 
         const count = properties.length;
-        const totalValue = properties.reduce((sum, p) => sum + (p.sale_price || p.asking_price || 0), 0);
+        const totalValue = properties.reduce((sum, p) => sum + (p.arv || p.estimated_value || 0), 0);
         
         // For sold, this is realized profit
         const profitPotential = properties.reduce((sum, p) => {
-          const salePrice = p.sale_price || p.arv || 0;
-          const costBasis = p.asking_price || 0;
+          const salePrice = p.arv || p.arv || 0;
+          const costBasis = p.estimated_value || 0;
           const repairs = p.repair_estimate || 0;
           return sum + Math.max(0, salePrice - costBasis - repairs);
         }, 0);

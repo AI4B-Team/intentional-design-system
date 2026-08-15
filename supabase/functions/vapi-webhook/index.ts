@@ -388,7 +388,7 @@ async function toolTransferCall(supabase: any, call: any, args: any) {
 async function toolLookupProperty(supabase: any, args: any) {
   const { address, phone_number } = args;
 
-  let query = supabase.from("properties").select("id, address, city, state, zip, arv, asking_price, status, owner_name, owner_phone, bedrooms, bathrooms, sqft, year_built, repair_estimate, equity_amount");
+  let query = supabase.from("properties").select("id, address, city, state, zip, arv, estimated_value, status, owner_name, owner_phone, beds, baths, sqft, year_built, repair_estimate, equity_percent");
 
   if (address) {
     query = query.ilike("address", `%${address}%`);
@@ -408,15 +408,15 @@ async function toolLookupProperty(supabase: any, args: any) {
     properties: data.map((p: any) => ({
       address: `${p.address}, ${p.city}, ${p.state} ${p.zip}`,
       arv: p.arv,
-      asking_price: p.asking_price,
+      asking_price: p.estimated_value,
       status: p.status,
       owner_name: p.owner_name,
-      beds: p.bedrooms,
-      baths: p.bathrooms,
+      beds: p.beds,
+      baths: p.baths,
       sqft: p.sqft,
       year_built: p.year_built,
       repair_estimate: p.repair_estimate,
-      equity: p.equity_amount,
+      equity: p.equity_percent,
     })),
   };
 }

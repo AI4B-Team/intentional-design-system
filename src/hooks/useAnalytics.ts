@@ -102,10 +102,11 @@ function getComparisonRange(range: DateRange): DateRange {
  * PostgREST `or` filter that keeps analytics scoped to the active workspace.
  * Legacy rows without an organization are still counted for their own creator.
  */
-function workspaceFilter(userId: string | undefined): string {
+function workspaceFilter(userId: string | undefined, ownerColumn = "user_id"): string {
   const organizationId = getActiveOrganizationId();
-  if (!organizationId) return `user_id.eq.${userId ?? "00000000-0000-0000-0000-000000000000"}`;
-  return `organization_id.eq.${organizationId},and(organization_id.is.null,user_id.eq.${userId ?? "00000000-0000-0000-0000-000000000000"})`;
+  const owner = userId ?? "00000000-0000-0000-0000-000000000000";
+  if (!organizationId) return `${ownerColumn}.eq.${owner}`;
+  return `organization_id.eq.${organizationId},and(organization_id.is.null,${ownerColumn}.eq.${owner})`;
 }
 
 // ============ OVERVIEW ANALYTICS ============
@@ -113,6 +114,7 @@ function workspaceFilter(userId: string | undefined): string {
 export function useOverviewAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
   const compareRange = getComparisonRange(dateRange);
 
   return useQuery({
@@ -151,13 +153,13 @@ export function useOverviewAnalytics(dateRange: DateRange) {
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("scheduled_time", dateRange.from.toISOString())
           .lte("scheduled_time", dateRange.to.toISOString()),
         supabase
           .from("offers")
           .select("id", { count: "exact", head: true })
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
@@ -191,13 +193,13 @@ export function useOverviewAnalytics(dateRange: DateRange) {
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("scheduled_time", compareRange.from.toISOString())
           .lte("scheduled_time", compareRange.to.toISOString()),
         supabase
           .from("offers")
           .select("id", { count: "exact", head: true })
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("created_at", compareRange.from.toISOString())
           .lte("created_at", compareRange.to.toISOString()),
         supabase
@@ -286,6 +288,7 @@ export function useOverviewAnalytics(dateRange: DateRange) {
 export function usePipelineAnalytics() {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["analytics-pipeline-enhanced", user?.id, orgFilter],
@@ -394,6 +397,7 @@ export function usePipelineAnalytics() {
 export function useStalledDeals() {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["stalled-deals", user?.id, orgFilter],
@@ -505,6 +509,7 @@ export function useSourceRecommendations(sources: SourceBreakdown[] | undefined)
 export function useSourceAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["analytics-sources", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
@@ -594,6 +599,7 @@ export function useSourceAnalytics(dateRange: DateRange) {
 export function useDealFlowTimeSeries(dateRange: DateRange) {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["analytics-dealflow", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
@@ -626,13 +632,13 @@ export function useDealFlowTimeSeries(dateRange: DateRange) {
         supabase
           .from("offers")
           .select("id, created_at")
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("appointments")
           .select("id, scheduled_time")
-          .or(orgFilter)
+          .or(orgFilterCreatedBy)
           .gte("scheduled_time", dateRange.from.toISOString())
           .lte("scheduled_time", dateRange.to.toISOString()),
       ]);
@@ -686,6 +692,7 @@ export function useDealFlowTimeSeries(dateRange: DateRange) {
 export function useMarketingAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["analytics-marketing", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
@@ -785,6 +792,7 @@ export interface ExpenseCategory {
 export function useFinancialAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
   const orgFilter = workspaceFilter(user?.id);
+  const orgFilterCreatedBy = workspaceFilter(user?.id, "created_by");
 
   return useQuery({
     queryKey: ["analytics-financial-enhanced", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id, orgFilter],
