@@ -156,6 +156,7 @@ export function useOfferActivity() {
         supabase.from("offers").select("id"),
         organizationId,
         user.id,
+        "created_by",
       );
       if (offersError) throw offersError;
       const offerIds = (workspaceOffers || []).map((o) => o.id);
