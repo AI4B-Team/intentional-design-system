@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import {
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
   Building2,
   Landmark,
   UserCheck,
@@ -438,6 +439,7 @@ export default function Welcome() {
       // 4. Call the edge function
       const { data: result, error: fnErr } = await supabase.functions.invoke("welcome-finish", {
         body: {
+          organization_id: getActiveOrganizationId(),
           titleCompany: data.titleCompany,
           lender: data.lender,
           agent: data.agent,

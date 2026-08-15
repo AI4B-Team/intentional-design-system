@@ -1,6 +1,7 @@
 import * as React from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 interface SkipTraceInput {
   firstName?: string;
@@ -61,7 +62,7 @@ export function useSkipTrace() {
 
     try {
       const { data, error } = await supabase.functions.invoke("skip-trace", {
-        body: input,
+        body: { ...input, organization_id: getActiveOrganizationId() },
       });
 
       if (error) throw error;

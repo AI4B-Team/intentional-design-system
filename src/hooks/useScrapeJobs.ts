@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
 import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { toast } from "sonner";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export interface ScrapeJob {
   id: string;
@@ -117,7 +118,7 @@ export function useScrapeJobs() {
   const runScrape = useMutation({
     mutationFn: async (params: { query: string; sources?: string[]; jobId?: string }) => {
       const { data, error } = await supabase.functions.invoke("scrape-listings", {
-        body: params,
+        body: { ...params, organization_id: getActiveOrganizationId() },
       });
       if (error) throw error;
       return data;
