@@ -101,13 +101,14 @@ serve(async (req) => {
 
       const { data: mailPiece } = await supabaseAdmin
         .from("mail_pieces")
-        .select("*, mail_campaigns!inner(user_id)")
+        .select("*, mail_campaigns!inner(user_id, organization_id)")
         .eq("lob_id", body.id)
         .single();
 
       if (mailPiece) {
         await supabaseAdmin.from("mail_suppression_list").upsert({
           user_id: mailPiece.mail_campaigns.user_id,
+          organization_id: mailPiece.mail_campaigns.organization_id ?? null,
           address: `${mailPiece.recipient_address}, ${mailPiece.recipient_city}, ${mailPiece.recipient_state} ${mailPiece.recipient_zip}`,
           reason: "returned",
           source: "campaign_return",
