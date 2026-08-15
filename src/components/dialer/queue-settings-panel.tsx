@@ -63,6 +63,7 @@ export function QueueSettingsPanel({
   queue,
 }: QueueSettingsPanelProps) {
   const queryClient = useQueryClient();
+  const { organizationId } = useOrganizationContext();
   const [settings, setSettings] = React.useState<QueueSettings | null>(null);
 
   React.useEffect(() => {
