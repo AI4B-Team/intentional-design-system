@@ -6,23 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -33,234 +16,54 @@ import {
   PenTool,
   Send,
   Clock,
-  CheckCircle,
-  XCircle,
-  MoreVertical,
-  Eye,
-  Mail,
-  Download,
-  Trash2,
-  FileText,
   Users,
-  AlertCircle,
-  RefreshCw,
   Link2,
-  UserPlus,
-  Ban,
-  ArrowRight,
-  Phone,
   TrendingUp,
   BookOpen,
   Layers,
-  ArrowLeft,
   Sparkles,
-  Building2,
-  Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, differenceInHours, differenceInDays } from "date-fns";
+import { differenceInHours } from "date-fns";
 import { toast } from "sonner";
 import { useSearchParams } from "react-router-dom";
 import { TemplateLibrary } from "@/components/signatures/TemplateLibrary";
 import { ClauseLibrary } from "@/components/signatures/ClauseLibrary";
-import { VariableFillForm } from "@/components/signatures/VariableFillForm";
 import { SignatureTemplate } from "@/types/signature-templates";
-import { DocumentFieldBuilder } from "@/components/signatures/DocumentFieldBuilder";
 import { DocumentField } from "@/types/document-fields";
-import { SignerManager } from "@/components/signatures/SignerManager";
-import { AuditTrail } from "@/components/signatures/AuditTrail";
-import { SigningWorkflow, createDefaultWorkflow, createSigner, AuditEvent } from "@/types/signing-workflow";
-import { DealPicker, DealData, dealToVariables } from "@/components/signatures/DealPicker";
+import { SigningWorkflow, createDefaultWorkflow } from "@/types/signing-workflow";
+import { DealData, dealToVariables } from "@/components/signatures/DealPicker";
 import { SigningView } from "@/components/signatures/SigningView";
 import { CompletionCertificate } from "@/components/signatures/CompletionCertificate";
 import { SignatureCaptureResult } from "@/components/signatures/SignaturePad";
 import { BulkSendDialog } from "@/components/signatures/BulkSendDialog";
 import { ReminderManager } from "@/components/signatures/ReminderManager";
-import { WorkflowVisualizer } from "@/components/signatures/WorkflowVisualizer";
 import { AIDocumentAnalysis } from "@/components/signatures/AIDocumentAnalysis";
-import { SignerAuthConfigPanel, SignerAuthChallenge, defaultAuthConfig } from "@/components/signatures/SignerAuthentication";
-import type { SignerAuthConfig, SignerAuthResult } from "@/components/signatures/SignerAuthentication";
+import { SignerAuthChallenge, defaultAuthConfig } from "@/components/signatures/SignerAuthentication";
+import type { SignerAuthConfig } from "@/components/signatures/SignerAuthentication";
 import { SignaturesDashboard } from "@/components/signatures/SignaturesDashboard";
 import { AuditTrailViewer, generateMockAuditTrail } from "@/components/signatures/AuditTrailViewer";
 import { DocumentVersioning } from "@/components/signatures/DocumentVersioning";
 import { MobileSigningManager } from "@/components/signatures/MobileSigningView";
 import { WebhookIntegration } from "@/components/signatures/WebhookIntegration";
+import {
+  AIActionMode,
+  SendStep,
+  SignatureRequest,
+  SignatureStatus,
+  mockRequests,
+} from "@/components/signatures/signature-request-types";
+import { SignatureRequestCard } from "@/components/signatures/SignatureRequestCard";
+import { SendFlowDialog } from "@/components/signatures/SendFlowDialog";
+import { RequestDetailDialog } from "@/components/signatures/RequestDetailDialog";
 
-// ─── Types ──────────────────────────────────────────────────
-type SignatureStatus = "draft" | "pending" | "signed" | "declined" | "expired";
-type AIActionMode = "manual" | "ai_assist" | "ai_auto";
+const aiStatusForMode = (mode: AIActionMode) =>
+  mode === "ai_auto" ? "Monitoring" : mode === "ai_assist" ? "Awaiting Approval" : undefined;
 
-const AI_MODE_CONFIG: Record<AIActionMode, { label: string; icon: string; description: string; color: string }> = {
-  manual: { label: "Manual", icon: "🧍", description: "AI suggests — you decide", color: "text-muted-foreground" },
-  ai_assist: { label: "AI Assist", icon: "🤖", description: "AI drafts — you approve with one click", color: "text-brand" },
-  ai_auto: { label: "AI Auto", icon: "⚡", description: "AI sends reminders automatically on your rules", color: "text-warning" },
-};
-
-interface SignatureRequest {
-  id: string;
-  documentName: string;
-  recipientName: string;
-  recipientEmail: string;
-  status: SignatureStatus;
-  createdAt: Date;
-  sentAt?: Date;
-  signedAt?: Date;
-  expiresAt?: Date;
-  propertyAddress?: string;
-  viewedAt?: Date;
-  viewCount?: number;
-  lastActivity?: string;
-  templateId?: string;
-  workflow?: SigningWorkflow;
-  dealId?: string;
-  dealStatus?: string;
-  aiMode?: AIActionMode;
-  aiStatus?: string; // e.g. "Follow-Up Ready", "Reminder Scheduled", "Waiting on Approval"
-}
-
-// ─── Mock data ──────────────────────────────────────────────
-const mockRequests: SignatureRequest[] = [
-  {
-    id: "1",
-    documentName: "Purchase Agreement - 123 Main St",
-    recipientName: "John Smith",
-    recipientEmail: "john.smith@email.com",
-    status: "pending",
-    createdAt: new Date("2024-01-20"),
-    sentAt: new Date("2024-01-20"),
-    expiresAt: new Date(Date.now() + 36 * 60 * 60 * 1000),
-    propertyAddress: "123 Main St, Austin, TX",
-    viewedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
-    viewCount: 3,
-    lastActivity: "Viewed 3h Ago",
-    templateId: "tpl-1",
-    dealId: "deal-1",
-    dealStatus: "offer_made",
-    aiMode: "ai_assist",
-    aiStatus: "Follow-Up Ready",
-    workflow: {
-      signingOrder: "sequential",
-      signers: [
-        { id: "s1", name: "John Smith", email: "john.smith@email.com", role: "signer", order: 1, status: "viewed", viewCount: 3, viewedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), sentAt: new Date("2024-01-20") },
-        { id: "s2", name: "Jane Smith", email: "jane.smith@email.com", role: "signer", order: 2, status: "pending", viewCount: 0 },
-      ],
-      reminders: { enabled: true, frequency: "every_2_days", maxReminders: 5, remindersSent: 1, lastReminderAt: new Date(Date.now() - 48 * 60 * 60 * 1000) },
-      expirationDays: 30,
-      auditTrail: [
-        { id: "a1", timestamp: new Date("2024-01-20T09:00:00"), action: "created", actor: "You", details: "Document created from Purchase Agreement template" },
-        { id: "a2", timestamp: new Date("2024-01-20T09:05:00"), action: "sent", actor: "System", actorEmail: "john.smith@email.com", details: "Sent to John Smith" },
-        { id: "a3", timestamp: new Date("2024-01-20T14:30:00"), action: "viewed", actor: "John Smith", actorEmail: "john.smith@email.com", ipAddress: "192.168.1.42" },
-        { id: "a4", timestamp: new Date("2024-01-22T09:00:00"), action: "reminder_sent", actor: "System", details: "Auto-reminder sent to John Smith" },
-      ],
-    },
-  },
-  {
-    id: "2",
-    documentName: "Assignment Contract - 456 Oak Ave",
-    recipientName: "Sarah Johnson",
-    recipientEmail: "sarah.j@email.com",
-    status: "signed",
-    createdAt: new Date("2024-01-18"),
-    sentAt: new Date("2024-01-18"),
-    signedAt: new Date("2024-01-19"),
-    propertyAddress: "456 Oak Ave, Dallas, TX",
-    viewCount: 2,
-    lastActivity: "Signed",
-    templateId: "tpl-2",
-    dealId: "deal-2",
-    dealStatus: "under_contract",
-    aiMode: "ai_auto",
-    aiStatus: "Complete — Archived",
-  },
-  {
-    id: "3",
-    documentName: "Lead Paint Disclosure",
-    recipientName: "Mike Williams",
-    recipientEmail: "mike.w@email.com",
-    status: "declined",
-    createdAt: new Date("2024-01-15"),
-    sentAt: new Date("2024-01-15"),
-    propertyAddress: "789 Pine Rd, Houston, TX",
-    viewCount: 1,
-    lastActivity: "Declined",
-    templateId: "tpl-3",
-    aiMode: "manual",
-  },
-  {
-    id: "4",
-    documentName: "Seller Financing Agreement",
-    recipientName: "Emily Brown",
-    recipientEmail: "emily.brown@email.com",
-    status: "draft",
-    createdAt: new Date("2024-01-22"),
-    viewCount: 0,
-    lastActivity: "Draft",
-  },
-  {
-    id: "5",
-    documentName: "Addendum - 321 Elm St",
-    recipientName: "David Lee",
-    recipientEmail: "david.lee@email.com",
-    status: "pending",
-    createdAt: new Date("2024-01-21"),
-    sentAt: new Date("2024-01-21"),
-    expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    propertyAddress: "321 Elm St, San Antonio, TX",
-    viewedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
-    viewCount: 5,
-    lastActivity: "Viewed 12h Ago · No Action",
-    templateId: "tpl-5",
-    dealId: "deal-5",
-    dealStatus: "negotiating",
-    aiMode: "ai_auto",
-    aiStatus: "Reminder Scheduled",
-  },
-];
-
-const statusConfig: Record<SignatureStatus, { label: string; color: string; icon: React.ElementType }> = {
-  draft: { label: "In Progress", color: "bg-muted text-muted-foreground", icon: FileText },
-  pending: { label: "Out For Signature", color: "bg-warning/10 text-warning border-warning/20", icon: Clock },
-  signed: { label: "Completed", color: "bg-success/10 text-success border-success/20", icon: CheckCircle },
-  declined: { label: "Action Required", color: "bg-destructive/10 text-destructive border-destructive/20", icon: XCircle },
-  expired: { label: "Expired", color: "bg-muted text-muted-foreground", icon: AlertCircle },
-};
-
-// ─── Helpers ────────────────────────────────────────────────
-function formatTimeAgo(date: Date): string {
-  const hours = differenceInHours(new Date(), date);
-  if (hours < 1) return "Just Now";
-  if (hours < 24) return `${hours}h Ago`;
-  const days = differenceInDays(new Date(), date);
-  if (days < 7) return `${days}d Ago`;
-  if (days < 30) return `${Math.floor(days / 7)}w Ago`;
-  if (days < 365) return `${Math.floor(days / 30)}mo Ago`;
-  return `${Math.floor(days / 365)}y Ago`;
-}
-
-function getNextAction(request: SignatureRequest): { label: string; icon: React.ElementType; color: string } | null {
-  if (request.status === "signed") return { label: "Archive", icon: CheckCircle, color: "text-success" };
-  if (request.status === "pending" && request.expiresAt && differenceInHours(request.expiresAt, new Date()) <= 24) {
-    return { label: "Resend — Expires in 24h", icon: RefreshCw, color: "text-destructive" };
-  }
-  if (request.status === "pending" && request.viewedAt && !request.signedAt) {
-    const hoursSinceView = differenceInHours(new Date(), request.viewedAt);
-    if (hoursSinceView > 6) return { label: `Follow Up (SMS) — Viewed ${hoursSinceView}h Ago`, icon: Phone, color: "text-warning" };
-    return { label: "Waiting — Viewed Recently", icon: Eye, color: "text-muted-foreground" };
-  }
-  if (request.status === "pending" && !request.viewedAt) return { label: "Waiting — Not Yet Opened", icon: Clock, color: "text-muted-foreground" };
-  if (request.status === "declined") return { label: "Call Signer — Declined", icon: Phone, color: "text-destructive" };
-  if (request.status === "draft") return { label: "Send", icon: Send, color: "text-brand" };
-  return null;
-}
-
-// ─── Send Flow Steps ────────────────────────────────────────
-type SendStep = "deal" | "template" | "variables" | "fields" | "signers" | "followup_mode" | "recipient";
-
-// ─── Main Component ─────────────────────────────────────────
 export default function Signatures() {
   const [searchParams] = useSearchParams();
   const templateId = searchParams.get("template");
-  
+
   const [searchQuery, setSearchQuery] = React.useState("");
   const [requests, setRequests] = React.useState<SignatureRequest[]>(mockRequests);
   const [activeStatusFilter, setActiveStatusFilter] = React.useState("all");
@@ -298,6 +101,7 @@ export default function Signatures() {
   const [signingRequest, setSigningRequest] = React.useState<SignatureRequest | null>(null);
   const [certificateOpen, setCertificateOpen] = React.useState(false);
   const [certificateRequest, setCertificateRequest] = React.useState<SignatureRequest | null>(null);
+  const [sendAiMode, setSendAiMode] = React.useState<AIActionMode>("ai_assist");
 
   const filteredRequests = requests.filter((req) => {
     const matchesSearch =
@@ -345,8 +149,7 @@ export default function Signatures() {
     setSelectedTemplate(template);
     // Merge deal vars into template if deal already selected
     if (selectedDeal) {
-      const dealVars = dealToVariables(selectedDeal);
-      setVariableValues(dealVars);
+      setVariableValues(dealToVariables(selectedDeal));
     } else {
       setVariableValues({});
     }
@@ -370,9 +173,7 @@ export default function Signatures() {
     setSendStep("fields");
   };
 
-  const handleFieldsNext = () => {
-    setSendStep("signers");
-  };
+  const handleFieldsNext = () => setSendStep("signers");
 
   const handleSignersNext = () => {
     if (sendWorkflow.signers.length === 0) {
@@ -388,9 +189,6 @@ export default function Signatures() {
     }));
     setSendStep("followup_mode");
   };
-
-  // Follow-up mode state
-  const [sendAiMode, setSendAiMode] = React.useState<AIActionMode>("ai_assist");
 
   const handleSendRequest = () => {
     if (!recipientInfo.recipientEmail.trim()) {
@@ -436,7 +234,7 @@ export default function Signatures() {
       dealId: selectedDeal?.id,
       dealStatus: selectedDeal?.status,
       aiMode: sendAiMode,
-      aiStatus: sendAiMode === "ai_auto" ? "Monitoring" : sendAiMode === "ai_assist" ? "Awaiting Approval" : undefined,
+      aiStatus: aiStatusForMode(sendAiMode),
     };
 
     setRequests([request, ...requests]);
@@ -481,6 +279,18 @@ export default function Signatures() {
     toast.success("Request voided");
   };
 
+  const handleChangeAiMode = (id: string, mode: AIActionMode) => {
+    setRequests((prev) => prev.map((r) => r.id === id ? { ...r, aiMode: mode, aiStatus: aiStatusForMode(mode) } : r));
+    toast.success(mode === "manual" ? "Switched to Manual mode" : "Switched to AI Assist mode");
+  };
+
+  const handleCycleAiMode = (request: SignatureRequest, next: AIActionMode) => {
+    const updated = { ...request, aiMode: next, aiStatus: aiStatusForMode(next) };
+    setRequests((prev) => prev.map((r) => r.id === request.id ? updated : r));
+    setSelectedRequest(updated);
+    toast.success(`Switched to ${next === "manual" ? "Manual" : next === "ai_assist" ? "AI Assist" : "AI Auto"}`);
+  };
+
   const handleOpenSigning = (request: SignatureRequest) => {
     setSigningRequest(request);
     setSigningViewOpen(true);
@@ -523,6 +333,11 @@ export default function Signatures() {
     setSelectedRequest(null);
   };
 
+  const openAiAnalysis = (documentName: string) => {
+    setAiAnalysisDoc(documentName);
+    setAiAnalysisOpen(true);
+  };
+
   return (
     <>
       <PageLayout>
@@ -545,10 +360,7 @@ export default function Signatures() {
                   <Button
                     variant="outline"
                     className="gap-2"
-                    onClick={() => {
-                      setAiAnalysisDoc("All Active Requests");
-                      setAiAnalysisOpen(true);
-                    }}
+                    onClick={() => openAiAnalysis("All Active Requests")}
                   >
                     <Sparkles className="h-4 w-4" />
                     AI Review
@@ -651,226 +463,19 @@ export default function Signatures() {
 
             {/* Requests List */}
             <div className="space-y-3">
-              {filteredRequests.map((request) => {
-                const statusInfo = statusConfig[request.status];
-                const StatusIcon = statusInfo.icon;
-                const nextAction = getNextAction(request);
-
-                return (
-                  <Card key={request.id} padding="md" className="group hover:shadow-md transition-shadow cursor-pointer" onClick={() => setSelectedRequest(request)}>
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <PenTool className="h-5 w-5 text-primary" />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="font-semibold text-foreground truncate">{request.documentName}</h3>
-                          <Badge variant="outline" className={cn("text-xs", statusInfo.color)}>
-                            <StatusIcon className="h-3 w-3 mr-1" />
-                            {statusInfo.label}
-                          </Badge>
-                          {nextAction && (
-                            <Badge variant="outline" className={cn("text-xs gap-1", nextAction.color)}>
-                              <nextAction.icon className="h-3 w-3" />
-                              {nextAction.label}
-                            </Badge>
-                          )}
-                        </div>
-                        {/* Deal context line */}
-                        {(request.dealId || request.propertyAddress) && (
-                          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5">
-                            <Building2 className="h-3 w-3 text-brand/60" />
-                            {request.dealId ? (
-                              <>
-                                <span>Linked Deal: {request.propertyAddress || "—"}</span>
-                                {request.dealStatus && (
-                                  <span className="text-brand/80 font-medium">· {request.dealStatus.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}</span>
-                                )}
-                              </>
-                            ) : (
-                              <span>{request.propertyAddress}</span>
-                            )}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <Users className="h-3 w-3" />
-                            {request.recipientName}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Mail className="h-3 w-3" />
-                            {request.recipientEmail}
-                          </span>
-                        </div>
-
-                        {/* Status Timeline */}
-                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
-                          <span>
-                            {request.sentAt ? `Sent ${formatTimeAgo(request.sentAt)}` : `Created ${formatTimeAgo(request.createdAt)}`}
-                          </span>
-                          {request.viewedAt && (
-                            <>
-                              <ArrowRight className="h-3 w-3" />
-                              <span>Viewed {formatTimeAgo(request.viewedAt)}</span>
-                            </>
-                          )}
-                          {request.signedAt && (
-                            <>
-                              <ArrowRight className="h-3 w-3" />
-                              <span className="text-success">Signed {formatTimeAgo(request.signedAt)}</span>
-                            </>
-                          )}
-                          {request.viewCount !== undefined && request.viewCount > 0 && (
-                            <span className="ml-2 flex items-center gap-1">
-                              <Eye className="h-3 w-3" />
-                              {request.viewCount}×
-                            </span>
-                          )}
-                          {/* AI Mode Status — visible, not hidden */}
-                          {request.aiMode && request.aiMode !== "manual" && request.aiStatus && (
-                            <span className={cn(
-                              "ml-2 flex items-center gap-1 px-1.5 py-0.5 rounded bg-brand/5 border border-brand/15",
-                              AI_MODE_CONFIG[request.aiMode].color
-                            )}>
-                              <Sparkles className="h-2.5 w-2.5" />
-                              <span className="font-medium">{request.aiStatus}</span>
-                            </span>
-                          )}
-                          {request.aiMode === "manual" && request.status !== "signed" && request.status !== "draft" && (
-                            <span className="ml-2 flex items-center gap-1 text-muted-foreground/60">
-                              <span className="text-[10px]">🧍</span>
-                              <span>Manual</span>
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="text-right hidden sm:flex flex-col items-end gap-1">
-                        {request.expiresAt && request.status === "pending" && (
-                          <p className={cn(
-                            "text-xs",
-                            differenceInHours(request.expiresAt, new Date()) <= 48
-                              ? "text-destructive font-medium"
-                              : "text-muted-foreground"
-                          )}>
-                            Expires {format(request.expiresAt, "MMM d")}
-                          </p>
-                        )}
-                        {request.lastActivity && (
-                          <p className="text-xs text-muted-foreground">{request.lastActivity}</p>
-                        )}
-                      </div>
-
-                      {/* Quick Actions */}
-                      <TooltipProvider delayDuration={0}>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {request.status === "pending" && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleResend(request.id, e)}>
-                                  <RefreshCw className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">Send Reminder</TooltipContent>
-                            </Tooltip>
-                          )}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleCopyLink(request.id, e)}>
-                                <Link2 className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom" className="bg-popover text-popover-foreground border border-border z-[200]">Copy Link</TooltipContent>
-                          </Tooltip>
-                        </div>
-                      </TooltipProvider>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}>
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem className="gap-2" onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); }}>
-                            <Eye className="h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          {request.status === "pending" && (
-                            <>
-                              <DropdownMenuItem className="gap-2" onClick={(e) => handleResend(request.id, e as any)}>
-                                <RefreshCw className="h-4 w-4" />
-                                Send Reminder
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2" onClick={(e) => handleCopyLink(request.id, e as any)}>
-                                <Link2 className="h-4 w-4" />
-                                Copy Link
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2">
-                                <UserPlus className="h-4 w-4" />
-                                Add Signer
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="gap-2" onClick={(e) => handleVoid(request.id, e as any)}>
-                                <Ban className="h-4 w-4" />
-                                Void
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {request.status === "signed" && (
-                            <DropdownMenuItem className="gap-2">
-                              <Download className="h-4 w-4" />
-                              Download Signed
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuItem className="gap-2">
-                            <FileText className="h-4 w-4" />
-                            View Audit Trail
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          {/* AI Actions Section */}
-                          <div className="px-2 py-1">
-                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">AI Actions</p>
-                          </div>
-                          <DropdownMenuItem className="gap-2" onClick={(e) => {
-                            e.stopPropagation();
-                            setAiAnalysisDoc(request.documentName);
-                            setAiAnalysisOpen(true);
-                          }}>
-                            <Sparkles className="h-4 w-4" />
-                            Run AI Review
-                          </DropdownMenuItem>
-                          {request.aiMode !== "manual" && (
-                            <DropdownMenuItem className="gap-2" onClick={(e) => {
-                              e.stopPropagation();
-                              setRequests(prev => prev.map(r => r.id === request.id ? { ...r, aiMode: "manual" as AIActionMode, aiStatus: undefined } : r));
-                              toast.success("Switched to Manual mode");
-                            }}>
-                              <Ban className="h-4 w-4" />
-                              Pause AI
-                            </DropdownMenuItem>
-                          )}
-                          {request.aiMode === "manual" && request.status === "pending" && (
-                            <DropdownMenuItem className="gap-2" onClick={(e) => {
-                              e.stopPropagation();
-                              setRequests(prev => prev.map(r => r.id === request.id ? { ...r, aiMode: "ai_assist" as AIActionMode, aiStatus: "Awaiting Approval" } : r));
-                              toast.success("Switched to AI Assist mode");
-                            }}>
-                              <Sparkles className="h-4 w-4" />
-                              Enable AI Assist
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive" onClick={(e) => handleDelete(request.id, e as any)}>
-                            <Trash2 className="h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </Card>
-                );
-              })}
+              {filteredRequests.map((request) => (
+                <SignatureRequestCard
+                  key={request.id}
+                  request={request}
+                  onSelect={setSelectedRequest}
+                  onResend={handleResend}
+                  onCopyLink={handleCopyLink}
+                  onVoid={handleVoid}
+                  onDelete={handleDelete}
+                  onRunAiReview={(r) => openAiAnalysis(r.documentName)}
+                  onChangeAiMode={handleChangeAiMode}
+                />
+              ))}
 
               {filteredRequests.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -907,12 +512,8 @@ export default function Signatures() {
         {/* ─── Reminders View ────────────────────────────────── */}
         {pageView === "reminders" && (
           <ReminderManager
-            onSendReminder={(id) => {
-              toast.success("Reminder sent");
-            }}
-            onExtendExpiration={(id, days) => {
-              toast.success(`Expiration extended by ${days} days`);
-            }}
+            onSendReminder={() => toast.success("Reminder sent")}
+            onExtendExpiration={(id, days) => toast.success(`Expiration extended by ${days} days`)}
           />
         )}
 
@@ -924,587 +525,53 @@ export default function Signatures() {
       </PageLayout>
 
       {/* ─── Multi-Step Send Flow Dialog ─────────────────────── */}
-      <Dialog open={isNewRequestOpen} onOpenChange={(open) => { if (!open) resetSendFlow(); }}>
-        <DialogContent className={cn(
-          sendStep === "template" || sendStep === "fields" || sendStep === "deal" ? "sm:max-w-[900px]" : "sm:max-w-[600px]"
-        )}>
-          {/* Step: Select Deal */}
-          {sendStep === "deal" && (
-            <>
-              <DialogHeader>
-                <DialogTitle>Build from Deal</DialogTitle>
-                <DialogDescription>Select a property from your pipeline to auto-fill document fields, or skip to start fresh.</DialogDescription>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
-                <DealPicker onSelect={handleSelectDeal} selectedDealId={selectedDeal?.id} />
-              </div>
-              <DialogFooter className="flex justify-between">
-                <Button variant="outline" onClick={resetSendFlow}>Cancel</Button>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setSendStep("template")}
-                  >
-                    Skip — No Deal
-                  </Button>
-                  {selectedDeal && (
-                    <Button onClick={() => setSendStep("template")} className="gap-2">
-                      Continue with {selectedDeal.address.split(",")[0]}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Choose Template */}
-          {sendStep === "template" && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("deal")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>Choose a Template</DialogTitle>
-                    <DialogDescription>
-                      {selectedDeal
-                        ? `Deal: ${selectedDeal.address} — Select a template to auto-fill.`
-                        : "Select a document template or start from scratch."}
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              {selectedDeal && (
-                <div className="mx-6 mb-2 flex items-center gap-2 text-xs text-brand bg-brand/5 border border-brand/20 rounded-lg px-3 py-2">
-                  <Building2 className="h-3.5 w-3.5" />
-                  <span className="font-medium">{selectedDeal.address}</span>
-                  <span className="text-muted-foreground">· {selectedDeal.ownerName || "No owner"}</span>
-                  <span className="text-muted-foreground">· {selectedDeal.status?.replace(/_/g, " ")}</span>
-                </div>
-              )}
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
-                <TemplateLibrary onSelectTemplate={handleSelectTemplate} compact />
-              </div>
-              <DialogFooter className="flex justify-between">
-                <Button variant="outline" onClick={() => setSendStep("deal")}>Back</Button>
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => {
-                    setSelectedTemplate(null);
-                    setSendStep("fields");
-                  }}
-                >
-                  <FileText className="h-4 w-4" />
-                  Skip — Blank Document
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Fill Variables */}
-          {sendStep === "variables" && selectedTemplate && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("template")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>{selectedTemplate.name}</DialogTitle>
-                    <DialogDescription>Fill in the document fields. Fields with source badges can be auto-filled from deal data.</DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
-                <VariableFillForm
-                  template={selectedTemplate}
-                  values={variableValues}
-                  onChange={setVariableValues}
-                />
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setSendStep("template")}>Back</Button>
-                <Button onClick={handleVariablesNext} className="gap-2">
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Place Fields */}
-          {sendStep === "fields" && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>Place Signature Fields</DialogTitle>
-                    <DialogDescription>Upload a PDF and place fields where signers need to sign, initial, or fill in information.</DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 min-h-[420px]">
-                <DocumentFieldBuilder
-                  fields={documentFields}
-                  onFieldsChange={setDocumentFields}
-                  documentName={selectedTemplate?.name}
-                />
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => selectedTemplate ? setSendStep("variables") : setSendStep("template")}>Back</Button>
-                <Button onClick={handleFieldsNext} className="gap-2">
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Signers + Workflow */}
-          {sendStep === "signers" && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("fields")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>Add Signers</DialogTitle>
-                    <DialogDescription>Add signers, set signing order, and configure reminders.</DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 space-y-6">
-                <SignerManager workflow={sendWorkflow} onWorkflowChange={setSendWorkflow} />
-                
-                {/* Signer Authentication Config */}
-                <div className="border-t border-border-subtle pt-4">
-                  <SignerAuthConfigPanel config={authConfig} onChange={setAuthConfig} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setSendStep("fields")}>Back</Button>
-                <Button onClick={handleSignersNext} className="gap-2">
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Follow-Up Mode */}
-          {sendStep === "followup_mode" && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("signers")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>Follow-Up Mode</DialogTitle>
-                    <DialogDescription>Choose how AI handles follow-ups for this document.</DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6 space-y-3">
-                {(Object.entries(AI_MODE_CONFIG) as [AIActionMode, typeof AI_MODE_CONFIG[AIActionMode]][]).map(([mode, config]) => (
-                  <button
-                    key={mode}
-                    className={cn(
-                      "w-full text-left rounded-lg border p-4 transition-all",
-                      sendAiMode === mode
-                        ? "border-brand bg-brand/5 ring-1 ring-brand/20"
-                        : "border-border-subtle hover:border-brand/30 hover:bg-muted/30"
-                    )}
-                    onClick={() => setSendAiMode(mode)}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg">{config.icon}</span>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-sm text-foreground">{config.label}</span>
-                          {mode === "ai_assist" && (
-                            <Badge variant="default" size="sm">Recommended</Badge>
-                          )}
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">{config.description}</p>
-                      </div>
-                      <div className={cn(
-                        "h-5 w-5 rounded-full border-2 flex items-center justify-center",
-                        sendAiMode === mode ? "border-brand" : "border-border"
-                      )}>
-                        {sendAiMode === mode && <div className="h-2.5 w-2.5 rounded-full bg-brand" />}
-                      </div>
-                    </div>
-                    {mode === "ai_auto" && sendAiMode === mode && (
-                      <div className="mt-3 ml-8 text-xs text-muted-foreground space-y-1 border-t border-border-subtle pt-2">
-                        <p>• If viewed but not signed in 24h → send email</p>
-                        <p>• If still unsigned after 48h → send SMS</p>
-                        <p>• If 72h + expires soon → notify you + suggest call</p>
-                        <p>• If declined → pause automation and alert you</p>
-                      </div>
-                    )}
-                  </button>
-                ))}
-                <p className="text-xs text-muted-foreground/70 text-center mt-2">
-                  AI will follow up automatically if not signed within 48 hours.
-                </p>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setSendStep("signers")}>Back</Button>
-                <Button onClick={() => setSendStep("recipient")} className="gap-2">
-                  Continue
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-
-          {/* Step: Recipient + Send */}
-          {sendStep === "recipient" && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSendStep("followup_mode")}>
-                    <ArrowLeft className="h-4 w-4" />
-                  </Button>
-                  <div>
-                    <DialogTitle>Recipient Details</DialogTitle>
-                    <DialogDescription>
-                      {selectedTemplate
-                        ? `Sending: ${selectedTemplate.name}`
-                        : "Enter recipient details and Send For Signature."}
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
-              <div className="flex-1 overflow-y-auto min-h-0 space-y-4 py-4 px-6">
-                {!selectedTemplate && (
-                  <div className="space-y-2">
-                    <Label htmlFor="documentName">Document Name *</Label>
-                    <Input id="documentName" placeholder="e.g., Purchase Agreement - 123 Main St" />
-                  </div>
-                )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="recipientName">Recipient Name</Label>
-                    <Input
-                      id="recipientName"
-                      placeholder="John Smith"
-                      value={recipientInfo.recipientName}
-                      onChange={(e) => setRecipientInfo({ ...recipientInfo, recipientName: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="recipientEmail">Recipient Email *</Label>
-                    <Input
-                      id="recipientEmail"
-                      type="email"
-                      placeholder="john@email.com"
-                      value={recipientInfo.recipientEmail}
-                      onChange={(e) => setRecipientInfo({ ...recipientInfo, recipientEmail: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="propertyAddress">Property Address</Label>
-                  <Input
-                    id="propertyAddress"
-                    placeholder="123 Main St, City, State"
-                    value={recipientInfo.propertyAddress}
-                    onChange={(e) => setRecipientInfo({ ...recipientInfo, propertyAddress: e.target.value })}
-                  />
-                </div>
-
-                {/* Summary if template selected */}
-                {selectedTemplate && (
-                  <div className="rounded-lg border border-border-subtle p-3 bg-surface-secondary">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="h-4 w-4 text-brand" />
-                      <span className="text-sm font-medium text-foreground">Document Preview</span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      Template: <span className="font-medium text-foreground">{selectedTemplate.name}</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Fields filled: <span className="font-medium text-foreground">
-                        {Object.values(variableValues).filter((v) => v?.trim()).length}/{selectedTemplate.variables.length}
-                      </span>
-                    </p>
-                    {documentFields.length > 0 && (
-                      <p className="text-xs text-muted-foreground">
-                        Signature fields: <span className="font-medium text-foreground">{documentFields.length}</span>
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setSendStep("signers")}>Back</Button>
-                <Button onClick={handleSendRequest} className="gap-2">
-                  <Send className="h-4 w-4" />
-                  Send For Signature
-                </Button>
-              </DialogFooter>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <SendFlowDialog
+        isOpen={isNewRequestOpen}
+        onClose={resetSendFlow}
+        sendStep={sendStep}
+        setSendStep={setSendStep}
+        selectedDeal={selectedDeal}
+        onSelectDeal={handleSelectDeal}
+        selectedTemplate={selectedTemplate}
+        setSelectedTemplate={setSelectedTemplate}
+        onSelectTemplate={handleSelectTemplate}
+        variableValues={variableValues}
+        setVariableValues={setVariableValues}
+        onVariablesNext={handleVariablesNext}
+        documentFields={documentFields}
+        setDocumentFields={setDocumentFields}
+        onFieldsNext={handleFieldsNext}
+        sendWorkflow={sendWorkflow}
+        setSendWorkflow={setSendWorkflow}
+        onSignersNext={handleSignersNext}
+        authConfig={authConfig}
+        setAuthConfig={setAuthConfig}
+        sendAiMode={sendAiMode}
+        setSendAiMode={setSendAiMode}
+        recipientInfo={recipientInfo}
+        setRecipientInfo={setRecipientInfo}
+        onSend={handleSendRequest}
+      />
 
       {/* ─── Document Detail Dialog ──────────────────────────── */}
-      <Dialog open={!!selectedRequest} onOpenChange={(open) => { if (!open) { setSelectedRequest(null); setDetailTab("details"); } }}>
-        <DialogContent className="sm:max-w-[650px]">
-          {selectedRequest && (() => {
-            const info = statusConfig[selectedRequest.status];
-            const Icon = info.icon;
-            const wf = selectedRequest.workflow;
-            return (
-              <>
-                <DialogHeader>
-                  <DialogTitle>{selectedRequest.documentName}</DialogTitle>
-                  <DialogDescription>Signature request details</DialogDescription>
-                </DialogHeader>
+      <RequestDetailDialog
+        request={selectedRequest}
+        onClose={() => { setSelectedRequest(null); setDetailTab("details"); }}
+        detailTab={detailTab}
+        setDetailTab={setDetailTab}
+        onCycleAiMode={handleCycleAiMode}
+        onOpenSigning={handleOpenSigning}
+        onCopyLink={(id) => handleCopyLink(id)}
+        onResend={(id) => { handleResend(id); setSelectedRequest(null); }}
+        onVoid={(id) => handleVoid(id)}
+        onDelete={(id) => handleDelete(id)}
+        onViewCertificate={handleViewCertificate}
+        onOpenAuditTrail={(r) => { setAuditTrailDoc(r.documentName); setAuditTrailOpen(true); }}
+        onOpenVersioning={(r) => { setVersioningDoc(r.documentName); setVersioningOpen(true); }}
+        onOpenMobileSigning={(r) => { setMobileSignRequest(r); setMobileSignOpen(true); }}
+        onOpenAiAnalysis={(r) => openAiAnalysis(r.documentName)}
+      />
 
-                {/* Tabs */}
-                <div className="flex items-center gap-1 border-b border-border-subtle px-6 flex-shrink-0">
-                  {(["details", "signers", "audit"] as const).map((tab) => (
-                    <button
-                      key={tab}
-                      className={cn(
-                        "px-3 py-2 text-sm font-medium border-b-2 transition-colors capitalize",
-                        detailTab === tab
-                          ? "border-brand text-brand"
-                          : "border-transparent text-muted-foreground hover:text-foreground"
-                      )}
-                      onClick={() => setDetailTab(tab)}
-                    >
-                      {tab === "signers" ? `Signers${wf ? ` (${wf.signers.length})` : ""}` : tab === "audit" ? "Audit Trail" : "Details"}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="flex-1 overflow-y-auto min-h-0 py-4 px-6">
-                  {/* Details Tab */}
-                  {detailTab === "details" && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={cn("text-xs", info.color)}>
-                          <Icon className="h-3 w-3 mr-1" />
-                          {info.label}
-                        </Badge>
-                        {selectedRequest.viewCount !== undefined && selectedRequest.viewCount > 0 && (
-                          <Badge variant="outline" className="text-xs gap-1">
-                            <Eye className="h-3 w-3" />
-                            Viewed {selectedRequest.viewCount}×
-                          </Badge>
-                        )}
-                        {wf && (
-                          <Badge variant="outline" className="text-xs capitalize">
-                            {wf.signingOrder}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Status Timeline */}
-                      <div className="flex items-center gap-2 text-sm border border-border-subtle rounded-lg p-3 bg-surface-secondary">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {selectedRequest.sentAt && (
-                            <span className="flex items-center gap-1 text-muted-foreground">
-                              <Send className="h-3 w-3" /> Sent {formatTimeAgo(selectedRequest.sentAt)}
-                            </span>
-                          )}
-                          {selectedRequest.viewedAt && (
-                            <>
-                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                              <span className="flex items-center gap-1 text-muted-foreground">
-                                <Eye className="h-3 w-3" /> Opened {formatTimeAgo(selectedRequest.viewedAt)}
-                              </span>
-                            </>
-                          )}
-                          {selectedRequest.signedAt && (
-                            <>
-                              <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                              <span className="flex items-center gap-1 text-success">
-                                <CheckCircle className="h-3 w-3" /> Signed {formatTimeAgo(selectedRequest.signedAt)}
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-muted-foreground mb-1">Recipient</p>
-                          <p className="font-medium">{selectedRequest.recipientName}</p>
-                        </div>
-                        <div>
-                          <p className="text-muted-foreground mb-1">Email</p>
-                          <p className="font-medium">{selectedRequest.recipientEmail}</p>
-                        </div>
-                        {selectedRequest.propertyAddress && (
-                          <div className="col-span-2">
-                            <p className="text-muted-foreground mb-1">Property Address</p>
-                            <p className="font-medium">{selectedRequest.propertyAddress}</p>
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-muted-foreground mb-1">Created</p>
-                          <p className="font-medium">{format(selectedRequest.createdAt, "MMM d, yyyy")}</p>
-                        </div>
-                        {selectedRequest.sentAt && (
-                          <div>
-                            <p className="text-muted-foreground mb-1">Sent</p>
-                            <p className="font-medium">{format(selectedRequest.sentAt, "MMM d, yyyy")}</p>
-                          </div>
-                        )}
-                        {selectedRequest.signedAt && (
-                          <div>
-                            <p className="text-muted-foreground mb-1">Signed</p>
-                            <p className="font-medium">{format(selectedRequest.signedAt, "MMM d, yyyy")}</p>
-                          </div>
-                        )}
-                        {selectedRequest.expiresAt && (
-                          <div>
-                            <p className="text-muted-foreground mb-1">Expires</p>
-                            <p className={cn(
-                              "font-medium",
-                              selectedRequest.expiresAt && differenceInHours(selectedRequest.expiresAt, new Date()) <= 48 ? "text-destructive" : ""
-                            )}>
-                              {format(selectedRequest.expiresAt, "MMM d, yyyy")}
-                            </p>
-                          </div>
-                        )}
-                        {wf?.reminders.enabled && (
-                          <div>
-                            <p className="text-muted-foreground mb-1">Reminders</p>
-                            <p className="font-medium">{wf.reminders.remindersSent}/{wf.reminders.maxReminders} sent</p>
-                          </div>
-                        )}
-                        {selectedRequest.dealId && (
-                          <div className="col-span-2 mt-2 flex items-center gap-2 text-xs bg-brand/5 border border-brand/20 rounded-lg px-3 py-2">
-                            <Building2 className="h-3.5 w-3.5 text-brand" />
-                            <span className="font-medium text-brand">Linked to Deal</span>
-                            {selectedRequest.dealStatus && (
-                              <Badge variant="outline" className="text-[10px] h-5 capitalize">
-                                {selectedRequest.dealStatus.replace(/_/g, " ")}
-                              </Badge>
-                            )}
-                          </div>
-                        )}
-                        {/* AI Mode indicator in detail view */}
-                        {selectedRequest.aiMode && (
-                          <div className="col-span-2 mt-2 flex items-center justify-between text-xs bg-muted/30 border border-border-subtle rounded-lg px-3 py-2">
-                            <div className="flex items-center gap-2">
-                              <span>{AI_MODE_CONFIG[selectedRequest.aiMode].icon}</span>
-                              <span className="font-medium text-foreground">{AI_MODE_CONFIG[selectedRequest.aiMode].label}</span>
-                              {selectedRequest.aiStatus && (
-                                <span className="text-muted-foreground">· {selectedRequest.aiStatus}</span>
-                              )}
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 text-xs px-2"
-                              onClick={() => {
-                                const modes: AIActionMode[] = ["manual", "ai_assist", "ai_auto"];
-                                const current = modes.indexOf(selectedRequest.aiMode!);
-                                const next = modes[(current + 1) % modes.length];
-                                const updated = { ...selectedRequest, aiMode: next, aiStatus: next === "ai_auto" ? "Monitoring" : next === "ai_assist" ? "Awaiting Approval" : undefined };
-                                setRequests(prev => prev.map(r => r.id === selectedRequest.id ? updated : r));
-                                setSelectedRequest(updated);
-                                toast.success(`Switched to ${AI_MODE_CONFIG[next].label}`);
-                              }}
-                            >
-                              Switch Mode
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Signers Tab - Enhanced with Workflow Visualizer */}
-                  {detailTab === "signers" && wf && (
-                    <WorkflowVisualizer workflow={wf} />
-                  )}
-                  {detailTab === "signers" && !wf && (
-                    <div className="text-center py-6 text-sm text-muted-foreground">
-                      <Users className="h-8 w-8 mx-auto mb-2 opacity-40" />
-                      No workflow configured for this request
-                    </div>
-                  )}
-
-                  {/* Audit Trail Tab */}
-                  {detailTab === "audit" && (
-                    <AuditTrail events={wf?.auditTrail || []} />
-                  )}
-                </div>
-
-                <DialogFooter className="flex-wrap gap-1.5">
-                  {selectedRequest.status === "pending" && (
-                    <>
-                      <Button size="sm" className="gap-2" onClick={() => handleOpenSigning(selectedRequest)}>
-                        <PenTool className="h-4 w-4" />
-                        Sign Now
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={() => handleCopyLink(selectedRequest.id)}>
-                        <Link2 className="h-4 w-4" />
-                        Copy Link
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={() => { handleResend(selectedRequest.id); setSelectedRequest(null); }}>
-                        <RefreshCw className="h-4 w-4" />
-                        Send Reminder
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={() => handleVoid(selectedRequest.id)}>
-                        <Ban className="h-4 w-4" />
-                        Void
-                      </Button>
-                    </>
-                  )}
-                  {selectedRequest.status === "signed" && (
-                    <>
-                      <Button size="sm" className="gap-2" onClick={() => handleViewCertificate(selectedRequest)}>
-                        <Shield className="h-4 w-4" />
-                        View Certificate
-                      </Button>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Download className="h-4 w-4" />
-                        Download Signed
-                      </Button>
-                    </>
-                  )}
-                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAuditTrailDoc(selectedRequest.documentName); setAuditTrailOpen(true); }}>
-                     <Shield className="h-4 w-4" />
-                     Audit Trail
-                   </Button>
-                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setVersioningDoc(selectedRequest.documentName); setVersioningOpen(true); }}>
-                     <RefreshCw className="h-4 w-4" />
-                     Versions
-                   </Button>
-                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setMobileSignRequest(selectedRequest); setMobileSignOpen(true); }}>
-                     <Phone className="h-4 w-4" />
-                     Mobile
-                   </Button>
-                   <Button variant="outline" size="sm" className="gap-2" onClick={() => { setAiAnalysisDoc(selectedRequest.documentName); setAiAnalysisOpen(true); }}>
-                     <Sparkles className="h-4 w-4" />
-                     AI Analysis
-                   </Button>
-                   <Button variant="destructive" size="sm" className="gap-2" onClick={() => handleDelete(selectedRequest.id)}>
-                     <Trash2 className="h-4 w-4" />
-                     Delete
-                  </Button>
-                </DialogFooter>
-              </>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
       {/* ─── Signing View Dialog ─────────────────────────────── */}
       {signingRequest && (
         <SigningView
@@ -1597,7 +664,7 @@ export default function Signatures() {
       <SignerAuthChallenge
         isOpen={authChallengeOpen}
         onClose={() => setAuthChallengeOpen(false)}
-        onVerified={(results) => {
+        onVerified={() => {
           setAuthChallengeOpen(false);
           toast.success("Signer identity verified");
         }}
@@ -1638,7 +705,7 @@ export default function Signatures() {
           documentName={mobileSignRequest.documentName}
           recipientName={mobileSignRequest.recipientName}
           recipientEmail={mobileSignRequest.recipientEmail}
-          onSendSms={(phone, link) => {
+          onSendSms={(phone) => {
             toast.success(`SMS signing link sent to ${phone}`);
           }}
         />
