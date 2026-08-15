@@ -27,6 +27,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useMailTemplates, useCreateMailCampaign } from "@/hooks/useMailCampaigns";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useQuery } from "@tanstack/react-query";
 import { 
   ArrowLeft, 
@@ -179,12 +182,16 @@ export default function MailCampaignWizard() {
   const [showLaunchModal, setShowLaunchModal] = React.useState(false);
 
   const { data: matchingProperties, isLoading: propertiesLoading } = useQuery({
-    queryKey: ["campaign-properties-preview", state.statusFilters, state.sourceFilters, state.motivationRange, state.hasMailingAddress],
+    queryKey: ["campaign-properties-preview", organizationId, state.statusFilters, state.sourceFilters, state.motivationRange, state.hasMailingAddress],
     queryFn: async () => {
-      let query = supabase
-        .from("properties")
-        .select("id, address, city, state, owner_name, motivation_score, owner_mailing_address")
-        .order("motivation_score", { ascending: false });
+      let query = scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, owner_name, motivation_score, owner_mailing_address")
+          .order("motivation_score", { ascending: false }),
+        organizationId,
+        user!.id,
+      );
 
       if (state.statusFilters.length > 0) {
         query = query.in("status", state.statusFilters);
@@ -206,7 +213,7 @@ export default function MailCampaignWizard() {
       if (error) throw error;
       return data;
     },
-    enabled: state.listType === "database",
+    enabled: state.listType === "database" && !!user?.id,
   });
 
   const selectedTemplate = templates?.find(t => t.id === state.templateId);
@@ -310,6 +317,8 @@ export default function MailCampaignWizard() {
           recipient_state: p.state || null,
           recipient_zip: null,
           status: "pending",
+          user_id: user?.id ?? null,
+          organization_id: organizationId ?? null,
         }));
 
         const { error: insertErr } = await supabase.from("mail_pieces").insert(pieces);
