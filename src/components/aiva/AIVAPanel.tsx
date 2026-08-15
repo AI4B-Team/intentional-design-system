@@ -107,6 +107,7 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
     <>
       {/* Backdrop - dims the page but not the sidebar */}
       <div
+        aria-hidden={!open}
         className={cn(
           "fixed inset-0 bg-black/50 z-[60] transition-opacity duration-300",
           open ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -118,6 +119,9 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
 
       {/* Panel - slides in from left, positioned next to sidebar */}
       <div
+        role="dialog"
+        aria-label="AIVA assistant"
+        aria-hidden={!open}
         className={cn(
           "fixed top-0 h-full bg-background z-[70] duration-300 ease-in-out flex flex-col",
           // No shadow/border (prevents any visual spill onto the sidebar).
@@ -129,9 +133,15 @@ export function AIVAPanel({ open, onClose }: AIVAPanelProps) {
         )}
         style={{ left: panelLeft }}
       >
-        {/* Chat Area - takes full height */}
-        <AIVAChat className="flex-1 border-0 rounded-none shadow-none" onClose={onClose} />
+        {/* Chat Area - takes full height.
+            Only mounted while the panel is visible: keeping it mounted put the chat
+            UI in the DOM (and accessibility/tab order) of every page and fired the
+            conversation-history query on every route change. */}
+        {mounted && (
+          <AIVAChat className="flex-1 border-0 rounded-none shadow-none" onClose={onClose} />
+        )}
       </div>
     </>
   );
+
 }
