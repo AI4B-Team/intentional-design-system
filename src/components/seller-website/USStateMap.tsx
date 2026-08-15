@@ -44,13 +44,14 @@ export function USStateMap({ selectedStates, onToggleState, primaryColor = "#256
   });
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="w-full aspect-[16/10]">
       <USAMap
         customStates={customStates}
         mapSettings={{
           width: "100%",
-          height: "fit-content",
+          height: "100%",
         }}
+
       />
     </div>
   );

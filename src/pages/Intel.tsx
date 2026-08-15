@@ -69,12 +69,14 @@ function generateMarketData(marketName: string, timeRange: string = "6M") {
   // Generate zip codes
   const baseZip = r(10000, 99000);
   const neighborhoodNames = ["Downtown", "Midtown", "Westside", "Eastside", "North End", "Southport", "Lakewood", "Riverside"];
+  let zipCursor = baseZip;
   const zips = neighborhoodNames.map((name, i) => {
     const ts = r(20, 180);
     const cr = rf(30, 97);
     const cs = Math.round(ts * cr / 100);
+    if (i > 0) zipCursor += r(1, 15);
     return {
-      zip: String(baseZip + i * r(1, 15)),
+      zip: String(zipCursor),
       name,
       ts, cs, rs: ts - cs,
       mp: r(35000, 300000),
