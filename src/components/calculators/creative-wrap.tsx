@@ -86,15 +86,15 @@ export function WrapCalculator() {
     : 0;
   
   // Monthly spread
-  const monthlySpread = wrapMonthlyPayment - inputs.underlyingPayment;
+  const monthlySpread = Math.round(wrapMonthlyPayment - inputs.underlyingPayment);
   const annualSpread = monthlySpread * 12;
   
   // Interest rate arbitrage
   const rateSpread = inputs.wrapRate - inputs.underlyingRate;
-  const annualArbitrageProfit = (rateSpread / 100) * inputs.underlyingBalance;
+  const annualArbitrageProfit = Math.round((rateSpread / 100) * inputs.underlyingBalance);
   
   // Front-end profit
-  const frontEndProfit = inputs.wrapDownPayment + (inputs.purchasePrice - totalBasis);
+  const frontEndProfit = Math.round(inputs.wrapDownPayment + (inputs.purchasePrice - totalBasis));
   
   // Principal position over time
   const calculateBalances = (years: number) => {
@@ -116,14 +116,14 @@ export function WrapCalculator() {
       wrapBal = Math.max(0, wrapBal - wrapPrincipal);
     }
     
-    return { underlying: underlyingBal, wrap: wrapBal, equity: wrapBal - underlyingBal };
+    return { underlying: Math.round(underlyingBal), wrap: Math.round(wrapBal), equity: Math.round(wrapBal - underlyingBal) };
   };
   
   // Early payoff scenarios
   const earlyPayoffScenarios = [3, 5, 7].map(year => {
     const balances = calculateBalances(year);
     const cashFlowCollected = monthlySpread * year * 12;
-    const profit = balances.wrap - balances.underlying + cashFlowCollected + inputs.wrapDownPayment;
+    const profit = Math.round(balances.wrap - balances.underlying + cashFlowCollected + inputs.wrapDownPayment);
     return {
       year,
       wrapBalance: balances.wrap,
@@ -134,10 +134,10 @@ export function WrapCalculator() {
   });
   
   // Full term projections
-  const totalInterestCollected = wrapMonthlyPayment * wrapNumPayments - wrapLoanAmount;
+  const totalInterestCollected = Math.round(wrapMonthlyPayment * wrapNumPayments - wrapLoanAmount);
   const underlyingTotalPayments = inputs.underlyingPayment * inputs.underlyingYearsRemaining * 12;
-  const underlyingInterestPaid = underlyingTotalPayments - inputs.underlyingBalance;
-  const netInterestProfit = totalInterestCollected - underlyingInterestPaid;
+  const underlyingInterestPaid = Math.round(underlyingTotalPayments - inputs.underlyingBalance);
+  const netInterestProfit = Math.round(totalInterestCollected - underlyingInterestPaid);
   
   // Deal Score
   const dealScore = Math.min(100, Math.max(0,
