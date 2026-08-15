@@ -10384,6 +10384,53 @@ export type Database = {
         }
         Returns: number
       }
+      create_organization_with_owner: {
+        Args: {
+          p_billing_email?: string
+          p_name: string
+          p_phone?: string
+          p_slug: string
+          p_website?: string
+        }
+        Returns: {
+          address: string | null
+          automation_mode: string | null
+          billing_email: string | null
+          business_hours_end: string | null
+          business_hours_start: string | null
+          city: string | null
+          created_at: string | null
+          ein: string | null
+          id: string
+          llc_name: string | null
+          logo_url: string | null
+          max_properties: number | null
+          max_users: number | null
+          name: string
+          phone: string | null
+          signature_url: string | null
+          signer_name: string | null
+          signer_title: string | null
+          slug: string
+          state: string | null
+          stripe_customer_id: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          timezone: string | null
+          twilio_phone_number: string | null
+          twilio_phone_sid: string | null
+          updated_at: string | null
+          website: string | null
+          welcome_completed_at: string | null
+          zip: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "organizations"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       deduct_credits: {
         Args: {
           p_amount: number
