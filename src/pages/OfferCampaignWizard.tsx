@@ -64,108 +64,27 @@ import {
 } from "@/components/offer-wizard";
 import { SubjectPropertySummaryCard } from "@/components/offer-wizard/SubjectPropertySummaryCard";
 
-interface OfferTemplate {
-  id: string;
-  name: string;
-  description: string;
-  icon: React.ReactNode;
-  supportsEmail: boolean;
-  supportsSms: boolean;
-  isDefault?: boolean;
-  badge?: string;
-}
+import { OfferPackageStep } from "@/components/offer-wizard/OfferPackageStep";
+import { PricingStep } from "@/components/offer-wizard/PricingStep";
+import { DeliveryStep } from "@/components/offer-wizard/DeliveryStep";
+import { PreviewStep } from "@/components/offer-wizard/PreviewStep";
+import { ReviewSendStep } from "@/components/offer-wizard/ReviewSendStep";
+import {
+  OFFER_TEMPLATES,
+  MOCK_POF_DOCUMENTS,
+  MOCK_DEALS_OPTIONS,
+  WIZARD_STEPS,
+  formatCurrency,
+  type ScheduleType,
+  type OfferWizardStepProps,
+} from "@/components/offer-wizard/offer-campaign-constants";
 
-type ScheduleType = "immediate" | "drip" | "scheduled" | "draft";
-
-const OFFER_TEMPLATES: OfferTemplate[] = [
-  {
-    id: "cash",
-    name: "Cash Offer",
-    description: "Standard cash offer with quick close timeline",
-    icon: <DollarSign className="h-5 w-5" />,
-    supportsEmail: true,
-    supportsSms: true,
-    isDefault: true,
-    badge: "Most Common",
-  },
-  {
-    id: "seller-financing",
-    name: "Seller Financing Offer",
-    description: "Creative financing with seller-carried note",
-    icon: <FileText className="h-5 w-5" />,
-    supportsEmail: true,
-    supportsSms: true,
-  },
-  {
-    id: "subject-to",
-    name: "Subject-To Offer",
-    description: "Take over existing mortgage payments",
-    icon: <Home className="h-5 w-5" />,
-    supportsEmail: true,
-    supportsSms: true,
-  },
-  {
-    id: "hybrid",
-    name: "Hybrid Offer Package",
-    description: "Combined cash + seller financing terms",
-    icon: <Package className="h-5 w-5" />,
-    supportsEmail: true,
-    supportsSms: true,
-  },
-];
-
-const PRESET_PERCENTAGES = [60, 65, 70, 75, 80];
-
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-// Mock POF documents
-const MOCK_POF_DOCUMENTS = [
-  {
-    id: "pof-1",
-    fileName: "Lima_One_POF_500k.pdf",
-    amount: 500000,
-    lenderName: "Lima One Capital",
-    expirationDate: "2026-03-15",
-    isActive: true,
-  },
-  {
-    id: "pof-2",
-    fileName: "Personal_Bank_Statement.pdf",
-    amount: 250000,
-    lenderName: "Wells Fargo",
-    expirationDate: "2026-02-10",
-    isActive: true,
-  },
-];
-
-// Default filter values for useMockDeals
-const defaultOptions = {
-  filters: {
-    address: "",
-    leadType: "all",
-    homeTypes: [],
-    priceMin: "",
-    priceMax: "",
-    bedsMin: "",
-    bathsMin: "",
-  },
-  sortBy: "newest",
-  page: 1,
-  perPage: 100,
-};
 
 export default function OfferCampaignWizard() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  const { deals } = useMockDeals(defaultOptions);
+  const { deals } = useMockDeals(MOCK_DEALS_OPTIONS);
   const deal = deals.find((d) => d.id === id);
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -314,15 +233,7 @@ export default function OfferCampaignWizard() {
   const previewInsight = useOfferInsight("preview", insightContext, currentStep === 5);
   const reviewInsight = useOfferInsight("review", insightContext, currentStep === 6);
 
-  // 6-step flow
-  const steps = [
-    { number: 1, title: "Deal", icon: Settings2 },
-    { number: 2, title: "Offer", icon: Package },
-    { number: 3, title: "Pricing", icon: DollarSign },
-    { number: 4, title: "Delivery", icon: Send },
-    { number: 5, title: "Preview", icon: Eye },
-    { number: 6, title: "Send", icon: Check },
-  ];
+  const steps = WIZARD_STEPS;
 
   const canProceed = () => {
     switch (currentStep) {
@@ -446,6 +357,74 @@ Best regards,
 [Your Phone]`;
 
   const smsBody = `Hi, I just sent over an LOI for ${deal.address}. I'm offering ${formatCurrency(offerAmount)} cash with a 14-21 day close. No fees, no repairs needed. Let me know if you have any questions - Reply YES or call me.`;
+
+  const stepProps: OfferWizardStepProps = {
+    deal,
+    arv,
+    offerAmount,
+    effectivePercentage,
+    offerPercentage,
+    setOfferPercentage,
+    customOfferAmount,
+    setCustomOfferAmount,
+    estRepairsInput,
+    setEstRepairsInput,
+    holdingCostsInput,
+    setHoldingCostsInput,
+    closingCosts,
+    agentCommission,
+    flipperProfit,
+    wholesalerProfit,
+    buyerMaxOffer,
+    selectedTemplate,
+    setSelectedTemplate,
+    templateTab,
+    setTemplateTab,
+    templates,
+    saveTemplate,
+    deleteTemplate,
+    setDefault,
+    currentTemplateConfig,
+    selectedTemplateData,
+    emailEnabled,
+    setEmailEnabled,
+    smsEnabled,
+    setSmsEnabled,
+    twilioNumber,
+    setTwilioNumber,
+    scheduleType,
+    setScheduleType,
+    dripBatchSize,
+    setDripBatchSize,
+    dripInterval,
+    setDripInterval,
+    scheduledDate,
+    setScheduledDate,
+    scheduledTime,
+    setScheduledTime,
+    previewTab,
+    setPreviewTab,
+    autoFollowUp,
+    setAutoFollowUp,
+    followUpDays,
+    setFollowUpDays,
+    emailSubject,
+    emailBody,
+    smsBody,
+    propertyImages,
+    packageInsight,
+    pricingInsight,
+    deliveryInsight,
+    previewInsight,
+    reviewInsight,
+    isOnMarket,
+    navigate,
+    mockContact,
+    setCurrentStep,
+    isSubmitting,
+    dealSetupData,
+    setDealSetupData,
+  };
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % propertyImages.length);
