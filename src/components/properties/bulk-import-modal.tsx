@@ -1,6 +1,5 @@
 import * as React from "react";
 import Papa from "papaparse";
-import * as XLSX from "xlsx";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -193,8 +192,9 @@ export function BulkImportModal({ open, onOpenChange, onSuccess }: BulkImportMod
   };
 
   // Parse Excel content
-  const parseExcel = (buffer: ArrayBuffer) => {
+  const parseExcel = async (buffer: ArrayBuffer) => {
     try {
+      const XLSX = await import("xlsx");
       const workbook = XLSX.read(buffer, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
@@ -239,7 +239,7 @@ export function BulkImportModal({ open, onOpenChange, onSuccess }: BulkImportMod
     } else if (ext === "xlsx" || ext === "xls") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        parseExcel(e.target?.result as ArrayBuffer);
+        void parseExcel(e.target?.result as ArrayBuffer);
       };
       reader.readAsArrayBuffer(file);
     } else {
