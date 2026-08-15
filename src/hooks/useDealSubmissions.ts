@@ -155,8 +155,13 @@ export function useSubmitDeal() {
       // public). The rest of the submission goes through the rate-limited
       // edge function so anon writes to deal_sources/properties/deal_submissions
       // are no longer allowed from the browser.
+      // Public form can be linked with ?org=<workspace id> so the submission
+      // lands in the receiving team's workspace.
+      const orgParam = new URLSearchParams(window.location.search).get('org');
+
       const { data: resp, error } = await supabase.functions.invoke('submit-deal', {
         body: {
+          organizationId: orgParam || undefined,
           submitterName: data.submitterName,
           submitterCompany: data.submitterCompany,
           submitterPhone: data.submitterPhone,
