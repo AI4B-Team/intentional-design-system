@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import type { Tables, TablesInsert } from "@/integrations/supabase/types";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 export type Comp = Tables<"comps">;
 export type CompInsert = TablesInsert<"comps">;
@@ -32,7 +33,7 @@ export function useAddComp() {
     mutationFn: async (comp: CompInsert) => {
       const { data, error } = await supabase
         .from("comps")
-        .insert(comp)
+        .insert({ organization_id: getActiveOrganizationId(), ...comp })
         .select()
         .single();
 

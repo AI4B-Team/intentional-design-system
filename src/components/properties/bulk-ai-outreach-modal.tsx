@@ -36,6 +36,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { MOCK_CLOSEBOT_BOTS } from "@/hooks/useClosebotIntegration";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 interface BulkAIOutreachModalProps {
   open: boolean;
@@ -124,6 +125,7 @@ export function BulkAIOutreachModal({
         // Create conversation record (in production, this would call Closebot API)
         const { error } = await supabase.from("closebot_conversations").insert({
           user_id: user?.id,
+          organization_id: getActiveOrganizationId(),
           property_id: property.id,
           bot_id: selectedBot,
           bot_name: MOCK_CLOSEBOT_BOTS.find((b) => b.id === selectedBot)?.name || "AI Bot",
