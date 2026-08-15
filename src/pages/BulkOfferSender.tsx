@@ -162,13 +162,15 @@ export default function BulkOfferSender() {
   // Load properties
   React.useEffect(() => {
     loadProperties();
-  }, []);
+  }, [organizationId]);
 
   const loadProperties = async () => {
+    if (!organizationId) return;
     setLoadingProperties(true);
     const { data, error } = await supabase
       .from("properties")
       .select("id, address, city, state, zip, arv, owner_name, owner_email, owner_phone")
+      .eq("organization_id", organizationId)
       .order("created_at", { ascending: false })
       .limit(500);
 

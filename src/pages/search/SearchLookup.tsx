@@ -33,6 +33,7 @@ export default function SearchLookup() {
     const { data: existing } = await supabase
       .from("properties")
       .select("id, address")
+      .eq("organization_id", organizationId)
       .ilike("address", `%${query.trim()}%`)
       .limit(1);
 

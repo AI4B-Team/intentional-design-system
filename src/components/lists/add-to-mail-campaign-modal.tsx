@@ -56,30 +56,32 @@ export function AddToMailCampaignModal({
 
   // Fetch campaigns
   const { data: campaigns = [], isLoading: loadingCampaigns } = useQuery({
-    queryKey: ["mail-campaigns-list"],
+    queryKey: ["mail-campaigns-list", organizationId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mail_campaigns")
         .select("id, name, status, total_recipients")
+        .eq("organization_id", organizationId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
     },
-    enabled: open,
+    enabled: open && !!organizationId,
   });
 
   // Fetch templates
   const { data: templates = [] } = useQuery({
-    queryKey: ["mail-templates-list"],
+    queryKey: ["mail-templates-list", organizationId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("mail_templates")
         .select("id, name")
+        .or(`organization_id.eq.${organizationId},organization_id.is.null`)
         .order("name");
       if (error) throw error;
       return data || [];
     },
-    enabled: open && tab === "new",
+    enabled: open && tab === "new" && !!organizationId,
   });
 
   const addRecordsToCampaign = async (campaignId: string, campaignName: string) => {
