@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Settings, Clock, FileText, Zap } from "lucide-react";
-import { useOrganizationContext } from "@/contexts/OrganizationContext";
+import { useOrganization } from "@/contexts/OrganizationContext";
 
 interface QueueSettings {
   id: string;
@@ -63,7 +63,7 @@ export function QueueSettingsPanel({
   queue,
 }: QueueSettingsPanelProps) {
   const queryClient = useQueryClient();
-  const { organizationId } = useOrganizationContext();
+  const { organizationId } = useOrganization();
   const [settings, setSettings] = React.useState<QueueSettings | null>(null);
 
   React.useEffect(() => {
