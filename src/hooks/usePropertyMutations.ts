@@ -12,7 +12,7 @@ export function useAddOffer() {
     mutationFn: async (offer: TablesInsert<"offers">) => {
       const { data, error } = await supabase
         .from("offers")
-        .insert(offer)
+        .insert({ organization_id: getActiveOrganizationId(), ...offer })
         .select()
         .single();
 
@@ -125,7 +125,7 @@ export function useAddAppointment() {
     mutationFn: async (appointment: TablesInsert<"appointments">) => {
       const { data, error } = await supabase
         .from("appointments")
-        .insert(appointment)
+        .insert({ organization_id: getActiveOrganizationId(), ...appointment })
         .select()
         .single();
 

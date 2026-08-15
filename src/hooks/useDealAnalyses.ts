@@ -103,6 +103,7 @@ export function useDealAnalyses() {
     if (!user) throw new Error("User not authenticated");
 
     const insertData = {
+      organization_id: getActiveOrganizationId(),
       ...input,
       user_id: user.id,
       purchase_price: input.purchase_price ?? input.asking_price ?? 0,

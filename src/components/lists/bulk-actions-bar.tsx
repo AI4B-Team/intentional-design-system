@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AddToMailCampaignModal } from "./add-to-mail-campaign-modal";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -67,6 +68,7 @@ export function BulkActionsBar({
           if (records) {
             const suppressions = records.map((r) => ({
               user_id: r.user_id,
+              organization_id: getActiveOrganizationId(),
               address_hash: r.address_hash,
               normalized_address: r.address_hash,
               address: r.address,
