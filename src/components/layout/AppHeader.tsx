@@ -4,6 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -48,6 +50,7 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [isScrolled, setIsScrolled] = useState(false);
   const marketplaceQueryRef = React.useRef("");
 
@@ -99,9 +102,11 @@ export function AppHeader({ onMenuClick, breadcrumbs, onOpenCommandPalette }: Ap
     if (isFullAddress(query)) {
       try {
         const { supabase } = await import("@/integrations/supabase/client");
-        const { data: existing } = await supabase
-          .from("properties")
-          .select("id")
+        const { data: existing } = await scopeToWorkspace(
+          supabase.from("properties").select("id"),
+          organizationId,
+          user?.id ?? "",
+        )
           .ilike("address", `%${query}%`)
           .limit(1);
         if (existing && existing.length > 0) {
