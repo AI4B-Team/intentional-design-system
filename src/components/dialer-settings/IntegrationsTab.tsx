@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link2, Copy, Calendar, Mail, MessageSquare, Clock } from "lucide-react";
+import { Link2, Copy, Calendar, Mail, MessageSquare, Clock, Phone } from "lucide-react";
 import { type DialerSettingsValues } from "./dialer-settings-constants";
 
 interface IntegrationsTabProps {
