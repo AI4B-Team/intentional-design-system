@@ -2,6 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 
 export interface RentComp {
   id: string;
@@ -110,14 +113,16 @@ export function useDeleteRentComp() {
 
 export function usePortfolioProperties() {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   return useQuery({
-    queryKey: ["portfolio-properties", user?.id],
+    queryKey: ["portfolio-properties", organizationId, user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase
-        .from("portfolio_properties")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("portfolio_properties").select("*"),
+        organizationId,
+        user.id,
+      ).order("created_at", { ascending: false });
       if (error) throw error;
       return data as PortfolioProperty[];
     },
@@ -134,7 +139,7 @@ export function useCreatePortfolioProperty() {
       if (!user) throw new Error("Not authenticated");
       const { data: result, error } = await supabase
         .from("portfolio_properties")
-        .insert({ ...data, user_id: user.id })
+        .insert({ ...data, user_id: user.id, organization_id: getActiveOrganizationId() })
         .select()
         .single();
       if (error) throw error;

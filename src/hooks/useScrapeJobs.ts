@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { toast } from "sonner";
 
 export interface ScrapeJob {
@@ -56,12 +57,13 @@ export function useScrapeJobs() {
   const queryClient = useQueryClient();
 
   const jobsQuery = useQuery({
-    queryKey: ["scrape-jobs", user?.id],
+    queryKey: ["scrape-jobs", organization?.id, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("scrape_jobs")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("scrape_jobs").select("*"),
+        organization?.id ?? null,
+        user!.id,
+      ).order("created_at", { ascending: false });
       if (error) throw error;
       return (data || []) as ScrapeJob[];
     },
@@ -69,11 +71,13 @@ export function useScrapeJobs() {
   });
 
   const leadsQuery = useQuery({
-    queryKey: ["scraped-leads", user?.id],
+    queryKey: ["scraped-leads", organization?.id, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("scraped_leads")
-        .select("*")
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("scraped_leads").select("*"),
+        organization?.id ?? null,
+        user!.id,
+      )
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
