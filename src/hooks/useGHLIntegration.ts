@@ -1,6 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -103,18 +105,22 @@ export function useGHLConnection() {
 
 export function useGHLSyncLogs(limit = 50) {
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
 
   return useQuery({
-    queryKey: ["ghl-sync-logs", user?.id, limit],
+    queryKey: ["ghl-sync-logs", organizationId, user?.id, limit],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const { data, error } = await supabase
-        .from("ghl_sync_log")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(limit);
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("ghl_sync_log")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(limit),
+        organizationId,
+        user.id,
+      );
 
       if (error) throw error;
       return data as GHLSyncLog[];
