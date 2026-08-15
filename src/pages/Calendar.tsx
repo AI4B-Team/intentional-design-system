@@ -88,6 +88,9 @@ import { toast } from "sonner";
 import { DailyAgenda } from "@/components/calendar/DailyAgenda";
 import type { CalendarEvent } from "@/components/calendar/types";
 import { useCompleteAction, useUpdateAction } from "@/hooks/useUnifiedActions";
+import { useAuth } from "@/contexts/AuthContext";
+import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 
 type ViewMode = "month" | "week" | "day";
 
@@ -127,20 +130,26 @@ function getUrgency(event: CalendarEvent): "low" | "medium" | "high" | "critical
 }
 
 function useCalendarEvents(currentDate: Date) {
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const rangeStart = startOfWeek(subMonths(monthStart, 1));
   const rangeEnd = endOfWeek(addMonths(monthEnd, 1));
 
   return useQuery({
-    queryKey: ["calendar-events", format(rangeStart, "yyyy-MM-dd"), format(rangeEnd, "yyyy-MM-dd")],
+    queryKey: ["calendar-events", organizationId, user?.id, format(rangeStart, "yyyy-MM-dd"), format(rangeEnd, "yyyy-MM-dd")],
+    enabled: !!user?.id,
     queryFn: async (): Promise<CalendarEvent[]> => {
+      const userId = user!.id;
       const events: CalendarEvent[] = [];
 
       // 1. Fetch from unified_actions (canonical source)
-      const { data: unifiedActions } = await supabase
-        .from("unified_actions")
-        .select("*")
+      const { data: unifiedActions } = await scopeToWorkspace(
+        supabase.from("unified_actions").select("*"),
+        organizationId,
+        userId,
+      )
         .gte("due_at", rangeStart.toISOString())
         .lte("due_at", rangeEnd.toISOString())
         .in("status", ["pending", "overdue", "completed"])
@@ -182,9 +191,11 @@ function useCalendarEvents(currentDate: Date) {
       });
 
       // 2. Legacy: appointments (skip if already in unified_actions)
-      const { data: appointments } = await supabase
-        .from("appointments")
-        .select(`id, scheduled_time, appointment_type, status, notes, property_id, properties!inner(address, city, state)`)
+      const { data: appointments } = await scopeToWorkspace(
+        supabase.from("appointments").select(`id, scheduled_time, appointment_type, status, notes, property_id, properties!inner(address, city, state)`),
+        organizationId,
+        userId,
+      )
         .gte("scheduled_time", rangeStart.toISOString())
         .lte("scheduled_time", rangeEnd.toISOString())
         .order("scheduled_time", { ascending: true });
@@ -205,9 +216,11 @@ function useCalendarEvents(currentDate: Date) {
       });
 
       // 3. Legacy: follow-ups from calls (skip if already in unified_actions)
-      const { data: followups } = await supabase
-        .from("calls")
-        .select(`id, follow_up_date, follow_up_time, follow_up_notes, contact_name, property_id, properties(address, city), created_at`)
+      const { data: followups } = await scopeToWorkspace(
+        supabase.from("calls").select(`id, follow_up_date, follow_up_time, follow_up_notes, contact_name, property_id, properties(address, city), created_at`),
+        organizationId,
+        userId,
+      )
         .not("follow_up_date", "is", null)
         .gte("follow_up_date", format(rangeStart, "yyyy-MM-dd"))
         .lte("follow_up_date", format(rangeEnd, "yyyy-MM-dd"));
@@ -237,9 +250,11 @@ function useCalendarEvents(currentDate: Date) {
       // 4. Legacy: stale properties
       const threeDaysAgo = new Date();
       threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      const { data: staleProps } = await supabase
-        .from("properties")
-        .select("id, address, city, state, updated_at")
+      const { data: staleProps } = await scopeToWorkspace(
+        supabase.from("properties").select("id, address, city, state, updated_at"),
+        organizationId,
+        userId,
+      )
         .eq("status", "contacted")
         .lt("updated_at", threeDaysAgo.toISOString())
         .limit(10);
