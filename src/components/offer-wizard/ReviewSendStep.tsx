@@ -9,7 +9,7 @@ import { formatCurrency } from "@/components/offer-wizard/offer-campaign-constan
 import type { OfferWizardStepProps } from "@/components/offer-wizard/offer-campaign-constants";
 
 export function ReviewSendStep(props: OfferWizardStepProps) {
-  const { deal, arv, offerAmount, effectivePercentage, selectedTemplateData, emailEnabled, smsEnabled, scheduleType, scheduledDate, scheduledTime, autoFollowUp, followUpDays, propertyImages, reviewInsight } = props;
+  const { dealSetupData, deal, arv, offerAmount, effectivePercentage, selectedTemplateData, emailEnabled, smsEnabled, scheduleType, scheduledDate, scheduledTime, autoFollowUp, followUpDays, propertyImages, reviewInsight } = props;
 
   return (
     <div className="space-y-6">

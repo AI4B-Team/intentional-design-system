@@ -174,4 +174,6 @@ export interface OfferWizardStepProps {
   mockContact: any;
   setCurrentStep: (v: number) => void;
   isSubmitting: boolean;
+  dealSetupData: any;
+  setDealSetupData: (fn: any) => void;
 }
