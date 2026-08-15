@@ -20,10 +20,10 @@ interface PropertySearchResult {
   state: string;
   zip: string;
   arv?: number;
-  asking_price?: number;
+  estimated_value?: number;
   status?: string;
-  bedrooms?: number;
-  bathrooms?: number;
+  beds?: number;
+  baths?: number;
   sqft?: number;
   year_built?: number;
   property_type?: string;
