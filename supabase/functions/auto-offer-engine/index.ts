@@ -39,13 +39,12 @@ Deno.serve(async (req) => {
       // Find properties matching this buy box that haven't been offered yet
       let query = sb
         .from('properties')
-        .select('id, address, city, state, zip, arv, repair_estimate, mao_standard, owner_phone, owner_email, owner_name, property_type, beds, asking_price')
+        .select('id, address, city, state, zip, arv, repair_estimate, mao_standard, owner_phone, owner_email, owner_name, property_type, beds, estimated_value')
         .eq('user_id', bb.user_id)
-        .in('status', ['new', 'contacted', 'follow_up'])
-        .is('offer_sent_at', null);
+        .in('status', ['new', 'contacted', 'follow_up']);
 
-      if (criteria.price_max) query = query.lte('asking_price', criteria.price_max);
-      if (criteria.price_min) query = query.gte('asking_price', criteria.price_min);
+      if (criteria.price_max) query = query.lte('estimated_value', criteria.price_max);
+      if (criteria.price_min) query = query.gte('estimated_value', criteria.price_min);
       if (criteria.property_types?.length) {
         query = query.in('property_type', criteria.property_types);
       }
@@ -54,7 +53,7 @@ Deno.serve(async (req) => {
       const { data: matches } = await query.limit(bb.max_daily_offers || 10);
 
       for (const prop of matches ?? []) {
-        const arv = prop.arv ?? prop.asking_price ?? 0;
+        const arv = prop.arv ?? prop.estimated_value ?? 0;
         const repairs = prop.repair_estimate ?? 0;
         const pct = bb.offer_percentage ?? criteria.offer_pct ?? 0.70;
         const offerAmount = Math.round(arv * pct - repairs);
