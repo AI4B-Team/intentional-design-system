@@ -22,6 +22,7 @@ import {
 import { Loader2, Mail, Plus, Check } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrganizationId } from "@/lib/activeOrganization";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -49,6 +50,7 @@ export function AddToMailCampaignModal({
 }: AddToMailCampaignModalProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [tab, setTab] = useState("existing");
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
