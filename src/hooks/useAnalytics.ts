@@ -2,6 +2,7 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { getActiveOrganizationId } from "@/lib/activeOrganization";
 import {
   subDays,
   differenceInDays,
@@ -97,10 +98,21 @@ function getComparisonRange(range: DateRange): DateRange {
   };
 }
 
+/**
+ * PostgREST `or` filter that keeps analytics scoped to the active workspace.
+ * Legacy rows without an organization are still counted for their own creator.
+ */
+function workspaceFilter(userId: string | undefined): string {
+  const organizationId = getActiveOrganizationId();
+  if (!organizationId) return `user_id.eq.${userId ?? "00000000-0000-0000-0000-000000000000"}`;
+  return `organization_id.eq.${organizationId},and(organization_id.is.null,user_id.eq.${userId ?? "00000000-0000-0000-0000-000000000000"})`;
+}
+
 // ============ OVERVIEW ANALYTICS ============
 
 export function useOverviewAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
   const compareRange = getComparisonRange(dateRange);
 
   return useQuery({
@@ -126,33 +138,39 @@ export function useOverviewAnalytics(dateRange: DateRange) {
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "contacted")
           .gte("updated_at", dateRange.from.toISOString())
           .lte("updated_at", dateRange.to.toISOString()),
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("scheduled_time", dateRange.from.toISOString())
           .lte("scheduled_time", dateRange.to.toISOString()),
         supabase
           .from("offers")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "under_contract")
           .gte("updated_at", dateRange.from.toISOString())
           .lte("updated_at", dateRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "closed")
           .gte("updated_at", dateRange.from.toISOString())
           .lte("updated_at", dateRange.to.toISOString()),
@@ -160,33 +178,39 @@ export function useOverviewAnalytics(dateRange: DateRange) {
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("created_at", compareRange.from.toISOString())
           .lte("created_at", compareRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "contacted")
           .gte("updated_at", compareRange.from.toISOString())
           .lte("updated_at", compareRange.to.toISOString()),
         supabase
           .from("appointments")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("scheduled_time", compareRange.from.toISOString())
           .lte("scheduled_time", compareRange.to.toISOString()),
         supabase
           .from("offers")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .gte("created_at", compareRange.from.toISOString())
           .lte("created_at", compareRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "under_contract")
           .gte("updated_at", compareRange.from.toISOString())
           .lte("updated_at", compareRange.to.toISOString()),
         supabase
           .from("properties")
           .select("id", { count: "exact", head: true })
+          .or(orgFilter)
           .eq("status", "closed")
           .gte("updated_at", compareRange.from.toISOString())
           .lte("updated_at", compareRange.to.toISOString()),
@@ -261,6 +285,7 @@ export function useOverviewAnalytics(dateRange: DateRange) {
 
 export function usePipelineAnalytics() {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["analytics-pipeline-enhanced", user?.id],
@@ -277,7 +302,8 @@ export function usePipelineAnalytics() {
       // Get all properties with their data
       const { data: properties } = await supabase
         .from("properties")
-        .select("id, address, status, created_at, updated_at, arv, mao_standard");
+        .select("id, address, status, created_at, updated_at, arv, mao_standard")
+        .or(orgFilter);
 
       if (!properties) return { stages: [], velocity: [], totalValue: 0, weightedValue: 0 };
 
@@ -367,6 +393,7 @@ export function usePipelineAnalytics() {
 
 export function useStalledDeals() {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["stalled-deals", user?.id],
@@ -382,6 +409,7 @@ export function useStalledDeals() {
       const { data: properties } = await supabase
         .from("properties")
         .select("id, address, status, created_at, updated_at, arv")
+        .or(orgFilter)
         .in("status", ["new", "contacted", "appointment", "offer_made", "under_contract"]);
 
       if (!properties) return [];
@@ -476,6 +504,7 @@ export function useSourceRecommendations(sources: SourceBreakdown[] | undefined)
 
 export function useSourceAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["analytics-sources", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
@@ -484,6 +513,7 @@ export function useSourceAnalytics(dateRange: DateRange) {
       const { data: properties } = await supabase
         .from("properties")
         .select("id, source, status, created_at, arv, mao_standard")
+        .or(orgFilter)
         .gte("created_at", dateRange.from.toISOString())
         .lte("created_at", dateRange.to.toISOString());
 
@@ -563,6 +593,7 @@ export function useSourceAnalytics(dateRange: DateRange) {
 
 export function useDealFlowTimeSeries(dateRange: DateRange) {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["analytics-dealflow", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
@@ -589,16 +620,19 @@ export function useDealFlowTimeSeries(dateRange: DateRange) {
         supabase
           .from("properties")
           .select("id, status, created_at, updated_at")
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("offers")
           .select("id, created_at")
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("appointments")
           .select("id, scheduled_time")
+          .or(orgFilter)
           .gte("scheduled_time", dateRange.from.toISOString())
           .lte("scheduled_time", dateRange.to.toISOString()),
       ]);
@@ -651,6 +685,7 @@ export function useDealFlowTimeSeries(dateRange: DateRange) {
 
 export function useMarketingAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["analytics-marketing", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
@@ -659,11 +694,13 @@ export function useMarketingAnalytics(dateRange: DateRange) {
         supabase
           .from("campaigns")
           .select("id, name, status, sent_count, opened_count, responded_count, properties_count")
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
         supabase
           .from("outreach_log")
           .select("id, channel, status, created_at")
+          .or(orgFilter)
           .gte("created_at", dateRange.from.toISOString())
           .lte("created_at", dateRange.to.toISOString()),
       ]);
@@ -747,6 +784,7 @@ export interface ExpenseCategory {
 
 export function useFinancialAnalytics(dateRange: DateRange) {
   const { user } = useAuth();
+  const orgFilter = workspaceFilter(user?.id);
 
   return useQuery({
     queryKey: ["analytics-financial-enhanced", dateRange.from.toISOString(), dateRange.to.toISOString(), user?.id],
@@ -754,6 +792,7 @@ export function useFinancialAnalytics(dateRange: DateRange) {
       const { data: closedDeals } = await supabase
         .from("properties")
         .select("id, address, property_type, arv, mao_standard, repair_estimate, created_at, updated_at")
+        .or(orgFilter)
         .eq("status", "closed")
         .gte("updated_at", dateRange.from.toISOString())
         .lte("updated_at", dateRange.to.toISOString());
@@ -844,6 +883,7 @@ export function useFinancialAnalytics(dateRange: DateRange) {
       const { data: pipelineDeals } = await supabase
         .from("properties")
         .select("id, arv, mao_standard")
+        .or(orgFilter)
         .in("status", ["under_contract", "offer_made"]);
 
       const projectedPipeline = (pipelineDeals || []).reduce((sum, d) => {
