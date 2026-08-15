@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Search, MapPin, DollarSign, User, CheckCircle, Building2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface DealData {
   id: string;
@@ -35,6 +38,8 @@ interface DealPickerProps {
 }
 
 export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
+  const { user } = useAuth();
+  const organizationId = useCurrentOrganizationId();
   const [query, setQuery] = React.useState("");
   const [deals, setDeals] = React.useState<DealData[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -51,9 +56,13 @@ export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
     setHasSearched(true);
 
     try {
-      const { data, error } = await supabase
-        .from("properties")
-        .select("id, address, city, state, zip, owner_name, owner_email, owner_phone, estimated_value, arv, repair_estimate, status, beds, baths, sqft, year_built, property_type, asking_price, earnest_money")
+      const { data, error } = await scopeToWorkspace(
+        supabase
+          .from("properties")
+          .select("id, address, city, state, zip, owner_name, owner_email, owner_phone, estimated_value, arv, repair_estimate, status, beds, baths, sqft, year_built, property_type, asking_price, earnest_money"),
+        organizationId,
+        user?.id,
+      )
         .or(`address.ilike.%${searchText}%,city.ilike.%${searchText}%,owner_name.ilike.%${searchText}%`)
         .limit(10);
 
@@ -87,7 +96,7 @@ export function DealPicker({ onSelect, selectedDealId }: DealPickerProps) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [organizationId, user?.id]);
 
   React.useEffect(() => {
     const timeout = setTimeout(() => searchDeals(query), 300);

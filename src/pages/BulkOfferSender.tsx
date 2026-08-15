@@ -52,6 +52,7 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useCurrentOrganizationId } from "@/lib/activeOrganization";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useLoiTemplates,
@@ -128,6 +129,7 @@ function StepIndicator({ currentStep }: { currentStep: Step }) {
 }
 
 export default function BulkOfferSender() {
+  const organizationId = useCurrentOrganizationId();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: templates, isLoading: templatesLoading } = useLoiTemplates();
@@ -162,13 +164,15 @@ export default function BulkOfferSender() {
   // Load properties
   React.useEffect(() => {
     loadProperties();
-  }, []);
+  }, [organizationId]);
 
   const loadProperties = async () => {
+    if (!organizationId) return;
     setLoadingProperties(true);
     const { data, error } = await supabase
       .from("properties")
       .select("id, address, city, state, zip, arv, owner_name, owner_email, owner_phone")
+      .eq("organization_id", organizationId)
       .order("created_at", { ascending: false })
       .limit(500);
 
