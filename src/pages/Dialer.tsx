@@ -94,23 +94,28 @@ export default function Dialer() {
 
   // Fetch current script for selected queue
   const { data: currentScript } = useQuery({
-    queryKey: ["call-script", selectedQueueId],
+    queryKey: ["call-script", selectedQueueId, organizationId],
     queryFn: async () => {
-      if (!selectedQueueId) return null;
+      if (!selectedQueueId || !organizationId) return null;
 
-      // Get queue to find script ID
+      // Get queue to find script ID (queue must belong to the active workspace)
       const { data: queue } = await supabase
         .from("call_queues")
         .select("call_script_id")
         .eq("id", selectedQueueId)
+        .eq("organization_id", organizationId)
         .maybeSingle();
 
       if (!queue?.call_script_id) {
-        // Get default script
+        // Get default script for this workspace (fall back to system scripts)
         const { data: defaultScript } = await supabase
           .from("call_scripts")
           .select("*")
           .eq("is_default", true)
+          .eq("is_active", true)
+          .or(`organization_id.eq.${organizationId},is_system.eq.true`)
+          .order("is_system", { ascending: true })
+          .limit(1)
           .maybeSingle();
         return defaultScript;
       }
@@ -119,11 +124,12 @@ export default function Dialer() {
         .from("call_scripts")
         .select("*")
         .eq("id", queue.call_script_id)
+        .or(`organization_id.eq.${organizationId},is_system.eq.true`)
         .maybeSingle();
 
       return script;
     },
-    enabled: !!selectedQueueId,
+    enabled: !!selectedQueueId && !!organizationId,
   });
 
   // Initialize dialer on mount
