@@ -173,7 +173,8 @@ Deno.serve(async (req) => {
       // Create appointment if set
       if (appointmentTime && payload.property_id) {
         await supabase.from("appointments").insert({
-          user_id: connection.user_id,
+          created_by: connection.user_id,
+          assigned_to: connection.user_id,
           organization_id: connection.organization_id ?? null,
           property_id: payload.property_id,
           scheduled_time: appointmentTime,

@@ -71,6 +71,7 @@ export function useAllOffers() {
           `),
         organizationId,
         user.id,
+        "created_by",
       ).order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -99,6 +100,7 @@ export function useOfferStats() {
         supabase.from("offers").select("*"),
         organizationId,
         user.id,
+        "created_by",
       );
 
       if (offersError) throw offersError;
@@ -154,6 +156,7 @@ export function useOfferActivity() {
         supabase.from("offers").select("id"),
         organizationId,
         user.id,
+        "created_by",
       );
       if (offersError) throw offersError;
       const offerIds = (workspaceOffers || []).map((o) => o.id);

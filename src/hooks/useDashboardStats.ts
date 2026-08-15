@@ -32,6 +32,7 @@ export function useDashboardStats() {
           (supabase.from(table) as ReturnType<typeof supabase.from>).select("id", { count: "exact", head: true }),
           organizationId,
           user!.id,
+          table === "properties" ? "user_id" : "created_by",
         ) as unknown as CountQuery;
 
       const now = new Date();

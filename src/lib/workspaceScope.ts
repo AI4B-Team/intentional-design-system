@@ -6,16 +6,21 @@
  * rows. Legacy rows created before workspace stamping have a NULL
  * `organization_id`, so those are still included for their own creator.
  */
-export function scopeToWorkspace<T>(query: T, organizationId: string | null, userId: string): T {
+export function scopeToWorkspace<T>(
+  query: T,
+  organizationId: string | null,
+  userId: string,
+  ownerColumn: "user_id" | "created_by" = "user_id",
+): T {
   const q = query as unknown as {
     or: (filter: string) => T;
     eq: (column: string, value: string) => T;
   };
 
-  if (!organizationId) return q.eq("user_id", userId);
+  if (!organizationId) return q.eq(ownerColumn, userId);
 
   return q.or(
-    `organization_id.eq.${organizationId},and(organization_id.is.null,user_id.eq.${userId})`,
+    `organization_id.eq.${organizationId},and(organization_id.is.null,${ownerColumn}.eq.${userId})`,
   );
 }
 

@@ -93,6 +93,7 @@ function useRealNotifications() {
     enabled: !!user?.id,
     queryFn: async (): Promise<Notification[]> => {
       const scoped = <T,>(q: T) => scopeToWorkspace(q, organizationId, user!.id);
+      const scopedByCreator = <T,>(q: T) => scopeToWorkspace(q, organizationId, user!.id, "created_by");
       const notifications: Notification[] = [];
       const now = new Date();
 
@@ -113,7 +114,7 @@ function useRealNotifications() {
           .limit(5),
 
         // Today's appointments and follow-ups
-        scoped(supabase
+        scopedByCreator(supabase
           .from("appointments")
           .select(`
             id,
@@ -128,7 +129,7 @@ function useRealNotifications() {
           .limit(10),
 
         // Pending offers
-        scoped(supabase
+        scopedByCreator(supabase
           .from("offers")
           .select(`
             id,
@@ -143,7 +144,7 @@ function useRealNotifications() {
           .limit(5),
 
         // Upcoming appointments
-        scoped(supabase
+        scopedByCreator(supabase
           .from("appointments")
           .select(`
             id,

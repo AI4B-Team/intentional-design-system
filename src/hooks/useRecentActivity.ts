@@ -57,6 +57,7 @@ export function useRecentActivity(limit = 20) {
           `),
           organizationId,
           userId,
+          "created_by",
         )
           .order("created_at", { ascending: false })
           .limit(10),
@@ -73,6 +74,7 @@ export function useRecentActivity(limit = 20) {
           `),
           organizationId,
           userId,
+          "created_by",
         )
           .order("created_at", { ascending: false })
           .limit(10),

@@ -20,10 +20,10 @@ interface PropertySearchResult {
   state: string;
   zip: string;
   arv?: number;
-  asking_price?: number;
+  estimated_value?: number;
   status?: string;
-  bedrooms?: number;
-  bathrooms?: number;
+  beds?: number;
+  baths?: number;
   sqft?: number;
   year_built?: number;
   property_type?: string;
@@ -47,7 +47,7 @@ async function searchPropertiesInDatabase(
 
   let queryBuilder = supabase
     .from("properties")
-    .select("id, address, city, state, zip, arv, asking_price, status, bedrooms, bathrooms, sqft, year_built, property_type")
+    .select("id, address, city, state, zip, arv, estimated_value, status, beds, baths, sqft, year_built, property_type")
     .eq("user_id", userId)
     .limit(10);
   
@@ -133,9 +133,9 @@ function formatPropertyResults(properties: PropertySearchResult[]): string {
   properties.forEach((prop, index) => {
     result += `**${index + 1}. ${prop.address}**\n`;
     result += `   📍 ${prop.city}, ${prop.state} ${prop.zip}\n`;
-    if (prop.asking_price) result += `   💰 Asking: $${prop.asking_price.toLocaleString()}\n`;
+    if (prop.estimated_value) result += `   💰 Asking: $${prop.estimated_value.toLocaleString()}\n`;
     if (prop.arv) result += `   📈 ARV: $${prop.arv.toLocaleString()}\n`;
-    if (prop.bedrooms || prop.bathrooms) result += `   🏠 ${prop.bedrooms || 0} bed / ${prop.bathrooms || 0} bath\n`;
+    if (prop.beds || prop.baths) result += `   🏠 ${prop.beds || 0} bed / ${prop.baths || 0} bath\n`;
     if (prop.sqft) result += `   📐 ${prop.sqft.toLocaleString()} sqft\n`;
     if (prop.status) result += `   📋 Status: ${prop.status}\n`;
     result += "\n";
