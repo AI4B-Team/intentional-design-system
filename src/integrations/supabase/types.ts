@@ -6324,6 +6324,7 @@ export type Database = {
           added_at: string
           address: string
           id: string
+          organization_id: string | null
           reason: string | null
           source: string | null
           user_id: string
@@ -6332,6 +6333,7 @@ export type Database = {
           added_at?: string
           address: string
           id?: string
+          organization_id?: string | null
           reason?: string | null
           source?: string | null
           user_id: string
@@ -6340,11 +6342,20 @@ export type Database = {
           added_at?: string
           address?: string
           id?: string
+          organization_id?: string | null
           reason?: string | null
           source?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "mail_suppression_list_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mail_templates: {
         Row: {
