@@ -890,7 +890,7 @@ export default function Calendar() {
             )}
 
             {viewTab === "kanban" && (
-              <CalendarKanbanView events={filteredEvents} navigate={navigate} completeAction={completeAction} updateAction={updateAction} onReschedule={setRescheduleEvent} />
+              <CalendarKanbanView events={filteredEvents} navigate={navigate} completeAction={completeAction} updateAction={updateAction} onReschedule={openRescheduleDialog} />
             )}
 
             {viewTab === "feed" && (

@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Phone, MessageSquare, CalendarClock, CheckCircle2, Clock, MapPin, Sparkles, AlertCircle, Calendar as CalendarIcon, FileText, Home } from "lucide-react";
 import type { CalendarEvent } from "@/components/calendar/types";
 import type { useCompleteAction, useUpdateAction } from "@/hooks/useUnifiedActions";
-import { EVENT_COLORS, URGENCY_COLORS, EVENT_ICONS, handleQuickAction } from "@/components/calendar/calendar-constants";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { EVENT_COLORS, URGENCY_COLORS, EVENT_ICONS, handleQuickAction, getEventNavigation } from "@/components/calendar/calendar-constants";
 
 interface CalendarKanbanViewProps {
   events: CalendarEvent[];
@@ -178,7 +179,7 @@ export function CalendarKanbanView({ events: filteredEvents, navigate, completeA
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <button
-                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule", completeAction, updateAction, openRescheduleDialog); }}
+                                          onClick={(e) => { e.stopPropagation(); handleQuickAction(navigate, evt, "reschedule", completeAction, updateAction, onReschedule); }}
                                           className="flex-1 flex items-center justify-center py-1.5 text-muted-foreground/50 hover:text-muted-foreground hover:bg-muted/20 transition-colors"
                                         >
                                           <CalendarClock className="h-3 w-3" />
