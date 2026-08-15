@@ -24,6 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentOrganizationId } from "@/hooks/useOrganizationId";
 import { getActiveOrganizationId } from "@/lib/activeOrganization";
+import { scopeToWorkspace } from "@/lib/workspaceScope";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
@@ -73,17 +74,17 @@ export function AddToMailCampaignModal({
 
   // Fetch templates
   const { data: templates = [] } = useQuery({
-    queryKey: ["mail-templates-list", organizationId],
+    queryKey: ["mail-templates-list", organizationId, user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("mail_templates")
-        .select("id, name")
-        .or(`organization_id.eq.${organizationId},organization_id.is.null`)
-        .order("name");
+      const { data, error } = await scopeToWorkspace(
+        supabase.from("mail_templates").select("id, name"),
+        organizationId,
+        user!.id,
+      ).order("name");
       if (error) throw error;
       return data || [];
     },
-    enabled: open && tab === "new" && !!organizationId,
+    enabled: open && tab === "new" && !!organizationId && !!user?.id,
   });
 
   const addRecordsToCampaign = async (campaignId: string, campaignName: string) => {
