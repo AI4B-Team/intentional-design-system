@@ -5,7 +5,7 @@ import { CHANNEL_CONFIG } from "./comms-config";
 import {
   Phone, MessageCircle, Mail, Voicemail, Search, Star, Sparkles,
   Send, ChevronDown, ArrowDownLeft, ArrowUpRight,
-  FileText, Calendar, Bot,
+  FileText, Calendar, Bot, Inbox,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -189,7 +189,7 @@ export function ViewSwitcher({ activeView, onSwitch }: { activeView: string; onS
 // ============================================================================
 export function ChannelFilters({ activeFilter, onFilter }: { activeFilter: string; onFilter: (f: string) => void }) {
   const filters = [
-    { key: "all", label: "All" },
+    { key: "all", label: "All Channels", icon: Inbox },
     { key: "call", label: "Calls", icon: Phone, colorClass: "text-violet-500", bgClass: "bg-violet-500/10 border-violet-500/30" },
     { key: "sms", label: "SMS", icon: MessageCircle, colorClass: "text-blue-500", bgClass: "bg-blue-500/10 border-blue-500/30" },
     { key: "email", label: "Email", icon: Mail, colorClass: "text-amber-500", bgClass: "bg-amber-500/10 border-amber-500/30" },
@@ -198,19 +198,25 @@ export function ChannelFilters({ activeFilter, onFilter }: { activeFilter: strin
   return (
     <div className="flex gap-1.5">
       {filters.map(({ key, label, icon: Icon, colorClass, bgClass }) => (
-        <button
-          key={key}
-          onClick={() => onFilter(key)}
-          className={cn(
-            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all",
-            activeFilter === key
-              ? (bgClass || "bg-primary/10 border-primary/30 text-primary")
-              : "bg-muted/50 border-border text-muted-foreground hover:text-foreground"
-          )}
-        >
-          {Icon && <Icon className="h-3 w-3" />}
-          {label}
-        </button>
+        <Tooltip key={key}>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={() => onFilter(key)}
+              aria-label={label}
+              aria-pressed={activeFilter === key}
+              className={cn(
+                "flex items-center justify-center h-8 w-8 rounded-lg border transition-all",
+                activeFilter === key
+                  ? cn(bgClass || "bg-primary/10 border-primary/30 text-primary", colorClass)
+                  : "bg-muted/50 border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="h-4 w-4" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>{label}</TooltipContent>
+        </Tooltip>
       ))}
     </div>
   );

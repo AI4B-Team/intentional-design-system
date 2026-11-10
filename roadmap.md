@@ -5,3 +5,4 @@
 - [ ] Never lock the page when the backend is slow: cached workspace, timeout, retry, connection-trouble notice
 - [ ] Fix scheduled AI lead jobs rejected for missing sign-in (scores stale since June)
 - [ ] Only wake the every-minute scheduled-calls job when calls are actually due
+- [ ] Top menu buttons (Communications page): icons only, labels moved to tooltips
