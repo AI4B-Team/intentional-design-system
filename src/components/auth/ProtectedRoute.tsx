@@ -2,7 +2,9 @@ import * as React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrganization } from "@/contexts/OrganizationContext";
-import { LoadingPage } from "@/components/ui/spinner";
+import { ConnectionTroubleBanner, ConnectionTroubleScreen } from "@/components/auth/ConnectionNotice";
+
+const LOADING_TIMEOUT_MS = 10_000;
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,7 +13,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requireOrganization = true }: ProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
-  const { organization, loading: orgLoading } = useOrganization();
+  const { organization, loading: orgLoading, connectionError, refreshOrganization } = useOrganization();
   const location = useLocation();
   
   // Check localStorage for previous session — survives page refreshes unlike refs
@@ -49,6 +51,23 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
     if (user) setGraceExpired(false);
   }, [authLoading, user, graceExpired]);
 
+  // If sign-in or workspace loading hangs (slow backend), stop dimming the page
+  // after a few seconds and tell the user instead of leaving it unclickable.
+  const stuckLoading = authLoading || (requireOrganization && orgLoading);
+  const [loadingTooLong, setLoadingTooLong] = React.useState(false);
+  React.useEffect(() => {
+    if (!stuckLoading) {
+      setLoadingTooLong(false);
+      return;
+    }
+    const timer = setTimeout(() => setLoadingTooLong(true), LOADING_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [stuckLoading]);
+
+  if (stuckLoading && loadingTooLong) {
+    return <ConnectionTroubleScreen onRetry={() => window.location.reload()} />;
+  }
+
   // During auth loading or grace period, render children at reduced opacity (sidebar stays visible)
   if (authLoading || (!user && hadPreviousSession.current && !graceExpired)) {
     return <div className="opacity-50 pointer-events-none transition-opacity duration-200">{children}</div>;
@@ -73,10 +92,20 @@ export function ProtectedRoute({ children, requireOrganization = true }: Protect
                               location.pathname.startsWith("/signup/flow") ||
                               location.pathname === "/create-organization";
     
+    // Couldn't reach the backend and have no saved workspace: don't mistake that for "no workspace"
+    if (!organization && connectionError && !isOnboardingPage) {
+      return <ConnectionTroubleScreen onRetry={() => void refreshOrganization()} />;
+    }
+
     if (!organization && !isOnboardingPage) {
       return <Navigate to="/signup/flow" replace />;
     }
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      {connectionError && <ConnectionTroubleBanner />}
+    </>
+  );
 }

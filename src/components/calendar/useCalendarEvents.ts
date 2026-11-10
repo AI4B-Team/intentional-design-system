@@ -157,6 +157,6 @@ export function useCalendarEvents(currentDate: Date) {
 
       return events.map((e) => ({ ...e, urgency: e.urgency || getUrgency(e) })).sort((a, b) => a.date.getTime() - b.date.getTime());
     },
-    refetchInterval: 60000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
   });
 }

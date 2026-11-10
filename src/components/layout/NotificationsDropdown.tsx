@@ -261,7 +261,7 @@ function useRealNotifications() {
         return b.timestamp.getTime() - a.timestamp.getTime();
       });
     },
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 

@@ -54,6 +54,8 @@ interface OrganizationContextType {
   rolesByOrganization: Record<string, OrgRole>;
   switchOrganization: (organizationId: string) => void;
   loading: boolean;
+  /** True when the last workspace refresh could not reach the backend (auto-retrying) */
+  connectionError: boolean;
   hasRole: (role: OrgRole | string) => boolean;
   canManageTeam: boolean;
   canManageSettings: boolean;
@@ -79,8 +81,50 @@ const ROLE_HIERARCHY: Record<OrgRole, number> = {
   member: 1,
 };
 
+type MemberRow = Record<string, unknown> & {
+  id: string;
+  organization_id: string;
+  organizations: Organization | null;
+};
+
+// Last-known workspace list per user. Lets the app render instantly (and stay
+// usable) when the backend is slow, then refresh quietly in the background.
+const ORG_CACHE_PREFIX = "df_org_cache:";
+const FETCH_TIMEOUT_MS = 12_000;
+const RETRY_BASE_MS = 15_000;
+const RETRY_MAX_MS = 2 * 60_000;
+
+function readOrgCache(userId: string): MemberRow[] | null {
+  try {
+    const raw = localStorage.getItem(ORG_CACHE_PREFIX + userId);
+    const parsed = raw ? JSON.parse(raw) : null;
+    return Array.isArray(parsed) ? (parsed as MemberRow[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeOrgCache(userId: string, rows: MemberRow[]) {
+  try {
+    localStorage.setItem(ORG_CACHE_PREFIX + userId, JSON.stringify(rows));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+function clearOrgCaches() {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith(ORG_CACHE_PREFIX))
+      .forEach((k) => localStorage.removeItem(k));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 export function OrganizationProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
+  const userId = user?.id ?? null;
   const [organization, setOrganization] = React.useState<Organization | null>(null);
   const [membership, setMembership] = React.useState<OrganizationMember | null>(null);
   const [members, setMembers] = React.useState<OrganizationMember[]>([]);
@@ -94,6 +138,15 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
   });
   const [loading, setLoading] = React.useState(true);
+  const [connectionError, setConnectionError] = React.useState(false);
+
+  const activeOrgIdRef = React.useRef(activeOrgId);
+  activeOrgIdRef.current = activeOrgId;
+  const rowsRef = React.useRef<MemberRow[] | null>(null);
+  const rowsUserRef = React.useRef<string | null>(null);
+  const retryTimerRef = React.useRef<number | null>(null);
+  const retryAttemptRef = React.useRef(0);
+  const fetchRef = React.useRef<() => Promise<void>>();
 
   const switchOrganization = React.useCallback((organizationId: string) => {
     setActiveOrgId(organizationId);
@@ -104,106 +157,158 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  const fetchOrganization = React.useCallback(async () => {
-    // Wait for auth to finish loading before checking organization
-    if (authLoading) {
-      return;
-    }
+  const clearState = React.useCallback(() => {
+    setOrganization(null);
+    setMembership(null);
+    setMembers([]);
+    setOrganizations([]);
+    setRolesByOrganization({});
+  }, []);
 
-    if (!user) {
-      setOrganization(null);
-      setMembership(null);
-      setMembers([]);
-      setOrganizations([]);
-      setRolesByOrganization({});
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      // Get every active membership with its organization (a user can belong to several)
-      const { data: memberRows, error: memberError } = await supabase
-        .from("organization_members")
-        .select(`
-          *,
-          organizations (*)
-        `)
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .order("created_at", { ascending: false });
-
-      const rows = (memberRows ?? []).filter((r) => (r as any).organizations);
-
-      if (memberError || rows.length === 0) {
-        // User has no organization - will need to create or join one
-        setOrganization(null);
-        setMembership(null);
-        setMembers([]);
-        setOrganizations([]);
-        setRolesByOrganization({});
-        setLoading(false);
-        return;
+  /** Derive all workspace state from membership rows. Returns the active membership row. */
+  const applyRows = React.useCallback(
+    (rows: MemberRow[]): MemberRow | null => {
+      rowsRef.current = rows;
+      if (rows.length === 0) {
+        clearState();
+        return null;
       }
 
-      const allOrgs = rows.map((r) => (r as any).organizations as Organization);
       const roleMap: Record<string, OrgRole> = {};
       rows.forEach((r) => {
-        roleMap[(r as any).organization_id] = (r as any).role as OrgRole;
+        roleMap[r.organization_id] = r.role as OrgRole;
       });
-      setOrganizations(allOrgs);
+      setOrganizations(rows.map((r) => r.organizations as Organization));
       setRolesByOrganization(roleMap);
 
       // Prefer the stored active workspace, fall back to the most recent membership
-      const memberData =
-        (activeOrgId && rows.find((r) => (r as any).organization_id === activeOrgId)) || rows[0];
+      const stored = activeOrgIdRef.current;
+      const memberData = (stored && rows.find((r) => r.organization_id === stored)) || rows[0];
 
       // Keep the stored id in sync so a deleted/left workspace isn't remembered forever
-      const resolvedOrgId = (memberData as any).organization_id as string;
-      if (resolvedOrgId !== activeOrgId) {
+      if (memberData.organization_id !== stored) {
         try {
-          localStorage.setItem(ACTIVE_ORG_STORAGE_KEY, resolvedOrgId);
+          localStorage.setItem(ACTIVE_ORG_STORAGE_KEY, memberData.organization_id);
         } catch {
           /* storage unavailable */
         }
       }
 
-
-
-      // Extract organization from nested response
-      const orgData = (memberData as any).organizations as Organization;
-      const membershipData: OrganizationMember = {
+      setOrganization(memberData.organizations as Organization);
+      setMembership({
         id: memberData.id,
         organization_id: memberData.organization_id,
-        user_id: memberData.user_id,
+        user_id: memberData.user_id as string,
         role: memberData.role as OrgRole,
-        status: memberData.status,
-        invited_by: memberData.invited_by,
-        invited_at: memberData.invited_at,
-        joined_at: memberData.joined_at,
-        last_active_at: memberData.last_active_at,
-        created_at: memberData.created_at,
-      };
+        status: memberData.status as string,
+        invited_by: (memberData.invited_by as string | null) ?? null,
+        invited_at: (memberData.invited_at as string | null) ?? null,
+        joined_at: (memberData.joined_at as string | null) ?? null,
+        last_active_at: (memberData.last_active_at as string | null) ?? null,
+        created_at: memberData.created_at as string,
+      });
+      return memberData;
+    },
+    [clearState],
+  );
 
-      setOrganization(orgData);
-      setMembership(membershipData);
+  const fetchOrganization = React.useCallback(async () => {
+    // Wait for auth to finish loading before checking organization
+    if (authLoading) return;
 
-      // Update last_active_at (fire and forget - don't block loading)
-      void supabase
+    if (retryTimerRef.current) {
+      window.clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
+
+    if (!userId) {
+      rowsRef.current = null;
+      rowsUserRef.current = null;
+      clearState();
+      clearOrgCaches();
+      setConnectionError(false);
+      setLoading(false);
+      return;
+    }
+
+    // New user in this tab: forget the previous user's rows, hydrate from cache
+    if (rowsUserRef.current !== userId) {
+      rowsUserRef.current = userId;
+      rowsRef.current = null;
+      const cached = readOrgCache(userId);
+      if (cached) {
+        applyRows(cached);
+        setLoading(false);
+      }
+    }
+
+    // Only block the page when we have nothing to show yet
+    if (rowsRef.current === null) setLoading(true);
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+    try {
+      // Every active membership with its organization (a user can belong to several)
+      const { data, error } = await supabase
         .from("organization_members")
-        .update({ last_active_at: new Date().toISOString() })
-        .eq("id", memberData.id);
+        .select(`
+          *,
+          organizations (*)
+        `)
+        .eq("user_id", userId)
+        .eq("status", "active")
+        .order("created_at", { ascending: false })
+        .abortSignal(controller.signal);
 
+      // A failed request is NOT "no workspace" — never send the user to signup for it
+      if (error) throw error;
+
+      const rows = ((data ?? []) as unknown as MemberRow[]).filter((r) => r.organizations);
+      writeOrgCache(userId, rows);
+      retryAttemptRef.current = 0;
+      setConnectionError(false);
+
+      const active = applyRows(rows);
+      if (active) {
+        // Update last_active_at (fire and forget - don't block loading)
+        void supabase
+          .from("organization_members")
+          .update({ last_active_at: new Date().toISOString() })
+          .eq("id", active.id);
+      }
     } catch (error) {
       console.error("Error fetching organization:", error);
-      setOrganization(null);
-      setMembership(null);
+      setConnectionError(true);
+      // Back off: 15s, 30s, 60s, then every 2 min until the backend answers
+      const delay = Math.min(RETRY_BASE_MS * 2 ** retryAttemptRef.current, RETRY_MAX_MS);
+      retryAttemptRef.current += 1;
+      retryTimerRef.current = window.setTimeout(() => {
+        void fetchRef.current?.();
+      }, delay);
     } finally {
+      window.clearTimeout(timeout);
       setLoading(false);
     }
-  }, [user, authLoading, activeOrgId]);
+  }, [userId, authLoading, applyRows, clearState]);
 
+  fetchRef.current = fetchOrganization;
+
+  React.useEffect(() => {
+    void fetchOrganization();
+  }, [fetchOrganization]);
+
+  React.useEffect(
+    () => () => {
+      if (retryTimerRef.current) window.clearTimeout(retryTimerRef.current);
+    },
+    [],
+  );
+
+  // Switching workspace only re-derives state from rows we already have
+  React.useEffect(() => {
+    if (rowsRef.current) applyRows(rowsRef.current);
+  }, [activeOrgId, applyRows]);
 
   const fetchMembers = React.useCallback(async () => {
     if (!organization || !membership) {
@@ -234,10 +339,6 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       console.error("Error in fetchMembers:", error);
     }
   }, [organization, membership]);
-
-  React.useEffect(() => {
-    fetchOrganization();
-  }, [fetchOrganization, authLoading]);
 
   React.useEffect(() => {
     if (organization && membership) {
@@ -272,6 +373,7 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
         rolesByOrganization,
         switchOrganization,
         loading,
+        connectionError,
         hasRole,
         canManageTeam,
         canManageSettings,

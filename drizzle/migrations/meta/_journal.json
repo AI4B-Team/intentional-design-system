@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794276482251,
+      "tag": "0000_remove_broken_lead_job_schedules",
+      "breakpoints": true
+    }
+  ]
+}

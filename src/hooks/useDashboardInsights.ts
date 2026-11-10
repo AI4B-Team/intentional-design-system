@@ -232,7 +232,7 @@ export function useDashboardInsights() {
         hotOpportunities: hotOpportunitiesEnhanced,
       };
     },
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 

@@ -279,7 +279,7 @@ export function useOverviewAnalytics(dateRange: DateRange) {
       };
     },
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 

@@ -33,7 +33,7 @@ export function useNotifications() {
       return data as Notification[];
     },
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 
@@ -55,7 +55,7 @@ export function useUnreadNotificationCount() {
       return count || 0;
     },
     enabled: !!user,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 

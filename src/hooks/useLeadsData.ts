@@ -157,7 +157,7 @@ export function useScraperHealth() {
   return useQuery({
     queryKey: ["leads_scraper_health", organizationId],
     enabled: !!organizationId,
-    refetchInterval: 60_000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
     queryFn: async () => {
       const rows = await safeFetch<any>(
         supabase

@@ -109,7 +109,7 @@ export function useFamilyEvents(limit = 50) {
   return useQuery({
     queryKey: ["app_family_events", organizationId, limit],
     enabled: !!organizationId,
-    refetchInterval: 60_000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
     queryFn: async () => {
       const { data, error } = await supabase
         .from("app_family_events" as any)

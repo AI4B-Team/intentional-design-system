@@ -39,6 +39,6 @@ export function useHotOpportunities(limit = 15) {
       return data || [];
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }

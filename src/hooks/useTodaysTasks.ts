@@ -93,6 +93,6 @@ export function useTodaysTasks() {
       return tasks;
     },
     enabled: !!user?.id,
-    refetchInterval: 60000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
   });
 }

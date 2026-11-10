@@ -161,7 +161,7 @@ export function useTeamActivity(limit = 20) {
       return data as ActivityLogEntry[];
     },
     enabled: !!organization,
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 }
 

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { authenticateCronRequest } from "../_shared/cron-auth.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -41,7 +42,8 @@ async function gradeOrg(supabase: ReturnType<typeof createClient>, organizationI
 
   if (!leads || leads.length === 0) return { organization_id: organizationId, scored: 0 };
 
-  let scored = 0;
+  const rows: Record<string, unknown>[] = [];
+  const computedAt = new Date().toISOString();
   for (const lead of leads as any[]) {
     // Signal severity component
     const sigs = lead.leads_signals ?? [];
@@ -77,25 +79,30 @@ async function gradeOrg(supabase: ReturnType<typeof createClient>, organizationI
     const score = Math.round(clamp(sigScore + equityScore + freshness + enrScore));
     const tier = score >= 80 ? "hot" : score >= 60 ? "warm" : "cold";
 
-    // One score row per lead: refresh in place instead of appending history,
-    // which previously grew the table by hundreds of rows per lead.
-    const { error } = await supabase.from("leads_scores").upsert(
-      {
-        organization_id: organizationId,
-        lead_property_id: lead.id,
-        opportunity_score: score,
-        tier,
-        computed_at: new Date().toISOString(),
-        score_breakdown: {
-          signal: Math.round(sigScore),
-          equity: Math.round(equityScore),
-          freshness: Math.round(freshness),
-          enrichment: Math.round(enrScore),
-        },
+    // One score row per lead: refresh in place instead of appending history
+    rows.push({
+      organization_id: organizationId,
+      lead_property_id: lead.id,
+      opportunity_score: score,
+      tier,
+      computed_at: computedAt,
+      score_breakdown: {
+        signal: Math.round(sigScore),
+        equity: Math.round(equityScore),
+        freshness: Math.round(freshness),
+        enrichment: Math.round(enrScore),
       },
-      { onConflict: "lead_property_id" },
-    );
-    if (!error) scored++;
+    });
+  }
+
+  // Write in batches instead of one request per lead (was ~1,300 writes per run)
+  let scored = 0;
+  const BATCH = 500;
+  for (let i = 0; i < rows.length; i += BATCH) {
+    const chunk = rows.slice(i, i + BATCH);
+    const { error } = await supabase.from("leads_scores").upsert(chunk, { onConflict: "lead_property_id" });
+    if (error) throw new Error(`score upsert failed: ${error.message}`);
+    scored += chunk.length;
   }
 
   return { organization_id: organizationId, scored };
@@ -103,6 +110,10 @@ async function gradeOrg(supabase: ReturnType<typeof createClient>, organizationI
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  // Scheduled-only job: accept nothing but the managed scheduler credential
+  const denied = authenticateCronRequest(req);
+  if (denied) return denied;
 
   try {
     const supabase = createClient(

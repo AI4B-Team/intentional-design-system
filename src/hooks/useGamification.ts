@@ -469,7 +469,7 @@ export function useLeaderboard(timeframe: "today" | "week" | "month" | "all" = "
       return entries;
     },
     enabled: !!organization,
-    refetchInterval: 60000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
   });
 }
 

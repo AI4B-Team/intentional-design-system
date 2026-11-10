@@ -92,7 +92,7 @@ export function TeamWorkloadCard({ className }: { className?: string }) {
       return workload;
     },
     enabled: !!organization && members.length > 0,
-    refetchInterval: 60000,
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
   });
 
   if (isLoading) {

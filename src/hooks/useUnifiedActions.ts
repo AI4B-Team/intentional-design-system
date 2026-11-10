@@ -179,7 +179,7 @@ export function useUnifiedActions(filters: ActionFilters = {}) {
       if (error) throw error;
       return (data || []) as UnifiedAction[];
     },
-    refetchInterval: 30000,
+    refetchInterval: 2 * 60 * 1000, // 2 min — keeps backend load low
   });
 
   return query;

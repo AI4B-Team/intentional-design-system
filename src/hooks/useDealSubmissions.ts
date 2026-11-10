@@ -110,7 +110,7 @@ export function usePendingSubmissionsCount() {
       return count || 0;
     },
     enabled: !!user?.id,
-    refetchInterval: 60000, // Refetch every minute
+    refetchInterval: 5 * 60 * 1000, // 5 min — keeps backend load low
   });
 }
 

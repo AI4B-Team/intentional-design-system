@@ -57,13 +57,13 @@ verify_jwt = false  # Inbound from Stripe — Stripe-Signature HMAC validated in
 verify_jwt = true
 
 [functions.agent-grade]
-verify_jwt = true
+verify_jwt = false  # managed scheduler; checked in code via cron-auth
 
 [functions.agent-oversight]
-verify_jwt = true
+verify_jwt = false  # managed scheduler; checked in code via cron-auth
 
 [functions.agent-validate]
-verify_jwt = true
+verify_jwt = false  # managed scheduler; checked in code via cron-auth
 
 [functions.ai-appointment-prep]
 verify_jwt = true
@@ -114,7 +114,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.auto-campaign-trigger]
-verify_jwt = true
+verify_jwt = false  # managed scheduler; checked in code via cron-auth
 
 [functions.auto-offer-engine]
 verify_jwt = true
